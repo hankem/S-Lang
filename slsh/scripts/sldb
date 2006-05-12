@@ -1,0 +1,16 @@
+#!/usr/bin/env slsh
+
+if (__argc == 1)
+{
+   () = fprintf (stdout, "Usage: %s script args...\n", path_basename (__argv[0]));
+   exit (1);
+}
+
+__set_argc_argv (__argv[[1:]]);
+sldb (__argv[0]);
+
+#ifexists slsh_main
+slsh_main ();
+#endif
+
+exit (0);

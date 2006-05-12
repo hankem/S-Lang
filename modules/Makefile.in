@@ -1,0 +1,104 @@
+# -*- sh -*-
+MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
+  varray-module.so @PCRE_MODULE@ @PNG_MODULE@
+SLFILES = slsmg termios select fcntl varray pcre png
+#---------------------------------------------------------------------------
+CC		= @CC@
+CFLAGS		= @CFLAGS@
+LDFLAGS		= @LDFLAGS@
+CC_SHARED 	= @CC_SHARED@
+#---------------------------------------------------------------------------
+# Installation location of the slang library
+#---------------------------------------------------------------------------
+prefix 		= @prefix@
+exec_prefix 	= @exec_prefix@
+SLANG_INC	= -I../src#-I@includedir@
+#SLANG_INC	= #-I@includedir@
+#SLANG_LIB	= #-L@libdir@ -lslang
+
+#---------------------------------------------------------------------------
+# If building the PCRE module, you may need to set these
+#---------------------------------------------------------------------------
+PCRE_INC	= @PCRE_INC@
+PCRE_LIB	= @PCRE_LIB@ -lpcre
+#---------------------------------------------------------------------------
+# If building the PNG module, you may need to set these
+#---------------------------------------------------------------------------
+PNG_INC	= @PNG_INC@
+PNG_LIB	= @PNG_LIB@ -lpng
+#---------------------------------------------------------------------------
+# Installation location of the modules
+#---------------------------------------------------------------------------
+MODULE_INSTALL_DIR = @libdir@/slang/v@slang_major_version@/modules
+INSTALL		= @INSTALL@
+INSTALL_DATA	= @INSTALL_DATA@
+MKINSDIR	= ../autoconf/mkinsdir.sh
+SLSH_DIR	= $(prefix)/share/slsh
+CMAPS_DIR	= $(SLSH_DIR)/cmaps
+HELP_DIR	= $(SLSH_DIR)/help
+#---------------------------------------------------------------------------
+# DESTDIR is designed to facilitate making packages.  Normally it is empty
+#---------------------------------------------------------------------------
+DESTDIR =
+DEST_MODULEDIR	= $(DESTDIR)$(MODULE_INSTALL_DIR)
+DEST_SLSH_DIR	= $(DESTDIR)$(SLSH_DIR)
+DEST_CMAPSDIR	= $(DESTDIR)$(CMAPS_DIR)
+DEST_HELPDIR	= $(DESTDIR)$(HELP_DIR)
+#---------------------------------------------------------------------------
+RPATH = @RPATH@
+
+#LIBS = $(RPATH) $(SLANG_LIB) $(DL_LIB) -lm
+LIBS = $(RPATH) $(DL_LIB) -lm
+INCS = $(SLANG_INC)
+
+all: $(MODULES)
+
+config.h: ../src/config.h
+	cp ../src/config.h .
+
+slsmg-module.so: slsmg-module.c config.h
+	$(CC_SHARED) $(INCS) slsmg-module.c -o slsmg-module.so $(LIBS)
+newt-module.so: newt-module.c config.h
+	$(CC_SHARED) $(INCS) newt-module.c -o newt-module.so -lnewt $(LIBS)
+termios-module.so: termios-module.c config.h
+	$(CC_SHARED) $(INCS) termios-module.c -o termios-module.so $(LIBS)
+select-module.so: select-module.c config.h
+	$(CC_SHARED) $(INCS) select-module.c -o select-module.so $(LIBS)
+fcntl-module.so: fcntl-module.c config.h
+	$(CC_SHARED) $(INCS) fcntl-module.c -o fcntl-module.so $(LIBS)
+varray-module.so: varray-module.c config.h
+	$(CC_SHARED) $(INCS) varray-module.c -o varray-module.so $(LIBS)
+pcre-module.so: pcre-module.c config.h
+	$(CC_SHARED) $(INCS) $(PCRE_INC) pcre-module.c -o pcre-module.so $(PCRE_LIB) $(LIBS)
+png-module.so: png-module.c config.h
+	$(CC_SHARED) $(INCS) $(PNG_INC) png-module.c -o png-module.so $(PNG_LIB) $(LIBS)
+
+install: all
+	-$(MKINSDIR) $(DEST_MODULEDIR)
+	@for i in $(MODULES); \
+	do \
+		echo $(INSTALL_DATA) $$i $(DEST_MODULEDIR); \
+		$(INSTALL_DATA) $$i $(DEST_MODULEDIR); \
+	done
+	-$(MKINSDIR) $(DEST_SLSH_DIR)
+	@for i in $(SLFILES); \
+	do \
+		echo $(INSTALL_DATA) $$i.sl $(DEST_SLSH_DIR); \
+		$(INSTALL_DATA) $$i.sl $(DEST_SLSH_DIR); \
+	done
+	-$(MKINSDIR) $(DEST_CMAPSDIR)
+	@for i in cmaps/*.map; \
+	do \
+		echo $(INSTALL_DATA) $$i $(DEST_CMAPSDIR); \
+		$(INSTALL_DATA) $$i $(DEST_CMAPSDIR); \
+	done
+	-$(MKINSDIR) $(DEST_HELPDIR)
+	@for i in help/*.hlp; \
+	do \
+		echo $(INSTALL_DATA) $$i $(DEST_HELPDIR); \
+		$(INSTALL_DATA) $$i $(DEST_HELPDIR); \
+	done
+clean:
+	-/bin/rm -f $(MODULES) *~
+distclean: clean
+

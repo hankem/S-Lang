@@ -1,0 +1,8 @@
+slsh (slang-shell) is a work in progress.  See the scripts/
+subdirectory for some trivial examples of its use.
+
+See the INSTALL for installation instructions.
+
+A manpage may be found doc/man/.  For non-unix systems, see
+doc/tm/slsh.tm .
+

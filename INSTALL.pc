@@ -1,0 +1,8 @@
+-*- text -*-
+
+The slang library is available for OS/2, MSDOS, and WIN32 (windows
+9x/NT) systems.  This _includes_ the various GNU environments such as
+DJGPP, and MING32.  For CYGWIN, follow the UNIX instructions.
+
+There is one master makefile located in src/mkfiles.  See the README
+file in that directory for more information.

@@ -1,0 +1,5 @@
+This directory contains the makefile used to build modules under the
+various DOS/Windows C compilers.
+
+See the README in ../../src/mkfiles/ for more information.  The exact
+same comments apply.

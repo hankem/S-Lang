@@ -1,0 +1,220 @@
+dnl -*- sh -*-
+dnl
+dnl   This file requires m4 macros that I define in my acsite.m4 file.
+dnl   A copy is in the autoconf directory.
+dnl
+
+AC_INIT(src/slang.c)
+#AC_PREFIX_DEFAULT($MY_PREFIX_DEAULT)
+
+# Installation location
+AC_PREFIX_DEFAULT("/usr/local"
+dnl if test -f "/usr/include/slang.h"; then
+dnl ac_default_prefix="/usr"
+dnl fi
+)
+
+AC_CONFIG_AUX_DIR(autoconf)
+AC_CANONICAL_HOST
+
+JD_INIT
+JD_ANSI_CC
+
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_INSTALL
+
+#Check these header since they cause trouble
+AC_CHECK_HEADERS( \
+stdlib.h \
+unistd.h \
+memory.h \
+termios.h \
+malloc.h \
+locale.h \
+langinfo.h \
+fcntl.h \
+sys/fcntl.h \
+sys/types.h \
+sys/wait.h \
+sys/utsname.h \
+sys/times.h \
+sys/time.h \
+floatingpoint.h \
+ieeefp.h \
+nan.h \
+fenv.h \
+sys/mman.h \
+)
+
+AC_TYPE_MODE_T
+AC_TYPE_PID_T
+AC_TYPE_UID_T
+AC_TYPE_SIZE_T
+dnl# AC_TYPE_OFF_T
+
+AC_HEADER_DIRENT
+
+AC_CHECK_FUNCS(\
+memset \
+memcpy \
+putenv \
+getcwd \
+setlocale \
+tcgetattr \
+tcsetattr \
+cfgetospeed \
+sigaction \
+sigemptyset \
+sigprocmask \
+sigaddset \
+alarm \
+pause \
+vfscanf \
+lstat readlink symlink link \
+kill \
+snprintf vsnprintf \
+getppid getegid geteuid getuid getgid setgid setpgid setuid \
+mmap \
+chown popen mkfifo \
+atexit on_exit umask uname \
+times gmtime mktime gettimeofday \
+strtod atoll strtoll \
+issetugid \
+isnan \
+finite \
+isinf \
+round \
+)
+
+dnl# Systems that have nl_langinfo may not have CODESET.  Test for both here
+AC_CACHE_CHECK([for nl_langinfo and CODESET], jd_cv_nl_langinfo_codeset,
+ [AC_TRY_LINK([#include <langinfo.h>], [char* cs = nl_langinfo(CODESET);],
+  jd_cv_nl_langinfo_codeset=yes, jd_cv_nl_langinfo_codeset=no)
+])
+if test $jd_cv_nl_langinfo_codeset = yes
+then
+  AC_DEFINE(HAVE_NL_LANGINFO_CODESET, 1)
+fi
+
+AC_CHECK_LIB(m, acosh, [AC_DEFINE(HAVE_ACOSH)])
+AC_CHECK_LIB(m, asinh, [AC_DEFINE(HAVE_ASINH)])
+AC_CHECK_LIB(m, atanh, [AC_DEFINE(HAVE_ATANH)])
+AC_CHECK_LIB(m, hypot, [AC_DEFINE(HAVE_HYPOT)])
+AC_CHECK_LIB(m, atan2, [AC_DEFINE(HAVE_ATAN2)])
+AC_CHECK_LIB(m, feclearexcept, [AC_DEFINE(HAVE_FECLEAREXCEPT)])
+AC_CHECK_LIB(m, fpsetsticky, [AC_DEFINE(HAVE_FPSETSTICKY)])
+
+JD_ELF_COMPILER
+JD_IEEE_CFLAGS
+
+ELF_CFLAGS="$ELF_CFLAGS $IEEE_CFLAGS"
+CFLAGS="$CFLAGS $IEEE_CFLAGS"
+
+JD_SET_RPATH($libdir)
+
+AC_CHECK_SIZEOF(short, 2)
+AC_CHECK_SIZEOF(int, 4)
+AC_CHECK_SIZEOF(long, 4)
+AC_CHECK_SIZEOF(float, 4)
+AC_CHECK_SIZEOF(double, 8)
+
+JD_CHECK_LONG_LONG
+JD_LARGE_FILE_SUPPORT
+
+JD_TERMCAP
+JD_GCC_WARNINGS
+
+JD_SET_OBJ_SRC_DIR(src)
+
+JD_CHECK_FOR_LIBRARY(pcre)
+if test $jd_with_pcre_library = yes
+then 
+  PCRE_MODULE="pcre-module.so"
+  AC_DEFINE(HAVE_PCRE_H)
+else
+  PCRE_MODULE=""
+fi
+AC_SUBST(PCRE_MODULE)
+
+JD_CHECK_FOR_LIBRARY(png)
+if test $jd_with_png_library = yes
+then 
+  PNG_MODULE="png-module.so"
+  AC_DEFINE(HAVE_PNG_H)
+else
+  PNG_MODULE=""
+fi
+AC_SUBST(PNG_MODULE)
+
+dnl # Readline support for slsh
+AC_ARG_WITH(readline,
+   [  --with-readline=xxx       use slang(default) or gnu readline for slsh ],
+   [ jd_with_readline_arg=$withval ], [jd_with_readline_arg=slang])
+AC_MSG_CHECKING(type of readline support for slsh)
+case "x$jd_with_readline_arg" in
+  xgnu|xGNU )
+    GNU_READLINE=1
+    LIB_READLINE=-lreadline
+    AC_MSG_RESULT(gnu);
+    ;;
+  *)
+    GNU_READLINE=0
+    LIB_READLINE="# -lreadline"
+    AC_MSG_RESULT(slang);
+    ;;
+esac
+AC_SUBST(GNU_READLINE)
+AC_SUBST(LIB_READLINE)
+
+JD_GET_MODULES(src/modules.unx)
+JD_CREATE_MODULE_ORULES
+
+AC_MSG_CHECKING(SLANG_VERSION)
+slang_version=`grep "^#define  *SLANG_VERSION " $srcdir/src/slang.h |
+               awk '{ print [$]3 }'`
+slang_major_version=`echo $slang_version |
+ awk '{ print int([$]1/10000) }'`
+slang_minor_version=`echo $slang_version $slang_major_version |
+ awk '{ print int(([$]1 - [$]2*10000)/100) }'`
+slang_mminor_version=`echo $slang_version $slang_major_version $slang_minor_version |
+ awk '{ print ([$]1 - [$]2*10000 - [$]3*100) }'`
+
+slang_minor_version="$slang_minor_version.$slang_mminor_version"
+slang_version="$slang_major_version.$slang_minor_version"
+AC_MSG_RESULT($slang_version)
+AC_SUBST(slang_major_version)
+AC_SUBST(slang_minor_version)
+AC_SUBST(slang_version)
+
+AC_CONFIG_HEADER(src/sysconf.h:src/config.hin)
+
+dnl AC_CONFIG_SUBDIRS(demo)
+
+AC_OUTPUT(Makefile:autoconf/Makefile.in \
+  src/Makefile slsh/Makefile modules/Makefile demo/Makefile)
+
+JD_CREATE_EXEC_RULE(calc)
+JD_CREATE_EXEC_RULE(untic)
+JD_APPEND_RULES(src/Makefile)
+JD_APPEND_ELFRULES(src/Makefile)
+
+echo ""
+echo "Configuration complete.  You may need to edit src/Makefile."
+echo "You are compiling SLANG with the following compiler configuration:"
+echo "       CC =" "$CC"
+echo "   CFLAGS =" "$CFLAGS"
+echo "  LDFLAGS =" "$LDFLAGS $DYNAMIC_LINK_FLAGS"
+echo ""
+echo "   ELF_CC =" "$ELF_CC"
+echo " ELF_LINK =" "$ELF_LINK"
+echo "ELF_CFLAGS=" "$ELF_CFLAGS"
+echo ""
+echo "                  prefix:" "$prefix"
+echo "             exec_prefix:" "$exec_prefix"
+echo "    Installation Lib Dir:" "$libdir"
+echo "Installation Include Dir:" "$includedir"
+echo ""
+echo "See also src/sl-feat.h for various features."
+echo "Type 'make' to build normal library."
+echo "On ELF systems, type 'make elf' to create ELF shared library."

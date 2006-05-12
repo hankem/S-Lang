@@ -1,0 +1,33 @@
+#!/usr/bin/env slsh
+require ("profile");
+
+if (__argc == 1)
+{
+   () = fprintf (stdout, "Usage: %s script args...\n", path_basename (__argv[0]));
+   () = fprintf (stdout, "This script writes to profile.log\n");
+   exit (1);
+}
+
+private define calibrate ()
+{
+   () = fprintf (stdout, "Calibrating profiler..."); ()=fflush (stdout);
+   profile_calibrate ();
+   () = fprintf (stdout, "Done\n");
+}
+calibrate ();
+
+private define write_profile ()
+{
+   profile_report ("profile.log");
+}
+atexit (&write_profile);
+__set_argc_argv (__argv[[1:]]);
+
+profile_begin ();
+() = evalfile (__argv[0]);
+#ifexists slsh_main
+slsh_main ();
+#endif
+profile_end ();
+
+exit (0);

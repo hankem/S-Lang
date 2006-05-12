@@ -1,0 +1,61 @@
+# -*- sh -*-
+
+#This is a UNIX-only makefile.  For other systems, get a makefile from
+#src/mkfiles/
+
+@SET_MAKE@
+SHELL = /bin/sh
+
+all:
+	cd src; $(MAKE) all
+	cd slsh; $(MAKE) all
+	cd modules; $(MAKE) all
+elf:
+	cd src; $(MAKE) elf
+	cd slsh; $(MAKE) all
+	cd modules; $(MAKE) all
+	@echo Use make install-elf to install it.
+runtests:
+	cd src; $(MAKE) all
+	cd src; $(MAKE) runtests
+check: runtests
+
+demos:
+	cd demo; $(MAKE)
+clean:
+	/bin/rm -f *~
+	cd src; $(MAKE) clean
+	cd modules; $(MAKE) clean
+	cd slsh; $(MAKE) clean
+	cd demo; $(MAKE) clean
+install:
+	cd src; $(MAKE) install
+install-elf:
+	cd src; $(MAKE) install-elf
+	@echo Now installing slsh
+	cd slsh; $(MAKE) install
+	@echo Now installing the modules
+	cd modules; $(MAKE) install
+	@echo ""
+	@echo "On some systems, e.g., linux, you may also have to run ldconfig."
+	@echo ""
+install-links:
+	cd src; $(MAKE) install-links
+#
+distclean:
+	/bin/rm -f *~ Makefile config.status config.log config.cache files.pck
+	cd src; $(MAKE) distclean
+	cd demo; $(MAKE) distclean
+	cd modules; $(MAKE) distclean
+	cd slsh; $(MAKE) distclean
+#
+configure: autoconf/aclocal.m4 autoconf/configure.ac
+	cd autoconf && autoconf && mv ./configure ..
+update: autoconf/config.sub autoconf/config.guess
+autoconf/config.guess: /usr/share/misc/config.guess
+	/bin/cp -f /usr/share/misc/config.guess autoconf/config.guess
+autoconf/config.sub: /usr/share/misc/config.sub
+	/bin/cp -f /usr/share/misc/config.sub autoconf/config.sub
+#
+.PHONY: all install clean check update
+#
