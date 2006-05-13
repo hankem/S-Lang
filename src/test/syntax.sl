@@ -1,18 +1,21 @@
 _debug_info = 1; () = evalfile ("inc.sl");
 testing_feature ("syntax");
 
-private define check_version ()
+private define check_version_string ()
 {
-   variable v = strtok (_slang_version_string, "-.");
+   variable vers = _slang_version_string;
+   if (0 == strncmp (vers, "pre", 3))
+     vers = vers[[3:]];
+   variable v = strtok (vers, "-.");
    variable major = integer(v[0]);
    variable minor = integer(v[1]);
    variable micro = integer(v[2]);
    
    v = ((major*100)+minor)*100 + micro;
-   if (v > _slang_version)
+   if (v != _slang_version)
      failed ("slang version %S does not match %S", _slang_version, _slang_version_string);
 }
-check_version ();
+check_version_string ();
 
 pop(1);  % This tests pop as a special keyword
 

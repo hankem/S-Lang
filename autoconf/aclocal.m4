@@ -1,5 +1,6 @@
 dnl# -*- mode: sh; mode: fold -*-
 dnl#
+dnl# Version 0.1.6: Added cygwin module support
 dnl# Version 0.1.5: Added gcc version-script support.
 dnl#
 
@@ -546,6 +547,8 @@ then
   fi
 fi
 
+INSTALL_MODULE="\$(INSTALL_DATA)"
+
 case "$host_os" in
   *linux*|*gnu*|k*bsd*-gnu )
     DYNAMIC_LINK_FLAGS="-Wl,-export-dynamic"
@@ -637,6 +640,18 @@ case "$host_os" in
     ELF_DEP_LIBS="\$(DL_LIB) -lm"
     CC_SHARED="\$(CC) \$(CFLAGS) -shared -fPIC"
     ;;
+  *cygwin* )
+    DYNAMIC_LINK_FLAGS=""
+    ELF_CC="\$(CC)"
+    ELF_CFLAGS="\$(CFLAGS) "
+    DLL_IMPLIB_NAME="lib\$(THIS_LIB)\$(ELFLIB_MAJOR_VERSION).dll.a"
+    ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME) -Wl,-export-all-symbols -Wl,-enable-auto-import"
+    ELF_DEP_LIBS="\$(DL_LIB) -lm"
+    CC_SHARED="\$(CC) \$(CFLAGS) -shared"
+    dnl# CYGWIN prohibits undefined symbols when linking shared libs
+    SLANG_LIB_FOR_MODULES="-L\$(ELFDIR) -lslang"
+    INSTALL_MODULE="\$(INSTALL)"
+    ;;
   * )
     echo "Note: ELF compiler for host_os=$host_os may be wrong"
     ELF_CC="\$(CC)"
@@ -656,6 +671,9 @@ AC_SUBST(CC_SHARED)
 AC_SUBST(ELFLIB)
 AC_SUBST(ELFLIB_MAJOR)
 AC_SUBST(ELFLIB_MAJOR_MINOR)
+AC_SUBST(SLANG_LIB_FOR_MODULES)
+AC_SUBST(DLL_IMPLIB_NAME)
+AC_SUBST(INSTALL_MODULE)
 ])
 
 

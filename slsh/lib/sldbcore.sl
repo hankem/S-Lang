@@ -127,6 +127,9 @@ private define break_cmd (cmd, args, file, line)
 
 private define display_file_and_line (file, linemin, linemax)
 {
+   if (file == "***string***")
+     return;
+
    if (linemin < 1)
      linemin = 1;
    if (linemax < linemin)
@@ -526,6 +529,7 @@ private define debugger_input_loop ()
 
 private define do_debug (file, line, bp_num)
 {
+   %output ("do_debug: file=%S, line=%S, fun=%S\n", file, line, bp_num);
    Current_Frame = _get_frame_depth ()-2;
    Max_Current_Frame = Current_Frame;
    %vmessage ("Current_Frame=%d\n", Current_Frame);
@@ -544,7 +548,7 @@ private define do_debug (file, line, bp_num)
    variable fun = info.function;
    if (fun == NULL) fun = "<top-level>";
 
-   if ((file == "<stdin>") or (file == "***string***"))
+   if ((file == "<stdin>"))% or (file == "***string***"))
      {
 	Last_Frame = Current_Frame;
 	Last_Function = fun;

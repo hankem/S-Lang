@@ -1033,7 +1033,7 @@ static void nint_intrin (void)
 
       case SLANG_DOUBLE_TYPE:
       default:
-	if (-1 == SLang_pop_array_of_type (&at, SLANG_FLOAT_TYPE))
+	if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
 	  return;
 	at_to_int_fun = double_to_nint;
 	break;

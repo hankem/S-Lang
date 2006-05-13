@@ -24,6 +24,7 @@ USA.
  * SunOS when using Electric Fence.
  */
 
+#include "slinclud.h"
 #include "slang.h"
 #include "_slang.h"
 char *SLstrcpy(register char *aa, register char *b)

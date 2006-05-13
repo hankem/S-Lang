@@ -537,7 +537,7 @@ reshape
   reshape (Array_Type A, Array_Type I)
 
  DESCRIPTION
-  The `reshape' function changes the shaper of `A' to have the
+  The `reshape' function changes the shape of `A' to have the
   shape specified by the 1-d integer array `I'.  The elements of `I'
   specify the new dimensions of `A' and must be consistent with
   the number of elements `A'.
@@ -2535,12 +2535,13 @@ list_append
   Append an object to a list
 
  USAGE
-  list_append (List_Type object, Int_Type nth)
+  list_append (List_Type list, object [,Int_Type nth])
 
  DESCRIPTION
   The `list_append' function is like `list_insert' except
-  this function inserts the object into the list after the `nth'
-  item.  See the documentation on `list_insert' for more details.
+  this function appends the object to the the list.  The optional
+  argument `nth' may be used to specify where the object is to be
+  appended.  See the documentation on `list_insert' for more details.
 
  SEE ALSO
   list_insert, list_delete, list_pop, list_new, list_reverse
@@ -2573,14 +2574,16 @@ list_insert
   Insert an item into a list
 
  USAGE
-  list_insert (List_Type list, object, Int_Type nth)
+  list_insert (List_Type list, object [,Int_Type nth])
 
  DESCRIPTION
-  This function may be used to insert an object before the `nth'
-  position in a list.  The first item in the list corresponds to a
-  value of `nth' equal to zero.  If `nth' is negative, then
-  the indexing is with respect to the end of the list with the last
-  item given by a value of `nth' equal to -1.
+  This function may be used to insert an object into the specified
+  list.  With just two arguments, the object will be inserted at the
+  beginning of the list.  The optional third argument, `nth', may
+  be used to specify the insertion point.  The first item in the list
+  corresponds to a value of `nth' equal to zero.  If `nth'
+  is negative, then the indexing is with respect to the end of the
+  list with the last item given by a value of `nth' equal to -1.
 
  NOTES
   It is important to note that
@@ -6842,6 +6845,7 @@ strtok
     \u matches uppercase
     \d matches a digit
     \\ matches a backslash
+    \^ matches a ^ character
 
 
   If the second parameter is not present, then it defaults to
@@ -6902,6 +6906,7 @@ strtrans
     \u matches uppercase
     \d matches a digit
     \\ matches a backslash
+    \^ matches a ^ character
 
   If the first character of a set is `^' then the set is taken to
   be the complement set.
@@ -6910,6 +6915,7 @@ strtrans
 
     str = strtrans (str, "\\u", "\\l");   % lower-case str
     str = strtrans (str, "^0-9", " ");    % Replace anything but 0-9 by space
+    str = strtrans (str, "\\^0-9", " ");  % Replace '^' and 0-9 by a space
 
 
  SEE ALSO
@@ -6940,6 +6946,7 @@ strtrim
     \u matches uppercase
     \d matches a digit
     \\ matches a backslash
+    \^ matches a ^ character
 
   If the first character of a set is `^' then the set is taken to
   be the complement set.
@@ -7040,6 +7047,7 @@ str_delete_chars
     \u matches uppercase
     \d matches a digit
     \\ matches a backslash
+    \^ matches a ^ character
 
   If the first character of `del_set' is `^', then the set
   is taken to be the complement of the remaining string.

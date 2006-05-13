@@ -10,7 +10,7 @@
 #v+
      define error_checked_atof (s)
      {
-        if (__is_datatype_numeric (_slang_guess_type (x)))
+        if (__is_datatype_numeric (_slang_guess_type (s)))
           return atof (s);
         throw InvalidParmError, "$s is not a double"$;
     }

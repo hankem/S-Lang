@@ -5,7 +5,11 @@
 @NEWS
 @README
 @UPGRADE.txt
+
 @mkfiles/build.bat
+@mkfiles/build.sh 0755
+@mkfiles/makefile.dos
+@mkfiles/makefile.sh
 
 @autoconf/Makefile.in
 @autoconf/aclocal.m4

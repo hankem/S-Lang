@@ -1210,7 +1210,23 @@ test_where_first_last ([1:10] < 10);
 test_where_first_last ([1:10] == 5);
 test_where_first_last ([1:10] mod 2);
 test_where_first_last ([1:10] mod 3);
-   
+
+if (length ([1,2,]) != 2)
+  failed ("2-element array with trailing comma has wrong length");
+if (length ([1,]) != 1)
+  failed ("1-element array with trailing comma has wrong length");
+
+try
+{
+   eval("() = [,];");
+   failed ("Illegal commas in array not caught");
+   eval("() = [1,,];");
+   failed ("Illegal commas in array not caught");
+   eval("() = [1,2,,];");
+   failed ("Illegal commas in array not caught");
+}
+catch SyntaxError;
+
 print ("Ok\n");
 
 exit (0);

@@ -21,7 +21,9 @@
 #endif
 
 #ifdef HAVE_MALLOC_H
-# include <malloc.h>
+# if !defined(__FreeBSD__)
+#  include <malloc.h>
+# endif
 #endif
 
 #ifdef HAVE_MEMORY_H

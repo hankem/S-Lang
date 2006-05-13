@@ -1,10 +1,11 @@
 \function{list_append}
 \synopsis{Append an object to a list}
-\usage{list_append (List_Type object, Int_Type nth)}
+\usage{list_append (List_Type list, object [,Int_Type nth])}
 \description
   The \ifun{list_append} function is like \ifun{list_insert} except
-  this function inserts the object into the list after the \exmp{nth}
-  item.  See the documentation on \ifun{list_insert} for more details.
+  this function appends the object to the the list.  The optional
+  argument \exmp{nth} may be used to specify where the object is to be
+  appended.  See the documentation on \ifun{list_insert} for more details.
 \seealso{list_insert, list_delete, list_pop, list_new, list_reverse}
 \done
 
@@ -22,13 +23,15 @@
 
 \function{list_insert}
 \synopsis{Insert an item into a list}
-\usage{list_insert (List_Type list, object, Int_Type nth)}
+\usage{list_insert (List_Type list, object [,Int_Type nth])}
 \description
-  This function may be used to insert an object before the \exmp{nth}
-  position in a list.  The first item in the list corresponds to a
-  value of \exmp{nth} equal to zero.  If \exmp{nth} is negative, then
-  the indexing is with respect to the end of the list with the last
-  item given by a value of \exmp{nth} equal to -1.
+  This function may be used to insert an object into the specified
+  list.  With just two arguments, the object will be inserted at the
+  beginning of the list.  The optional third argument, \exmp{nth}, may
+  be used to specify the insertion point.  The first item in the list
+  corresponds to a value of \exmp{nth} equal to zero.  If \exmp{nth}
+  is negative, then the indexing is with respect to the end of the
+  list with the last item given by a value of \exmp{nth} equal to -1.
 \notes
   It is important to note that
 #v+

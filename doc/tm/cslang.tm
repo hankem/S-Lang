@@ -674,7 +674,7 @@
   to use the function \cfun{SLadd_intrinsic_variable}:
 #v+
      int SLadd_intrinsic_variable (char *name, VOID_STAR addr, 
-                                   unsigned char data_type, 
+                                   SLtype data_type, 
                                    int read_only);
 #v-
   For example, suppose that \var{I} is an integer variable, e.g.,
@@ -936,7 +936,7 @@
     int push_struct_example (char *string_value, int int_value)
     {
        char *field_names[2];
-       unsigned char field_types[2];
+       SLtype field_types[2];
        VOID_STAR field_values[2];
        
        field_names[0] = "string_field";

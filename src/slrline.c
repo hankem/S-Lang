@@ -34,7 +34,7 @@ typedef struct RL_History_Type
 } RL_History_Type;
 
 /* Maximum size of display */
-#define SLRL_DISPLAY_BUFFER_SIZE 1024
+#define SLRL_DISPLAY_BUFFER_SIZE 4096  /* reasonable size for UTF-8 */
 
 struct _pSLrline_Type
 {
@@ -54,11 +54,14 @@ struct _pSLrline_Type
 
    FVOID_STAR last_fun;		       /* last function executed by rl */
 
-   /* These two contain an image of what is on the display */
+   /* These two contain an image of what is on the display.  They are 
+    * used by the default display handling functions. (update_hook is NULL)
+    */
    unsigned char upd_buf1[SLRL_DISPLAY_BUFFER_SIZE];
    unsigned char upd_buf2[SLRL_DISPLAY_BUFFER_SIZE];
    unsigned char *old_upd, *new_upd;   /* pointers to previous two buffers */
    int new_upd_len, old_upd_len;       /* length of output buffers */
+   unsigned int last_nonblank_column;  /* column of last none blank char */
 
    SLKeyMap_List_Type *keymap;
    int eof_char;
@@ -314,6 +317,48 @@ static int rl_enter (SLrline_Type *This_RLI)
 
 static SLKeyMap_List_Type *RL_Keymap;
 
+static SLuchar_Type *compute_char_width (SLuchar_Type *b, SLuchar_Type *bmax, int utf8_mode, unsigned int *wp, SLwchar_Type *wchp, int *illegalp)
+{
+   SLwchar_Type wch;
+
+   if (illegalp != NULL) *illegalp = 0;
+
+   if (b >= bmax)
+     {
+	*wp = 0;
+	if (wchp != NULL) *wchp = 0;
+	return b;
+     }
+
+   if (utf8_mode == 0)
+     {
+	*wp = Char_Widths[*b];
+	if (wchp != NULL) *wchp = *b;
+	return b + 1;
+     }
+   
+   if (NULL == SLutf8_decode (b, bmax, &wch, NULL))
+     {
+	/* Illegal byte sequence */
+	*wp = 4;   /* <XX> */
+	if (wchp != NULL) *wchp = *b;
+	if (illegalp != NULL) *illegalp = 1;
+	return b + 1;
+     }
+
+   /* skip combining */
+   if ((wch >= ' ') && (wch < 127))
+     *wp = 1;
+   else if (wch > 127)
+     *wp = SLwchar_wcwidth (wch);
+   else
+     *wp = 2;			       /* ^X */
+   
+   if (wchp != NULL) *wchp = wch;
+   /* skip combining chars too */
+   return SLutf8_skip_chars (b, bmax, 1, NULL, 1);
+}
+
 /* This update is designed for dumb terminals.  It assumes only that the
  * terminal can backspace via ^H, and move cursor to start of line via ^M.
  * There is a hook so the user can provide a more sophisticated update if
@@ -322,7 +367,10 @@ static SLKeyMap_List_Type *RL_Keymap;
 static void position_cursor (SLrline_Type *This_RLI, int col)
 {
    unsigned char *p, *pmax;
+   unsigned int len, dlen;
+   int curs_pos;
    int dc;
+   int utf8_mode = This_RLI->flags & SL_RLINE_UTF8_MODE;
 
    if (col == This_RLI->curs_pos)
      {
@@ -338,12 +386,28 @@ static void position_cursor (SLrline_Type *This_RLI, int col)
 	return;
      }
 
+   curs_pos = This_RLI->curs_pos;
    dc = This_RLI->curs_pos - col;
    if (dc < 0)
      {
-	p = This_RLI->new_upd + This_RLI->curs_pos;
-	pmax = This_RLI->new_upd + col;
-	while (p < pmax) putc((char) *p++, stdout);
+	p = This_RLI->new_upd;
+	pmax = p + SLRL_DISPLAY_BUFFER_SIZE;
+
+	len = 0;
+	while (((int)len < curs_pos) && (p < pmax))
+	  {
+	     p = compute_char_width (p, pmax, utf8_mode, &dlen, NULL, NULL);
+	     len += dlen;
+	  }
+	while (((int)len < col) && (p < pmax))
+	  {
+	     SLuchar_Type *p1;
+	     p1 = compute_char_width (p, pmax, utf8_mode, &dlen, NULL, NULL);
+	     while (p < p1)
+	       putc((char) *p++, stdout);
+	       
+	     len += dlen;
+	  }
      }
    else
      {
@@ -355,18 +419,27 @@ static void position_cursor (SLrline_Type *This_RLI, int col)
 	  {
 	     putc('\r', stdout);
 	     p = This_RLI->new_upd;
-	     pmax = This_RLI->new_upd + col;
-	     while (p < pmax) putc((char) *p++, stdout);
+	     pmax = p + SLRL_DISPLAY_BUFFER_SIZE;
+	     len = 0;
+	     while (((int)len < col) && (p < pmax))
+	       {
+		  SLuchar_Type *p1;
+		  p1 = compute_char_width (p, pmax, utf8_mode, &dlen, NULL, NULL);
+		  while (p < p1)
+		    putc((char) *p++, stdout);
+		  len += dlen;
+	       }
 	  }
      }
    This_RLI->curs_pos = col;
    fflush (stdout);
 }
 
+#if 0
 static void erase_eol (SLrline_Type *rli)
 {
    unsigned char *p, *pmax;
-
+   
    p = rli->old_upd + rli->curs_pos;
    pmax = rli->old_upd + rli->old_upd_len;
 
@@ -374,38 +447,78 @@ static void erase_eol (SLrline_Type *rli)
 
    rli->curs_pos = rli->old_upd_len;
 }
-
-static unsigned char *spit_out(SLrline_Type *rli, unsigned char *p)
+#else
+static void erase_eol (SLrline_Type *rli)
 {
-   unsigned char *pmax;
-   position_cursor (rli, (int) (p - rli->new_upd));
-   pmax = rli->new_upd + rli->new_upd_len;
-   while (p < pmax) putc((char) *p++, stdout);
-   rli->curs_pos = rli->new_upd_len;
-   return pmax;
+   int col = rli->curs_pos;
+   int col_max = rli->last_nonblank_column;
+   
+   while (col < col_max)
+     {
+	putc(' ', stdout);
+	col++;
+     }
+   rli->curs_pos = col_max;
+}
+#endif
+
+static void spit_out(SLrline_Type *rli, SLuchar_Type *p, SLuchar_Type *pmax, int col)
+{
+   int utf8_mode = rli->flags & SL_RLINE_UTF8_MODE;
+   position_cursor (rli, col);
+   while (p < pmax) 
+     {
+	SLuchar_Type *p1;
+	unsigned int dcol;
+	p1 = compute_char_width (p, pmax, utf8_mode, &dcol, NULL, NULL);
+	while (p < p1)
+	  putc((char) *p++, stdout);
+	col += dcol;
+     }
+   rli->curs_pos = col;
 }
 
 static void really_update (SLrline_Type *rli, int new_curs_position)
 {
-   unsigned char *b = rli->old_upd, *p = rli->new_upd, chb, chp;
-   unsigned char *pmax;
+   SLuchar_Type *b, *bmax, *p, *pmax;
+   unsigned int col, max_col;
+   int utf8_mode = rli->flags & SL_RLINE_UTF8_MODE;
 
-   pmax = p + rli->edit_width;
-   while (p < pmax)
+   col = 0;
+   max_col = rli->edit_width;
+   b = rli->old_upd;
+   p = rli->new_upd;
+   bmax = b + rli->old_upd_len;
+   pmax = p + rli->new_upd_len;
+
+   while (col < max_col)
      {
-	chb = *b++; chp = *p++;
-	if (chb == chp) continue;
+	SLwchar_Type pch, bch;
+	SLuchar_Type *p1, *b1;
+	unsigned int plen, blen;
+
+	b1 = compute_char_width (b, bmax, utf8_mode, &blen, &bch, NULL);
+	p1 = compute_char_width (p, pmax, utf8_mode, &plen, &pch, NULL);
 	
-	if (rli->old_upd_len <= rli->new_upd_len)
+	if ((p1 != p) && ((b1-b) == (p1-p))
+	    && (bch == pch))
 	  {
-	     /* easy one */
-	     (void) spit_out (rli, p - 1);
-	     break;
+	     col += plen;
+	     b = b1;
+	     p = p1;
+	     continue;
 	  }
-	spit_out(rli, p - 1);
-	erase_eol (rli);
+	
+	spit_out (rli, p, pmax, col);
+
+	col = rli->curs_pos;
+	if (col < rli->last_nonblank_column)
+	  erase_eol (rli);
+	rli->last_nonblank_column = col;
+
 	break;
      }
+
    position_cursor (rli, new_curs_position);
 
    /* update finished, so swap */
@@ -416,14 +529,43 @@ static void really_update (SLrline_Type *rli, int new_curs_position)
    rli->new_upd = p;
 }
 
+static unsigned int compute_string_width (SLrline_Type *rli, SLuchar_Type *b, SLuchar_Type *bmax, unsigned int prompt_len, unsigned int tab_width)
+{
+   int utf8_mode = rli->flags & SL_RLINE_UTF8_MODE;
+   unsigned int len;
+
+   if (b == NULL)
+     return 0;
+   
+   len = 0;
+   while (b < bmax)
+     {
+	unsigned int dlen;
+
+	if ((*b == '\t') && tab_width)
+	  {
+	     dlen = tab_width * ((len - prompt_len) / tab_width + 1) - (len - prompt_len);
+	     b++;
+	  }
+	else b = compute_char_width (b, bmax, utf8_mode, &dlen, NULL, NULL);
+
+	len += dlen;
+     }
+   return len;
+}
+
 static void RLupdate (SLrline_Type *rli)
 {
-   int len, dlen, start_len, prompt_len = 0, tw = 0, count;
+   unsigned int len, dlen, prompt_len = 0, tw = 0, count;
+   unsigned int start_len;
    int want_cursor_pos;
-   unsigned char *b, chb, *b_point, *p;
+   unsigned char *b, *bmax, *b_point, *p, *pmax;
    int no_echo;
+   int utf8_mode;
 
    no_echo = rli->flags & SL_RLINE_NO_ECHO;
+   utf8_mode = rli->flags & SL_RLINE_UTF8_MODE;
+
    *(rli->buf + rli->len) = 0;
    
    if (rli->update_hook != NULL)
@@ -435,118 +577,132 @@ static void RLupdate (SLrline_Type *rli)
 	return;
      }
 
-   b_point = (unsigned char *) (rli->buf + rli->point);
 
    /* expand characters for output buffer --- handle prompt first.
     * Do two passes --- first to find out where to begin upon horiz
     * scroll and the second to actually fill the buffer. */
    len = 0;
-   count = 2;			       /* once for prompt and once for buf */
-
    b = (unsigned char *) rli->prompt;
-   while (count--)
+   if (b != NULL)
      {
-	if ((count == 0) && no_echo)
-	  break;
-
-	/* The prompt could be NULL */
-	if (b != NULL) while ((chb = *b) != 0)
-	  {
-	     /* This will ensure that the screen is scrolled a third of the edit
-	      * width each time */
-	     if (b_point == b) break;
-	     dlen = Char_Widths[chb];
-	     if ((chb == '\t') && tw)
-	       {
-		  dlen = tw * ((len - prompt_len) / tw + 1) - (len - prompt_len);
-	       }
-	     len += dlen;
-	     b++;
-	  }
-	tw = rli->tab;
-	b = (unsigned char *) rli->buf;
-	if (count == 1) prompt_len = len;
+	bmax = b + strlen ((char *)b);
+	len += compute_string_width (rli, b, bmax, 0, 0);
      }
+   prompt_len = len;
+
+   b = (unsigned char *) rli->buf;
+   b_point = (unsigned char *) (rli->buf + rli->point);
+   if (no_echo == 0)
+     len += compute_string_width (rli, b, b_point, len, rli->tab);
 
    if (len + rli->hscroll < rli->edit_width) start_len = 0;
    else if ((rli->start_column > (int)len)
-	    || (rli->start_column + (int)rli->edit_width <= len))
-     {
-	start_len = len - (rli->edit_width - rli->hscroll);
-	if (start_len < 0) start_len = 0;
-     }
+	    || (rli->start_column + (int)rli->edit_width <= (int)len))
+     start_len = (len + rli->hscroll) - rli->edit_width;
    else start_len = rli->start_column;
    rli->start_column = start_len;
 
    want_cursor_pos = len - start_len;
 
    /* second pass */
-   p = rli->new_upd;
-
-   len = 0;
-   count = 2;
    b = (unsigned char *) rli->prompt;
    if (b == NULL) b = (unsigned char *) "";
-
-   while ((len < start_len) && (*b))
+   bmax = b + strlen ((char *)b);
+   len = 0;
+   count = 2;
+   while ((len < start_len) && (b < bmax))
      {
-	len += Char_Widths[*b++];
+	b = compute_char_width (b, bmax, utf8_mode, &dlen, NULL, NULL);
+	len += dlen;
      }
 
    tw = 0;
-   if (*b == 0)
+   if (b == bmax)
      {
 	b = (unsigned char *) rli->buf;
-	while (len < start_len)
+	bmax = b + strlen ((char *)b);
+	while ((len < start_len) && (b < bmax))
 	  {
-	     len += Char_Widths[*b++];
+	     b = compute_char_width (b, bmax, utf8_mode, &dlen, NULL, NULL);
+	     len += dlen;
 	  }
 	tw = rli->tab;
 	count--;
      }
 
    len = 0;
+   p = rli->new_upd;
+   pmax = p + SLRL_DISPLAY_BUFFER_SIZE;
+
    while (count--)
      {
 	if ((count == 0) && (no_echo))
 	  break;
 
-	while ((len < (int)rli->edit_width) && ((chb = *b++) != 0))
+	while ((len < rli->edit_width) && (b < bmax))
 	  {
-	     dlen = Char_Widths[chb];
-	     if (dlen == 1) *p++ = chb;
-	     else
-	       {
-		  if ((chb == '\t') && tw)
-		    {
-		       dlen = tw * ((len + start_len - prompt_len) / tw + 1) - (len + start_len - prompt_len);
-		       len += dlen;	       /* ok since dlen comes out 0  */
-		       if (len > (int)rli->edit_width) dlen = len - rli->edit_width;
-		       while (dlen--) *p++ = ' ';
-		       dlen = 0;
-		    }
-		  else
-		    {
-		       if (dlen == 3)
-			 {
-			    chb &= 0x7F;
-			    *p++ = '~';
-			 }
+	     SLwchar_Type wch;
+	     int is_illegal;
+	     SLuchar_Type *b1;
 
-		       *p++ = '^';
-		       if (chb == 127)  *p++ = '?';
-		       else *p++ = chb + '@';
+	     if ((*b == '\t') && tw)
+	       {
+		  dlen = tw * ((len + start_len - prompt_len) / tw + 1) - (len + start_len - prompt_len);
+		  len += dlen;	       /* ok since dlen comes out 0  */
+		  if (len > rli->edit_width) dlen = len - rli->edit_width;
+		  while (dlen-- && (p < pmax)) *p++ = ' ';
+		  continue;
+	       }
+
+	     b1 = compute_char_width (b, bmax, utf8_mode, &dlen, &wch, &is_illegal);
+	     if (len + dlen > rli->edit_width)
+	       {		       
+		  /* The character is double width and a portion of it exceeds 
+		   * the edit width
+		   */
+		  break;
+	       }
+
+	     if (is_illegal == 0)
+	       {
+		  if (wch < 32)
+		    {
+		       if (p < pmax) *p++ = '^';
+		       if (p < pmax) *p++ = *b + '@';
+		    }
+		  else if (wch == 127)
+		    {
+		       if (p < pmax) *p++ = '^';
+		       if (p < pmax) *p++ = '?';
+		    }
+		  else while (b < b1) 
+		    {
+		       if (p < pmax) *p++ = *b++;
 		    }
 	       }
+	     else
+	       {
+		  if (p + 4 < pmax) 
+		    {
+		       sprintf ((char *)p, "<%02X>", *b);
+		       p += 4;
+		    }
+	       }
+	     b = b1;
 	     len += dlen;
 	  }
 	/* if (start_len > prompt_len) break; */
 	tw = rli->tab;
 	b = (unsigned char *) rli->buf;
+	bmax = b + strlen ((char *)b);
      }
 
    rli->new_upd_len = (int) (p - rli->new_upd);
-   while (p < rli->new_upd + rli->edit_width) *p++ = ' ';
+   while ((p < pmax) && (len < rli->edit_width))
+     {
+	*p++ = ' ';
+	len++;
+     }
    really_update (rli, want_cursor_pos);
 }
 
@@ -871,6 +1027,9 @@ SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
    int ch;
    char simple[2];
    SLrline_Type *rli;
+
+   if (_pSLutf8_mode)
+     flags |= SL_RLINE_UTF8_MODE;
 
    if (NULL == (rli = (SLrline_Type *)SLcalloc (1, sizeof (SLrline_Type))))
      return NULL;

@@ -4214,10 +4214,12 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     push_local_variable (addr->b.i_blk);
 	     (void) end_arg_list ();
 	     break;
-
+#if USE_BC_LINE_NUM
 	   case SLANG_BC_LINE_NUM:
 	     break;
-	     
+#else
+	   case SLANG_BC_UNUSED_0x74:
+#endif
 	   case SLANG_BC_BOS:
 #if SLANG_HAS_BOSEOS
 	     BOS_Stack_Depth++;
@@ -4811,7 +4813,9 @@ static int lang_free_branch (SLBlock_Type *p)
 	     SLang_free_slstring (p->b.s_blk);
 	     break;
 	   case SLANG_BC_BOS:
+#if USE_BC_LINE_NUM
 	   case SLANG_BC_LINE_NUM:
+#endif
 #if SLANG_HAS_DEBUG_CODE
 	     if (p->b.line_info != NULL)
 	       {

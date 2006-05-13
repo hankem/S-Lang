@@ -174,7 +174,9 @@ typedef enum
    /* SLANG_BC_ARG_LVARIABLE	= 0x72, */
    SLANG_BC_UNUSED_0x72		= 0x72,
    SLANG_BC_EARG_LVARIABLE	= 0x73,
-   SLANG_BC_LINE_NUM		= 0x74,
+#define USE_BC_LINE_NUM	0	       /* used in slang.c */
+   /* SLANG_BC_LINE_NUM		= 0x74, */
+   SLANG_BC_UNUSED_0x74		= 0x74,
    SLANG_BC_BOS			= 0x75,
    SLANG_BC_EOS			= 0x76,
    SLANG_BC_UNUSED_0x77		= 0x77,

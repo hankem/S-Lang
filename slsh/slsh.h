@@ -3,6 +3,8 @@
 
 extern int slsh_interactive (void);
 extern int slsh_use_readline (int);
+extern void slsh_set_prompt_hook (void);
+extern void slsh_get_prompt_hook (void);
 extern void slsh_readline_intrinsic (char *);
 extern void slsh_readline_noecho_intrinsic (char *);
 

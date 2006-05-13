@@ -1,7 +1,7 @@
 % -*- mode: SLang; mode: fold -*-
 
 % This file was written with the help of Mike Noble and John Houck.
-
+_debug_info=1;
 if (is_defined ("slsh_help"))
   use_namespace ("slsh_interactive");
 else
@@ -177,8 +177,15 @@ public define slsh_interactive_massage_hook (input)
      }
    else
      {
-	if (String_Type != _slang_guess_type (strtok (input, "-+*/<>&|; \t")[0]))
-	  return sprintf ("eval(\" %s\");", input);
+	%  line begins with "."
+	variable type = _slang_guess_type (strtok (input, "-+*/<>&|; \t")[0]);
+	if (type != String_Type)
+	  {
+	     % Do not allow the line to be parsed as RPN.  So prefix
+	     % with a space.
+	     return strcat (" ", maybe_append_semicolon (input));
+	  }
+	%return sprintf ("eval(\" %s\");", input);
 
 	input = input[[1:]];
 

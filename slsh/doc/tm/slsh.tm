@@ -135,8 +135,8 @@
      slsh> 3*10;
      30
      slsh> x = [1:20];
-     slsh> sum (sin(x));
-     0.998222
+     slsh> sum (sin(x)-cos(x));
+     0.458613
      slsh> quit;
 #v-
   Note that in this mode, variables are automatically declared.

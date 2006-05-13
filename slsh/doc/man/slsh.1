@@ -3,12 +3,13 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "SLSH" "1" "23 March 2005" "" ""
+.TH "SLSH" "1" "06 May 2006" "" ""
+
 .SH NAME
 slsh \- Interpreter for S-Lang scripts
 .SH SYNOPSIS
 
-\fBslsh\fR [ \fB--help\fR]  [ \fB--version\fR]  [ \fB-g\fR]  [ \fB-n\fR]  [ \fB--init \fIfile\fB\fR]  [ \fB--no-readline\fR]  [ \fB-i\fR]  [ \fB-t\fR]  [ \fB-v\fR]  [ \fB-|\fIscript-file args...\fB\fR] 
+\fBslsh\fR [ \fB--help\fR ] [ \fB--version\fR ] [ \fB-g\fR ] [ \fB-n\fR ] [ \fB--init \fIfile\fB\fR ] [ \fB--no-readline\fR ] [ \fB-i\fR ] [ \fB-t\fR ] [ \fB-v\fR ] [ \fB-|\fIscript-file args...\fB\fR ]
 
 .SH "DESCRIPTION"
 .PP
@@ -53,7 +54,7 @@ files are being loaded.
 Upon startup, the program will try to load \fIslsh.rc\fR as
 follows. If either SLSH_CONF_DIR or
 SLSH_LIB_DIR environment variables exist, then \fBslsh\fR will
-look look in the corresponding directories for \fIslsh.rc\fR.
+look look in the corresponding directories for \fIslsh.rc\fR\&.
 Otherwise it will look in:
 
 \fI$(prefix)/etc/\fR   (as specified in the Makefile)
@@ -110,8 +111,8 @@ calculator, e.g.,
      slsh> 3*10;
      30
      slsh> x = [1:20];
-     slsh> sum (sin(x));
-     0.998222
+     slsh> sum (sin(x)-cos(x));
+     0.458613
      slsh> quit;
 .fi
 Note that in this mode, variables are automatically declared.
@@ -119,7 +120,7 @@ Note that in this mode, variables are automatically declared.
 The interactive mode also supports command logging.  Logging is
 enabled by the start_log function.  The stop_log
 function will turn off logging.  The default file where logging
-information will be written is \fIslsh.log\fR.  An alternative
+information will be written is \fIslsh.log\fR\&.  An alternative
 may be specified as an optional argument to the start_log
 function:
 
@@ -204,11 +205,26 @@ apropos function:
 .fi
 For convenience, the help and apropos functions
 do not require the syntactic constraints of the other functions.
+.SH "MISCELLANEOUS SCRIPTS"
+.PP
+Several useful example scripts are located in
+\fI$prefix/share/slsh/scripts/\fR, where $prefix represents the
+\fBslsh\fR installation prefix (\fI/usr\fR,
+\fI/usr/local\fR,...).  These scripts include:
+.TP
+\fBsldb\fR
+A script that runs the S-Lang debugger. 
+.TP
+\fBjpegsize\fR
+Reports the size of a jpeg file. 
+.TP
+\fBsvnsh\fR
+A shell for browsing an SVN repository. 
 .SH "AUTHOR"
 .PP
-The principal author of \fBslsh\fR is John E. Davis <jed@jedsoft.org>.
+The principal author of \fBslsh\fR is John E. Davis <jed@jedsoft.org>\&.
 The interactive mode was provided by Mike Noble
-<mnoble@space.mit.edu>.  The S-Lang library upon which \fBslsh\fR is
+<mnoble@space.mit.edu>\&.  The S-Lang library upon which \fBslsh\fR is
 based is primarily the work of John E. Davis with help from many
 others.
 .PP

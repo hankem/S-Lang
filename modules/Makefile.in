@@ -15,6 +15,12 @@ exec_prefix 	= @exec_prefix@
 SLANG_INC	= -I../src#-I@includedir@
 #SLANG_INC	= #-I@includedir@
 #SLANG_LIB	= #-L@libdir@ -lslang
+ELFDIR		= @ELFDIR@
+DLL_IMPLIB_NAME = @DLL_IMPLIB_NAME@
+# On some systems, the module must be linked to the slang library,
+# but not all do.  If you have such system, point SLANG_LIB to the 
+# slang library, otherwise leave it blank.
+SLANG_LIB	= @SLANG_LIB_FOR_MODULES@
 
 #---------------------------------------------------------------------------
 # If building the PCRE module, you may need to set these
@@ -32,6 +38,7 @@ PNG_LIB	= @PNG_LIB@ -lpng
 MODULE_INSTALL_DIR = @libdir@/slang/v@slang_major_version@/modules
 INSTALL		= @INSTALL@
 INSTALL_DATA	= @INSTALL_DATA@
+INSTALL_MODULE	= @INSTALL_MODULE@
 MKINSDIR	= ../autoconf/mkinsdir.sh
 SLSH_DIR	= $(prefix)/share/slsh
 CMAPS_DIR	= $(SLSH_DIR)/cmaps
@@ -47,8 +54,8 @@ DEST_HELPDIR	= $(DESTDIR)$(HELP_DIR)
 #---------------------------------------------------------------------------
 RPATH = @RPATH@
 
-#LIBS = $(RPATH) $(SLANG_LIB) $(DL_LIB) -lm
-LIBS = $(RPATH) $(DL_LIB) -lm
+LIBS = $(RPATH) $(SLANG_LIB) $(DL_LIB) -lm
+#LIBS = $(RPATH) $(DL_LIB) -lm
 INCS = $(SLANG_INC)
 
 all: $(MODULES)
@@ -73,12 +80,13 @@ pcre-module.so: pcre-module.c config.h
 png-module.so: png-module.c config.h
 	$(CC_SHARED) $(INCS) $(PNG_INC) png-module.c -o png-module.so $(PNG_LIB) $(LIBS)
 
+# Note that Windows/Cygwin modules need execute permissions
 install: all
 	-$(MKINSDIR) $(DEST_MODULEDIR)
 	@for i in $(MODULES); \
 	do \
-		echo $(INSTALL_DATA) $$i $(DEST_MODULEDIR); \
-		$(INSTALL_DATA) $$i $(DEST_MODULEDIR); \
+		echo $(INSTALL_MODULE) $$i $(DEST_MODULEDIR); \
+		$(INSTALL_MODULE) $$i $(DEST_MODULEDIR); \
 	done
 	-$(MKINSDIR) $(DEST_SLSH_DIR)
 	@for i in $(SLFILES); \
@@ -101,4 +109,5 @@ install: all
 clean:
 	-/bin/rm -f $(MODULES) *~
 distclean: clean
+	-/bin/rm -f Makefile
 

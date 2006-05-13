@@ -394,7 +394,7 @@
 \synopsis{Reshape an array}
 \usage{reshape (Array_Type A, Array_Type I)}
 \description
-  The \ifun{reshape} function changes the shaper of \exmp{A} to have the
+  The \ifun{reshape} function changes the shape of \exmp{A} to have the
   shape specified by the 1-d integer array \exmp{I}.  The elements of \exmp{I}
   specify the new dimensions of \exmp{A} and must be consistent with
   the number of elements \exmp{A}.

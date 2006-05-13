@@ -38,7 +38,7 @@ private define list_method (file, linemin, linemax)
    foreach (open_file_at_linenum (file, linemin))
      {
 	variable line = ();
-	vmessage_method ("%d %s", linemin, line);
+	vmessage_method ("%d\t%s", linemin, line);
 	%vmessage_method ("> %s:%d %s", file, linemin, line);
 	linemin++;
 	if (linemin > linemax)

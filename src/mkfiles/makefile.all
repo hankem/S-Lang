@@ -284,9 +284,9 @@ RANLIB = ranlib
 # This Makefile is for the MINGW32 environment
 CC = $(TOOL_PREFIX)gcc
 !   ifdef DLL
-CFLAGS += -DWIN32 -W -Wall -O2 -fno-strength-reduce -DSLANG_DLL=1
+CFLAGS = -DWIN32 -W -Wall -O2 -fno-strength-reduce -DSLANG_DLL=1
 !   else
-CFLAGS += -DWIN32 -W -Wall -O2 -fno-strength-reduce
+CFLAGS = -DWIN32 -W -Wall -O2 -fno-strength-reduce
 !   endif
 P = /#
 O = o # Object extension
@@ -738,5 +738,8 @@ $(OBJDIR)$(P)slos2tty.$(O) : $(SRCDIR)$(P)slos2tty.c $(CONFIG_H)
 $(OBJDIR)$(P)slw32tty.$(O) : $(SRCDIR)$(P)slw32tty.c $(CONFIG_H)
 	$(COMPILE_CMD)$(OBJDIR)$(P)slw32tty.$(O) $(SRCDIR)$(P)slw32tty.c
 !endif
+
+clean:
+	$(RM) $(OBJDIR)$(P)*.$(O)
 
 !endif   #NOT HELP

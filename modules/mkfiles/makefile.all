@@ -59,7 +59,8 @@ Other macros include:
  RSPFILE	: Name of response file
  RSP_PREFIX	: Prefix for response file line (See its usage)
  RSP_POSTFIX	: Postfix for response file line (See its usage)
- DEF_FILE       : *.def file
+ DEF_FILE	: *.def file
+ RM		: What to use to delete a file
 
 Special notes:
 
@@ -97,6 +98,7 @@ GO32 = G:/djgpp/bin/go32.exe
 !   endif
 COMPILE_DEPS =
 TARGET_DEPS =
+RM = rm
 COPY = cp
 #}}}
 ! elifdef BCC #{{{
@@ -116,6 +118,7 @@ COMPILE_CMD = $(CC) -c $(CFLAGS) -I$(SLANGINC) -o#  <-- no tailing space
 LINK_CMD = $(CC) -ml -L$(SLANGLIB) -e$(TARGET) /P=4096 @$(RSPFILE) slang.lib
 COMPILE_DEPS =
 TARGET_DEPS =
+RM = del
 COPY = copy
 #}}}
 ! endif 
@@ -143,6 +146,7 @@ MSWSHELL_EXE = ..\bin\mswshell.exe
 DEF_FILE = $(OBJDIR)\slsh.def
 TARGET_DEPS = $(MSWSHELL_EXE) $(DEF_FILE)
 COMPILE_DEPS =
+RM = del
 COPY = copy
 #}}}
 ! endif 
@@ -170,6 +174,7 @@ LINK_CMD = tlink32 /Tpe /ap /c /x $(BCCLIB)\c0x32 @$(RSPFILE), $(OBJDIR)$(P)slsh
 DEF_FILE =
 TARGET_DEPS = $(RSPFILE2)
 COMPILE_DEPS =
+RM = del
 COPY = copy
 #}}}
 ! elifdef VC #{{{
@@ -187,6 +192,7 @@ COMPILE_RSP =
 COMPILE_CMD = $(CC) /c $(CFLAGS) /Fo # /Fo specifies object file name
 TARGET_DEPS =
 COMPILE_DEPS =
+RM = del
 COPY = copy
 LINK_CMD = link /DLL /SUBSYSTEM:console /LIBPATH:$(SLANGLIB) wslang32.lib -out:#
 # This needs changing for Windows NT on non-Intel processors
@@ -196,11 +202,11 @@ CPU = _X86_
 CC = $(TOOL_PREFIX)gcc
 P = /
 !  ifdef CYGWIN32
-CFLAGS += -DWIN32 -W -Wall -O2 -fno-strength-reduce -mno-cygwin
+CFLAGS = -DWIN32 -W -Wall -O2 -fno-strength-reduce -mno-cygwin
 !  else
-CFLAGS += -DWIN32 -W -Wall -O2 -fno-strength-reduce
+CFLAGS = -DWIN32 -W -Wall -O2 -fno-strength-reduce
 !  endif
-LINK_CMD = $(CC) -s -L$(SLANGLIB) -o $(OBJDIR)$(P)slsh.exe $(OBJS) -lslang -luser32
+LINK_CMD = $(CC) -s -L$(SLANGLIB) -o $(MOD_DLL) $(MOD_OBJ) -lslang -luser32
 OBJDIR = gw32objs# Location of objects
 O = o # Object extension
 SRCDIR = .# Location of sources
@@ -209,10 +215,11 @@ RSP_PREFIX =
 RSP_POSTFIX =
 COMPILE_CMD = $(CC) -c $(CFLAGS) -I$(SLANGINC) -o #
 COMPILE_DEPS =
+RM = rm
 COPY = cp
 #}}}
 ! endif
-TARGET = $(OBJDIR)$(P)slsh.exe
+TARGET = dlls
 SLANGINC = ..$(P)src
 SLANGLIB = ..$(P)src$(P)$(OBJDIR)
 #}}}
@@ -233,6 +240,7 @@ DEF_FILE = $(OBJDIR)/slsh.def
 LINK_CMD = $(CC) -o $(TARGET) $(OBJS) -L$(SLANGLIB) $(DEF_FILE) -lslang -lvideo
 TARGET_DEPS = $(DEF_FILE)
 COMPILE_DEPS =
+RM = del
 COPY = cp
 #}}}
 ! elifdef WCC #{{{
@@ -250,6 +258,7 @@ DEF_FILE =
 LINK_CMD = wcl386 -fe=$(TARGET) $(OBJS) $(SLANGLIB) -k150000 # -lvideo
 TARGET_DEPS =
 COMPILE_DEPS =
+RM = del
 COPY = copy
 #}}}
 ! elifdef ICC #{{{
@@ -267,6 +276,7 @@ DEF_FILE =
 LINK_CMD = $(CC) -Fe$(TARGET) $(OBJS) $(SLANGLIB)
 TARGET_DEPS =
 COMPILE_DEPS =
+RM = del
 COPY = copy
 #}}}
 ! endif
@@ -276,29 +286,32 @@ COPY = copy
 
 # End of compiler specific section
 
+MOD_DLL=$(OBJDIR)$(P)$(MODNAME).dll
+MOD_OBJ=$(OBJDIR)$(P)$(MODNAME).$(O)
+MOD_SRC=$(SRCDIR)$(P)$(MODNAME).c
+
 #fcntl-module.c: Not for Dos/Win
-
 #newt-module.c: ???
-
 #pcre-module.c: Ported to Win by GnuWin32 group.
-
 #select-module.c: Not for Dos/Win
-
-#slsmg-module.c
-
-$(OBJDIR)$(P)slsmg-module.dll: $(OBJDIR) $(OBJDIR)$(P)slsmg-module.$(O)
-	$(LINK_CMD)$(OBJDIR)$(P)slsmg-module.dll $(OBJDIR)$(P)slsmg-module.$(O)
-
-$(OBJDIR)$(P)slsmg-module.$(O): $(SRCDIR)$(P)slsmg-module.c
-	$(COMPILE_CMD)$(OBJDIR)$(P)slsmg-module.$(O) $(SRCDIR)$(P)slsmg-module.c
-
 #termios-module.c: Not for Dos/Win
-
 #varray-module.c: freasible, but the Win API to mm files is completely 
 #                 different form Unix, so not today...
 
+dlls: $(OBJDIR)
+	$(MAKE) dll MODNAME=slsmg-module
+	@echo If you have libpng installed, uncomment the PNG module build
+#	$(MAKE) dll MODNAME=png-module
 
+dll:  $(MOD_DLL)
+$(MOD_DLL): $(MOD_OBJ)
+	$(LINK_CMD)
+
+$(MOD_OBJ): $(MOD_SRC)
+	$(COMPILE_CMD)$(MOD_OBJ) $(MOD_SRC)
 $(OBJDIR) :
 	-mkdir $(OBJDIR)
+clean:
+	$(RM) $(OBJDIR)$(P)*.$(O)
 
 !endif   #NOT HELP

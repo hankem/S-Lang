@@ -166,6 +166,13 @@ try
 }
 catch NotImplementedError: vmessage ("\t&s.foo not supported");
 
+try
+{
+   eval ("()++;--();++();");
+   vmessage ("**** ++() not being caught by the parser!!!");
+}
+catch SyntaxError;
+
 private define foo (i, x)
 {
    if (x != NULL)

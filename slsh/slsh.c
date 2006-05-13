@@ -35,7 +35,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.7.5-0";
+static char *Slsh_Version = "0.7.7-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -408,6 +408,8 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_1("atexit", at_exit, VOID_TYPE, SLANG_REF_TYPE),
    MAKE_INTRINSIC_S("slsh_readline", slsh_readline_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("slsh_readline_noecho", slsh_readline_noecho_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_set_prompt_hook", slsh_set_prompt_hook, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_get_prompt_hook", slsh_get_prompt_hook, VOID_TYPE),
    MAKE_INTRINSIC_0("stat_mode_to_string", stat_mode_to_string, VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
@@ -440,16 +442,30 @@ Usage: slsh [OPTIONS] [-|file [args...]]\n\
    exit (1);
 }
 
-static void version (void)
+static void output_version (void)
 {
-   fprintf (stdout, "slsh version %s\n", Slsh_Version);
-   fprintf (stdout, "S-Lang Library Version: %s\n", SLang_Version_String);
+   fprintf (stdout, "slsh version %s; ", Slsh_Version);
+   fprintf (stdout, "S-Lang version: %s\n", SLang_Version_String);
    if (SLANG_VERSION != SLang_Version)
      {
 	fprintf (stdout, "\t** Note: This program was compiled against version %s.\n",
 		 SLANG_VERSION_STRING);
      }
+}
+
+static int output_copyright (void)
+{
+   output_version ();
+   fprintf (stdout, "Copyright (C) 2005-2006 John E. Davis <jed@jedsoft.org>\r\n");
+   fprintf (stdout, "This is free software with ABSOLUTELY NO WARRANTY.\r\n");
+   fprintf (stdout, "\n");
    
+   return 0;
+}
+
+static void version (void)
+{
+   output_version ();
    exit (0);
 }
 
@@ -462,13 +478,6 @@ int main (int argc, char **argv)
    int is_interactive = 0;
    int use_readline = 1;
    int test_mode = 0;
-
-   if (SLang_Version < SLANG_VERSION)
-     {
-	fprintf (stderr, "***Warning: Executable compiled against S-Lang %s but linked to %s\n",
-		 SLANG_VERSION_STRING, SLang_Version_String);
-	fflush (stderr);
-     }
 
    (void) SLutf8_enable (-1);
 
@@ -597,7 +606,15 @@ int main (int argc, char **argv)
 	argc--;
 	argv++;
      }
-   
+
+   if ((is_interactive == 0)
+       && (SLang_Version < SLANG_VERSION))
+     {
+	fprintf (stderr, "***Warning: Executable compiled against S-Lang %s but linked to %s\n",
+		 SLANG_VERSION_STRING, SLang_Version_String);
+	fflush (stderr);
+     }
+
    (void) slsh_use_readline (use_readline);
 
    /* fprintf (stdout, "slsh: argv[0]=%s\n", argv[0]); */
@@ -627,7 +644,10 @@ int main (int argc, char **argv)
      }
 
    if (is_interactive)
-     (void) slsh_interactive ();
+     {
+	output_copyright ();
+	(void) slsh_interactive ();
+     }
 
    exit_val = SLang_get_error ();
    c_exit (&exit_val);

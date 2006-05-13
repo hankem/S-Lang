@@ -4,5 +4,32 @@ The slang library is available for OS/2, MSDOS, and WIN32 (windows
 9x/NT) systems.  This _includes_ the various GNU environments such as
 DJGPP, and MING32.  For CYGWIN, follow the UNIX instructions.
 
-There is one master makefile located in src/mkfiles.  See the README
-file in that directory for more information.
+Each of the src, modules, and slsh directories contains a mkfiles
+subdirectory that can be used to create Makefiles for non-CYGWIN
+builds.  The simplest approach to building the distribution is to
+invoke the build scripts located in the top-level mkfiles directory.
+
+For example, from a MINGW shell
+
+	sh mkfiles/build.sh WIN32 MINGW32 DLL
+
+should generate 4 Makefiles
+
+	Makefile
+	src/Makefile
+	modules/Makefile
+	slsh/Makefile
+
+and -- assuming GCC, make, etc are in your PATH -- immediately commence
+building.  The build.bat script performs a similar role for DOS-based 
+builds, although your mileage may vary.
+
+A clean target is provided in each generated Makefile, but otherwise
+they're not nearly as complete as their UNIX counterparts.  For example,
+an install: target is not provided, so to exercise slsh and module
+importation you will have to manually copy libslang.dll, slsh.exe,
+and the relevant modules to a common location.  As of this writing
+the slsmg and PNG modules are known to build and load under MINGW.
+
+More information on the makefile generation process is available
+in src/mkfiles/README.

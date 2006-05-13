@@ -60,7 +60,6 @@ USA.
 
 
 static int Use_Readline;
-static char *Prompt;
 static int Slsh_Quit = 0;
 static SLang_Load_Type *Readline_Load_Object;
 static SLang_RLine_Info_Type *Rline_Info;
@@ -321,27 +320,75 @@ static int save_input_line (SLang_RLine_Info_Type *rline, char *line)
 #endif
 }
 
+static SLang_Name_Type *Prompt_Hook = NULL;
+void slsh_set_prompt_hook (void)
+{
+   SLang_Name_Type *h;
+
+   if (SLang_peek_at_stack () == SLANG_NULL_TYPE)
+     {
+	SLang_pop_null ();
+	h = NULL;
+     }
+   else if (NULL == (h = SLang_pop_function ()))
+     return;
+
+   if (Prompt_Hook != NULL) 
+     SLang_free_function (Prompt_Hook);
+   
+   Prompt_Hook = h;
+}
+
+void slsh_get_prompt_hook (void)
+{
+   if (Prompt_Hook == NULL)
+     (void) SLang_push_null ();
+   else
+     (void) SLang_push_function (Prompt_Hook);
+}
 
 /* Returns a malloced value */
 static char *get_input_line (SLang_Load_Type *x)
 {
-   char *prompt;
    char *line;
    int parse_level;
-   
+   int free_prompt = 0;
+   char *prompt;
+
    parse_level = x->parse_level;
+   if (Prompt_Hook != NULL)
+     {
+	if ((-1 == SLang_start_arg_list ())
+	    || (-1 == SLang_push_int (parse_level))
+	    || (-1 == SLang_end_arg_list ())
+	    || (-1 == SLexecute_function (Prompt_Hook))
+	    || (-1 == SLang_pop_slstring (&prompt)))
+	  {
+	     SLang_verror (SL_RunTime_Error, "Disabling prompt hook");
+	     SLang_free_function (Prompt_Hook);
+	     Prompt_Hook = NULL;
+	     return NULL;
+	  }
+	free_prompt = 1;
+     }
+   else if (parse_level == 0)
+     prompt = "slsh> ";
+   else
+     prompt = "       ";
+
    if (parse_level == 0) 
      {
 	if (-1 == SLang_run_hooks ("slsh_interactive_before_hook", 0))
-	  return NULL;
-
-	prompt = Prompt;
-	if (prompt == NULL)
-	  prompt = "slsh> ";
+	  {
+	     if (free_prompt)
+	       SLang_free_slstring (prompt);
+	     return NULL;
+	  }
      }
-   else prompt = "       ";
 
    line = read_input_line (Rline_Info, prompt, 0);
+   if (free_prompt)
+     SLang_free_slstring (prompt);
 
    if ((line == NULL) 
        && (parse_level == 0)
@@ -352,7 +399,9 @@ static char *get_input_line (SLang_Load_Type *x)
      }
 
    if (line == NULL)
-     return NULL;
+     {
+	return NULL;
+     }
 
    /* This hook is used mainly for logging input */
    (void) SLang_run_hooks ("slsh_interactive_after_hook", 1, line);

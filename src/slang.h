@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.  
 */
 
-#define SLANG_VERSION 20006
-#define SLANG_VERSION_STRING "2.0.6"
+#define SLANG_VERSION 20007
+#define SLANG_VERSION_STRING "pre2.0.7-20"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -318,6 +318,9 @@ SL_EXTERN int SLwchar_isspace (SLwchar_Type);
 SL_EXTERN int SLwchar_isupper (SLwchar_Type);
 SL_EXTERN int SLwchar_isxdigit (SLwchar_Type);
 
+#define SLWCWIDTH_SINGLE_WIDTH	0x0001
+SL_EXTERN int SLwchar_set_wcwidth_flags (int flags);
+
 SL_EXTERN SLuchar_Type *SLutf8_skip_char (SLuchar_Type *u, SLuchar_Type *umax);
 SL_EXTERN SLuchar_Type *SLutf8_bskip_char (SLuchar_Type *umin, SLuchar_Type *u);
 
@@ -551,7 +554,7 @@ SL_EXTERN int SLadd_math_unary_table (SLang_Math_Unary_Type *, char *);
 SL_EXTERN int SLadd_iconstant_table (SLang_IConstant_Type *, char *);
 SL_EXTERN int SLadd_dconstant_table (SLang_DConstant_Type *, char *);
 SL_EXTERN int SLadd_fconstant_table (SLang_FConstant_Type *, char *);
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 SL_EXTERN int SLadd_llconstant_table (SLang_LLConstant_Type *, char *);
 #endif
 SL_EXTERN int SLadd_istruct_table (SLang_IStruct_Field_Type *, VOID_STAR, char *);
@@ -1285,7 +1288,7 @@ SL_EXTERN int SLatoi(unsigned char *);
 SL_EXTERN long SLatol (unsigned char *);
 SL_EXTERN unsigned long SLatoul (unsigned char *);
 
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 SL_EXTERN long long SLatoll (unsigned char *s);
 SL_EXTERN unsigned long long SLatoull (unsigned char *s);
 #endif

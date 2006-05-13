@@ -2323,22 +2323,26 @@ static int check_for_lvalue (unsigned char eqs_type, _pSLang_Token_Type *ctok)
 
    if ((ctok == NULL)
        && (NULL == (ctok = get_last_token ())))
-     return -1;
-
-   type = ctok->type;
+     type = ILLEGAL_TOKEN;
+   else 
+     type = ctok->type;
 
    eqs_type -= ASSIGN_TOKEN;
-
-   if (type == IDENT_TOKEN)
-     eqs_type += _SCALAR_ASSIGN_TOKEN;
-   else if (type == ARRAY_TOKEN)
-     eqs_type += _ARRAY_ASSIGN_TOKEN;
-   else if (type == DOT_TOKEN)
-     eqs_type += _STRUCT_ASSIGN_TOKEN;
-   else if (type == DEREF_TOKEN)
-     eqs_type += _DEREF_ASSIGN_TOKEN;
-   else
+   switch (type)
      {
+      case IDENT_TOKEN:
+	eqs_type += _SCALAR_ASSIGN_TOKEN;
+	break;
+      case ARRAY_TOKEN:
+	eqs_type += _ARRAY_ASSIGN_TOKEN;
+	break;
+      case DOT_TOKEN:
+	eqs_type += _STRUCT_ASSIGN_TOKEN;
+	break;
+      case DEREF_TOKEN:
+	eqs_type += _DEREF_ASSIGN_TOKEN;
+	break;
+      default:
 	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting LVALUE", ctok, 0);
 	return -1;
      }
@@ -2364,6 +2368,8 @@ static void inline_list_expression (_pSLang_Token_Type *ctok)
 	     if (ctok->type != COMMA_TOKEN)
 	       break;
 	     get_token (ctok);
+	     if (ctok->type == CBRACE_TOKEN)   /* trailing comma: {a,b,} */
+	       break;
 	  }
 	if (ctok->type != CBRACE_TOKEN)
 	  {
@@ -2407,6 +2413,8 @@ static void array_index_expression (_pSLang_Token_Type *ctok)
 	  return;
 	num_commas++;
 	get_token (ctok);
+	if (ctok->type == CBRACKET_TOKEN)   /* allow trailing comma */
+	  return;
      }
 }
 

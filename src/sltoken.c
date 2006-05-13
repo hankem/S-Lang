@@ -97,8 +97,27 @@ static char *map_token_to_string (_pSLang_Token_Type *tok)
       case CPAREN_TOKEN: s = ")"; break;
       case OBRACE_TOKEN: s = "{"; break;
       case CBRACE_TOKEN: s = "}"; break;
-      case DEREF_TOKEN: s = "@"; break;
+      case POW_TOKEN: s = "^"; break;
+      case ADD_TOKEN: s = "+"; break;
+      case SUB_TOKEN: s = "-"; break;
+      case TIMES_TOKEN: s = "*"; break;
+      case DIV_TOKEN: s = "/"; break;
+      case LT_TOKEN: s = "<"; break;
+      case LE_TOKEN: s = "<="; break;
+      case GT_TOKEN: s = ">"; break;
+      case GE_TOKEN: s = ">="; break;
+      case EQ_TOKEN: s = "=="; break;
+      case NE_TOKEN: s = "!="; break;
+      case AND_TOKEN: s = "and"; break;
+      case OR_TOKEN: s = "or"; break;
+      case MOD_TOKEN: s = "mod"; break;
+      case BAND_TOKEN: s = "&"; break;
+      case SHL_TOKEN: s = "shl"; break;
+      case SHR_TOKEN: s = "shr"; break;
+      case BXOR_TOKEN: s = "xor"; break;
+      case BOR_TOKEN: s = "|"; break;
       case POUND_TOKEN: s = "#"; break;
+      case DEREF_TOKEN: s = "@"; break;
       case COMMA_TOKEN: s = ","; break;
       case SEMICOLON_TOKEN: s = ";"; break;
       case COLON_TOKEN: s = ":"; break;
@@ -135,7 +154,8 @@ void _pSLparse_error (int errcode, char *str, _pSLang_Token_Type *tok, int flag)
      str = "Parse Error";
 
 #if SLANG_HAS_DEBUG_CODE
-   if (tok != NULL) line = tok->line_number;
+   if ((tok != NULL) && (tok->line_number != -1))
+     line = tok->line_number;
 #endif
    if (file == NULL) file = "??";
 
