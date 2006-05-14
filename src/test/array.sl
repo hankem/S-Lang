@@ -1227,6 +1227,56 @@ try
 }
 catch SyntaxError;
 
+% inline array of different types
+private define test_array_types (a, b)
+{
+   variable t = typeof (a+b);
+
+   if ((t != _typeof ([a,b]))
+       or (t != _typeof ([[a],[b]]))
+       or (t != _typeof ([[a],b]))
+       or (t != _typeof ([a,[b]]))
+       or (t != _typeof ([[b],a]))
+       or (t != _typeof ([b,a]))
+       or (t != _typeof ([[b],[a]])))
+     {
+	failed ("array of %S and %S not of expected type %S", typeof(a), typeof(b));
+     }
+}
+
+test_array_types (1h, 1L);
+test_array_types (1h, 1f);
+test_array_types (1h, 1.0);
+test_array_types (1h, 1j);
+test_array_types ("a", "a\0");
+
+% Test presence of NULLs in inline arrays
+private define test_nulls_in_array (arr, is_good)
+{
+   try
+     {
+	eval ("()=" + arr);
+	if (is_good)
+	  return;
+	failed ("%s should have generated an error", arr);
+     }
+   catch TypeMismatchError:
+     {
+	if (is_good)
+	  failed ("typemismatch evaluating %s", arr);
+     }
+}
+
+test_nulls_in_array ("[NULL, &sin]", 1);
+test_nulls_in_array ("[&sin, NULL]", 1);
+test_nulls_in_array ("[&sin, NULL,NULL,NULL,NULL]", 1);
+test_nulls_in_array ("[NULL,NULL,&sin,NULL,NULL]", 1);
+test_nulls_in_array ("[NULL,NULL,&sin,[&sin,NULL]]", 1);
+test_nulls_in_array ("[1,2,NULL]", 0);
+test_nulls_in_array ("[1,NULL]", 0);
+test_nulls_in_array ("[1,NULL,]", 0);
+test_nulls_in_array ("[1,NULL,2]", 0);
+
 print ("Ok\n");
 
 exit (0);

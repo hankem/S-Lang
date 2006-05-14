@@ -1012,11 +1012,28 @@ static SLKeymap_Function_Type SLReadLine_Functions[] =
    AKEY(NULL, NULL),
 };
 
+
+static void free_history (SLrline_Type *rli)
+{
+   RL_History_Type *h;
+   
+   h = rli->root;
+   while (h != NULL)
+     {
+	RL_History_Type *next = h->next;
+	if (h->buf != NULL)
+	  SLfree (h->buf);
+	SLfree ((char *)h);
+	h = next;
+     }
+}
+	     
 void SLrline_close (SLrline_Type *rli)
 {
    if (rli == NULL)
      return;
    
+   free_history (rli);
    SLfree (rli->prompt);
    SLfree ((char *)rli->buf);
    SLfree ((char *)rli);
@@ -1184,6 +1201,9 @@ int SLrline_add_to_history (SLrline_Type *rli, char *hist)
 	SLfree ((char *)h);
 	return -1;
      }
+
+   if (rli->root == NULL)
+     rli->root = h;
 
    if (rli->tail != NULL)
      rli->tail->next = h;

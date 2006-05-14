@@ -61,6 +61,12 @@ Changes since 2.0.6
     changes to the Makefiles and aclocal.m4  (Mike Noble)
 20. slsh/slsh.c: Brief copyright message displayed when started up in
     interactive mode.
+21. src/slarray.c: Improved support for mixed-type inline arrays:
+    NULLs supported (["foo", NULL]) where it makes sense, and
+    type-promotion rules are used to determine the resulting type when
+    concatenating mix-type arrays (["foo"], NULL, ["bar\0"]);
+22. src/slrline.c: SLrline_close was not freeing the history creating
+    a memory leak.
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.

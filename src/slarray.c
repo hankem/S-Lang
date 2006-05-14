@@ -2223,6 +2223,90 @@ int _pSLarray_wildcard_array (void)
    return SLang_push_array (at, 1);
 }
 
+/* FIXME: The type-promotion routine needs to be made more generic and
+ * better support user-defined types.  
+ */
+
+/* Test if the type cannot be promoted further */
+_INLINE_ static int nowhere_to_promote (SLtype type)
+{
+   switch (type)
+     {
+      case SLANG_COMPLEX_TYPE:
+      case SLANG_BSTRING_TYPE:
+      case SLANG_ARRAY_TYPE:
+	return 1;
+     }
+   
+   return 0;
+}
+
+static int promote_to_common_type (SLtype a, SLtype b, SLtype *c)
+{
+   if (a == b)
+     {
+	*c = a;
+	return 0;
+     }
+   if (nowhere_to_promote (a))
+     {
+	/* a type can always be converted to an array: T -> [T] */
+	if (b == SLANG_ARRAY_TYPE)
+	  *c = b;
+	else
+	  *c = a;
+	return 0;
+     }
+   if (nowhere_to_promote (b))
+     {
+	*c = b;
+	return 0;
+     }
+
+   if (_pSLang_is_arith_type (a) && _pSLang_is_arith_type (b))
+     {
+	if (_pSLarith_get_precedence (a) > _pSLarith_get_precedence (b))
+	  *c = a;
+	else
+	  *c = b;
+	return 0;
+     }
+   
+   if (a == SLANG_NULL_TYPE)
+     {
+	*c = b;
+	return 0;
+     }
+   if (b == SLANG_NULL_TYPE)
+     {
+	*c = a;
+	return 0;
+     }
+   
+   *c = a;
+   return 0;
+}
+
+static SLtype get_type_for_concat (SLang_Array_Type **arrays, unsigned int n)
+{
+   SLtype type;
+   unsigned int i;
+
+   type = arrays[0]->data_type;
+
+   for (i = 1; i < n; i++)
+     {
+	SLtype this_type = arrays[i]->data_type;
+
+	if (this_type == type)
+	  continue;
+
+	if (-1 == promote_to_common_type (type, this_type, &type))
+	  return SLANG_UNDEFINED_TYPE;
+     }
+   return type;
+}
+	
 static SLang_Array_Type *concat_arrays (unsigned int count)
 {
    SLang_Array_Type **arrays;
@@ -2261,11 +2345,13 @@ static SLang_Array_Type *concat_arrays (unsigned int count)
 
    /* From here on, arrays[*] are linear */
 
-   type = arrays[0]->data_type;
+   /* type = arrays[0]->data_type; */
+   type = get_type_for_concat (arrays, count);
+
    max_dims = min_dims = arrays[0]->num_dims;
    min_rows = max_rows = arrays[0]->dims[0];
 
-   for (i = 1; i < count; i++)
+   for (i = 0; i < count; i++)
      {
 	SLang_Array_Type *ct;
 	int num;
@@ -2362,39 +2448,13 @@ int _pSLarray_inline_array (void)
 
 	if (type == 0)
 	  type = this_type;
-
-	if ((type == this_type) || (type == SLANG_ARRAY_TYPE))
+	else if (type != this_type)
 	  {
-	     count--;
-	     continue;
-	  }
-
-	switch (this_type)
-	  {
-	   case SLANG_ARRAY_TYPE:
-	     type = SLANG_ARRAY_TYPE;
-	     break;
-#if SLANG_HAS_COMPLEX
-	   case SLANG_COMPLEX_TYPE:
-	     if (0 == _pSLang_is_arith_type (type))
-	       goto type_mismatch;
-	     
-	     type = this_type;
-	     break;
-#endif
-	   default:
-	     if (0 == _pSLang_is_arith_type(this_type))
-	       goto type_mismatch;
-	     
-	     if (type == SLANG_COMPLEX_TYPE)
-	       break;
-	     
-	     if (0 == _pSLang_is_arith_type (type))
-	       goto type_mismatch;
-	     
-	     if (_pSLarith_get_precedence (this_type) > _pSLarith_get_precedence (type))
-	       type = this_type;
-	     break;
+	     if (-1 == promote_to_common_type (type, this_type, &type))
+	       {
+		  _pSLclass_type_mismatch_error (type, this_type);
+		  return -1;
+	       }
 	  }
 	count--;
      }
@@ -2444,10 +2504,6 @@ int _pSLarray_inline_array (void)
      }
 
    return SLang_push_array (at, 1);
-
-   type_mismatch:
-   _pSLclass_type_mismatch_error (type, this_type);
-   return -1;
 }
 
 static int array_binary_op_result (int op, SLtype a, SLtype b,
@@ -3571,6 +3627,7 @@ array_app_op (int op,
    return 1;
 }
 
+/* Typecast array from a_type to b_type */
 int
 _pSLarray_typecast (SLtype a_type, VOID_STAR ap, unsigned int na,
 		   SLtype b_type, VOID_STAR bp,
@@ -3621,8 +3678,19 @@ _pSLarray_typecast (SLtype a_type, VOID_STAR ap, unsigned int na,
 	  }
 	/* Couldn't do it, so drop */
      }
-   
-     
+
+   /* Typecast NULL array to the desired type with elements set to NULL */
+   if ((a_type == SLANG_NULL_TYPE) 
+       && ((b_cl->cl_class_type == SLANG_CLASS_TYPE_MMT)
+	   || (b_cl->cl_class_type == SLANG_CLASS_TYPE_PTR)))
+     {
+	if (NULL == (bt = SLang_create_array1 (b_type, 0, NULL, at->dims, at->num_dims, 0)))
+	  return -1;
+
+	*(SLang_Array_Type **) bp = bt;
+	return 1;
+     }
+
    
    if (NULL == (t = _pSLclass_get_typecast (a_type, b_type, is_implicit)))
      return -1;
