@@ -1134,17 +1134,16 @@
    The following identifiers are reserved by the language for use as
    keywords:
 #v+
-   abs            and           andelse       break         case
-   catch          chs           continue      define        do
-   do_while       else          ERROR_BLOCK   exch          EXIT_BLOCK
-   finally        _for          for           foreach       forever
-   !if            if            loop          mod           mul2
-   not            or            orelse        pop           private
-   public         return        shl           shr           sign
-   sqr            static        struct        switch        __tmp
-   throw          try           typedef       USER_BLOCK1   USER_BLOCK2
-   USER_BLOCK0    USER_BLOCK4   USER_BLOCK3   using         variable
-   while          xor
+   and           andelse       break         case          catch
+   continue      define        do            else          ERROR_BLOCK
+   exch          EXIT_BLOCK    finally       _for          for
+   foreach       forever       !if           if            loop
+   mod           not           or            orelse        pop
+   private       public        return        shl           shr
+   static        struct        switch        __tmp         throw
+   try           typedef       USER_BLOCK1   USER_BLOCK2   USER_BLOCK0
+   USER_BLOCK4   USER_BLOCK3   using         variable
+   while         xor
 #v-
 
 #%}}}

@@ -18,7 +18,7 @@ catch			CATCH_TOKEN
 continue		CONT_TOKEN
 define			DEFINE_TOKEN
 do			DO_TOKEN
-do_while		DOWHILE_TOKEN
+%do_while		DOWHILE_TOKEN
 else			ELSE_TOKEN
 exch			EXCH_TOKEN
 finally			FINALLY_TOKEN

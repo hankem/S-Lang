@@ -67,6 +67,10 @@ Changes since 2.0.6
     concatenating mix-type arrays (["foo"], NULL, ["bar\0"]);
 22. src/slrline.c: SLrline_close was not freeing the history creating
     a memory leak.
+23. src/keywhash.c: Removed obsolete and unused "do_while" keyword,
+    and regenerated keywhash.c
+24. doc/tm/slang.tm: List of keywords updated to reflect the actual
+    keywords used.
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.
