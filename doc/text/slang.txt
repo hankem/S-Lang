@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language
   John E. Davis, davis@space.mit.edu
-  May 14, 2006
+  May 17, 2006
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -2867,6 +2867,12 @@
               [1.0:1.0]       ==> []
               [1.0:1.0001]    ==> [1.0]
               [1:-3]          ==> []
+
+  Currently Int_Type is the only integer type supported by range
+  arrays--- arbitrary integer types will be supported in a future
+  version.  This means that [1h:5h] will not produce an array of
+  Short_Type, rather it will produce an Int_Type array.  However,
+  [1h,2h,3h,4h,5h] will produce an array of Short_Type integers.
 
   [1m11.1.2.  Creating arrays via the dereference operator[0m
 

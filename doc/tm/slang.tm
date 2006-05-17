@@ -2919,6 +2919,13 @@
        [1:-3]          ==> []
 #v-
 
+   Currently \dtype{Int_Type} is the only integer type supported
+   by range arrays--- arbitrary integer types will be supported in a
+   future version.  This means that \exmp{[1h:5h]} will not produce
+   an array of \dtype{Short_Type}, rather it will produce an
+   \dtype{Int_Type} array.  However, \exmp{[1h,2h,3h,4h,5h]} will
+   produce an array of \dtype{Short_Type} integers.
+
 \sect1{Creating arrays via the dereference operator}
 
    Another way to create an array is to apply the dereference operator

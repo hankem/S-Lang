@@ -1,3 +1,19 @@
+\variable{_bofeof_info}
+\synopsis{Control the generation of function callback code}
+\usage{Int_Type _bofeof_info}
+\description
+ This value of this variable dictates whether or not the \slang
+ interpeter will generate code to call the beginning and end of
+ function callback handlers.  The value of this variable is local to
+ the compilation unit, but is inherited by other units loaded by the
+ current unit.
+ 
+ If the value of this variable is 1 when a function is defined, then
+ when the function is executed, the callback handlers defined via
+ \ifun{_set_bof_handler} and \ifun{_set_eof_handler} will be called.
+\seealso{_set_bof_handler, _set_eof_handler, _boseos_info}
+\done
+
 \variable{_boseos_info}
 \synopsis{Control the generation of BOS/EOS callback code}
 \usage{Int_Type _boseos_info}
@@ -15,9 +31,11 @@
    -----------------------------------------------------------------
      0        No code for making callbacks will be produced.
      1        Callback generation will take place for all non-branching
-              statements.
+              and looping statements.
      2        Same as for 1 with the addition that code will also be
-              generated for branching statements.
+              generated for branching statements (if, !if, loop, ...)
+     3        Same as 2, but also including break and continue
+              statements.
 #v-
  A non-branching statement is one that does not effect chain of
  execution.  Branching statements include all looping statements,
@@ -45,7 +63,7 @@
 \notes
  The \sldb debugger and \slsh's \exmp{stkcheck.sl} make use of this
  facility.
-\seealso{_set_bos_handler, _set_eos_handler, _debug_info}
+\seealso{_set_bos_handler, _set_eos_handler, _bofeof_info}
 \done
 
 \function{_clear_error}
@@ -82,31 +100,6 @@
 \seealso{_trace_function, _slangtrace, _traceback}
 \done
 
-\variable{_debug_info}
-\synopsis{Configure debugging information}
-\usage{Integer_Type _debug_info}
-\description
-  The \ivar{_debug_info} variable controls whether or not extra code
-  should be generated for additional debugging and traceback
-  information.  Currently, if \ivar{_debug_info} is zero, no extra code
-  will be generated; otherwise extra code will be inserted into the
-  compiled bytecode for additional debugging data.
-
-  The value of this variable is local to each compilation unit and
-  setting its value in one unit has no effect upon its value in other
-  units.
-\example
-#v+
-    _debug_info = 1;   % Enable debugging information
-#v-
-\notes
-  Setting this variable to a non-zero value may slow down the
-  interpreter somewhat.
-  
-  The value of this variable is not currently used.
-\seealso{_traceback, _slangtrace}
-\done
-
 \function{_set_bos_handler}
 \synopsis{Set the beginning of statement callback handler}
 \usage{_set_bos_handler (Ref_Type func)}
@@ -117,7 +110,7 @@
  to be executed.  It should return nothing.
 \example
 #v+
-    static define bos_handler (file, line)
+    private define bos_handler (file, line)
     {
       () = fputs ("About to execute $file:$line\n"$, stdout);
     }
@@ -127,11 +120,11 @@
  The beginning and end of statement handlers will be called for
  statements in a file only if that file was compiled with the variable
  \ivar{_boseos_info} set to a non-zero value.
-\seealso{_set_eos_handler, _boseos_info}
+\seealso{_set_eos_handler, _boseos_info, _bofeof_info}
 \done
 
 \function{_set_eos_handler}
-\synopsis{Set the beginning of statement callback handler}
+\synopsis{Set the end of statement callback handler}
 \usage{_set_eos_handler (Ref_Type func)}
 \description
  This function is used to set the function to be called at the end of
@@ -139,17 +132,60 @@
  return nothing.
 \example
 #v+
-   static define eos_handler ()
+   private define eos_handler ()
    {
      () = fputs ("Done executing the statement\n", stdout);
    }
-   _set_eos_handler (&bos_handler);
+   _set_eos_handler (&eos_handler);
 #v-
 \notes
  The beginning and end of statement handlers will be called for
  statements in a file only if that file was compiled with the variable
  \ivar{_boseos_info} set to a non-zero value.
-\seealso{_set_eos_handler, _boseos_info}
+\seealso{_set_bos_handler, _boseos_info, _bofeof_info}
+\done
+
+\function{_set_bof_handler}
+\synopsis{Set the beginning of function callback handler}
+\usage{_set_bof_handler (Ref_Type func)}
+\description
+ This function is used to set the function to be called prior to the
+ execution of the body \slang function but after its arguments have
+ been evaluated, provided that function was defined
+ with \ivar{_bofeof_info} set appropriately.  The callback function
+ must be defined to take a single parameter representing the name of
+ the function and must return nothing.  
+\example
+#v+
+    private define bof_handler (fun)
+    {
+      () = fputs ("About to execute $fun"$, stdout);
+    }
+    _set_bos_handler (&bof_handler);
+#v-
+\notes
+\seealso{_set_eof_handler, _boseos_info, _set_bos_handler}
+\done
+
+\function{_set_eof_handler}
+\synopsis{Set the beginning of function callback handler}
+\usage{_set_eof_handler (Ref_Type func)}
+\description
+ This function is used to set the function to be called at the end of
+ execution of a \slang function, provided that function was compiled with
+ \ivar{_bofeof_info} set accordingly.
+ 
+ The callback function will be passed no parameters and it must return
+ nothing.
+\example
+#v+
+   private define eof_handler ()
+   {
+     () = fputs ("Done executing the function\n", stdout);
+   }
+   _set_eof_handler (&eof_handler);
+#v-
+\seealso{_set_bof_handler, _bofeof_info, _boseos_info}
 \done
 
 \variable{_slangtrace}

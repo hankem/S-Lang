@@ -191,7 +191,21 @@ define test_array_map_bug ()
 	vmessage ("\tarray_map bug present with NULL present");
      }
 }
-
 test_array_map_bug ();
+
+define test_range_array_bug ()
+{
+   variable a = {1h, 1, 1L, 1LL};
+   foreach (a)
+     {
+	variable i = ();
+	if (_typeof ([i:i]) == typeof (i))
+	  continue;
+	vmessage ("\tRange arrays of Short, Long, LongLong types converted to Int_Type");
+	return;
+     }
+}
+test_range_array_bug ();
+     
 exit (0);
 

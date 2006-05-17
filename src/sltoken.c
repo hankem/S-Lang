@@ -27,12 +27,13 @@ USA.
 #define MAX_TOKEN_LEN 254
 #define MAX_FILE_LINE_LEN 256
 
-int _pSLang_Compile_Line_Num_Info;
+/* int _pSLang_Compile_Line_Num_Info; */
 #if SLANG_HAS_BOSEOS
 int _pSLang_Compile_BOSEOS;
+int _pSLang_Compile_BOFEOF;
 #endif
 #if SLANG_HAS_DEBUG_CODE
-static int Default_Compile_Line_Num_Info;
+/* static int Default_Compile_Line_Num_Info; */
 #if 0
 static int Default_Compile_BOSEOS;
 #endif
@@ -1076,10 +1077,11 @@ int SLang_load_object (SLang_Load_Type *x)
    SLang_Load_Type *save_llt;
    char *save_input_line, *save_input_line_ptr;
 #if SLANG_HAS_DEBUG_CODE
-   int save_compile_line_num_info;
+   /* int save_compile_line_num_info; */
 #endif
 #if SLANG_HAS_BOSEOS
    int save_compile_boseos;
+   int save_compile_bofeof;
 #endif
    int save_auto_declare_variables;
 
@@ -1095,10 +1097,11 @@ int SLang_load_object (SLang_Load_Type *x)
      }
 
 #if SLANG_HAS_DEBUG_CODE
-   save_compile_line_num_info = _pSLang_Compile_Line_Num_Info;
+   /* save_compile_line_num_info = _pSLang_Compile_Line_Num_Info; */
 #endif
 #if SLANG_HAS_BOSEOS
    save_compile_boseos = _pSLang_Compile_BOSEOS;
+   save_compile_bofeof = _pSLang_Compile_BOFEOF;
 #endif
    save_this_pp = This_SLpp;
    save_input_line = Input_Line;
@@ -1115,7 +1118,7 @@ int SLang_load_object (SLang_Load_Type *x)
    _pSLang_Auto_Declare_Globals = x->auto_declare_globals;
 
 #if SLANG_HAS_DEBUG_CODE
-   _pSLang_Compile_Line_Num_Info = Default_Compile_Line_Num_Info;
+   /* _pSLang_Compile_Line_Num_Info = Default_Compile_Line_Num_Info; */
 #endif
 #if SLANG_HAS_BOSEOS
 #if 0
@@ -1158,10 +1161,11 @@ int SLang_load_object (SLang_Load_Type *x)
    This_SLpp = save_this_pp;
 
 #if SLANG_HAS_DEBUG_CODE
-   _pSLang_Compile_Line_Num_Info = save_compile_line_num_info;
+   /* _pSLang_Compile_Line_Num_Info = save_compile_line_num_info; */
 #endif
 #if SLANG_HAS_BOSEOS
    _pSLang_Compile_BOSEOS = save_compile_boseos;
+   _pSLang_Compile_BOFEOF = save_compile_bofeof;
 #endif
    if (_pSLang_Error) return -1;
    return 0;
@@ -1773,8 +1777,10 @@ int SLang_byte_compile_file (char *name, int method)
 int SLang_generate_debug_info (int x)
 {
 #if SLANG_HAS_DEBUG_CODE
-   int y = Default_Compile_Line_Num_Info;
-   Default_Compile_Line_Num_Info = x;
+   /* int y = Default_Compile_Line_Num_Info; */
+   /* Default_Compile_Line_Num_Info = x; */
+   int y = 0;
+   (void)x;
 #if 0
    if (x == 0)
      Default_Compile_BOSEOS = 0;

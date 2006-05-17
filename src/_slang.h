@@ -673,12 +673,15 @@ extern char *_pSLang_current_function_name (void);
 extern int _pSLang_trace_fun(char *);
 
 /* This is a bitmapped variable */
-extern int _pSLang_Compile_Line_Num_Info;
+/* extern int _pSLang_Compile_Line_Num_Info; */
 #if SLANG_HAS_BOSEOS
 extern int _pSLang_Compile_BOSEOS;
+extern int _pSLang_Compile_BOFEOF;
 extern int _pSLang_init_boseos (void);
 extern int _pSLcall_bos_handler (char *, int);
 extern int _pSLcall_eos_handler (void);
+extern int _pSLcall_bof_handler (char *);
+extern int _pSLcall_eof_handler (void);
 extern int _pSLcall_debug_hook (char *file, int linenum);
 /* extern int _pSLcall_debug_hook (char *file, int linenum, char *funct); */
 #endif

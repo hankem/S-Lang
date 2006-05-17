@@ -26,6 +26,8 @@ USA.
 #if SLANG_HAS_BOSEOS
 static SLang_Name_Type *BOS_Callback_Handler = NULL;
 static SLang_Name_Type *EOS_Callback_Handler = NULL;
+static SLang_Name_Type *BOF_Callback_Handler = NULL;
+static SLang_Name_Type *EOF_Callback_Handler = NULL;
 
 static void set_bos_eos_handlers (SLang_Name_Type *bos, SLang_Name_Type *eos)
 {
@@ -36,6 +38,17 @@ static void set_bos_eos_handlers (SLang_Name_Type *bos, SLang_Name_Type *eos)
    if (EOS_Callback_Handler != NULL)
      SLang_free_function (EOS_Callback_Handler);
    EOS_Callback_Handler = eos;
+}
+
+static void set_bof_eof_handlers (SLang_Name_Type *bof, SLang_Name_Type *eof)
+{
+   if (BOF_Callback_Handler != NULL)
+     SLang_free_function (BOF_Callback_Handler);
+   BOF_Callback_Handler = bof;
+   
+   if (EOF_Callback_Handler != NULL)
+     SLang_free_function (EOF_Callback_Handler);
+   EOF_Callback_Handler = eof;
 }
 
 static int Handler_Active = 0;
@@ -86,6 +99,51 @@ int _pSLcall_eos_handler (void)
    return 0;
 }
 
+int _pSLcall_bof_handler (char *fun)
+{
+   if (BOF_Callback_Handler == NULL)
+     return 0;
+
+   if (Handler_Active)
+     return 0;
+
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_push_string (fun))
+       || (-1 == SLang_end_arg_list ()))
+     return -1;
+
+   Handler_Active++;
+   if (-1 == SLexecute_function (BOF_Callback_Handler))
+     {
+	Handler_Active--;
+	set_bof_eof_handlers (NULL, NULL);
+	return -1;
+     }
+   Handler_Active--;
+   return 0;
+}
+
+int _pSLcall_eof_handler (void)
+{
+   if ((EOF_Callback_Handler == NULL)
+       || (Handler_Active))
+     return 0;
+
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_end_arg_list ()))
+     return -1;
+   
+   Handler_Active++;
+   if (-1 == SLexecute_function (EOF_Callback_Handler))
+     {
+	Handler_Active--;
+	set_bof_eof_handlers (NULL, NULL);
+	return -1;
+     }
+   Handler_Active--;
+   return 0;
+}
+
 static int pop_new_push_old (SLang_Name_Type **handler)
 {
    SLang_Name_Type *new_handler;
@@ -119,6 +177,16 @@ static void set_bos_handler (void)
 static void set_eos_handler (void)
 {
    (void) pop_new_push_old (&EOS_Callback_Handler);
+}
+
+static void set_bof_handler (void)
+{
+   (void) pop_new_push_old (&BOF_Callback_Handler);
+}
+
+static void set_eof_handler (void)
+{
+   (void) pop_new_push_old (&EOF_Callback_Handler);
 }
 
 
@@ -269,6 +337,8 @@ static SLang_Intrin_Fun_Type Intrin_Funs [] =
 {
    MAKE_INTRINSIC_0("_set_bos_handler", set_bos_handler, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_set_eos_handler", set_eos_handler, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_set_bof_handler", set_bof_handler, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_set_eof_handler", set_eof_handler, SLANG_VOID_TYPE),
 #if SLANG_HAS_DEBUGGER_SUPPORT
    MAKE_INTRINSIC_0("_set_frame_variable", set_frame_variable, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_IS("_get_frame_variable", get_frame_variable, SLANG_VOID_TYPE),

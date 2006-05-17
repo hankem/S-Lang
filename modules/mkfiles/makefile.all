@@ -194,7 +194,7 @@ TARGET_DEPS =
 COMPILE_DEPS =
 RM = del
 COPY = copy
-LINK_CMD = link /DLL /SUBSYSTEM:console /LIBPATH:$(SLANGLIB) wslang32.lib -out:#
+LINK_CMD = link /DLL /SUBSYSTEM:console /LIBPATH:$(SLANGLIB) wslang32.lib -out:$(MOD_DLL) $(MOD_OBJ)#
 # This needs changing for Windows NT on non-Intel processors
 CPU = _X86_
 #}}}

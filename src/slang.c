@@ -52,6 +52,9 @@ typedef struct
    char **local_variables;
    SLang_NameSpace_Type *static_ns;  /* namespace containing this function */
    SLang_NameSpace_Type *private_ns;  /* private namespace where this function was declared */
+#if SLANG_HAS_BOSEOS
+   int issue_bofeof_info;
+#endif
 }
 Function_Header_Type;
 
@@ -3011,6 +3014,12 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    if (header->nargs)
      (void) pop_n_objs_reverse (Local_Variable_Frame - (header->nargs-1), header->nargs);
 
+#if SLANG_HAS_BOSEOS
+   if (header->issue_bofeof_info)
+     {
+	(void) _pSLcall_bof_handler (fun->name);
+     }
+#endif   
    if (SLang_Enter_Function != NULL) 
      (*SLang_Enter_Function) (fun->name);
 
@@ -3071,6 +3080,11 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
 	/* (void) _pSLcall_debug_hook (); */
 #endif
      }
+
+#if SLANG_HAS_BOSEOS
+   if (header->issue_bofeof_info)
+     (void) _pSLcall_eof_handler ();
+#endif
 
    /* free local variables.... */
    lvf = Local_Variable_Frame;
@@ -4889,6 +4903,10 @@ static Function_Header_Type *
 	return NULL;
      }
 
+#if SLANG_HAS_BOSEOS
+   h->issue_bofeof_info = (_pSLang_Compile_BOFEOF != 0);
+#endif
+
    if (nlocals == 0)
      return h;
 
@@ -4907,7 +4925,6 @@ static Function_Header_Type *
 	     return NULL;
 	  }
      }
-
    return h;
 }
 

@@ -2096,6 +2096,8 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 
 /* FIXME: Priority=medium
  * This needs to be updated to work with all integer types.
+ * Adding support for other types is going to require a generalization
+ * of the Range_Array_Type object.
  */
 int _pSLarray_inline_implicit_array (void)
 {

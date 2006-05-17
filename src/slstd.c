@@ -892,11 +892,13 @@ static char *Install_Prefix = SLANG_INSTALL_PREFIX;
 static char *Install_Prefix = "";
 #endif
 
+static int obsolete_int_variable;
 static SLang_Intrin_Var_Type Intrin_Vars[] =
 {
-   MAKE_VARIABLE("_debug_info", &_pSLang_Compile_Line_Num_Info, SLANG_INT_TYPE, 0),
+   MAKE_VARIABLE("_debug_info", &obsolete_int_variable, SLANG_INT_TYPE, 0),
 #if SLANG_HAS_BOSEOS
    MAKE_VARIABLE("_boseos_info", &_pSLang_Compile_BOSEOS, SLANG_INT_TYPE, 0),
+   MAKE_VARIABLE("_bofeof_info", &_pSLang_Compile_BOFEOF, SLANG_INT_TYPE, 0),
 #endif
    MAKE_VARIABLE("_auto_declare", &_pSLang_Auto_Declare_Globals, SLANG_INT_TYPE, 0),
    MAKE_VARIABLE("_slangtrace", &_pSLang_Trace, SLANG_INT_TYPE, 0),

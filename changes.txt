@@ -71,6 +71,15 @@ Changes since 2.0.6
     and regenerated keywhash.c
 24. doc/tm/slang.tm: List of keywords updated to reflect the actual
     keywords used.
+25. modules/mkfiles/makefile.all: Updated VC-specific LINK_CMD macro
+    to support the changes outlines in 18 above (Dino Sangoid).
+26. src/slang.c,src/slboseos.c: Added hooks for entering and leaving a
+    function.  The beginning-of-statement and end-of-statement hooks
+    were found insufficient to support a debugger support.  See the
+    documentation for _bofeof_info for more information.
+27. slsh/lib/sldbcore.sl: Modified to use the bof/eof hooks introduced
+    in #26.
+28. Various documentation tweaks.
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.

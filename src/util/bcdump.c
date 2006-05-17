@@ -466,6 +466,11 @@ static void dump_token (_pSLang_Token_Type *t)
       case LINE_NUM_TOKEN:
 	b = "__line_num__"; break;
 	
+      case BOS_TOKEN:
+	b = "__bos__"; break;
+      case EOS_TOKEN:
+	b = "__eos__"; break;
+
 
       default:
 	sprintf (buf, "____UNKNOWN___0x%X", t->type);
@@ -492,6 +497,7 @@ int main (int argc, char **argv)
      return 1;
    
    _pSLcompile_ptr = dump_token;
+   _pSLang_Compile_BOSEOS = 3;
    SLang_load_file (file);
    
    return _pSLang_Error;

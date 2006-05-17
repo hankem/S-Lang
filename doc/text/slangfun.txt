@@ -1258,6 +1258,30 @@ Struct_Type
 
 --------------------------------------------------------------
 
+_bofeof_info
+
+ SYNOPSIS
+  Control the generation of function callback code
+
+ USAGE
+  Int_Type _bofeof_info
+
+ DESCRIPTION
+ This value of this variable dictates whether or not the S-Lang
+ interpeter will generate code to call the beginning and end of
+ function callback handlers.  The value of this variable is local to
+ the compilation unit, but is inherited by other units loaded by the
+ current unit.
+
+ If the value of this variable is 1 when a function is defined, then
+ when the function is executed, the callback handlers defined via
+ `_set_bof_handler' and `_set_eof_handler' will be called.
+
+ SEE ALSO
+  _set_bof_handler, _set_eof_handler, _boseos_info
+
+--------------------------------------------------------------
+
 _boseos_info
 
  SYNOPSIS
@@ -1280,9 +1304,11 @@ _boseos_info
    -----------------------------------------------------------------
      0        No code for making callbacks will be produced.
      1        Callback generation will take place for all non-branching
-              statements.
+              and looping statements.
      2        Same as for 1 with the addition that code will also be
-              generated for branching statements.
+              generated for branching statements (if, !if, loop, ...)
+     3        Same as 2, but also including break and continue
+              statements.
 
  A non-branching statement is one that does not effect chain of
  execution.  Branching statements include all looping statements,
@@ -1314,7 +1340,7 @@ _boseos_info
  facility.
 
  SEE ALSO
-  _set_bos_handler, _set_eos_handler, _debug_info
+  _set_bos_handler, _set_eos_handler, _bofeof_info
 
 --------------------------------------------------------------
 
@@ -1361,41 +1387,6 @@ _clear_error
 
 --------------------------------------------------------------
 
-_debug_info
-
- SYNOPSIS
-  Configure debugging information
-
- USAGE
-  Integer_Type _debug_info
-
- DESCRIPTION
-  The `_debug_info' variable controls whether or not extra code
-  should be generated for additional debugging and traceback
-  information.  Currently, if `_debug_info' is zero, no extra code
-  will be generated; otherwise extra code will be inserted into the
-  compiled bytecode for additional debugging data.
-
-  The value of this variable is local to each compilation unit and
-  setting its value in one unit has no effect upon its value in other
-  units.
-
- EXAMPLE
-
-    _debug_info = 1;   % Enable debugging information
-
-
- NOTES
-  Setting this variable to a non-zero value may slow down the
-  interpreter somewhat.
-
-  The value of this variable is not currently used.
-
- SEE ALSO
-  _traceback, _slangtrace
-
---------------------------------------------------------------
-
 _set_bos_handler
 
  SYNOPSIS
@@ -1412,7 +1403,7 @@ _set_bos_handler
 
  EXAMPLE
 
-    static define bos_handler (file, line)
+    private define bos_handler (file, line)
     {
       () = fputs ("About to execute $file:$line\n"$, stdout);
     }
@@ -1425,14 +1416,14 @@ _set_bos_handler
  `_boseos_info' set to a non-zero value.
 
  SEE ALSO
-  _set_eos_handler, _boseos_info
+  _set_eos_handler, _boseos_info, _bofeof_info
 
 --------------------------------------------------------------
 
 _set_eos_handler
 
  SYNOPSIS
-  Set the beginning of statement callback handler
+  Set the end of statement callback handler
 
  USAGE
   _set_eos_handler (Ref_Type func)
@@ -1444,11 +1435,11 @@ _set_eos_handler
 
  EXAMPLE
 
-   static define eos_handler ()
+   private define eos_handler ()
    {
      () = fputs ("Done executing the statement\n", stdout);
    }
-   _set_eos_handler (&bos_handler);
+   _set_eos_handler (&eos_handler);
 
 
  NOTES
@@ -1457,7 +1448,69 @@ _set_eos_handler
  `_boseos_info' set to a non-zero value.
 
  SEE ALSO
-  _set_eos_handler, _boseos_info
+  _set_bos_handler, _boseos_info, _bofeof_info
+
+--------------------------------------------------------------
+
+_set_bof_handler
+
+ SYNOPSIS
+  Set the beginning of function callback handler
+
+ USAGE
+  _set_bof_handler (Ref_Type func)
+
+ DESCRIPTION
+ This function is used to set the function to be called prior to the
+ execution of the body S-Lang function but after its arguments have
+ been evaluated, provided that function was defined
+ with `_bofeof_info' set appropriately.  The callback function
+ must be defined to take a single parameter representing the name of
+ the function and must return nothing.
+
+ EXAMPLE
+
+    private define bof_handler (fun)
+    {
+      () = fputs ("About to execute $fun"$, stdout);
+    }
+    _set_bos_handler (&bof_handler);
+
+
+ NOTES
+
+ SEE ALSO
+  _set_eof_handler, _boseos_info, _set_bos_handler
+
+--------------------------------------------------------------
+
+_set_eof_handler
+
+ SYNOPSIS
+  Set the beginning of function callback handler
+
+ USAGE
+  _set_eof_handler (Ref_Type func)
+
+ DESCRIPTION
+ This function is used to set the function to be called at the end of
+ execution of a S-Lang function, provided that function was compiled with
+ `_bofeof_info' set accordingly.
+
+ The callback function will be passed no parameters and it must return
+ nothing.
+
+ EXAMPLE
+
+   private define eof_handler ()
+   {
+     () = fputs ("Done executing the function\n", stdout);
+   }
+   _set_eof_handler (&eof_handler);
+
+
+ SEE ALSO
+  _set_bof_handler, _bofeof_info, _boseos_info
 
 --------------------------------------------------------------
 

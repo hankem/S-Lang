@@ -476,7 +476,6 @@ private define init_sigint_handler ()
 #endif
 }
 
-private variable Last_Depth = 1;
 private variable Last_Frame = -1;
 private variable Last_Function = NULL;
 
@@ -541,10 +540,16 @@ private define do_debug (file, line, bp_num)
 	init_sigint_handler ();
      }
 
-   if (file == NULL)
-     file = "???";
-
    variable info = _get_frame_info (Current_Frame);
+   if (file == NULL)
+     {
+	file = info.file;
+	if (file == NULL)
+	  file = "???";
+     }
+   if (line == NULL)
+     line = info.line;
+
    variable fun = info.function;
    if (fun == NULL) fun = "<top-level>";
 
@@ -573,8 +578,7 @@ private define do_debug (file, line, bp_num)
 
 private define bos_handler (file, line)
 {
-   Depth++;
-   %output ("bos: depth=%d, last_depth=%d, fun=%S\n", Depth, Last_Depth,_get_frame_info(-1).function);
+%   output ("bos: depth=%d, fun=%S\n", Depth,_get_frame_info(-1).function);
    variable pos = make_breakpoint_name (file, line);
    variable bp = Breakpoints[pos];
 
@@ -583,27 +587,6 @@ private define bos_handler (file, line)
 	if (bp < 0) Breakpoints[pos] = 0;   %  clear temporary breakpoint
 	do_debug (file, line, bp);
 	return;
-     }
-
-   % While the use of the depth variables catches where functions are entered
-   % in code such as  define foo () { bar (); }
-   % it misses foo(bar());
-   % In the latter case, "break foo" does not work.  Sigh.
-   if (Depth > Last_Depth)
-     {
-	% entering a function
-	pos = _get_frame_info(-1).function;
-
-	if (pos != NULL)
-	  {
-	     bp = Breakpoints[pos];
-	     if (bp)
-	       {
-		  if (bp < 0) Breakpoints[pos] = 0;   %  clear temporary breakpoint
-		  do_debug (file, line, bp);
-		  return;
-	       }
-	  }
      }
 
    if (Debugger_Step == 0)
@@ -641,9 +624,35 @@ private define eos_handler()
 	  }
      }
 #endif
-   Last_Depth = Depth;
+   %output ("eos: depth=%d\n", Depth);
+}
+
+private define bof_handler (fun)
+{
+   %output ("Entering BOF: %S, %S, %S", fun, file, line);
+   Depth++;
+
+   variable bp = Breakpoints[fun];
+   if (bp)
+     {
+	if (bp < 0) Breakpoints[fun] = 0;   %  clear temporary breakpoint
+	Debugger_Step = STEP_NEXT;
+	Stop_Depth = Depth;
+     }
+}
+
+private define eof_handler ()
+{
+   %output ("Leaving EOF");
    Depth--;
-   %output ("eos: depth=%d, last_depth=%d\n", Depth, Last_Depth);
+   if (Debugger_Step)
+     {
+	if (Depth == Stop_Depth)
+	  {
+	     variable info = _get_frame_info (_get_frame_depth ()-2);
+	     do_debug (info.file, info.line, 0);
+	  }
+     }
 }
 
 private define debug_hook (file, line)
@@ -659,14 +668,16 @@ define sldb_enable ()
 {
    ()=_set_bos_handler (&bos_handler);
    ()=_set_eos_handler (&eos_handler);
+   ()=_set_bof_handler (&bof_handler);
+   ()=_set_eof_handler (&eof_handler);
    ()=_set_debug_hook (&debug_hook);
 
    check_breakpoints ();
    Depth = 0;
-   Last_Depth = Depth + 1;
    Debugger_Step = STEP_STEP;
    init_sigint_handler ();
    _traceback = 1;
+   _bofeof_info = 1;
    _boseos_info = 3;
 }
 
@@ -689,8 +700,11 @@ define sldb_stop ()
 {
    ()=_set_bos_handler (NULL);
    ()=_set_eos_handler (NULL);
+   ()=_set_bof_handler (NULL);
+   ()=_set_eof_handler (NULL);
    ()=_set_debug_hook (NULL);
    deinit_sigint_handler ();
+   _bofeof_info = 0;
    _boseos_info = 0;
 }
 
