@@ -118,9 +118,10 @@ define require ()
      () = evalfile (file);
    else
      () = evalfile (file, ns);
-
+#iffalse
    !if (_featurep (f, ns))
      vmessage ("***Warning: feature %s not provided by %s", f, file);
+#endif
 }
 
 

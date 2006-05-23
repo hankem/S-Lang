@@ -21,19 +21,35 @@ private variable Debugger_Methods = struct
    vmessage,      % vmessage (fmt, args...)
    read_input,    % input = read_input (prompt, default)
    pprint,        % pprint(obj) % pprint the value of an object
-   quit           % quit program
+   quit,          % quit (and kill) the program
+   exit		  % exit the debugger but not the program
 };
+
+private define output ()
+{
+   variable args = __pop_args (_NARGS);
+   (@Debugger_Methods.vmessage)(__push_args(args));
+}
 
 private define quit_method () 
 {
+   output ("Program exiting\n");
    exit (0);
 }
 Debugger_Methods.quit = &quit_method;
+
+private define exit_method ()
+{
+   output ("Leaving the debugger\n");
+}
+Debugger_Methods.exit = &exit_method;
 
 define sldb_methods ()
 {
    return Debugger_Methods;
 }
+define sldb_initialize ();	       % This should be overridden
+
 define sldb_stop();
 
 private variable Depth = 0;
@@ -41,6 +57,7 @@ private variable Stop_Depth	= 0;
 private variable Debugger_Step	= 0;
 private variable STEP_NEXT	= 1;
 private variable STEP_STEP	= 2;
+private variable STEP_FINISH	= 3;
 private variable Breakpoints = NULL;
 private variable Breakpoint_Number = 1;
 private variable Current_Frame;
@@ -49,12 +66,6 @@ private variable Last_List_Line = 0;
 private variable Last_Cmd_Line = NULL;
 private variable Last_Cmd = NULL;
 private variable Prompt = "(SLdb) ";
-
-private define output ()
-{
-   variable args = __pop_args (_NARGS);
-   (@Debugger_Methods.vmessage)(__push_args(args));
-}
 
 private define new_breakpoints ()
 {
@@ -89,8 +100,9 @@ private define make_breakpoint_name (file, line)
 private define eval_in_frame (frame, expr, num_on_stack, print_fun)
 {
    variable boseos = _boseos_info;
-   expr = sprintf ("_use_frame_namespace(%d); _boseos_info=0; %s; _boseos_info=%d;",
-		   frame, expr, boseos);
+   variable bofeof = _bofeof_info;
+   expr = sprintf ("_boseos_info=0; _bofeof_info=0; _use_frame_namespace(%d); %s; _bofeof_info=%d; _boseos_info=%d;",
+		   frame, expr, bofeof, boseos);
    variable depth = _stkdepth () - num_on_stack;
    eval (expr);
 
@@ -140,10 +152,11 @@ private define display_file_and_line (file, linemin, linemax)
 
 private define finish_cmd (cmd, args, file, line)
 {
-   variable fun = _get_frame_info (Max_Current_Frame).function;
+   %variable fun = _get_frame_info (Max_Current_Frame).function;
+   variable fun = _get_frame_info (Current_Frame).function;
    if (fun == NULL) fun = "<top-level>";
    output ("Run until exit from %s\n", fun);
-   Debugger_Step = STEP_NEXT;
+   Debugger_Step = STEP_FINISH;
    Stop_Depth = Depth-1;
    return 1;
 }
@@ -158,6 +171,7 @@ private define next_cmd (cmd, args, file, line)
 private define step_cmd (cmd, args, file, line)
 {
    Debugger_Step = STEP_STEP;
+   Stop_Depth = Depth + 1;
    return 1;
 }
 
@@ -208,22 +222,23 @@ private define watch_cmd (cmd, args, file, line)
 
 private define exit_cmd (cmd, args, file, line)
 {
-   output ("Exiting debugger\n");
    sldb_stop ();
+   (@Debugger_Methods.exit) ();
    return 1;
 }
 
 private define quit_cmd (cmd, args, file, line)
 {
-   variable prompt = "Are you sure you want to quit the program? (y/n) ";
+   variable prompt = "Are you sure you want to quit (and kill) the program? (y/n) ";
    variable y = (@Debugger_Methods.read_input)(prompt, NULL);
    y = strup (y);
    !if (strlen (y))
      return 0;
-   if (y[0] == 'N')
-     return 0;
-
-   output ("Quitting the program.\n");
+   if (y[0] != 'Y')
+     {
+	output ("Try using 'exit' to leave the debugger");
+	return 0;
+     }
    sldb_stop ();
    (@Debugger_Methods.quit)();
    return 1;
@@ -231,7 +246,8 @@ private define quit_cmd (cmd, args, file, line)
 
 private define simple_print (v)
 {
-   output ("%s\n", string (v));
+   print (v, &v);
+   output ("%s\n", v);
 }
 
 private define pretty_print (v)
@@ -501,10 +517,22 @@ private define debugger_input_loop ()
 	     variable file = info.file;
 	     variable line = info.line;
 
-	     variable cmdline = (@Debugger_Methods.read_input)(Prompt, Last_Cmd_Line);
-	     cmdline = strtrim (cmdline);
-	     variable cmd = strtok (cmdline, " \t")[0];
-	     variable cmd_parm = substr (cmdline, 1+strlen(cmd), -1);
+	     variable cmdline, cmd, cmd_parm;
+	     forever
+	       {
+		  cmdline = (@Debugger_Methods.read_input)(Prompt, Last_Cmd_Line);
+		  if (cmdline == NULL)
+		    throw ReadError, "NULL input returned";
+		       
+		  cmdline = strtrim (cmdline);
+		  variable tokens = strtok (cmdline, " \t");
+		  if (length (tokens))
+		    {
+		       cmd = tokens[0];
+		       break;
+		    }
+	       }
+	     cmd_parm = substr (cmdline, 1+strlen(cmd), -1);
 	     cmd_parm = strtrim (cmd_parm, "\t ");
 
 	     if (0 == assoc_key_exists (Cmd_Table, cmd))
@@ -518,6 +546,12 @@ private define debugger_input_loop ()
 	     Last_Cmd_Line = cmdline;
 	     Last_Cmd = cmd;
 	     if (ret) return;
+	  }
+	catch IOError:
+	  {
+	     sldb_stop ();
+	     vmessage ("Caught IOError exception -- stopping the debugger: %S",e.message);
+	     return;
 	  }
 	catch AnyError:
 	  {
@@ -578,7 +612,7 @@ private define do_debug (file, line, bp_num)
 
 private define bos_handler (file, line)
 {
-%   output ("bos: depth=%d, fun=%S\n", Depth,_get_frame_info(-1).function);
+   %output ("bos: depth=%d, stop_depth=%d, fun=%S\n", Depth,Stop_Depth,_get_frame_info(-1).function);
    variable pos = make_breakpoint_name (file, line);
    variable bp = Breakpoints[pos];
 
@@ -589,7 +623,14 @@ private define bos_handler (file, line)
 	return;
      }
 
+   if (Depth > Stop_Depth)
+     return;
+
    if (Debugger_Step == 0)
+     return;
+
+#iffalse
+   if (Debugger_Step == STEP_FINISH)
      return;
 
    if (Debugger_Step == STEP_NEXT)
@@ -597,6 +638,7 @@ private define bos_handler (file, line)
 	if (Depth > Stop_Depth)
 	  return;
      }
+#endif
    do_debug (file, line, bp);
 }
 
@@ -627,7 +669,7 @@ private define eos_handler()
    %output ("eos: depth=%d\n", Depth);
 }
 
-private define bof_handler (fun)
+private define bof_handler (fun, file)
 {
    %output ("Entering BOF: %S, %S, %S", fun, file, line);
    Depth++;
@@ -647,13 +689,21 @@ private define eof_handler ()
    Depth--;
    if (Debugger_Step)
      {
-	if (Depth == Stop_Depth)
+	if (Debugger_Step == STEP_FINISH)
 	  {
-	     variable info = _get_frame_info (_get_frame_depth ()-2);
-	     do_debug (info.file, info.line, 0);
+	     if (Depth == Stop_Depth)
+	       {
+		  Debugger_Step = 0;
+		  %variable info = _get_frame_info (_get_frame_depth ()-2);
+		  %do_debug (info.file, info.line, 0);
+		  do_debug (NULL, NULL, 0);
+	       }
 	  }
+	if (Debugger_Step == STEP_NEXT)
+	  Stop_Depth = Depth;
      }
 }
+
 
 private define debug_hook (file, line)
 {
@@ -681,8 +731,15 @@ define sldb_enable ()
    _boseos_info = 3;
 }
 
+% Usage Forms: 
+%   sldb ();
+%   sldb (file);
+%   sldb (file, ns);
+% The namespace semantics are the same as that of require.
 define sldb ()
 {
+   sldb_initialize ();
+
    sldb_enable ();
    if (_NARGS == 0)
      {
@@ -691,8 +748,20 @@ define sldb ()
 	debugger_input_loop ();
 	return;
      }
+   variable args = __pop_args (_NARGS);
+   require (__push_args (args));
+#iffalse
+   variable ns = current_namespace ();
+   if (_NARGS == 2)
+     
+     ns = ();
    variable file = ();
-   () = evalfile (file);
+
+   if (ns == NULL)
+     () = evalfile (file);
+   else
+     () = evalfile (file, ns);
+#endif
 }
 
 % remove bos and eos handlers.

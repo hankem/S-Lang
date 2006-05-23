@@ -680,7 +680,7 @@ extern int _pSLang_Compile_BOFEOF;
 extern int _pSLang_init_boseos (void);
 extern int _pSLcall_bos_handler (char *, int);
 extern int _pSLcall_eos_handler (void);
-extern int _pSLcall_bof_handler (char *);
+extern int _pSLcall_bof_handler (char *, char *);
 extern int _pSLcall_eof_handler (void);
 extern int _pSLcall_debug_hook (char *file, int linenum);
 /* extern int _pSLcall_debug_hook (char *file, int linenum, char *funct); */

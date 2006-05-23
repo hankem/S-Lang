@@ -1132,13 +1132,56 @@ List_Type
   `copy = @list'.
 
   The `foreach' statement may be used with a List_Type
-  objects to loop over its elements:
+  object to loop over its elements:
 
     foreach elem (list) {....}
 
 
  SEE ALSO
   Array_Type, Assoc_Type, Struct_Type
+
+--------------------------------------------------------------
+
+String_Type
+
+ SYNOPSIS
+  A string object
+
+ DESCRIPTION
+  An object of type `String_Type' represents a string of bytes or
+  characters, which in general have different semantics depending upon
+  the UTF-8 mode.
+
+  The string obeys byte-semantics when indexed as an
+  array.  That is, `S[0]' will return the first byte of the
+  string `S'.  For character semantics, the nth character in the
+  string may be obtained using `substr' function.
+
+  The `foreach' statement may be used with a String_Type
+  object `S' to loop over its bytes:
+
+    foreach b (S) {....}
+    foreach b (S) using ("bytes") {....}
+
+  To loop over its characters, the following form may be used:
+
+    foreach c (S) using ("chars") {...}
+
+  When UTF-8 mode is not in effect, the byte and character forms will
+  produce the same sequence.  Otherwise, the string will be decoded
+  to generate the (wide) character sequence.  If the string contains
+  an invalid UTF-8 encoded character, sucessive bytes of the invalid
+  sequence will be returned as negative integers.  For example,
+  `"a\xAB\x{AB}"' specifies a string composed of the character
+  `a', a byte `0xAB', and the character `0xAB'.  In
+  this case,
+
+     foreach c ("a\xAB\x{AB}") {...}
+
+  will produce the integer-valued sequence `'a', -0xAB, 0xAB'.
+
+ SEE ALSO
+  Array_Type, _slang_utf8_ok
 
 --------------------------------------------------------------
 

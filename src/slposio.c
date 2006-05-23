@@ -66,18 +66,32 @@ struct _pSLFile_FD_Type
 {
    char *name;
    unsigned int num_refs;	       /* reference counting */
-   int fd;
+   int fd;			       /* used if get_fd method is NULL */
+
    SLang_MMT_Type *stdio_mmt;	       /* fdopen'd stdio object */
 
+   int is_closed;		       /* non-zero if closed */
+
    /* methods */
-   int (*close)(int);
-   int (*read) (int, char *, unsigned int *);
-   int (*write)(int, char *, unsigned int *);
+   int clientdata_id;
+   VOID_STAR clientdata;
+   void (*free_client_data)(VOID_STAR);
+
+   int (*get_fd) (VOID_STAR, int *);
+   /* If non-NULL, get_fd will be used to obtain the descriptor when needed */
+
+   int (*close) (VOID_STAR);
+   int (*read)(VOID_STAR, char *, unsigned int);
+   int (*write)(VOID_STAR, char *, unsigned int);
+   SLFile_FD_Type *(*dup)(VOID_STAR);
 };
 
 
+/* Returns 0 the system call should not be restarted, 1 otherwise */
 static int is_interrupt (int e)
 {
+   SLerrno_set_errno (e);
+
 #ifdef EINTR
    if (e == EINTR)
      {
@@ -95,77 +109,137 @@ static int is_interrupt (int e)
    return 0;
 }
 	
-
-static int close_method (int fd)
+static int get_fd (SLFile_FD_Type *f, int *fdp)
 {
-   return close (fd);
-}
-
-static int write_method (int fd, char *buf, unsigned int *nump)
-{
-   int num;
-
-   if (-1 == (num = write (fd, buf, *nump)))
+   if (f->is_closed == 0)
      {
-	*nump = 0;
-	return -1;
+	if (f->get_fd == NULL)
+	  {
+	     *fdp = f->fd;
+	     return 0;
+	  }
+   
+	if (0 == (*f->get_fd)(f->clientdata, fdp))
+	  return 0;
      }
-
-   *nump = (unsigned int) num;
-   return 0;
-}
-
-static int read_method (int fd, char *buf, unsigned int *nump)
-{
-   int num;
-
-   num = read (fd, buf, *nump);
-   if (num == -1)
-     {
-	*nump = 0;
-	return -1;
-     }
-   *nump = (unsigned int) num;
-   return 0;
-}
-
-static int check_fd (int fd)
-{
-   if (fd == -1)
-     {
+   *fdp = -1;
 #ifdef EBADF
-	_pSLerrno_errno = EBADF;
+   SLerrno_set_errno (EBADF);
 #endif
+   return -1;
+}
+
+	
+static int do_close (SLFile_FD_Type *f)
+{
+   int fd;
+	  
+   if (-1 == get_fd (f, &fd))
+     return -1;
+
+   while (1)
+     {
+	int status;
+
+	errno = 0;
+	if (f->close != NULL)
+	  status = (*f->close)(f->clientdata);
+	else
+	  status = close (fd);
+	
+	if (status == 0)
+	  {
+	     f->fd = -1;
+	     f->is_closed = 1;
+	     if ((f->clientdata != NULL) && (f->free_client_data != NULL))
+	       (*f->free_client_data) (f->clientdata);
+	     f->clientdata = NULL;
+	     return status;
+	  }
+
+	if (0 == is_interrupt (errno))
+	  return -1;
+     }
+}
+
+static int do_write (SLFile_FD_Type *f, char *buf, unsigned int *nump)
+{
+   int fd;
+
+   if (-1 == get_fd (f, &fd))
+     {
+	*nump = 0;
 	return -1;
      }
 
-   return 0;
+   while (1)
+     {
+	int num;
+
+	errno = 0;
+	if (f->write != NULL)
+	  num = (*f->write)(f->clientdata, buf, *nump);
+	else
+	  num = write (fd, buf, *nump);
+	
+	if (num != -1)
+	  {
+	     *nump = (unsigned int) num;
+	     return 0;
+	  }
+
+	if (is_interrupt (errno))
+	  continue;
+	
+	*nump = 0;
+	return -1;
+     }
+}
+
+static int do_read (SLFile_FD_Type *f, char *buf, unsigned int *nump)
+{
+   int fd;
+
+   if (-1 == get_fd (f, &fd))
+     {
+	*nump = 0;
+	return -1;
+     }
+
+   while (1)
+     {
+	int num;
+
+	errno = 0;
+	if (f->read != NULL)
+	  num = (*f->read)(f->clientdata, buf, *nump);
+	else
+	  num = read (fd, buf, *nump);
+
+	if (num != -1)
+	  {
+	     *nump = (unsigned int) num;
+	     return 0;
+	  }
+
+	if (is_interrupt (errno))
+	  continue;
+	
+	*nump = 0;
+	return -1;
+     }
 }
 
 static int posix_close (SLFile_FD_Type *f)
 {
-   if (-1 == check_fd (f->fd))
+   if (-1 == do_close (f))
      return -1;
-
-   if (f->close != NULL)
-     {
-	while (-1 == f->close (f->fd))
-	  {
-	     if (is_interrupt (errno))
-	       continue;
-
-	     _pSLerrno_errno = errno;
-	     return -1;
-	  }
-     }
-
+   
    if (f->stdio_mmt != NULL)
      {
 	SLang_free_mmt (f->stdio_mmt);
 	f->stdio_mmt = NULL;
      }
-
-   f->fd = -1;
    return 0;
 }
 
@@ -174,24 +248,13 @@ static void posix_write (SLFile_FD_Type *f, SLang_BString_Type *bstr)
 {
    unsigned int len;
    char *p;
-
-   if ((-1 == check_fd (f->fd))
-       || (NULL == (p = (char *)SLbstring_get_pointer (bstr, &len))))
+   
+   if ((NULL == (p = (char *)SLbstring_get_pointer (bstr, &len)))
+       || (-1 == do_write (f, p, &len)))
      {
 	SLang_push_integer (-1);
 	return;
      }
-
-   while (-1 == f->write (f->fd, p, &len))
-     {
-	if (is_interrupt (errno))
-	  continue;
-
-	_pSLerrno_errno = errno;
-	SLang_push_integer (-1);
-	return;
-     }
-
    (void) SLang_push_uinteger (len);
 }
 
@@ -205,18 +268,9 @@ static void posix_read (SLFile_FD_Type *f, SLang_Ref_Type *ref, unsigned int *nb
    b = NULL;
 
    len = *nbytes;
-   if ((-1 == check_fd (f->fd))
-       || (NULL == (b = SLmalloc (len + 1))))
+   if ((NULL == (b = SLmalloc (len + 1)))
+       || (-1 == do_read (f, b, &len)))
      goto return_error;
-   
-   while (-1 == f->read (f->fd, b, &len))
-     {
-	if (is_interrupt (errno))
-	  continue;
-
-	_pSLerrno_errno = errno;
-	goto return_error;
-     }
 
    if (len != *nbytes)
      {
@@ -238,7 +292,7 @@ static void posix_read (SLFile_FD_Type *f, SLang_Ref_Type *ref, unsigned int *nb
 	(void) SLang_push_uinteger (len);
 	return;
      }
-   
+
    return_error:
    if (b != NULL) SLfree ((char *)b);
    (void) SLang_assign_to_ref (ref, SLANG_NULL_TYPE, NULL);
@@ -262,11 +316,98 @@ SLFile_FD_Type *SLfile_create_fd (char *name, int fd)
    f->fd = fd;
    f->num_refs = 1;
 
-   f->close = close_method;
-   f->read = read_method;
-   f->write = write_method;
+   f->clientdata_id = 0;
+   f->clientdata = NULL;
+   /* If NULL, use the standard routines on a file descriptor */
+   f->close = NULL;
+   f->read = NULL;
+   f->write = NULL;
 
    return f;
+}
+
+int SLfile_set_getfd_method (SLFile_FD_Type *f, int (*func)(VOID_STAR, int *))
+{
+   if (f == NULL)
+     return -1;
+   f->get_fd = func;
+   return 0;
+}
+
+int Last_Client_Data_ID = 0;
+int SLfile_create_clientdata_id (int *idp)
+{
+   if (Last_Client_Data_ID != -1)
+     Last_Client_Data_ID++;
+
+   if (Last_Client_Data_ID == -1)
+     {
+	*idp = -1;
+	return -1;
+     }
+   *idp = Last_Client_Data_ID;
+   return 0;
+}
+
+int SLfile_get_clientdata (SLFile_FD_Type *f, int id, VOID_STAR *cdp)
+{
+   if ((f == NULL)
+       || (f->clientdata_id != id))
+     {
+	*cdp = NULL;
+	return -1;
+     }
+   
+   *cdp = f->clientdata;
+   return 0;
+}
+
+int SLfile_set_clientdata (SLFile_FD_Type *f, void (*func)(VOID_STAR), VOID_STAR cd, int id)
+{
+   if (f == NULL)
+     return -1;
+   if (id == -1)
+     {
+	SLang_verror (SL_Application_Error, "SLfile_set_client_data: invalid id");
+	return -1;
+     }
+
+   f->free_client_data = func;
+   f->clientdata = cd;
+   f->clientdata_id = id;
+   return 0;
+}
+
+int SLfile_set_close_method (SLFile_FD_Type *f, int (*func)(VOID_STAR))
+{
+   if (f == NULL)
+     return -1;
+   f->close = func;
+   return 0;
+}
+
+int SLfile_set_read_method (SLFile_FD_Type *f, int (*func)(VOID_STAR, char*, unsigned int))
+{
+   if (f == NULL)
+     return -1;
+   f->read = func;
+   return 0;
+}
+
+int SLfile_set_write_method (SLFile_FD_Type *f, int (*func)(VOID_STAR, char*, unsigned int))
+{
+   if (f == NULL)
+     return -1;
+   f->write = func;
+   return 0;
+}
+
+int SLfile_set_dup_method (SLFile_FD_Type *f, SLFile_FD_Type *(*func)(VOID_STAR))
+{
+   if (f == NULL)
+     return -1;
+   f->dup = func;
+   return 0;
 }
 
 SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
@@ -276,22 +417,25 @@ SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
 
    if (f0 == NULL)
      return NULL;
-   fd0 = f0->fd;
-   if (-1 == check_fd (fd0))
+   
+   if (-1 == get_fd (f0, &fd0))
      return NULL;
+
+   if (f0->dup != NULL)
+     return (*f0->dup)(f0->clientdata);
 
    while (-1 == (fd = dup (fd0)))
      {
 	if (is_interrupt (errno))
 	  continue;
-
-	_pSLerrno_errno = errno;
+	
 	return NULL;
      }
    
    if (NULL == (f = SLfile_create_fd (f0->name, fd)))
      {
-	f0->close (fd);
+	while ((-1 == close (fd)) && is_interrupt (errno))
+	  ;
 	return NULL;
      }
    
@@ -303,11 +447,7 @@ int SLfile_get_fd (SLFile_FD_Type *f, int *fd)
    if (f == NULL)
      return -1;
    
-   *fd = f->fd;
-   if (-1 == check_fd (*fd))
-     return -1;
-
-   return 0;
+   return get_fd (f, fd);
 }
 
 void SLfile_free_fd (SLFile_FD_Type *f)
@@ -320,17 +460,12 @@ void SLfile_free_fd (SLFile_FD_Type *f)
 	f->num_refs -= 1;
 	return;
      }
+   
+   (void) do_close (f);
 
-   if (f->fd != -1)
-     {
-	if (f->close != NULL)
-	  {
-	     while ((-1 == f->close (f->fd))
-		    && is_interrupt (errno))
-	       ;
-	  }
-	f->fd = -1;
-     }
+   if ((f->clientdata != NULL)
+       && (f->free_client_data != NULL))
+     (*f->free_client_data) (f->clientdata);
 
    if (f->stdio_mmt != NULL)
      SLang_free_mmt (f->stdio_mmt);
@@ -396,7 +531,6 @@ static void posix_open (void)
 	if (is_interrupt (errno))
 	  continue;
 
-	_pSLerrno_errno = errno;
 	SLfile_free_fd (f);
 	SLang_push_null ();
 	return;
@@ -405,6 +539,12 @@ static void posix_open (void)
    if (-1 == SLfile_push_fd (f))
      SLang_push_null ();
    SLfile_free_fd (f);
+}
+
+static int dummy_close (VOID_STAR cd)
+{
+   (void) cd;
+   return 0;
 }
 
 static void posix_fileno (void)
@@ -424,10 +564,13 @@ static void posix_fileno (void)
    fd = fileno (fp);
 
    f = SLfile_create_fd (name, fd);
+   
    if (f != NULL)
-     f->close = NULL;		       /* prevent fd from being closed 
-					* when it goes out of scope
-					*/
+     {
+	f->close = dummy_close;		       /* prevent fd from being closed 
+						* when it goes out of scope
+						*/
+     }
    SLang_free_mmt (mmt);
 
    if (-1 == SLfile_push_fd (f))
@@ -452,13 +595,15 @@ static void posix_fdopen (SLFile_FD_Type *f, char *mode)
 static _pSLc_off_t_Type posix_lseek (SLFile_FD_Type *f, _pSLc_off_t_Type *ofs, int *whence)
 {
    _pSLc_off_t_Type status;
+   int fd;
    
-   while (-1 == (status = lseek (f->fd, *ofs, *whence)))
+   if (-1 == get_fd (f, &fd))
+     return -1;
+
+   while (-1 == (status = lseek (fd, *ofs, *whence)))
      {
 	if (is_interrupt (errno))
 	  continue;
-
-	_pSLerrno_errno = errno;
 	return -1;
      }
 
@@ -469,6 +614,7 @@ static int posix_isatty (void)
 {
    int ret;
    SLFile_FD_Type *f;
+   int fd;
 
    if (SLang_peek_at_stack () == SLANG_FILE_PTR_TYPE)
      {
@@ -486,7 +632,11 @@ static int posix_isatty (void)
    if (-1 == SLfile_pop_fd (&f))
      return 0;
 
-   ret = isatty (f->fd);
+   if (-1 == get_fd (f, &fd))
+     ret = -1;
+   else
+     ret = isatty (f->fd);
+
    SLfile_free_fd (f);
 
    return ret;

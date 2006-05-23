@@ -884,6 +884,7 @@ static int decrement_slang_frame_pointer (void)
    s = Function_Stack_Ptr;
    Current_Function = s->function;
    Current_Function_Header = s->header;
+   This_Compile_Linenum = s->line;
    return 0;
 }
 
@@ -2974,6 +2975,7 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    SLBlock_Type *exit_block_save;
    SLBlock_Type **user_block_save;
    SLBlock_Type *user_blocks[5];
+   int issue_bofeof_info = 0;
 
    exit_block_save = Exit_Block_Ptr;
    user_block_save = User_Block_Ptr;
@@ -3017,7 +3019,8 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
 #if SLANG_HAS_BOSEOS
    if (header->issue_bofeof_info)
      {
-	(void) _pSLcall_bof_handler (fun->name);
+	issue_bofeof_info = 1;
+	(void) _pSLcall_bof_handler (fun->name, header->file);
      }
 #endif   
    if (SLang_Enter_Function != NULL) 
@@ -3081,11 +3084,6 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
 #endif
      }
 
-#if SLANG_HAS_BOSEOS
-   if (header->issue_bofeof_info)
-     (void) _pSLcall_eof_handler ();
-#endif
-
    /* free local variables.... */
    lvf = Local_Variable_Frame;
    while (lvf > frame)
@@ -3109,6 +3107,10 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    Exit_Block_Ptr = exit_block_save;
    User_Block_Ptr = user_block_save;
    (void) decrement_slang_frame_pointer ();
+#if SLANG_HAS_BOSEOS
+   if (issue_bofeof_info)
+     (void) _pSLcall_eof_handler ();
+#endif
 }
 
 

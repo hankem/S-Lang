@@ -99,7 +99,7 @@ int _pSLcall_eos_handler (void)
    return 0;
 }
 
-int _pSLcall_bof_handler (char *fun)
+int _pSLcall_bof_handler (char *fun, char *file)
 {
    if (BOF_Callback_Handler == NULL)
      return 0;
@@ -109,6 +109,7 @@ int _pSLcall_bof_handler (char *fun)
 
    if ((-1 == SLang_start_arg_list ())
        || (-1 == SLang_push_string (fun))
+       || (-1 == SLang_push_string (file))
        || (-1 == SLang_end_arg_list ()))
      return -1;
 

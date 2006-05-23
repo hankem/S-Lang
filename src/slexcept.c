@@ -260,6 +260,28 @@ int _pSLerr_throw (void)
    return 0;
 }
 
+#if SLANG_VERSION >= 20100
+int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr)
+{
+   free_thrown_object ();
+
+   if ((obj_type != 0) || (objptr != NULL))
+     {
+	if (-1 == SLang_push_value (obj_type, objptr))
+	  return -1;
+	if (-1 == SLang_pop (&Object_Thrown))
+	  return -1;
+	Object_Thrownp = &Object_Thrown;
+     }
+
+   if (msg != NULL)
+     SLang_verror (err, "%s", msg);
+   else
+     SLang_set_error (err);
+
+   return 0;
+}
+#endif
 static void new_exception (char *name, int *baseclass, char *description)
 {
    (void) SLerr_new_exception (*baseclass, name, description);

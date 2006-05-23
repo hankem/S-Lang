@@ -331,6 +331,40 @@ test_strsub (&strsub, "AB", 2, 0, "A");
 test_strsub (&strbytesub, "A", 1, 0, "");
 test_strsub (&strbytesub, "AB", 1, 'a', "aB");
 test_strsub (&strbytesub, "AB", 2, 0, "A");
+
+private define test_foreach ()
+{
+   variable X = "ab\xAA\x{BB}";
+   variable utf8_X = {'a', 'b', -0xAA, 0xBB};
+   % Note that \x{BB} varies according to the UTF-8 mode
+   variable xi;
+   foreach xi (X)
+     {
+	if (typeof (xi) != UChar_Type)
+	  failed ("foreach (String_Type) failed to produce UChar_Types");
+     }
+   foreach (X) using ("bytes")
+     {
+	xi = ();
+	if (typeof (xi) != UChar_Type)
+	  failed ("foreach (String_Type) using bytes failed to produce UChar_Types");
+     }
+
+   variable i = 0;
+   foreach xi (X) using ("chars")
+     {
+	if (_slang_utf8_ok)
+	  {
+	     if (xi != utf8_X[i])
+	       failed ("foreach (String_Type) using chars failed at i=%d", i);
+	  }
+	else if (xi != X[i])
+	  failed ("foreach (String_Type) using chars failed at i=%d", i);
+	i++;
+     }
+}
+test_foreach ();
+
    
 print ("Ok\n");
 exit (0);

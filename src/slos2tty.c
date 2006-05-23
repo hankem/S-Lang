@@ -177,8 +177,9 @@ int SLang_init_tty(int abort_char, int dum2, int dum3)
 
   (void) dum2; (void) dum3;
    if (abort_char == -1) abort_char = 3;   /* ^C */
-  SLang_Abort_Char = abort_char;
-
+   SLang_Abort_Char = abort_char;
+   SLKeyBoard_Quit = 0;
+   
   /*  set ^C off */
   signal (SIGINT, SIG_IGN);
   signal (SIGBREAK, SIG_IGN);

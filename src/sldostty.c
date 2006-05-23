@@ -404,6 +404,8 @@ int SLang_init_tty (int abort_char, int no_flow_control, int opost)
    (void) no_flow_control;
    (void) opost;
 
+   SLKeyBoard_Quit = 0;
+
    bios_key_f = 0x10;		/* assume it's an enhanced keyboard */
 #if defined (HAS_INT9)
    bios_key_f &= peekb (0x40,0x96);	/* verify it's true */

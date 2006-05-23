@@ -77,9 +77,13 @@ private define read_input_method (prompt, default_cmd)
    return line;
 }
 
-sldb_methods().list = &list_method;
-sldb_methods().vmessage = &vmessage_method;
-sldb_methods().read_input = &read_input_method;
-sldb_methods().pprint = &print;
+define sldb_initialize ()
+{
+   variable m = sldb_methods ();
+   m.list = &list_method;
+   m.vmessage = &vmessage_method;
+   m.read_input = &read_input_method;
+   m.pprint = &print;
+}
 
 provide ("sldb");

@@ -1,6 +1,8 @@
 % See the slprof script for an example of using the profiler.
 %
 _boseos_info=0;
+_bofeof_info=0;
+
 private variable Counts = Assoc_Type[Int_Type, 0];
 private variable Child_Counts = Assoc_Type[Int_Type, 0];
 private variable Times = Assoc_Type[Double_Type, 0.0];
@@ -39,10 +41,41 @@ private define eos_handler ()
    Child_Counts[file] += (Num_Counts-Counts_Stack[Stack_Depth]) - 1;
 }
 
-define profile_on ()
+private define bof_handler (fun, file)
 {
-   _boseos_info = 3;
+   variable s = Stack_Depth;
+   Stack_Depth++;
+   file = sprintf ("%S:%S", file, fun);
+   Counts[file] += 1;
+   Lines_Stack[s] = file;
+   Counts_Stack[s] = Num_Counts;
+   Num_Counts++;
+   Times_Stack[s] = toc();
 }
+
+private define eof_handler ()
+{
+   variable t = toc();
+   Stack_Depth--;
+   variable file = Lines_Stack[Stack_Depth];
+   Times[file] += (t - Times_Stack[Stack_Depth]);
+   Child_Counts[file] += (Num_Counts-Counts_Stack[Stack_Depth]) - 1;
+}
+
+define profile_on (fun)
+{
+   if (fun)
+     {
+	_boseos_info = 0;
+	_bofeof_info = 1;
+     }
+   else
+     {
+	_boseos_info = 3;
+	_bofeof_info = 0;
+     }
+}
+
 define profile_off ()
 {
    _boseos_info = 0;
@@ -52,6 +85,8 @@ define profile_begin ()
 {
    ()=_set_bos_handler (&bos_handler);
    ()=_set_eos_handler (&eos_handler);
+   ()=_set_bof_handler (&bof_handler);
+   ()=_set_eof_handler (&eof_handler);
    Stack_Depth = 0;
    Times = Assoc_Type[Double_Type, 0.0];
    Counts = Assoc_Type[Int_Type, 0];
@@ -66,6 +101,8 @@ define profile_end ()
 {
    ()=_set_bos_handler (NULL);
    ()=_set_eos_handler (NULL);
+   ()=_set_bof_handler (NULL);
+   ()=_set_eof_handler (NULL);
    profile_off ();
 }
 
@@ -120,7 +157,7 @@ define profile_calibrate ()
    Error_Per_Call = (t_obs - t_expected)/num_calls;
    Overhead_Per_Call = (t_elapsed-t_expected)/num_calls;
 }
-_traceback=1;
+
 define profile_report (fp)
 {
    if (typeof (fp) == String_Type)

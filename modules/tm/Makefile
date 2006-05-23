@@ -6,7 +6,7 @@
 TMEXPAND = /aluche/d1/web/tm-dist/bin/tmexpand
 MACRODIR = /aluche/d1/web/tm-dist/macros
 
-HLP_FILES = pngfuns.hlp pcrefuns.hlp
+HLP_FILES = pngfuns.hlp pcrefuns.hlp sockfuns.hlp
 
 all: help-files
 help-files: $(HLP_FILES)
@@ -14,9 +14,11 @@ pngfuns.hlp: pngfuns.tm
 	$(TMEXPAND) -I$(MACRODIR) -Mslhlp pngfuns.tm pngfuns.hlp
 pcrefuns.hlp: pcrefuns.tm
 	$(TMEXPAND) -I$(MACRODIR) -Mslhlp pcrefuns.tm pcrefuns.hlp
+sockfuns.hlp: sockfuns.tm
+	$(TMEXPAND) -I$(MACRODIR) -Mslhlp sockfuns.tm sockfuns.hlp
 #----------------------------------------------------------------------------
 clean:
-	-rm -f *~ *.dvi *.log *.aux *.toc
+	-rm -f *~ *.dvi *.log *.aux *.toc *.bak
 distclean: clean
 	-rm -f *.html *.ps $(HLP_FILES)
 install: $(HLP_FILES)

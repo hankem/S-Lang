@@ -80,6 +80,30 @@ Changes since 2.0.6
 27. slsh/lib/sldbcore.sl: Modified to use the bof/eof hooks introduced
     in #26.
 28. Various documentation tweaks.
+29. src/slboseos.c: Changed the beginning-of-function handler to
+    include the filename.
+30. src/slsh/lib/require.sl: Removed the "feature not provided" message.
+31. src/slrline.c: Tabs were not being expanded properly when the
+    window was horizontally scrolled.  Also, the last column of the
+    display is not used in case the terminal has automatic margins.
+32. lib/sldbcore.sl: The debugger's "finish" command was not quite
+    working as it should have.
+33. lib/sldbcore.sl: Added an sldb_initialize function that can be
+    overridden by the debugger.
+34. src/slposio.c: Made changes to allow arbitrary objects to be
+    attached to file descriptors.
+35. src/sl*tty.c: Set SLKeyBoard_Quit to 0 in the init_tty routines.
+36. modules/socket-module.c: A new module that defines various socket
+    functions.  This required additions to the configure script and
+    related files.
+37. src/slstrops.c, slsh/readline.c: Removed statements that were never
+    reached.
+38. src/sltypes.c: foreach(X) where X is String_Type produces a
+    sequence of UChar_Type objects.  This is consistent with
+    typeof(X[i]).  Also added "using" forms to specify char or
+    byte-semantics: foreach (X) using ("bytes"|"chars").  The default
+    is byte semantics.  Updated the corresponding docs.
+39. src/slang.h: Added SLang_push/pop_wchar macros.
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.

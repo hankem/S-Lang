@@ -249,6 +249,7 @@ int SLang_init_tty (int abort_char, int no_flow_control, int opost)
      }
 
    TTY_Open = 0;
+   SLKeyBoard_Quit = 0;
 
    if ((SLang_TT_Read_FD == -1)
        || (1 != isatty (SLang_TT_Read_FD)))

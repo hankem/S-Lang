@@ -144,6 +144,14 @@
 #undef HAVE_ALARM
 #undef HAVE_PAUSE
 
+/* These are used by the socket module */
+#undef HAVE_SOCKET
+#undef HAVE_SYS_SOCKET_H
+#undef HAVE_SOCKET_H
+#undef HAVE_NETINET_IN_H
+#undef HAVE_ARPA_INET_H
+#undef HAVE_SYS_UN_H
+
 /* These two are needed on DOS-like systems.  Unix does not require them.
  * They are included here for consistency.
  *
@@ -159,6 +167,8 @@
 #undef uid_t
 #undef pid_t
 #undef gid_t
+
+#undef HAVE_SIGLONGJMP
 
 /* Do we have posix signals? */
 #undef HAVE_SIGACTION

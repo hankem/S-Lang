@@ -359,25 +359,57 @@ static int string_acopy (SLtype unused, VOID_STAR src_sptr, VOID_STAR dest_sptr)
 struct _pSLang_Foreach_Context_Type
 {
    char *string;
-   unsigned int n;
+   unsigned char *s, *smax;	       /* pointers into string */
+   int using_chars;
 };
 
 static SLang_Foreach_Context_Type *
 string_foreach_open (SLtype type, unsigned int num)
 {
    char *s;
+   char *u;
    SLang_Foreach_Context_Type *c;
+   int using_chars = 0;
 
    (void) type;
-   if (num != 0)
-     {
-	SLang_verror (SL_NOT_IMPLEMENTED,
-		      "'foreach using' form not supported by String_Type");
-	SLdo_pop_n (num + 1);
-	return NULL;
-     }
+
    if (-1 == SLang_pop_slstring (&s))
      return NULL;
+
+   switch (num)
+     {
+      case 1:
+	if (-1 == SLang_pop_slstring (&u))
+	  {
+	     SLang_free_slstring (s);
+	     return NULL;
+	  }
+	if (0 == strcmp (u, "chars"))
+	  using_chars = 1;
+	else if (0 == strcmp (u, "bytes"))
+	  using_chars = 0;
+	else
+	  {
+	     SLang_verror (SL_InvalidParm_Error, "Expected foreach (String_Type) using (chars|bytes)");
+	     SLang_free_slstring (u);
+	     SLang_free_slstring (s);
+	     return NULL;
+	  }
+	SLang_free_slstring (u);
+   	break;
+
+      case 0:
+	using_chars = 0;
+	break;
+      default:
+	SLang_verror (SL_NumArgs_Error,
+		      "'foreach (String_Type) using' requires single control value (chars|bytes)");
+	return NULL;
+     }
+   
+   /* In UTF-8 mode, chars and bytes are synonymous */
+   if (_pSLinterp_UTF8_Mode == 0)
+     using_chars = 0;
 
    c = (SLang_Foreach_Context_Type *)SLmalloc (sizeof (SLang_Foreach_Context_Type));
    if (c == NULL)
@@ -388,7 +420,9 @@ string_foreach_open (SLtype type, unsigned int num)
 
    memset ((char *) c, 0, sizeof (SLang_Foreach_Context_Type));
    c->string = s;
-
+   c->s = (unsigned char *) s;
+   c->smax = (unsigned char *)s + strlen (s);
+   c->using_chars = using_chars;
    return c;
 }
 
@@ -402,18 +436,42 @@ static void string_foreach_close (SLtype type, SLang_Foreach_Context_Type *c)
 
 static int string_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 {
-   char ch;
-
+   unsigned char ch;
+   SLwchar_Type wch;
+   unsigned char *s, *s1, *smax;
+   
    (void) type;
-   ch = c->string[c->n];
-   if (ch == 0)
-     return 0;			       /* done */
 
-   c->n += 1;
+   s = c->s;
+   smax = c->smax;
+   if (s == smax)
+     return 0;
 
-   if (-1 == SLclass_push_int_obj (SLANG_INT_TYPE, ch))
+   if (c->using_chars == 0)
+     {
+	ch = (unsigned char) *s++;
+	c->s = s;
+
+	if (-1 == SLclass_push_char_obj (SLANG_UCHAR_TYPE, ch))
+	  return -1;
+
+	return 1;
+     }
+   s1 = SLutf8_decode (s, smax, &wch, NULL);
+   if (s1 == NULL)
+     {
+	int iwch = (int) *s;
+	c->s = s + 1;
+	/* Invalid encoded char-- return it as a negative int */
+	if (-1 == SLang_push_int (-iwch))
+	  return -1;
+	
+	return 1;
+     }
+   c->s = s1;
+   if (-1 == SLang_push_wchar (wch))
      return -1;
-
+   
    return 1;
 }
 

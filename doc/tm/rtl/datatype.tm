@@ -87,11 +87,49 @@
   \exmp{copy = @list}.
   
   The \kw{foreach} statement may be used with a \dtype{List_Type}
-  objects to loop over its elements:
+  object to loop over its elements:
 #v+
     foreach elem (list) {....}
 #v-
 \seealso{Array_Type, Assoc_Type, Struct_Type}
+\done
+
+\datatype{String_Type}
+\synopsis{A string object}
+\description
+  An object of type \var{String_Type} represents a string of bytes or
+  characters, which in general have different semantics depending upon
+  the UTF-8 mode.
+  
+  The string obeys byte-semantics when indexed as an
+  array.  That is, \exmp{S[0]} will return the first byte of the
+  string \exmp{S}.  For character semantics, the nth character in the
+  string may be obtained using \ivar{substr} function.
+  
+  The \kw{foreach} statement may be used with a \dtype{String_Type}
+  object \exmp{S} to loop over its bytes:
+#v+
+    foreach b (S) {....}
+    foreach b (S) using ("bytes") {....}
+#v-
+  To loop over its characters, the following form may be used:
+#v+
+    foreach c (S) using ("chars") {...}
+#v-
+  When UTF-8 mode is not in effect, the byte and character forms will
+  produce the same sequence.  Otherwise, the string will be decoded
+  to generate the (wide) character sequence.  If the string contains
+  an invalid UTF-8 encoded character, sucessive bytes of the invalid
+  sequence will be returned as negative integers.  For example, 
+  \exmp{"a\\xAB\\x{AB}"} specifies a string composed of the character
+  \exmp{a}, a byte \exmp{0xAB}, and the character \exmp{0xAB}.  In
+  this case, 
+#v+
+     foreach c ("a\xAB\x{AB}") {...}
+#v-
+  will produce the integer-valued sequence \exmp{'a', -0xAB, 0xAB}.
+
+\seealso{Array_Type, _slang_utf8_ok}
 \done
 
 \datatype{Struct_Type}

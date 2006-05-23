@@ -199,6 +199,7 @@ int SLang_init_tty (int a, int flow, int out)
 
    if (a == -1) a = 3;		       /* ^C */
    SLang_Abort_Char = a;
+   SLKeyBoard_Quit = 0;
    TTY_Inited = 1;
    ppid = 0, lastppid = -1;
 

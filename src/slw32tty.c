@@ -60,6 +60,8 @@ int SLang_init_tty (int abort_char, int no_flow_control, int opost)
    (void) opost;
    (void) no_flow_control;
 
+   SLKeyBoard_Quit = 0;
+   
    if (SLw32_Hstdin != INVALID_HANDLE_VALUE)
      return 0;
 

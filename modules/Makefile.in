@@ -1,7 +1,7 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
-  varray-module.so @PCRE_MODULE@ @PNG_MODULE@
-SLFILES = slsmg termios select fcntl varray pcre png
+  varray-module.so socket-module.so @PCRE_MODULE@ @PNG_MODULE@
+SLFILES = slsmg termios select fcntl varray socket pcre png 
 #---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@
@@ -32,6 +32,10 @@ PCRE_LIB	= @PCRE_LIB@ -lpcre
 #---------------------------------------------------------------------------
 PNG_INC	= @PNG_INC@
 PNG_LIB	= @PNG_LIB@ -lpng
+#---------------------------------------------------------------------------
+# If building the SOCKET module, you may need to set these
+#---------------------------------------------------------------------------
+SOCKET_LIBS = @X_EXTRA_LIBS@
 #---------------------------------------------------------------------------
 # Installation location of the modules
 #---------------------------------------------------------------------------
@@ -79,6 +83,8 @@ pcre-module.so: pcre-module.c config.h
 	$(CC_SHARED) $(INCS) $(PCRE_INC) pcre-module.c -o pcre-module.so $(PCRE_LIB) $(LIBS)
 png-module.so: png-module.c config.h
 	$(CC_SHARED) $(INCS) $(PNG_INC) png-module.c -o png-module.so $(PNG_LIB) $(LIBS)
+socket-module.so: socket-module.c config.h
+	$(CC_SHARED) $(INCS) socket-module.c -o socket-module.so $(SOCKET_LIBS) $(LIBS)
 
 # Note that Windows/Cygwin modules need execute permissions
 install: all

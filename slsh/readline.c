@@ -230,24 +230,20 @@ static char *read_input_line (SLang_RLine_Info_Type *rline, char *prompt, int no
 	  }
 	
 	line = buf;
-	while (1)
+	while (NULL == fgets (buf, sizeof (buf), stdin))
 	  {
-	     while (NULL == fgets (buf, sizeof (buf), stdin))
-	       {
 #ifdef EINTR
-		  if (errno == EINTR)
+	     if (errno == EINTR)
+	       {
+		  if (-1 == SLang_handle_interrupt ())
 		    {
-		       if (-1 == SLang_handle_interrupt ())
-			 {
-			    line = NULL;
-			    break;
-			 }
-		       continue;
+		       line = NULL;
+		       break;
 		    }
-#endif
-		  line = NULL;
-		  break;
+		  continue;
 	       }
+#endif
+	     line = NULL;
 	     break;
 	  }
 #ifdef REAL_UNIX_SYSTEM

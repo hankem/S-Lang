@@ -156,15 +156,6 @@ static void free_3_strings (char *a, char *b, char *c)
    SLfree (c);
 }
 
-static int SLang_pop_wchar (SLwchar_Type *wc)
-{
-   unsigned long w;
-   if (-1 == SLang_pop_ulong (&w))
-     return -1;
-   *wc = (SLwchar_Type)w;
-   return 0;
-}
-
 static void strcat_cmd (void) /*{{{*/
 {
    char *c, *c1;
@@ -1479,9 +1470,11 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 		  use_string = 1;
 		  break;
 	       }
+#if 0
 	     guess_size = 1;
 	     use_long = 0;
 	     /* drop */
+#endif
 	   case 'd':
 	   case 'i':
 	   case 'o':

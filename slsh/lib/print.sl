@@ -53,22 +53,28 @@ private define struct_to_string (s)
    return strcat ("{", str, "}");
 }
 
-private define print_list (a)
+private define print_list (a, ref)
 {
    variable fp = stdout;
    variable i;
-   () = fputs ("{", stdout);
+   variable s = "{";
    variable comma = "";
    _for i (0, length (a)-1, 1)
      {
-        if (-1 == fprintf (fp, "%s%s", comma, generic_to_string(a[i])))
-	  return;
+	s = sprintf ("%s%s%s", s, comma, generic_to_string(a[i]));
 	comma = ", ";
      }
-   () = fputs ("}\n", stdout);
+   s = strcat (s, "}");
+   if (ref != NULL)
+     {
+	@ref = s;
+	return;
+     }
+   () = fputs (s, stdout);
+   () = fputs ("\n", stdout);
 }
 
-private define print_array (a)
+private define print_array (a, ref)
 {
    variable dims, ndims, type;
    
@@ -135,23 +141,44 @@ define print_set_pager_lines (n)
    Pager_Rows = n;
 }
 
-define print (x)
+define print ()
 {
+   variable ref = NULL;
+   if (_NARGS == 0)
+     {
+	usage ("print (OBJ [,&str]);");
+     }
+   if (_NARGS == 2)
+     {
+	ref = ();
+     }
+   variable x = ();
    variable t = typeof (x);
 
    if (t == Array_Type)
-     return print_array (x);
-   
+     {
+	if (ref == NULL)
+	  return print_array (x, &ref);
+     }
+
    if (is_struct_type (x))
      {
-	() = fprintf (stdout, "%s\n", struct_to_string (x));
+	x = struct_to_string (x);
+	if (ref != NULL)
+	  @ref = x;
+	else
+	  () = fprintf (stdout, "%s\n", x);
 	return;
      }
    if (t == List_Type)
      {
-	print_list (x);
+	print_list (x, ref);
 	return;
      }
 
-   () = fprintf (stdout, "%s\n", generic_to_string (x));
+   x = generic_to_string (x);
+   if (ref != NULL)
+     @ref = x;
+   else
+     () = fprintf (stdout, "%s\n", x);
 }

@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20007
-#define SLANG_VERSION_STRING "pre2.0.7-28"
+#define SLANG_VERSION_STRING "pre2.0.7-39"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -279,9 +279,13 @@ SL_EXTERN void SLstring_dump_stats (void);
 #if SLANG_SIZEOF_INT == 4
 typedef unsigned int SLwchar_Type;
 # define SLANG_WCHAR_TYPE SLANG_UINT_TYPE
+# define SLang_push_wchar SLang_push_uint
+# define SLang_pop_wchar SLang_pop_uint
 #else
 typedef unsigned long SLwchar_Type;
 # define SLANG_WCHAR_TYPE SLANG_ULONG_TYPE
+# define SLang_push_wchar SLang_push_ulong
+# define SLang_pop_wchar SLang_pop_ulong
 #endif
 typedef unsigned char SLuchar_Type;
 
@@ -899,6 +903,7 @@ SL_EXTERN int SLarray_map_array (SLCONST SLarray_Map_Type *);
 
 /*{{{ Interpreter Function Prototypes */
 
+/* SL_EXTERN int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr); */
 SL_EXTERN void SLang_verror (int, char *, ...) SLATTRIBUTE_PRINTF(2,3);
 SL_EXTERN int SLang_get_error (void);
 SL_EXTERN int SLang_set_error (int);
@@ -1310,6 +1315,19 @@ SL_EXTERN int SLfile_pop_fd (SLFile_FD_Type **);
 SL_EXTERN int SLfile_get_fd (SLFile_FD_Type *, int *);
 SL_EXTERN SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0);
 SL_EXTERN int SLang_init_posix_io (void);
+
+/* These routines allow an application to attach an object to a file-descriptor
+ * as well a provide read/write/close/etc methods.  To allow the coexistence of
+ * different types of objects, a clientdata-id must be used.
+ */
+SL_EXTERN int SLfile_set_getfd_method (SLFile_FD_Type *f, int (*func)(VOID_STAR, int *));
+SL_EXTERN int SLfile_set_close_method (SLFile_FD_Type *f, int (*func)(VOID_STAR));
+SL_EXTERN int SLfile_set_read_method (SLFile_FD_Type *f, int (*func)(VOID_STAR, char*, unsigned int));
+SL_EXTERN int SLfile_set_write_method (SLFile_FD_Type *f, int (*func)(VOID_STAR, char*, unsigned int));
+SL_EXTERN int SLfile_set_dup_method (SLFile_FD_Type *f, SLFile_FD_Type *(*func)(VOID_STAR));
+SL_EXTERN int SLfile_create_clientdata_id (int *id);
+SL_EXTERN int SLfile_set_clientdata (SLFile_FD_Type *f, void (*free_func)(VOID_STAR), VOID_STAR cd, int id);
+SL_EXTERN int SLfile_get_clientdata (SLFile_FD_Type *f, int id, VOID_STAR *cdp);
 
 typedef double (*SLang_To_Double_Fun_Type)(VOID_STAR);
 SL_EXTERN SLang_To_Double_Fun_Type SLarith_get_to_double_fun (SLtype, unsigned int *);

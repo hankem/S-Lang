@@ -128,12 +128,16 @@
 @modules/varray-module.c
 @modules/varray.sl
 @modules/newt-module.c
+@modules/socket-module.c
+@modules/socket.sl
 
-@modules/tm/pngfuns.tm
 @modules/tm/pcrefuns.tm
+@modules/tm/pngfuns.tm
+@modules/tm/sockfuns.tm
 @modules/tm/Makefile
-@modules/help/pngfuns.hlp
 @modules/help/pcrefuns.hlp
+@modules/help/pngfuns.hlp
+@modules/help/sockfuns.hlp
 
 @modules/examples/newt_ex.sl
 @modules/examples/slsmg_ex.sl
