@@ -1739,7 +1739,10 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
    while (1)
      {
 	if (q == qmax) return;
-
+#if SLANG_HAS_KANJI_SUPPORT
+# undef SLANG_HAS_KANJI_SUPPORT
+# define SLANG_HAS_KANJI_SUPPORT 0
+#endif
 #if SLANG_HAS_KANJI_SUPPORT
 	if (*p & 0x80)
 	  { /* new is kanji */

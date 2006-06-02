@@ -104,6 +104,8 @@ Changes since 2.0.6
     byte-semantics: foreach (X) using ("bytes"|"chars").  The default
     is byte semantics.  Updated the corresponding docs.
 39. src/slang.h: Added SLang_push/pop_wchar macros.
+40. src/sldisply.c: This file was failing to compile with Kanji
+    support enabled.  Kanji is unsupported in slang-2.
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.

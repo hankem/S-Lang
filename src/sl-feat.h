@@ -62,7 +62,10 @@
  */
 #define SLTT_XTERM_ALWAYS_BCE		0
   
-/* Set this to 1 to enable Kanji support.  See above comment. */
+/*
+ * NOTE: Kanji is not supported by slang-2.  Consider using a UTF-8 aware 
+ * terminal.  Setting this variable will have no effect.
+ */
 #define SLANG_HAS_KANJI_SUPPORT		0
 
 #define SLANG_HAS_SIGNALS		1
