@@ -106,6 +106,12 @@ Changes since 2.0.6
 39. src/slang.h: Added SLang_push/pop_wchar macros.
 40. src/sldisply.c: This file was failing to compile with Kanji
     support enabled.  Kanji is unsupported in slang-2.
+41. src/slcurses.*: Alt-character set handling was not working.  Once
+    again, I strongly encourage you to modify your programs to use the
+    native SLsmg routines instead of the partial curses emulation hacks.
+42. slsh/lib/sldbsock.sl: New file to implement socket-based debugger.
+43. slsh/scripts/sldb: Added --pid <pid> option for debugging a
+    separate process via the socket-based debugger interface.
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.

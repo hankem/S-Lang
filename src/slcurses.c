@@ -41,12 +41,13 @@ USA.
 #define SLCURSES_BUILD_CHAR(ch,wch,c) \
    ((ch) = ((SLcurses_Char_Type)(wch)) | (((SLcurses_Char_Type)(c)) << 24))
 
-#define SLCURSES_BUILD_CELL(cellp,wch,c) \
+#define SLCURSES_BUILD_CELL(cellp,wch,c,isacs) \
    do \
      { \
 	int slcurses_build_cell_i; \
 	SLcurses_Cell_Type *slcurses_build_cell_c = (cellp); \
 	SLCURSES_BUILD_CHAR(slcurses_build_cell_c->main, wch, c); \
+	slcurses_build_cell_c->is_acs = isacs; \
 	for (slcurses_build_cell_i = 0; \
 	     slcurses_build_cell_i < SLSMG_MAX_CHARS_PER_CELL-1; \
 	     slcurses_build_cell_i++) \
@@ -70,7 +71,7 @@ static void blank_line (SLcurses_Cell_Type *b, unsigned int len, SLsmg_Color_Typ
    SLcurses_Cell_Type *bmax = b + len;
 
    while (b < bmax)
-     SLCURSES_BUILD_CELL(b++,' ',color);
+     SLCURSES_BUILD_CELL(b++,' ',color, 0);
 }
 
 static int va_mvprintw (SLcurses_Window_Type *w, int r, int c, int do_move,
@@ -550,7 +551,7 @@ static int do_newline (SLcurses_Window_Type *w)
  * no room).
  */
 static void SLcurses_placechar (SLcurses_Window_Type *w, SLwchar_Type wch,
-				int width, int color)
+				int width, int color, int is_acs)
 {
    SLcurses_Cell_Type *b;
    unsigned int i;
@@ -593,12 +594,12 @@ static void SLcurses_placechar (SLcurses_Window_Type *w, SLwchar_Type wch,
 	  }
 	while (i < w->_curx)
 	  {
-	     SLCURSES_BUILD_CELL(&w->lines[w->_cury][i], ' ', blankcolor);
+	     SLCURSES_BUILD_CELL(&w->lines[w->_cury][i], ' ', blankcolor, is_acs);
 	     i++;
 	  }
      }
    /* Place wch itself. */
-   SLCURSES_BUILD_CELL(b, wch, w->color);
+   SLCURSES_BUILD_CELL(b, wch, w->color, is_acs);
    /* If wch is multicolumn, reserve the following cell(s). */
    for (i = 1; i < (unsigned int) width; i++)
      {
@@ -613,7 +614,7 @@ static void SLcurses_placechar (SLcurses_Window_Type *w, SLwchar_Type wch,
 	b = &w->lines[w->_cury][i];
 	if (b->main != SLCURSES_NULLATTR)
 	  break;
-	SLCURSES_BUILD_CELL(b, ' ', color);
+	SLCURSES_BUILD_CELL(b, ' ', color, is_acs);
      }
 }
 
@@ -622,6 +623,7 @@ int SLcurses_waddch (SLcurses_Window_Type *win, SLtt_Char_Type attr)
    SLtt_Char_Type ch;
    SLsmg_Color_Type color;
    int width;
+   int is_acs;
 
    if (win == NULL) return -1;
 
@@ -648,6 +650,8 @@ int SLcurses_waddch (SLcurses_Window_Type *win, SLtt_Char_Type attr)
 	  }
 	color = map_attr_to_object (attr);
      }
+
+   is_acs = attr & A_ALTCHARSET;
 
    if (SLwchar_iscntrl((SLwchar_Type)ch))
      {
@@ -692,7 +696,7 @@ int SLcurses_waddch (SLcurses_Window_Type *win, SLtt_Char_Type attr)
 	do_newline (win);
      }
 
-   SLcurses_placechar (win, ch, width, color);
+   SLcurses_placechar (win, ch, width, color, is_acs);
    win->_curx += width;
 
    return 0;
@@ -702,7 +706,6 @@ static void write_color_chars (SLcurses_Cell_Type *p, unsigned int len)
 {
    int color = -1;
    unsigned int i;
-   
    for (i = 0; i < len; i++)
      {
 	SLwchar_Type ch;
@@ -717,6 +720,8 @@ static void write_color_chars (SLcurses_Cell_Type *p, unsigned int len)
 	     SLsmg_set_color (this_color);
 	     color = this_color;
 	  }
+	if (p[i].is_acs)
+	  SLsmg_set_char_set (1);
 	SLsmg_write_char (ch);
 	for (j = 0; j < SLSMG_MAX_CHARS_PER_CELL-1; j++)
 	  {
@@ -725,6 +730,8 @@ static void write_color_chars (SLcurses_Cell_Type *p, unsigned int len)
 	       break;	/* no more combining chars */
 	     SLsmg_write_char (combining);
 	  }
+	if (p[i].is_acs)
+	  SLsmg_set_char_set (0);
      }
 }
 
@@ -801,7 +808,7 @@ int SLcurses_wclrtoeol (SLcurses_Window_Type *w)
 
    color = w->color;
    while (b < bmax)
-     SLCURSES_BUILD_CELL(b++,' ',color);
+     SLCURSES_BUILD_CELL(b++,' ',color, 0);
 
    return 0;
 }
@@ -823,7 +830,7 @@ int SLcurses_wclrtobot (SLcurses_Window_Type *w)
 	bmax = b + w->ncols;
 
 	while (b < bmax)
-	  SLCURSES_BUILD_CELL(b++,' ',color);
+	  SLCURSES_BUILD_CELL(b++,' ',color, 0);
      }
 
    return 0;
@@ -929,6 +936,7 @@ int SLcurses_waddnstr (SLcurses_Window_Type *w, char *str, int len)
 {
    unsigned int nrows, ncols, crow, ccol;
    SLuchar_Type *u, *umax;
+   int is_acs = 0;
 
    if ((w == NULL)
        || (str == NULL))
@@ -1012,14 +1020,14 @@ int SLcurses_waddnstr (SLcurses_Window_Type *w, char *str, int len)
 	     w->_cury = crow;
 	     do
 	       {
-		  SLcurses_placechar (w, (SLwchar_Type)' ', 1, w->color);
+		  SLcurses_placechar (w, (SLwchar_Type)' ', 1, w->color, is_acs);
 		  w->_curx = ++ccol;
 	       }
 	     while (ccol < ncols && ccol % SLsmg_Tab_Width != 0);
 	     continue;
 	  }
 
-	SLcurses_placechar (w, ch, width, w->color);
+	SLcurses_placechar (w, ch, width, w->color, is_acs);
 	w->_curx = (ccol += width);
      }
 
@@ -1147,7 +1155,7 @@ int SLcurses_wdelch (SLcurses_Window_Type *w)
 #endif
 
    while (dest < limit)
-     SLCURSES_BUILD_CELL(&line[dest++], ' ', w->color);
+     SLCURSES_BUILD_CELL(&line[dest++], ' ', w->color, 0);
 
    w->modified = 1;
    return 0;
@@ -1155,6 +1163,7 @@ int SLcurses_wdelch (SLcurses_Window_Type *w)
 
 int SLcurses_winsch (SLcurses_Window_Type *w, int ch)
 {
+   int is_acs = 0;
    int colsneeded;
 #ifndef HAVE_MEMMOVE
    int dest, src;
@@ -1224,7 +1233,7 @@ int SLcurses_winsch (SLcurses_Window_Type *w, int ch)
 	 * which is partially shifted off the end.
 	 */
 	while (i + colsneeded < (int)w->ncols)
-	  SLCURSES_BUILD_CELL(&line[i++], ' ', w->color);
+	  SLCURSES_BUILD_CELL(&line[i++], ' ', w->color, is_acs);
      }
 
    /* line[_curx+colsneeded..ncols-1] = line[_curx..ncols-1-colsneeded]; */
@@ -1236,7 +1245,7 @@ int SLcurses_winsch (SLcurses_Window_Type *w, int ch)
      line[dest] = line[src];
 #endif
    if (w->_curx + colsneeded <= w->ncols)
-     SLcurses_placechar (w, ch, colsneeded, w->color);
+     SLcurses_placechar (w, ch, colsneeded, w->color, is_acs);
 
    w->modified = 1;
    return 0;

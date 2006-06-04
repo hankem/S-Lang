@@ -31,8 +31,9 @@ USA.
 typedef unsigned long SLcurses_Char_Type;
 typedef struct SLcurses_Cell_Type
 {
-    SLcurses_Char_Type main;
-    SLwchar_Type combining[SLSMG_MAX_CHARS_PER_CELL-1];
+   SLcurses_Char_Type main;
+   SLwchar_Type combining[SLSMG_MAX_CHARS_PER_CELL-1];
+   int is_acs;
 }
 SLcurses_Cell_Type;
 

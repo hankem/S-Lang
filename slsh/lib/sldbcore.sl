@@ -15,6 +15,8 @@
 %    it may be limited due to the lack of line number information.
 %
 %
+require ("print");
+
 private variable Debugger_Methods = struct
 {
    list,          % list (file, linemin, linemax)
@@ -247,7 +249,7 @@ private define quit_cmd (cmd, args, file, line)
 private define simple_print (v)
 {
    print (v, &v);
-   output ("%s\n", v);
+   output ("%S\n", v);
 }
 
 private define pretty_print (v)
