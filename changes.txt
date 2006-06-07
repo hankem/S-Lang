@@ -112,6 +112,8 @@ Changes since 2.0.6
 42. slsh/lib/sldbsock.sl: New file to implement socket-based debugger.
 43. slsh/scripts/sldb: Added --pid <pid> option for debugging a
     separate process via the socket-based debugger interface.
+44. src/slang.c: If a try-finally block contained a return statement,
+    the function would sometimes continue after the finally block.
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.

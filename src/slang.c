@@ -2685,8 +2685,14 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
    if (0 == (e1 = SLang_get_error ()))
      {
 	if (final->b.blk->bc_main_type)
-	  inner_interp (final->b.blk);
-	return;
+	  {
+	     int bc = Lang_Break_Condition, r = Lang_Return, br = Lang_Break;
+	     /* Need to reset these so that loops work in the finally block */
+	     Lang_Break_Condition = Lang_Break = Lang_Return = 0;
+	     inner_interp (final->b.blk);
+	     Lang_Break = br; Lang_Return = r; Lang_Break_Condition = bc;
+	     return;
+	  }
      }
    num = SLstack_depth () - stack_depth;
    if (num > 0)
