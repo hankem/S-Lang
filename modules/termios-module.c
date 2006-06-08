@@ -520,6 +520,9 @@ static SLang_IConstant_Type Termios_Consts [] =
    MAKE_ICONSTANT("VSUSP", VSUSP),
    MAKE_ICONSTANT("VSTART", VSTART),
    MAKE_ICONSTANT("VSTOP", VSTOP),
+#ifdef CRTSCTS			       /* not POSIX */
+   MAKE_ICONSTANT("CRTSCTS", CRTSCTS),
+#endif
 #ifdef ultrix   /* Ultrix gets _POSIX_VDISABLE wrong! */
 # define NULL_VALUE -1
 #else
