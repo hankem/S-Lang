@@ -251,6 +251,166 @@ static void termios_set_cc (void)
    SLang_free_mmt (mmt);
 }
 
+typedef struct 
+{
+   unsigned int bspeed;
+   unsigned int speed;
+}
+Baudrate_Map_Type;
+
+Baudrate_Map_Type Baudrate_Map[] = 
+{
+#ifdef B0
+   {B0, 0},
+#endif
+#ifdef B50
+   {B50, 50},
+#endif
+#ifdef B75
+   {B75, 75},
+#endif
+#ifdef B110
+   {B110, 110},
+#endif
+#ifdef B134
+   {B134, 134},
+#endif
+#ifdef B150
+   {B150, 150},
+#endif
+#ifdef B200
+   {B200, 200},
+#endif
+#ifdef B300
+   {B300, 300},
+#endif
+#ifdef B600
+   {B600, 600},
+#endif
+#ifdef B1200
+   {B1200, 1200},
+#endif
+#ifdef B1800
+   {B1800, 1800},
+#endif
+#ifdef B2400
+   {B2400, 2400},
+#endif
+#ifdef B4800
+   {B4800, 4800},
+#endif
+#ifdef B9600
+   {B9600, 9600},
+#endif
+#ifdef B19200
+   {B19200, 19200},
+#endif
+#ifdef B38400
+   {B38400, 38400},
+#endif
+#ifdef B57600
+   {B57600, 57600},
+#endif
+#ifdef B115200
+   {B115200, 115200},
+#endif
+#ifdef B230400
+   {B230400, 230400},
+#endif
+#ifdef B460800
+   {B460800, 460800},
+#endif
+   {0, 0}
+};
+
+static int map_speed_to_bspeed (unsigned int speed, unsigned int *bspeed)
+{
+   Baudrate_Map_Type *b, *bmax;
+
+   b = Baudrate_Map;
+   bmax = Baudrate_Map + (sizeof(Baudrate_Map)/sizeof(Baudrate_Map_Type)-1);
+   
+   while (b < bmax)
+     {
+	if (b->speed == speed)
+	  {
+	     *bspeed = b->bspeed;
+	     return 0;
+	  }
+	b++;
+     }
+   SLang_verror (SL_InvalidParm_Error, "Invalid or Unsupported baudrate %u", speed);
+   return -1;
+}
+
+static int map_bspeed_to_speed (unsigned int bspeed, unsigned int *speed)
+{
+   Baudrate_Map_Type *b, *bmax;
+
+   b = Baudrate_Map;
+   bmax = Baudrate_Map + (sizeof(Baudrate_Map)/sizeof(Baudrate_Map_Type)-1);
+   
+   while (b < bmax)
+     {
+	if (b->bspeed == bspeed)
+	  {
+	     *speed = b->speed;
+	     return 0;
+	  }
+	b++;
+     }
+   SLang_verror (SL_InvalidParm_Error, "Invalid or Unsupported baudrate %u", bspeed);
+   return -1;
+}
+
+static void cfgetispeed_intrin (struct termios *t)
+{
+   unsigned int speed, bspeed;
+
+   bspeed = cfgetispeed (t);
+   if (0 == map_bspeed_to_speed (bspeed, &speed))
+     (void) SLang_push_uint (speed);
+}
+
+static void cfgetospeed_intrin (struct termios *t)
+{
+   unsigned int speed, bspeed;
+
+   bspeed = cfgetospeed (t);
+   if (0 == map_bspeed_to_speed (bspeed, &speed))
+     (void) SLang_push_uint (speed);
+}
+
+static int cfsetispeed_intrin (struct termios *t, unsigned int *speed)
+{   
+   unsigned int bspeed;
+
+   if (-1 == map_speed_to_bspeed (*speed, &bspeed))
+     return -1;
+
+   if (-1 == cfsetispeed (t, bspeed))
+     {
+	(void) SLerrno_set_errno (errno);
+	return -1;
+     }
+   return 0;
+}
+
+static int cfsetospeed_intrin (struct termios *t, unsigned int *speed)
+{   
+   unsigned int bspeed;
+
+   if (-1 == map_speed_to_bspeed (*speed, &bspeed))
+     return -1;
+
+   if (-1 == cfsetospeed (t, bspeed))
+     {
+	(void) SLerrno_set_errno (errno);
+	return -1;
+     }
+   return 0;
+}
+
 
 static int termios_dereference (SLtype type, VOID_STAR addr)
 {
@@ -278,6 +438,7 @@ static int termios_dereference (SLtype type, VOID_STAR addr)
 #define F SLANG_FILE_FD_TYPE
 #define I SLANG_INT_TYPE
 #define V SLANG_VOID_TYPE
+#define U SLANG_UINT_TYPE
 static SLang_Intrin_Fun_Type Termios_Intrinsics [] =
 {
    MAKE_INTRINSIC_1("tcdrain", tcdrain_intrin, I, F),
@@ -288,6 +449,10 @@ static SLang_Intrin_Fun_Type Termios_Intrinsics [] =
    MAKE_INTRINSIC_2("tcsendbreak", tcsendbreak_intrin, I, F, I),
    MAKE_INTRINSIC_1("tcgetattr", tcgetattr_intrin, V, F),
    MAKE_INTRINSIC_3("tcsetattr", tcsetattr_intrin, I, F, I, T),
+   MAKE_INTRINSIC_1("cfgetispeed", cfgetispeed_intrin, V, T),
+   MAKE_INTRINSIC_1("cfgetospeed", cfgetospeed_intrin, V, T),
+   MAKE_INTRINSIC_2("cfsetispeed", cfsetispeed_intrin, I, T, U),
+   MAKE_INTRINSIC_2("cfsetospeed", cfsetospeed_intrin, I, T, U),
    MAKE_INTRINSIC_1("termios_get_oflag", termios_get_oflag, I, T),
    MAKE_INTRINSIC_1("termios_get_iflag", termios_get_iflag, I, T),
    MAKE_INTRINSIC_1("termios_get_cflag", termios_get_cflag, I, T),
@@ -305,6 +470,7 @@ static SLang_Intrin_Fun_Type Termios_Intrinsics [] =
 #undef I
 #undef F
 #undef V
+#undef U
 
 static SLang_IConstant_Type Termios_Consts [] =
 {
