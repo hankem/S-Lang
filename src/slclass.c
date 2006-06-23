@@ -1574,6 +1574,19 @@ SLclass_add_typecast (SLtype from, SLtype to,
 SLang_MMT_Type *SLang_pop_mmt (SLtype type) /*{{{*/
 {
    SLang_MMT_Type *mmt;
+   SLang_Class_Type *cl;
+   
+   cl = lookup_class (type);
+   if (cl == NULL)
+     {
+	SLang_verror (SL_Application_Error, "SLtype %d is not registered", type);
+	return NULL;
+     }
+   if (cl->cl_class_type != SLANG_CLASS_TYPE_MMT)
+     {
+	SLang_verror (SL_Application_Error, "SLtype %d is not an MMT", type);
+	return NULL;
+     }
 
    if (-1 == SLclass_pop_ptr_obj (type, VOID_STAR_STAR(&mmt)))
      mmt = NULL;

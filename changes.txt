@@ -1,3 +1,4 @@
+-*- mode: text; mode: fold -*-
 Changes since 2.0.6
 1. src/slmath.c: if a double precision array was passed to nint, it
    was treated as a single precision one leading to a core dump.
@@ -115,7 +116,13 @@ Changes since 2.0.6
 44. src/slang.c: If a try-finally block contained a return statement,
     the function would sometimes continue after the finally block.
 45. modules/termios-module.c: Added tcget/seti/ospeed functions for
-    setting baudrates of termios structures.
+    setting baudrates of termios structures.  Also added CRTSCTS
+    constant to the module.
+46. src/slclass.c: If an application calls SLang_pop_mmt with a
+    non-MMT type specified, a SL_Application_Error exception will be
+    generated.
+
+{{{ Previous Versions
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.
@@ -2212,3 +2219,4 @@ Changes to `calc':
 	 define hello_world () { print ("hello world"); }
 	 loop (10) hello_world ();
 	 quit ();
+}}}

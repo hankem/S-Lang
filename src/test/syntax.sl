@@ -272,5 +272,15 @@ test ("-2.0^2 != -4");
 #endif
 print ("Ok\n");
 
+#ifexists test_pop_mmt
+try
+{
+   () = test_pop_mmt (1.0);
+}
+catch ApplicationError;
+
+() = test_pop_mmt (stdin);
+#endif
+
 exit (0);
 

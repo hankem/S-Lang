@@ -107,6 +107,17 @@ static void get_c_struct_via_ref (SLang_Ref_Type *r)
    (void) SLang_assign_cstruct_to_ref (r, (VOID_STAR) &C_Struct_Buf, C_Struct);
 }
 
+static void test_pop_mmt (void)
+{
+   SLang_MMT_Type *mmt;
+   
+   if (NULL == (mmt = SLang_pop_mmt (SLang_peek_at_stack ())))
+     return;
+   
+   if (-1 == SLang_push_mmt (mmt))
+     SLang_free_mmt (mmt);
+}
+
 static void fake_import (char *);
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
@@ -120,6 +131,7 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
 #if SLANG_HAS_FLOAT
    MAKE_INTRINSIC_1("test_double_return", test_double_return, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE),
 #endif
+   MAKE_INTRINSIC_0("test_pop_mmt", test_pop_mmt, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("get_c_struct", get_c_struct, VOID_TYPE),
    MAKE_INTRINSIC_0("set_c_struct", set_c_struct, VOID_TYPE),
    MAKE_INTRINSIC_1("get_c_struct_via_ref", get_c_struct_via_ref, VOID_TYPE, SLANG_REF_TYPE),

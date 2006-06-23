@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20007
-#define SLANG_VERSION_STRING "pre2.0.7-45"
+#define SLANG_VERSION_STRING "pre2.0.7-46"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1485,6 +1485,8 @@ SL_EXTERN FVOID_STAR SLang_find_key_function(char *, SLkeymap_Type *);
 SL_EXTERN SLkeymap_Type *SLang_find_keymap(char *);
 
 SL_EXTERN int SLang_Last_Key_Char;
+/* Despite the name of this variable, its value is the last BYTE of a key-sequence */
+
 SL_EXTERN int SLang_Key_TimeOut_Flag;
 
 /*}}}*/
