@@ -2691,8 +2691,8 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
 	     Lang_Break_Condition = Lang_Break = Lang_Return = 0;
 	     inner_interp (final->b.blk);
 	     Lang_Break = br; Lang_Return = r; Lang_Break_Condition = bc;
-	     return;
 	  }
+	return;
      }
    num = SLstack_depth () - stack_depth;
    if (num > 0)

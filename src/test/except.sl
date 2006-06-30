@@ -2,7 +2,7 @@ _debug_info = 1; () = evalfile ("inc.sl");
 _traceback=1;
 testing_feature ("exceptions");
 
-static variable Exception_Line;
+private variable Exception_Line;
 define test_exceptions ()
 {
    variable e;
@@ -138,7 +138,24 @@ define syntax_error ()
 syntax_error ();
 stack_underflow ();
 
-static define test_with_return (frun)
+private define test_try_with_return ()
+{
+   try
+     {
+	return 0;
+     }
+   catch MathError:
+     {
+	return -1;
+     }
+   
+   return -2;
+}
+
+if (0 != test_try_with_return ())
+  failed ("catch try with return");
+
+private define test_catch_with_return (frun)
 {
    
    @frun = 0;
@@ -158,10 +175,10 @@ static define test_with_return (frun)
    return 2;
 }
 
-if ((-1 != test_with_return (&$1)) or ($1 != 2))
+if ((-1 != test_catch_with_return (&$1)) or ($1 != 2))
   failed ("catch with return");
 
-static define test_with_continue (frun)
+private define test_with_continue (frun)
 {
    @frun = 0;
    loop (2)
@@ -188,7 +205,7 @@ if ((1 != test_with_continue (&$1)) or ($1 != 4))
   failed ("catch with continue");
 
 new_exception ("MyError", RunTimeError, "My error");
-static define test_new_exception ()
+private define test_new_exception ()
 {
    throw (MyError);
 }
