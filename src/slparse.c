@@ -1057,7 +1057,7 @@ static int init_identifier_token (_pSLang_Token_Type *t, char *name, int alloc)
  *       exception-list , exception
  * 
  *    finally_block_opt:
- *       FINALLY block
+ *       FINALLY[:] block
  * 
  * The above gets compiled into the form:
  * 
@@ -1152,6 +1152,8 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
    if (ctok->type == FINALLY_TOKEN)
      {
 	get_token (ctok);
+	if (ctok->type == COLON_TOKEN)
+	  get_token (ctok);
 	block (ctok);
      }
    else

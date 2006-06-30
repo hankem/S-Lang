@@ -123,6 +123,8 @@ Changes since 2.0.6
     generated.
 47. src/slang.c: A misplaced return statement was introduced by #44
     above.
+48. src/slparse.c: Allow the "finally" keyword to be followed by a
+    colon, e.g., try foo; finally: bar;
 
 {{{ Previous Versions
 
