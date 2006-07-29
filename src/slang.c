@@ -6356,7 +6356,11 @@ static int add_local_variable (char *name, unsigned long hash)
      return -1;
 
    t->local_var_number = Local_Variable_Number;
-   Local_Variable_Names[Local_Variable_Number] = name;   /* we will copy this later */
+   Local_Variable_Names[Local_Variable_Number] = t->name; 
+   /* we will copy this later -- it is an slstring and will persist as long 
+    * as the Locals_NameSpace persists
+    */
+
    Local_Variable_Number++;
    return 0;
 }
@@ -6566,7 +6570,8 @@ static int handle_special_line (Special_NameTable_Type *nt, _pSLang_Token_Type *
 {
    (void) nt;
 #if SLANG_HAS_DEBUG_CODE
-   Compile_ByteCode_Ptr->b.l_blk = (long) tok->line_number;
+   if ((Compile_ByteCode_Ptr->b.l_blk = (long) tok->line_number) <= 0)
+     Compile_ByteCode_Ptr->b.l_blk = This_Compile_Linenum;
 #else
    (void) tok;
 #endif
@@ -7373,7 +7378,14 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case _BSTRING_TOKEN:
-	compile_bstring (SLbstring_create ((unsigned char *)t->v.s_val, (unsigned int) t->hash));
+	  {
+	     SLang_BString_Type *b = SLbstring_create ((unsigned char *)t->v.s_val, (unsigned int) t->hash);
+	     if (b != NULL)
+	       {
+		  compile_bstring (b);
+		  SLbstring_free (b);
+	       }
+	  }
 	break;
 
       case BSTRING_TOKEN:
@@ -7736,6 +7748,7 @@ typedef struct _Compile_Context_Type
    void (*define_function) (char *, unsigned long);
    int lang_defining_function;
    int local_variable_number;
+   char *local_variable_names[SLANG_MAX_LOCAL_VARIABLES];
    unsigned int function_args_number;
    void (*compile_mode_function)(_pSLang_Token_Type *);
    char *compile_filename;
@@ -7769,6 +7782,8 @@ static int pop_compile_context (void)
 
    Lang_Defining_Function = cc->lang_defining_function;
    Local_Variable_Number = cc->local_variable_number;
+   memcpy ((char *)Local_Variable_Names, (char *)cc->local_variable_names, sizeof(Local_Variable_Names));
+
    Function_Args_Number = cc->function_args_number;
 
    SLang_free_slstring (This_Compile_Filename);
@@ -7832,6 +7847,8 @@ static int push_compile_context (char *name)
 
    cc->lang_defining_function = Lang_Defining_Function;
    cc->local_variable_number = Local_Variable_Number;
+   memcpy ((char *)cc->local_variable_names, (char *)Local_Variable_Names, sizeof(Local_Variable_Names));
+
    cc->function_args_number = Function_Args_Number;
    cc->compile_mode_function = Compile_Mode_Function;
 

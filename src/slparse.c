@@ -2100,7 +2100,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
       case COMPLEX_TOKEN:
 #endif
       case STRING_DOLLAR_TOKEN:
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
       case LLONG_TOKEN:
       case ULLONG_TOKEN:
 #endif

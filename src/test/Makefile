@@ -1,8 +1,12 @@
 # -*-sh-*-
-TEST_SCRIPTS = argv syntax eqs sscanf loops arith array strops bstring \
+TEST_SCRIPTS_SLC = argv syntax eqs sscanf loops arith array strops bstring \
   pack stdio assoc selfload struct nspace path ifeval anytype arrmult \
-  nspace2 prep time utf8 except bugs list regexp method deref naninf \
-  longlong signal dollar req autoload docfun debug
+  time utf8 except bugs list regexp method deref naninf \
+  longlong signal dollar req docfun debug
+
+TEST_SCRIPTS_NO_SLC = autoload nspace2 prep
+
+TEST_SCRIPTS = $(TEST_SCRIPTS_SLC) $(TEST_SCRIPTS_NO_SLC)
 
 TEST_PGM = sltest
 #RUN_TEST_PGM = valgrind --tool=memcheck --leak-check=yes --logfile=log --num-callers=20 ./$(TEST_PGM)
@@ -21,7 +25,18 @@ run_tests: $(TEST_PGM)
 	done
 	touch sltest.c
 
+run_tests_slc: $(TEST_PGM)
+	@echo ""
+	@echo "Running tests:"
+	@echo ""
+	-@for X in $(TEST_SCRIPTS_SLC); \
+	do \
+	   $(RUN_TEST_PGM) $$X.slc; \
+	   $(RUN_TEST_PGM) -utf8 $$X.slc; \
+	done
+	touch sltest.c
+
 sltest: sltest.c $(SLANGLIB)/libslang.a
 	$(CC) $(CFLAGS) $(LDFLAGS) sltest.c -o sltest -I$(SLANGINC) -L$(SLANGLIB) -lslang $(TCAPLIB) -lm
 clean: 
-	-/bin/rm -f *~ sltest *.o *.log tmp-* log.pid*
+	-/bin/rm -f *~ sltest *.o *.log tmp-* log.pid* *.slc

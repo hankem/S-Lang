@@ -22,7 +22,11 @@ static void dump_token (_pSLang_Token_Type *t)
 	b = t->v.s_val;
 	break;
 	
+      case TMP_TOKEN:
+	b = "__tmp"; break;
+
       case CHAR_TOKEN:
+      case UCHAR_TOKEN:
       case INT_TOKEN:
       case LONG_TOKEN:
 	sprintf (buf, "%ld", t->v.long_val);
@@ -36,8 +40,12 @@ static void dump_token (_pSLang_Token_Type *t)
 	sprintf (buf, "\"%s\"", t->v.s_val);
 	break;
 	
+      case STRING_DOLLAR_TOKEN:
+	sprintf (buf, "\"%s\"$", t->v.s_val);
+	break;
+	
       case PLUSPLUS_TOKEN:
-	sprintf (buf, "++%s", t->v.s_val);
+	sprintf (buf, "++ (RPN)");
 	break;
 	
       case POST_PLUSPLUS_TOKEN:
@@ -45,7 +53,7 @@ static void dump_token (_pSLang_Token_Type *t)
 	break;
 	
       case MINUSMINUS_TOKEN:
-	sprintf (buf, "--%s", t->v.s_val);
+	sprintf (buf, "-- (RPN)");
 	break;
 	
       case POST_MINUSMINUS_TOKEN:
@@ -61,7 +69,7 @@ static void dump_token (_pSLang_Token_Type *t)
 	break;
 	
       case ASSIGN_TOKEN:
-	sprintf (buf, "=%s", t->v.s_val);
+	sprintf (buf, "= (RPN assign)");
 	break;
 	
       case EOF_TOKEN:
@@ -191,7 +199,15 @@ static void dump_token (_pSLang_Token_Type *t)
       case STATIC_TOKEN:
 	b = "static";
 	break;
+
+      case PRIVATE_TOKEN:
+	b = "private";
+	break;
 	
+      case PUBLIC_TOKEN:
+	b = "public";
+	break;
+
       case STRUCT_TOKEN:
 	b = "struct";
 	break;
@@ -311,6 +327,9 @@ static void dump_token (_pSLang_Token_Type *t)
       case _SCALAR_POST_MINUSMINUS_TOKEN:
 	sprintf (buf, "%s--", t->v.s_val);
 	break;
+
+      case _ARRAY_DIVEQS_TOKEN:
+	sprintf (buf, "/= (array)"); break;
 
 #if 0
       case _DEREF_ASSIGN_TOKEN:
@@ -460,12 +479,19 @@ static void dump_token (_pSLang_Token_Type *t)
 	b = "__using__"; break;
       case FOREACH_TOKEN:
 	b = "__foreach__"; break;
+	
+      case DEFINE_PRIVATE_TOKEN:
+	b = "private"; break;
+
       case TRY_TOKEN:
 	b = "try"; break;
 	
       case LINE_NUM_TOKEN:
-	b = "__line_num__"; break;
-	
+        sprintf (buf, "__line_num__ %ld", t->v.long_val); break;
+
+      case _INLINE_WILDCARD_ARRAY_TOKEN:
+	sprintf (buf, "__inline_wildcard_array__"); break;
+
       case BOS_TOKEN:
 	b = "__bos__"; break;
       case EOS_TOKEN:
@@ -497,7 +523,7 @@ int main (int argc, char **argv)
      return 1;
    
    _pSLcompile_ptr = dump_token;
-   _pSLang_Compile_BOSEOS = 3;
+   /* _pSLang_Compile_BOSEOS = 3; */
    SLang_load_file (file);
    
    return _pSLang_Error;

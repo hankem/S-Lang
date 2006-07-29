@@ -1450,10 +1450,13 @@ void _pSLcompile_byte_compiled (void)
 	       return;
 	     tok.v.long_val = atol (buf);
 	     break;
-#ifdef X___HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 	   case LLONG_TOKEN:
 	   case ULLONG_TOKEN:
-	     XXX
+	     if (NULL == check_byte_compiled_token (buf))
+	       return;
+	     tok.v.llong_val = SLatoll ((unsigned char *)buf);
+	     break;
 #endif
 	   case COMPLEX_TOKEN:
 	   case FLOAT_TOKEN:
@@ -1461,6 +1464,15 @@ void _pSLcompile_byte_compiled (void)
 	     if (NULL == check_byte_compiled_token (buf))
 	       return;
 	     tok.v.s_val = buf;
+	     break;
+
+	   case ESC_STRING_DOLLAR_TOKEN:
+	     if (NULL == (ebuf = check_byte_compiled_token (buf)))
+	       return;
+	     tok.v.s_val = buf;
+	     (void) expand_escaped_string (buf, buf, ebuf, &len, 0);
+	     tok.hash = _pSLstring_hash ((unsigned char *)buf, (unsigned char *)buf + len);
+	     type = STRING_DOLLAR_TOKEN;
 	     break;
 
 	   case ESC_STRING_TOKEN:
@@ -1487,6 +1499,8 @@ void _pSLcompile_byte_compiled (void)
 	   case DEFINE_PRIVATE_TOKEN:
 	   case DEFINE_PUBLIC_TOKEN:
 	   case DOT_TOKEN:
+	   case DOT_METHOD_CALL_TOKEN:
+	   case STRING_DOLLAR_TOKEN:
 	   case STRING_TOKEN:
 	   case IDENT_TOKEN:
 	   case _REF_TOKEN:
@@ -1647,6 +1661,15 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
 	sprintf (b3, "%lu", tok->v.long_val);
 	break;
 
+#ifdef HAVE_LONG_LONG
+      case LLONG_TOKEN:
+	sprintf (b3, "%lld", tok->v.llong_val);
+	break;
+	
+      case ULLONG_TOKEN:
+	sprintf (b3, "%llu", tok->v.ullong_val);
+	break;
+#endif
       case _BSTRING_TOKEN:
 	s = (unsigned char *) tok->v.s_val;
 	len = (unsigned int) tok->hash;
@@ -1670,6 +1693,7 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
 	buf[0] = ESC_BSTRING_TOKEN;
 	break;
 
+      case STRING_DOLLAR_TOKEN:
       case STRING_TOKEN:
 	s = (unsigned char *)tok->v.s_val;
 
@@ -1679,7 +1703,8 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
 	    return;
 
 	if (is_escaped)
-	  buf[0] = ESC_STRING_TOKEN;
+	  buf[0] = ((tok->type == STRING_TOKEN) 
+		    ? ESC_STRING_TOKEN : ESC_STRING_DOLLAR_TOKEN);
 	break;
 
       /* case _DEREF_ASSIGN_TOKEN: */
@@ -1696,6 +1721,7 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
       case _SCALAR_MINUSMINUS_TOKEN:
       case _SCALAR_POST_MINUSMINUS_TOKEN:
       case DOT_TOKEN:
+      case DOT_METHOD_CALL_TOKEN:
       case TMP_TOKEN:
       case DEFINE_TOKEN:
       case DEFINE_STATIC_TOKEN:

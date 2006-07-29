@@ -210,7 +210,19 @@ int main (int argc, char **argv)
 
    while (i < argc)
      {
-	if (-1 == SLang_load_file (argv[i]))
+	char *file = argv[i];
+	if (0 == strncmp (SLpath_extname (file), ".slc", 4))
+	  {
+	     char *file_sl = SLmake_string (file);
+	     file_sl[strlen(file_sl)-1] = 0;
+	     if (-1 == SLang_byte_compile_file (file_sl, 0))
+	       {
+		  SLfree (file_sl);
+		  return 1;
+	       }
+	     SLfree (file_sl);
+	  }
+	if (-1 == SLang_load_file (file))
 	  return 1;
 	i++;
      }

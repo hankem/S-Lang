@@ -1293,6 +1293,8 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define _INLINE_WILDCARD_ARRAY_TOKEN	0xE3
 #define _INLINE_LIST_TOKEN		0xE4
 
+#define ESC_STRING_DOLLAR_TOKEN		0xF0
+
 #define BOS_TOKEN			0xFA
 #define EOS_TOKEN			0xFB
 #define LINE_NUM_TOKEN			0xFC

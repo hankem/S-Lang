@@ -125,6 +125,10 @@ Changes since 2.0.6
     above.
 48. src/slparse.c: Allow the "finally" keyword to be followed by a
     colon, e.g., try foo; finally: bar;
+49. src/sltoken.c,slang,c: "Dollar" and long-longs were not being properly
+    handled in byte-compiled files.
+50. src/test/Makefile: Changes were made to test byte-compiled
+    versions of the test scripts.
 
 {{{ Previous Versions
 

@@ -3,7 +3,18 @@ _debug_info = 1; () = evalfile ("inc.sl");
 
 testing_feature ("array functions");
 
-static define eqs (a, b)
+% Ensure that this mechanism of array creation is supported.
+$1 = Short_Type[10, 20];
+$2 = _typeof ($1)[3,4];
+if (typeof ($2) != Array_Type)
+  failed ("_typeof(X)[] failed to create an array");
+if (_typeof($2) != Short_Type)
+  failed ("_typeof(X)[] failed to create an array of the proper type");
+if ((array_shape ($2)[0] != 3) or (array_shape($2)[1] != 4))
+  failed ("typeof(X)[] failed to create an array of the proper shape");
+
+		  
+private define eqs (a, b)
 {
    return _eqs(a,b);
 #iffalse
@@ -16,7 +27,7 @@ static define eqs (a, b)
 #endif
 }
 
-static define array_dims (a)
+private define array_dims (a)
 {
    variable dims;
    (dims,,) = array_info (a);
@@ -27,15 +38,15 @@ static define array_dims (a)
 }
 
 
-static define neqs (a, b)
+private define neqs (a, b)
 {
    not (eqs (a, b));
 }
 
-static variable A = [0:23];
+private variable A = [0:23];
 
-static variable B = transpose(A);
-static variable dims;
+private variable B = transpose(A);
+private variable dims;
 
 (dims,,) = array_info (B);
 if ((dims[0] != 1)
@@ -144,7 +155,7 @@ if (neqs (sin(S), array_map (Double_Type, &sin, S))) failed ("array_map 4");
 
 S = [1:20:0.1];
 variable Sin_S = Double_Type[length(S)];
-static define void_sin (x, i)
+private define void_sin (x, i)
 {
    Sin_S[i] = sin (x);
 }
@@ -337,7 +348,7 @@ check_result (8 shr [3,4], [1,0],"shr");
 check_result ([3,4] shr 1, [1,2],"shr");
 
 % Test __tmp optimizations
-static define test_tmp ()
+private define test_tmp ()
 {
    variable x = [1:100];
    x = 1*__tmp(x)*1 + 1;
@@ -345,7 +356,7 @@ static define test_tmp ()
      failed ("__tmp optimizations");
 }
 
-static define ones ()
+private define ones ()
 {
    variable a;
    
@@ -416,7 +427,7 @@ test_semiopen (1.0, 0.0, -1.0, 1);
 test_semiopen (1.0, -0.0001, -1.0, 2);
 #endif
 
-static define test_inline_array (a, type)
+private define test_inline_array (a, type)
 {
    if (_typeof (a) != type)
      failed ("test_inline_array: %S is not %S type", a, type);
@@ -466,7 +477,7 @@ A[1] = NULL;
 if (length (where (A != String_Type[10])) != 9)
   failed ("A != String_Type[10]");
 
-static define test_indexing_with_1_index ()
+private define test_indexing_with_1_index ()
 {
    variable n = 10;
    variable a = Double_Type[n,n];
@@ -486,7 +497,7 @@ test_indexing_with_1_index ();
 
 % Test array summing operations
 #ifexists Double_Type
-static define compute_sum (a, n)
+private define compute_sum (a, n)
 {
    variable s = 0;
    variable b;
@@ -658,7 +669,7 @@ if ((_max(_NaN, 1) != 1) or (_max(1,_NaN) != 1))
 
   
 #ifexists cumsum
-static define do_cumsum (a)
+private define do_cumsum (a)
 {
    variable b = 1.0 * a;
    variable i, s;
@@ -673,7 +684,7 @@ static define do_cumsum (a)
    return b;
 }
    
-static define test_cumsum (a, k, result_type)
+private define test_cumsum (a, k, result_type)
 {
    variable b = 1.0 * a;
    variable bb;
@@ -847,7 +858,7 @@ test_cumsum (A, 2, Complex_Type);
 
 #endif
 
-static variable I;
+private variable I;
 A=[1:100];
 I = Int_Type[3,3];
 if (neqs (array_dims (A[I]), array_dims(I)))
@@ -896,7 +907,7 @@ define test_example ()
 test_example ();
    
 #ifexists array_swap
-static define test_array_swap (a, i, j)
+private define test_array_swap (a, i, j)
 {
    variable b = @a;
    array_swap (a, i, j);
@@ -913,7 +924,7 @@ test_array_swap (["ab", "cd", "ef", "gh", "ij"], 3, 4);
 #endif
 
 #ifexists array_reverse
-static define test_array_reverse (a, i, j)
+private define test_array_reverse (a, i, j)
 {
    variable b = @a;
    if (i == NULL)
@@ -939,7 +950,7 @@ test_array_reverse ([1:5], NULL, 1);
 test_array_reverse (["ab", "cd", "ef", "gh", "ij"], 3, 4);
 test_array_reverse (["ab", "cd", "ef", "gh", "ij"], NULL, 4);
 
-static define test_2darray_reverse (a, i, j, dim)
+private define test_2darray_reverse (a, i, j, dim)
 {
    variable b = @a;
    try
@@ -972,7 +983,7 @@ test_2darray_reverse (_reshape ([1:3*4], [3,4]), 1,3, 1);
 #endif
 
 #ifexists __aget
-static define test_aget ()
+private define test_aget ()
 {
    variable a, indices;
    indices = __pop_args (_NARGS-1);
@@ -993,7 +1004,7 @@ static define test_aget ()
    catch IndexError;
 }
 
-static variable A = [1:3*7*11];
+private variable A = [1:3*7*11];
 test_aget (A, 3*4*5);
 test_aget (A, -1);
 test_aget (A, -20);
@@ -1003,7 +1014,7 @@ test_aget (A, -1,-1,-1);
 test_aget (A, 0,0,0);
 test_aget (A, 1,3,5);
 
-static define test_aput ()
+private define test_aput ()
 {
    variable a, x, indices;
    
@@ -1027,7 +1038,7 @@ static define test_aput ()
    catch IndexError;
 }
 
-static variable A = [1:3*7*11];
+private variable A = [1:3*7*11];
 test_aput (1023, A, 3*4*5);
 test_aput (1024, A, -1);
 test_aput (1024, A, -20);
@@ -1070,13 +1081,13 @@ A[*] += A[*];
 if (not (_eqs (A, [2:11]*2)))
   failed ("A[*] += A[*]");
 
-static variable _Random_Seed = 123456789UL;
-static define random (n)
+private variable _Random_Seed = 123456789UL;
+private define random (n)
 {
    _Random_Seed = (_Random_Seed * 69069UL + 1013904243UL)&0xFFFFFFFFU;
    return _Random_Seed/4294967296.0 * n;
 }
-static define index_random ()
+private define index_random ()
 {
    variable a = [1:60];
    variable n = Int_Type[83]; n[*] = 70;
@@ -1102,7 +1113,7 @@ try
 }
 catch InvalidParmError;
 
-static define test_any_1 (astr, ans)
+private define test_any_1 (astr, ans)
 {
    variable ans1 = any(eval(astr));
    if (ans != ans1)
@@ -1110,7 +1121,7 @@ static define test_any_1 (astr, ans)
    if (typeof (ans1) != Char_Type)
      failed ("any(%S) returned %S", astr, typeof(ans1));
 }
-static define test_all_1 (astr, ans)
+private define test_all_1 (astr, ans)
 {
    variable ans1 = all(eval(astr));
    if (ans != ans1)
@@ -1119,7 +1130,7 @@ static define test_all_1 (astr, ans)
      failed ("all(%S) returned %S", astr, typeof(ans1));
 }
 
-static define test_any_or_all (fun, astr, ans)
+private define test_any_or_all (fun, astr, ans)
 {
    foreach ([Char_Type, UChar_Type, Short_Type, UShort_Type, 
 	     Int_Type, UInt_Type, Long_Type, ULong_Type])
@@ -1129,12 +1140,12 @@ static define test_any_or_all (fun, astr, ans)
      }
 }
 
-static define test_any (astr, ans)
+private define test_any (astr, ans)
 {
    test_any_or_all (&test_any_1, astr, ans);
 }
 
-static define test_all (astr, ans)
+private define test_all (astr, ans)
 {
    test_any_or_all (&test_all_1, astr, ans);
 }
