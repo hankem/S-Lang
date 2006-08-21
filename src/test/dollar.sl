@@ -65,6 +65,20 @@ static define test_uninited ()
 }
 test_uninited ();
 
+define test_special ()
+{
+   variable n = _NARGS;
+   _pop_n (_NARGS);
+   
+   if ("$n"$ != "${_NARGS}"$)
+     failed ("${_NARGS}");
+
+   if ("$n"$ != "$_NARGS"$)
+     failed ("$_NARGS");
+}
+test_special (1,2,3);
+test_special ();
+
 if ("$$$$$$$$"$ != "$$$$")
   failed ("$$$$$$$$");
 if ("$"$ != "$")

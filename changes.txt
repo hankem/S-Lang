@@ -129,6 +129,8 @@ Changes since 2.0.6
     handled in byte-compiled files.
 50. src/test/Makefile: Changes were made to test byte-compiled
     versions of the test scripts.
+51. modules/socket-module.c: added #include <time.h> to get it to
+    compile on mac osx.
 
 {{{ Previous Versions
 

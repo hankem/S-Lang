@@ -40,6 +40,11 @@ USA.
 
 #include <sys/types.h>
 
+#include <time.h>
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+
 #ifdef HAVE_SOCKET_H
 # include <socket.h>
 #endif
