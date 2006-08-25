@@ -131,6 +131,7 @@ Changes since 2.0.6
     versions of the test scripts.
 51. modules/socket-module.c: added #include <time.h> to get it to
     compile on mac osx.
+52. src/slmath.c: The data field was not properly used by the nint function.
 
 {{{ Previous Versions
 

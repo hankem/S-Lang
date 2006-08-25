@@ -979,7 +979,7 @@ static int float_to_nint (SLang_Array_Type *at, SLang_Array_Type *bt)
    float *fp;
    
    fp = (float *) at->data;
-   ip = (int *) bt;
+   ip = (int *) bt->data;
    n = at->num_elements;
 
    for (i = 0; i < n; i++)
@@ -995,7 +995,7 @@ static int double_to_nint (SLang_Array_Type *at, SLang_Array_Type *bt)
    double *dp;
    
    dp = (double *) at->data;
-   ip = (int *) bt;
+   ip = (int *) bt->data;
    n = at->num_elements;
 
    for (i = 0; i < n; i++)
