@@ -88,6 +88,15 @@ if (fd != NULL)
 }
 fd = 0;
 
+if (fileno (stdin) != fileno(stdin))
+{
+   failed ("fileno(stdin) not equal to itself");
+}
+
+if (fileno (stdin) == fileno(stdout))
+{
+   failed ("fileno(stdin) is equal to fileno(stdout)");
+}
 
 print ("Ok\n");
 exit (0);

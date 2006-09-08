@@ -2855,11 +2855,16 @@ static int pop_bool_array_and_start (int nargs, SLang_Array_Type **atp, SLindex_
    if (istart < 0)
      istart += num_elements;
 
-   if (istart >= num_elements)
+   if (istart < 0)
      {
-	SLang_set_error (SL_Index_Error);
-	SLang_free_array (at);
-	return -1;
+	if (num_elements == 0)
+	  istart = 0;
+	else
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     SLang_free_array (at);
+	     return -1;
+	  }
      }
    
    *atp = at;
@@ -2910,6 +2915,8 @@ static void array_where_last (void)
    a_data = (char *) at->data;
 
    i = istart + 1;
+   if (i > (SLindex_Type)at->num_elements)
+     i = (SLindex_Type) at->num_elements;
    while (i > 0)
      {
 	i--;

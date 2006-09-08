@@ -193,7 +193,8 @@ static void select_intrin (double *secsp)
 	     readfs_buf = readfs_save_buf;
 	     writefds_buf = writefds_save_buf;
 	     exceptfds_buf = exceptfds_save_buf;
-	     continue;
+	     if (0 == SLang_handle_interrupt ())
+	       continue;
 	  }
 #endif
 	(void) SLerrno_set_errno (errno);

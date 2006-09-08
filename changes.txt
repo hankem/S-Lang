@@ -132,6 +132,12 @@ Changes since 2.0.6
 51. modules/socket-module.c: added #include <time.h> to get it to
     compile on mac osx.
 52. src/slmath.c: The data field was not properly used by the nint function.
+53. modules/select-module.c: Call SLang_handle_interrupt when the
+    select system calls gets interrupted.
+54. src/slposio.c: Add == and != operators to FD_Type objects so that
+    fileno(stdin)==fileno(stdin) works as expected.
+55. src/slarray.c: wherefirst and wherelast were not working with
+    empty arrays.
 
 {{{ Previous Versions
 

@@ -1222,6 +1222,8 @@ test_where_first_last ([1:10] == 5);
 test_where_first_last ([1:10] mod 2);
 test_where_first_last ([1:10] mod 3);
 
+test_where_first_last ([0:-1] == 1);
+
 if (length ([1,2,]) != 2)
   failed ("2-element array with trailing comma has wrong length");
 if (length ([1,]) != 1)

@@ -754,6 +754,85 @@ static int fd_push (SLtype type, VOID_STAR v)
    return SLfile_push_fd (*(SLFile_FD_Type **)v);
 }
 
+static int
+fd_fd_bin_op_result (int op, SLtype a, SLtype b,
+			     SLtype *c)
+{
+   (void) a;
+   (void) b;
+   switch (op)
+     {
+      default:
+	return 0;
+
+#if 0
+      case SLANG_GT:
+      case SLANG_GE:
+      case SLANG_LT:
+      case SLANG_LE:
+#endif
+      case SLANG_EQ:
+      case SLANG_NE:
+	*c = SLANG_CHAR_TYPE;
+	break;
+     }
+   return 1;
+}
+
+static int
+fd_fd_bin_op (int op,
+		      SLtype a_type, VOID_STAR ap, unsigned int na,
+		      SLtype b_type, VOID_STAR bp, unsigned int nb,
+		      VOID_STAR cp)
+{
+   char *ic;
+   SLFile_FD_Type **a, **b;
+   unsigned int n, n_max;
+   unsigned int da, db;
+
+   (void) a_type;
+   (void) b_type;
+
+   if (na == 1) da = 0; else da = 1;
+   if (nb == 1) db = 0; else db = 1;
+
+   if (na > nb) n_max = na; else n_max = nb;
+
+   a = (SLFile_FD_Type **) ap;
+   b = (SLFile_FD_Type **) bp;   
+   ic = (char *) cp;
+
+   switch (op)
+     {
+      case SLANG_NE:
+	for (n = 0; n < n_max; n++)
+	  {
+	     if ((*a == NULL) || (*b == NULL))
+	       ic [n] = (*a != *b);
+	     else
+	       ic [n] = (*a)->fd != (*b)->fd;
+	     a += da;
+	     b += db;
+	  }
+	break;
+      case SLANG_EQ:
+	for (n = 0; n < n_max; n++)
+	  {
+	     if ((*a == NULL) || (*b == NULL))
+	       ic [n] = (*a == *b);
+	     else
+	       ic [n] = (*a)->fd == (*b)->fd;
+	     a += da;
+	     b += db;
+	  }
+	break;
+
+      default:
+	return 0;
+     }
+   return 1;
+}
+
 int SLang_init_posix_io (void)
 {
    SLang_Class_Type *cl;
@@ -763,7 +842,8 @@ int SLang_init_posix_io (void)
    cl->cl_destroy = destroy_fd_type;
    (void) SLclass_set_push_function (cl, fd_push);
 
-   if (-1 == SLclass_register_class (cl, SLANG_FILE_FD_TYPE, sizeof (SLFile_FD_Type), SLANG_CLASS_TYPE_PTR))
+   if ((-1 == SLclass_register_class (cl, SLANG_FILE_FD_TYPE, sizeof (SLFile_FD_Type), SLANG_CLASS_TYPE_PTR))
+       || (-1 == SLclass_add_binary_op (SLANG_FILE_FD_TYPE, SLANG_FILE_FD_TYPE, fd_fd_bin_op, fd_fd_bin_op_result)))
      return -1;
 
    if ((-1 == SLadd_intrin_fun_table(Fd_Name_Table, "__POSIXIO__"))
