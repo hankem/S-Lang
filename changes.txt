@@ -138,6 +138,8 @@ Changes since 2.0.6
     fileno(stdin)==fileno(stdin) works as expected.
 55. src/slarray.c: wherefirst and wherelast were not working with
     empty arrays.
+56. src/slmisc.c: SLang_guess_type was failing on numbers containing a
+    leading '+' sign.
 
 {{{ Previous Versions
 

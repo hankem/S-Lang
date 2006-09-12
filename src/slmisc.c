@@ -381,7 +381,7 @@ int SLang_guess_type (char *t)
 #define MODIFIER_HEX	0x10
 
    modifier = 0;
-   if (*t == '-') t++;
+   if ((*t == '-') || (*t == '+')) t++;
    p = t;
 
 #if SLANG_HAS_FLOAT

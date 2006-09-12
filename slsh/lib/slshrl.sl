@@ -1,7 +1,6 @@
 % -*- mode: SLang; mode: fold -*-
 
 % This file was written with the help of Mike Noble and John Houck.
-_debug_info=1;
 if (is_defined ("slsh_help"))
   use_namespace ("slsh_interactive");
 else
