@@ -290,6 +290,16 @@ static int rl_bdel (SLrline_Type *This_RLI)
    return 0;
 }
 
+static int rl_delbol (SLrline_Type *This_RLI)
+{
+   while (This_RLI->point)
+     {
+	rl_left (This_RLI);
+	rl_del(This_RLI);
+     }
+   return 0;
+}
+
 static int rl_deleol (SLrline_Type *This_RLI)
 {
    if (This_RLI->point == This_RLI->len) return 0;
@@ -1022,6 +1032,7 @@ static SLKeymap_Function_Type SLReadLine_Functions[] =
    AKEY("bdel", rl_bdel),
    AKEY("del", rl_del),
    AKEY("deleol", rl_deleol),
+   AKEY("delbol", rl_delbol),
    AKEY("enter", rl_enter),
    AKEY("trim", rl_trim),
    AKEY("quoted_insert", rl_quote_insert),
@@ -1168,6 +1179,7 @@ SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
 	SLkm_define_key  ("\n", (FVOID_STAR) rl_enter, RL_Keymap);
 	SLkm_define_key  ("^K", (FVOID_STAR) rl_deleol, RL_Keymap);
 	SLkm_define_key  ("^L", (FVOID_STAR) rl_deleol, RL_Keymap);
+	SLkm_define_key  ("^U", (FVOID_STAR) rl_delbol, RL_Keymap);
 	SLkm_define_key  ("^V", (FVOID_STAR) rl_del, RL_Keymap);
 	SLkm_define_key  ("^D", (FVOID_STAR) rl_del, RL_Keymap);
 	SLkm_define_key  ("^F", (FVOID_STAR) rl_right, RL_Keymap);

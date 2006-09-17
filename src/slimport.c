@@ -49,7 +49,9 @@ USA.
 #endif
 
 static char *Module_Path;
-#define MODULE_PATH_ENV_NAME	"SLANG_MODULE_PATH"
+#ifndef MODULE_PATH_ENV_NAME
+# define MODULE_PATH_ENV_NAME "SLANG_MODULE_PATH"
+#endif
 #ifndef MODULE_INSTALL_DIR
 # define MODULE_INSTALL_DIR "/usr/local/lib/slang/v2/modules"
 #endif

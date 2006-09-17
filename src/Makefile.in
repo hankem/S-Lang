@@ -27,6 +27,13 @@ ELFDIR = @ELFDIR@# Location of elf objects
 VERSION_SCRIPT	= $(SRCDIR)/slang.ver
 
 #---------------------------------------------------------------------------
+# When searching for modules, slang will search the paths specified by the
+# value of the SLANG_MODULE_PATH environment variable.  The name of this
+# variable may be changed here.
+#---------------------------------------------------------------------------
+MODULE_PATH_ENV_NAME = "SLANG_MODULE_PATH"
+
+#---------------------------------------------------------------------------
 # Set for termcap support
 #TCAPLIB = -ltermcap
 TCAPLIB = @TERMCAP@
@@ -116,7 +123,7 @@ slupper_O_DEP = slupper.h
 slwcwidth_O_DEP = slwcwidth.h
 slcommon_O_DEP = slang.h
 slstd_C_FLAGS = -DSLANG_DOC_DIR='"$(install_doc_dir)"' -DSLANG_INSTALL_PREFIX='"$(prefix)"'
-slimport_C_FLAGS = -DMODULE_INSTALL_DIR='"$(MODULE_INSTALL_DIR)"'
+slimport_C_FLAGS = -DMODULE_INSTALL_DIR='"$(MODULE_INSTALL_DIR)"' -DMODULE_PATH_ENV_NAME='$(MODULE_PATH_ENV_NAME)'
 sltermin_C_FLAGS = -DMISC_TERMINFO_DIRS='"$(MISC_TERMINFO_DIRS)"'
 UPDATE_VERSION_SCRIPT = $(HOME)/bin/update_changes_version
 

@@ -140,6 +140,10 @@ Changes since 2.0.6
     empty arrays.
 56. src/slmisc.c: SLang_guess_type was failing on numbers containing a
     leading '+' sign.
+57. src/slimport.c: The name of the SLANG_MODULE_PATH environment
+    variable may be changed in src/Makefile.
+58. src/slrline.c: Added a delete-to-beginning-of-line (delbol)
+    function and bound it to ^U.
 
 {{{ Previous Versions
 
