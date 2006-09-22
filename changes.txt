@@ -144,6 +144,8 @@ Changes since 2.0.6
     variable may be changed in src/Makefile.
 58. src/slrline.c: Added a delete-to-beginning-of-line (delbol)
     function and bound it to ^U.
+59. slsh/Makefile.in: $(CFLAGS) added to the final link line. (Nelson
+    H. F. Beebe)
 
 {{{ Previous Versions
 

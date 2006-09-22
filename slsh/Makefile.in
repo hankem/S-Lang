@@ -67,9 +67,9 @@ SRC_LIBS = $(SLANG_SRCLIB) -lslang $(READLINE_LIB) $(OTHER_LIBS)
 #
 all: slsh_exe
 slsh_exe: slsh.o readline.o
-	$(CC) slsh.o readline.o -o slsh_exe $(LDFLAGS) $(SRC_LIBS)
+	$(CC) $(CFLAGS) slsh.o readline.o -o slsh_exe $(LDFLAGS) $(SRC_LIBS)
 slsh: slsh.o readline.o
-	$(CC) slsh.o readline.o -o slsh $(LDFLAGS) $(INST_LIBS)
+	$(CC) $(CFLAGS) slsh.o readline.o -o slsh $(LDFLAGS) $(INST_LIBS)
 slsh.o: slsh.c slsh.h config.h
 	$(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) slsh.c
 readline.o: readline.c slsh.h config.h
