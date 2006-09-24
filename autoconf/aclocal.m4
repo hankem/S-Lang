@@ -1,5 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
-dnl#
+dnl# Version 0.1.7: removed "-K pic" from IRIX compiler lines
 dnl# Version 0.1.6: Added cygwin module support
 dnl# Version 0.1.5: Added gcc version-script support.
 dnl#
@@ -611,10 +611,10 @@ case "$host_os" in
      else
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS) -K pic"     # default anyhow
+       ELF_CFLAGS="\$(CFLAGS)"     # default anyhow
        ELF_LINK="\$(CC) \$(LDFLAGS) -shared -o \$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
-       CC_SHARED="\$(CC) \$(CFLAGS) -shared -K pic"
+       CC_SHARED="\$(CC) \$(CFLAGS) -shared"
      fi
      ;;
   *darwin* )

@@ -13,6 +13,7 @@ TEST_PGM = sltest
 RUN_TEST_PGM = ./$(TEST_PGM)
 SLANGINC = ..
 SLANGLIB = ../$(ARCH)objs
+OTHERLIBS = -lm
 
 run_tests: $(TEST_PGM)
 	@echo ""
@@ -37,6 +38,6 @@ run_tests_slc: $(TEST_PGM)
 	touch sltest.c
 
 sltest: sltest.c $(SLANGLIB)/libslang.a
-	$(CC) $(CFLAGS) $(LDFLAGS) sltest.c -o sltest -I$(SLANGINC) -L$(SLANGLIB) -lslang $(TCAPLIB) -lm
+	$(CC) $(CFLAGS) $(LDFLAGS) sltest.c -o sltest -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
 clean: 
 	-/bin/rm -f *~ sltest *.o *.log tmp-* log.pid* *.slc

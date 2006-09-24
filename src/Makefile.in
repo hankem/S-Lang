@@ -34,11 +34,9 @@ VERSION_SCRIPT	= $(SRCDIR)/slang.ver
 MODULE_PATH_ENV_NAME = "SLANG_MODULE_PATH"
 
 #---------------------------------------------------------------------------
-# Set for termcap support
-#TCAPLIB = -ltermcap
-TCAPLIB = @TERMCAP@
+# Misc Libraries
 MISC_TERMINFO_DIRS = @MISC_TERMINFO_DIRS@
-
+OTHERLIBS = @TERMCAP@ @LIBS@ -lm
 #---------------------------------------------------------------------------
 # Directory where library is going to go when installed
 #---------------------------------------------------------------------------
@@ -104,7 +102,7 @@ ELFLIB_MAJOR_MINOR = @ELFLIB_MAJOR_MINOR@
 ELFDIR_ELF_LIB = $(ELFDIR)/$(ELFLIB_MAJOR_MINOR)#
 ELFDIR_DLL_LIB = $(ELFDIR)/$(DLL_IMPLIB_NAME)#
 
-EXECLIBS = -L$(OBJDIR) -lslang -lm $(TCAPLIB) $(DL_LIB)
+EXECLIBS = -L$(OBJDIR) -lslang $(OTHERLIBS) $(DL_LIB)
 EXECDEPS = $(OBJDIR_NORMAL_LIB)
 
 OFILES = @PROGRAM_OFILES@
@@ -208,7 +206,7 @@ install-links:
 # Tests
 #---------------------------------------------------------------------------
 runtests:
-	cd test; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" TCAPLIB="$(TCAPLIB)" SLANGLIB="$(OBJDIR)"
+	cd test; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" OTHERLIBS="$(OTHERLIBS)" SLANGLIB="$(OBJDIR)"
 #---------------------------------------------------------------------------
 # Housekeeping
 #---------------------------------------------------------------------------

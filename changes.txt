@@ -146,6 +146,11 @@ Changes since 2.0.6
     function and bound it to ^U.
 59. slsh/Makefile.in: $(CFLAGS) added to the final link line. (Nelson
     H. F. Beebe)
+60. src/slmath.c: Avoid the use of function pointers to standard math
+    functions to support a wider range of compilers.
+61. autoconf/aclocal.m4: IRIX compilers do not require "-K pic"
+62. autoconf/configure.ac: Probe for socklen_t.
+63. */Makefile.in: Added support for the $LIBS env variable
 
 {{{ Previous Versions
 

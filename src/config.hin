@@ -151,6 +151,7 @@
 #undef HAVE_NETINET_IN_H
 #undef HAVE_ARPA_INET_H
 #undef HAVE_SYS_UN_H
+#undef socklen_t
 
 /* These two are needed on DOS-like systems.  Unix does not require them.
  * They are included here for consistency.

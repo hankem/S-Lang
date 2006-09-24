@@ -216,7 +216,6 @@ static int double_math_op (int op,
 {
    double *a, *b;
    unsigned int i;
-   double (*fun) (double);
    char *c;
 
    (void) type;
@@ -229,53 +228,52 @@ static int double_math_op (int op,
 	return 0;
 
       case SLMATH_SINH:
-	fun = sinh;
+	for (i = 0; i < na; i++) b[i] = sinh(a[i]);
 	break;
       case SLMATH_COSH:
-	fun = cosh;
+	for (i = 0; i < na; i++) b[i] = cosh(a[i]);
 	break;
       case SLMATH_TANH:
-	fun = tanh;
+	for (i = 0; i < na; i++) b[i] = tanh(a[i]);
 	break;
       case SLMATH_TAN:
-	fun = tan;
+	for (i = 0; i < na; i++) b[i] = tan(a[i]);
 	break;
       case SLMATH_ASIN:
-	fun = asin;
+	for (i = 0; i < na; i++) b[i] = asin(a[i]);
 	break;
       case SLMATH_ACOS:
-	fun = acos;
+	for (i = 0; i < na; i++) b[i] = acos(a[i]);
 	break;
       case SLMATH_ATAN:
-	fun = atan;
+	for (i = 0; i < na; i++) b[i] = atan(a[i]);
 	break;
       case SLMATH_EXP:
-	fun = exp;
+	for (i = 0; i < na; i++) b[i] = exp(a[i]);
 	break;
       case SLMATH_LOG:
-	fun = log;
+	for (i = 0; i < na; i++) b[i] = log(a[i]);
 	break;
       case SLMATH_LOG10:
-	fun = log10;
+	for (i = 0; i < na; i++) b[i] = log10(a[i]);
 	break;
       case SLMATH_SQRT:
-	for (i = 0; i < na; i++)
-	  b[i] = sqrt ((double) a[i]);
+	for (i = 0; i < na; i++) b[i] = sqrt (a[i]);
 	return 1;
       case SLMATH_SIN:
-	fun = sin;
+	for (i = 0; i < na; i++) b[i] = sin(a[i]);
 	break;
       case SLMATH_COS:
-	fun = cos;
+	for (i = 0; i < na; i++) b[i] = cos(a[i]);
 	break;
       case SLMATH_ASINH:
-	fun = ASINH_FUN;
+	for (i = 0; i < na; i++) b[i] = ASINH_FUN(a[i]);
 	break;
       case SLMATH_ATANH:
-	fun = ATANH_FUN;
+	for (i = 0; i < na; i++) b[i] = ATANH_FUN(a[i]);
 	break;
       case SLMATH_ACOSH:
-	fun = ACOSH_FUN;
+	for (i = 0; i < na; i++) b[i] = ACOSH_FUN(a[i]);
 	break;
 
       case SLMATH_CONJ:
@@ -301,21 +299,18 @@ static int double_math_op (int op,
 	return 1;
 	
       case SLMATH_FLOOR:
-	fun = floor;
+	for (i = 0; i < na; i++) b[i] = floor(a[i]);
 	break;
 
       case SLMATH_CEIL:
-	fun = ceil;
+	for (i = 0; i < na; i++) b[i] = ceil(a[i]);
 	break;
 	
       case SLMATH_ROUND:
-	fun = ROUND_FUN;
+	for (i = 0; i < na; i++) b[i] = ROUND_FUN(a[i]);
 	break;
      }
-
-   for (i = 0; i < na; i++)
-     b[i] = (*fun) (a[i]);
-
+   
    return 1;
 }
 
@@ -325,7 +320,6 @@ static int float_math_op (int op,
 {
    float *a, *b;
    unsigned int i;
-   double (*fun) (double);
    char *c;
 
    (void) type;
@@ -339,34 +333,34 @@ static int float_math_op (int op,
 	return 0;
 
       case SLMATH_SINH:
-	fun = sinh;
+	for (i = 0; i < na; i++) b[i] = sinh(a[i]);
 	break;
       case SLMATH_COSH:
-	fun = cosh;
+	for (i = 0; i < na; i++) b[i] = cosh(a[i]);
 	break;
       case SLMATH_TANH:
-	fun = tanh;
+	for (i = 0; i < na; i++) b[i] = tanh(a[i]);
 	break;
       case SLMATH_TAN:
-	fun = tan;
+	for (i = 0; i < na; i++) b[i] = tan(a[i]);
 	break;
       case SLMATH_ASIN:
-	fun = asin;
+	for (i = 0; i < na; i++) b[i] = asin(a[i]);
 	break;
       case SLMATH_ACOS:
-	fun = acos;
+	for (i = 0; i < na; i++) b[i] = acos(a[i]);
 	break;
       case SLMATH_ATAN:
-	fun = atan;
+	for (i = 0; i < na; i++) b[i] = atan(a[i]);
 	break;
       case SLMATH_EXP:
-	fun = exp;
+	for (i = 0; i < na; i++) b[i] = exp(a[i]);
 	break;
       case SLMATH_LOG:
-	fun = log;
+	for (i = 0; i < na; i++) b[i] = log(a[i]);
 	break;
       case SLMATH_LOG10:
-	fun = log10;
+	for (i = 0; i < na; i++) b[i] = log10(a[i]);
 	break;
       case SLMATH_SQRT:
 	for (i = 0; i < na; i++)
@@ -374,20 +368,20 @@ static int float_math_op (int op,
 	return 1;
 
       case SLMATH_SIN:
-	fun = sin;
+	for (i = 0; i < na; i++) b[i] = sin(a[i]);
 	break;
       case SLMATH_COS:
-	fun = cos;
+	for (i = 0; i < na; i++) b[i] = cos(a[i]);
 	break;
 
       case SLMATH_ASINH:
-	fun = ASINH_FUN;
+	for (i = 0; i < na; i++) b[i] = ASINH_FUN(a[i]);
 	break;
       case SLMATH_ATANH:
-	fun = ATANH_FUN;
+	for (i = 0; i < na; i++) b[i] = ATANH_FUN(a[i]);
 	break;
       case SLMATH_ACOSH:
-	fun = ACOSH_FUN;
+	for (i = 0; i < na; i++) b[i] = ACOSH_FUN(a[i]);
 	break;
 
       case SLMATH_CONJ:
@@ -412,18 +406,15 @@ static int float_math_op (int op,
 	return 1;
 
       case SLMATH_FLOOR:
-	fun = floor;
+	for (i = 0; i < na; i++) b[i] = floor(a[i]);
 	break;
       case SLMATH_CEIL:
-	fun = ceil;
+	for (i = 0; i < na; i++) b[i] = ceil(a[i]);
 	break;
       case SLMATH_ROUND:
-	fun = ROUND_FUN;
+	for (i = 0; i < na; i++) b[i] = ROUND_FUN(a[i]);
 	break;
      }
-
-   for (i = 0; i < na; i++)
-     b[i] = (float) (*fun) ((double) a[i]);
 
    return 1;
 }
@@ -435,7 +426,6 @@ static int generic_math_op (int op,
    double *b;
    unsigned int i;
    SLang_To_Double_Fun_Type to_double;
-   double (*fun) (double);
    unsigned int da;
    char *a, *c;
 
@@ -451,53 +441,117 @@ static int generic_math_op (int op,
 	return 0;
 
       case SLMATH_SINH:
-	fun = sinh;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = sinh (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_COSH:
-	fun = cosh;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = cosh (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_TANH:
-	fun = tanh;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = tanh (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_TAN:
-	fun = tan;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = tan (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_ASIN:
-	fun = asin;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = asin (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_ACOS:
-	fun = acos;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = acos (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_ATAN:
-	fun = atan;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = atan (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_EXP:
-	fun = exp;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = exp (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_LOG:
-	fun = log;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = log (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_LOG10:
-	fun = log10;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = log10 (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_SQRT:
-	fun = sqrt;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = sqrt (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_SIN:
-	fun = sin;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = sin (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_COS:
-	fun = cos;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = cos (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
 
       case SLMATH_ASINH:
-	fun = ASINH_FUN;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = ASINH_FUN (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_ATANH:
-	fun = ATANH_FUN;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = ATANH_FUN (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_ACOSH:
-	fun = ACOSH_FUN;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = ACOSH_FUN (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
 
 
@@ -532,20 +586,26 @@ static int generic_math_op (int op,
 	  }
 	return 1;
       case SLMATH_FLOOR:
-	fun = floor;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = floor (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_CEIL:
-	fun = ceil;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = ceil (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
       case SLMATH_ROUND:
-	fun = ROUND_FUN;
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = ROUND_FUN (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
 	break;
-     }
-
-   for (i = 0; i < na; i++)
-     {
-	b[i] = (*fun) (to_double ((VOID_STAR) a));
-	a += da;
      }
    
    return 1;

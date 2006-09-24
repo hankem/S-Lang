@@ -61,6 +61,14 @@ AC_TYPE_UID_T
 AC_TYPE_SIZE_T
 dnl# AC_TYPE_OFF_T
 
+AC_MSG_CHECKING([for socklen_t])
+AC_EGREP_HEADER(socklen_t, sys/socket.h, 
+                AC_MSG_RESULT([yes]),
+                AC_MSG_RESULT([no])
+                   AC_DEFINE(socklen_t,int,
+                             [ Define to 'int' if not in <sys/socket.h>]))
+
+
 AC_HEADER_DIRENT
 
 AC_CHECK_FUNCS(\

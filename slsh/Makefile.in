@@ -13,7 +13,7 @@ SLANG_INST_LIB	= -L$(INST_LIB_DIR)
 SLANG_SRCINC	= -I@SRCDIR@
 SLANG_SRCLIB	= -L@OBJDIR@ -L@ELFDIR@
 #---------------------------------------------------------------------------
-OTHER_LIBS	= @TERMCAP@ @DYNAMIC_LINK_LIB@ -lm
+OTHER_LIBS	= @TERMCAP@ @DYNAMIC_LINK_LIB@ @LIBS@ -lm
 RPATH		= @RPATH@
 #----------------------------------------------------------------------------
 INSTALL		= @INSTALL@
