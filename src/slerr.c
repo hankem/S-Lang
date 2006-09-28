@@ -716,6 +716,7 @@ void SLang_vmessage (char *fmt, ...)
      {
 	vfprintf (stdout, fmt, ap);
 	fputs ("\n", stdout);
+	(void) fflush (stdout);
      }
 
    va_end (ap);

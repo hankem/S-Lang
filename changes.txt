@@ -151,6 +151,7 @@ Changes since 2.0.6
 61. autoconf/aclocal.m4: IRIX compilers do not require "-K pic"
 62. autoconf/configure.ac: Probe for socklen_t.
 63. */Makefile.in: Added support for the $LIBS env variable
+64. src/slerr.c: Added fflush(stdout) to SLang_vmessage.
 
 {{{ Previous Versions
 
