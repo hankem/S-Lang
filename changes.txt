@@ -152,6 +152,10 @@ Changes since 2.0.6
 62. autoconf/configure.ac: Probe for socklen_t.
 63. */Makefile.in: Added support for the $LIBS env variable
 64. src/slerr.c: Added fflush(stdout) to SLang_vmessage.
+65. slsh/lib/sldbcore.sl: The eof hook was improperly handling the
+    debugger step.
+66. src/slarray.c: Optimization added for index-array operations on
+    double, float, and int arrays.
 
 {{{ Previous Versions
 

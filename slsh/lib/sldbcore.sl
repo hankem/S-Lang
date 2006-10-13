@@ -522,7 +522,11 @@ private define debugger_input_loop ()
 	     variable cmdline, cmd, cmd_parm;
 	     forever
 	       {
-		  cmdline = (@Debugger_Methods.read_input)(Prompt, Last_Cmd_Line);
+		  variable prompt = Prompt;
+#iffalse
+		  prompt = "Depth=${Depth},Stop_Depth=${Stop_Depth} $prompt"$;
+#endif
+		  cmdline = (@Debugger_Methods.read_input)(prompt, Last_Cmd_Line);
 		  if (cmdline == NULL)
 		    throw ReadError, "NULL input returned";
 		       
@@ -701,7 +705,7 @@ private define eof_handler ()
 		  do_debug (NULL, NULL, 0);
 	       }
 	  }
-	if (Debugger_Step == STEP_NEXT)
+	if ((Debugger_Step == STEP_NEXT) and (Stop_Depth > Depth))
 	  Stop_Depth = Depth;
      }
 }

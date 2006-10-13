@@ -765,6 +765,84 @@ _pSLarray_aget_transfer_elem (SLang_Array_Type *at, SLindex_Type *indices,
    return transfer_n_elements (at, new_data, at_data, sizeof_type, 1, is_ptr);
 }
 
+#if SLANG_OPTIMIZE_FOR_SPEED
+static int aget_doubles_from_index_array (double *src_data, SLindex_Type num_elements,
+					  SLindex_Type *indices, SLindex_Type *indices_max,
+					  double *dest_data)
+{
+   while (indices < indices_max)
+     {
+	SLindex_Type i = *indices;
+
+	if (i < 0) 
+	  {
+	     i += num_elements;
+	     if (i < 0)
+	       i = num_elements;
+	  }
+	if (i >= num_elements)
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     return -1;
+	  }
+	*dest_data++ = src_data[i];
+	indices++;
+     }
+   return 0;
+}
+
+static int aget_floats_from_index_array (float *src_data, SLindex_Type num_elements,
+					 SLindex_Type *indices, SLindex_Type *indices_max,
+					 float *dest_data)
+{
+   while (indices < indices_max)
+     {
+	SLindex_Type i = *indices;
+
+	if (i < 0) 
+	  {
+	     i += num_elements;
+	     if (i < 0)
+	       i = num_elements;
+	  }
+	if (i >= num_elements)
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     return -1;
+	  }
+	*dest_data++ = src_data[i];
+	indices++;
+     }
+   return 0;
+}
+
+static int aget_ints_from_index_array (int *src_data, SLindex_Type num_elements,
+				       SLindex_Type *indices, SLindex_Type *indices_max,
+				       int *dest_data)
+{
+   while (indices < indices_max)
+     {
+	SLindex_Type i = *indices;
+
+	if (i < 0) 
+	  {
+	     i += num_elements;
+	     if (i < 0)
+	       i = num_elements;
+	  }
+	if (i >= num_elements)
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     return -1;
+	  }
+	*dest_data++ = src_data[i];
+	indices++;
+     }
+   return 0;
+}
+#endif
+
+
 /* Here the ind_at index-array is an n-d array of indices.  This function
  * creates an n-d array of made up of values of 'at' at the locations
  * specified by the indices.  The result is pushed.
@@ -798,38 +876,64 @@ aget_from_index_array (SLang_Array_Type *at,
    sizeof_type = new_at->sizeof_type;
    is_ptr = (new_at->flags & SLARR_DATA_VALUE_IS_POINTER);
 
-   while (indices < indices_max)
+   switch (at->data_type)
      {
-	size_t offset;
-	SLindex_Type i = *indices;
-
-	if (i < 0) 
+#if SLANG_OPTIMIZE_FOR_SPEED
+# if SLANG_HAS_FLOAT
+      case SLANG_DOUBLE_TYPE:
+	if (-1 == aget_doubles_from_index_array ((double *)src_data, num_elements,
+						 indices, indices_max,
+						 (double *)new_data))
+	  goto return_error;
+	break;
+      case SLANG_FLOAT_TYPE:
+	if (-1 == aget_floats_from_index_array ((float *)src_data, num_elements,
+						indices, indices_max,
+						(float *)new_data))
+	  goto return_error;
+	break;
+# endif
+      case SLANG_INT_TYPE:
+	if (-1 == aget_ints_from_index_array ((int *)src_data, num_elements,
+					      indices, indices_max,
+					      (int *)new_data))
+	  goto return_error;
+	break;
+#endif
+      default:
+	while (indices < indices_max)
 	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     SLang_free_array (new_at);
-	     return -1;
-	  }
+	     size_t offset;
+	     SLindex_Type i = *indices;
 
-	offset = sizeof_type * (SLuindex_Type)i;
-	if (-1 == transfer_n_elements (at, (VOID_STAR) new_data,
-				       (VOID_STAR) (src_data + offset),
-				       sizeof_type, 1, is_ptr))
-	  {
-	     SLang_free_array (new_at);
-	     return -1;
-	  }
+	     if (i < 0) 
+	       {
+		  i += num_elements;
+		  if (i < 0)
+		    i = num_elements;
+	       }
+	     if (i >= num_elements)
+	       {
+		  SLang_set_error (SL_Index_Error);
+		  goto return_error;
+	       }
 
-	new_data += sizeof_type;
-	indices++;
+	     offset = sizeof_type * (SLuindex_Type)i;
+	     if (-1 == transfer_n_elements (at, (VOID_STAR) new_data,
+					    (VOID_STAR) (src_data + offset),
+					    sizeof_type, 1, is_ptr))
+	       goto return_error;
+
+	     new_data += sizeof_type;
+	     indices++;
+	  }
      }
 
    return SLang_push_array (new_at, 1);
+   
+   return_error:
+   SLang_free_array (new_at);
+   return -1;
 }
 
 /* This is extremely ugly.  It is due to the fact that the index_objects
@@ -1455,6 +1559,84 @@ aput_from_indices (SLang_Array_Type *at,
    return ret;
 }
 
+#if SLANG_OPTIMIZE_FOR_SPEED
+static int aput_doubles_from_index_array (char *data_to_put, SLuindex_Type data_increment,
+					  SLindex_Type *indices, SLindex_Type *indices_max,
+					  double *dest_data, SLindex_Type num_elements)
+{
+   while (indices < indices_max)
+     {
+	SLindex_Type i = *indices;
+	     
+	if (i < 0) 
+	  {
+	     i += num_elements;
+	     if (i < 0)
+	       i = num_elements;
+	  }
+	if (i >= num_elements)
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     return -1;
+	  }
+	dest_data[i] = *(double *)data_to_put;
+	indices++;
+	data_to_put += data_increment;
+     }
+   return 0;
+}
+static int aput_floats_from_index_array (char *data_to_put, SLuindex_Type data_increment,
+					 SLindex_Type *indices, SLindex_Type *indices_max,
+					 float *dest_data, SLindex_Type num_elements)
+{
+   while (indices < indices_max)
+     {
+	SLindex_Type i = *indices;
+	     
+	if (i < 0) 
+	  {
+	     i += num_elements;
+	     if (i < 0)
+	       i = num_elements;
+	  }
+	if (i >= num_elements)
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     return -1;
+	  }
+	dest_data[i] = *(float *)data_to_put;
+	indices++;
+	data_to_put += data_increment;
+     }
+   return 0;
+}
+static int aput_ints_from_index_array (char *data_to_put, SLuindex_Type data_increment,
+				       SLindex_Type *indices, SLindex_Type *indices_max,
+				       int *dest_data, SLindex_Type num_elements)
+{
+   while (indices < indices_max)
+     {
+	SLindex_Type i = *indices;
+	     
+	if (i < 0) 
+	  {
+	     i += num_elements;
+	     if (i < 0)
+	       i = num_elements;
+	  }
+	if (i >= num_elements)
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     return -1;
+	  }
+	dest_data[i] = *(int *)data_to_put;
+	indices++;
+	data_to_put += data_increment;
+     }
+   return 0;
+}
+#endif
+
 static int
 aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 {
@@ -1494,34 +1676,62 @@ aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
    num_elements = (SLindex_Type) at->num_elements;
 
    ret = -1;
-   while (indices < indices_max)
+   switch (at->data_type)
      {
-	size_t offset;
-	SLindex_Type i = *indices;
-
-	if (i < 0) 
-	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     goto return_error;
-	  }
-
-	offset = sizeof_type * (SLuindex_Type)i;
-
-	if (-1 == transfer_n_elements (at, (VOID_STAR) (dest_data + offset),
-				       (VOID_STAR) data_to_put, sizeof_type, 1,
-				       is_ptr))
+#if SLANG_OPTIMIZE_FOR_SPEED
+# if SLANG_HAS_FLOAT
+      case SLANG_DOUBLE_TYPE:
+	if (-1 == aput_doubles_from_index_array (data_to_put, data_increment,
+						 indices, indices_max, 
+						 (double*)dest_data, num_elements))
 	  goto return_error;
+	break;
 
-	indices++;
-	data_to_put += data_increment;
+      case SLANG_FLOAT_TYPE:
+	if (-1 == aput_floats_from_index_array (data_to_put, data_increment,
+						indices, indices_max, 
+						(float*)dest_data, num_elements))
+	  goto return_error;
+	break;
+# endif
+      case SLANG_INT_TYPE:
+	if (-1 == aput_ints_from_index_array (data_to_put, data_increment,
+					      indices, indices_max, 
+					      (int*)dest_data, num_elements))
+	  goto return_error;
+	break;
+
+#endif 
+      default:
+	while (indices < indices_max)
+	  {
+	     size_t offset;
+	     SLindex_Type i = *indices;
+	     
+	     if (i < 0) 
+	       {
+		  i += num_elements;
+		  if (i < 0)
+		    i = num_elements;
+	       }
+	     if (i >= num_elements)
+	       {
+		  SLang_set_error (SL_Index_Error);
+		  goto return_error;
+	       }
+
+	     offset = sizeof_type * (SLuindex_Type)i;
+	     
+	     if (-1 == transfer_n_elements (at, (VOID_STAR) (dest_data + offset),
+					    (VOID_STAR) data_to_put, sizeof_type, 1,
+					    is_ptr))
+	       goto return_error;
+	     
+	     indices++;
+	     data_to_put += data_increment;
+	  }
      }
-
+   
    ret = 0;
    /* Drop */
 
@@ -1795,9 +2005,12 @@ static void sort_array (void)
 	  return;
 	
 #if SLANG_OPTIMIZE_FOR_SPEED
+#if SLANG_HAS_FLOAT
 	if (at->data_type == SLANG_DOUBLE_TYPE)
 	  sort_fun = double_sort_fun;
-	else if (at->data_type == SLANG_INT_TYPE)
+	else
+#endif
+	  if (at->data_type == SLANG_INT_TYPE)
 	  sort_fun = int_sort_fun;
 	else
 #endif
