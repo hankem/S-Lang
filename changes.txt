@@ -156,6 +156,8 @@ Changes since 2.0.6
     debugger step.
 66. src/slarray.c: Optimization added for index-array operations on
     double, float, and int arrays.
+67. src/slarith.c: Optimization added for boolean operations between
+    [U]Char_Types.
 
 {{{ Previous Versions
 

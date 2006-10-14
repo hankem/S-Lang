@@ -1290,6 +1290,25 @@ test_nulls_in_array ("[1,NULL]", 0);
 test_nulls_in_array ("[1,NULL,]", 0);
 test_nulls_in_array ("[1,NULL,2]", 0);
 
+define test_bool_ops ()
+{
+   variable a = typecast ([1,2,3,4,0], Char_Type);
+   variable b = typecast ([1,2,0,5,0], Char_Type);
+   variable i = where (a == b);
+   if (0 == eqs (i, [0,1,4]))
+     failed ("test_bool_ops: a==b");
+   i = where (a != b);
+   if (0 == eqs (i, [2,3]))
+     failed ("test_bool_ops: a!=b");
+   i = where (a or b);
+   if (0 == eqs (i, [0,1,2,3]))
+     failed ("test_bool_ops: a or b");
+   i = where (a and b);
+   if (0 == eqs (i, [0,1,3]))
+     failed ("test_bool_ops: a and b");
+}
+test_bool_ops ();
+
 print ("Ok\n");
 
 exit (0);

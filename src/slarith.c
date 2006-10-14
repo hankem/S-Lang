@@ -375,6 +375,8 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 
 #define GENERIC_UNARY_FUNCTION char_unary_op
 #define GENERIC_ARITH_UNARY_FUNCTION char_arith_unary_op
+#define GENERIC_BINARY_FUNCTION char_char_arith_bin_op
+#define JUST_BOOLEAN_BINARY_OPS
 #define GENERIC_BIT_OPERATIONS
 #define GENERIC_TYPE signed char
 #define ABS_FUNCTION abs
@@ -546,8 +548,20 @@ static int arith_bin_op (int op,
    SLtype c_type;
    int ret;
 
-   c_type = promote_to_common_type (a_type, b_type);
+   if ((a_type == b_type)
+       && ((a_type == SLANG_CHAR_TYPE) || (a_type == SLANG_UCHAR_TYPE)))
+     {
+	switch (op)
+	  {
+	   case SLANG_EQ:
+	   case SLANG_NE:
+	   case SLANG_AND:
+	   case SLANG_OR:
+	     return char_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	  }
+     }
 
+   c_type = promote_to_common_type (a_type, b_type);
    a_indx = TYPE_TO_TABLE_INDEX(a_type);
    b_indx = TYPE_TO_TABLE_INDEX(b_type);
    c_indx = TYPE_TO_TABLE_INDEX(c_type);
