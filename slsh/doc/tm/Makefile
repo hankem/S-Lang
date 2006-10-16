@@ -3,8 +3,8 @@
 # To create the SGML files, you will need to install the tm-utils
 # package.  See http://www.jedsoft.org/ for more information.
 #
-TM2SGML = /aluche/d1/web/tm-dist/bin/tmexpand
-MACRODIR = /aluche/d1/web/tm-dist/macros
+TM2SGML = $(HOME)/lib/tmexpand/bin/tmexpand
+MACRODIR = $(HOME)/lib/tmexpand/macros
 
 DOCBOOK2MAN = docbook2man
 

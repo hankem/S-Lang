@@ -3,9 +3,9 @@
 # To create the SGML files, you will need to install the tmexpand
 # package.  See http://www.jedsoft.org/ for more information.
 #
-TMEXPAND = /aluche/d1/web/tm-dist/bin/tmexpand
+TMEXPAND = $(HOME)/lib/tmexpand/bin/tmexpand
 TM2SGML = $(TMEXPAND)
-MACRODIR = /aluche/d1/web/tm-dist/macros
+MACRODIR = $(HOME)/lib/tmexpand/macros
 TM2HLP = $(TMEXPAND) -I$(MACRODIR) -Mslhlp
 
 TXT_FILES = slang.txt cslang.txt cref.txt slangfun.txt

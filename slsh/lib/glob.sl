@@ -1,16 +1,3 @@
-%!%+
-%\function{glob}
-%\synopsis{Find files using wildcards}
-%\usage{files = glob (pattern1, ..., patternN);
-%\description
-%  This function returns a list of files whose names match the specified
-%  globbing patterns.  A globbing pattern is one in which '?' matches a
-%  single character, and '*' matches 0 or more characters.
-%\example
-%   files = glob ("*.c", "*.h");
-%\seealso{glob_to_regexp}
-%!%-
-
 private define needs_globbing (path)
 {
    return (path != str_delete_chars (path, "*?["));
@@ -90,5 +77,9 @@ define slsh_main ()
      }
 }
 #endif
+
+$1 = path_concat (path_dirname (__FILE__), "help/glob.hlp");
+if (NULL != stat_file ($1))
+  add_doc_file ($1);
 
 provide ("glob");

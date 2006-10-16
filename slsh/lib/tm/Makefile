@@ -6,16 +6,18 @@
 TMEXPAND = $(HOME)/lib/tmexpand/bin/tmexpand
 MACRODIR = $(HOME)/lib/tmexpand/macros
 
-HLP_FILES = pngfuns.hlp pcrefuns.hlp sockfuns.hlp
+HLP_FILES = arrayfuns.hlp glob.hlp require.hlp structfuns.hlp
 
 all: help-files
 help-files: $(HLP_FILES)
-pngfuns.hlp: pngfuns.tm
-	$(TMEXPAND) -I$(MACRODIR) -Mslhlp pngfuns.tm pngfuns.hlp
-pcrefuns.hlp: pcrefuns.tm
-	$(TMEXPAND) -I$(MACRODIR) -Mslhlp pcrefuns.tm pcrefuns.hlp
-sockfuns.hlp: sockfuns.tm
-	$(TMEXPAND) -I$(MACRODIR) -Mslhlp sockfuns.tm sockfuns.hlp
+arrayfuns.hlp: arrayfuns.tm
+	$(TMEXPAND) -I$(MACRODIR) -Mslhlp arrayfuns.tm arrayfuns.hlp
+glob.hlp: glob.tm
+	$(TMEXPAND) -I$(MACRODIR) -Mslhlp glob.tm glob.hlp
+require.hlp: require.tm
+	$(TMEXPAND) -I$(MACRODIR) -Mslhlp require.tm require.hlp
+structfuns.hlp: structfuns.tm
+	$(TMEXPAND) -I$(MACRODIR) -Mslhlp structfuns.tm structfuns.hlp
 #----------------------------------------------------------------------------
 clean:
 	-rm -f *~ *.dvi *.log *.aux *.toc *.bak

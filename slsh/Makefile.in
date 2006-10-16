@@ -24,6 +24,7 @@ MKINSDIR	= ../autoconf/mkinsdir.sh
 #----------------------------------------------------------------------------
 SLSH_CONF_DIR	= @sysconfdir@
 SLSH_LIB_DIR	= @datadir@/slsh
+SLSH_HELP_DIR	= $(SLSH_LIB_DIR)/help
 SLSH_LOCALLIB_DIR = $(SLSH_LIB_DIR)/local-packages
 SLSH_SCRIPT_DIR	= $(SLSH_LIB_DIR)/scripts
 SCRIPTS		= jpegsize lsrpm sldb svnsh slprof
@@ -51,6 +52,7 @@ DEST_BIN_DIR	= $(DESTDIR)$(BIN_DIR)
 DEST_MAN_DIR	= $(DESTDIR)$(MAN_DIR)
 DEST_SLSH_CONF_DIR = $(DESTDIR)$(SLSH_CONF_DIR)
 DEST_SLSH_LIB_DIR  = $(DESTDIR)$(SLSH_LIB_DIR)
+DEST_SLSH_HELP_DIR = $(DESTDIR)$(SLSH_HELP_DIR)
 DEST_SLSH_LOCALLIB_DIR = $(DESTDIR)$(SLSH_LOCALLIB_DIR)
 DEST_SLSH_SCRIPT_DIR = $(DESTDIR)$(SLSH_SCRIPT_DIR)
 
@@ -81,6 +83,7 @@ install_directories:
 	$(MKINSDIR) $(DEST_MAN_DIR)
 	$(MKINSDIR) $(DEST_SLSH_CONF_DIR)
 	$(MKINSDIR) $(DEST_SLSH_LIB_DIR)
+	$(MKINSDIR) $(DEST_SLSH_HELP_DIR)
 	$(MKINSDIR) $(DEST_SLSH_LOCALLIB_DIR)
 	$(MKINSDIR) $(DEST_SLSH_SCRIPT_DIR)
 install_lib_files:
@@ -101,8 +104,17 @@ install_scripts:
 		  exit 1; \
 		fi; \
 	done
+install_help:
+	@for X in lib/help/*.hlp; \
+	do \
+		echo $(INSTALL_DATA) $$X $(DEST_SLSH_HELP_DIR); \
+		$(INSTALL_DATA) $$X $(DEST_SLSH_HELP_DIR); \
+		if [ "$$?" != "0" ]; then \
+		  exit 1; \
+		fi; \
+	done
 
-install: slsh install_directories install_lib_files install_scripts
+install: slsh install_directories install_lib_files install_scripts install_help
 	$(INSTALL) slsh $(DEST_BIN_DIR)/
 	$(INSTALL_DATA) lib/slsh.rc $(DEST_SLSH_CONF_DIR)/
 	echo 'prepend_to_slang_load_path("$(SLSH_LOCALLIB_DIR)");' >> $(DEST_SLSH_CONF_DIR)/slsh.rc

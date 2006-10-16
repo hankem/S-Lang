@@ -158,6 +158,10 @@ Changes since 2.0.6
     double, float, and int arrays.
 67. src/slarith.c: Optimization added for boolean operations between
     [U]Char_Types.
+68. lib/structfuns.sl: Typo in the documentation corrected (Doug Burke)
+69. lib/*.sl, lib/tm/*.tm, lib/help/*.hlp: Documentation for the
+    functions in *.sl has been moved to *.tm and integrated into the
+    help system.
 
 {{{ Previous Versions
 
