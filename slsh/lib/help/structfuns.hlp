@@ -1,0 +1,67 @@
+struct_filter
+
+ SYNOPSIS
+  Apply a filter to a struct
+
+ USAGE
+  struct_filter(Struct_Type s, Int_Type i)
+
+ DESCRIPTION
+  This function applies the filter `i' to the fields of a structure
+  by performing the operation
+
+    s.field = s.field[i];
+
+  on each array field of the structure.  Scalar fields will not be modified.
+
+ SEE ALSO
+  where
+
+--------------------------------------------------------------
+
+struct_combine
+
+ SYNOPSIS
+  Combine two or more structures
+
+ USAGE
+  new_s = struct_combine (s1, s2, ...)
+
+ DESCRIPTION
+  This function creates a new structure from two or more structures
+  `s1', `s2',....  The new structure will have fields formed by the
+  union of the fields of the input structures.  The new structure fields will
+  be given values that correspond to the fields of the input structures.  If
+  more than one structure has the same field name, the value of the field will
+  be given by the last structure.
+
+  If an input value is a string, then it will be interpreted as a structure
+  with a single field of the corresponding name.  This is a useful feature
+  when one wants to expand a structure with new field names, e.g.,
+
+    s = struct { foo, bar };
+    t = struct_combine (s, "baz");   % t = struct {foo, bar, baz};
+
+
+ SEE ALSO
+  get_struct_field_names
+
+--------------------------------------------------------------
+
+struct_field_exists
+
+ SYNOPSIS
+  Determine whether or not a structure contains a specified field
+
+ USAGE
+  Int_Type struct_field_exists (Struct_Type s, String_Type f)
+
+ DESCRIPTION
+ This function may be used to determine if a structure contains a field with
+ a specfied name.  It returns 0 if the structure does not contain the field,
+ or non-zero if it does.
+
+ SEE ALSO
+  get_struct_field_names
+
+--------------------------------------------------------------
