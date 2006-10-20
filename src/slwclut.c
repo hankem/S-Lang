@@ -520,6 +520,10 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	   case 'w':	       /* alphanumeric */
 	     lex->e.char_class = SLCHARCLASS_ALPHA|SLCHARCLASS_XDIGIT;
 	     break;
+	     
+	   default:
+	     SLang_verror (SL_INVALID_PARM, "Invalid character class '%c'.", char_class);
+	     return NULL;
 	  }
 	return u;
      }

@@ -162,6 +162,8 @@ Changes since 2.0.6
 69. lib/*.sl, lib/tm/*.tm, lib/help/*.hlp: Documentation for the
     functions in *.sl has been moved to *.tm and integrated into the
     help system.
+70. src/slwclut.c: a missing "default" label in a switch statement was
+    causing invalid character class specifiers to pass.
 
 {{{ Previous Versions
 
