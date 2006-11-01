@@ -164,6 +164,9 @@ Changes since 2.0.6
     help system.
 70. src/slwclut.c: a missing "default" label in a switch statement was
     causing invalid character class specifiers to pass.
+71. src/slang.c: Optimization added for struct method calls.  In
+    addition, linenumber information was propagated for such function
+    calls to permit better interaction with the debugger.
 
 {{{ Previous Versions
 

@@ -1959,6 +1959,20 @@ static int push_struct_field (char *name)
    return (*cl->cl_sget) ((SLtype) type, name);
 }
 
+static int inner_interp(register SLBlock_Type *);
+static int inner_interp_nametype (SLang_Name_Type *nt, int linenum)
+{
+   SLBlock_Type bc_blks[2];
+
+   bc_blks[0].b.nt_blk = nt;
+   bc_blks[0].bc_main_type = (_pSLang_BC_Type)nt->name_type;
+   bc_blks[0].bc_sub_type = 0;
+   bc_blks[0].linenum = linenum;
+   bc_blks[1].bc_main_type = SLANG_BC_LAST_BLOCK;
+   
+   return inner_interp(bc_blks);
+}
+
 /*  This arises from code such as a.f(x,y) with the following on the stack:
  * 
  *     __args x y a
@@ -1968,7 +1982,7 @@ static int push_struct_field (char *name)
  *     __args a x y _eargs (@a.field)
  * 
  */
-static int do_struct_method (char *name)
+static int do_struct_method (char *name, int linenum)
 {
    SLang_Object_Type obj;
    SLtype type;
@@ -1997,6 +2011,13 @@ static int do_struct_method (char *name)
      }
 
    type = obj.data_type;
+   if (type == SLANG_REF_TYPE)
+     {
+	SLang_Ref_Type *ref = (SLang_Ref_Type *)obj.v.ref;
+	if ((ref != NULL) && (ref->is_global))
+	  return inner_interp_nametype (ref->v.nt, linenum);
+     }
+
    GET_CLASS(cl,type);
    ret = (*cl->cl_dereference)(type, (VOID_STAR) &obj.v);
    SLang_free_object (&obj);
@@ -2300,8 +2321,6 @@ static int execute_intrinsic_fun (SLang_Intrin_Fun_Type *objf)
 
    return _pSL_decrement_frame_pointer ();
 }
-
-static int inner_interp(register SLBlock_Type *);
 
 /* Switch_Obj_Ptr points to the NEXT available free switch object */
 static SLang_Object_Type Switch_Objects[SLANG_MAX_NESTED_SWITCH];
@@ -3195,19 +3214,6 @@ static void do_arith_binary (SLang_Arith_Binary_Type *nt)
      do_traceback (nt->name);
 }
 
-static int inner_interp_nametype (SLang_Name_Type *nt)
-{
-   SLBlock_Type bc_blks[2];
-
-   bc_blks[0].b.nt_blk = nt;
-   bc_blks[0].bc_main_type = (_pSLang_BC_Type)nt->name_type;
-   bc_blks[0].bc_sub_type = 0;
-   bc_blks[0].linenum = 0;
-   bc_blks[1].bc_main_type = SLANG_BC_LAST_BLOCK;
-   
-   return inner_interp(bc_blks);
-}
-
 int _pSLang_dereference_ref (SLang_Ref_Type *ref)
 {
    if (ref == NULL)
@@ -3227,7 +3233,7 @@ int _pSLang_dereference_ref (SLang_Ref_Type *ref)
 	return _pSLpush_slang_obj (ref->v.local_obj);
      }
 
-   (void) inner_interp_nametype (ref->v.nt);
+   (void) inner_interp_nametype (ref->v.nt, 0);
    return 0;
 }
 
@@ -3879,7 +3885,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     (void) push_struct_field (addr->b.s_blk);
 	     break;
 	   case SLANG_BC_METHOD:
-	     do_struct_method (addr->b.s_blk);
+	     do_struct_method (addr->b.s_blk, addr->linenum);
 	     break;
 #if SLANG_OPTIMIZE_FOR_SPEED
 	   case SLANG_BC_LVARIABLE_AGET:
@@ -5664,7 +5670,7 @@ int SLexecute_function (SLang_Name_Type *nt)
       case SLANG_APP_UNARY:
       case SLANG_ARITH_UNARY:
       case SLANG_ARITH_BINARY:
-	inner_interp_nametype (nt);
+	inner_interp_nametype (nt, 0);
 	break;
 
       default:
