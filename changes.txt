@@ -167,6 +167,8 @@ Changes since 2.0.6
 71. src/slang.c: Optimization added for struct method calls.  In
     addition, linenumber information was propagated for such function
     calls to permit better interaction with the debugger.
+72. slsh/lib/profile.sl: profile_on was not being called with an
+    argument.
 
 {{{ Previous Versions
 

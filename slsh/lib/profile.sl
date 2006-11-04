@@ -115,7 +115,7 @@ private define calibrate_fun_0 (n)
      }
 }
 
-profile_on ();
+profile_on (0);
 private define calibrate_fun_1 (n)
 {
    loop (n) 
