@@ -617,12 +617,25 @@ where
   Get indices where a numeric array is non-zero
 
  USAGE
-  Array_Type where (Array_Type a)
+  Array_Type where (Array_Type a [, Ref_Type jp])
 
  DESCRIPTION
   The `where' function examines a numeric array `a' and
   returns an integer array giving the indices of `a'
-  where the corresponding element of `a' is non-zero.
+  where the corresponding element of `a' is non-zero.  The
+  function accepts an optional Ref_Type argument that will be
+  set to complement set of indices, that is, the indices where
+  `a' is zero.  In fact
+
+     i = where (a);
+     j = where (not a);
+
+  and
+
+     i = where (a, &j);
+
+  are equivalent, but the latter form is prefered since it executes
+  about twice as fast as the former.
 
   Although this function may appear to be simple or even trivial, it
   is arguably one of the most important and powerful functions for
@@ -644,6 +657,9 @@ where
   the elements of `A' that are less than 0.  Finally, the
   last statement replaces those elements of `A' by the cosine of the
   corresponding elements of `X'.
+
+ NOTES
+  Support for the optional argument was added to version 2.1.0.
 
  SEE ALSO
   wherefirst, wherelast, array_info, array_shape, _isnull

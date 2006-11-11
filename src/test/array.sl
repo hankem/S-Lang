@@ -1309,6 +1309,26 @@ define test_bool_ops ()
 }
 test_bool_ops ();
 
+private define test_where_2_args (a)
+{
+   variable i0, j0, i1, j1;
+   i0 = where (a);
+   j0 = where (not a);
+   i1 = where (a, &j1);
+   
+   if ((not eqs (i0, i1)) or (not eqs (j0, j1)))
+     {
+	failed ("where_2_args");
+     }
+}
+
+test_where_2_args (([1:10] mod 2)==0);
+test_where_2_args (([1:10] mod 2)==1);
+test_where_2_args (([1:10] mod 3)==0);
+test_where_2_args (([1:10] mod 3)==1);
+test_where_2_args (([1:10] mod 3)==2);
+test_where_2_args (([1:-1] mod 2)==2);
+
 print ("Ok\n");
 
 exit (0);

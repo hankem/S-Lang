@@ -1,4 +1,19 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.0.7
+1. src/slrline.c: SLrline_bol/eol functions were missing from the
+   interface.
+2. src/slarray.c: An optional reference argument may be passed to the
+   where function to get the complement indices.  That is:
+   
+       i = where (foo, &j);
+   
+   is equivalent to 
+
+       i = where (foo); 
+       j = where (not foo);
+
+{{{ Previous Versions
+
 Changes since 2.0.6
 1. src/slmath.c: if a double precision array was passed to nint, it
    was treated as a single precision one leading to a core dump.
@@ -169,8 +184,6 @@ Changes since 2.0.6
     calls to permit better interaction with the debugger.
 72. slsh/lib/profile.sl: profile_on was not being called with an
     argument.
-
-{{{ Previous Versions
 
 Changes since 2.0.5
 1. src/slmath.c: nint was returning the wrong value for numbers 0.5<=x<1.

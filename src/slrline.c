@@ -116,13 +116,13 @@ static int check_space (SLrline_Type *This_RLI, unsigned int dn)
 
 
 /* editing functions */
-static int rl_bol (SLrline_Type *This_RLI)
+int SLrline_bol (SLrline_Type *This_RLI)
 {
    This_RLI->point = 0;
    return 0;
 }
 
-static int rl_eol (SLrline_Type *This_RLI)
+int SLrline_eol (SLrline_Type *This_RLI)
 {
    This_RLI->point = This_RLI->len;
    return 0;
@@ -310,7 +310,7 @@ static int rl_deleol (SLrline_Type *This_RLI)
 
 static int rl_delete_line (SLrline_Type *This_RLI)
 {
-   rl_bol (This_RLI);
+   (void) SLrline_bol (This_RLI);
    rl_deleol (This_RLI);
    return 0;
 }
@@ -1024,8 +1024,8 @@ static SLKeymap_Function_Type SLReadLine_Functions[] =
 {
    AKEY("up", rl_prev_line),
    AKEY("down", rl_next_line),
-   AKEY("bol", rl_bol),
-   AKEY("eol", rl_eol),
+   AKEY("bol", SLrline_bol),
+   AKEY("eol", SLrline_eol),
    AKEY("right", rl_right),
    AKEY("left", rl_left),
    AKEY("self_insert", rl_self_insert),
@@ -1159,22 +1159,22 @@ SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
 	SLkm_define_key  ("^@M", (FVOID_STAR) rl_right, RL_Keymap);
 	SLkm_define_key  ("^@K", (FVOID_STAR) rl_left, RL_Keymap);
 	SLkm_define_key  ("^@S", (FVOID_STAR) rl_del, RL_Keymap);
-	SLkm_define_key  ("^@O", (FVOID_STAR) rl_eol, RL_Keymap);
-	SLkm_define_key  ("^@G", (FVOID_STAR) rl_bol, RL_Keymap);
+	SLkm_define_key  ("^@O", (FVOID_STAR) SLrline_eol, RL_Keymap);
+	SLkm_define_key  ("^@G", (FVOID_STAR) SLrline_bol, RL_Keymap);
 
 	SLkm_define_key  ("\xE0H", (FVOID_STAR) rl_prev_line, RL_Keymap);
 	SLkm_define_key  ("\xE0P", (FVOID_STAR) rl_next_line, RL_Keymap);
 	SLkm_define_key  ("\xE0M", (FVOID_STAR) rl_right, RL_Keymap);
 	SLkm_define_key  ("\xE0K", (FVOID_STAR) rl_left, RL_Keymap);
 	SLkm_define_key  ("\xE0S", (FVOID_STAR) rl_del, RL_Keymap);
-	SLkm_define_key  ("\xE0O", (FVOID_STAR) rl_eol, RL_Keymap);
-	SLkm_define_key  ("\xE0G", (FVOID_STAR) rl_bol, RL_Keymap);
+	SLkm_define_key  ("\xE0O", (FVOID_STAR) SLrline_eol, RL_Keymap);
+	SLkm_define_key  ("\xE0G", (FVOID_STAR) SLrline_bol, RL_Keymap);
 #endif
 	SLkm_define_key  ("^C", (FVOID_STAR) rl_abort, RL_Keymap);
-	SLkm_define_key  ("^E", (FVOID_STAR) rl_eol, RL_Keymap);
+	SLkm_define_key  ("^E", (FVOID_STAR) SLrline_eol, RL_Keymap);
 	SLkm_define_key  ("^G", (FVOID_STAR) rl_abort, RL_Keymap);
 	SLkm_define_key  ("^I", (FVOID_STAR) rl_self_insert, RL_Keymap);
-	SLkm_define_key  ("^A", (FVOID_STAR) rl_bol, RL_Keymap);
+	SLkm_define_key  ("^A", (FVOID_STAR) SLrline_bol, RL_Keymap);
 	SLkm_define_key  ("\r", (FVOID_STAR) rl_enter, RL_Keymap);
 	SLkm_define_key  ("\n", (FVOID_STAR) rl_enter, RL_Keymap);
 	SLkm_define_key  ("^K", (FVOID_STAR) rl_deleol, RL_Keymap);

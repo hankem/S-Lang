@@ -3151,7 +3151,14 @@ static void array_where (void)
    SLindex_Type *b_data;
    SLuindex_Type i, num_elements;
    SLindex_Type b_num;
+   SLang_Ref_Type *ref = NULL;
 
+   if (SLang_Num_Function_Args == 2)
+     {
+	if (-1 == SLang_pop_ref (&ref))
+	  return;
+     }
+   
    if (NULL == (at = pop_bool_array ()))
      return;
 
@@ -3167,16 +3174,41 @@ static void array_where (void)
 
    b_data = (SLindex_Type *) bt->data;
 
-   i = 0;
-   while (b_num)
+   if (ref != NULL)
      {
-	if (a_data[i] != 0)
-	  {
-	     *b_data++ = i;
-	     b_num--;
-	  }
+	SLindex_Type *c_data;
+	SLindex_Type c_num;
+	SLang_Array_Type *ct;
 
-	i++;
+	c_num = num_elements - b_num;
+	if (NULL == (ct = SLang_create_array1 (SLANG_ARRAY_INDEX_TYPE, 0, NULL, &c_num, 1, 1)))
+	  goto return_error;
+	c_data = (SLindex_Type *) ct->data;
+
+	for (i = 0; i < num_elements; i++)
+	  {
+	     if (a_data[i] != 0)
+	       *b_data++ = i;
+	     else
+	       *c_data++ = i;
+	  }
+	(void) SLang_assign_to_ref (ref, SLANG_ARRAY_TYPE, &ct);
+	/* Let any error propagate */
+	SLang_free_array (ct);
+	/* drop */
+     }
+   else
+     {
+	i = 0;
+	while (b_num)
+	  {
+	     if (a_data[i] != 0)
+	       {
+		  *b_data++ = i;
+		  b_num--;
+	       }
+	     i++;
+	  }
      }
 
    (void) SLang_push_array (bt, 0);
@@ -3185,6 +3217,8 @@ static void array_where (void)
    return_error:
    SLang_free_array (at);
    SLang_free_array (bt);
+   if (ref != NULL)
+     SLang_free_ref (ref);
 }
 
 /* Up to the caller to ensure that ind_at is an index array */

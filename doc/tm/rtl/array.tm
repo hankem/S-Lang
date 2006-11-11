@@ -448,11 +448,24 @@
 
 \function{where}
 \synopsis{Get indices where a numeric array is non-zero}
-\usage{Array_Type where (Array_Type a)}
+\usage{Array_Type where (Array_Type a [, Ref_Type jp])}
 \description
   The \ifun{where} function examines a numeric array \exmp{a} and
   returns an integer array giving the indices of \exmp{a}
-  where the corresponding element of \exmp{a} is non-zero.
+  where the corresponding element of \exmp{a} is non-zero.  The
+  function accepts an optional \dtype{Ref_Type} argument that will be
+  set to complement set of indices, that is, the indices where
+  \exmp{a} is zero.  In fact
+#v+
+     i = where (a);
+     j = where (not a);
+#v-
+  and
+#v+
+     i = where (a, &j);
+#v-
+  are equivalent, but the latter form is prefered since it executes
+  about twice as fast as the former.
 
   Although this function may appear to be simple or even trivial, it
   is arguably one of the most important and powerful functions for
@@ -472,7 +485,9 @@
   The third statement uses the \ifun{where} function to get the indices of
   the elements of \exmp{A} that are less than 0.  Finally, the
   last statement replaces those elements of \exmp{A} by the cosine of the
-  corresponding elements of \exmp{X}.  
+  corresponding elements of \exmp{X}.
+\notes
+  Support for the optional argument was added to version 2.1.0.
 \seealso{wherefirst, wherelast, array_info, array_shape, _isnull}
 \done
 
