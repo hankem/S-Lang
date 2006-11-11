@@ -1729,6 +1729,9 @@ static void expression (_pSLang_Token_Type *ctok)
 /* priority levels of binary operations */
 static unsigned char Binop_Level[] =
 {
+/* SC_AND_TOKEN */	10,
+/* SC_OR_TOKEN */	12,
+/* POW_TOKEN */		0,  /* This case is handled in unary expression so that -x^2 == -(x^2) */
 /* ADD_TOKEN */		2,
 /* SUB_TOKEN */		2,
 /* MUL_TOKEN */		1,
@@ -1740,7 +1743,7 @@ static unsigned char Binop_Level[] =
 /* EQ_TOKEN */		5,
 /* NE_TOKEN */		5,
 /* AND_TOKEN */		9,
-/* OR_TOKEN */		10,
+/* OR_TOKEN */		11,
 /* MOD_TOKEN */		1,
 /* BAND_TOKEN */	6,
 /* SHL_TOKEN */		3,
@@ -1749,6 +1752,71 @@ static unsigned char Binop_Level[] =
 /* BOR_TOKEN */		8,
 /* POUND_TOKEN */	1  /* Matrix Multiplication */
 };
+
+static void handle_binary_sequence (_pSLang_Token_Type *, unsigned char);
+static void handle_sc_sequence (_pSLang_Token_Type *ctok)
+{
+   unsigned char type = ctok->type;
+   unsigned char level = Binop_Level[type - FIRST_BINARY_OP];
+   
+   while ((ctok->type == type) && (_pSLang_Error == 0))
+     {
+	append_token_of_type (OBRACE_TOKEN);
+	get_token (ctok);
+	unary_expression (ctok);
+	handle_binary_sequence (ctok, level);
+	append_token_of_type (CBRACE_TOKEN);
+     }
+   append_token_of_type (type);
+}
+
+
+static void handle_binary_sequence (_pSLang_Token_Type *ctok, unsigned char max_level)
+{
+   unsigned char op_stack [64];
+   unsigned char level_stack [64];
+   unsigned char level;
+   unsigned int op_num;
+   unsigned char type;
+
+   op_num = 0;
+   type = ctok->type;
+
+   while ((_pSLang_Error == 0)
+	  && (IS_BINARY_OP(type)))
+     {
+	level = Binop_Level[type - FIRST_BINARY_OP];
+	if (level >= max_level)
+	  break;
+
+	while ((op_num > 0) && (level_stack [op_num - 1] <= level))
+	  append_token_of_type (op_stack [--op_num]);
+
+	if ((type == SC_AND_TOKEN) || (type == SC_OR_TOKEN))
+	  {
+	     handle_sc_sequence (ctok);
+	     type = ctok->type;
+	     continue;
+	  }
+
+	if (op_num >= sizeof (op_stack) - 1)
+	  {
+	     _pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Binary op stack overflow", ctok, 0);
+	     return;
+	  }
+
+	op_stack [op_num] = type;
+	level_stack [op_num] = level;
+	op_num++;
+
+	get_token (ctok);
+	unary_expression (ctok);
+	type = ctok->type;
+     }
+
+   while (op_num > 0)
+     append_token_of_type(op_stack[--op_num]);
+}
 
 /* % Note: simple-expression groups operators OP1 at same level.  The
  * % actual implementation will not do this.
@@ -1768,10 +1836,6 @@ static unsigned char Binop_Level[] =
 static void simple_expression (_pSLang_Token_Type *ctok)
 {
    unsigned char type;
-   unsigned char op_stack [64];
-   unsigned char level_stack [64];
-   unsigned char level;
-   unsigned int op_num;
 
    switch (ctok->type)
      {
@@ -1814,33 +1878,7 @@ static void simple_expression (_pSLang_Token_Type *ctok)
    if (SEMICOLON_TOKEN == (type = ctok->type))
      return;
 
-   op_num = 0;
-
-   while ((_pSLang_Error == 0)
-	  && (IS_BINARY_OP(type)))
-     {
-	level = Binop_Level[type - FIRST_BINARY_OP];
-
-	while ((op_num > 0) && (level_stack [op_num - 1] <= level))
-	  append_token_of_type (op_stack [--op_num]);
-
-	if (op_num >= sizeof (op_stack) - 1)
-	  {
-	     _pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Binary op stack overflow", ctok, 0);
-	     return;
-	  }
-
-	op_stack [op_num] = type;
-	level_stack [op_num] = level;
-	op_num++;
-
-	get_token (ctok);
-	unary_expression (ctok);
-	type = ctok->type;
-     }
-
-   while (op_num > 0)
-     append_token_of_type(op_stack[--op_num]);
+   handle_binary_sequence (ctok, 0xFF);
 }
 
 /* unary-expression:
@@ -2267,12 +2305,13 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	     token_list_element_exchange (start_pos, end_pos);
 	     break;
 #endif
+#if 1
 	   case POW_TOKEN:
 	     get_token (ctok);
 	     unary_expression (ctok);
 	     append_token_of_type (POW_TOKEN);
 	     break;
-
+#endif
 	   default:
 	     return;
 	  }

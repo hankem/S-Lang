@@ -367,6 +367,7 @@
 @src/test/req.sl
 @src/test/reqfoo.sl
 @src/test/selfload.sl
+@src/test/scircuit.sl
 @src/test/signal.sl
 @src/test/sltest.c
 @src/test/sscanf.sl

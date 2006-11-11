@@ -2609,12 +2609,9 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
    /* do_traceback (loop_name, NULL, -1); */
 }
 
-static void lang_do_and_orelse (int stype, SLBlock_Type *addr, SLBlock_Type *addr_max)
+static void lang_do_and_orelse (int is_or, SLBlock_Type *addr, SLBlock_Type *addr_max)
 {
    int test = 0;
-   int is_or;
-
-   is_or = (stype == SLANG_BCST_ORELSE);
 
    while (addr <= addr_max)
      {
@@ -2641,7 +2638,7 @@ static void lang_do_and_orelse (int stype, SLBlock_Type *addr, SLBlock_Type *add
 
 	addr++;
      }
-   push_int_object (SLANG_INT_TYPE, test);
+   push_char_object (SLANG_CHAR_TYPE, (char) test);
 }
 
 
@@ -4138,13 +4135,40 @@ static int inner_interp (SLBlock_Type *addr_start)
 		  block = NULL;
 		  break;
 
+		case SLANG_BCST_SC_AND:
+		    {
+		       int i;
+		       if ((0 == pop_ctrl_integer (&i)) && (i == 0))
+			 {
+			    (void) push_char_object (SLANG_CHAR_TYPE, 0);
+			    block = NULL;
+			    break;
+			 }
+		    }
+		  /* drop */
 		case SLANG_BCST_ANDELSE:
-		case SLANG_BCST_ORELSE:
 		  if (block == NULL) block = addr;
-		  lang_do_and_orelse (addr->bc_sub_type, block, addr);
+		  lang_do_and_orelse (0, block, addr);
 		  block = NULL;
 		  break;
-		  
+
+		case SLANG_BCST_SC_OR:
+		    {
+		       int i;
+		       if ((0 == pop_ctrl_integer (&i)) && i)
+			 {
+			    (void) push_char_object (SLANG_CHAR_TYPE, (char)i);
+			    block = NULL;
+			    break;
+			 }
+		    }
+		  /* drop */
+		case SLANG_BCST_ORELSE:
+		  if (block == NULL) block = addr;
+		  lang_do_and_orelse (1, block, addr);
+		  block = NULL;
+		  break;
+
 		case SLANG_BCST_TRY:
 		  do_try (block, addr);
 		  block = NULL;
@@ -7205,6 +7229,14 @@ static void compile_directive_mode (_pSLang_Token_Type *t)
 	
       case TRY_TOKEN:
 	bc_sub_type = SLANG_BCST_TRY;
+	break;
+	
+      case SC_OR_TOKEN:
+	bc_sub_type = SLANG_BCST_SC_OR;
+	break;
+
+      case SC_AND_TOKEN:
+	bc_sub_type = SLANG_BCST_SC_AND;
 	break;
 
       default:

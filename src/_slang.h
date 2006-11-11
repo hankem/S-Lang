@@ -351,6 +351,8 @@ _pSLang_BC_Type;
 #define SLANG_BCST_ORELSE	0x24
 #define SLANG_BCST_SWITCH	0x25
 #define SLANG_BCST_NOTELSE	0x26
+#define SLANG_BCST_SC_OR	0x27
+#define SLANG_BCST_SC_AND	0x28
 
 /* assignment (SLANG_BC_SET_*_LVALUE) subtypes.  The order MUST correspond
  * to the assignment token order with the ASSIGN_TOKEN as the first!
@@ -1124,10 +1126,11 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define NAMESPACE_TOKEN	0x34
 
 /* Operators */
-#define POW_TOKEN	0x38
-
 /* The order here must match the order in the Binop_Level table in slparse.c */
-#define FIRST_BINARY_OP	0x39
+#define FIRST_BINARY_OP	0x36
+#define SC_AND_TOKEN	0x36
+#define SC_OR_TOKEN	0x37
+#define POW_TOKEN	0x38
 #define ADD_TOKEN	0x39
 #define SUB_TOKEN	0x3a
 #define TIMES_TOKEN	0x3b
@@ -1147,7 +1150,6 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define BXOR_TOKEN	0x49
 #define BOR_TOKEN	0x4a
 #define POUND_TOKEN	0x4b	       /* matrix multiplication */
-
 #define LAST_BINARY_OP	 0x4b
 #define IS_BINARY_OP(t)	 ((t >= FIRST_BINARY_OP) && (t <= LAST_BINARY_OP))
 

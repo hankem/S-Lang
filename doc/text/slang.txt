@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language
   John E. Davis, davis@space.mit.edu
-  May 17, 2006
+  Nov 11, 2006
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -1377,27 +1377,34 @@
 
   [1m7.2.3.  Boolean Operators[0m
 
-  [1mS-Lang [22msupports two boolean binary operators: or and and, which for
-  most data types, return a boolean result. In particular, the or
-  operator returns a non-zero value (boolean TRUE) if either of its
-  operands are non-zero, otherwise it produces zero (boolean FALSE).
-  The and operator produces a non-zero value if and only if both its
-  operands are non-zero, otherwise it produces zero.  If either of the
-  operands is an array then a corresponding array of boolean values will
-  result.  This is explained in more detail in the section on arrays.
+  [1mS-Lang [22msupports four boolean binary operators: or, and, ||, and &&,
+  which for most data types, return a boolean result.  In particular,
+  the or and || operators return a non-zero value (boolean TRUE) if
+  either of their operands are non-zero, otherwise they produce zero
+  (boolean FALSE).  The and and && operators produce a non-zero value if
+  and only if both their operands are non-zero, otherwise they produce
+  zero.
 
-  Neither of these operators perform the so-called boolean short-circuit
-  evaluation.  For example, consider the expression:
+  Unlike the operators && and ||, the and and or operators do not
+  perform the so-called boolean short-circuit evaluation.  For example,
+  consider the expression:
 
              (x != 0) and (1/x > 10)
 
   Here, if x were to have a value of zero, a division by zero error
   would occur because even though x!=0 evaluates to zero, the and opera-
   tor is not short-circuited and the 1/x expression would still be
-  evaluated.  Although these operators are not short-circuited, [1mS-Lang[0m
-  does have another mechanism of performing short-circuit boolean evalu-
-  ation via the orelse and andelse expressions.  See below for informa-
-  tion about these constructs.
+  evaluated.  This problem can be avoided using the short-circuiting &&
+  operator:
+
+            (x != 0) && (1/x > 10)
+
+  Another difference between the short-circuiting (&&,||) and the non-
+  short-circuiting operators (and,or) is that the short-circuiting forms
+  work only with integer or boolean types.  In contrast, if either of
+  the operands of the and or or operators is an array then a correspond-
+  ing array of boolean values will result.  This is explained in more
+  detail in the section on arrays.
 
   [1m7.2.4.  Bitwise Operators[0m
 
@@ -1440,11 +1447,11 @@
   bit: if it is 0 the buffer has not been modified, otherwise it has
   been modified.  Thus we can create the function,
 
-            define is_buffer_modified ()
-            {
-               variable flags = get_buffer_flags ();
-               return (flags & 1);
-            }
+       define is_buffer_modified ()
+       {
+          variable flags = get_buffer_flags ();
+          return (flags & 1);
+       }
 
   where the integer 1 has been used since it is represented as an object
   with all bits unset, except for the zeroth one, which is set.   (At
@@ -1491,15 +1498,15 @@
   [4moperands[24m [4mof[24m [4ma[24m [4mbinary[24m [4mexpression[24m [4mcan[24m [4mreturn[24m [4mmultiple[24m [4mvalues,[24m [4mand[24m [4mthat[0m
   [4moperand[24m [4mmust[24m [4mbe[24m [4mthe[24m [4mfirst[24m [4mone,[24m [4mnot[24m [4mthe[24m [4msecond.[24m  For example,
 
-      define read_line (fp)
-      {
-         variable line, status;
+           define read_line (fp)
+           {
+              variable line, status;
 
-         status = fgets (&line, fp);
-         if (status == -1)
-           return -1;
-         return (line, status);
-      }
+              status = fgets (&line, fp);
+              if (status == -1)
+                return -1;
+              return (line, status);
+           }
 
   defines a function, read_line that takes a single argument specifying
   a handle to an open file, and returns one or two values, depending
@@ -1538,10 +1545,10 @@
   point value, the other will be converted to a floating point value,
   and a floating point result be produced.  For example:
 
-        11 / 2           --> 5   (integer)
-        11 / 2.0         --> 5.5 (double)
-        11.0 / 2         --> 5.5 (double)
-        11.0 / 2.0       --> 5.5 (double)
+             11 / 2           --> 5   (integer)
+             11 / 2.0         --> 5.5 (double)
+             11.0 / 2         --> 5.5 (double)
+             11.0 / 2.0       --> 5.5 (double)
 
   Sometimes to achive the desired result, it is necessary to explicitly
   convert from one data type to another.  For example, suppose that a
@@ -1553,6 +1560,9 @@
              x = a/double(b);
 
   [1m7.4.  Short Circuit Boolean Evaluation[0m
+
+  [1mAs of S-Lang [22mversion 2.1, use of the andelse and orelse have been
+  deprecated in favor of the && and || short-circuiting operators.
 
   The boolean operators or and and [4mare[24m [4mnot[24m [4mshort[24m [4mcircuited[24m as they are
   in some languages.  [1mS-Lang [22muses orelse and andelse expressions for
@@ -1576,9 +1586,9 @@
   causing division by zero. For this case, the andelse expression could
   be used to avoid the problem:
 
-             if (andelse
-                 {x != 0}
-                 {1 / x > 10})  do_something ();
+        if (andelse
+            {x != 0}
+            {1 / x > 10})  do_something ();
 
   [1m8.  Statements[0m
 
@@ -1784,8 +1794,10 @@
 
   [1m8.3.1.4.  orelse, andelse[0m
 
-  These constructs were discussed earlier.  The syntax for the orelse
-  statement is:
+  [1mAs of S-Lang [22mversion 2.1, use of the andelse and orelse have been
+  deprecated in favor of the && and || short-circuiting operators.
+
+  The syntax for the orelse statement is:
 
        orelse {[4minteger-expression-1[24m} ... {[4minteger-expression-n[24m}
 

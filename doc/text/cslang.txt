@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide, V2.0.4
   John E. Davis, davis@space.mit.edu
-  May 12, 2006
+  Nov 11, 2006
   ____________________________________________________________
 
                             [1mTable of Contents[0m

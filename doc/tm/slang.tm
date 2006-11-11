@@ -1313,17 +1313,17 @@
 
 \sect1{Boolean Operators} #%{{{
 
-   \slang supports two boolean binary operators: \exmp{or} and
-   \exmp{and}, which for most data types, return a boolean result. In
-   particular, the \exmp{or} operator returns a non-zero value
-   (boolean TRUE) if either of its operands are non-zero, otherwise it
-   produces zero (boolean FALSE).  The \exmp{and} operator produces a
-   non-zero value if and only if both its operands are non-zero,
-   otherwise it produces zero.  If either of the operands is an array 
-   then a corresponding array of boolean values will result.  This is
-   explained in more detail in the section on arrays.
-
-   Neither of these operators perform the so-called boolean
+   \slang supports four boolean binary operators: \exmp{or}, 
+   \exmp{and}, \exmp{||}, and \exmp{&&}, which for most data types,
+   return a boolean result.  In particular, the \exmp{or} and
+   \exmp{||} operators return a non-zero value (boolean TRUE) if
+   either of their operands are non-zero, otherwise they produce zero
+   (boolean FALSE).  The \exmp{and} and \exmp{&&} operators produce a
+   non-zero value if and only if both their operands are non-zero,
+   otherwise they produce zero.  
+   
+   Unlike the operators \exmp{&&} and \exmp{||}, the \exmp{and} and
+   \exmp{or} operators do not perform the so-called boolean
    short-circuit evaluation.  For example, consider the expression:
 #v+
       (x != 0) and (1/x > 10)
@@ -1331,11 +1331,18 @@
    Here, if \exmp{x} were to have a value of zero, a division by zero error
    would occur because even though \exmp{x!=0} evaluates to zero, the
    \var{and} operator is not short-circuited and the \exmp{1/x} expression
-   would still be evaluated.  Although these operators are not
-   short-circuited, \slang does have another mechanism of performing
-   short-circuit boolean evaluation via the \kw{orelse} and
-   \kw{andelse} expressions.  See below for information about these
-   constructs.
+   would still be evaluated.  This problem can be avoided using the
+   short-circuiting \exmp{&&} operator:
+#v+
+     (x != 0) && (1/x > 10)
+#v-
+   Another difference between the short-circuiting (\exmp{&&,||}) and
+   the non-short-circuiting operators (\exmp{and,or}) is that the
+   short-circuiting forms work only with integer or boolean types.  In
+   contrast, if either of the operands of the \exmp{and} or \exmp{or}
+   operators is an array then a corresponding array of boolean values
+   will result.  This is explained in more detail in the section on
+   arrays.
 
 #%}}}
 
@@ -1507,6 +1514,12 @@
 #v-
 
 \sect{Short Circuit Boolean Evaluation}
+
+  \bf{
+       As of \slang version 2.1, use of the \exmp{andelse} and
+       \exmp{orelse} have been deprecated in favor of the \exmp{&&} and
+       \exmp{||} short-circuiting operators.
+     }
 
    The boolean operators \var{or} and \var{and} \em{are not short
    circuited} as they are in some languages.  \slang uses \var{orelse}
@@ -1752,8 +1765,13 @@
 
 \sect2{orelse, andelse}
 
-  These constructs were discussed earlier.  The syntax for the
-  \kw{orelse} statement is:
+  \bf{
+  As of \slang version 2.1, use of the \exmp{andelse} and
+  \exmp{orelse} have been deprecated in favor of the \exmp{&&} and
+  \exmp{||} short-circuiting operators.
+  }
+
+  The syntax for the \kw{orelse} statement is:
 \begin{tscreen}
      orelse {\em{integer-expression-1}} ... {\em{integer-expression-n}}
 \end{tscreen}

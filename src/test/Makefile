@@ -1,6 +1,6 @@
 # -*-sh-*-
-TEST_SCRIPTS_SLC = argv syntax eqs sscanf loops arith array strops bstring \
-  pack stdio assoc selfload struct nspace path ifeval anytype arrmult \
+TEST_SCRIPTS_SLC = argv syntax scircuit eqs sscanf loops arith array strops \
+  bstring pack stdio assoc selfload struct nspace path ifeval anytype arrmult \
   time utf8 except bugs list regexp method deref naninf \
   longlong signal dollar req docfun debug
 

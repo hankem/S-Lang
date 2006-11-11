@@ -203,7 +203,7 @@ static SLCONST char Operators [31][4] =
      {'#',	0,	0, POUND_TOKEN},
 #define OFS_BAND	2
      {'&',	0,	0, BAND_TOKEN},
-     {'&',	'&',	0, EOF_TOKEN},
+     {'&',	'&',	0, SC_AND_TOKEN},
      {'&',	'=',	0, BANDEQS_TOKEN},
 #define OFS_STAR	5
      {'*',	0,	0, TIMES_TOKEN},
@@ -237,7 +237,7 @@ static SLCONST char Operators [31][4] =
      {'^',	0,	0, POW_TOKEN},
 #define OFS_BOR		26
      {'|',	0,	0, BOR_TOKEN},
-     {'|',	'|',	0, EOF_TOKEN},
+     {'|',	'|',	0, SC_OR_TOKEN},
      {'|',	'=',	0, BOREQS_TOKEN},
 #define OFS_BNOT	29
      {'~',	0,	0, BNOT_TOKEN},

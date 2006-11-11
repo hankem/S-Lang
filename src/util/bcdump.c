@@ -396,6 +396,9 @@ static void dump_token (_pSLang_Token_Type *t)
 	b = ":";
 	break;
 	
+      case SC_AND_TOKEN: b = "&&"; break;
+      case SC_OR_TOKEN: b = "||"; break;
+
       case POW_TOKEN:
 	b = "^";
 	break;

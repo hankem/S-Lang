@@ -14,6 +14,8 @@ Changes since 2.0.7
 
 3. src/slexcept.c: SLerr_throw added to allow applications to mimic
    the semantics of "throw".
+4. src/slparse.c,slang.c: New short-circuit operators || and &&.  Use
+   of the "orelse" and "andelse" constructs has been deprecated.
 
 {{{ Previous Versions
 
