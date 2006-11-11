@@ -260,7 +260,6 @@ int _pSLerr_throw (void)
    return 0;
 }
 
-#if SLANG_VERSION >= 20100
 int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr)
 {
    free_thrown_object ();
@@ -281,7 +280,7 @@ int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr)
 
    return 0;
 }
-#endif
+
 static void new_exception (char *name, int *baseclass, char *description)
 {
    (void) SLerr_new_exception (*baseclass, name, description);

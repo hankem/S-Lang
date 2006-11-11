@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20100
-#define SLANG_VERSION_STRING "pre2.1.0-2"
+#define SLANG_VERSION_STRING "pre2.1.0-3"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -903,7 +903,7 @@ SL_EXTERN int SLarray_map_array (SLCONST SLarray_Map_Type *);
 
 /*{{{ Interpreter Function Prototypes */
 
-/* SL_EXTERN int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr); */
+SL_EXTERN int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr);
 SL_EXTERN void SLang_verror (int, char *, ...) SLATTRIBUTE_PRINTF(2,3);
 SL_EXTERN int SLang_get_error (void);
 SL_EXTERN int SLang_set_error (int);
