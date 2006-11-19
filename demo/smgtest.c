@@ -691,38 +691,66 @@ for fun.";
    SLsmg_fill_region (row-1, col-1, dr+2, dc+2, '.');
    SLsmg_draw_box (row-1, col-1, dr+2, dc+2);
    SLsmg_write_wrapped_string ((SLuchar_Type *)str, row, col, dr, dc, 1);
+   
+   post_test ();
 
    if (SLutf8_is_utf8_mode ())
      {
-	unsigned int len;
-	post_test ();
-
-	str = "UTF8: พระปกเกศกองบู๊กู้ขึ้นใหม่\
+	unsigned int len, i;
+	static char *long_strings[2] =
+	  {
+	     "พระปกเกศกองบู๊กู้ขึ้นใหม่\
 สององค์ไซร้โง่เขลาเบาปัญญา\
 บ้านเมืองจึงวิปริตเป็นนักหนา\
 หมายจะฆ่ามดชั่วตัวสำคัญ\
 รับหมาป่าเข้ามาเลยอาสัญ\
 ใช้สาวนั้นเป็นชนวนชื่นชวนใจ\
 ช่างอาเพศจริงหนาฟ้าร้องไห้\
-ฤๅหาใครค้ำชูกู้บรรลังก์ ฯ";
+ฤๅหาใครค้ำชูกู้บรรลังก์ ฯ",
+	     "UTF-8:(CJK)を選択しる違いを知りたければ\
+を設定した状態とを選択した状態の両方で"
+	  };
+	static char *short_strings[2] =
+	  {
+	     "รั\tบ\tหมาป่าเข้ามาเลยอาสัญ\xAB",
+	     "定した状態\xAB"
+	  };
 
-	SLsmg_fill_region (row-1, col-1, dr+2, dc+2, '.');
-	SLsmg_draw_box (row-1, col-1, dr+2, dc+2);
-	SLsmg_write_wrapped_string ((SLuchar_Type *)str, row, col, dr, dc, 1);
-	
-	post_test ();
+	for (i = 0; i < 2; i++)
+	  {
+	     str = long_strings[i];
 
-	col = 5;
-	str = "รั\tบ\tหมาป่าเข้ามาเลยอาสัญ\xAB";
-	SLsmg_cls ();
-	SLsmg_gotorc (row, col);
-	len = SLsmg_strwidth ((SLuchar_Type*)str, (SLuchar_Type*)str + strlen (str));
-	SLsmg_write_string (str);
-	SLsmg_gotorc (row+1, col+len);
-	SLsmg_write_string ("^---End of above line should be here");
+	     pre_test ("Wrapped-string test (UTF-8)");
+	     SLsmg_fill_region (row-1, col-1, dr+2, dc+2, '.');
+	     SLsmg_draw_box (row-1, col-1, dr+2, dc+2);
+	     SLsmg_write_wrapped_string ((SLuchar_Type *)str, row, col, dr, dc, 1);
+	     post_test ();
+
+	     pre_test ("SLsmg_strwidth test (UTF-8)");
+	     col = 5;
+	     str = short_strings[i];
+	     SLsmg_cls ();
+	     SLsmg_gotorc (row, col);
+	     len = SLsmg_strwidth ((SLuchar_Type*)str, (SLuchar_Type*)str + strlen (str));
+	     SLsmg_write_string (str);
+	     SLsmg_gotorc (row+1, col+len);
+	     SLsmg_write_string ("^---End of above line should be here");
+	     post_test ();
+	     
+	     
+	     pre_test ("SLsmg_write_nstring test (UTF-8)");
+	     str = long_strings[i];
+	     SLsmg_gotorc (row+2, col);
+	     len = 15;
+	     SLsmg_write_nstring (str, len);
+	     SLsmg_write_string ("X");
+	     SLsmg_gotorc (row+3, col+len+1);
+	     SLsmg_write_string ("^---End of the line with an X should be here");
+	     post_test ();
+	  }
      }
-   post_test ();
 }
+
 
 static void low_level_test (void)
 {

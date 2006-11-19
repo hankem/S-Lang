@@ -16,6 +16,9 @@ Changes since 2.0.7
    the semantics of "throw".
 4. src/slparse.c,slang.c: New short-circuit operators || and &&.  Use
    of the "orelse" and "andelse" constructs has been deprecated.
+5. src/slsmg.c: SLsmg_write_wrapped_string and SLsmg_write_nstring
+   were broken for double-width characters.  Updated demo/smgtest.c to
+   test these functions in the presence of such characters.
 
 {{{ Previous Versions
 

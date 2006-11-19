@@ -808,34 +808,6 @@ void SLsmg_write_string (char *str)
 		      (unsigned char *)str + strlen (str));
 }
 
-void SLsmg_write_nstring (char *str, unsigned int n)
-{
-   unsigned int width;
-   unsigned char *blank = (unsigned char *)" ";
-   unsigned char *u = (unsigned char *)str;
-
-   /* Avoid a problem if a user accidently passes a negative value */
-   if ((int) n < 0)
-     return;
-
-   if (u == NULL) width = 0;
-   else
-     {
-	unsigned char *umax;
-	
-	width = strlen ((char *)u);
-	if (UTF8_Mode)
-	  umax = SLutf8_skip_chars (u, u+width, n, &width, 0);
-	else 
-	  {
-	     if (width > n) width = n;
-	     umax = u + width;
-	  }
-	SLsmg_write_chars (u, umax);
-     }
-
-   while (width++ < n) SLsmg_write_chars (blank, blank+1);
-}
 
 void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
 				 unsigned int dr, unsigned int dc,
@@ -844,15 +816,26 @@ void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
    int maxc = (int) dc;
    unsigned char *p, *pmax;
    int utf8_mode = UTF8_Mode;
+   unsigned char display_8bit = (unsigned char) SLsmg_Display_Eight_Bit;
+
+   if (utf8_mode)
+     display_8bit = 0xA0;
 
    if ((dr == 0) || (dc == 0)) return;
+   if (u == NULL)
+     u = (unsigned char *)"";
+
    p = u;
    pmax = u + strlen ((char *)u);
    
    dc = 0;
    while (1)
      {
+	SLwchar_Type wc;
+	unsigned int nconsumed;
 	unsigned char ch = *p;
+	unsigned int ddc;
+
 	if ((ch == 0) || (ch == '\n'))
 	  {
 	     int diff;
@@ -876,25 +859,80 @@ void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
 	     continue;
 	  }
 
-	if ((int) dc == maxc)
-	  {
-	     SLsmg_gotorc (r, c);
-	     SLsmg_write_chars (u, p);
-	     if (dr == 1) break;
+	/* If the width of the characters buffered so far extend to or beyond
+	 * the width of the box, then write them out and goto the
+	 * next line. Note that dc > maxc if the displayable width of
+	 * the last character to be written is greater than the width
+	 * of the box.  This will be the case if (maxc<ddc) -- see below
+	 */
+	if ((int) dc >= maxc)
+	  goto write_chars_and_reset;
 
-	     r++;
-	     dc = 0;
-	     dr--;
-	     u = p;
+	nconsumed = 1;
+	if (ch < 0x80)
+	  {
+	     p++;
+	     if ((ch >= 0x20) && (ch != 0x7F))
+	       {
+		  dc++;
+		  continue;
+	       }
+	     /* Otherwise display as ^X */
+	     dc += 2;
 	     continue;
 	  }
 
-	dc++;
-	if (utf8_mode)
-	  p = SLutf8_skip_chars (p, pmax, 1, NULL, 0);
+	nconsumed = 1;
+	if ((utf8_mode == 0)
+	    || (NULL == SLutf8_decode (p, pmax, &wc, &nconsumed)))
+	  {	     
+	     if ((utf8_mode == 0)
+		 && (display_8bit && (*p >= display_8bit)))
+	       {
+		  dc++;
+		  p += nconsumed;
+		  continue;
+	       }
+
+	     ddc = 4*nconsumed;      /* <XX> */
+	  }
+	else if (wc < (SLwchar_Type)display_8bit)
+	  ddc = 4;		       /* displays as <XX> */
 	else
-	  p++;
+	  ddc = SLwchar_wcwidth (wc);
+
+	dc += ddc;
+	if (((int)dc > maxc) && (maxc > (int)ddc))
+	  {
+	     dc -= ddc;
+	     goto write_chars_and_reset;
+	  }
+	p += nconsumed;
+	continue;
+
+	write_chars_and_reset:	
+	SLsmg_gotorc (r, c);
+	SLsmg_write_chars (u, p);
+	while ((int)dc < maxc)
+	  {
+	     SLsmg_write_char (' ');
+	     dc++;
+	  }
+	if (dr == 1) break;
+	r++;
+	dc = 0;
+	dr--;
+	u = p;
      }
+}
+
+void SLsmg_write_nstring (char *str, unsigned int n)
+{
+   /* Avoid a problem if a user accidently passes a negative value */
+   if ((int) n < 0)
+     return;
+   
+   SLsmg_write_wrapped_string ((unsigned char *)str, This_Row, This_Col, 1, n, 1);
 }
 
 int SLsmg_Tab_Width = 8;
