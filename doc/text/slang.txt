@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language
   John E. Davis, davis@space.mit.edu
-  Nov 11, 2006
+  Nov 20, 2006
   ____________________________________________________________
 
                             [1mTable of Contents[0m

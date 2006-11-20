@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide, V2.0.4
   John E. Davis, davis@space.mit.edu
-  Nov 11, 2006
+  Nov 20, 2006
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -1792,38 +1792,70 @@
      representation with ^ as the first character.  That is, Ctrl-X is
      output as ^X.
 
-  o  The newline character does [4mnot[24m cause the cursor to advance to the
-     next row.  Instead, when a newline character is encountered when
-     outputting text, the output routine will return.  That is,
-     outputting a string containing a newline character will only
-     display the contents of the string up to the newline character.
+  o  The behavior of the newline character depends upon the value of the
+     SLsmg_Newline_Behavior variable.  It may be set to any one of the
+     following values:
+
+     SLSMG_NEWLINE_IGNORED : If a newline character is encountered when
+     writing a string to the virtual display, the characters in the
+     string following the newline character will not be written.  In
+     other words, the newline character will act like a string
+     termination character.  This is the default setting for the
+     SLsmg_Newline_Behavior.
+
+     SLSMG_NEWLINE_MOVES : If a newline character is when writing to the
+     virtual display, the following characters will be written to the
+     beginning of the next row.
+     SLSMG_NEWLINE_SCROLLS : When set to this value and a newline
+     character is output at the bottom of the virtual display, the
+     display will scroll up.  Otherwise the behavior will be the same as
+     that of SLSMG_NEWLINE_MOVES.
+
+     SLSMG_NEWLINE_PRINTABLE : When set to this value, a newline
+     character will be printed as the two characters sequence ^J.
 
   Although the some of the above items might appear to be too
   restrictive, in practice this is not seem to be the case.  In fact,
   the design of the output routines was influenced by their actual use
   and modified to simplify the code of the application utilizing them.
 
-  void SLsmg_write_char (char ch); Write a single character to the
-  virtual display.
+     void SLsmg_write_char (char ch);
+        Write a single character to the virtual display.
 
-  void SLsmg_write_nchars (char *str, int len); Write len characters
-  pointed to by str to the virtual display.
+     void SLsmg_write_nchars (char *str, int len);
+        Write len characters pointed to by str to the virtual display.
 
-  void SLsmg_write_string (char *str); Write the null terminated string
-  given by pointer str to the virtual display.  This function is a
-  wrapper around SLsmg_write_nchars.
+     void SLsmg_write_string (char *str);
+        Write the null terminated string given by pointer str to the
+        virtual display.  This function is a wrapper around
+        SLsmg_write_nchars.
 
-  void SLsmg_write_nstring (char *str, int n); Write the null terminated
-  string given by pointer str to the virtual display.  At most, only n
-  characters are written.  If the length of the string is less than n,
-  then the string will be padded with blanks.  This function is a
-  wrapper around SLsmg_write_nchars.
+     void SLsmg_write_nstring (char *str, int n);
+        The purpose of this function is to write a null terminated
+        string to a field that is at most n cells wide.  Each double-
+        wide character in the string will use two cells.  If the string
+        is not big enough to fill the n cells, the rest of the cells
+        will be filled with space characters. This function is a wrapper
+        around SLsmg_write_wrapped_string.
 
-  void SLsmg_printf (char *fmt, ...); This function is similar to printf
-  except that it writes to the SLsmg virtual display.
+     void SLsmg_write_wrapped_string(SLuchar_Type *str, int r, int c,
+        unsigned int dr, unsigned int dc, int fill)
+        The purpose of this function is two write a string str to a box
+        defined by rows and columns satisfying r<=row<r+dc and
+        c<=column<c+dc. The string will be wrapped at the column
+        boundaries of the box and truncated if its size exceeds to size
+        of the box.  If the total size of the string is less than that
+        of the box, and the fill parameter is non-zero, then the rest of
+        the cells in the box will be filled with space characters.
+        Currently the wrapping algorithm is very simple and knows
+        nothing about word boundaries.
 
-  void SLsmg_vprintf (char *, va_list); Like SLsmg_printf but uses a
-  variable argument list.
+     void SLsmg_printf (char *fmt, ...);
+        This function is similar to printf except that it writes to the
+        SLsmg virtual display.
+
+     void SLsmg_vprintf (char *, va_list);
+        Like SLsmg_printf but uses a variable argument list.
 
   [1m7.4.3.  Erasing the Display[0m
 
@@ -1832,13 +1864,14 @@
   current attributes.  (See below for a discussion of character
   attributes)
 
-  void SLsmg_erase_eol (void); Erase line from current position to the
-  end of the line.
+     void SLsmg_erase_eol (void);
+        Erase line from current position to the end of the line.
 
-  void SLsmg_erase_eos (void); Erase from the current position to the
-  end of the screen.
+     void SLsmg_erase_eos (void);
+        Erase from the current position to the end of the screen.
 
-  void SLsmg_cls (void); Clear the entire virtual display.
+     void SLsmg_cls (void);
+        Clear the entire virtual display.
 
   [1m7.4.4.  Setting Character Attributes[0m
 
@@ -1888,7 +1921,6 @@
   attribute mapping (such as assigning a ``blink'' attribute to the
   object).  For a more full explanation on all of these routines see the
   section about the SLtt interface.
-
   The SLtt_set_color function takes four parameters.  The first
   parameter, obj, is simply the integer of the object for which
   attributes are to be assigned.  The second parameter is currently
@@ -1937,15 +1969,16 @@
   the virtual display.  For this reason, the new attribute is called the
   [4mcurrent[24m attribute.
 
-  void SLsmg_set_color (int obj); Set the current attribute to those of
-  object obj.
+     void SLsmg_set_color (int obj);
+        Set the current attribute to those of object obj.
 
-  void SLsmg_normal_video (void); This function is equivalent to
-  SLsmg_set_color (0).
+     void SLsmg_normal_video (void);
+        This function is equivalent to SLsmg_set_color (0).
 
-  void SLsmg_reverse_video (void); This function is equivalent to
-  SLsmg_set_color (1).  On monochrome terminals, it is equivalent to
-  setting the subsequent character attributes to inverse video.
+     void SLsmg_reverse_video (void);
+        This function is equivalent to SLsmg_set_color (1).  On
+        monochrome terminals, it is equivalent to setting the subsequent
+        character attributes to inverse video.
 
   Unfortunately there does not seem to be a standard way for the
   application or, in particular, the library to determine which color
@@ -1969,29 +2002,60 @@
   turning on and turning off alternate character sets.  This is
   especially useful for drawing horizontal and vertical lines.
 
-  void SLsmg_set_char_set (int flag); If flag is non-zero, subsequent
-  write functions will use characters from the alternate character set.
-  If flag is zero, the default, or, ordinary character set will be used.
+     void SLsmg_set_char_set (int flag);
+        If flag is non-zero, subsequent write functions will use
+        characters from the alternate character set.  If flag is zero,
+        the default, or, ordinary character set will be used.
 
-  void SLsmg_draw_hline (int len); Draw a horizontal line from the
-  current position to the column that is len characters to the right.
+     void SLsmg_draw_hline (int len);
+        Draw a horizontal line from the current position to the column
+        that is len characters to the right.
 
-  void SLsmg_draw_vline (int len); Draw a horizontal line from the
-  current position to the row that is len rows below.
+     void SLsmg_draw_vline (int len);
+        Draw a horizontal line from the current position to the row that
+        is len rows below.
 
-  void SLsmg_draw_box (int r, int c, int dr, int dc); Draw a box whose
-  upper right corner is at row r and column c.  The box spans dr rows
-  and dc columns.  The current position will be left at row r and column
-  c.
+     void SLsmg_draw_box (int r, int c, int dr, int dc);
+        Draw a box whose upper right corner is at row r and column c.
+        The box spans dr rows and dc columns.  The current position will
+        be left at row r and column c.
 
   [1m7.4.6.  Miscellaneous Functions[0m
 
-  void SLsmg_touch_lines (int r, int n); Mark screen rows numbered r, r
-  + 1, ... r + (n - 1) as modified.  When SLsmg_refresh is called, these
-  rows will be completely redrawn.
-  int SLsmg_char_at(SLsmg_Char_Type *ch); Returns the character and its
-  attributes at the current position.  The SLsmg_Char_Type object is a
-  structure.
+     void SLsmg_touch_lines (int r, int n);
+        Mark screen rows numbered r, r + 1, ... r + (n - 1) as modified.
+        When SLsmg_refresh is called, these rows will be completely
+        redrawn.
+
+     int SLsmg_char_at(SLsmg_Char_Type *ch);
+        Returns the character and its attributes at the current
+        position.  The SLsmg_Char_Type object is a structure
+        representing the character cell:
+
+         #define SLSMG_MAX_CHARS_PER_CELL 5
+         typedef struct
+          {
+             unsigned int nchars;
+             SLwchar_Type wchars[SLSMG_MAX_CHARS_PER_CELL];
+             SLsmg_Color_Type color;
+          }
+          SLsmg_Char_Type;
+
+     Normally the value of the nchars field will be 1 to indicate that
+     the character contains precisely one character whose value is given
+     by the zeroth element of the wchars array of the structure.  The
+     value of nchars will be greater than one if the character cell also
+     contains so-called Unicode combining characters.  The combining
+     characters are given by the elements 1 through nchars-1 of the
+     wchars array.  If nchars is 0, then the character cell represents
+     the second half of a double-wide character.
+
+     The color field repesents both the color of the character cell and
+     the alternate character set setting of the cell.  This value may be
+     bitwise-anded with SLSMG_COLOR_MASK to obtain the cell's color, and
+     bitwise-anded with SLSMG_ACS_MASK to determine whether or not the
+     alternate-character set setting is in effect for the cell (zero or
+     non-zero).
 
   [1m7.5.  Variables[0m
 
@@ -2011,7 +2075,8 @@
   with the high bit set with a value greater than or equal to this value
   is output as is; otherwise, it will be output in a 7-bit
   representation.  The default value for this variable is 128 for MSDOS
-  and 160 for other systems (ISO-Latin).
+  and 160 for other systems (ISO-Latin).  In UTF-8 mode, the value of
+  this variable is 0.
 
   int SLtt_Use_Ansi_Colors; If this value is non-zero, the terminal is
   assumed to support ANSI colors otherwise it is assumed to be

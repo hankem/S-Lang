@@ -19,6 +19,10 @@ Changes since 2.0.7
 5. src/slsmg.c: SLsmg_write_wrapped_string and SLsmg_write_nstring
    were broken for double-width characters.  Updated demo/smgtest.c to
    test these functions in the presence of such characters.
+6. demo/smgtest.sl: Embedded some control characters in the
+   double-wide character string for testing the handling of them.
+7. doc/tm/cslang.tm: Updated some of the documentation for the SLsmg
+   interface.
 
 {{{ Previous Versions
 

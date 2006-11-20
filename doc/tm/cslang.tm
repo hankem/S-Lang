@@ -15,6 +15,7 @@
 #d seealso#1 <tag> See Also </tag> <tt>$1</tt>
 #d done </descrip><p>
 
+#d proto#1 \tag{\tt{$1}}
 #d documentstyle book
 
 #d SLinterface#1 \bf{$1}
@@ -1792,56 +1793,90 @@
       representation with \verb{^} as the first character.  That is,
       \key{Ctrl-X} is output as \verb{^X}.
       
-\item The newline character does \em{not} cause the cursor to advance to
-      the next row.  Instead, when a newline character is encountered when
-      outputting text, the output routine will return.  That is, outputting
-      a string containing a newline character will only display the contents
-      of the string up to the newline character.
+\item The behavior of the newline character depends upon the value of
+      the \verb{SLsmg_Newline_Behavior} variable.  It may be set to
+      any one of the following values:
+      
+      \p\verb{SLSMG_NEWLINE_IGNORED} : If a newline character is
+      encountered when writing a string to the virtual display, the
+      characters in the string following the newline character will not
+      be written.  In other words, the newline character will act like
+      a string termination character.  This is the default setting for
+      the \verb{SLsmg_Newline_Behavior}.
+
+      \p\verb{SLSMG_NEWLINE_MOVES} : If a newline character is when
+      writing to the virtual display, the following characters will be
+      written to the beginning of the next row.
+
+      \p\verb{SLSMG_NEWLINE_SCROLLS} : When set to this value and a
+      newline character is output at the bottom of the virtual
+      display, the display will scroll up.  Otherwise the behavior
+      will be the same as that of \verb{SLSMG_NEWLINE_MOVES}.
+      
+      \p\verb{SLSMG_NEWLINE_PRINTABLE} : When set to this value, a
+      newline character will be printed as the two characters sequence
+      \verb{^J}.
+
 \end{itemize} 
 
   Although the some of the above items might appear to be too restrictive, in
   practice this is not seem to be the case.  In fact, the design of the
   output routines was influenced by their actual use and modified to
   simplify the code of the application utilizing them.
+\begin{descrip}
+\proto{void SLsmg_write_char (char ch);}
+     Write a single character to the virtual display.
 
-  \verb{void SLsmg_write_char (char ch);}
-  Write a single character to the virtual display.
-  
-  \verb{void SLsmg_write_nchars (char *str, int len);}
-  Write \verb{len} characters pointed to by \verb{str} to the virtual display. 
+\proto{void SLsmg_write_nchars (char *str, int len);}
+     Write \verb{len} characters pointed to by \verb{str} to the
+     virtual display.
 
-  \verb{void SLsmg_write_string (char *str);} 
-  Write the null terminated string given by pointer \verb{str} to the virtual
-  display.  This function is a wrapper around \verb{SLsmg_write_nchars}.
+\proto{void SLsmg_write_string (char *str);} 
+  Write the null terminated string given by pointer \verb{str} to the
+  virtual display.  This function is a wrapper around
+  \verb{SLsmg_write_nchars}.
 
-  \verb{void SLsmg_write_nstring (char *str, int n);}
-  Write the null terminated string given by pointer \verb{str} to the virtual
-  display.  At most, only \verb{n} characters are written.  If the length of
-  the string is less than \verb{n}, then the string will be padded with blanks.
-  This function is a wrapper around \verb{SLsmg_write_nchars}.
-  
-  \verb{void SLsmg_printf (char *fmt, ...);}
-  This function is similar to \verb{printf} except that it writes to the
-  \verb{SLsmg} virtual display.
-  
-  \verb{void SLsmg_vprintf (char *, va_list);}
+\proto{void SLsmg_write_nstring (char *str, int n);}
+  The purpose of this function is to write a null terminated string to
+  a field that is at most \verb{n} cells wide.  Each double-wide
+  character in the string will use two cells.  If the string is not
+  big enough to fill the \verb{n} cells, the rest of the cells will be
+  filled with space characters. This function is a wrapper around
+  \verb{SLsmg_write_wrapped_string}.
+
+\proto{void SLsmg_write_wrapped_string(SLuchar_Type *str, int r, int c, unsigned int dr, unsigned int dc, int fill)} 
+  The purpose of this function is two write a string \verb{str} to a
+  box defined by rows and columns satisfying \verb{r<=row<r+dc} and
+  \verb{c<=column<c+dc}. The string will be wrapped at the column
+  boundaries of the box and truncated if its size exceeds to size of
+  the box.  If the total size of the string is less than that of the
+  box, and the \verb{fill} parameter is non-zero, then the rest of the
+  cells in the box will be filled with space characters. Currently the
+  wrapping algorithm is very simple and knows nothing about word
+  boundaries.
+
+\proto{void SLsmg_printf (char *fmt, ...);}
+  This function is similar to \verb{printf} except that it writes to
+  the \verb{SLsmg} virtual display.
+
+  \proto{void SLsmg_vprintf (char *, va_list);}
   Like \verb{SLsmg_printf} but uses a variable argument list.
-
+\end{descrip}
 \sect1{Erasing the Display}
 
   The following functions may be used to fill portions of the display with
   blank characters.  The attributes of blank character are the current
   attributes.  (See below for a discussion of character attributes)
-  
-  \verb{void SLsmg_erase_eol (void);}
+\begin{descrip}  
+  \proto{void SLsmg_erase_eol (void);}
   Erase line from current position to the end of the line.
-  
-  \verb{void SLsmg_erase_eos (void);}
+
+  \proto{void SLsmg_erase_eos (void);}
   Erase from the current position to the end of the screen.
 
-  \verb{void SLsmg_cls (void);}
+  \proto{void SLsmg_cls (void);}
   Clear the entire virtual display.
-
+\end{descrip}
 \sect1{Setting Character Attributes}
 
   Character attributes define the visual characteristics the character 
@@ -1939,17 +1974,18 @@
   attributes that are to be assigned to \em{subsequent} characters written
   to the virtual display.  For this reason, the new attribute is called the
   \em{current} attribute.
-
-  \verb{void SLsmg_set_color (int obj);}
+\begin{descrip}
+  \proto{void SLsmg_set_color (int obj);}
   Set the current attribute to those of object \verb{obj}.
   
-  \verb{void SLsmg_normal_video (void);}
+  \proto{void SLsmg_normal_video (void);}
   This function is equivalent to \verb{SLsmg_set_color (0)}. 
   
-  \verb{void SLsmg_reverse_video (void);}
+  \proto{void SLsmg_reverse_video (void);}
   This function is equivalent to \verb{SLsmg_set_color (1)}.  On monochrome
   terminals, it is equivalent to setting the subsequent character attributes
   to inverse video.
+\end{descrip}
 
   Unfortunately there does not seem to be a standard way for the
   application or, in particular, the library to determine which color
@@ -1973,38 +2009,67 @@
   The \slang screen management library also includes routines for turning
   on and turning off alternate character sets.  This is especially useful
   for drawing horizontal and vertical lines.
-  
-  \verb{void SLsmg_set_char_set (int flag);}
+\begin{descrip}
+  \proto{void SLsmg_set_char_set (int flag);}
   If \verb{flag} is non-zero, subsequent write functions will use characters
   from the alternate character set.  If \verb{flag} is zero, the default, or,
   ordinary character set will be used.
   
-  \verb{void SLsmg_draw_hline (int len);}
+  \proto{void SLsmg_draw_hline (int len);}
   Draw a horizontal line from the current position to the column that is
   \verb{len} characters to the right.
   
-  \verb{void SLsmg_draw_vline (int len);}
+  \proto{void SLsmg_draw_vline (int len);}
   Draw a horizontal line from the current position to the row that is
   \verb{len} rows below.
   
-  \verb{void SLsmg_draw_box (int r, int c, int dr, int dc);}
+  \proto{void SLsmg_draw_box (int r, int c, int dr, int dc);}
   Draw a box whose upper right corner is at row \verb{r} and column
   \verb{c}.
   The box spans \verb{dr} rows and \verb{dc} columns.  The current position
   will be left at row \verb{r} and column \verb{c}.
-  
+\end{descrip}
+
 \sect1{Miscellaneous Functions}
  
-  \verb{void SLsmg_touch_lines (int r, int n);}
+\begin{descrip}
+  \proto{void SLsmg_touch_lines (int r, int n);}
   Mark screen rows numbered \verb{r}, \verb{r + 1}, \ldots \verb{r +
   (n - 1)} as
   modified.  When \verb{SLsmg_refresh} is called, these rows will be
   completely redrawn.
-  
-  \verb{int SLsmg_char_at(SLsmg_Char_Type *ch);}
-  Returns the character and its attributes at the current position.
-  The SLsmg_Char_Type object is a structure.
 
+  \proto{int SLsmg_char_at(SLsmg_Char_Type *ch);}
+  Returns the character and its attributes at the current position.
+  The SLsmg_Char_Type object is a structure representing the character
+  cell:
+#v+
+    #define SLSMG_MAX_CHARS_PER_CELL 5
+    typedef struct
+     {
+        unsigned int nchars;
+        SLwchar_Type wchars[SLSMG_MAX_CHARS_PER_CELL];
+        SLsmg_Color_Type color;
+     }
+     SLsmg_Char_Type;
+#v-
+  Normally the value of the \verb{nchars} field will be 1 to indicate
+  that the character contains precisely one character whose value is
+  given by the zeroth element of the wchars array of the structure.
+  The value of \verb{nchars} will be greater than one if the character
+  cell also contains so-called Unicode combining characters.  The
+  combining characters are given by the elements 1 through
+  \verb{nchars-1} of the \verb{wchars} array.  If \verb{nchars} is 0,
+  then the character cell represents the second half of a double-wide
+  character.
+  
+  The \verb{color} field repesents both the color of the character
+  cell and the alternate character set setting of the cell.  This
+  value may be bitwise-anded with \verb{SLSMG_COLOR_MASK} to obtain
+  the cell's color, and bitwise-anded with \verb{SLSMG_ACS_MASK} to
+  determine whether or not the alternate-character set setting is in
+  effect for the cell (zero or non-zero).
+\end{descrip}
 
 #%}}}
 
@@ -2030,6 +2095,7 @@
   greater than or equal to this value is output as is; otherwise, it will be
   output in a 7-bit representation.  The default value for this variable is
   \verb{128} for MSDOS and \verb{160} for other systems (ISO-Latin).
+  In UTF-8 mode, the value of this variable is 0.
 
   \verb{int SLtt_Use_Ansi_Colors;}
   If this value is non-zero, the terminal is assumed to support ANSI colors
