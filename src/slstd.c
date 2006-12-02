@@ -805,6 +805,11 @@ static int stack_depth_intrin (void)
    return SLstack_depth ();
 }
 
+static void expand_dollar_string (char *s)
+{
+   (void) _pSLpush_dollar_string (s);
+}
+
 static void set_argv_intrinsic (void);
 static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
 {
@@ -875,6 +880,7 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_0("current_namespace", _pSLang_cur_namespace_intrinsic, SLANG_STRING_TYPE),
    MAKE_INTRINSIC_0("length", length_cmd, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("__set_argc_argv", set_argv_intrinsic, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_S("_$", expand_dollar_string, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

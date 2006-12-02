@@ -728,13 +728,10 @@ static void list_pop (void)
    SLang_free_mmt (mmt);
 }
 
-int _pSLlist_inline_list (void)
+static int pop_as_list_internal (unsigned int count)
 {
-   unsigned int count;
    SLang_List_Type *list;
 
-   count = SLang_Num_Function_Args;
-   
    if (NULL == (list = allocate_list ()))
      return -1;
 
@@ -760,6 +757,34 @@ int _pSLlist_inline_list (void)
    return -1;
 }
 
+static void pop_as_list (int *nitems)
+{
+   if (*nitems < 0)
+     {
+	SLang_verror (SL_INVALID_PARM, "Expecting a non-negative integer");
+	return;
+     }
+   (void) pop_as_list_internal (*nitems);
+}
+
+int _pSLlist_inline_list (void)
+{
+   return pop_as_list_internal (SLang_Num_Function_Args);
+}
+
+static void push_list_elements (SLang_List_Type *list)
+{
+   int n = list->length;
+   int i;
+   
+   for (i = 0; i < n; i++)
+     {
+	SLang_Object_Type *objp = find_nth_element (list, i, NULL);
+	if ((objp == NULL) || (-1 == _pSLpush_slang_obj (objp)))
+	  return;
+     }
+}
+
 #define L SLANG_LIST_TYPE
 #define I SLANG_INT_TYPE
 static SLang_Intrin_Fun_Type Intrin_Table [] =
@@ -770,6 +795,8 @@ static SLang_Intrin_Fun_Type Intrin_Table [] =
    MAKE_INTRINSIC_0("list_append", list_append_elem, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("list_new", list_new, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("list_pop", list_pop, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_1("__push_list", push_list_elements, SLANG_VOID_TYPE, L),
+   MAKE_INTRINSIC_1("__pop_list", pop_as_list, SLANG_VOID_TYPE, I),
    SLANG_END_INTRIN_FUN_TABLE
 };
 #undef L

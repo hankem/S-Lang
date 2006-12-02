@@ -100,6 +100,28 @@
 \seealso{_trace_function, _slangtrace, _traceback}
 \done
 
+\function{_set_bof_handler}
+\synopsis{Set the beginning of function callback handler}
+\usage{_set_bof_handler (Ref_Type func)}
+\description
+ This function is used to set the function to be called prior to the
+ execution of the body \slang function but after its arguments have
+ been evaluated, provided that function was defined
+ with \ivar{_bofeof_info} set appropriately.  The callback function
+ must be defined to take a single parameter representing the name of
+ the function and must return nothing.  
+\example
+#v+
+    private define bof_handler (fun)
+    {
+      () = fputs ("About to execute $fun"$, stdout);
+    }
+    _set_bos_handler (&bof_handler);
+#v-
+\notes
+\seealso{_set_eof_handler, _boseos_info, _set_bos_handler}
+\done
+
 \function{_set_bos_handler}
 \synopsis{Set the beginning of statement callback handler}
 \usage{_set_bos_handler (Ref_Type func)}
@@ -123,6 +145,27 @@
 \seealso{_set_eos_handler, _boseos_info, _bofeof_info}
 \done
 
+\function{_set_eof_handler}
+\synopsis{Set the beginning of function callback handler}
+\usage{_set_eof_handler (Ref_Type func)}
+\description
+ This function is used to set the function to be called at the end of
+ execution of a \slang function, provided that function was compiled with
+ \ivar{_bofeof_info} set accordingly.
+ 
+ The callback function will be passed no parameters and it must return
+ nothing.
+\example
+#v+
+   private define eof_handler ()
+   {
+     () = fputs ("Done executing the function\n", stdout);
+   }
+   _set_eof_handler (&eof_handler);
+#v-
+\seealso{_set_bof_handler, _bofeof_info, _boseos_info}
+\done
+
 \function{_set_eos_handler}
 \synopsis{Set the end of statement callback handler}
 \usage{_set_eos_handler (Ref_Type func)}
@@ -143,49 +186,6 @@
  statements in a file only if that file was compiled with the variable
  \ivar{_boseos_info} set to a non-zero value.
 \seealso{_set_bos_handler, _boseos_info, _bofeof_info}
-\done
-
-\function{_set_bof_handler}
-\synopsis{Set the beginning of function callback handler}
-\usage{_set_bof_handler (Ref_Type func)}
-\description
- This function is used to set the function to be called prior to the
- execution of the body \slang function but after its arguments have
- been evaluated, provided that function was defined
- with \ivar{_bofeof_info} set appropriately.  The callback function
- must be defined to take a single parameter representing the name of
- the function and must return nothing.  
-\example
-#v+
-    private define bof_handler (fun)
-    {
-      () = fputs ("About to execute $fun"$, stdout);
-    }
-    _set_bos_handler (&bof_handler);
-#v-
-\notes
-\seealso{_set_eof_handler, _boseos_info, _set_bos_handler}
-\done
-
-\function{_set_eof_handler}
-\synopsis{Set the beginning of function callback handler}
-\usage{_set_eof_handler (Ref_Type func)}
-\description
- This function is used to set the function to be called at the end of
- execution of a \slang function, provided that function was compiled with
- \ivar{_bofeof_info} set accordingly.
- 
- The callback function will be passed no parameters and it must return
- nothing.
-\example
-#v+
-   private define eof_handler ()
-   {
-     () = fputs ("Done executing the function\n", stdout);
-   }
-   _set_eof_handler (&eof_handler);
-#v-
-\seealso{_set_bof_handler, _bofeof_info, _boseos_info}
 \done
 
 \variable{_slangtrace}

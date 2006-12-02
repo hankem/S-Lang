@@ -3542,7 +3542,7 @@ int _pSLang_parse_dollar_string (char *str, char ***argvp, unsigned int *argcp)
 
 /* Convert "bla bla $foo bla" to sprintf ("bla bla %S bla", foo) 
  */
-static int push_dollar_string (char *str)
+int _pSLpush_dollar_string (char *str)
 {
    /* return SLang_push_string (str); */
    char **argv;
@@ -3961,7 +3961,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     break;
 #endif
 	   case SLANG_BC_DOLLAR_STR:
-	     (void) push_dollar_string (addr->b.s_blk);
+	     (void) _pSLpush_dollar_string (addr->b.s_blk);
 	     break;
 
 #if USE_UNUSED_BYCODES_IN_SWITCH

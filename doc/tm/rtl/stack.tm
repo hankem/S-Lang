@@ -75,7 +75,32 @@
   Here, \ifun{__push_args} was used to push the arguments passed to
   the \exmp{ones} function onto the stack to be used when dereferencing
   \dtype{Array_Type}.
-\seealso{__push_args, typeof, _pop_n}
+\notes
+  This function has been superseded by the \ifun{__pop_list} function,
+  which returns the objects as a list instead of an array of structures.
+\seealso{__push_args, __pop_list, __push_list, typeof, _pop_n}
+\done
+
+\function{__pop_list}
+\synopsis{Convert items on the stack to a List_Type}
+\usage{List_Type = __pop_list (Int_Type n)}
+\description
+ This function removes a specified number of items from the stack and
+ converts returns them in the form of a list.
+\example
+#v+
+  define print_args ()
+  {
+     variable list = __pop_list (_NARGS);
+     variable i;
+     _for i (0, length(length)-1, 1)
+        {
+           vmessage ("arg[%d]: %S", list[i]);
+        }
+  }
+#v-
+\notes
+\seealso{__push_list}
 \done
 
 \function{_pop_n}
@@ -97,14 +122,31 @@
 \done
 
 \function{__push_args}
-\synopsis{Remove n function arguments onto the stack}
+\synopsis{Move n function arguments onto the stack}
 \usage{__push_args (Struct_Type args);}
 \description
   This function together with the companion function \ifun{__pop_args}
   is useful for the creation of functions that take a variable number
   of arguments.  See the description of \ifun{__pop_args} for more
   information.
-\seealso{__pop_args, typeof, _pop_n}
+\notes
+  This function has been superseded by the \ifun{__push_list} function.
+\seealso{__pop_args, __push_list, __pop_list, typeof, _pop_n}
+\done
+
+\function{__push_list}
+\synopsis{Push the elements of a list to the stack}
+\usage{__push_list (List_Type list)}
+\description
+ This function pushes the elements of a list to the stack.
+\example
+#v+
+ private variable list_to_array (list)
+ {
+    return [__push_list (list)];
+ }
+#v-
+\seealso{__pop_list}
 \done
 
 \function{_stkdepth}

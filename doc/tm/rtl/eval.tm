@@ -1,3 +1,28 @@
+\function{_$}
+\synopsis{Expand the dollar-escaped variables in a string}
+\usage{String_Type _$(String_Type s)}
+\description
+ This function expands the dollar-escaped variables in a string and
+ returns the resulting string.
+\example
+ Consider the following code fragment:
+#v+
+     private variable Format = "/tmp/foo-$time.$pid";
+     define make_filename ()
+     {
+        variable pid = getpid ();
+        variable time = _time ();
+        return _$(Format);
+     }
+#v-
+ Note that the variable \exmp{Format} contains dollar-escaped
+ variables, but because the \exmp{$} suffix was omitted from the
+ string literal, the variables are not expanded.  Instead expansion is
+ deferred until execution of the \exmp{make_filename} function through
+ the use of the \exmp{_$} function.
+\seealso{eval, getenv}
+\done
+
 \function{autoload}
 \synopsis{Load a function from a file}
 \usage{autoload (String_Type funct, String_Type file)}

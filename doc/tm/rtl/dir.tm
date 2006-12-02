@@ -53,7 +53,6 @@
 \seealso{mkdir, chdir, errno}
 \done
 
-
 \function{hardlink}
 \synopsis{Create a hard-link}
 \usage{Int_Type hardlink (String_Type oldpath, String_Type newpath)}

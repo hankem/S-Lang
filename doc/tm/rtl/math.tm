@@ -264,7 +264,6 @@
 \seealso{sqr, abs}
 \done
 
-
 \function{nint}
 \synopsis{Round to the nearest integer}
 \usage{i = nint(x)}

@@ -78,6 +78,32 @@ _for $1 (0, 10, 1)
 if (L[1] != 10)
   failed ("L[1]");
 
+private define test_push_pop_list ()
+{
+   variable list = __pop_list (_NARGS);
+   
+   variable d0 = _stkdepth ();
+   __push_list (list);
+   variable d1 = _stkdepth ();
+   if (d1 - d0 != _NARGS)
+     failed ("push/pop_list");
+   
+   loop (_NARGS)
+     {
+	variable a = list_pop (list, -1);
+	variable b = ();
+	if (not __is_same (a, b))
+	  failed ("push/pop_list failed sameness test");
+     }
+}
+
+test_push_pop_list ("A", 1, 4, PI, Array_Type[3]);
+test_push_pop_list ();
+test_push_pop_list ("A");
+test_push_pop_list ({});
+test_push_pop_list ("A", {});
+   
+
 print ("Ok\n");
 
 exit (0);

@@ -633,6 +633,8 @@ extern int _pSLpush_slang_obj (SLang_Object_Type *);
 extern char *_pSLexpand_escaped_char(char *, SLwchar_Type *, int *);
 extern void _pSLexpand_escaped_string (char *, char *, char *);
 
+extern int _pSLpush_dollar_string (char *);
+
 /* returns a pointer to an SLstring string-- use SLang_free_slstring */
 extern char *_pSLstringize_object (SLang_Object_Type *);
 extern int _pSLdump_objects (char *, SLang_Object_Type *, unsigned int, int);

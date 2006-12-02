@@ -23,6 +23,16 @@ Changes since 2.0.7
    double-wide character string for testing the handling of them.
 7. doc/tm/cslang.tm: Updated some of the documentation for the SLsmg
    interface.
+8. src/slstd.c,slang.c: Added new function intrinisc called "_$" that
+   expands embedded "dollar-escaped" variables.
+9. src/sllist.c: Added __push_list/__pop_list functions that push list
+   elements to the stack or create a list from objects on the stack.
+   These functions may also be used as an alternative to
+   __push_args/__pop_args.
+10. slsh/lib/structfuns.sl: Modified struct_combine to use __pop_list
+    instead of __push_list.
+11. src/test/scircuit.sl used for regression testing of the
+    short-circuit operators was missing.
 
 {{{ Previous Versions
 

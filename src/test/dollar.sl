@@ -16,6 +16,9 @@ public define test_hello_world ()
    variable world = "world";
    if ("hello world" != "$This_is_static $world"$)
      failed ("hello world 1");
+   
+   if ("$This_is_static $world"$ != _$("$This_is_static $world"))
+     failed ("hello world 1a");
 
    if ("hello world" != "$This_is_public $world"$)
      failed ("hello world 2");
@@ -23,6 +26,9 @@ public define test_hello_world ()
    putenv ("WORLD=world");
    if ("hello world" != "$This_is_public $WORLD"$)
      failed ("hello world 3");
+
+   if ("$This_is_public $WORLD"$ != _$("$This_is_public $WORLD"))
+     failed ("hello world 3a");
 
    if ("hello world" != "$This_is_public $UNDEFINED$WORLD"$)
      failed ("hello world 4");

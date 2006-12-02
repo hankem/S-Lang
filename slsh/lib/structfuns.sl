@@ -14,12 +14,11 @@ define struct_filter (s, i)
 
 define struct_combine ()
 {
-   variable args = __pop_args (_NARGS);
+   variable args = __pop_list (_NARGS);
    variable fields = String_Type[0];
    variable arg;
    foreach arg (args)
      {
-	arg = arg.value;
 	if (is_struct_type (arg))
 	  arg = get_struct_field_names (arg);
 	fields = [fields, arg];
@@ -35,7 +34,6 @@ define struct_combine ()
    variable s = @Struct_Type (fields);
    foreach arg (args)
      {
-	arg = arg.value;
 	if (0 == is_struct_type (arg))
 	  continue;
 	foreach (get_struct_field_names (arg))
