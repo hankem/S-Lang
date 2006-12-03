@@ -33,6 +33,11 @@ Changes since 2.0.7
     instead of __push_list.
 11. src/test/scircuit.sl used for regression testing of the
     short-circuit operators was missing.
+12. src/slang.c: Small memory leak involving method calls plugged.
+13. src/slparse.c,slang.c,slstruct.c: Added support for embedded
+    assignments in structure definitions, e.g.,
+    
+        X = struct { a = 4, b = 3, c = sin(PI/4)};
 
 {{{ Previous Versions
 

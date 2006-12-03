@@ -380,6 +380,53 @@ test_duplicate_fields ("a, a, b", 0);
 test_duplicate_fields ("a, b, c, b, e", 0);
 test_duplicate_fields ("a, b, c, b, e, a", 0);
 test_duplicate_fields ("a, b, c, d, e, e", 0);
+
+
+private define test_struct_with_assign (exprs)
+{
+   variable i, n = length (exprs);
+   variable fields = array_map (String_Type, &sprintf, ("field%d", [1:n]));
+
+   variable s0 = @Struct_Type(fields);
+   variable s1_expr = "struct {\n";
+   _for i (0, n-1, 1)
+     {
+	variable expr = exprs[i];
+	variable field = fields[i];
+
+	if (expr != NULL)
+	  {
+	     s1_expr = strcat (s1_expr, field, "= ", expr, ",\n");
+	     set_struct_field (s0, field, eval(expr));
+	     continue;
+	  }
+
+	s1_expr = strcat (s1_expr, field, ",\n");
+     }
+   s1_expr = strcat (s1_expr, "};");
+   
+   variable s1 = eval (s1_expr);
+   if (not _eqs (s0, s1))
+     failed ("structures are not equal: %s", s1_expr);
+}
+
+test_struct_with_assign ([NULL]);
+test_struct_with_assign ([NULL, "3"]);
+#ifexists Double_Type
+test_struct_with_assign (["3*sin(2)", NULL]);
+#endif
+test_struct_with_assign (["13", "[1:10]"]);
+test_struct_with_assign (["-2", NULL, "[1:10]"]);
+test_struct_with_assign (["-10", "[1:10]", "NULL"]);
+test_struct_with_assign (["&strcat", "[1:10]", "NULL", NULL]);
+test_struct_with_assign (["struct{a,b}"]);
+test_struct_with_assign (["struct{a,b}", NULL]);
+#ifexists Complex_Type
+test_struct_with_assign (["1+2j", NULL]);
+#endif
+test_struct_with_assign (["\"string\""]);
+   
+
 print ("Ok\n");
 exit (0);
 

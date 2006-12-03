@@ -548,6 +548,7 @@ extern int _pSLang_pop_struct (_pSLang_Struct_Type **);
 extern int _pSLstruct_init (void);
 /* extern int _pSLstruct_get_field (char *); */
 extern int _pSLstruct_define_struct (void);
+extern int _pSLstruct_define_struct2 (void);
 extern int _pSLstruct_define_typedef (void);
 
 struct _pSLang_Ref_Type
@@ -1234,6 +1235,8 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define CATCH_TOKEN	0x88
 #define THROW_TOKEN	0x89
 #define FINALLY_TOKEN	0x8a
+
+#define STRUCT_WITH_ASSIGN_TOKEN	0x8e
 
 /* Note: the order here must match the order of the generic assignment tokens.
  * Also, the first token of each group must be the ?_ASSIGN_TOKEN.

@@ -2015,7 +2015,11 @@ static int do_struct_method (char *name, int linenum)
      {
 	SLang_Ref_Type *ref = (SLang_Ref_Type *)obj.v.ref;
 	if ((ref != NULL) && (ref->is_global))
-	  return inner_interp_nametype (ref->v.nt, linenum);
+	  {
+	     ret = inner_interp_nametype (ref->v.nt, linenum);
+	     SLang_free_ref (ref);
+	     return ret;
+	  }
      }
 
    GET_CLASS(cl,type);
@@ -7290,6 +7294,10 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 
       case STRUCT_TOKEN:
 	compile_call_direct (_pSLstruct_define_struct, SLANG_BC_CALL_DIRECT);
+	break;
+
+      case STRUCT_WITH_ASSIGN_TOKEN:
+	compile_call_direct (_pSLstruct_define_struct2, SLANG_BC_CALL_DIRECT);
 	break;
 
       case TYPEDEF_TOKEN:

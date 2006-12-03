@@ -249,6 +249,36 @@ static int append_token (_pSLang_Token_Type *t)
    return 0;
 }
 
+static int append_copy_of_string_token (_pSLang_Token_Type *t)
+{
+   _pSLang_Token_Type *t1;
+
+   if (-1 == check_token_list_space (Token_List, 1))
+     return -1;
+
+   t1 = Token_List->stack + Token_List->len;
+   *t1 = *t;
+   
+   if (NULL == (t1->v.s_val = SLang_create_slstring (t->v.s_val)))
+     return -1;
+   
+   t1->free_sval_flag = 1;
+   t1->num_refs = 1;
+
+   Token_List->len += 1;
+   return 0;
+}
+
+static int append_int_token (int n)
+{     
+   _pSLang_Token_Type num_tok;
+
+   init_token (&num_tok);
+   num_tok.type = INT_TOKEN;
+   num_tok.v.long_val = n;
+   return append_token (&num_tok);
+}
+
 static int append_token_of_type (unsigned char t)
 {
    _pSLang_Token_Type *tok;
@@ -474,7 +504,7 @@ static void handle_for_statement (_pSLang_Token_Type *);
 static void handle_foreach_statement (_pSLang_Token_Type *);
 static void statement_list (_pSLang_Token_Type *);
 static void variable_list (_pSLang_Token_Type *, unsigned char);
-static void struct_declaration (_pSLang_Token_Type *);
+static void struct_declaration (_pSLang_Token_Type *, int);
 static void define_function_args (_pSLang_Token_Type *);
 static void typedef_definition (_pSLang_Token_Type *);
 static void function_args_expression (_pSLang_Token_Type *, int);
@@ -1207,6 +1237,18 @@ static void handle_throw_statement (_pSLang_Token_Type *ctok)
    compile_token_of_type (THROW_TOKEN);
 }
 
+static _pSLang_Token_Type *allocate_token (void)
+{
+   _pSLang_Token_Type *v;
+
+   v = (_pSLang_Token_Type *)SLmalloc (sizeof (_pSLang_Token_Type));
+   if (v == NULL)
+     return NULL;
+   
+   init_token (v);
+   return v;
+}
+
 static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 {
    _pSLang_Token_Type *var_tokens = NULL;
@@ -1461,19 +1503,117 @@ static void variable_list (_pSLang_Token_Type *name_token, unsigned char variabl
    if (declaring) compile_token_of_type (CBRACKET_TOKEN);
 }
 
+static void free_token_linked_list (_pSLang_Token_Type *tok)
+{
+   while (tok != NULL)
+     {
+	_pSLang_Token_Type *next = tok->next;
+	free_token (tok);
+	if (tok->num_refs != 0)
+	  {
+	     SLang_verror (SL_INTERNAL_ERROR, "Cannot free token in linked list");
+	  }
+	else
+	  SLfree ((char *) tok);
+
+	tok = next;
+     }
+}
+
+/*
+ * This function parses a structure definition block.  It returns the names
+ * of the structure fields in the form of a linked list of tokens.
+ *
+ * If the structure contains assignments, the function parses the expressions and returns the
+ * number of such assignments.  So:
+ *
+ *  foo = foo_expr, bar = bar_expr, ...
+ *
+ * generates:  foo_expr_tokens "foo" bar_expr_tokens "bar" ...
+ */
+static _pSLang_Token_Type *
+  handle_struct_assign_list (_pSLang_Token_Type *ctok, int assign_ok, unsigned int *nassignp)
+{
+   _pSLang_Token_Type *name_list_root = NULL;
+   _pSLang_Token_Type *name_list_tail = NULL;
+   unsigned int n, m;
+
+   n = m = 0;
+   while ((_pSLang_Error == 0)
+	  && (IDENT_TOKEN == get_token (ctok)))
+     {
+	_pSLang_Token_Type *new_tok = allocate_token ();
+	if (new_tok == NULL)
+	  break;
+
+	*new_tok = *ctok;
+	new_tok->type = STRING_TOKEN;
+
+	init_token (ctok);
+
+	if (name_list_root == NULL)
+	  name_list_tail = name_list_root = new_tok;
+	else
+	  name_list_tail->next = new_tok;
+	name_list_tail = new_tok;
+
+	n++;
+
+	if (COMMA_TOKEN == get_token (ctok))
+	  continue;
+
+	if (assign_ok && (ASSIGN_TOKEN == ctok->type))
+	  {
+	     /* name = ... */
+	     int eos = compile_bos (ctok, 1);
+	     get_token (ctok);
+	     simple_expression (ctok);
+	     if (eos) compile_eos ();
+
+	     if (-1 == append_copy_of_string_token (new_tok))
+	       break;
+	     
+	     m++;
+
+	     if (ctok->type == COMMA_TOKEN)
+	       continue;
+	  }	
+	break;
+     }
+
+   if (_pSLang_Error)
+     {
+	free_token_linked_list (name_list_root);
+	return NULL;
+     }
+   
+   if (n == 0)
+     {
+	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting an identifier", ctok, 0);
+	return NULL;
+     }
+
+   *nassignp = m;
+   return name_list_root;
+}
+
 /* struct-declaration:
  * 	struct { struct-field-list };
  *
  * struct-field-list:
- * 	struct-field-name , struct-field-list
- * 	struct-field-name
+ * 	struct-field-name [= simple_expr], struct-field-list
+ * 	struct-field-name [= simple_expr]
  *
- * Generates code: "field-name-1" ... "field-name-N" N STRUCT_TOKEN
+ * Generates code: 
+ *    "field-name-1" ... "field-name-N" N STRUCT_TOKEN
+ * - OR -
+ *    expr-k1 "field-name-k1" ... expr-kM "field-name-kM"  
+ *        "name-1" ... "field-name-N" N M STRUCT_DEF_ASSIGN_TOKEN
  */
-static void struct_declaration (_pSLang_Token_Type *ctok)
+static void struct_declaration (_pSLang_Token_Type *ctok, int assign_ok)
 {
-   int n;
-   _pSLang_Token_Type num_tok;
+   _pSLang_Token_Type *name_list, *next;
+   unsigned int n, m;
 
    if (ctok->type != OBRACE_TOKEN)
      {
@@ -1481,34 +1621,39 @@ static void struct_declaration (_pSLang_Token_Type *ctok)
 	return;
      }
 
-   n = 0;
-   while (IDENT_TOKEN == get_token (ctok))
-     {
-	n++;
-	ctok->type = STRING_TOKEN;
-	append_token (ctok);
-	if (COMMA_TOKEN != get_token (ctok))
-	  break;
-     }
+   if (NULL == (name_list = handle_struct_assign_list (ctok, assign_ok, &m)))
+     return;
 
    if (ctok->type != CBRACE_TOKEN)
      {
 	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting }", ctok, 0);
+	free_token_linked_list (name_list);
 	return;
      }
-   if (n == 0)
-     {
-	_pSLparse_error (SL_SYNTAX_ERROR, "struct requires at least 1 field", ctok, 0);
-	return;
-     }
-
-   init_token (&num_tok);
-   num_tok.type = INT_TOKEN;
-   num_tok.v.long_val = n;
-   append_token (&num_tok);
-   append_token_of_type (STRUCT_TOKEN);
-
    get_token (ctok);
+
+   n = 0;
+   next = name_list;
+   while (next != NULL)
+     {
+	if (-1 == append_token (next))
+	  break;
+	next = next->next;
+	n++;
+     }
+   free_token_linked_list (name_list);
+
+   if (_pSLang_Error)
+     return;
+
+   append_int_token (n);
+   if (m == 0)
+     append_token_of_type (STRUCT_TOKEN);
+   else
+     {
+	append_int_token (m);
+	append_token_of_type (STRUCT_WITH_ASSIGN_TOKEN);
+     }
 }
 
 /* struct-declaration:
@@ -1530,7 +1675,7 @@ static void typedef_definition (_pSLang_Token_Type *t)
      }
    get_token (t);
 
-   struct_declaration (t);
+   struct_declaration (t, 0);
    if (t->type != IDENT_TOKEN)
      {
 	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting identifier", t, 0);
@@ -2190,7 +2335,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 
       case STRUCT_TOKEN:
 	get_token (ctok);
-	struct_declaration (ctok);
+	struct_declaration (ctok, 1);
 	break;
 
       case TMP_TOKEN:

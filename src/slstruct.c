@@ -333,6 +333,61 @@ int _pSLstruct_define_struct (void)
    return 0;
 }
 
+static int pop_to_struct_field (_pSLang_Struct_Type *s, char *name)
+{
+   _pSLstruct_Field_Type *f;
+   SLang_Object_Type obj;
+   
+   if ((NULL == (f = pop_field (s, name, find_field)))
+       || (-1 == SLang_pop (&obj)))
+     return -1;
+
+   SLang_free_object (&f->obj);
+   f->obj = obj;
+   
+   return 0;
+}
+
+/* This function is used for structure definitions with embedded assignments */
+int _pSLstruct_define_struct2 (void)
+{
+   _pSLang_Struct_Type *s;
+   int nfields;
+   int nassigns;
+
+   if (-1 == SLang_pop_integer (&nassigns))
+     return -1;
+
+   if (-1 == SLang_pop_integer (&nfields))
+     return -1;
+
+   if (NULL == (s = struct_from_struct_fields (nfields)))
+     return -1;
+
+   while (nassigns > 0)
+     {
+	char *name;
+	if (-1 == SLang_pop_slstring (&name))
+	  goto return_error;
+	
+	if (-1 == pop_to_struct_field (s, name))
+	  {
+	     SLang_free_slstring (name);
+	     goto return_error;
+	  }
+	SLang_free_slstring (name);
+	nassigns--;
+     }
+
+   if (0 == _pSLang_push_struct (s))
+     return 0;
+   
+   return_error:
+   
+   _pSLstruct_delete_struct (s);
+   return -1;
+}
+
 static int init_struct_with_user_methods (SLtype, _pSLang_Struct_Type *);
 /* Simply make a struct that contains the same fields as struct s.  Do not
  * duplicate the field values.
@@ -1175,23 +1230,17 @@ static int init_struct_with_user_methods (SLtype type, _pSLang_Struct_Type *s)
 static int struct_sput (SLtype type, char *name)
 {
    _pSLang_Struct_Type *s;
-   _pSLstruct_Field_Type *f;
-   SLang_Object_Type obj;
 
    (void) type;
 
    if (-1 == _pSLang_pop_struct (&s))
      return -1;
 
-   if ((NULL == (f = pop_field (s, name, find_field)))
-       || (-1 == SLang_pop (&obj)))
+   if (-1 == pop_to_struct_field (s, name))
      {
 	_pSLstruct_delete_struct (s);
 	return -1;
      }
-
-   SLang_free_object (&f->obj);
-   f->obj = obj;
    _pSLstruct_delete_struct (s);
    return 0;
 }
