@@ -1446,6 +1446,38 @@ _clear_error
 
 --------------------------------------------------------------
 
+_set_bof_handler
+
+ SYNOPSIS
+  Set the beginning of function callback handler
+
+ USAGE
+  _set_bof_handler (Ref_Type func)
+
+ DESCRIPTION
+ This function is used to set the function to be called prior to the
+ execution of the body S-Lang function but after its arguments have
+ been evaluated, provided that function was defined
+ with `_bofeof_info' set appropriately.  The callback function
+ must be defined to take a single parameter representing the name of
+ the function and must return nothing.
+
+ EXAMPLE
+
+    private define bof_handler (fun)
+    {
+      () = fputs ("About to execute $fun"$, stdout);
+    }
+    _set_bos_handler (&bof_handler);
+
+
+ NOTES
+
+ SEE ALSO
+  _set_eof_handler, _boseos_info, _set_bos_handler
+
+--------------------------------------------------------------
+
 _set_bos_handler
 
  SYNOPSIS
@@ -1479,6 +1511,36 @@ _set_bos_handler
 
 --------------------------------------------------------------
 
+_set_eof_handler
+
+ SYNOPSIS
+  Set the beginning of function callback handler
+
+ USAGE
+  _set_eof_handler (Ref_Type func)
+
+ DESCRIPTION
+ This function is used to set the function to be called at the end of
+ execution of a S-Lang function, provided that function was compiled with
+ `_bofeof_info' set accordingly.
+
+ The callback function will be passed no parameters and it must return
+ nothing.
+
+ EXAMPLE
+
+   private define eof_handler ()
+   {
+     () = fputs ("Done executing the function\n", stdout);
+   }
+   _set_eof_handler (&eof_handler);
+
+
+ SEE ALSO
+  _set_bof_handler, _bofeof_info, _boseos_info
+
+--------------------------------------------------------------
+
 _set_eos_handler
 
  SYNOPSIS
@@ -1508,68 +1570,6 @@ _set_eos_handler
 
  SEE ALSO
   _set_bos_handler, _boseos_info, _bofeof_info
-
---------------------------------------------------------------
-
-_set_bof_handler
-
- SYNOPSIS
-  Set the beginning of function callback handler
-
- USAGE
-  _set_bof_handler (Ref_Type func)
-
- DESCRIPTION
- This function is used to set the function to be called prior to the
- execution of the body S-Lang function but after its arguments have
- been evaluated, provided that function was defined
- with `_bofeof_info' set appropriately.  The callback function
- must be defined to take a single parameter representing the name of
- the function and must return nothing.
-
- EXAMPLE
-
-    private define bof_handler (fun)
-    {
-      () = fputs ("About to execute $fun"$, stdout);
-    }
-    _set_bos_handler (&bof_handler);
-
-
- NOTES
-
- SEE ALSO
-  _set_eof_handler, _boseos_info, _set_bos_handler
-
---------------------------------------------------------------
-
-_set_eof_handler
-
- SYNOPSIS
-  Set the beginning of function callback handler
-
- USAGE
-  _set_eof_handler (Ref_Type func)
-
- DESCRIPTION
- This function is used to set the function to be called at the end of
- execution of a S-Lang function, provided that function was compiled with
- `_bofeof_info' set accordingly.
-
- The callback function will be passed no parameters and it must return
- nothing.
-
- EXAMPLE
-
-   private define eof_handler ()
-   {
-     () = fputs ("Done executing the function\n", stdout);
-   }
-   _set_eof_handler (&eof_handler);
-
-
- SEE ALSO
-  _set_bof_handler, _bofeof_info, _boseos_info
 
 --------------------------------------------------------------
 
@@ -2017,6 +2017,40 @@ symlink
 
  SEE ALSO
   readlink, hardlink
+
+--------------------------------------------------------------
+
+_$
+
+ SYNOPSIS
+  Expand the dollar-escaped variables in a string
+
+ USAGE
+  String_Type _$(String_Type s)
+
+ DESCRIPTION
+ This function expands the dollar-escaped variables in a string and
+ returns the resulting string.
+
+ EXAMPLE
+ Consider the following code fragment:
+
+     private variable Format = "/tmp/foo-$time.$pid";
+     define make_filename ()
+     {
+        variable pid = getpid ();
+        variable time = _time ();
+        return _$(Format);
+     }
+
+ Note that the variable `Format' contains dollar-escaped
+ variables, but because the `$' suffix was omitted from the
+ string literal, the variables are not expanded.  Instead expansion is
+ deferred until execution of the `make_filename' function through
+ the use of the `_$' function.
+
+ SEE ALSO
+  eval, getenv
 
 --------------------------------------------------------------
 
@@ -4945,6 +4979,136 @@ uname
 
 --------------------------------------------------------------
 
+__qualifiers
+
+ SYNOPSIS
+  Get the active set of qualifiers
+
+ USAGE
+  Struct_Type __qualifiers ()
+
+ DESCRIPTION
+ This function returns the set of qualifiers associated with the
+ current execution context.  If qualifiers are active, then the result
+ is a structure representing the names of the qualifiers and their
+ corresponding values.  Otherwise `NULL' will be returned.
+
+ One of the main uses of this function is to pass the current set of
+ qualifiers to another another function.  For example, consider a
+ plotting application with a function called called `lineto' that
+ sets the pen-color before drawing the line to the specified point:
+
+    define lineto (x, y)
+    {
+       % The color may be specified by a qualifier, defaulting to black
+       variable color = qualifier ("color", "black");
+       set_pen_color (color);
+           .
+           .
+    }
+
+ The `lineto' function permits the color to be specified by a
+ qualifier.  Now consider a function that make use of lineto to draw a
+ line segment between two points:
+
+    define line_segment (x0, y0, x1, y1)
+    {
+       moveto (x0, y0);
+       lineto (x1, y1 ; color=qualifier("color", "black"));
+    }
+    line_segment (1,1, 10,10; color="blue");
+
+ Note that in this implementation of `line_segment', the
+ `color' qualifier was explicitely passed to the `lineto'
+ function.  However, this technique does not scale well.  For example, the
+ `lineto' function might also take a qualifer that specifies the
+ line-style, to be used as
+
+    line_segment (1,1, 10,10; color="blue", linestyle="solid");
+
+ But the above implementation of `line_segment' does not pass the
+ `linestyle' qualifier.  In such a case, it is preferable to pass
+ all the qualifiers, e.g.,
+
+    define line_segment (x0, y0, x1, y1)
+    {
+       moveto (x0, y0);
+       lineto (x1, y1 ;; __qualifiers());
+    }
+
+ Note the use of the double-semi colon in the `lineto'
+ statement.  This tells the parser that the qualifiers are specified
+ by a structure-valued argument and not a set of name-value pairs.
+
+ SEE ALSO
+  qualifier, qualifier_exists
+
+--------------------------------------------------------------
+
+qualifier
+
+ SYNOPSIS
+  Get the value of a qualifier
+
+ USAGE
+  value = qualifier (String_Type name [,default_value])
+
+ DESCRIPTION
+ This function may be used to get the value of a qualifer.  If the
+ specified qualifier does not exist, `NULL' will be returned,
+ unless a default value has been provided.
+
+ EXAMPLE
+
+    define echo (text)
+    {
+       variable fp = qualifier ("out", stdout);
+       () = fputs (text, fp);
+    }
+    echo ("hello");              % writes hello to stdout
+    echo ("hello"; out=stderr);  % writes hello to stderr
+
+
+ NOTES
+ Since `NULL' is a valid value for a qualifier, this function is
+ unable to distinguish between a non-existent qualifier and one whose
+ value if `NULL'.  If such a distinction is important, the
+ `qualifier_exists' function can be used.  For example,
+
+    define echo (text)
+    {
+       variable fp = stdout;
+       if (qualifier_exists ("use_stderr"))
+         fp = stderr;
+       () = fputs (text, fp);
+    }
+    echo ("hello"; use_stderr);  % writes hello to stderr
+
+ In this case, no value was provided for the `use_stderr'
+ qualifier: it exists but has a value of `NULL'.
+
+ SEE ALSO
+  qualifier_exists, __qualifiers
+
+--------------------------------------------------------------
+
+qualifier_exists
+
+ SYNOPSIS
+  Check for the existence of a qualifier
+
+ USAGE
+  Int_Type qualifier_exists (String_Type name)
+
+ DESCRIPTION
+ This function will return 1 if a qualifier of the specified name
+ exists, or 0 otherwise.
+
+ SEE ALSO
+  qualifier, __qualifiers
+
+--------------------------------------------------------------
+
 alarm
 
  SYNOPSIS
@@ -5241,8 +5405,44 @@ __pop_args
   the `ones' function onto the stack to be used when dereferencing
   Array_Type.
 
+ NOTES
+  This function has been superseded by the `__pop_list' function,
+  which returns the objects as a list instead of an array of structures.
+
  SEE ALSO
-  __push_args, typeof, _pop_n
+  __push_args, __pop_list, __push_list, typeof, _pop_n
+
+--------------------------------------------------------------
+
+__pop_list
+
+ SYNOPSIS
+  Convert items on the stack to a List_Type
+
+ USAGE
+  List_Type = __pop_list (Int_Type n)
+
+ DESCRIPTION
+ This function removes a specified number of items from the stack and
+ converts returns them in the form of a list.
+
+ EXAMPLE
+
+  define print_args ()
+  {
+     variable list = __pop_list (_NARGS);
+     variable i;
+     _for i (0, length(length)-1, 1)
+        {
+           vmessage ("arg[%d]: %S", list[i]);
+        }
+  }
+
+
+ NOTES
+
+ SEE ALSO
+  __push_list
 
 --------------------------------------------------------------
 
@@ -5283,7 +5483,7 @@ _print_stack
 __push_args
 
  SYNOPSIS
-  Remove n function arguments onto the stack
+  Move n function arguments onto the stack
 
  USAGE
   __push_args (Struct_Type args);
@@ -5294,8 +5494,35 @@ __push_args
   of arguments.  See the description of `__pop_args' for more
   information.
 
+ NOTES
+  This function has been superseded by the `__push_list' function.
+
  SEE ALSO
-  __pop_args, typeof, _pop_n
+  __pop_args, __push_list, __pop_list, typeof, _pop_n
+
+--------------------------------------------------------------
+
+__push_list
+
+ SYNOPSIS
+  Push the elements of a list to the stack
+
+ USAGE
+  __push_list (List_Type list)
+
+ DESCRIPTION
+ This function pushes the elements of a list to the stack.
+
+ EXAMPLE
+
+ private variable list_to_array (list)
+ {
+    return [__push_list (list)];
+ }
+
+
+ SEE ALSO
+  __pop_list
 
 --------------------------------------------------------------
 
