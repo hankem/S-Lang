@@ -810,6 +810,68 @@ static void expand_dollar_string (char *s)
    (void) _pSLpush_dollar_string (s);
 }
 
+#if SLANG_HAS_QUALIFIERS
+static void get_qualifiers_intrin (void)
+{
+   SLang_Struct_Type *q;
+   if (0 == _pSLang_get_qualifiers (&q))
+     (void) SLang_push_struct (q);
+}
+
+static int qualifier_exists_intrin (char *name)
+{
+   SLang_Struct_Type *q;
+
+   if (-1 == _pSLang_get_qualifiers (&q))
+     return -1;
+   
+   if ((q == NULL)
+       || (NULL == _pSLstruct_get_field_value (q, name)))
+     return 0;
+   
+   return 1;
+}
+
+static void qualifier_intrin (void)
+{
+   int has_default;
+   char *name;
+   SLang_Struct_Type *q;
+   SLang_Object_Type *objp;
+
+   if (-1 == _pSLang_get_qualifiers (&q))
+     return;
+
+   has_default = (SLang_Num_Function_Args == 2);
+   if (has_default)
+     {
+	if (-1 == SLroll_stack (2))
+	  return;
+     }
+
+   if (-1 == SLang_pop_slstring (&name))
+     return;
+
+   if (q != NULL)
+     objp = _pSLstruct_get_field_value (q, name);
+   else
+     objp = NULL;
+   
+   SLang_free_slstring (name);
+
+   if (objp != NULL)
+     {
+	if (has_default)
+	  SLdo_pop ();
+	_pSLpush_slang_obj (objp);
+     }
+   else if (has_default == 0)
+     (void) SLang_push_null ();
+   
+   /* Note: objp and q should _not_ be freed since they were not allocated */
+}
+#endif
+
 static void set_argv_intrinsic (void);
 static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
 {
@@ -881,6 +943,11 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_0("length", length_cmd, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("__set_argc_argv", set_argv_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("_$", expand_dollar_string, SLANG_VOID_TYPE),
+#if SLANG_HAS_QUALIFIERS
+   MAKE_INTRINSIC_0("__qualifiers", get_qualifiers_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("qualifier", qualifier_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_S("qualifier_exists", qualifier_exists_intrin, SLANG_INT_TYPE),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 

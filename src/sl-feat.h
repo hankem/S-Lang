@@ -75,3 +75,6 @@
  * SLANG_HAS_DEBUG_CODE must be enabled for this to work.
  */
 #define SLANG_HAS_BOSEOS	SLANG_HAS_DEBUG_CODE
+
+/* Define this if you want the language to support qualifiers */
+#define SLANG_HAS_QUALIFIERS	1

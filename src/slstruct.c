@@ -27,7 +27,7 @@ USA.
 #include "_slang.h"
 
 
-void _pSLstruct_delete_struct (_pSLang_Struct_Type *s)
+void SLang_free_struct (_pSLang_Struct_Type *s)
 {
    _pSLstruct_Field_Type *field, *field_max;
 
@@ -117,12 +117,15 @@ static int push_struct_of_type (SLtype type, _pSLang_Struct_Type *s)
    return -1;
 }
 
-int _pSLang_push_struct (_pSLang_Struct_Type *s)
+int SLang_push_struct (_pSLang_Struct_Type *s)
 {
+   if (s == NULL)
+     return SLang_push_null ();
+
    return push_struct_of_type (SLANG_STRUCT_TYPE, s);
 }
 
-int _pSLang_pop_struct (_pSLang_Struct_Type **sp)
+int SLang_pop_struct (_pSLang_Struct_Type **sp)
 {
    SLang_Object_Type obj;
    SLang_Class_Type *cl;
@@ -153,7 +156,7 @@ int _pSLang_pop_struct (_pSLang_Struct_Type **sp)
 static void struct_destroy (SLtype type, VOID_STAR vs)
 {
    (void) type;
-   _pSLstruct_delete_struct (*(_pSLang_Struct_Type **) vs);
+   SLang_free_struct (*(_pSLang_Struct_Type **) vs);
 }
 
 static int struct_push (SLtype type, VOID_STAR ptr)
@@ -178,6 +181,17 @@ static _pSLstruct_Field_Type *find_field (_pSLang_Struct_Type *s, char *name)
      }
 
    return NULL;
+}
+
+/* This function is used by the qualifier-code */
+SLang_Object_Type *_pSLstruct_get_field_value (SLang_Struct_Type *s, char *name)
+{
+   _pSLstruct_Field_Type *f = find_field (s, name);
+
+   if (f == NULL)
+     return NULL;
+
+   return &f->obj;
 }
 
 static _pSLstruct_Field_Type *pop_field (_pSLang_Struct_Type *s, char *name,
@@ -244,7 +258,7 @@ static _pSLang_Struct_Type *
    return s;
 
    return_error:
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return NULL;
 }
 
@@ -258,10 +272,10 @@ int SLstruct_create_struct (unsigned int nfields,
    if (NULL == (s = create_struct (nfields, field_names, field_types, field_values)))
      return -1;
 
-   if (0 == _pSLang_push_struct (s))
+   if (0 == SLang_push_struct (s))
      return 0;
 
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return -1;
 }
 
@@ -292,7 +306,7 @@ static _pSLang_Struct_Type *struct_from_struct_fields (int nfields)
 	nfields--;
 	if (-1 == SLang_pop_slstring (&name))
 	  {
-	     _pSLstruct_delete_struct (s);
+	     SLang_free_struct (s);
 	     return NULL;
 	  }
 
@@ -306,7 +320,7 @@ static _pSLang_Struct_Type *struct_from_struct_fields (int nfields)
 	     SLang_verror (SL_DuplicateDefinition_Error,
 			   "Field %s used more than once in the struct",
 			   name);
-	     _pSLstruct_delete_struct (s);
+	     SLang_free_struct (s);
 	     return NULL;
 	  }
      }
@@ -325,9 +339,9 @@ int _pSLstruct_define_struct (void)
    if (NULL == (s = struct_from_struct_fields (nfields)))
      return -1;
 
-   if (-1 == _pSLang_push_struct (s))
+   if (-1 == SLang_push_struct (s))
      {
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	return -1;
      }
    return 0;
@@ -379,12 +393,12 @@ int _pSLstruct_define_struct2 (void)
 	nassigns--;
      }
 
-   if (0 == _pSLang_push_struct (s))
+   if (0 == SLang_push_struct (s))
      return 0;
    
    return_error:
    
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return -1;
 }
 
@@ -409,7 +423,7 @@ static _pSLang_Struct_Type *make_struct_shell (_pSLang_Struct_Type *s, SLtype ty
      {
 	if (NULL == (new_f[i].name = SLang_create_slstring (old_f[i].name)))
 	  {
-	     _pSLstruct_delete_struct (new_s);
+	     SLang_free_struct (new_s);
 	     return NULL;
 	  }
      }
@@ -445,7 +459,7 @@ typedefed_struct_datatype_deref (SLtype type)
 
    if (-1 == push_struct_of_type (type, s))
      {
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	return -1;
      }
 
@@ -476,7 +490,7 @@ static _pSLang_Struct_Type *duplicate_struct (_pSLang_Struct_Type *s, SLtype typ
 	     if ((-1 == _pSLpush_slang_obj (obj))
 		 || (-1 == SLang_pop (&new_f->obj)))
 	       {
-		  _pSLstruct_delete_struct (new_s);
+		  SLang_free_struct (new_s);
 		  return NULL;
 	       }
 	  }
@@ -496,7 +510,7 @@ static int struct_dereference (SLtype type, VOID_STAR addr)
 
    if (-1 == push_struct_of_type (type, s))
      {
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	return -1;
      }
 
@@ -520,7 +534,7 @@ struct_foreach_open (SLtype type, unsigned int num)
 
    (void) type;
 
-   if (-1 == _pSLang_pop_struct (&s))
+   if (-1 == SLang_pop_struct (&s))
      return NULL;
 
    switch (num)
@@ -544,14 +558,14 @@ struct_foreach_open (SLtype type, unsigned int num)
 
    if (next_name == NULL)
      {
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	return NULL;
      }
 
    c = (SLang_Foreach_Context_Type *)SLmalloc (sizeof (SLang_Foreach_Context_Type));
    if (c == NULL)
      {
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	SLang_free_slstring (next_name);
 	return NULL;
      }
@@ -569,7 +583,7 @@ static void struct_foreach_close (SLtype type, SLang_Foreach_Context_Type *c)
    if (c == NULL) return;
 
    SLang_free_slstring (c->next_field_name);
-   if (c->s != NULL) _pSLstruct_delete_struct (c->s);
+   if (c->s != NULL) SLang_free_struct (c->s);
    SLfree ((char *) c);
 }
 
@@ -586,7 +600,7 @@ static int struct_foreach (SLtype type, SLang_Foreach_Context_Type *c)
    if (c->s == NULL)
      return 0;			       /* done */
 
-   if (-1 == _pSLang_push_struct (c->s))
+   if (-1 == SLang_push_struct (c->s))
      return -1;
 
    /* Now get the next one ready for the next foreach loop */
@@ -608,7 +622,7 @@ static int struct_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 	  }
      }
 
-   _pSLstruct_delete_struct (c->s);
+   SLang_free_struct (c->s);
    c->s = next_s;
 
    /* keep going */
@@ -1185,7 +1199,7 @@ static void add_destroy_method (void)
 	return;
      }
    
-   if (-1 == _pSLang_pop_struct (&s))
+   if (-1 == SLang_pop_struct (&s))
      {
 	SLang_free_function (f);
 	return;
@@ -1194,7 +1208,7 @@ static void add_destroy_method (void)
    if (s->destroy_method != NULL)
      SLang_free_function (s->destroy_method);
    s->destroy_method = SLang_copy_function (f);
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
 }
 
 static void add_string_method (SLtype *typep, SLang_Ref_Type *ref)
@@ -1233,15 +1247,15 @@ static int struct_sput (SLtype type, char *name)
 
    (void) type;
 
-   if (-1 == _pSLang_pop_struct (&s))
+   if (-1 == SLang_pop_struct (&s))
      return -1;
 
    if (-1 == pop_to_struct_field (s, name))
      {
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	return -1;
      }
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return 0;
 }
 
@@ -1253,17 +1267,17 @@ static int struct_sget (SLtype type, char *name)
 
    (void) type;
 
-   if (-1 == _pSLang_pop_struct (&s))
+   if (-1 == SLang_pop_struct (&s))
      return -1;
 
    if (NULL == (f = pop_field (s, name, find_field)))
      {
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	return -1;
      }
 
    ret = _pSLpush_slang_obj (&f->obj);
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return ret;
 }
 
@@ -1371,7 +1385,7 @@ int _pSLstruct_define_typedef (void)
    if (-1 == SLang_pop_slstring (&type_name))
      return -1;
 
-   if (-1 == _pSLang_pop_struct (&s))
+   if (-1 == SLang_pop_struct (&s))
      {
 	SLang_free_slstring (type_name);
 	return -1;
@@ -1380,16 +1394,16 @@ int _pSLstruct_define_typedef (void)
    if (NULL == (s1 = make_struct_shell (s, SLANG_STRUCT_TYPE)))
      {
 	SLang_free_slstring (type_name);
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	return -1;
      }
 
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
 
    if (NULL == (cl = SLclass_allocate_class (type_name)))
      {
 	SLang_free_slstring (type_name);
-	_pSLstruct_delete_struct (s1);
+	SLang_free_struct (s1);
 	return -1;
      }
    SLang_free_slstring (type_name);
@@ -1551,7 +1565,7 @@ static void struct_set_field (void)
 	return;
      }
 
-   if (-1 == _pSLang_pop_struct (&s))
+   if (-1 == SLang_pop_struct (&s))
      {
 	SLang_free_slstring (name);
 	SLang_free_object (&obj);
@@ -1560,7 +1574,7 @@ static void struct_set_field (void)
 
    if (NULL == (f = pop_field (s, name, find_field)))
      {
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	SLang_free_slstring (name);
 	SLang_free_object (&obj);
 	return;
@@ -1569,7 +1583,7 @@ static void struct_set_field (void)
    SLang_free_object (&f->obj);
    f->obj = obj;
 
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    SLang_free_slstring (name);
 }
 
@@ -1586,7 +1600,7 @@ static void set_struct_fields (void)
      return;
 
    n--;
-   if (-1 == _pSLang_pop_struct (&s))
+   if (-1 == SLang_pop_struct (&s))
      {
 	SLdo_pop_n (n);
 	return;
@@ -1596,7 +1610,7 @@ static void set_struct_fields (void)
      {
 	SLdo_pop_n (n);
 	SLang_verror (SL_INVALID_PARM, "Too many values for structure");
-	_pSLstruct_delete_struct (s);
+	SLang_free_struct (s);
 	return;
      }
 
@@ -1615,7 +1629,7 @@ static void set_struct_fields (void)
 	n--;
      }
 
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
 }
 
 static void get_struct_field (char *name)
@@ -1749,7 +1763,7 @@ void _pSLstruct_pop_args (int *np)
 
 	s = data[i];
 	if (s != NULL)
-	  _pSLstruct_delete_struct (s);
+	  SLang_free_struct (s);
      }
 
    SLfree ((char *) data);
@@ -1834,7 +1848,7 @@ int SLang_pop_cstruct (VOID_STAR cs, SLang_CStruct_Field_Type *cfields)
    if ((cfields == NULL) || (cs == NULL))
      return -1;
 
-   if (-1 == _pSLang_pop_struct (&s))
+   if (-1 == SLang_pop_struct (&s))
      return -1;
 
    cfield = cfields;
@@ -1855,7 +1869,7 @@ int SLang_pop_cstruct (VOID_STAR cs, SLang_CStruct_Field_Type *cfields)
 	cfield++;
      }
 
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return 0;
 
    return_error:
@@ -1864,7 +1878,7 @@ int SLang_pop_cstruct (VOID_STAR cs, SLang_CStruct_Field_Type *cfields)
 	free_cstruct_field (cfield, cs);
 	cfield--;
      }
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return -1;
 }
 
@@ -1924,10 +1938,10 @@ int SLang_push_cstruct (VOID_STAR cs, SLang_CStruct_Field_Type *cfields)
    if (NULL == (s = create_cstruct (cs, cfields)))
      return -1;
    
-   if (0 == _pSLang_push_struct (s))
+   if (0 == SLang_push_struct (s))
      return 0;
    
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return -1;
 }
 
@@ -1941,23 +1955,6 @@ int SLang_assign_cstruct_to_ref (SLang_Ref_Type *ref, VOID_STAR cs, SLang_CStruc
    if (0 == SLang_assign_to_ref (ref, SLANG_STRUCT_TYPE, (VOID_STAR) &s))
      return 0;
 
-   _pSLstruct_delete_struct (s);
+   SLang_free_struct (s);
    return -1;
 }
-
-/* Public functions */
-extern void SLang_free_struct (SLang_Struct_Type *s)
-{
-   _pSLstruct_delete_struct (s);
-}
-
-extern int SLang_push_struct (SLang_Struct_Type *s)
-{
-   return _pSLang_push_struct (s);
-}
-
-extern int SLang_pop_struct (SLang_Struct_Type **s)
-{
-   return _pSLang_pop_struct (s);
-}
-

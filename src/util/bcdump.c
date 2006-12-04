@@ -212,6 +212,14 @@ static void dump_token (_pSLang_Token_Type *t)
 	b = "struct";
 	break;
 	
+      case STRUCT_WITH_ASSIGN_TOKEN:
+	b = "__struct_with_assign";
+	break;
+	
+      case QUALIFIER_TOKEN:
+	b = "__qualifiers";
+	break;
+	
       case RETURN_TOKEN:
 	b = "return";
 	break;
@@ -265,13 +273,17 @@ static void dump_token (_pSLang_Token_Type *t)
 	break;
 #endif
       case DEFINE_TOKEN:
-	b = ")";
+	sprintf (buf, ") %s", t->v.s_val);
 	break;
 
       case DEFINE_STATIC_TOKEN:
-	b = ")static";
+	sprintf (buf, ") static %s", t->v.s_val);
 	break;
 	
+      case DEFINE_PRIVATE_TOKEN:
+	sprintf (buf, ") private %s", t->v.s_val);
+	break;
+
       case LOOP_TOKEN:
 	b = "loop";
 	break;
@@ -483,9 +495,6 @@ static void dump_token (_pSLang_Token_Type *t)
       case FOREACH_TOKEN:
 	b = "__foreach__"; break;
 	
-      case DEFINE_PRIVATE_TOKEN:
-	b = "private"; break;
-
       case TRY_TOKEN:
 	b = "try"; break;
 	

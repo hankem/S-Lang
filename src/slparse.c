@@ -507,7 +507,7 @@ static void variable_list (_pSLang_Token_Type *, unsigned char);
 static void struct_declaration (_pSLang_Token_Type *, int);
 static void define_function_args (_pSLang_Token_Type *);
 static void typedef_definition (_pSLang_Token_Type *);
-static void function_args_expression (_pSLang_Token_Type *, int);
+static void function_args_expression (_pSLang_Token_Type *, int, int);
 static void expression (_pSLang_Token_Type *);
 static void expression_with_commas (_pSLang_Token_Type *, int);
 static void simple_expression (_pSLang_Token_Type *);
@@ -1294,7 +1294,7 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 	     goto free_return;
 	  }
 	get_token (ctok);
-	function_args_expression (ctok, 0);
+	function_args_expression (ctok, 0, 0);
      }
    append_token_of_type (EARG_TOKEN);
    
@@ -1539,8 +1539,8 @@ static _pSLang_Token_Type *
    unsigned int n, m;
 
    n = m = 0;
-   while ((_pSLang_Error == 0)
-	  && (IDENT_TOKEN == get_token (ctok)))
+   while ((_pSLang_Error == 0) 
+	  && (IDENT_TOKEN == ctok->type))
      {
 	_pSLang_Token_Type *new_tok = allocate_token ();
 	if (new_tok == NULL)
@@ -1560,7 +1560,10 @@ static _pSLang_Token_Type *
 	n++;
 
 	if (COMMA_TOKEN == get_token (ctok))
-	  continue;
+	  {
+	     get_token (ctok);
+	     continue;
+	  }
 
 	if (assign_ok && (ASSIGN_TOKEN == ctok->type))
 	  {
@@ -1576,7 +1579,10 @@ static _pSLang_Token_Type *
 	     m++;
 
 	     if (ctok->type == COMMA_TOKEN)
-	       continue;
+	       {
+		  get_token (ctok);
+		  continue;
+	       }
 	  }	
 	break;
      }
@@ -1597,6 +1603,43 @@ static _pSLang_Token_Type *
    return name_list_root;
 }
 
+static int handle_struct_fields (_pSLang_Token_Type *ctok, int assign_ok)
+{
+   _pSLang_Token_Type *name_list, *next;
+   unsigned int n, m;
+
+   if (NULL == (name_list = handle_struct_assign_list (ctok, assign_ok, &m)))
+     return -1;
+
+   n = 0;
+   next = name_list;
+   while (next != NULL)
+     {
+	if (-1 == append_token (next))
+	  break;
+	next = next->next;
+	n++;
+     }
+   free_token_linked_list (name_list);
+
+   if (_pSLang_Error)
+     return -1;
+
+   append_int_token (n);
+   if (m == 0)
+     append_token_of_type (STRUCT_TOKEN);
+   else
+     {
+	append_int_token (m);
+	append_token_of_type (STRUCT_WITH_ASSIGN_TOKEN);
+     }
+   
+   if (_pSLang_Error)
+     return -1;
+
+   return 0;
+}
+
 /* struct-declaration:
  * 	struct { struct-field-list };
  *
@@ -1612,48 +1655,22 @@ static _pSLang_Token_Type *
  */
 static void struct_declaration (_pSLang_Token_Type *ctok, int assign_ok)
 {
-   _pSLang_Token_Type *name_list, *next;
-   unsigned int n, m;
-
    if (ctok->type != OBRACE_TOKEN)
      {
 	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting {", ctok, 0);
 	return;
      }
+   get_token (ctok);
 
-   if (NULL == (name_list = handle_struct_assign_list (ctok, assign_ok, &m)))
+   if (-1 == handle_struct_fields (ctok, assign_ok))
      return;
-
+   
    if (ctok->type != CBRACE_TOKEN)
      {
 	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting }", ctok, 0);
-	free_token_linked_list (name_list);
 	return;
      }
    get_token (ctok);
-
-   n = 0;
-   next = name_list;
-   while (next != NULL)
-     {
-	if (-1 == append_token (next))
-	  break;
-	next = next->next;
-	n++;
-     }
-   free_token_linked_list (name_list);
-
-   if (_pSLang_Error)
-     return;
-
-   append_int_token (n);
-   if (m == 0)
-     append_token_of_type (STRUCT_TOKEN);
-   else
-     {
-	append_int_token (m);
-	append_token_of_type (STRUCT_WITH_ASSIGN_TOKEN);
-     }
 }
 
 /* struct-declaration:
@@ -2396,7 +2413,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	     /* f(args) ==> args f */
 	     if (CPAREN_TOKEN != get_token (ctok))
 	       {
-		  function_args_expression (ctok, 1);
+		  function_args_expression (ctok, 1, 1);
 		  token_list_element_exchange (start_pos, end_pos);
 	       }
 	     else get_token (ctok);
@@ -2425,7 +2442,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 		  end_pos = Token_List->len;
 		  append_token_of_type (ARG_TOKEN);
 		  get_token (ctok);
-		  function_args_expression (ctok, 0);
+		  function_args_expression (ctok, 0, 1);
 		  token_list_element_exchange (start_pos, end_pos);
 	       }
 #endif
@@ -2463,7 +2480,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
      }
 }
 
-static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_args)
+static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_args, int handle_qualifiers)
 {
    unsigned char last_type, this_type;
    
@@ -2490,10 +2507,37 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 	     get_token (ctok);
 	     return;
 
+	   case SEMICOLON_TOKEN:
+	     if (handle_qualifiers)
+	       {
+		  if (last_type == COMMA_TOKEN)
+		    append_token_of_type (_NULL_TOKEN);
+
+		  if (SEMICOLON_TOKEN == get_token (ctok))
+		    {
+		       /* foo (args... ;; q) form */
+		       if (CPAREN_TOKEN == get_token (ctok))
+			 break;  /* foo (args ;;) */
+		       simple_expression (ctok);
+		    }
+		  else if (ctok->type == CPAREN_TOKEN)
+		    break;	       /* foo (args;) */
+		  else if (-1 == handle_struct_fields (ctok, 1))
+		    return;
+
+		  append_token_of_type (QUALIFIER_TOKEN);
+		  if (ctok->type != CPAREN_TOKEN)
+		    _pSLparse_error (SL_SYNTAX_ERROR, "Expecting ')'", ctok, 0);
+		  break;
+	       }
+	     /* drop */
+		  
 	   default:
 	     simple_expression (ctok);
 	     if ((ctok->type != COMMA_TOKEN)
-		 && (ctok->type != CPAREN_TOKEN))
+		 && (ctok->type != CPAREN_TOKEN)
+		 && ((handle_qualifiers == 0) 
+		     || (ctok->type != SEMICOLON_TOKEN)))
 	       {
 		  _pSLparse_error (SL_SYNTAX_ERROR, "Expecting ')'", ctok, 0);
 		  break;

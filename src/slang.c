@@ -179,6 +179,13 @@ static int *Num_Args_Stack;
 static unsigned int Recursion_Depth;
 static SLang_Object_Type *Frame_Pointer;
 static int Next_Function_Num_Args;
+
+#if SLANG_HAS_QUALIFIERS
+static SLang_Struct_Type *Next_Function_Qualifiers;
+static SLang_Struct_Type *Function_Qualifiers;
+static SLang_Struct_Type **Function_Qualifiers_Stack;
+#endif
+
 static unsigned int Frame_Pointer_Depth;
 static unsigned int *Frame_Pointer_Stack;
 
@@ -845,13 +852,24 @@ int _pSL_increment_frame_pointer (void)
 {
    if (Recursion_Depth >= SLANG_MAX_RECURSIVE_DEPTH)
      {
+#if SLANG_HAS_QUALIFIERS
+	if (Next_Function_Qualifiers != NULL)
+	  {
+	     SLang_free_struct (Next_Function_Qualifiers);
+	     Next_Function_Qualifiers = NULL;
+	  }
+#endif
 	SLang_verror (SL_STACK_OVERFLOW, "Num Args Stack Overflow");
 	return -1;
      }
    Num_Args_Stack [Recursion_Depth] = SLang_Num_Function_Args;
-
    SLang_Num_Function_Args = Next_Function_Num_Args;
    Next_Function_Num_Args = 0;
+#if SLANG_HAS_QUALIFIERS   
+   Function_Qualifiers_Stack[Recursion_Depth] = Function_Qualifiers;   
+   Function_Qualifiers = Next_Function_Qualifiers;
+   Next_Function_Qualifiers = NULL;
+#endif
    Recursion_Depth++;
    return 0;
 }
@@ -859,6 +877,13 @@ int _pSL_increment_frame_pointer (void)
 _INLINE_
 int _pSL_decrement_frame_pointer (void)
 {
+#if SLANG_HAS_QUALIFIERS
+   if (Function_Qualifiers != NULL)
+     {
+	SLang_free_struct (Function_Qualifiers);
+	Function_Qualifiers = NULL;
+     }
+#endif
    if (Recursion_Depth == 0)
      {
 	SLang_verror (SL_STACK_UNDERFLOW, "Num Args Stack Underflow");
@@ -867,8 +892,12 @@ int _pSL_decrement_frame_pointer (void)
 
    Recursion_Depth--;
    if (Recursion_Depth < SLANG_MAX_RECURSIVE_DEPTH)
-     SLang_Num_Function_Args = Num_Args_Stack [Recursion_Depth];
-
+     {
+	SLang_Num_Function_Args = Num_Args_Stack [Recursion_Depth];
+#if SLANG_HAS_QUALIFIERS
+	Function_Qualifiers = Function_Qualifiers_Stack[Recursion_Depth];
+#endif
+     }
    return 0;
 }
 
@@ -947,6 +976,30 @@ static int increment_slang_frame_pointer (_pSLang_Function_Type *fun, unsigned i
    return 0;
 }
 
+#if SLANG_HAS_QUALIFIERS
+static int set_qualifier (void)
+{
+   if (SLANG_NULL_TYPE == SLang_peek_at_stack ())
+     {
+	Next_Function_Qualifiers = NULL;
+	return SLang_pop_null ();
+     }
+   return SLang_pop_struct (&Next_Function_Qualifiers);
+}
+
+int _pSLang_get_qualifiers (SLang_Struct_Type **qp)
+{
+   /* The assumption is that this is being called from a function one level up.
+    * Grab the qualifiers from the previous frame stack.
+    */
+   if (Recursion_Depth > 1)
+     *qp = Function_Qualifiers_Stack[Recursion_Depth-1];
+   else 
+     *qp = NULL;
+
+   return 0;
+}
+#endif
 
 _INLINE_
 int SLang_start_arg_list (void)
@@ -6442,6 +6495,21 @@ static void reset_active_interpreter (void)
    Lang_Break = Lang_Return = 0;
 }
 
+#if SLANG_HAS_QUALIFIERS
+static void clear_qualifier_stack (void)
+{
+   unsigned int i;
+   
+   for (i = 0; i < Recursion_Depth; i++)
+     {
+	if (Function_Qualifiers_Stack[i] != NULL)
+	  {
+	     SLang_free_struct (Function_Qualifiers_Stack[i]);
+	     Function_Qualifiers_Stack[i] = NULL;
+	  }
+     }
+}
+#endif
 void SLang_restart (int localv)
 {
    reset_active_interpreter ();
@@ -6462,6 +6530,9 @@ void SLang_restart (int localv)
      {
 	Next_Function_Num_Args = SLang_Num_Function_Args = 0;
 	Local_Variable_Frame = Local_Variable_Stack;
+#if SLANG_HAS_QUALIFIERS
+	clear_qualifier_stack ();
+#endif
 	Recursion_Depth = 0;
 	Frame_Pointer = Stack_Pointer;
 	Frame_Pointer_Depth = 0;
@@ -7304,10 +7375,6 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	compile_call_direct (_pSLstruct_define_typedef, SLANG_BC_CALL_DIRECT);
 	break;
 
-      case TMP_TOKEN:
-	compile_tmp_variable (t->v.s_val, t->hash);
-	break;
-
       case DOT_TOKEN:		       /* X . field */
 	compile_dot (t, SLANG_BC_FIELD);
 	break;
@@ -7735,6 +7802,13 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	Function_Args_Number = Local_Variable_Number;
 	break;
 
+      case TMP_TOKEN:
+	compile_tmp_variable (t->v.s_val, t->hash);
+	break;
+#if SLANG_HAS_QUALIFIERS
+      case QUALIFIER_TOKEN:
+	compile_call_direct (set_qualifier, SLANG_BC_CALL_DIRECT);
+#endif
       case BOS_TOKEN:
 #if SLANG_HAS_DEBUG_CODE && SLANG_HAS_BOSEOS
 	compile_line_info (SLANG_BC_BOS, This_Compile_Filename, t->v.long_val);
@@ -8003,12 +8077,24 @@ static int init_interpreter (void)
 	SLfree ((char *) Run_Stack);
 	return -1;
      }
+#if SLANG_HAS_QUALIFIERS
+   Function_Qualifiers_Stack = (SLang_Struct_Type **) SLcalloc (SLANG_MAX_RECURSIVE_DEPTH, sizeof (SLang_Struct_Type *));
+   if (Function_Qualifiers_Stack == NULL)
+     {
+	SLfree ((char *) Run_Stack);
+	SLfree ((char *) Num_Args_Stack);
+	return -1;
+     }
+#endif
    Recursion_Depth = 0;
    Frame_Pointer_Stack = (unsigned int *) SLmalloc (sizeof (unsigned int) * SLANG_MAX_RECURSIVE_DEPTH);
    if (Frame_Pointer_Stack == NULL)
      {
 	SLfree ((char *) Run_Stack);
 	SLfree ((char *)Num_Args_Stack);
+#if SLANG_HAS_QUALIFIERS
+	SLfree ((char *) Function_Qualifiers_Stack);
+#endif
 	return -1;
      }
    Frame_Pointer_Depth = 0;
@@ -8020,6 +8106,9 @@ static int init_interpreter (void)
 	SLfree ((char *) Run_Stack);
 	SLfree ((char *) Num_Args_Stack);
 	SLfree ((char *) Frame_Pointer_Stack);
+#if SLANG_HAS_QUALIFIERS
+	SLfree ((char *) Function_Qualifiers_Stack);
+#endif
 	return -1;
      }
    Function_Stack_Ptr = Function_Stack;

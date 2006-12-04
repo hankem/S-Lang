@@ -39,6 +39,19 @@ Changes since 2.0.7
     
         X = struct { a = 4, b = 3, c = sin(PI/4)};
 
+14. src/slang.c,slparse.c,slstruct.c: Added support for
+    "function-qualifiers", e.g,.
+
+         define plot_point (x, y)
+	 {
+	     set_color (qualifier ("color", "black"));
+	       .
+	       .
+	 }
+	 plot_point (2, 1; color="red");
+
+   See docs for more info.
+
 {{{ Previous Versions
 
 Changes since 2.0.6

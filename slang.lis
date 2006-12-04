@@ -84,6 +84,7 @@
 @doc/tm/rtl/ospath.tm
 @doc/tm/rtl/posio.tm
 @doc/tm/rtl/posix.tm
+@doc/tm/rtl/qualif.tm
 @doc/tm/rtl/signal.tm
 @doc/tm/rtl/stack.tm
 @doc/tm/rtl/stdio.tm
@@ -363,6 +364,7 @@
 @src/test/path.sl
 @src/test/posixio.sl
 @src/test/prep.sl
+@src/test/qualif.sl
 @src/test/regexp.sl
 @src/test/req.sl
 @src/test/reqfoo.sl

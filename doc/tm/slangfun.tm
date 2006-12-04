@@ -100,6 +100,9 @@
 \chapter{Eval Functions}
 #i rtl/eval.tm
 
+\chapter{Qualifier Functions}
+#i rtl/qualif.tm
+
 \chapter{Module Functions}
 #i rtl/import.tm
 

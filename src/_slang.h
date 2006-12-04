@@ -542,14 +542,13 @@ typedef struct _pSLang_Struct_Type
 }
 _pSLang_Struct_Type;
 
-extern void _pSLstruct_delete_struct (_pSLang_Struct_Type *);
-extern int _pSLang_push_struct (_pSLang_Struct_Type *);
-extern int _pSLang_pop_struct (_pSLang_Struct_Type **);
 extern int _pSLstruct_init (void);
-/* extern int _pSLstruct_get_field (char *); */
 extern int _pSLstruct_define_struct (void);
 extern int _pSLstruct_define_struct2 (void);
 extern int _pSLstruct_define_typedef (void);
+
+extern SLang_Object_Type *_pSLstruct_get_field_value (SLang_Struct_Type *, char *);
+int _pSLang_get_qualifiers (SLang_Struct_Type **);
 
 struct _pSLang_Ref_Type
 {
@@ -1076,6 +1075,7 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define NOP_TOKEN	0x05
 #define FARG_TOKEN	0x06
 #define TMP_TOKEN	0x07
+#define QUALIFIER_TOKEN	0x08
 
 #define RESERVED1_TOKEN	0x0A	       /* \n */
 #define RESERVED2_TOKEN	0x0D	       /* \r */
