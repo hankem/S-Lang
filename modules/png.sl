@@ -81,35 +81,40 @@ define png_rgb_to_gray (rgb)
 
 private define normalize_gray (gray, nlevels)
 {
-   if ((typeof (gray) == UChar_Type) and (nlevels == 256))
+   variable g0 = qualifier ("gmin");
+   variable g1 = qualifier ("gmax");
+   
+   if ((typeof (gray) == UChar_Type) && (nlevels == 256)
+       && (g0 == NULL) && (g1 == NULL))
      return gray;
 
-   variable g0, g1;
    variable is_bad = isnan(gray) or isinf(gray);
    variable any_is_bad = any(is_bad);
    if (any_is_bad)
      {
 	variable good_gray = gray [where(is_bad == 0)];
-	g0 = min (good_gray);
-	g1 = max (good_gray);
+	if (g0 == NULL) g0 = min (good_gray);
+	if (g1 == NULL) g1 = max (good_gray);
      }
    else
      {
-	g0 = min(gray);
-	g1 = max(gray);
+	if (g0 == NULL) g0 = min(gray);
+	if (g1 == NULL) g1 = max(gray);
      }
+   if (g0 > g1) (g0, g1) = (g1, g0);
 
    if (g0 != g1)
      {
 	variable factor = nlevels/double(g1-g0);
 	gray = typecast ((gray-g0)*factor, Int_Type);
+	gray[where (gray<0)] = 0;
 	gray[where (gray>=nlevels)] = (nlevels-1);
      }
    else
      gray = typecast (gray * 0 + 127, Int_Type);
 
    if (any_is_bad)
-     gray[where(is_bad)] = 0;
+     gray[where(is_bad)] = bad_level;
    
    return gray;
 }
@@ -119,7 +124,7 @@ private define gray_to_rgb_with_cmap (gray, cmap)
    if (typeof (cmap) == String_Type)
      cmap = png_get_colormap (cmap);
 
-   gray = normalize_gray (gray, length(cmap));
+   gray = normalize_gray (gray, length(cmap);;__qualifiers());
    return cmap[gray];
 }
 
@@ -127,10 +132,10 @@ define png_gray_to_rgb ()
 {
    variable gray;
    if (_NARGS == 2)
-     return gray_to_rgb_with_cmap ();
+     return gray_to_rgb_with_cmap (;;__qualifiers ());
 
    gray = ();
-   gray = normalize_gray (gray, 256);
+   gray = normalize_gray (gray, 256;;__qualifiers ());
    return gray + (gray shl 8) + (gray shl 16);
 }
 

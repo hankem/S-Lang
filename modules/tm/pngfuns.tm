@@ -110,13 +110,20 @@
 \description
   This function creates an RGB image, represented by a 2d array of 
   32 bit integers from a grayscale image using the specified colormap.
-  If the values in the input image lie outside the range 0-255, then
-  the image will be rescaled to fall in that range.
+  The values in the input image will be linearly mapped onto the
+  elements of the colormap such that the minimum value in the
+  grayscale image will be assigned the first RGB value in the
+  colormap, and the maximum value will be assigned the last RGB value.
   
-  The colormap argument must either be an array of 256 32 bit integers
+  The colormap argument must either be an array of 32 bit integers
   encoding the RGB information, or must be the name of a supported
   color map.  See the documentation for the \sfun{png_get_colormap}
   function for more information about colormaps.
+\qualifiers
+  The qualifiers \exmp{gmin} and \exmp{gmax} may be used to define the
+  minimum and maximum grayscale values used for the mapping onto the
+  colormap.  Grayscale values outside the specified range will be clipped.
+
 \seealso{png_rgb_to_gray, png_get_colormap}
 \done
 
