@@ -53,6 +53,29 @@ Changes since 2.0.7
    See docs for more info.
 15. modules/png.sl: Added gmin and gmax qualifiers to the
     png_gray_to_rgb function.
+16. src/kwhash.c: New keywords: "ifnot" and "then".  The "ifnot"
+    keyword plays the same role as "!if", except the use of "!if" is
+    deprecated.  Then "then" keyword is used in looping constructs as
+    described in #17.
+17. src/slparse.c,src/slang.c: All looping constructs may be followed
+    either an "else" block, or a "then" block, or a combination of
+    both:
+           loop (N)
+	     {
+	        if (foo) 
+		  break; % execute the else block if present
+	     }
+	   then 
+	     { 
+	        % This block executes if the loop ran to completion
+	     }
+	   else
+	     {
+	        % This block executes if the loop was broken prematurely
+	     }
+
+18. slsh/scripts/slprof: Rewrote much of this script to make it more
+    friendly and useful.
 
 {{{ Previous Versions
 

@@ -346,13 +346,16 @@ _pSLang_BC_Type;
 
 #define SLANG_BCST_IF		0x20
 #define SLANG_BCST_IFNOT	0x21
-#define SLANG_BCST_ELSE	0x22
+#define SLANG_BCST_ELSE		0x22
 #define SLANG_BCST_ANDELSE	0x23
 #define SLANG_BCST_ORELSE	0x24
 #define SLANG_BCST_SWITCH	0x25
 #define SLANG_BCST_NOTELSE	0x26
 #define SLANG_BCST_SC_OR	0x27
 #define SLANG_BCST_SC_AND	0x28
+
+#define SLANG_BCST_LOOP_ELSE	0x29
+#define SLANG_BCST_LOOP_THEN	0x30
 
 /* assignment (SLANG_BC_SET_*_LVALUE) subtypes.  The order MUST correspond
  * to the assignment token order with the ASSIGN_TOKEN as the first!
@@ -1189,7 +1192,6 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define POST_MINUSMINUS_TOKEN	0x61
 
 /* Directives */
-#define FIRST_DIRECTIVE_TOKEN	0x62
 #define IFNOT_TOKEN	0x62
 #define IF_TOKEN	0x63
 #define ELSE_TOKEN	0x64
@@ -1235,6 +1237,8 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define CATCH_TOKEN	0x88
 #define THROW_TOKEN	0x89
 #define FINALLY_TOKEN	0x8a
+
+#define THEN_TOKEN	0x8d
 
 #define STRUCT_WITH_ASSIGN_TOKEN	0x8e
 
@@ -1293,6 +1297,9 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 
 #define LAST_ASSIGN_TOKEN		0xCA
 #define IS_ASSIGN_TOKEN(t) (((t)>=FIRST_ASSIGN_TOKEN)&&((t)<=LAST_ASSIGN_TOKEN))
+
+#define LOOP_THEN_TOKEN			0xD0
+#define LOOP_ELSE_TOKEN			0xD1
 
 #define _INLINE_ARRAY_TOKEN		0xE0
 #define _INLINE_IMPLICIT_ARRAY_TOKEN	0xE1

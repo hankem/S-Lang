@@ -123,7 +123,73 @@ test_while (&add_one_with_loop);
 test_for (&add_one);
 test_for (&add_one_with_call);
 test_for (&add_one_with_loop);
+
+private define test_loop_then_else ()
+{
+   variable f;
+   variable what;
    
+   foreach what (["else", "then"])
+     {
+	f = NULL;
+	loop (10)
+	  {
+	     if (what == "else") 
+	       break;
+	  }
+	else f = "else";
+	then f = "then";
+
+	if (f != what)
+	  failed ("loop-1 %s", what);
+	
+	f = NULL;
+	loop (10)
+	  {
+	     if (what == "else") 
+	       break;
+	  }
+	then
+	  {
+	     f = "then";
+	  }
+	else
+	  f = "else";
+	if (f != what)
+	  failed ("loop-2 %s", what);
+	
+	f = NULL;
+	loop (10)
+	  {
+	     if (what == "else") 
+	       break;
+	  }
+	then
+	  f = "then";
+	
+	if (((what == "then") && (f != what))
+	    || ((what == "else") && (f != NULL)))
+	  failed ("loop-3 %s", what);
+	
+	f = NULL;
+	loop (10)
+	  {
+	     if (what == "else") 
+	       break;
+	  }
+	else
+	  f = "else";
+	
+	if (((what == "then") && (f != NULL))
+	    || ((what == "else") && (f != what)))
+	  failed ("loop-3 %s", what);
+     }
+   then return;
+   failed ("foreach then");
+}
+
+test_loop_then_else ();
+
 print ("Ok\n");
 
 exit (0);

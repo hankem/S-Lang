@@ -25,7 +25,7 @@ public define slsh_apropos ()
      {
 	variable help1 = _apropos (ns, "\\C"+name, 0xF);
 	help1 = (ns + "->") + help1;
-       help = [help, help1];
+	help = [help, help1];
      }
 
    if (0 == length (help))

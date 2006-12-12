@@ -26,6 +26,7 @@ for			FOR_TOKEN
 foreach			FOREACH_TOKEN
 forever			FOREVER_TOKEN
 if			IF_TOKEN
+ifnot			IFNOT_TOKEN
 loop			LOOP_TOKEN
 mod			MOD_TOKEN
 %mul2			MUL2_TOKEN
@@ -43,6 +44,7 @@ shr			SHR_TOKEN
 static			STATIC_TOKEN
 struct			STRUCT_TOKEN
 switch			SWITCH_TOKEN
+then			THEN_TOKEN
 throw			THROW_TOKEN
 try			TRY_TOKEN
 typedef			TYPEDEF_TOKEN

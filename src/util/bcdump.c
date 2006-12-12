@@ -495,6 +495,12 @@ static void dump_token (_pSLang_Token_Type *t)
       case FOREACH_TOKEN:
 	b = "__foreach__"; break;
 	
+      case LOOP_THEN_TOKEN:
+	b = "__loopthen__"; break;
+
+      case LOOP_ELSE_TOKEN:
+	b = "__loopelse__"; break;
+	
       case TRY_TOKEN:
 	b = "try"; break;
 	

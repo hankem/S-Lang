@@ -601,6 +601,42 @@ static void define_function (_pSLang_Token_Type *ctok, unsigned char type)
    free_token (&fname);
 }
 
+/* This is called from "statement", which is expected to return no
+ * new token.
+ */
+static void check_for_loop_then_else (_pSLang_Token_Type *ctok)
+{
+   int b = 0;
+   
+   get_token (ctok);
+
+   while (1)
+     {
+	unsigned char type = ctok->type;
+
+	if ((type == ELSE_TOKEN) && ((b & 1) == 0))
+	  {
+	     get_token (ctok);
+	     block (ctok);
+	     compile_token_of_type (LOOP_ELSE_TOKEN);
+	     get_token (ctok);
+	     b |= 1;
+	     continue;
+	  }
+	if ((type == THEN_TOKEN) && ((b & 2) == 0))
+	  {
+	     get_token (ctok);
+	     block (ctok);
+	     compile_token_of_type (LOOP_THEN_TOKEN);
+	     get_token (ctok);
+	     b |= 2;
+	     continue;
+	  }
+	break;
+     }
+   unget_token (ctok);
+}
+
 /* statement:
  *	 compound-statement
  *	 if ( expression ) statement
@@ -688,6 +724,7 @@ static void statement (_pSLang_Token_Type *ctok)
       case _FOR_TOKEN:
 	get_token (ctok);
 	handle_for_statement (ctok);
+	check_for_loop_then_else (ctok);
 	break;
 
       case LOOP_TOKEN:
@@ -701,11 +738,13 @@ static void statement (_pSLang_Token_Type *ctok)
 #endif
 	block (ctok);
 	compile_token_of_type (LOOP_TOKEN);
+	check_for_loop_then_else (ctok);
 	break;
 
       case FOREACH_TOKEN:
 	get_token (ctok);
 	handle_foreach_statement (ctok);
+	check_for_loop_then_else (ctok);
 	break;
 
       case WHILE_TOKEN:
@@ -721,6 +760,7 @@ static void statement (_pSLang_Token_Type *ctok)
 	compile_token_of_type (CBRACE_TOKEN);
 	block (ctok);
 	compile_token_of_type (WHILE_TOKEN);
+	check_for_loop_then_else (ctok);
 	break;
 
       case DO_TOKEN:
@@ -746,6 +786,7 @@ static void statement (_pSLang_Token_Type *ctok)
 	compile_token_of_type (CBRACE_TOKEN);
 	compile_token_of_type (DOWHILE_TOKEN);
 	handle_semicolon (ctok);
+	check_for_loop_then_else (ctok);
 	break;
 
       case FOR_TOKEN:
@@ -820,6 +861,7 @@ static void statement (_pSLang_Token_Type *ctok)
 	get_token (ctok);
 	block (ctok);
 	compile_token_of_type (FOR_TOKEN);
+	check_for_loop_then_else (ctok);
 	break;
 
       case FOREVER_TOKEN:
@@ -835,6 +877,8 @@ static void statement (_pSLang_Token_Type *ctok)
 	get_token (ctok);
 	block (ctok);
 	compile_token_of_type (type);
+	if (type == FOREVER_TOKEN)
+	  check_for_loop_then_else (ctok);
 	break;
 
       case BREAK_TOKEN:

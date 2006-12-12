@@ -2384,7 +2384,7 @@ static SLang_Object_Type Switch_Objects[SLANG_MAX_NESTED_SWITCH];
 static SLang_Object_Type *Switch_Obj_Ptr = Switch_Objects;
 static SLang_Object_Type *Switch_Obj_Max = Switch_Objects + SLANG_MAX_NESTED_SWITCH;
 
-static void
+static int
 lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
 {
    int i, ctrl;
@@ -2406,7 +2406,7 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
 	       continue;
 #endif
 	     SLang_verror (SL_SYNTAX_ERROR, "Bytecode is not a looping block");
-	     return;
+	     return -1;
 	  }
 	blks[j] = block[i].b.blk;
 	j++;
@@ -2651,18 +2651,21 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
 	break;
 
       default:  SLang_verror(SL_INTERNAL_ERROR, "Unknown loop type");
-	return;
+	return -1;
      }
-   Lang_Break = /* Lang_Continue = */ 0;
    Lang_Break_Condition = Lang_Return;
-   return;
+   if (Lang_Break == 0)
+     return 0;
+
+   Lang_Break = /* Lang_Continue = */ 0;
+   return 1;
 
    wrong_num_blocks_error:
    SLang_verror (SL_SYNTAX_ERROR, "Wrong number of blocks for '%s' construct", loop_name);
 
    /* drop */
    return_error:
-   return;
+   return -1;
    /* do_traceback (loop_name, NULL, -1); */
 }
 
@@ -4130,9 +4133,34 @@ static int inner_interp (SLBlock_Type *addr_start)
 		case SLANG_BCST_CFOR:
 		case SLANG_BCST_DOWHILE:
 		case SLANG_BCST_FOREACH:
-		  if (block == NULL) block = addr;
-		  lang_do_loops(addr->bc_sub_type, block, 1 + (unsigned int) (addr - block));
-		  block = NULL;
+		    {
+		       int status;
+		       SLBlock_Type *addr1 = addr + 1;
+		       if (block == NULL) block = addr;
+		  
+		       status = lang_do_loops(addr->bc_sub_type, block, 1 + (unsigned int) (addr - block));
+		       block = NULL;
+		       while (addr1->bc_main_type == SLANG_BC_BLOCK)
+			 {
+			    if (addr1->bc_sub_type == SLANG_BCST_LOOP_THEN)
+			      {
+				 addr = addr1;
+				 if (status == 0)
+				   inner_interp (addr->b.blk);
+				 addr1++;
+				 continue;
+			      }
+			    if (addr1->bc_sub_type == SLANG_BCST_LOOP_ELSE)
+			      {
+				 addr = addr1;
+				 if (status == 1)
+				   inner_interp (addr->b.blk);
+				 addr1++;
+				 continue;
+			      }
+			    break;
+			 }
+		    }
 		  break;
 
 		case SLANG_BCST_IFNOT:
@@ -7268,6 +7296,14 @@ static void compile_directive_mode (_pSLang_Token_Type *t)
 
       case ELSE_TOKEN:
 	bc_sub_type = SLANG_BCST_ELSE;
+	break;
+
+      case LOOP_ELSE_TOKEN:
+	bc_sub_type = SLANG_BCST_LOOP_ELSE;
+	break;
+
+      case LOOP_THEN_TOKEN:
+	bc_sub_type = SLANG_BCST_LOOP_THEN;
 	break;
 
       case LOOP_TOKEN:
