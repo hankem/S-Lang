@@ -110,9 +110,7 @@ int SLtt_Force_Keypad_Init = 0;
 
 void (*_pSLtt_color_changed_hook)(void);
 
-#if SLTT_HAS_NON_BCE_SUPPORT
 static int Bce_Color_Offset = 0;
-#endif
 static int Can_Background_Color_Erase = 1;
 
 /* -1 means unknown */
@@ -1029,7 +1027,7 @@ static int initialize_brushes (void)
 }
    
    
-static Brush_Info_Type *get_brush_info (unsigned int color)
+static Brush_Info_Type *get_brush_info (SLsmg_Color_Type color)
 {
    if (Brushes_Initialized == 0)
      initialize_brushes ();
@@ -1042,7 +1040,7 @@ static Brush_Info_Type *get_brush_info (unsigned int color)
    return Brush_Table + color;
 }
 
-static SLtt_Char_Type get_brush_attr (unsigned int color)
+static SLtt_Char_Type get_brush_attr (SLsmg_Color_Type color)
 {
    Brush_Info_Type *b;
    
@@ -1055,7 +1053,7 @@ static SLtt_Char_Type get_brush_attr (unsigned int color)
    return b->mono;
 }
 
-static SLtt_Char_Type get_brush_fgbg (unsigned int color)
+static SLtt_Char_Type get_brush_fgbg (SLsmg_Color_Type color)
 {
    return get_brush_info(color)->fgbg;
 }
@@ -1453,13 +1451,9 @@ void SLtt_wide_width (void)
 /* Highest bit represents the character set. */
 #define COLOR_OF(a) ((a)->color & SLSMG_COLOR_MASK)
 
-static int bce_color_eqs (SLsmg_Char_Type *a, SLsmg_Char_Type *b)
+static int bce_colors_eq (SLsmg_Color_Type ca, SLsmg_Color_Type cb, int just_bg)
 {
-   SLsmg_Color_Type ca, cb;
    Brush_Info_Type *ba, *bb;
-
-   ca = COLOR_OF(a);
-   cb = COLOR_OF(b);
 
    if (ca == cb)
      return 1;
@@ -1470,15 +1464,22 @@ static int bce_color_eqs (SLsmg_Char_Type *a, SLsmg_Char_Type *b)
    if (SLtt_Use_Ansi_Colors == 0)
      return ba->mono == bb->mono;
 
-   if (Bce_Color_Offset == 0)
-     return ba->fgbg == bb->fgbg;
+   if (Bce_Color_Offset)
+     {
+	/* If either are color 0, then we do not know what that means since the
+	 * terminal does not support BCE 
+	 */
+	if ((ca == 0) || (cb == 0))
+	  return 0;
+	ba = get_brush_info (ca-1);
+	bb = get_brush_info (cb-1);
+     }
 
-   /* If either are color 0, then we do not know what that means since the
-    * terminal does not support BCE */
-   if ((ca == 0) || (cb == 0))
-     return 0;
-   
-   return get_brush_fgbg (ca-1) == get_brush_fgbg(cb-1);
+   if (ba->fgbg == bb->fgbg)
+     return 1;
+   if (just_bg)
+     return GET_BG(ba->fgbg) == GET_BG(bb->fgbg);
+   return 0;
 }
 
 /* The whole point of this routine is to prevent writing to the last column
@@ -1676,16 +1677,27 @@ static void forward_cursor (unsigned int n, int row)
  * space character as is assumed below.
  */
 
-#define COLOR_EQS(a,b) ((COLOR_OF(a)==COLOR_OF(b)) || bce_color_eqs (a,b))
+#define COLORS_EQ(ca,cb) (((ca) == (cb)) || bce_colors_eq((ca), (cb), 0))
+#define BG_COLORS_EQ(ca,cb) (((ca) == (cb)) || (bce_colors_eq((ca),(cb),1)))
+
+#define COLORS_OF_EQ(a,b) COLORS_EQ(COLOR_OF(a),COLOR_OF(b))
+
 #define CHARSET(a) ((a)->color&SLSMG_ACS_MASK)
 #define CHAR_EQS(a, b) (((a)->nchars==(b)->nchars) \
 			   && (((a)->nchars == 0) \
 				  || ((((a)->wchars[0]==(b)->wchars[0]) \
 					 && (0 == memcmp((a)->wchars, (b)->wchars, (a)->nchars*sizeof(SLwchar_Type)))) \
-					 && (COLOR_EQS(a,b)) \
+					 && (COLORS_OF_EQ(a,b)) \
 					 && (CHARSET(a)==CHARSET(b)))))
 
-#define CHAR_EQS_SPACE(a) (((a)->wchars[0]==' ') && ((a)->color==0) && ((a)->nchars==1))
+#if 0
+# define CHAR_EQS_SPACE(a) \
+   (((a)->wchars[0]==' ') && ((a)->color==0) && ((a)->nchars==1))
+#else
+# define CHAR_EQS_SPACE(a) \
+   (((a)->wchars[0]==' ') && ((a)->nchars==1) \
+     && BG_COLORS_EQ(COLOR_OF(a),Bce_Color_Offset))
+#endif
 
 void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int row)
 {
@@ -1754,9 +1766,9 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 
 		  else
 		    { /* kanji match ! */
-		       if (!COLOR_EQS(*q, *p)) break;
+		       if (!COLORS_OF_EQ(*q, *p)) break;
 		       q++; p++;
-		       if (!COLOR_EQS(*q, *p)) break;
+		       if (!COLORS_OF_EQ(*q, *p)) break;
 		       /* really match! */
 		       q++; p++;
 		       continue;
@@ -1937,7 +1949,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 			 }
 		       else
 			 { /* kanji match ? */
-			    if (!COLOR_EQS(*q, *p) || !COLOR_EQS(*(q+1), *(p+1)))
+			    if (!COLORS_OF_EQ(*q, *p) || !COLORS_OF_EQ(*(q+1), *(p+1)))
 			      {
 				 /* code is match, but color is diff */
 				 *buf++ = *p++;
@@ -2012,8 +2024,8 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 			   && ((0xFF & q[1]) == (0xFF & p[1])))
 			 {
 			    /* kanji match ? */
-			    if (!COLOR_EQS(*q, *p)
-				|| !COLOR_EQS(q[1], p[1]))
+			    if (!COLORS_OF_EQ(*q, *p)
+				|| !COLORS_OF_EQ(q[1], p[1]))
 			      break;
 
 			    *buf++ = *p++;

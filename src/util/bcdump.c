@@ -541,7 +541,8 @@ int main (int argc, char **argv)
      return 1;
    
    _pSLcompile_ptr = dump_token;
-   /* _pSLang_Compile_BOSEOS = 3; */
+   _pSLang_Compile_BOSEOS = 3;
+   _pSLang_Compile_BOFEOF = 1;
    SLang_load_file (file);
    
    return _pSLang_Error;

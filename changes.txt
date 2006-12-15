@@ -76,6 +76,10 @@ Changes since 2.0.7
 
 18. slsh/scripts/slprof: Rewrote much of this script to make it more
     friendly and useful.
+19. src/sldisply.c: When checking for the equality of space
+    characters, it is only necessary to see see if their background
+    colors are equal -- the foreground color does not matter.
+    Miroslav Lichvar mlichvar at redhat, com.
 
 {{{ Previous Versions
 
