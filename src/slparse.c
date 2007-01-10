@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -1946,8 +1946,8 @@ static unsigned char Binop_Level[] =
 /* LE_TOKEN */		4,
 /* GT_TOKEN */		4,
 /* GE_TOKEN */		4,
-/* EQ_TOKEN */		5,
-/* NE_TOKEN */		5,
+/* EQ_TOKEN */		4,
+/* NE_TOKEN */		4,
 /* AND_TOKEN */		9,
 /* OR_TOKEN */		11,
 /* MOD_TOKEN */		1,
@@ -1960,10 +1960,9 @@ static unsigned char Binop_Level[] =
 };
 
 static void handle_binary_sequence (_pSLang_Token_Type *, unsigned char);
-static void handle_sc_sequence (_pSLang_Token_Type *ctok)
+static void handle_sc_sequence (_pSLang_Token_Type *ctok, unsigned char level)
 {
    unsigned char type = ctok->type;
-   unsigned char level = Binop_Level[type - FIRST_BINARY_OP];
    
    while ((ctok->type == type) && (_pSLang_Error == 0))
      {
@@ -1974,6 +1973,42 @@ static void handle_sc_sequence (_pSLang_Token_Type *ctok)
 	append_token_of_type (CBRACE_TOKEN);
      }
    append_token_of_type (type);
+}
+
+/* unary0 OP1 unary1 OP2 unary2 ... OPN unaryN
+ * ==> unary0 unary1 ... unaryN {OP1 OP2 ... OPN} COMPARE_BLOCK
+ */
+static void handle_compare_sequence (_pSLang_Token_Type *ctok, unsigned char level)
+{
+   unsigned char op_stack [64];
+   unsigned int op_num = 0;
+   unsigned int i;
+
+   do
+     {
+	if (op_num >= sizeof(op_stack))
+	  {
+	     _pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Too many comparison operators", ctok, 0);
+	     return;
+	  }
+	op_stack[op_num++] = ctok->type;
+	get_token (ctok);
+	unary_expression (ctok);
+	handle_binary_sequence (ctok, level);
+     }
+   while (IS_COMPARE_OP(ctok->type) && (_pSLang_Error == 0));
+
+   if (op_num == 1)
+     {
+	append_token_of_type (op_stack[0]);
+	return;
+     }
+
+   append_token_of_type (OBRACE_TOKEN);
+   for (i = 0; i < op_num; i++)
+     append_token_of_type (op_stack[i]);
+   append_token_of_type (CBRACE_TOKEN);
+   append_token_of_type (_COMPARE_TOKEN);
 }
 
 
@@ -2000,11 +2035,17 @@ static void handle_binary_sequence (_pSLang_Token_Type *ctok, unsigned char max_
 
 	if ((type == SC_AND_TOKEN) || (type == SC_OR_TOKEN))
 	  {
-	     handle_sc_sequence (ctok);
+	     handle_sc_sequence (ctok, level);
 	     type = ctok->type;
 	     continue;
 	  }
 
+	if (IS_COMPARE_OP(type))
+	  {
+	     handle_compare_sequence (ctok, level);
+	     type = ctok->type;
+	     continue;
+	  }
 	if (op_num >= sizeof (op_stack) - 1)
 	  {
 	     _pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Binary op stack overflow", ctok, 0);
@@ -2306,6 +2347,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 {
    unsigned int start_pos, end_pos;
    unsigned char type;
+   _pSLang_Token_Type *last_token;
 
    if (Token_List == NULL)
      return;
@@ -2363,6 +2405,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	break;
 
       case BAND_TOKEN:
+#if 0
 	if (IDENT_TOKEN != get_identifier_expr_token (ctok))
 	  break;
 
@@ -2371,6 +2414,25 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	get_token (ctok);
 	if ((ctok->type == OBRACKET_TOKEN) || (ctok->type == DOT_TOKEN))
 	  _pSLparse_error (SL_NOT_IMPLEMENTED, "& of an array or structure element is not currently supported", ctok, 0);
+#else
+	get_token (ctok);
+	postfix_expression (ctok);
+	last_token = get_last_token ();
+	switch (last_token->type)
+	  {
+	   case IDENT_TOKEN:
+	     last_token->type = _REF_TOKEN;
+	     break;
+	   case ARRAY_TOKEN:
+	     last_token->type = _ARRAY_ELEM_REF_TOKEN;
+	     break;
+	   case DOT_TOKEN:
+	     last_token->type = _STRUCT_FIELD_REF_TOKEN;
+	     break;
+	   default:
+	     _pSLparse_error (SL_NOT_IMPLEMENTED, "& not supported in this context", last_token, 0);
+	  }
+#endif
 	break;
 
       case OBRACKET_TOKEN:
@@ -2455,6 +2517,18 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 
 	   case OPAREN_TOKEN:
 	     /* f(args) ==> args f */
+	     if ((NULL != (last_token = get_last_token ()))
+		 && (last_token->type == DEREF_TOKEN))
+	       {
+		  /* Expressions such as (@A[i])(args...) */
+		  last_token->type = _DEREF_FUNCALL_TOKEN;
+		  append_token_of_type (ARG_TOKEN);
+		  (void) get_token (ctok);
+		  function_args_expression (ctok, 0, 1);
+		  token_list_element_exchange (start_pos, end_pos);
+		  break;
+	       } 
+	     
 	     if (CPAREN_TOKEN != get_token (ctok))
 	       {
 		  function_args_expression (ctok, 1, 1);
@@ -2478,8 +2552,6 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 #ifdef DOT_METHOD_CALL_TOKEN
 	     if (ctok->type == OPAREN_TOKEN)
 	       {
-		  _pSLang_Token_Type *last_token;
-
 		  if (NULL == (last_token = get_last_token ()))
 		    return;
 		  last_token->type = DOT_METHOD_CALL_TOKEN;
@@ -2696,10 +2768,12 @@ static void array_index_expression (_pSLang_Token_Type *ctok)
  *    array_index_expression
  *    simple_expression : simple_expression
  *    simple_expression : simple_expression : simple_expression
+ *    simple_expression : simple_expression : # simple_expression
  */
 static void inline_array_expression (_pSLang_Token_Type *ctok)
 {
    int num_colons = 0;
+   int has_pound = 0;
 
    append_token_of_type (ARG_TOKEN);
 
@@ -2720,7 +2794,11 @@ static void inline_array_expression (_pSLang_Token_Type *ctok)
 	if (ctok->type == COLON_TOKEN)
 	  {
 	     num_colons++;
-	     get_token (ctok);
+	     if (POUND_TOKEN == get_token (ctok))
+	       {
+		  has_pound = 1;
+		  get_token(ctok);
+	       }
 	     simple_expression (ctok);
 	  }
      }
@@ -2733,7 +2811,12 @@ static void inline_array_expression (_pSLang_Token_Type *ctok)
 
    /* append_token_of_type (EARG_TOKEN); */
    if (num_colons)
-     append_token_of_type (_INLINE_IMPLICIT_ARRAY_TOKEN);
+     {
+	if (has_pound)
+	  append_token_of_type (_INLINE_IMPLICIT_ARRAYN_TOKEN);
+	else
+	  append_token_of_type (_INLINE_IMPLICIT_ARRAY_TOKEN);
+     }
    else
      append_token_of_type (_INLINE_ARRAY_TOKEN);
    get_token (ctok);

@@ -182,11 +182,15 @@
 \synopsis{Determine whether or not an object is callable}
 \usage{Int_Type __is_callable (obj)}
 \description
-  This function may be used to determine if an object is callable.  It
-  returns 1 if the argument is callable, or zero otherwise.
+  This function may be used to determine if an object is callable by
+  dereferencing the object.  It returns 1 if the argument is callable,
+  or zero otherwise.
 \example
-   __is_callable (7) ==> 0
-   __is_callable (&sin) ==> 1
+   __is_callable (7)      ==> 0
+   __is_callable (&sin)   ==> 1
+   a = [&sin];
+   __is_callable (a[0])   ==> 1
+   __is_callable (&a[0])  ==> 0
 \seealso{__is_numeric, is_defined}
 \done
 

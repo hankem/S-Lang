@@ -285,6 +285,39 @@
 
 #%}}}
 
+\sect{Qualifiers}
+  \slang 2.1 introduced support for function qualifiers as a mechanism
+  for passing additional information to a function.  For example,
+  consider a plotting application with a function
+#v+
+      define plot (x, y)
+      {
+         variable linestyle = qualifier ("linestyle", "solid");
+         variable color = qualifier ("color", "black");
+         
+         sys_set_color (color);
+         sys_set_linestyle (linestyle);
+         sys_plot (x,y);
+      }
+#v-
+  Here the functions \exmp{sys_set_linestyle}, \exmp{sys_set_color},
+  and \exmp{sys_plot} are hypothetical low-level functions that
+  perform the actual work.  This function may be called simply as
+#v+
+     x = [0:10:0.1];
+     plot (x, sin(x));
+#v-
+  to produce a solid black line connecting the points.  Through the
+  use of qualifiers, the color or linestyle may be specified, e.g,,
+#v+
+     plot (x, sin(x); linestyle="dashed");
+#v-
+  would produce a ``dashed'' black curve, whereas
+#v+
+     plot (x, sin(x); linestyle="dotted", color="blue");
+#v-
+  would produce a blue ``dotted'' one.
+
 \sect{Strings} #%{{{
 
    Perhaps the most appealing feature of any interpreted language is
@@ -439,8 +472,10 @@
 #v+
       variable C = [1:9:2];
 #v-
-   This will produce an array of 5 integers running from 1
-   through 9 in increments of 2.
+   This will produce an array of 5 integers running from 1 through 9
+   in increments of 2.  Similarly \exmp{[0:1:#1000]} represents a 1000
+   element floating point array of numbers running from 0 to 1
+   (inclusive).
 
    Arrays are passed by reference to functions and never by value.
    This permits one to write functions that can initialize arrays.
@@ -557,6 +592,17 @@
    individual fields of \exmp{bill} were initialized.  This is an
    example of an \em{anonymous} structure.
    
+   Note: \slang versions 2.1 and higher permit assignment statements
+   within the structure definition, e.g.,
+#v+
+      variable bill = struct
+      {
+         first_name = "Bill", 
+         last_name = "Clinton",
+         age = 51
+      };
+#v-
+
    A \em{named} structure is really a new data type and may be created
    using the \kw{typedef} keyword:
 #v+
@@ -1308,6 +1354,18 @@
    the comparison will be a boolean value; however, for arrays the
    result will be an array of boolean values.  The section on arrays
    will explain this is greater detail.
+   
+   Note: For \slang versions 2.1 and higher, relational expressions
+   such as \exmp{a<b<=c} are defined in the mathematical sense, i.e.,
+#v+
+      ((a < b) and (b <= c))
+#v-
+   Simarily, \exmp{(a < b <= c < d)} is the same as
+#v+
+      ((a < b) and (b <= c) and (c < d))
+#v-
+   and so on.  In previous versions of \slang, \exmp{(a<b<c)} meant
+   \exmp{(a<b)<c}; however this interpretation was not very useful.
 
 #%}}}
 
@@ -1343,6 +1401,10 @@
    operators is an array then a corresponding array of boolean values
    will result.  This is explained in more detail in the section on
    arrays.
+   
+   Note: the short-circuiting operators \exmp{&&} and \exmp{||} were
+   first introduced in \slang 2.1; they are not available in older
+   versions.
 
 #%}}}
 
@@ -2924,6 +2986,11 @@
    \math{c>=0}, and \math{b<x_k<=a} otherwise.  The number of elements
    in the array is one greater than the largest \math{k} that
    satisfies the open interval constraint.
+   
+   In contrast, a range-array expressed in the form \exmp{[a:b:#n]}
+   represents an array of exactly n elements running from \exmp{a} to
+   \exmp{b} inclusive.  It is equivalent to
+   \exmp{a+[0:n-1]*(b-a)/(n-1)}.
 
    Here are a few examples that illustrate the above comments:
 #v+
@@ -2935,6 +3002,8 @@
        [1.0:1.0]       ==> []
        [1.0:1.0001]    ==> [1.0]
        [1:-3]          ==> []
+       [0:1:#5]        ==> [0.0, 0.25, 0.50, 0.75, 1.0]
+       [0:-1:#3]       ==> [0.0, -0.5, -1.0]
 #v-
 
    Currently \dtype{Int_Type} is the only integer type supported
@@ -5394,6 +5463,63 @@
 #v-
 
 #%}}}
+
+\chapter{Profiling}
+\sect{Introduction}
+
+This chapter deals with the subject of writing efficient \slang code,
+and using the \slang profiler to isolate places in the code that could
+benefit from optimization.
+
+The most important consideration in writing efficient code is the
+choice of algorithm.  A poorly optimized good algorithm will almost
+always execute faster than a highly optimized poor algorithm.  In
+choosing an algorithm, it is also important to choose the right data
+structures for its implementation.  As a simple example, consider the
+task of counting words.  Any algorithm would involve a some sort of
+table with word/number pairs.  Such a table could be implemented using
+a variety of data structures, e.g., as a pair of arrays or lists
+representing the words and corresponding numbers, as an array of
+structures, etc. But in this case, the associative array is ideally
+suited to the task:
+#v+
+   a = Assoc_Type[Int_Type, 0];
+   while (get_word (&word))
+     a[word]++;
+#v-
+
+Note the concisness of the above code.  It is important to appreciate
+the fact that \slang is an byte-compiled interpreter that executes statements
+much slower than that of a language that compiles to machine code. The
+roughly overhead of the processing of byte-codes by the interpreter
+may be used to justify the rule of thumb that the smaller the code is,
+the faster it will run.  
+
+When possible, always take advantage of \slang's powerful array
+facilities.  For example, consider the act of clipping an array by
+setting all values greater than 10 to 10.  Rather than coding this as
+#v+
+    n = length(a);
+    for (i = 0; i < n; i++)
+      if (a[i] > 10) a[i] = 10;
+#v-
+it should be written as
+#v+
+    a[where(a>10)] = 10;
+#v-
+
+Finally, do not overlook the specialized modules that are available
+for \slang.
+
+\sect{Using the profiler}
+
+\slprof is an executable \slsh script that implements a standalone
+profiler for \slsh scripts.  The script is essentually a front-end for
+a set of interpreter hooks defined in a file called \file{profile.sl},
+which may be used by any application embedding \slang.  The use of the
+profiler will first be demonstrated in the context of \slprof, and
+after that follows a discussion of how to use \file{profile.sl} for
+other \slang applications.
 
 #i regexp.tm
 

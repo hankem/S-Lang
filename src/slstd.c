@@ -2,7 +2,7 @@
 /* Standard intrinsic functions for S-Lang.  Included here are string
    and array operations */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -607,7 +607,7 @@ static int intrin_get_defines (void)
 
 static void intrin_get_reference (char *name)
 {
-   _pSLang_push_ref (1, (VOID_STAR) _pSLlocate_name (name));
+   _pSLang_push_nt_as_ref (_pSLlocate_name (name));
 }
 
 static void intrin_get_namespaces (void)

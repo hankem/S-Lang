@@ -17,6 +17,7 @@
   \arg{\option{-n}}
   \arg{\option{--init}{file}}
   \arg{\option{--no-readline}}
+  \arg{\option{-e}{string}}
   \arg{\option{-i}}
   \arg{\option{-t}}
   \arg{\option{-v}}
@@ -54,6 +55,9 @@
       }
       \man_options_entry{\option{--no-readline}}{
         Do not use a readline interface for the interactive mode
+      }
+      \man_options_entry{\option{-e}{string}}{
+        Execute ``string'' as \slang code.
       }
       \man_options_entry{\option{-i}}{
         Force interactive mode.  Normally \slsh will go into
@@ -94,7 +98,8 @@
   \literal{$HOME/.slshrc} if present.  Finally, it will load the
   script specified on the command line.  If the name of the script is
   \literal{-}, then it will be read from stdin.  If the script name is
-  not present, \slsh will go into interactive mode and read input from
+  not present, or a string to execute was not specified using the -e
+  option, then \slsh will go into interactive mode and read input from
   the terminal.  If the script is present and defines a function
   called \sfun{slsh_main}, that function will be called.
 \p-end

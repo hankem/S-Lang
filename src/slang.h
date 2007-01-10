@@ -2,7 +2,7 @@
 #define DAVIS_SLANG_H_
 /* -*- mode: C; mode: fold; -*- */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004-2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20100
-#define SLANG_VERSION_STRING "pre2.1.0-19"
+#define SLANG_VERSION_STRING "pre2.1.0-34"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1508,6 +1508,7 @@ SL_EXTERN int SLrline_bol (SLrline_Type *);
 SL_EXTERN int SLrline_eol (SLrline_Type *);
 SL_EXTERN int SLrline_del (SLrline_Type *, unsigned int len);
 SL_EXTERN int SLrline_ins (SLrline_Type *, char *s, unsigned int len);
+SL_EXTERN int SLrline_move (SLrline_Type *, int);
 
 SL_EXTERN int SLrline_set_echo (SLrline_Type *, int);
 SL_EXTERN int SLrline_set_tab (SLrline_Type *, unsigned int tabwidth);
@@ -1535,6 +1536,9 @@ SL_EXTERN SLkeymap_Type *SLrline_get_keymap (SLrline_Type *);
 SL_EXTERN void SLrline_redraw (SLrline_Type *);
 SL_EXTERN int SLrline_save_line (SLrline_Type *);
 SL_EXTERN int SLrline_add_to_history (SLrline_Type *, char *);
+
+/* Interpreter interface */
+SL_EXTERN int SLrline_init (char *appdef, char *user_initfile, char *sys_initfile);
 
 /* Compatibility */
 typedef SLrline_Type SLang_RLine_Info_Type;

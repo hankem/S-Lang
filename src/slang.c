@@ -1,7 +1,7 @@
 /* -*- mode: C; mode: fold; -*- */
 /* slang.c  --- guts of S-Lang interpreter */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -1326,33 +1326,30 @@ static int do_binary (int op)
 }
 
 _INLINE_
-static void do_binary_b (int op, SLang_Object_Type *bp)
+static int do_binary_b (int op, SLang_Object_Type *bp)
 {
    SLang_Object_Type a;
+   int ret;
 
-   if (pop_object(&a)) return;
+   if (pop_object(&a)) return -1;
    
    if (a.data_type == bp->data_type)
      {
 	if (a.data_type == SLANG_INT_TYPE)
-	  {
-	     (void) int_int_binary (op, &a, bp);
-	     return;
-	  }
+	  return int_int_binary (op, &a, bp);
+
 #if SLANG_HAS_FLOAT
 	if (a.data_type == SLANG_DOUBLE_TYPE)
-	  {
-	     (void) dbl_dbl_binary (op, &a, bp);
-	     return;
-	  }
+	  return dbl_dbl_binary (op, &a, bp);
 #endif
      }
 
-   (void) do_binary_ab (op, &a, bp);
+   ret = do_binary_ab (op, &a, bp);
 #if SLANG_OPTIMIZE_FOR_SPEED
    if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(a.data_type))
 #endif
      SLang_free_object (&a);
+   return ret;
 }
 
 /* _INLINE_ */
@@ -1942,24 +1939,212 @@ static int set_nametype_variable (SLang_Name_Type *nt)
    return 0;
 }
 
-int _pSLang_deref_assign (SLang_Ref_Type *ref)
+/* References to Nametype objects */
+static char *nt_ref_string (VOID_STAR vdata)
 {
-   SLang_Object_Type *objp;
-   SLang_Name_Type *nt;
+   SLang_Name_Type *nt = *(SLang_Name_Type **)vdata;
+   char *name, *s;
 
-   if (ref->is_global == 0)
+   name = nt->name;
+   if ((name != NULL)
+       && (NULL != (s = SLmalloc (strlen(name) + 2))))
      {
-	objp = ref->v.local_obj;
-	if (objp > Local_Variable_Frame)
-	  {
-	     SLang_verror (SL_UNDEFINED_NAME, "Local variable reference is out of scope");
-	     return -1;
-	  }
-	return set_lvalue_obj (SLANG_BCST_ASSIGN, objp);
+	*s = '&';
+	strcpy (s + 1, name);
+	return s;
      }
+	
+   return NULL;
+}
 
-   nt = ref->v.nt;
-   return set_nametype_variable (nt);
+static void nt_ref_destroy (VOID_STAR vdata)
+{
+   /* SLang_free_function ((SLang_Name_Type *)nt) -- someday */
+   (void) vdata;
+}
+
+static int nt_ref_deref_assign (VOID_STAR vdata)
+{
+   return set_nametype_variable (*(SLang_Name_Type **) vdata);
+}
+
+static int inner_interp_nametype (SLang_Name_Type *, int);
+static int nt_ref_deref (VOID_STAR vdata)
+{
+   (void) inner_interp_nametype (*(SLang_Name_Type **)vdata, 0);
+   return 0;
+}
+
+static int nt_ref_is_initialized (VOID_STAR v)
+{
+   SLang_Name_Type *nt = *(SLang_Name_Type **)v;
+
+   if ((nt->name_type != SLANG_GVARIABLE)
+       && (nt->name_type != SLANG_PVARIABLE))
+     return 1;
+
+   return ((SLang_Global_Var_Type *)nt)->obj.data_type != SLANG_UNDEFINED_TYPE;
+}
+
+
+static int nt_ref_uninitialize (VOID_STAR v)
+{
+   SLang_Name_Type *nt = *(SLang_Name_Type **)v;
+   SLang_Object_Type *obj;
+
+   if ((nt->name_type != SLANG_GVARIABLE)
+       && (nt->name_type != SLANG_PVARIABLE))
+     return -1;
+   
+   obj = &((SLang_Global_Var_Type *)nt)->obj;
+   SLang_free_object (obj);
+   obj->data_type = SLANG_UNDEFINED_TYPE;
+   obj->v.ptr_val = NULL;
+   return 0;
+}
+
+static SLang_Ref_Type *create_ref_to_nametype (SLang_Name_Type *nt)
+{
+   SLang_Ref_Type *ref;
+
+   if (NULL == (ref = _pSLang_new_ref (sizeof (SLang_Name_Type *))))
+     return NULL;
+
+   ref->data_is_nametype = 1;
+   *(SLang_Name_Type **)ref->data = nt;
+   ref->destroy = nt_ref_destroy;
+   ref->string = nt_ref_string;
+   ref->deref = nt_ref_deref;
+   ref->deref_assign = nt_ref_deref_assign;
+   ref->is_initialized = nt_ref_is_initialized;
+   ref->uninitialize = nt_ref_uninitialize;
+   return ref;
+}
+
+int SLang_assign_nametype_to_ref (SLang_Ref_Type *ref, SLang_Name_Type *nt)
+{
+   SLang_Ref_Type *r;
+
+   if ((nt == NULL) || (ref == NULL))
+     return -1;
+
+   if (NULL == (r = create_ref_to_nametype (nt)))
+     return -1;
+
+   if (-1 == SLang_assign_to_ref (ref, SLANG_REF_TYPE, (VOID_STAR) &r))
+     {
+	SLang_free_ref (r);
+	return -1;
+     }
+   SLang_free_ref (r);
+   return 0;
+}
+
+/* Note: This is ok if nt is NULL.  Some routines rely on this behavior */
+int _pSLang_push_nt_as_ref (SLang_Name_Type *nt)
+{
+   SLang_Ref_Type *r;
+   int ret;
+
+   if (nt == NULL)
+     return SLang_push_null ();
+
+   r = create_ref_to_nametype (nt);
+   if (r == NULL) return -1;
+   
+   ret = SLang_push_ref (r);
+   SLang_free_ref (r);
+   return ret;
+}
+
+/* Local variable references */
+static SLang_Object_Type *lv_ref_check_object (VOID_STAR vdata)
+{
+   SLang_Object_Type *obj = *(SLang_Object_Type **)vdata;
+
+   if (obj > Local_Variable_Frame)
+     {
+	SLang_verror (SL_UNDEFINED_NAME, "Local variable reference is out of scope");
+	return NULL;
+     }
+   return obj;
+}
+
+static int lv_ref_deref (VOID_STAR vdata)
+{
+   SLang_Object_Type *obj = lv_ref_check_object (vdata);
+   if (obj == NULL)
+     return -1;
+   return _pSLpush_slang_obj (obj);
+}
+
+static int lv_ref_deref_assign (VOID_STAR vdata)
+{
+   SLang_Object_Type *objp = lv_ref_check_object (vdata);
+   if (objp == NULL)
+     return -1;
+   return set_lvalue_obj (SLANG_BCST_ASSIGN, objp);
+}
+
+static void lv_ref_destroy (VOID_STAR vdata)
+{
+   (void)vdata;
+}
+
+static char *lv_ref_string (VOID_STAR vdata)
+{
+   (void) vdata;
+   return SLmake_string ("Local variable reference");
+}
+
+static int lv_ref_is_initialized (VOID_STAR v)
+{
+   SLang_Object_Type *objp = lv_ref_check_object (v);
+   if (objp == NULL)
+     return -1;
+   
+   return objp->data_type != SLANG_UNDEFINED_TYPE;
+}
+
+static int lv_ref_uninitialize (VOID_STAR v)
+{
+   SLang_Object_Type *obj = lv_ref_check_object (v);
+   if (obj == NULL)
+     return -1;
+
+   SLang_free_object (obj);
+   obj->data_type = SLANG_UNDEFINED_TYPE;
+   obj->v.ptr_val = NULL;
+   return 0;
+}
+
+static SLang_Ref_Type *lv_new_ref (SLang_Object_Type *objp)
+{
+   SLang_Ref_Type *ref;
+
+   if (NULL == (ref = _pSLang_new_ref (sizeof (SLang_Object_Type *))))
+     return NULL;
+   *(SLang_Object_Type **)ref->data = objp;
+   ref->destroy = lv_ref_destroy;
+   ref->string = lv_ref_string;
+   ref->deref = lv_ref_deref;
+   ref->deref_assign = lv_ref_deref_assign;
+   ref->is_initialized = lv_ref_is_initialized;
+   ref->uninitialize = lv_ref_uninitialize;
+   return ref;
+}
+
+static int push_lv_as_ref (SLang_Object_Type *objp)
+{
+   int ret;
+   SLang_Ref_Type *ref = lv_new_ref (objp);
+
+   if (ref == NULL)
+     return -1;
+
+   ret = SLang_push_ref (ref);
+   SLang_free_ref (ref);
+   return ret;
 }
 
 #if 0
@@ -1991,6 +2176,7 @@ static void set_deref_lvalue (SLBlock_Type *bc_blk)
    SLang_free_ref (ref);
 }
 #endif
+
 static int push_struct_field (char *name)
 {
    int type;
@@ -2005,7 +2191,6 @@ static int push_struct_field (char *name)
 	SLang_verror (SL_NOT_IMPLEMENTED,
 		      "%s does not permit structure access",
 		      cl->cl_name);
-	SLdo_pop_n (2);
 	return -1;
      }
 
@@ -2067,9 +2252,9 @@ static int do_struct_method (char *name, int linenum)
    if (type == SLANG_REF_TYPE)
      {
 	SLang_Ref_Type *ref = (SLang_Ref_Type *)obj.v.ref;
-	if ((ref != NULL) && (ref->is_global))
+	if ((ref != NULL) && (ref->data_is_nametype))
 	  {
-	     ret = inner_interp_nametype (ref->v.nt, linenum);
+	     ret = inner_interp_nametype (*(SLang_Name_Type**)ref->data, linenum);
 	     SLang_free_ref (ref);
 	     return ret;
 	  }
@@ -2854,6 +3039,80 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
      }
 }
 
+/* This evaluates:
+ *  (x0 op1 x1) and (x1 op2 x2) ... and (x{N-1} opN xN)
+ * On stack: x0 x1 ... xN
+ * Need to perform:
+ *  x0 x1 op1 x1 x2 op2 and x2 x3 op3 and ... x{N-1} xN opN and
+ *  --------  --------      --------  ....... -------------
+ *     y1        y2            y3                    yN
+ *     y1 y2 and y3 and ... yN and
+ */
+static int do_compare (SLBlock_Type *ops1)
+{
+   SLang_Object_Type a, b, c;
+   SLang_Object_Type *ap, *bp, *cp;
+   SLBlock_Type *ops = ops1;
+   int ret = -1;
+
+   /* skip to opN */
+   while (ops->bc_main_type == SLANG_BC_BINARY)
+     ops++;
+   
+   bp = &b;
+   if (-1 == SLang_pop (bp))
+     return -1;
+   
+   ap = &a;
+   cp = NULL;
+   while (1)
+     {
+	SLang_Object_Type *tmp;
+	ops--;
+	if (-1 == SLang_pop (ap))
+	  goto return_error;
+
+	if (-1 == do_binary_ab_inc_ref (ops->b.i_blk, ap, bp))
+	  {
+	     SLang_free_object (ap);
+	     goto return_error;
+	  }
+	SLang_free_object (bp);
+	tmp = bp; bp = ap; ap = tmp;
+	
+	if (cp == NULL)
+	  {
+	     if (-1 == SLang_pop (&c))
+	       goto return_error;
+	     cp = &c;
+	     continue;
+	  }
+	
+	if (-1 == do_binary_b (SLANG_AND, cp))
+	  goto return_error;
+	SLang_free_object (cp);
+
+	if (ops == ops1)
+	  {
+	     cp = NULL;
+	     break;
+	  }
+
+	if (-1 == SLang_pop (cp))
+	  {
+	     cp = NULL;
+	     goto return_error;
+	  }
+     }
+   ret = 0;
+   /* drop */
+   return_error:
+   if (cp != NULL)
+     SLang_free_object (cp);
+   SLang_free_object (bp);
+   return ret;
+}
+
 static void do_else_if (SLBlock_Type *zero_block, SLBlock_Type *non_zero_block)
 {
    int test;
@@ -3273,91 +3532,25 @@ static void do_arith_binary (SLang_Arith_Binary_Type *nt)
 
 int _pSLang_dereference_ref (SLang_Ref_Type *ref)
 {
-   if (ref == NULL)
-     {
-	(void) SLang_set_error (SL_INTERNAL_ERROR);
-	return -1;
-     }
-
-   if (ref->is_global == 0)
-     {
-	SLang_Object_Type *obj = ref->v.local_obj;
-	if (obj > Local_Variable_Frame)
-	  {
-	     SLang_verror (SL_UNDEFINED_NAME, "Local variable deref is out of scope");
-	     return -1;
-	  }
-	return _pSLpush_slang_obj (ref->v.local_obj);
-     }
-
-   (void) inner_interp_nametype (ref->v.nt, 0);
-   return 0;
+   return ref->deref (ref->data);
 }
 
 int _pSLang_is_ref_initialized (SLang_Ref_Type *ref)
 {
-   SLtype type;
-
-   if (ref == NULL)
-     {
-	(void) SLang_set_error (SL_INTERNAL_ERROR);
-	return -1;
-     }
-
-   if (ref->is_global == 0)
-     {
-	SLang_Object_Type *obj = ref->v.local_obj;
-	if (obj > Local_Variable_Frame)
-	  {
-	     SLang_verror (SL_UNDEFINED_NAME, "Local variable deref is out of scope");
-	     return -1;
-	  }
-	type = ref->v.local_obj->data_type;
-     }
-   else
-     {
-	SLang_Name_Type *nt = ref->v.nt;
-	if ((nt->name_type != SLANG_GVARIABLE)
-	    && (nt->name_type != SLANG_PVARIABLE))
-	  return 1;
-	type = ((SLang_Global_Var_Type *)nt)->obj.data_type;
-     }
-   return type != SLANG_UNDEFINED_TYPE;
+   if (ref->is_initialized != NULL)
+     return ref->is_initialized (ref->data);
+   
+   return 1;			       /* punt */
 }
 
 int _pSLang_uninitialize_ref (SLang_Ref_Type *ref)
 {
-   SLang_Object_Type *obj;
+   if (ref->uninitialize != NULL)
+     return (*ref->uninitialize) (ref->data);
 
-   if (ref == NULL)
-     {
-	(void) SLang_set_error (SL_INTERNAL_ERROR);
-	return -1;
-     }
-
-   if (ref->is_global == 0)
-     {
-	obj = ref->v.local_obj;
-	if (obj > Local_Variable_Frame)
-	  {
-	     SLang_verror (SL_UNDEFINED_NAME, "Local variable deref is out of scope");
-	     return -1;
-	  }
-	obj = ref->v.local_obj;
-     }
-   else
-     {
-	SLang_Name_Type *nt = ref->v.nt;
-	if ((nt->name_type != SLANG_GVARIABLE)
-	    && (nt->name_type != SLANG_PVARIABLE))
-	  return -1;
-	obj = &((SLang_Global_Var_Type *)nt)->obj;
-     }
-   SLang_free_object (obj);
-   obj->data_type = SLANG_UNDEFINED_TYPE;
-   obj->v.ptr_val = NULL;
    return 0;
 }
+
 
 void (*SLang_Interrupt)(void);
 
@@ -3419,6 +3612,15 @@ static int dereference_object (void)
 
    SLang_free_object (&obj);
    return ret;
+}
+
+/* End the argument list, and make the function call */
+static int deref_fun_call (void)
+{
+   if (-1 == end_arg_list ())
+     return -1;
+   Next_Function_Num_Args--;	       /* do not include function to be derefed. */
+   return dereference_object ();
 }
 
 static int case_function (void)
@@ -3961,14 +4163,18 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     break;
 #endif
 	   case SLANG_BC_LOBJPTR:
-	     (void)_pSLang_push_ref (0, (VOID_STAR)(Local_Variable_Frame - addr->b.i_blk));
+	     (void)push_lv_as_ref (Local_Variable_Frame - addr->b.i_blk);
 	     break;
 
 	   case SLANG_BC_GOBJPTR:
-	     (void)_pSLang_push_ref (1, (VOID_STAR)addr->b.nt_blk);
+	     (void)_pSLang_push_nt_as_ref (addr->b.nt_blk);
 	     break;
+	     
+	   case SLANG_BC_FIELD_REF:
+	     (void) _pSLstruct_push_field_ref (addr->b.s_blk);
+	     break;
+
 #if USE_UNUSED_BYCODES_IN_SWITCH
-	   case SLANG_BC_UNUSED_0x2C:
 	   case SLANG_BC_UNUSED_0x2D:
 	   case SLANG_BC_UNUSED_0x2E:
 	   case SLANG_BC_UNUSED_0x2F:
@@ -4256,6 +4462,11 @@ static int inner_interp (SLBlock_Type *addr_start)
 
 		case SLANG_BCST_TRY:
 		  do_try (block, addr);
+		  block = NULL;
+		  break;
+		  
+		case SLANG_BCST_COMPARE:
+		  do_compare (addr->b.blk);
 		  block = NULL;
 		  break;
 
@@ -4561,7 +4772,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 		  SLang_Object_Type o;
 		  o.data_type = SLANG_INT_TYPE;
 		  o.v.int_val = (int) (addr+1)->b.l_blk;
-		  do_binary_b (addr->b.i_blk, &o);
+		  (void) do_binary_b (addr->b.i_blk, &o);
 	       }
 	     addr++;
 	     break;
@@ -4571,7 +4782,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 		  SLang_Object_Type o;
 		  o.data_type = SLANG_DOUBLE_TYPE;
 		  o.v.double_val = *(addr+1)->b.double_blk;
-		  do_binary_b (addr->b.i_blk, &o);
+		  (void) do_binary_b (addr->b.i_blk, &o);
 	       }
 	     addr++;
 	     break;
@@ -4946,6 +5157,7 @@ static int lang_free_branch (SLBlock_Type *p)
 	     break;
 
 	   case SLANG_BC_FIELD:
+	   case SLANG_BC_FIELD_REF:
 	   case SLANG_BC_SET_STRUCT_LVALUE:
 	     SLang_free_slstring (p->b.s_blk);
 	     break;
@@ -5680,10 +5892,10 @@ static int is_nametype_callable (SLang_Name_Type *nt)
 
 int _pSLang_ref_is_callable (SLang_Ref_Type *ref)
 {
-   if (0 == ref->is_global)
+   if (ref->data_is_nametype == 0)
      return 0;
    
-   return is_nametype_callable (ref->v.nt);
+   return is_nametype_callable (*(SLang_Name_Type **)ref->data);
 }
    
 /* returns positive number if name is a function or negative number if it
@@ -5731,12 +5943,13 @@ int SLang_is_defined(char *name)
 
 SLang_Name_Type *SLang_get_fun_from_ref (SLang_Ref_Type *ref)
 {
-   if (_pSLang_ref_is_callable (ref))
-     return ref->v.nt;
-   
-   if (ref->is_global)
+   if (ref->data_is_nametype)
      {
-	SLang_Name_Type *nt = ref->v.nt;
+	SLang_Name_Type *nt = *(SLang_Name_Type **)ref->data;
+
+	if (_pSLang_ref_is_callable (ref))
+	  return nt;
+   
 	SLang_verror (SL_TYPE_MISMATCH,
 		      "Reference to a function expected.  Found &%s", 
 		      nt->name);
@@ -7350,6 +7563,10 @@ static void compile_directive_mode (_pSLang_Token_Type *t)
 	bc_sub_type = SLANG_BCST_SC_AND;
 	break;
 
+      case _COMPARE_TOKEN:
+	bc_sub_type = SLANG_BCST_COMPARE;
+	break;
+
       default:
 	SLang_verror (SL_SYNTAX_ERROR, "Expecting directive token.  Found 0x%X", t->type);
 	break;
@@ -7397,6 +7614,10 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 
       case DEREF_TOKEN:
 	compile_call_direct (dereference_object, SLANG_BC_CALL_DIRECT);
+	break;
+
+      case _DEREF_FUNCALL_TOKEN:
+	compile_call_direct (deref_fun_call, SLANG_BC_CALL_DIRECT);
 	break;
 
       case STRUCT_TOKEN:
@@ -7485,7 +7706,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
       case ULONG_TOKEN:
 #endif
       case UINT_TOKEN:
-	compile_integer (t->v.long_val, SLANG_BC_LITERAL_INT, SLANG_UINT_TYPE);
+	compile_integer (t->v.long_val, SLANG_BC_LITERAL, SLANG_UINT_TYPE);
 	break;
 #if LONG_IS_NOT_INT	
       case LONG_TOKEN:
@@ -7563,6 +7784,10 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 
       case ARRAY_TOKEN:
 	compile_lvar_call_direct (_pSLarray_aget, SLANG_BC_LVARIABLE_AGET, SLANG_BC_CALL_DIRECT_FRAME);
+	break;
+
+      case _INLINE_IMPLICIT_ARRAYN_TOKEN:
+	compile_call_direct (_pSLarray_inline_implicit_arrayn, SLANG_BC_CALL_DIRECT_FRAME);
 	break;
 
 	/* Note: I need to add the other _ARRAY assign tokens. */
@@ -7861,6 +8086,15 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	set_line_number_info (t->v.long_val);
 #endif
 	break;
+
+      case _ARRAY_ELEM_REF_TOKEN:
+	compile_call_direct (_pSLarray_push_elem_ref, SLANG_BC_CALL_DIRECT_FRAME);
+	break;
+
+      case _STRUCT_FIELD_REF_TOKEN:
+	compile_dot (t, SLANG_BC_FIELD_REF);
+	break;
+
       case POUND_TOKEN:
 	compile_call_direct (_pSLarray_matrix_multiply, SLANG_BC_CALL_DIRECT);
 	break;

@@ -1,0 +1,5 @@
+% This is a site-wide slang readline init file.  If $HOME/.slrlinerc
+% does not exist, then this file will get loaded.
+
+% Load the completion hooks
+() = evalfile ("rline/complete");

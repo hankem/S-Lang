@@ -4,6 +4,14 @@
 #ifndef SL_CONFIG_H
 #define SL_CONFIG_H
 
+
+/* Files used by the slang-readline interface.  The interface first tries
+ * to read SLRLINE_USER_INIT_FILE from $HOME, and if that does not exist, it
+ * will read SLRLINE_SYS_INIT_FILE from the interpreter's load path.
+ */
+#define SLRLINE_USER_INIT_FILE	".slrlinerc"
+#define SLRLINE_SYS_INIT_FILE	"rline/slrline.rc"
+
 /* define if you have long long type */
 #undef HAVE_LONG_LONG
 

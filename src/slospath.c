@@ -1,6 +1,6 @@
 /* Pathname intrinsic functions */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -188,7 +188,7 @@ static char *find_file (char *path, char *file)
    return dirfile;
 }
 
-char *_pSLpath_find_file (char *file)
+char *_pSLpath_find_file (char *file, int signal_error)
 {
    char *path;
    char *dirfile;
@@ -209,7 +209,8 @@ char *_pSLpath_find_file (char *file)
 	return file;
      }
 
-   SLang_verror (SL_OBJ_NOPEN, "Unable to locate %s on load path", file);
+   if (signal_error)
+     SLang_verror (SL_OBJ_NOPEN, "Unable to locate %s on load path", file);
    return NULL;
 }
 

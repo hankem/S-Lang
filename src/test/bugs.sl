@@ -1,5 +1,4 @@
 _debug_info = 1; () = evalfile ("inc.sl");
-
 print ("Known Bugs or not yet implemented features:\n");
 implements ("bugs");
 
@@ -155,14 +154,14 @@ try
 {
    $1 = Int_Type[10];
    eval("() = &$1[0];");
-   vmessage ("**** Expecting &X[0] to generate an error!!!");
+   %vmessage ("**** Expecting &X[0] to generate an error!!!");
 }
 catch NotImplementedError: vmessage ("\t&s[0] not supported");
 try
 {
    $1 = struct {foo};
    eval("() = &$1.foo;");
-   vmessage ("**** Expecting &s.foo to generate an error!!!");
+   %vmessage ("**** Expecting &s.foo to generate an error!!!");
 }
 catch NotImplementedError: vmessage ("\t&s.foo not supported");
 

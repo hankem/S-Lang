@@ -1,7 +1,7 @@
 #!/usr/bin/env slsh
 require ("profile");
 
-private variable Version = "0.2.0-0";
+private variable Version = "0.2.1-0";
 private variable Profile_Fp;
 
 private define _slprof_version ()
@@ -17,10 +17,12 @@ private define _slprof_usage ()
    () = fprintf (fp, "Options:\n");
    variable opts = 
      [
-      " -f|--func   <function>     Name of Function to call [default: slsh_main]\n",
-      " -h|--help                  Print this message\n",
+      " -c|--calibrate <N>         Calibrate using N repetitions [default:1000, 0=off]\n",
+      " -f|--func <function>       Name of Function to call [default: slsh_main]\n",
+      " -l|--lines                 Profile lines, not just functions\n",
       " -o|--output <file>         Name of output file [default: <script>.slprof]\n",
-      " -v|--version               Print version information\n"
+      " -v|--version               Print version information\n",
+      " -h|--help                  Print this message\n"
      ];
    variable opt;
    foreach opt (opts)
@@ -35,10 +37,12 @@ private define _slprof_write_profile ()
    () = fclose (Profile_Fp);
 }
 
-private define _slprof_calibrate ()
+private define _slprof_calibrate (n)
 {
+   if (n == 0)
+     return;
    () = fprintf (stdout, "Calibrating profiler..."); ()=fflush (stdout);
-   profile_calibrate ();
+   profile_calibrate (n);
    () = fprintf (stdout, "Done\n");
 }
 
@@ -46,11 +50,25 @@ private define _slprof_main ()
 {
    variable output = NULL;
    variable func = "slsh_main";
+   variable line_by_line = 0;
+   variable cal_n = 1000;
 
    variable i = 1;
    while (i < __argc)
      {
 	variable arg = __argv[i]; i++;
+	if ((arg == "-c") or (arg == "--calibrate"))
+	  {
+	     if (i == __argc)
+	       _slprof_usage ();
+	     if (1 != sscanf (__argv[i], "%d", &cal_n))
+	       _slprof_usage ();
+	     if (cal_n < 0)
+	       cal_n = 0;
+	     i++;
+	     continue;
+	  }
+	     
 	if ((arg == "-f") or (arg == "--func"))
 	  {
 	     if (i == __argc)
@@ -59,6 +77,11 @@ private define _slprof_main ()
 	     if (func == "")
 	       _slprof_usage ();
 	     i++;
+	     continue;
+	  }
+	if ((arg == "-l") or (arg == "--lines"))
+	  {
+	     line_by_line = 1;
 	     continue;
 	  }
 	if ((arg == "-o") or (arg == "--output"))
@@ -130,14 +153,14 @@ private define _slprof_main ()
    () = fprintf (fp, "# slprof profile report for:\n");
    () = fprintf (fp, "#  %S\n\n", strjoin (__argv, " "));
    Profile_Fp = fp;
-   atexit (&_slprof_write_profile);
+   %atexit (&_slprof_write_profile);
 
    __set_argc_argv (__argv[[i:]]);
 	
    % Actual profiling starts here
 
-   _slprof_calibrate ();
-   profile_begin ();
+   _slprof_calibrate (cal_n);
+   profile_begin (line_by_line);
    () = evalfile (script);
    
    variable ref = __get_reference (main);
@@ -146,6 +169,7 @@ private define _slprof_main ()
    else if (main != "slsh_main")
      () = fprintf (stderr, "*** Warning: %s is not defined\n", main);
 
+   _slprof_write_profile ();
    profile_end ();
 }
 

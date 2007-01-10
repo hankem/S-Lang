@@ -80,6 +80,42 @@ Changes since 2.0.7
     characters, it is only necessary to see see if their background
     colors are equal -- the foreground color does not matter.
     Miroslav Lichvar mlichvar at redhat, com.
+20. modules/png.sl: A variable (bad_level) was undefined.
+21. src/slparse.c: The meaning of constructs such as (a<b<c) has been
+    changed to have its mathematical meaning, namely ((a<b)and(b<c)).
+    Before, (a<b<c) was interpreted as (a<b)<c.  Also, == and != now
+    have the same precedence level as <,<=,>,>= to permit, e.g.,
+    (a==b<c).  Note that (a<b<....<c<d) is also defined as 
+    ((a<b)and(b<...<c)and(c<d).
+22. src/slarray.c: New intrinsic: wherenot(x), which means where(not x).
+23. src/slarray.c,slparse.c: [a:b:#n] may be used to specify a
+    floating point array with n elements running from a to b, inclusive.
+24. src/slparse,slang.c: Fixed the bug where _NARGS was incorrectly
+    set in functions called via expressions such as (@A[i])(x).
+25. src/slang.c,slarray.c,slparse.c,slstruct.c: References to
+    structure fields and array elements are now supported, e.g.,
+    &s.foo and &A[20].
+26. slsh/slsh.c: Added '-e string' command-line option.
+27. slsh/lib/profile.sl: Rewrote much of it to support both profiling
+    individual lines and functions.
+28. slsh/scripts/slprof: Added 'calibrate' and 'lines' command-line
+    options.
+29. src/slang.c: Unsigned ints were sometimes pushed as signed ints.
+30. src/slrline.c: Added a new public function called SLrline_move
+    that moves the cursor a specified number of columns.
+31. slsh/lib/glob.sl: If a glob pattern does not include a path, the
+    returned list of files will nolonger be prefixed with "./", i.e.,
+    glob("foo") returns "foo" and not "./foo".
+32. slsh/readline.c: If slsh_interactive_hook exists, it will be
+    called prior to going into interactive mode.
+33. src/slrline.c:  A completion mechanism was added.  This works by
+    making a callback to a user or application provied hook that
+    returns a list of possible completions.  This functionality is
+    available if SLrline_init has be called to add readline-specific
+    intrinsics to the interpreter.  The slang code implementing the
+    completion hook is in slsh/lib/complete.sl.
+34. modules/png.sl: Load the colormaps into the same namespace that
+    was used by png.sl (Mike Noble).
 
 {{{ Previous Versions
 

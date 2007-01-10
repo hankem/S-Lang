@@ -352,6 +352,14 @@ static void dump_token (_pSLang_Token_Type *t)
 	sprintf (buf, "%s __ref", t->v.s_val);
 	break;
 	
+      case _ARRAY_ELEM_REF_TOKEN:
+	b = "__array_elem_ref";
+	break;
+	
+      case _STRUCT_FIELD_REF_TOKEN:
+	sprintf (buf, "%s __struct_field_ref", t->v.s_val);
+	break;
+
       case ORELSE_TOKEN:
 	b = "orelse";
 	break;

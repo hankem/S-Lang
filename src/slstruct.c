@@ -1,6 +1,6 @@
 /* Structure type implementation */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -1958,3 +1958,70 @@ int SLang_assign_cstruct_to_ref (SLang_Ref_Type *ref, VOID_STAR cs, SLang_CStruc
    SLang_free_struct (s);
    return -1;
 }
+
+/* Struct Field Reference */
+typedef struct
+{
+   SLang_Struct_Type *s;
+   char *field_name;
+}
+Struct_Field_Ref_Type;
+
+static int struct_field_deref_assign (VOID_STAR vdata)
+{
+   Struct_Field_Ref_Type *data = (Struct_Field_Ref_Type *)vdata;
+   return pop_to_struct_field (data->s, data->field_name);
+}
+
+static int struct_field_deref (VOID_STAR vdata)
+{
+   Struct_Field_Ref_Type *frt = (Struct_Field_Ref_Type *)vdata;
+   _pSLstruct_Field_Type *f;
+
+   if (NULL == (f = pop_field (frt->s, frt->field_name, find_field)))
+     return -1;
+
+   return _pSLpush_slang_obj (&f->obj);
+}
+
+static void struct_field_ref_destroy (VOID_STAR vdata)
+{
+   Struct_Field_Ref_Type *frt = (Struct_Field_Ref_Type *)vdata;
+
+   SLang_free_slstring (frt->field_name);
+   SLang_free_struct (frt->s);
+}
+
+/* Stack: struct */
+int _pSLstruct_push_field_ref (char *name)
+{
+   SLang_Struct_Type *s;
+   Struct_Field_Ref_Type *frt;
+   SLang_Ref_Type *ref;
+   int ret;
+
+   if (-1 == SLang_pop_struct (&s))
+     return -1;
+
+   if (NULL == (name = SLang_create_slstring (name)))
+     {
+	SLang_free_struct (s);
+	return -1;
+     }
+   if (NULL == (ref = _pSLang_new_ref (sizeof (Struct_Field_Ref_Type))))
+     {
+	SLang_free_struct (s);
+	SLang_free_slstring (name);
+     }
+   frt = (Struct_Field_Ref_Type *) ref->data;
+   frt->s = s;
+   frt->field_name = name;
+   ref->deref = struct_field_deref;
+   ref->deref_assign = struct_field_deref_assign;
+   ref->destroy = struct_field_ref_destroy;
+
+   ret = SLang_push_ref (ref);
+   SLang_free_ref (ref);
+   return ret;
+}
+

@@ -225,7 +225,8 @@ test_str_quote_string ("hello", "lh", 'X', "XheXlXlo");
 test_str_quote_string ("hel\u{1234}o", "lh\u{1234}", 0x2345, "\u{2345}he\u{2345}l\u{2345}\u{1234}o");
 #endif
 
-static variable D, S;
+private variable D, S;
+
 foreach D ([',', 0xAB, 0xABCD])
 {
    if ((D > 0xFF) and (_slang_utf8_ok == 0))

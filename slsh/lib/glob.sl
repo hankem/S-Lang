@@ -5,7 +5,13 @@ private define needs_globbing (path)
 
 private define do_the_glob (dir, pat)
 {
-   variable files = listdir (dir);
+   variable files;
+   
+   if (dir == "") 
+     files = listdir (".");
+   else
+     files = listdir (dir);
+
    if (files == NULL)
      return String_Type[0];
 
@@ -18,6 +24,9 @@ private define do_the_glob (dir, pat)
      return String_Type[0];
 
    files = files[i];
+   if (dir == "")
+     return files;
+
    return array_map (String_Type, &path_concat, dir, files);
 }
 
@@ -43,8 +52,10 @@ define glob ()
 	     continue;
 	  }
 
-	variable dir = path_dirname (pat);
 	variable base = path_basename (pat);
+	variable dir = "";
+	if (base != pat) 
+	  dir = path_dirname (pat);
 
 	if (needs_globbing (dir))
 	  {

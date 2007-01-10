@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004-2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -313,5 +313,13 @@ USA.
 # define HAVE_ATOLL	1
 # define HAVE_STRTOLL	1
 #endif
+
+
+/* Files used by the slang-readline interface.  The interface first tries
+ * to read SLRLINE_USER_INIT_FILE from $HOME, and if that does not exist, it
+ * will read SLRLINE_SYS_INIT_FILE from the load path.
+ */
+#define SLRLINE_USER_INIT_FILE	"slrline.rc"
+#define SLRLINE_SYS_INIT_FILE	"rline/slrline.rc"
 
 #endif				       /* ifndef SL_CONFIG_H */

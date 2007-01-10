@@ -3,6 +3,7 @@
 #d slang2 \bf{S-Lang 2}
 #d slrn \bf{slrn}
 #d sldb \bf{sldb}
+#d slprof \bf{slprof}
 #d slsh \bf{slsh}
 #d jed \bf{jed}
 #d key#1 <tt>$1</tt>

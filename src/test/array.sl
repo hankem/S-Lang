@@ -589,7 +589,8 @@ if (sum(A) != A[0] + A[1] + A[2])
 
 define find_min (a)
 {
-   a = a[where (not isnan(a))];
+   %a = a[where(not isnan(a))];
+   a = a[wherenot (isnan(a))];
    variable m = a[0];
    _for (1, length(a)-1, 1)
      {
@@ -1081,12 +1082,6 @@ A[*] += A[*];
 if (not (_eqs (A, [2:11]*2)))
   failed ("A[*] += A[*]");
 
-private variable _Random_Seed = 123456789UL;
-private define random (n)
-{
-   _Random_Seed = (_Random_Seed * 69069UL + 1013904243UL)&0xFFFFFFFFU;
-   return _Random_Seed/4294967296.0 * n;
-}
 private define index_random ()
 {
    variable a = [1:60];
@@ -1313,7 +1308,7 @@ private define test_where_2_args (a)
 {
    variable i0, j0, i1, j1;
    i0 = where (a);
-   j0 = where (not a);
+   j0 = wherenot(a);
    i1 = where (a, &j1);
    
    if ((not eqs (i0, i1)) or (not eqs (j0, j1)))
@@ -1328,6 +1323,54 @@ test_where_2_args (([1:10] mod 3)==0);
 test_where_2_args (([1:10] mod 3)==1);
 test_where_2_args (([1:10] mod 3)==2);
 test_where_2_args (([1:-1] mod 2)==2);
+
+private define test_arrayn (a, b, n)
+{
+   variable a0 = a + ([0:n-1])*((b-a)/double(n-1));
+   variable a1 = [a:b:#n];
+   
+   if ((typeof (a) == Float_Type) && (_typeof(a1) != Float_Type))
+     {
+	failed ("Expecting [%g:%g:#%g] to be Float_Type", a,b,n);
+     }
+
+   if (n <= 0)
+     {
+	if (length (a1) != 0)
+	  failed ("expecting [$a:$b:$n] to have 0 length"$);
+	return;
+     }
+
+   variable tol = 1e15;
+   
+   tol = 1e-15;
+   if (max (_diff(a1,a0)>tol*abs(a)))
+     failed ("[$a:$b:$n] max_diff=%g"$, max(_diff(a1,a0)));
+}
+
+test_arrayn (1,10, 10);
+test_arrayn (1,20, 10);
+test_arrayn (-5, 5, 10);
+test_arrayn (33.1, 45.0, 2048);
+test_arrayn (33.1, 45.0, 0);
+test_arrayn (33.1, 45.0, -5);
+test_arrayn (0f,255f,256);
+
+define test_array_refs ()
+{
+   variable a = String_Type[10, 10];
+   variable r = &a[5,5];
+   return;
+   @r = "foo";
+   if (a[5,5] != "foo")
+     failed ("&a[5,5]");
+   
+   r = &a[[2,3],[4,5,6]];
+   @r = ["1x", "2x", "3x", "4x", "5x","6x"];
+   if ((a[2,4] != "1x") or (a[3,6] != "6x"))
+     failed ("&a[[2,3],[4,5,6]]");
+}
+test_array_refs ();
 
 print ("Ok\n");
 

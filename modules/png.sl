@@ -33,6 +33,7 @@ define png_build_colormap (r_ranges, g_ranges, b_ranges)
 
 private variable Color_Maps = Assoc_Type[Array_Type];
 private variable Color_Map_Dir = path_concat (path_dirname (__FILE__), "cmaps");
+private variable Png_Namespace = current_namespace ();
 
 define png_add_colormap (name, map)
 {
@@ -49,7 +50,7 @@ define png_get_colormap (name)
    if (stat_file (file) == NULL)
      throw OpenError, "Unable to load colormap $mapfile"$;
    
-   () = evalfile (file);
+   () = evalfile (file, Png_Namespace);
 
    if (assoc_key_exists (Color_Maps, name))
      return Color_Maps[name];
@@ -113,6 +114,7 @@ private define normalize_gray (gray, nlevels)
    else
      gray = typecast (gray * 0 + 127, Int_Type);
 
+   variable bad_level = 0;
    if (any_is_bad)
      gray[where(is_bad)] = bad_level;
    

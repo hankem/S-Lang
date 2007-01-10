@@ -1,6 +1,6 @@
 /* Array manipulation routines for S-Lang */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -2234,7 +2234,8 @@ static SLang_Array_Type *inline_implicit_int_array (SLindex_Type *xminptr, SLind
 
 #if SLANG_HAS_FLOAT
 static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
-							 double *xminptr, double *xmaxptr, double *dxptr)
+							 double *xminptr, double *xmaxptr, double *dxptr,
+							 int ntype, int nels)
 {
    SLindex_Type n, i;
    SLang_Array_Type *at;
@@ -2248,38 +2249,55 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
      }
    xmin = *xminptr;
    xmax = *xmaxptr;
-   if (dxptr == NULL) dx = 1.0;
-   else dx = *dxptr;
-
-   if (dx == 0.0)
+   
+   if (ntype)
      {
-	SLang_verror (SL_INVALID_PARM, "range-array increment must be non-zero");
-	return NULL;
+	/* [a:b:#n] == a + [0:(n-1)]*(b-a)/(n-1) 
+	 * ==> dx = (b-a)/(n-1)
+	 */
+	n = (SLindex_Type) nels;
+	if (n <= 0)
+	  {
+	     n = 0;
+	     dx = 1.0;
+	  }
+	else dx = (xmax-xmin)/(n-1);
      }
-
-   /* I have convinced myself that it is better to use semi-open intervals
-    * because of less ambiguities.  So, [a:b:c] will represent the set of
-    * values a, a + c, a + 2c ... a + nc
-    * such that a + nc < b.  That is, b lies outside the interval.
-    */
-
-   /* Allow for roundoff by adding 0.5 before truncation */
-   n = (int)(1.5 + ((xmax - xmin) / dx));
-   if (n <= 0)
-     n = 0;
    else
      {
-	double last = xmin + (n-1) * dx;
+	if (dxptr == NULL) dx = 1.0;
+	else dx = *dxptr;
 
-	if (dx > 0.0)
+	if (dx == 0.0)
 	  {
-	     if (last >= xmax)
+	     SLang_verror (SL_INVALID_PARM, "range-array increment must be non-zero");
+	     return NULL;
+	  }
+
+	/* I have convinced myself that it is better to use semi-open intervals
+	 * because of less ambiguities.  So, [a:b:c] will represent the set of
+	 * values a, a + c, a + 2c ... a + nc
+	 * such that a + nc < b.  That is, b lies outside the interval.
+	 */
+
+	/* Allow for roundoff by adding 0.5 before truncation */
+	n = (int)(1.5 + ((xmax - xmin) / dx));
+	if (n <= 0)
+	  n = 0;
+	else
+	  {
+	     double last = xmin + (n-1) * dx;
+
+	     if (dx > 0.0)
+	       {
+		  if (last >= xmax)
+		    n -= 1;
+	       }
+	     else if (last <= xmax)
 	       n -= 1;
 	  }
-	else if (last <= xmax)
-	  n -= 1;
+	/* FIXME: Priority=medium: Add something to detect cases where the increment is too small */
      }
-   /* FIXME: Priority=medium: Add something to detect cases where the increment is too small */
 
    dims = n;
    if (NULL == (at = SLang_create_array1 (type, 0, NULL, &dims, 1, 1)))
@@ -2293,6 +2311,10 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 
 	for (i = 0; i < n; i++)
 	  ptr[i] = xmin + i * dx;
+	
+	/* Explicitly set the last element to xmax to avoid roundoff error */
+	if (ntype && (n > 0))
+	  ptr[n-1] = xmax;
      }
    else
      {
@@ -2302,6 +2324,9 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 
 	for (i = 0; i < n; i++)
 	  ptr[i] = (float) (xmin + i * dx);
+
+	if (ntype && (n > 0))
+	  ptr[n-1] = (float) xmax;
      }
    return at;
 }
@@ -2312,7 +2337,8 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
  * Adding support for other types is going to require a generalization
  * of the Range_Array_Type object.
  */
-int _pSLarray_inline_implicit_array (void)
+/* If ntype is non-zero, the array was specified using [a:b:#c] */
+static int inline_implicit_array (int ntype)
 {
    SLindex_Type index_vals[3];
 #if SLANG_HAS_FLOAT
@@ -2321,13 +2347,14 @@ int _pSLarray_inline_implicit_array (void)
 #endif
    int has_vals[3];
    unsigned int i, count;
+   int n = 0;
    SLang_Array_Type *at;
    int precedence;
    SLtype type;
 
    count = SLang_Num_Function_Args;
 
-   if (count == 2)
+   if ((count == 2) && (ntype == 0))
      has_vals [2] = 0;
    else if (count != 3)
      {
@@ -2342,7 +2369,15 @@ int _pSLarray_inline_implicit_array (void)
    type = 0;
    precedence = 0;
 
+   if (ntype)
+     {
+	if (-1 == SLang_pop_int (&n))
+	  return -1;
+	has_vals[2] = 0;
+	count--;
+     }
    i = count;
+
    while (i--)
      {
 	int this_type, this_precedence;
@@ -2363,6 +2398,11 @@ int _pSLarray_inline_implicit_array (void)
 	switch (this_type)
 	  {
 	   case SLANG_NULL_TYPE:
+	     if (ntype)
+	       {
+		  SLang_verror (SL_Syntax_Error, "Arrays of the form [a:b:#c] must be fully specified");
+		  return -1;
+	       }
 	     has_vals[i] = 0;
 	     (void) SLdo_pop ();
 	     break;
@@ -2386,11 +2426,19 @@ int _pSLarray_inline_implicit_array (void)
      }
 
 #if SLANG_HAS_FLOAT
+   if (ntype)
+     {
+	is_int = 0;
+	if (type != SLANG_FLOAT_TYPE)
+	  type = SLANG_DOUBLE_TYPE;
+     }
+   
    if (is_int == 0)
      at = inline_implicit_floating_array (type,
 					  (has_vals[0] ? &double_vals[0] : NULL),
 					  (has_vals[1] ? &double_vals[1] : NULL),
-					  (has_vals[2] ? &double_vals[2] : NULL));
+					  (has_vals[2] ? &double_vals[2] : NULL),
+					  ntype, n);
    else
 #endif
      at = inline_implicit_int_array ((has_vals[0] ? &index_vals[0] : NULL),
@@ -2402,6 +2450,17 @@ int _pSLarray_inline_implicit_array (void)
 
    return SLang_push_array (at, 1);
 }
+
+int _pSLarray_inline_implicit_array (void)
+{
+   return inline_implicit_array (0);
+}
+
+int _pSLarray_inline_implicit_arrayn (void)
+{
+   return inline_implicit_array (1);
+}
+
 
 static int try_typecast_range_array (SLang_Array_Type *at, SLtype to_type, 
 				     SLang_Array_Type **btp)
@@ -3144,7 +3203,7 @@ static void array_where_last (void)
    SLang_push_null ();
 }
 
-static void array_where (void)
+static void array_where_intern (int cmp)
 {
    SLang_Array_Type *at, *bt;
    char *a_data;
@@ -3167,7 +3226,7 @@ static void array_where (void)
 
    b_num = 0;
    for (i = 0; i < num_elements; i++)
-     if (a_data[i] != 0) b_num++;
+     if (cmp == (a_data[i] != 0)) b_num++;
 
    if (NULL == (bt = SLang_create_array1 (SLANG_ARRAY_INDEX_TYPE, 0, NULL, &b_num, 1, 1)))
      goto return_error;
@@ -3187,7 +3246,7 @@ static void array_where (void)
 
 	for (i = 0; i < num_elements; i++)
 	  {
-	     if (a_data[i] != 0)
+	     if (cmp == (a_data[i] != 0))
 	       *b_data++ = i;
 	     else
 	       *c_data++ = i;
@@ -3202,7 +3261,7 @@ static void array_where (void)
 	i = 0;
 	while (b_num)
 	  {
-	     if (a_data[i] != 0)
+	     if (cmp == (a_data[i] != 0))
 	       {
 		  *b_data++ = i;
 		  b_num--;
@@ -3219,6 +3278,15 @@ static void array_where (void)
    SLang_free_array (bt);
    if (ref != NULL)
      SLang_free_ref (ref);
+}
+
+static void array_where (void)
+{
+   array_where_intern (1);
+}
+static void array_wherenot (void)
+{
+   array_where_intern (0);
 }
 
 /* Up to the caller to ensure that ind_at is an index array */
@@ -3677,6 +3745,7 @@ static SLang_Intrin_Fun_Type Array_Table [] =
    MAKE_INTRINSIC_0("array_info", array_info, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("array_shape", array_shape, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("where", array_where, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherenot", array_wherenot, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("wherefirst", array_where_first, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("wherelast", array_where_last, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("reshape", array_reshape, SLANG_VOID_TYPE),
@@ -4205,7 +4274,8 @@ int _pSLarray_cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
      return -1;
 
    at = c->at;
-   if ((SLindex_Type)at->num_elements == c->next_element_index)
+   /* Use <= here to prepare for the time when arrays are permitted to change size */
+   if ((SLindex_Type)at->num_elements <= c->next_element_index)
      return 0;
 
    /* FIXME: Priority = low.  The following assumes linear arrays
@@ -4236,3 +4306,112 @@ int _pSLarray_cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
    return 1;
 }
 
+/* References to array elements */
+typedef struct
+{
+   SLang_Object_Type at;
+   SLang_Object_Type index_objs [SLARRAY_MAX_DIMS];
+   unsigned int num_indices;
+}
+Array_Elem_Ref_Type;
+
+static int elem_ref_push_index_objs (Array_Elem_Ref_Type *ert)
+{
+   SLang_Object_Type *o, *omax;
+
+   o = ert->index_objs;
+   omax = o + ert->num_indices;
+   
+   while (o < omax)
+     {
+	if (-1 == _pSLpush_slang_obj (o))
+	  return -1;
+	o++;
+     }
+   if (-1 == _pSLpush_slang_obj (&ert->at))
+     return -1;
+   
+   return 0;
+}
+
+static int elem_ref_deref_assign (VOID_STAR vdata)
+{
+   Array_Elem_Ref_Type *ert = (Array_Elem_Ref_Type *)vdata;
+
+   if (-1 == elem_ref_push_index_objs (ert))
+     return -1;
+   
+   return _pSLarray_aput1 (ert->num_indices);
+}
+
+static int elem_ref_deref (VOID_STAR vdata)
+{
+   Array_Elem_Ref_Type *ert = (Array_Elem_Ref_Type *)vdata;
+   
+   if (-1 == elem_ref_push_index_objs (ert))
+     return -1;
+   
+   return _pSLarray_aget1 (ert->num_indices);
+}
+
+static void elem_ref_destroy (VOID_STAR vdata)
+{
+   Array_Elem_Ref_Type *ert = (Array_Elem_Ref_Type *)vdata;
+   SLang_Object_Type *o, *omax;
+
+   if (ert->at.data_type != 0)
+     SLang_free_object (&ert->at);
+   o = ert->index_objs;
+   omax = o + ert->num_indices;
+   while (o < omax)
+     {
+	if (o->data_type != 0)
+	  SLang_free_object (o);
+	o++;
+     }
+}
+
+/* &A[i,...j] ==> __args i..j A ARRAY_REF */
+int _pSLarray_push_elem_ref (void)
+{
+   unsigned int num_indices = (unsigned int) (SLang_Num_Function_Args-1);
+   Array_Elem_Ref_Type *ert;
+   SLang_Ref_Type *ref;
+   unsigned int i;
+   int ret;
+
+   if (num_indices > SLARRAY_MAX_DIMS)
+     {
+	SLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", SLARRAY_MAX_DIMS);
+	return -1;
+     }
+
+   if (NULL == (ref = _pSLang_new_ref (sizeof (Array_Elem_Ref_Type))))
+     return -1;
+
+   ref->deref = elem_ref_deref;
+   ref->deref_assign = elem_ref_deref_assign;
+   ref->destroy = elem_ref_destroy;
+
+   ert = (Array_Elem_Ref_Type *) ref->data;
+   ert->num_indices = num_indices;
+   if (-1 == SLang_pop (&ert->at))
+     {
+	SLang_free_ref (ref);
+	return -1;
+     }
+
+   i = num_indices;
+   while (i)
+     {
+	i--;
+	if (-1 == SLang_pop (ert->index_objs + i))
+	  {
+	     SLang_free_ref (ref);
+	     return -1;
+	  }
+     }
+   ret = SLang_push_ref (ref);
+   SLang_free_ref (ref);
+   return ret;
+}

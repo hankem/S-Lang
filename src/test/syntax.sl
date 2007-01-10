@@ -216,8 +216,9 @@ define check_foreach ()
      s1 += i;
 
    if ((s1 != s) or (s != 55))
-     failed ("_for");
+     failed ("foreach");
 }
+check_foreach ();
 
 $1 = 0;
 static define check_NULL_args ()

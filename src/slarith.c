@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -134,7 +134,7 @@ SLtype _pSLarith_Arith_Types [MAX_ARITHMETIC_TYPES+1] =
 static SLtype Alias_Map [MAX_ARITHMETIC_TYPES];
    
 /* Here are a bunch of functions to convert from one type to another.  To
- * facilitate the process, a macros will be used.
+ * facilitate the process, macros will be used.
  */
 
 #define DEFUN_1(f,from_type,to_type) \

@@ -49,12 +49,6 @@ static define test_atof (x)
      failed ("%e = atof(%e [%s]): diff = %e\n", y, x, tstr, y-x);
 }
 
-static variable _Random_Seed = 123456789UL;
-static define random ()
-{
-   _Random_Seed = (_Random_Seed * 69069UL + 1013904243UL)&0xFFFFFFFFU;
-   return _Random_Seed/4294967296.0;
-}
 
 static define test_atof_main (n)
 {

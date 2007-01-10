@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005, 2006 John E. Davis
+Copyright (C) 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -35,7 +35,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.7.7-1";
+static char *Slsh_Version = "0.7.8-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -406,10 +406,6 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
 {
    MAKE_INTRINSIC_I("exit", c_exit, VOID_TYPE),
    MAKE_INTRINSIC_1("atexit", at_exit, VOID_TYPE, SLANG_REF_TYPE),
-   MAKE_INTRINSIC_S("slsh_readline", slsh_readline_intrinsic, VOID_TYPE),
-   MAKE_INTRINSIC_S("slsh_readline_noecho", slsh_readline_noecho_intrinsic, VOID_TYPE),
-   MAKE_INTRINSIC_0("slsh_set_prompt_hook", slsh_set_prompt_hook, VOID_TYPE),
-   MAKE_INTRINSIC_0("slsh_get_prompt_hook", slsh_get_prompt_hook, VOID_TYPE),
    MAKE_INTRINSIC_0("stat_mode_to_string", stat_mode_to_string, VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
@@ -421,6 +417,7 @@ static void usage (void)
 Usage: slsh [OPTIONS] [-|file [args...]]\n\
  --help           Print this help\n\
  --version        Show slsh version information\n\
+ -e string        Execute 'string' as S-Lang code\n\
  -g               Compile with debugging code, tracebacks, etc\n\
  -n               Don't load personal init file\n\
  --init file      Use this file instead of ~/%s\n",
@@ -428,7 +425,7 @@ Usage: slsh [OPTIONS] [-|file [args...]]\n\
    fprintf (stderr, "\
  --no-readline    Do not use readline\n\
  -i               Force interactive input\n\
- -t               Test mode.  If slsh_main exits, do not call it\n\
+ -t               Test mode.  If slsh_main exists, do not call it\n\
  -v               Show verbose loading messages\n\
 \n\
   Note: - and -i are mutually exclusive\n\
@@ -456,7 +453,7 @@ static void output_version (void)
 static int output_copyright (void)
 {
    output_version ();
-   fprintf (stdout, "Copyright (C) 2005-2006 John E. Davis <jed@jedsoft.org>\r\n");
+   fprintf (stdout, "Copyright (C) 2005-2007 John E. Davis <jed@jedsoft.org>\r\n");
    fprintf (stdout, "This is free software with ABSOLUTELY NO WARRANTY.\r\n");
    fprintf (stdout, "\n");
    
@@ -478,6 +475,7 @@ int main (int argc, char **argv)
    int is_interactive = 0;
    int use_readline = 1;
    int test_mode = 0;
+   char *exec_string = NULL;
 
    (void) SLutf8_enable (-1);
 
@@ -531,6 +529,15 @@ int main (int argc, char **argv)
 	     argc--;
 	     argv++;
 	     is_interactive = 1;
+	     continue;
+	  }
+
+	if ((0 == strcmp (argv[1], "-e"))
+	    && (argc > 2))
+	  {
+	     argc -= 2;
+	     argv += 2;
+	     exec_string = *argv;
 	     continue;
 	  }
 
@@ -590,7 +597,8 @@ int main (int argc, char **argv)
 
    if (argc == 1)
      {
-	is_interactive = (isatty (fileno(stdin)) && isatty (fileno(stdout)));
+	if ((exec_string == NULL) && (is_interactive == 0))
+	  is_interactive = (isatty (fileno(stdin)) && isatty (fileno(stdout)));
 	file = NULL;
      }
    else
@@ -615,8 +623,6 @@ int main (int argc, char **argv)
 	fflush (stderr);
      }
 
-   (void) slsh_use_readline (use_readline);
-
    /* fprintf (stdout, "slsh: argv[0]=%s\n", argv[0]); */
    if (-1 == SLang_set_argc_argv (argc, argv))
      return 1;
@@ -627,12 +633,18 @@ int main (int argc, char **argv)
    if (-1 == load_startup_file (is_interactive))
      return SLang_get_error ();
 
+   /* Initializing the readline interface causes the .slrlinerc file
+    * to be loaded.  It is put here after the startup files have been loaded.
+    */
+   if (-1 == slsh_use_readline (use_readline))
+     return 1;
+
    if ((init_file != NULL)
        && (-1 == try_to_load_file (init_file_dir, init_file, NULL)))
      return SLang_get_error ();
 
-   /* Now load an initialization file and exit */
-   if ((file != NULL) || (is_interactive == 0))
+   if ((file != NULL)
+       || ((is_interactive == 0) && (exec_string == NULL)))
      {
 	if (0 == try_to_load_file (NULL, file, NULL))
 	  {
@@ -641,6 +653,11 @@ int main (int argc, char **argv)
 	  }
 	if (test_mode == 0)
 	  (void) SLang_run_hooks ("slsh_main", 0);
+     }
+
+   if (exec_string != NULL)
+     {
+	(void) SLang_load_string (exec_string);
      }
 
    if (is_interactive)

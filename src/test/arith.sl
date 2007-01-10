@@ -108,6 +108,15 @@ else check_typeof (1hu + 'b', Integer_Type);
 
 check_typeof (1u + 1, UInteger_Type);
 
+define check_typeof_in_func ()
+{
+   check_typeof (1 & 1UL, ULong_Type);
+   check_typeof (1 & 1, Int_Type);
+   check_typeof (1 & 1uh, Int_Type);
+   check_typeof (1UL & 1uh, ULong_Type);
+}
+check_typeof_in_func ();
+
 if (Integer_Type == Long_Type) check_typeof (1u + 1L, ULong_Type);
 else  check_typeof (1u + 1L, Long_Type);
 

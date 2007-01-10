@@ -30,3 +30,24 @@ define failed ()
    exit (1);
 }
 
+
+private variable _Random_Seed = 123456789UL * _time ();
+define random ()
+{
+   _Random_Seed = (_Random_Seed * 69069UL + 1013904243UL)&0xFFFFFFFFU;
+   return _Random_Seed/4294967296.0;
+}
+
+define urand ()
+{
+   if (_NARGS == 0)
+     return random ();
+   variable n = ();
+   variable x = Double_Type [n];
+   _for (0, n-1, 1)
+     {
+	variable i = ();
+	x[i] = random ();
+     }
+   return x;
+}

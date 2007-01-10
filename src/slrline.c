@@ -1,6 +1,6 @@
 /* SLang_read_line interface --- uses SLang tty stuff */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -84,6 +84,10 @@ struct _pSLrline_Type
    /* This function is only called when blinking matches */
    int (*input_pending)(int);
 };
+
+   
+static SLang_Name_Type *Default_Completion_Callback;
+static SLang_Name_Type *Default_List_Completions_Callback;
 
 int SLang_Rline_Quit;
 
@@ -170,6 +174,30 @@ static int rl_left (SLrline_Type *This_RLI)
    return 0;
 }
 
+int SLrline_move (SLrline_Type *rli, int n)
+{
+   if (rli == NULL)
+     return -1;
+
+   if (n < 0)
+     {
+	n = -n;
+	while (n && rli->point)
+	  {
+	     (void) rl_left (rli);
+	     n--;
+	  }
+	return 0;
+     }
+   
+   while (n && (rli->point != rli->len))
+     {
+	(void) rl_right (rli);
+	n--;
+     }
+   return 0;
+}
+	
 int SLrline_ins (SLrline_Type *This_RLI, char *s, unsigned int n)
 {
    unsigned char *pmin;
@@ -322,6 +350,94 @@ static int rl_enter (SLrline_Type *This_RLI)
 
    *(This_RLI->buf + This_RLI->len) = 0;
    SLang_Rline_Quit = 1;
+   return 0;
+}
+
+static int rl_complete (SLrline_Type *rli)
+{
+   char *line;
+   unsigned int i, n, nbytes;
+   char **strings, *str0, ch0;
+   int start_point, delta;
+   SLang_Array_Type *at;
+   SLang_Name_Type *completion_callback;
+
+   completion_callback = Default_Completion_Callback;
+   if (completion_callback == NULL)
+     return SLrline_ins (rli, "\t", 1);
+
+   if (NULL == (line = SLrline_get_line (rli)))
+     return -1;
+
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_push_string (line))
+       || (-1 == SLang_push_int (rli->point))
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (completion_callback)))
+     {
+	SLfree (line);
+	return -1;
+     }
+
+   SLfree (line);
+
+   if (-1 == SLang_pop_int (&start_point))
+     return -1;
+
+   if (start_point < 0)
+     start_point = 0;
+
+   if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
+     return -1;
+
+   strings = (char **) at->data;
+   n = at->num_elements;
+   
+   if (n == 0)
+     {
+	SLang_free_array (at);
+	return 0;
+     }
+
+   if ((n != 1) && (Default_List_Completions_Callback != NULL))
+     {
+	if ((-1 == SLang_start_arg_list ())
+	    || (-1 == SLang_push_array (at, 0))
+	    || (-1 == SLang_end_arg_list ())
+	    || (-1 == SLexecute_function (Default_List_Completions_Callback)))
+	  {
+	     SLang_free_array (at);
+	     return -1;
+	  }
+	(void) SLrline_redraw (rli);
+     }
+	
+   str0 = strings[0];
+   nbytes = 0;
+   while (0 != (ch0 = str0[nbytes]))
+     {
+	for (i = 1; i < n; i++)
+	  {
+	     char ch1 = strings[i][nbytes];
+	     if (ch0 != ch1)
+	       break;
+	  }
+	if (i != n)
+	  break;
+	nbytes++;
+     }
+
+   delta = start_point - rli->point;
+   if (delta < 0)
+     {
+	(void) SLrline_move (rli, delta);
+	delta = -delta;
+     }
+   (void) SLrline_del (rli, (unsigned int) delta);
+   (void) SLrline_ins (rli, str0, nbytes);
+   /* if (n == 1) (void) SLrline_ins (rli, " ", 1); */
+
+   SLang_free_array (at);
    return 0;
 }
 
@@ -825,6 +941,8 @@ static void blink_match (SLrline_Type *rli)
      }
 }
 
+static SLrline_Type *Active_Rline_Info = NULL;
+
 char *SLrline_read_line (SLrline_Type *rli, char *prompt, unsigned int *lenp)
 {
    unsigned char *p, *pmax;
@@ -883,6 +1001,8 @@ char *SLrline_read_line (SLrline_Type *rli, char *prompt, unsigned int *lenp)
    last_input_char = 0;
    while (1)
      {
+	SLrline_Type *save_rli = Active_Rline_Info;
+
 	key = SLang_do_key (RL_Keymap, (int (*)(void)) rli->getkey);
 
 	if ((key == NULL) || (key->f.f == NULL))
@@ -906,6 +1026,7 @@ char *SLrline_read_line (SLrline_Type *rli, char *prompt, unsigned int *lenp)
 	     last_input_char = rli->eof_char;
 	  }
 
+	Active_Rline_Info = rli;
 	if (key->type == SLKEY_F_INTRINSIC)
 	  {
 	     int (*func)(SLrline_Type *);
@@ -919,10 +1040,16 @@ char *SLrline_read_line (SLrline_Type *rli, char *prompt, unsigned int *lenp)
 		 && (rli->input_pending != NULL))
 	       blink_match (rli);
 	  }
-	
-	if ((SLang_Rline_Quit) || (_pSLang_Error == SL_USER_BREAK))
+	else if (key->type == SLKEY_F_SLANG)
 	  {
-	     if (_pSLang_Error == SL_USER_BREAK)
+	     (void) SLexecute_function (key->f.slang_fun);
+	     RLupdate (rli);
+	  }
+	Active_Rline_Info = save_rli;
+
+	if ((SLang_Rline_Quit) || _pSLang_Error)
+	  {
+	     if (_pSLang_Error)
 	       {
 		  rli->len = 0;
 	       }
@@ -1066,10 +1193,103 @@ void SLrline_close (SLrline_Type *rli)
    SLfree ((char *)rli);
 }
 
-SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
+static int init_keymap (void)
 {
    int ch;
    char simple[2];
+   SLkeymap_Type *km;
+
+   if (RL_Keymap != NULL)
+     return 0;
+
+   simple[1] = 0;
+   if (NULL == (km = SLang_create_keymap ("ReadLine", NULL)))
+     return -1;
+
+   km->functions = SLReadLine_Functions;
+
+   /* This breaks under some DEC ALPHA compilers (scary!) */
+#ifndef __DECC
+   for (ch = ' '; ch < 256; ch++)
+     {
+	simple[0] = (char) ch;
+	SLkm_define_key (simple, (FVOID_STAR) rl_self_insert, km);
+     }
+#else
+   ch = ' ';
+   while (1)
+     {
+	simple[0] = (char) ch;
+	SLkm_define_key (simple, (FVOID_STAR) rl_self_insert, km);
+	ch = ch + 1;
+	if (ch == 256) break;
+     }
+#endif				       /* NOT __DECC */
+   
+   simple[0] = SLang_Abort_Char;
+   SLkm_define_key (simple, (FVOID_STAR) rl_abort, km);
+#ifdef REAL_UNIX_SYSTEM
+   simple[0] = (char) 4;
+#else
+   simple[0] = (char) 26;
+#endif
+   SLkm_define_key (simple, (FVOID_STAR) rl_eof_insert, km);
+   
+#ifndef IBMPC_SYSTEM
+   SLkm_define_key  ("^[[A", (FVOID_STAR) rl_prev_line, km);
+   SLkm_define_key  ("^[[B", (FVOID_STAR) rl_next_line, km);
+   SLkm_define_key  ("^[[C", (FVOID_STAR) rl_right, km);
+   SLkm_define_key  ("^[[D", (FVOID_STAR) rl_left, km);
+   SLkm_define_key  ("^[OA", (FVOID_STAR) rl_prev_line, km);
+   SLkm_define_key  ("^[OB", (FVOID_STAR) rl_next_line, km);
+   SLkm_define_key  ("^[OC", (FVOID_STAR) rl_right, km);
+   SLkm_define_key  ("^[OD", (FVOID_STAR) rl_left, km);
+#else
+   SLkm_define_key  ("^@H", (FVOID_STAR) rl_prev_line, km);
+   SLkm_define_key  ("^@P", (FVOID_STAR) rl_next_line, km);
+   SLkm_define_key  ("^@M", (FVOID_STAR) rl_right, km);
+   SLkm_define_key  ("^@K", (FVOID_STAR) rl_left, km);
+   SLkm_define_key  ("^@S", (FVOID_STAR) rl_del, km);
+   SLkm_define_key  ("^@O", (FVOID_STAR) SLrline_eol, km);
+   SLkm_define_key  ("^@G", (FVOID_STAR) SLrline_bol, km);
+   
+   SLkm_define_key  ("\xE0H", (FVOID_STAR) rl_prev_line, km);
+   SLkm_define_key  ("\xE0P", (FVOID_STAR) rl_next_line, km);
+   SLkm_define_key  ("\xE0M", (FVOID_STAR) rl_right, km);
+   SLkm_define_key  ("\xE0K", (FVOID_STAR) rl_left, km);
+   SLkm_define_key  ("\xE0S", (FVOID_STAR) rl_del, km);
+   SLkm_define_key  ("\xE0O", (FVOID_STAR) SLrline_eol, km);
+   SLkm_define_key  ("\xE0G", (FVOID_STAR) SLrline_bol, km);
+#endif
+   SLkm_define_key  ("^C", (FVOID_STAR) rl_abort, km);
+   SLkm_define_key  ("^E", (FVOID_STAR) SLrline_eol, km);
+   SLkm_define_key  ("^G", (FVOID_STAR) rl_abort, km);
+   SLkm_define_key  ("^I", (FVOID_STAR) rl_complete, km);
+   SLkm_define_key  ("^A", (FVOID_STAR) SLrline_bol, km);
+   SLkm_define_key  ("\r", (FVOID_STAR) rl_enter, km);
+   SLkm_define_key  ("\n", (FVOID_STAR) rl_enter, km);
+   SLkm_define_key  ("^K", (FVOID_STAR) rl_deleol, km);
+   SLkm_define_key  ("^L", (FVOID_STAR) rl_deleol, km);
+   SLkm_define_key  ("^U", (FVOID_STAR) rl_delbol, km);
+   SLkm_define_key  ("^V", (FVOID_STAR) rl_del, km);
+   SLkm_define_key  ("^D", (FVOID_STAR) rl_del, km);
+   SLkm_define_key  ("^F", (FVOID_STAR) rl_right, km);
+   SLkm_define_key  ("^B", (FVOID_STAR) rl_left, km);
+   SLkm_define_key  ("^?", (FVOID_STAR) rl_bdel, km);
+   SLkm_define_key  ("^H", (FVOID_STAR) rl_bdel, km);
+   SLkm_define_key  ("^P", (FVOID_STAR) rl_prev_line, km);
+   SLkm_define_key  ("^N", (FVOID_STAR) rl_next_line, km);
+   SLkm_define_key  ("^R", (FVOID_STAR) rl_redraw, km);
+   SLkm_define_key  ("`", (FVOID_STAR) rl_quote_insert, km);
+   SLkm_define_key  ("\033\\", (FVOID_STAR) rl_trim, km);
+   if (_pSLang_Error)
+     return -1;
+   RL_Keymap = km;
+   return 0;
+}
+
+SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
+{
    SLrline_Type *rli;
 
    if (_pSLutf8_mode)
@@ -1110,100 +1330,18 @@ SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
 	if (rli->tt_goto_column == NULL) rli->tt_goto_column = ansi_goto_column;
      }
 
-   if (RL_Keymap == NULL)
+   if (-1 == init_keymap ())
      {
-	simple[1] = 0;
-	if (NULL == (RL_Keymap = SLang_create_keymap ("ReadLine", NULL)))
-	  {
-	     SLrline_close (rli);
-	     return NULL;
-	  }
-
-	RL_Keymap->functions = SLReadLine_Functions;
-
-	/* This breaks under some DEC ALPHA compilers (scary!) */
-#ifndef __DECC
-	for (ch = ' '; ch < 256; ch++)
-	  {
-	     simple[0] = (char) ch;
-	     SLkm_define_key (simple, (FVOID_STAR) rl_self_insert, RL_Keymap);
-	  }
-#else
-	ch = ' ';
-	while (1)
-	  {
-	     simple[0] = (char) ch;
-	     SLkm_define_key (simple, (FVOID_STAR) rl_self_insert, RL_Keymap);
-	     ch = ch + 1;
-	     if (ch == 256) break;
-	  }
-#endif				       /* NOT __DECC */
-
-	simple[0] = SLang_Abort_Char;
-	SLkm_define_key (simple, (FVOID_STAR) rl_abort, RL_Keymap);
-	simple[0] = (char) rli->eof_char;
-	SLkm_define_key (simple, (FVOID_STAR) rl_eof_insert, RL_Keymap);
-
-#ifndef IBMPC_SYSTEM
-	SLkm_define_key  ("^[[A", (FVOID_STAR) rl_prev_line, RL_Keymap);
-	SLkm_define_key  ("^[[B", (FVOID_STAR) rl_next_line, RL_Keymap);
-	SLkm_define_key  ("^[[C", (FVOID_STAR) rl_right, RL_Keymap);
-	SLkm_define_key  ("^[[D", (FVOID_STAR) rl_left, RL_Keymap);
-	SLkm_define_key  ("^[OA", (FVOID_STAR) rl_prev_line, RL_Keymap);
-	SLkm_define_key  ("^[OB", (FVOID_STAR) rl_next_line, RL_Keymap);
-	SLkm_define_key  ("^[OC", (FVOID_STAR) rl_right, RL_Keymap);
-	SLkm_define_key  ("^[OD", (FVOID_STAR) rl_left, RL_Keymap);
-#else
-	SLkm_define_key  ("^@H", (FVOID_STAR) rl_prev_line, RL_Keymap);
-	SLkm_define_key  ("^@P", (FVOID_STAR) rl_next_line, RL_Keymap);
-	SLkm_define_key  ("^@M", (FVOID_STAR) rl_right, RL_Keymap);
-	SLkm_define_key  ("^@K", (FVOID_STAR) rl_left, RL_Keymap);
-	SLkm_define_key  ("^@S", (FVOID_STAR) rl_del, RL_Keymap);
-	SLkm_define_key  ("^@O", (FVOID_STAR) SLrline_eol, RL_Keymap);
-	SLkm_define_key  ("^@G", (FVOID_STAR) SLrline_bol, RL_Keymap);
-
-	SLkm_define_key  ("\xE0H", (FVOID_STAR) rl_prev_line, RL_Keymap);
-	SLkm_define_key  ("\xE0P", (FVOID_STAR) rl_next_line, RL_Keymap);
-	SLkm_define_key  ("\xE0M", (FVOID_STAR) rl_right, RL_Keymap);
-	SLkm_define_key  ("\xE0K", (FVOID_STAR) rl_left, RL_Keymap);
-	SLkm_define_key  ("\xE0S", (FVOID_STAR) rl_del, RL_Keymap);
-	SLkm_define_key  ("\xE0O", (FVOID_STAR) SLrline_eol, RL_Keymap);
-	SLkm_define_key  ("\xE0G", (FVOID_STAR) SLrline_bol, RL_Keymap);
-#endif
-	SLkm_define_key  ("^C", (FVOID_STAR) rl_abort, RL_Keymap);
-	SLkm_define_key  ("^E", (FVOID_STAR) SLrline_eol, RL_Keymap);
-	SLkm_define_key  ("^G", (FVOID_STAR) rl_abort, RL_Keymap);
-	SLkm_define_key  ("^I", (FVOID_STAR) rl_self_insert, RL_Keymap);
-	SLkm_define_key  ("^A", (FVOID_STAR) SLrline_bol, RL_Keymap);
-	SLkm_define_key  ("\r", (FVOID_STAR) rl_enter, RL_Keymap);
-	SLkm_define_key  ("\n", (FVOID_STAR) rl_enter, RL_Keymap);
-	SLkm_define_key  ("^K", (FVOID_STAR) rl_deleol, RL_Keymap);
-	SLkm_define_key  ("^L", (FVOID_STAR) rl_deleol, RL_Keymap);
-	SLkm_define_key  ("^U", (FVOID_STAR) rl_delbol, RL_Keymap);
-	SLkm_define_key  ("^V", (FVOID_STAR) rl_del, RL_Keymap);
-	SLkm_define_key  ("^D", (FVOID_STAR) rl_del, RL_Keymap);
-	SLkm_define_key  ("^F", (FVOID_STAR) rl_right, RL_Keymap);
-	SLkm_define_key  ("^B", (FVOID_STAR) rl_left, RL_Keymap);
-	SLkm_define_key  ("^?", (FVOID_STAR) rl_bdel, RL_Keymap);
-	SLkm_define_key  ("^H", (FVOID_STAR) rl_bdel, RL_Keymap);
-	SLkm_define_key  ("^P", (FVOID_STAR) rl_prev_line, RL_Keymap);
-	SLkm_define_key  ("^N", (FVOID_STAR) rl_next_line, RL_Keymap);
-	SLkm_define_key  ("^R", (FVOID_STAR) rl_redraw, RL_Keymap);
-	SLkm_define_key  ("`", (FVOID_STAR) rl_quote_insert, RL_Keymap);
-	SLkm_define_key  ("\033\\", (FVOID_STAR) rl_trim, RL_Keymap);
-	if (_pSLang_Error)
-	  {
-	     SLrline_close (rli);
-	     return NULL;
-	  }
+	SLrline_close (rli);
+	return NULL;
      }
-
-   if (rli->keymap == NULL) rli->keymap = RL_Keymap;
+   rli->keymap = RL_Keymap;
    rli->old_upd = rli->upd_buf1;
    rli->new_upd = rli->upd_buf2;
 
    if (Char_Widths[0] == 0)
      {
+	int ch;
 	/* FIXME: This does not support UTF-8 */
 	for (ch = 0; ch < 32; ch++) Char_Widths[ch] = 2;
 	for (ch = 32; ch < 256; ch++) Char_Widths[ch] = 1;
@@ -1391,5 +1529,183 @@ int SLrline_set_display_width (SLrline_Type *rli, unsigned int w)
    if (w < 1)
      w = 80;
    rli->edit_width = w;
+   return 0;
+}
+
+/* SLang Interface */
+
+static void rline_ins_intrinsic (char *str)
+{
+   if (Active_Rline_Info != NULL)
+     (void) SLrline_ins (Active_Rline_Info, str, strlen (str));
+}
+
+static void rline_del_intrinsic (int *np)
+{
+   int n = *np;
+
+   if (Active_Rline_Info == NULL)
+     return;
+   
+   if (n < 0)
+     {
+	(void) SLrline_move (Active_Rline_Info, n);
+	n = -n;
+     }
+
+   (void) SLrline_del (Active_Rline_Info, (unsigned int) n);
+}
+
+static SLkeymap_Type *get_keymap (void)
+{
+   SLkeymap_Type *kmap;
+
+   if (Active_Rline_Info != NULL)
+     kmap = SLrline_get_keymap (Active_Rline_Info);
+   else
+     kmap = RL_Keymap;
+   
+   if (kmap != NULL)
+     return kmap;
+
+   SLang_verror (SL_APPLICATION_ERROR, "No keymap available for rline interface");
+   return NULL;
+}
+
+
+static void rline_setkey_intrinsic (char *keyseq)
+{
+   char *str;
+   SLkeymap_Type *kmap;
+
+   if (NULL == (kmap = get_keymap ()))
+     return;
+
+   if (SLang_peek_at_stack () == SLANG_REF_TYPE)
+     {
+	SLang_Name_Type *nt;
+	
+	if (NULL == (nt = SLang_pop_function ()))
+	  return;
+
+	(void) SLkm_define_slkey (keyseq, nt, kmap);
+	return;
+     }
+   
+   if (-1 == SLang_pop_slstring (&str))
+     return;
+   
+   (void) SLang_define_key (keyseq, str, kmap);
+   SLang_free_slstring (str);
+}
+
+static void rline_unsetkey_intrinsic (char *keyseq)
+{
+   SLkeymap_Type *kmap;
+   
+   if (NULL != (kmap = get_keymap ()))
+     SLang_undefine_key (keyseq, kmap);
+}
+
+static int rline_get_point_intrinsic (void)
+{
+   unsigned int p;
+
+   if ((Active_Rline_Info == NULL) 
+       || (-1 == SLrline_get_point (Active_Rline_Info, &p)))
+     return 0;
+   
+   return (int) p;
+}
+
+static void rline_get_line_intrinsic (void)
+{
+   char *s;
+
+   if ((Active_Rline_Info == NULL)
+       || (NULL == (s = SLrline_get_line (Active_Rline_Info))))
+     {
+	(void) SLang_push_string ("");
+	return;
+     }
+   (void) SLang_push_malloced_string (s);
+}
+
+static void rline_set_completion_callback (void)
+{
+   SLang_Name_Type *nt;
+
+   if (NULL == (nt = SLang_pop_function ()))
+     return;
+   
+   SLang_free_function (Default_Completion_Callback);
+   Default_Completion_Callback = nt;
+}
+
+static void rline_set_list_completions_callback (void)
+{
+   SLang_Name_Type *nt;
+
+   if (NULL == (nt = SLang_pop_function ()))
+     return;
+   
+   SLang_free_function (Default_List_Completions_Callback);
+   Default_List_Completions_Callback = nt;
+}
+
+static SLang_Intrin_Fun_Type Intrinsics [] =
+{
+   MAKE_INTRINSIC_S("rline_ins", rline_ins_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_I("rline_del", rline_del_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_0("rline_get_point", rline_get_point_intrinsic, INT_TYPE),
+   MAKE_INTRINSIC_0("rline_get_line", rline_get_line_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_S("rline_setkey", rline_setkey_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_S("rline_unsetkey", rline_unsetkey_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_0("rline_set_completion_callback", rline_set_completion_callback, VOID_TYPE),
+   MAKE_INTRINSIC_0("rline_set_list_completions_callback", rline_set_list_completions_callback, VOID_TYPE),
+   SLANG_END_INTRIN_FUN_TABLE
+};
+
+int SLrline_init (char *appdef, char *user_initfile, char *sys_initfile)
+{
+#ifdef __WIN32__
+   char *home_dir = getenv ("USERPROFILE");
+#else
+# ifdef VMS
+   char *home_dir = "SYS$LOGIN:";
+# else
+   char *home_dir = getenv ("HOME");
+# endif
+#endif
+   char *file = NULL;
+
+   if (sys_initfile == NULL)
+     sys_initfile = SLRLINE_SYS_INIT_FILE;
+   if (user_initfile == NULL)
+     user_initfile = SLRLINE_USER_INIT_FILE;
+
+   if (-1 == SLadd_intrin_fun_table (Intrinsics, appdef))
+     return -1;
+
+   if (-1 == init_keymap ())
+     return -1;
+
+   if (user_initfile != NULL)
+     file = SLpath_find_file_in_path (home_dir, user_initfile);
+
+   if (file == NULL)
+     {
+	if (sys_initfile != NULL)
+	  file = _pSLpath_find_file (sys_initfile, 0);
+     }
+   if (file == NULL)
+     return 0;
+
+   if (-1 == SLns_load_file (file, NULL))
+     {
+	SLfree (file);
+	return -1;
+     }
+   SLfree (file);
    return 0;
 }

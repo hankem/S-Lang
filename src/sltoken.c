@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -122,6 +122,9 @@ static char *map_token_to_string (_pSLang_Token_Type *tok)
       case COMMA_TOKEN: s = ","; break;
       case SEMICOLON_TOKEN: s = ";"; break;
       case COLON_TOKEN: s = ":"; break;
+
+      case ARRAY_TOKEN: s = "["; break;
+      case DOT_TOKEN: s = "."; break;
 
 #if SLANG_HAS_FLOAT
       case FLOAT_TOKEN:
@@ -1344,7 +1347,7 @@ int SLns_load_file (char *f, char *ns_name)
    if (f == NULL) 
      name = SLang_create_slstring ("<stdin>");
    else
-     name = _pSLpath_find_file (f);
+     name = _pSLpath_find_file (f, 1);
 	
    if (name == NULL)
      return -1;

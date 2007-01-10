@@ -3,7 +3,7 @@
 /* header file for S-Lang internal structures that users do not (should not)
    need.  Use slang.h for that purpose. */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004-2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -91,7 +91,7 @@ typedef enum
    SLANG_BC_LVARIABLE_APUT	= 0x29,
    SLANG_BC_LOBJPTR		= 0x2A,
    SLANG_BC_GOBJPTR		= 0x2B,
-   SLANG_BC_UNUSED_0x2C		= 0x2C,
+   SLANG_BC_FIELD_REF		= 0x2C,
    SLANG_BC_UNUSED_0x2D		= 0x2D,
    SLANG_BC_UNUSED_0x2E		= 0x2E,
    SLANG_BC_UNUSED_0x2F		= 0x2F,
@@ -356,6 +356,7 @@ _pSLang_BC_Type;
 
 #define SLANG_BCST_LOOP_ELSE	0x29
 #define SLANG_BCST_LOOP_THEN	0x30
+#define SLANG_BCST_COMPARE      0x31
 
 /* assignment (SLANG_BC_SET_*_LVALUE) subtypes.  The order MUST correspond
  * to the assignment token order with the ASSIGN_TOKEN as the first!
@@ -551,22 +552,29 @@ extern int _pSLstruct_define_struct2 (void);
 extern int _pSLstruct_define_typedef (void);
 
 extern SLang_Object_Type *_pSLstruct_get_field_value (SLang_Struct_Type *, char *);
+extern int _pSLstruct_push_field_ref (char *);
+
 int _pSLang_get_qualifiers (SLang_Struct_Type **);
 
 struct _pSLang_Ref_Type
 {
-   int is_global;
-   union
-     {
-	SLang_Name_Type *nt;
-	SLang_Object_Type *local_obj;
-     }
-   v;
+   int num_refs;
+   VOID_STAR data;
+   unsigned int sizeof_data;
+   int data_is_nametype;	       /* used for optimization */
+   int (*deref_assign)(VOID_STAR);
+   int (*deref) (VOID_STAR);
+   char *(*string)(VOID_STAR);		       /* returns a malloced string */
+   void (*destroy) (VOID_STAR);
+   int (*is_initialized) (VOID_STAR);
+   int (*uninitialize) (VOID_STAR);
 };
 
 extern int _pSLang_dereference_ref (SLang_Ref_Type *);
 extern int _pSLang_deref_assign (SLang_Ref_Type *);
-extern int _pSLang_push_ref (int, VOID_STAR);
+extern int SLang_push_ref (SLang_Ref_Type *);
+extern int _pSLang_push_nt_as_ref (SLang_Name_Type *);
+extern SLang_Ref_Type *_pSLang_new_ref (unsigned int);
 
 extern int _pSL_increment_frame_pointer (void);
 extern int _pSL_decrement_frame_pointer (void);
@@ -926,6 +934,7 @@ extern void _pSLang_set_class_info (SLtype, SLang_Class_Type *);
 extern int _pSLarith_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
 
 extern int _pSLarray_add_bin_op (SLtype);
+extern int _pSLarray_push_elem_ref (void);
 
 typedef struct
 {
@@ -973,6 +982,7 @@ extern int _pSLarray_aput (void);
 extern int _pSLarray_aget (void);
 extern int _pSLarray_aget1 (unsigned int);
 extern int _pSLarray_inline_implicit_array (void);
+extern int _pSLarray_inline_implicit_arrayn (void);
 extern int _pSLarray_inline_array (void);
 extern int _pSLarray_wildcard_array (void);
 
@@ -1046,7 +1056,7 @@ extern void (*_pSLcompile_ptr)(_pSLang_Token_Type *);
 extern char *_pSLskip_whitespace (char *s);
 
 /* slospath.c */
-extern char *_pSLpath_find_file (char *);   /* slstring returned */
+extern char *_pSLpath_find_file (char *, int);   /* slstring returned */
 
 /* Read but do not set this variable. */
 extern volatile int _pSLang_Error;
@@ -1141,12 +1151,15 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define SUB_TOKEN	0x3a
 #define TIMES_TOKEN	0x3b
 #define DIV_TOKEN	0x3c
+
 #define LT_TOKEN	0x3d
 #define LE_TOKEN	0x3e
 #define GT_TOKEN	0x3f
 #define GE_TOKEN	0x40
 #define EQ_TOKEN	0x41
 #define NE_TOKEN	0x42
+#define IS_COMPARE_OP(x) (((x) >= LT_TOKEN) && ((x) <= NE_TOKEN))
+
 #define AND_TOKEN	0x43
 #define OR_TOKEN	0x44
 #define MOD_TOKEN	0x45
@@ -1298,14 +1311,21 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define LAST_ASSIGN_TOKEN		0xCA
 #define IS_ASSIGN_TOKEN(t) (((t)>=FIRST_ASSIGN_TOKEN)&&((t)<=LAST_ASSIGN_TOKEN))
 
+#define _DEREF_FUNCALL_TOKEN		0xCE
+
 #define LOOP_THEN_TOKEN			0xD0
 #define LOOP_ELSE_TOKEN			0xD1
 
+#define _COMPARE_TOKEN			0xD8   /* (a < b < c ...) */
+#define _ARRAY_ELEM_REF_TOKEN		0xD9   /* &X[i] */
+#define _STRUCT_FIELD_REF_TOKEN		0xDA   /* &S.a */
+
 #define _INLINE_ARRAY_TOKEN		0xE0
-#define _INLINE_IMPLICIT_ARRAY_TOKEN	0xE1
+#define _INLINE_IMPLICIT_ARRAY_TOKEN	0xE1   /* [a:b:c] */
 #define _NULL_TOKEN			0xE2
 #define _INLINE_WILDCARD_ARRAY_TOKEN	0xE3
 #define _INLINE_LIST_TOKEN		0xE4
+#define _INLINE_IMPLICIT_ARRAYN_TOKEN	0xE5   /* [a:b:#n] */
 
 #define ESC_STRING_DOLLAR_TOKEN		0xF0
 

@@ -176,6 +176,9 @@
 *slsh/mkfiles/slsh.ico
 @slsh/Makefile.in
 @slsh/README
+
+@slsh/etc/slsh.rc
+
 @slsh/lib/arrayfuns.sl
 @slsh/lib/structfuns.sl
 @slsh/lib/autoload.sl
@@ -183,11 +186,13 @@
 @slsh/lib/glob.sl
 @slsh/lib/stkcheck.sl
 @slsh/lib/slshrl.sl
-@slsh/lib/slsh.rc
 @slsh/lib/sldb.sl
 @slsh/lib/sldbcore.sl
 @slsh/lib/profile.sl
 @slsh/lib/print.sl
+
+@slsh/lib/rline/complete.sl
+@slsh/lib/rline/slrline.rc
 
 @slsh/lib/help/arrayfuns.hlp
 @slsh/lib/help/glob.hlp
@@ -342,6 +347,7 @@
 @src/test/autoload.sl
 @src/test/bstring.sl
 @src/test/bugs.sl
+@src/test/compare.sl
 @src/test/deref.sl
 @src/test/debug.sl
 @src/test/dollar.sl

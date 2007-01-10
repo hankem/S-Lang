@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -159,7 +159,7 @@ static int pop_new_push_old (SLang_Name_Type **handler)
    else if (NULL == (new_handler = SLang_pop_function ()))
      return -1;
 
-   if (-1 == _pSLang_push_ref (1, (VOID_STAR) old_handler))
+   if (-1 == _pSLang_push_nt_as_ref (old_handler))
      {
 	SLang_free_function (new_handler);
 	return -1;

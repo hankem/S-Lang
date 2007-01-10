@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005, 2006 John E. Davis
+Copyright (C) 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -188,7 +188,7 @@ static void close_readline ()
 #endif
 }
 
-static int open_readline ()
+static int open_readline (void)
 {
 #if USE_GNU_READLINE
    return 0;
@@ -317,7 +317,7 @@ static int save_input_line (SLang_RLine_Info_Type *rline, char *line)
 }
 
 static SLang_Name_Type *Prompt_Hook = NULL;
-void slsh_set_prompt_hook (void)
+static void set_prompt_hook (void)
 {
    SLang_Name_Type *h;
 
@@ -335,7 +335,7 @@ void slsh_set_prompt_hook (void)
    Prompt_Hook = h;
 }
 
-void slsh_get_prompt_hook (void)
+static void get_prompt_hook (void)
 {
    if (Prompt_Hook == NULL)
      (void) SLang_push_null ();
@@ -503,6 +503,15 @@ static int open_interactive (void)
 int slsh_use_readline (int use_readline)
 {
    Use_Readline = use_readline;
+
+#if USE_SLANG_READLINE
+   if (use_readline)
+     {
+	if (-1 == SLrline_init ("SLSH", NULL, NULL))
+	  return -1;
+     }
+#endif
+
    return 0;
 }
 
@@ -514,7 +523,9 @@ int slsh_interactive (void)
 
    if (-1 == open_interactive ())
      return -1;
-   
+
+   (void) SLang_run_hooks ("slsh_interactive_hook", 0);
+
    while (Slsh_Quit == 0)
      {
 	if (SLang_get_error ())
@@ -567,12 +578,30 @@ static int readline_intrinsic_internal (char *prompt, int noecho)
    return 0;
 }
 
-void slsh_readline_intrinsic (char *prompt)
+static void readline_intrinsic (char *prompt)
 {
    (void) readline_intrinsic_internal (prompt, 0);
 }
 
-void slsh_readline_noecho_intrinsic (char *prompt)
+static void readline_noecho_intrinsic (char *prompt)
 {
    (void) readline_intrinsic_internal (prompt, 1);
 }
+   
+static SLang_Intrin_Fun_Type Intrinsics [] =
+{
+   MAKE_INTRINSIC_S("slsh_readline", readline_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_S("slsh_readline_noecho", readline_noecho_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_set_prompt_hook", set_prompt_hook, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_get_prompt_hook", get_prompt_hook, VOID_TYPE),
+   SLANG_END_INTRIN_FUN_TABLE
+};
+
+int slsh_init_readline_intrinsics ()
+{
+   if (-1 == SLadd_intrin_fun_table (Intrinsics, NULL))
+     return -1;
+   
+   return 0;
+}
+

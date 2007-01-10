@@ -1,6 +1,6 @@
 /* Basic type operations for S-Lang */
 /*
-Copyright (C) 2004, 2005, 2006 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -645,75 +645,62 @@ _pSLString_List_Type *_pSLstring_list_new (unsigned int max_num, unsigned int de
 
 /* Ref type */
 
+int _pSLang_deref_assign (SLang_Ref_Type *ref)
+{
+   return ref->deref_assign (ref->data);
+}
+
 int SLang_pop_ref (SLang_Ref_Type **ref)
 {
    return SLclass_pop_ptr_obj (SLANG_REF_TYPE, (VOID_STAR *)ref);
 }
- 
-static SLang_Ref_Type *create_ref_to_nametype (SLang_Name_Type *nt, int is_global)
+
+int SLang_push_ref (SLang_Ref_Type *ref)
 {
-   SLang_Ref_Type *r;
-
-   r = (SLang_Ref_Type *) SLmalloc (sizeof (SLang_Ref_Type));
-   if (r == NULL) return NULL;
-
-   r->is_global = is_global;
-   r->v.nt = nt;
-   return r;
+   ref->num_refs++;
+   if (0 == SLclass_push_ptr_obj (SLANG_REF_TYPE, (VOID_STAR) ref))
+     return 0;
+   ref->num_refs--;
+   return -1;
 }
 
-int SLang_assign_nametype_to_ref (SLang_Ref_Type *ref, SLang_Name_Type *nt)
+void SLang_free_ref (SLang_Ref_Type *ref)
 {
-   SLang_Ref_Type *r;
-
-   if ((nt == NULL) || (ref == NULL))
-     return -1;
+   if (ref == NULL)
+     return;
    
-   if (NULL == (r = create_ref_to_nametype (nt, 1)))
-     return -1;
-
-   if (-1 == SLang_assign_to_ref (ref, SLANG_REF_TYPE, (VOID_STAR) &r))
+   if (ref->num_refs > 1)
      {
-	SLang_free_ref (r);
-	return -1;
+	ref->num_refs--;
+	return;
      }
-   SLang_free_ref (r);
-   return 0;
+
+   if (ref->destroy != NULL)
+     (*ref->destroy)(ref->data);
+   SLfree ((char *)ref->data);
+   SLfree ((char *)ref);
 }
 
-/* Note: This is ok if nt is NULL.  Some routines rely on this behavior */
-static int push_nametype_as_ref (SLang_Name_Type *nt, int is_global)
+SLang_Ref_Type *_pSLang_new_ref (unsigned int sizeof_data)
 {
-   SLang_Ref_Type *r;
-
-   if (nt == NULL)
-     return SLang_push_null ();
-
-   r = create_ref_to_nametype (nt, is_global);
-   if (r == NULL) return -1;
-
-   if (-1 == SLclass_push_ptr_obj (SLANG_REF_TYPE, (VOID_STAR) r))
+   SLang_Ref_Type *ref;
+   
+   if (NULL == (ref = (SLang_Ref_Type *)SLcalloc (1, sizeof (SLang_Ref_Type))))
+     return NULL;
+   if (NULL == (ref->data = (VOID_STAR)SLcalloc (1, sizeof_data)))
      {
-	SLfree ((char *) r);
-	return -1;
+	SLfree ((char *)ref);
+	return NULL;
      }
-   return 0;
-}
-
-int _pSLang_push_ref (int is_global, VOID_STAR ptr)
-{
-   return push_nametype_as_ref ((SLang_Name_Type *)ptr, is_global);
+   ref->num_refs = 1;
+   ref->sizeof_data = sizeof_data;
+   return ref;
 }
 
 static void ref_destroy (SLtype type, VOID_STAR ptr)
 {
    (void) type;
-   SLfree ((char *) *(SLang_Ref_Type **)ptr);
-}
-
-void SLang_free_ref (SLang_Ref_Type *ref)
-{
-   SLfree ((char *) ref);
+   SLang_free_ref (*(SLang_Ref_Type **)ptr);
 }
 
 static int ref_push (SLtype type, VOID_STAR ptr)
@@ -727,7 +714,7 @@ static int ref_push (SLtype type, VOID_STAR ptr)
    if (ref == NULL)
      return SLang_push_null ();
 
-   return _pSLang_push_ref (ref->is_global, (VOID_STAR) ref->v.nt);
+   return SLang_push_ref (ref);
 }
 
 int SLang_assign_to_ref (SLang_Ref_Type *ref, SLtype type, VOID_STAR v)
@@ -773,22 +760,9 @@ static char *ref_string (SLtype type, VOID_STAR ptr)
 
    (void) type;
    ref = *(SLang_Ref_Type **) ptr;
-   if (ref->is_global)
-     {
-	char *name, *s;
-
-	name = ref->v.nt->name;
-	if ((name != NULL)
-	    && (NULL != (s = SLmalloc (strlen(name) + 2))))
-	  {
-	     *s = '&';
-	     strcpy (s + 1, name);
-	     return s;
-	  }
-	
-	return NULL;
-     }
-   return SLmake_string ("Local Variable Reference");
+   if (ref->string != NULL)
+     return ref->string (ref->data);
+   return SLmake_string ("Ref_Type");
 }
 
 static int ref_dereference (SLtype unused, VOID_STAR ptr)
@@ -802,10 +776,10 @@ static int ref_cmp (SLtype type, VOID_STAR a, VOID_STAR b, int *c)
    SLang_Ref_Type *ra, *rb;
 
    (void) type;
-   
+
    ra = *(SLang_Ref_Type **)a;
    rb = *(SLang_Ref_Type **)b;
-   
+
    if (ra == NULL)
      {
 	if (rb == NULL) *c = 0;
@@ -817,16 +791,19 @@ static int ref_cmp (SLtype type, VOID_STAR a, VOID_STAR b, int *c)
 	*c = 1;
 	return 0;
      }
-	
-   if (ra->v.nt == rb->v.nt)
-     *c = 0;
-   else *c = strcmp (ra->v.nt->name, rb->v.nt->name);
+   if (ra->sizeof_data != rb->sizeof_data)
+     {
+	*c = (int)ra->sizeof_data - (int)rb->sizeof_data;
+	return 0;
+     }
+
+   *c = memcmp (ra->data, rb->data, ra->sizeof_data);
    return 0;
 }
 
 int SLang_push_function (SLang_Name_Type *nt)
 {
-   return push_nametype_as_ref (nt, 1);
+   return _pSLang_push_nt_as_ref (nt);
 }
    
 SLang_Name_Type *SLang_pop_function (void)

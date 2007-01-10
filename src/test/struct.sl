@@ -426,6 +426,23 @@ test_struct_with_assign (["1+2j", NULL]);
 #endif
 test_struct_with_assign (["\"string\""]);
    
+define test_struct_refs ()
+{
+   variable s = struct {foo, bar};
+   variable f = &s.bar;
+   @f = 7;
+   if (s.bar != 7)
+     failed ("ref to s.bar via f");
+   
+   @(&s.bar) = 3;
+   if (s.bar != 3)
+     failed ("@(&s.bar)");
+   
+   @&s.bar = "foo";
+   if (s.bar != "foo")
+     failed ("@&s.bar");
+}
+test_struct_refs ();
 
 print ("Ok\n");
 exit (0);
