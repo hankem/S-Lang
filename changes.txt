@@ -116,6 +116,9 @@ Changes since 2.0.7
     completion hook is in slsh/lib/complete.sl.
 34. modules/png.sl: Load the colormaps into the same namespace that
     was used by png.sl (Mike Noble).
+35. slsh/slsh.c: readline intrinsics were not getting initialized.
+36  slsh/lib/rline/completion.sl: Avoid adding NULL to the completion
+    list when no completions are in the global or current namespace.
 
 {{{ Previous Versions
 

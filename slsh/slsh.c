@@ -35,7 +35,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.7.8-0";
+static char *Slsh_Version = "0.7.8-1";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -482,7 +482,8 @@ int main (int argc, char **argv)
    if ((-1 == SLang_init_all ())
        || (-1 == SLang_init_array_extra ())
        || (-1 == SLang_init_import ()) /* dynamic linking */
-       || (-1 == SLadd_intrin_fun_table (Intrinsics, NULL)))
+       || (-1 == SLadd_intrin_fun_table (Intrinsics, NULL))
+       || (-1 == slsh_init_readline_intrinsics ()))
      {
 	fprintf(stderr, "Unable to initialize S-Lang.\n");
 	return 1;

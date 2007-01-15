@@ -89,13 +89,24 @@ private define compute_completions (line, point, partial_wordp, posp)
 
    variable partial_word = line[[istart:point-1]];
 
+   % It would be useful here to allow this to be customized via, e.g.,
+   % return completion_hook (line, partial_word, istart, in_string)
+     
    variable completions;
    if (instr || (line[0] == '!'))      %  !shell-escape
      completions = filename_completions (partial_word);
    else
-     completions = [_apropos ("Global", "^"+partial_word, 0xFF),
-		    _apropos ("", "^"+partial_word, 0xFF)];
-   
+     {
+	variable c1 = _apropos ("Global", "^"+partial_word, 0xFF);
+	variable c2 = _apropos ("", "^"+partial_word, 0xFF);
+	if (c1 == NULL)
+	  completions = c2;
+	else if (c2 == NULL)
+	  completions = c1;
+	else
+	  completions = [c1, c2];
+     }
+
    @posp = istart;
    @partial_wordp = partial_word;
 
