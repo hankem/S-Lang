@@ -119,6 +119,10 @@ Changes since 2.0.7
 35. slsh/slsh.c: readline intrinsics were not getting initialized.
 36.  slsh/lib/rline/completion.sl: Avoid adding NULL to the completion
     list when no completions are in the global or current namespace.
+37. src/slerr.c: Added SLang_verror_va function. It is like
+    SLang_verror, except it takes a va_list argument instead of a
+    variable argument list.
+38. slsh/scripts/slprof: If atexit exists, use it.
 
 {{{ Previous Versions
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env slsh
 require ("profile");
 
-private variable Version = "0.2.1-0";
+private variable Version = "0.2.1-1";
 private variable Profile_Fp;
 
 private define _slprof_version ()
@@ -153,7 +153,12 @@ private define _slprof_main ()
    () = fprintf (fp, "# slprof profile report for:\n");
    () = fprintf (fp, "#  %S\n\n", strjoin (__argv, " "));
    Profile_Fp = fp;
-   %atexit (&_slprof_write_profile);
+
+   variable has_at_exit = 0;
+#ifexists atexit
+   atexit (&_slprof_write_profile);
+   has_at_exit = 1;
+#endif
 
    __set_argc_argv (__argv[[i:]]);
 	
@@ -162,15 +167,17 @@ private define _slprof_main ()
    _slprof_calibrate (cal_n);
    profile_begin (line_by_line);
    () = evalfile (script);
-   
+
    variable ref = __get_reference (main);
    if (ref != NULL)
      (@ref) (__push_args (main_args));
    else if (main != "slsh_main")
      () = fprintf (stderr, "*** Warning: %s is not defined\n", main);
 
-   _slprof_write_profile ();
    profile_end ();
+
+   if (has_at_exit == 0)
+     _slprof_write_profile ();
 }
 
 _slprof_main ();
