@@ -616,9 +616,8 @@ void _pSLerr_free_queued_messages (void)
 }
 
 
-void SLang_verror (int err_code, char *fmt, ...)
+void SLang_verror_va (int err_code, char *fmt, va_list ap)
 {
-   va_list ap;
    char err [4096];
 
    if (-1 == _pSLerr_init ())
@@ -636,14 +635,21 @@ void SLang_verror (int err_code, char *fmt, ...)
    if (fmt == NULL)
      return;
 
-   va_start(ap, fmt);
    (void) SLvsnprintf (err, sizeof (err), fmt, ap);
-   va_end(ap);
 
    if (Suspend_Error_Messages)
      (void) queue_message (Default_Error_Queue, err, _SLERR_MSG_ERROR);
    else
      print_error (_SLERR_MSG_ERROR, err);
+}
+
+void SLang_verror (int err_code, char *fmt, ...)
+{
+   va_list ap;
+
+   va_start(ap, fmt);
+   SLang_verror_va (err_code, fmt, ap);
+   va_end(ap);
 }
 
 int _pSLerr_traceback_msg (char *fmt, ...)
