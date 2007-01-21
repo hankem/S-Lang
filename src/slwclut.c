@@ -348,7 +348,7 @@ static int is_posix_charclass (SLuchar_Type **up, SLuchar_Type *umax, SLwchar_Ty
 
    u1 = u;
    while ((u1 < umax)
-	  && (*u1 > 'a')
+	  && (*u1 >= 'a')
 	  && (*u1 <= 'z'))
      u1++;
 

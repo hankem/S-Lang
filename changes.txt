@@ -123,7 +123,10 @@ Changes since 2.0.7
     SLang_verror, except it takes a va_list argument instead of a
     variable argument list.
 38. slsh/scripts/slprof: If atexit exists, use it.
-
+39. src/slwclut.c: Typo in is_posix_charclass (> instead of >=) was
+    causing the long form of posix character class names not to be
+    properly recognized.
+    
 {{{ Previous Versions
 
 Changes since 2.0.6
