@@ -190,6 +190,7 @@
 @slsh/lib/sldbcore.sl
 @slsh/lib/profile.sl
 @slsh/lib/print.sl
+@slsh/lib/slshhelp.sl
 
 @slsh/lib/rline/complete.sl
 @slsh/lib/rline/slrline.rc

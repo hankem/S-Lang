@@ -126,6 +126,9 @@ Changes since 2.0.7
 39. src/slwclut.c: Typo in is_posix_charclass (> instead of >=) was
     causing the long form of posix character class names not to be
     properly recognized.
+40. src/slrline.c: SLrline_init was using SLfree instead of
+    SLang_free_slstring, causing a core-dump.
+41. slsh/lib/slshrl.sl: Use slsh_get_doc_string defined in slshhelp.sl.
     
 {{{ Previous Versions
 

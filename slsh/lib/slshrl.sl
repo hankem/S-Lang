@@ -1,6 +1,8 @@
 % -*- mode: SLang; mode: fold -*-
 
 % This file was written with the help of Mike Noble and John Houck.
+require ("slshhelp");
+
 if (is_defined ("slsh_help"))
   use_namespace ("slsh_interactive");
 else
@@ -78,7 +80,7 @@ public define slsh_help ()
      }
    
    variable name = ();
-   variable help = get_doc_string_from_file (name);
+   variable help = slsh_get_doc_string (name);
    if (help != NULL)
      {
 	() = fprintf (stdout, "%s\n", help);

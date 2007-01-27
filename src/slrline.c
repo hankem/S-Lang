@@ -1703,9 +1703,9 @@ int SLrline_init (char *appdef, char *user_initfile, char *sys_initfile)
 
    if (-1 == SLns_load_file (file, NULL))
      {
-	SLfree (file);
+	SLang_free_slstring (file);
 	return -1;
      }
-   SLfree (file);
+   SLang_free_slstring (file);
    return 0;
 }
