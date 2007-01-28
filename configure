@@ -6712,7 +6712,7 @@ case "$host_os" in
       fi
     fi
   ;;
-  *osf*)
+  *osf*|*openbsd*)
     if test "X$GCC" = Xyes
     then
       RPATH="-Wl,-rpath,"
@@ -10523,7 +10523,7 @@ case "$host_os" in
       fi
     fi
   ;;
-  *osf*)
+  *osf*|*openbsd*)
     if test "X$GCC" = Xyes
     then
       RPATH="-Wl,-rpath,"
@@ -10754,7 +10754,7 @@ case "$host_os" in
       fi
     fi
   ;;
-  *osf*)
+  *osf*|*openbsd*)
     if test "X$GCC" = Xyes
     then
       RPATH="-Wl,-rpath,"

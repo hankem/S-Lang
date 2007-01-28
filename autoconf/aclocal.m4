@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# Version 0.1.8: Add rpath support for OpenBSD
 dnl# Version 0.1.7: removed "-K pic" from IRIX compiler lines
 dnl# Version 0.1.6: Added cygwin module support
 dnl# Version 0.1.5: Added gcc version-script support.
@@ -111,7 +112,7 @@ case "$host_os" in
       fi
     fi
   ;;
-  *osf*)
+  *osf*|*openbsd*)
     if test "X$GCC" = Xyes
     then
       RPATH="-Wl,-rpath,"
