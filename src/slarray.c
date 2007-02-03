@@ -2313,7 +2313,7 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 	  ptr[i] = xmin + i * dx;
 	
 	/* Explicitly set the last element to xmax to avoid roundoff error */
-	if (ntype && (n > 0))
+	if (ntype && (n > 1))
 	  ptr[n-1] = xmax;
      }
    else

@@ -130,6 +130,8 @@ Changes since 2.0.7
     SLang_free_slstring, causing a core-dump.
 41. slsh/lib/slshrl.sl: Use slsh_get_doc_string defined in slshhelp.sl.
 42. autoconf/aclocal.m4: Add support for rpath on OpenBSD.
+43. src/slarray.c: Single element arrays specified via, e.g., [a:b:#1]
+    produced the array [b] instead of the "more" correct answer [a].
 
 {{{ Previous Versions
 
