@@ -227,8 +227,8 @@ int _pSLcall_debug_hook (char *file, int line)
    if (-1 == (status = SLexecute_function (Debug_Hook)))
      set_debug_hook (NULL);
    Debug_Handler_Active--;
-   
-   (void) _pSLang_pop_error_context ();
+
+   (void) _pSLang_pop_error_context (status != 0);
    return status;
 }
 

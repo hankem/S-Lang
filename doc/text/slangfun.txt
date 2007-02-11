@@ -3824,6 +3824,49 @@ vmessage
 
 --------------------------------------------------------------
 
+__get_exception_info
+
+ SYNOPSIS
+  Get information about the current exception
+
+ USAGE
+  Struct_Type __get_exception_info ()
+
+ DESCRIPTION
+ This function returns information about the currently active
+ exception in the form as a structure with the
+ following fields:
+
+    error            The current exception, e.g., RunTimeError
+    descr            A description of the exception
+    file             Name of the file generating the exception
+    line             Line number where the exception originated
+    function         Function where the exception originated
+    object           A user-defined object thrown by the exception
+    message          A user-defined message
+
+ If no exception is active, NULL will be returned.
+
+ This same information may also be obtained via the optional argument
+ to the `try' statement:
+
+     variable e = NULL;
+     try (e)
+       {
+          do_something ();
+       }
+     finally
+       {
+          if (e != NULL)
+            vmessage ("An error occured: %s", e.message);
+       }
+
+
+ SEE ALSO
+  error
+
+--------------------------------------------------------------
+
 _auto_declare
 
  SYNOPSIS
@@ -4083,12 +4126,16 @@ __is_callable
   Int_Type __is_callable (obj)
 
  DESCRIPTION
-  This function may be used to determine if an object is callable.  It
-  returns 1 if the argument is callable, or zero otherwise.
+  This function may be used to determine if an object is callable by
+  dereferencing the object.  It returns 1 if the argument is callable,
+  or zero otherwise.
 
  EXAMPLE
-   __is_callable (7) ==> 0
-   __is_callable (&sin) ==> 1
+   __is_callable (7)      ==> 0
+   __is_callable (&sin)   ==> 1
+   a = [&sin];
+   __is_callable (a[0])   ==> 1
+   __is_callable (&a[0])  ==> 0
 
  SEE ALSO
   __is_numeric, is_defined

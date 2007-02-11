@@ -1,4 +1,4 @@
-#% -*- mode: tm; mode: fold; eval: .0 =TAB -*-
+#% -*- mode: tm; mode: fold; TAB:7 -*-
 #%{{{Macros 
 
 #i linuxdoc.tm

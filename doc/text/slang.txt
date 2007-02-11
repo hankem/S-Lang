@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language
   John E. Davis, davis@space.mit.edu
-  Nov 20, 2006
+  Feb 7, 2007
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -18,12 +18,13 @@
   2.7. Obtaining more information about S-Lang
   3. Overview of the Language
   3.1. Variables and Functions
-  3.2. Strings
-  3.3. Referencing and Dereferencing
-  3.4. Arrays
-  3.5. Lists
-  3.6. Structures and User-Defined Types
-  3.7. Namespaces
+  3.2. Qualifiers
+  3.3. Strings
+  3.4. Referencing and Dereferencing
+  3.5. Arrays
+  3.6. Lists
+  3.7. Structures and User-Defined Types
+  3.8. Namespaces
   4. Data Types and Literal Constants
   4.1. Predefined Data Types
   4.1.1. Integers
@@ -121,9 +122,12 @@
   19. Debugging
   19.1. Tracebacks
   19.2. Using the sldb debugger
-  20. Regular Expressions
-  20.1. S-Lang  RE Syntax
-  20.2. Differences between S-Lang  and egrep REs
+  20. Profiling
+  20.1. Introduction
+  20.2. Using the profiler
+  21. Regular Expressions
+  21.1. S-Lang  RE Syntax
+  21.2. Differences between S-Lang  and egrep REs
   A. S-Lang 2 Interpreter NEWS
   A.1. What's new for S-Lang  2
   A.2. Upgrading to S-Lang  2
@@ -438,7 +442,41 @@
   the `%' character to start a comment and all characters from the com-
   ment character to the end of the line are ignored.
 
-  [1m3.2.  Strings[0m
+  [1m3.2.  Qualifiers[0m
+
+  [1mS-Lang [22m2.1 introduced support for function qualifiers as a mechanism
+  for passing additional information to a function.  For example,
+  consider a plotting application with a function
+
+             define plot (x, y)
+             {
+                variable linestyle = qualifier ("linestyle", "solid");
+                variable color = qualifier ("color", "black");
+
+                sys_set_color (color);
+                sys_set_linestyle (linestyle);
+                sys_plot (x,y);
+             }
+
+  Here the functions sys_set_linestyle, sys_set_color, and sys_plot are
+  hypothetical low-level functions that perform the actual work.  This
+  function may be called simply as
+
+            x = [0:10:0.1];
+            plot (x, sin(x));
+
+  to produce a solid black line connecting the points.  Through the use
+  of qualifiers, the color or linestyle may be specified, e.g,,
+
+            plot (x, sin(x); linestyle="dashed");
+
+  would produce a ``dashed'' black curve, whereas
+
+            plot (x, sin(x); linestyle="dotted", color="blue");
+
+  would produce a blue ``dotted'' one.
+
+  [1m3.3.  Strings[0m
 
   Perhaps the most appealing feature of any interpreted language is that
   it frees the user from the responsibility of memory management. This
@@ -446,10 +484,10 @@
   variables with a lower level language such as C.  Consider a function
   that concatenates three strings.  An example in [1mS-Lang [22mis:
 
-            define concat_3_strings (a, b, c)
-            {
-               return strcat (a, b, c);
-            }
+       define concat_3_strings (a, b, c)
+       {
+          return strcat (a, b, c);
+       }
 
   This function uses the built-in strcat function for concatenating two
   or more strings.  In C, the simplest such function would look like:
@@ -484,27 +522,27 @@
   See the section on ``Strings'' for more information about string vari-
   ables.
 
-  [1m3.3.  Referencing and Dereferencing[0m
+  [1m3.4.  Referencing and Dereferencing[0m
 
   The unary prefix operator, &, may be used to create a [4mreference[24m to an
   object, which is similar to a pointer in other languages.  References
   are commonly used as a mechanism to pass a function as an argument to
   another function as the following example illustrates:
 
-              define compute_functional_sum (funct)
-              {
-                 variable i, s;
+         define compute_functional_sum (funct)
+         {
+            variable i, s;
 
-                 s = 0;
-                 for (i = 0; i < 10; i++)
-                  {
-                     s += (@funct)(i);
-                  }
-                 return s;
-              }
+            s = 0;
+            for (i = 0; i < 10; i++)
+             {
+                s += (@funct)(i);
+             }
+            return s;
+         }
 
-              variable sin_sum = compute_functional_sum (&sin);
-              variable cos_sum = compute_functional_sum (&cos);
+         variable sin_sum = compute_functional_sum (&sin);
+         variable cos_sum = compute_functional_sum (&cos);
 
   Here, the function compute_functional_sum applies the function speci-
   fied by the parameter funct to the first 10 integers and returns the
@@ -561,7 +599,7 @@
                 *z = 3;
              }
 
-  [1m3.4.  Arrays[0m
+  [1m3.5.  Arrays[0m
 
   The [1mS-Lang [22mlanguage supports multi-dimensional arrays of all
   datatypes.  For example, one can define arrays of references to
@@ -585,7 +623,8 @@
              variable C = [1:9:2];
 
   This will produce an array of 5 integers running from 1 through 9 in
-  increments of 2.
+  increments of 2.  Similarly [0:1:#1000] represents a 1000 element
+  floating point array of numbers running from 0 to 1 (inclusive).
 
   Arrays are passed by reference to functions and never by value.  This
   permits one to write functions that can initialize arrays.  For
@@ -639,9 +678,9 @@
   an array whose elements are the sum of the elements of A and B.  A
   trivial example that illustrates the power of this capability is
 
-          variable X, Y;
-          X = [0:2*PI:0.01];
-          Y = 20 * sin (X);
+               variable X, Y;
+               X = [0:2*PI:0.01];
+               Y = 20 * sin (X);
 
   which is equivalent to the highly simplified C code:
 
@@ -657,7 +696,7 @@
                    Y[i] = 20 * sin (X[i]);
                  }
 
-  [1m3.5.  Lists[0m
+  [1m3.6.  Lists[0m
 
   A [1mS-Lang [22mlist is like an array except that it may contain a
   heterogeneous collection of data, e.g.,
@@ -672,7 +711,7 @@
   require such a data structure may execute many times faster when a
   list is used instead of an array.
 
-  [1m3.6.  Structures and User-Defined Types[0m
+  [1m3.7.  Structures and User-Defined Types[0m
 
   A [4mstructure[24m is similar to an array in the sense that it is a container
   object.  However, the elements of an array must all be of the same
@@ -693,6 +732,16 @@
   structure has been created using the dereference operator and assigned
   to bill.  Finally, the individual fields of bill were initialized.
   This is an example of an [4manonymous[24m structure.
+
+  Note: [1mS-Lang [22mversions 2.1 and higher permit assignment statements
+  within the structure definition, e.g.,
+
+             variable bill = struct
+             {
+                first_name = "Bill",
+                last_name = "Clinton",
+                age = 51
+             };
 
   A [4mnamed[24m structure is really a new data type and may be created using
   the typedef keyword:
@@ -720,7 +769,6 @@
   first_name fields of the first two elements.  In contrast, the form
   using an anonymous would require a separate step to instantiate the
   array elements:
-
              People = Struct_Type [100];
              People[0] = @person;
              People[0].first_name = "Bill";
@@ -730,6 +778,7 @@
   Another big advantage of a user-defined type is that the binary and
   unary operators may be overloaded onto such types.  This is explained
   in more detail below.
+
   The creation and initialization of a structure may be facilitated by a
   function such as
 
@@ -747,7 +796,7 @@
   binary trees, etc.  For more information about these and other
   features of structures, see the section on ``Linked Lists''.
 
-  [1m3.7.  Namespaces[0m
+  [1m3.8.  Namespaces[0m
 
   The language supports namespaces that may be used to control the scope
   and visibility of variables and functions.  In addition to the global
@@ -1375,6 +1424,18 @@
   for arrays the result will be an array of boolean values.  The section
   on arrays will explain this is greater detail.
 
+  Note: For [1mS-Lang [22mversions 2.1 and higher, relational expressions such
+  as a<b<=c are defined in the mathematical sense, i.e.,
+
+             ((a < b) and (b <= c))
+
+  Simarily, (a < b <= c < d) is the same as
+
+             ((a < b) and (b <= c) and (c < d))
+
+  and so on.  In previous versions of [1mS-Lang[22m, (a<b<c) meant (a<b)<c;
+  however this interpretation was not very useful.
+
   [1m7.2.3.  Boolean Operators[0m
 
   [1mS-Lang [22msupports four boolean binary operators: or, and, ||, and &&,
@@ -1393,8 +1454,8 @@
 
   Here, if x were to have a value of zero, a division by zero error
   would occur because even though x!=0 evaluates to zero, the and opera-
-  tor is not short-circuited and the 1/x expression would still be
-  evaluated.  This problem can be avoided using the short-circuiting &&
+  tor is not short-circuited and the 1/x expression would still be eval-
+  uated.  This problem can be avoided using the short-circuiting &&
   operator:
 
             (x != 0) && (1/x > 10)
@@ -1405,6 +1466,9 @@
   the operands of the and or or operators is an array then a correspond-
   ing array of boolean values will result.  This is explained in more
   detail in the section on arrays.
+
+  Note: the short-circuiting operators && and || were first introduced
+  in [1mS-Lang [22m2.1; they are not available in older versions.
 
   [1m7.2.4.  Bitwise Operators[0m
 
@@ -1447,11 +1511,11 @@
   bit: if it is 0 the buffer has not been modified, otherwise it has
   been modified.  Thus we can create the function,
 
-       define is_buffer_modified ()
-       {
-          variable flags = get_buffer_flags ();
-          return (flags & 1);
-       }
+            define is_buffer_modified ()
+            {
+               variable flags = get_buffer_flags ();
+               return (flags & 1);
+            }
 
   where the integer 1 has been used since it is represented as an object
   with all bits unset, except for the zeroth one, which is set.   (At
@@ -1526,13 +1590,13 @@
   ues, it must occur as the left binary operand.  Putting it on the
   right as in
 
-               while (0 < read_line (fp))    % Incorrect
-                 {
-                    text = ();
-                    % Do something with text
-                    .
-                    .
-                 }
+          while (0 < read_line (fp))    % Incorrect
+            {
+               text = ();
+               % Do something with text
+               .
+               .
+            }
 
   violates the rule and will result in the wrong answer.  For this rea-
   son, one should avoid using a function that returns muliple return
@@ -1572,7 +1636,6 @@
        [4mexpr-1[24m and [4mexpr-2[24m and ... [4mexpr-n[0m
 
   can be replaced by the short circuited version using andelse:
-
        andelse {[4mexpr-1[24m} {[4mexpr-2[24m} ... {[4mexpr-n[24m}
 
   A similar syntax holds for the orelse operator.  For example, consider
@@ -1586,9 +1649,9 @@
   causing division by zero. For this case, the andelse expression could
   be used to avoid the problem:
 
-        if (andelse
-            {x != 0}
-            {1 / x > 10})  do_something ();
+             if (andelse
+                 {x != 0}
+                 {1 / x > 10})  do_something ();
 
   [1m8.  Statements[0m
 
@@ -2869,6 +2932,10 @@
   the array is one greater than the largest k that satisfies the open
   interval constraint.
 
+  In contrast, a range-array expressed in the form [a:b:#n] represents
+  an array of exactly n elements running from a to b inclusive.  It is
+  equivalent to a+[0:n-1]*(b-a)/(n-1).
+
   Here are a few examples that illustrate the above comments:
 
               [1:5:1]         ==> [1,2,3,4,5]
@@ -2879,6 +2946,8 @@
               [1.0:1.0]       ==> []
               [1.0:1.0001]    ==> [1.0]
               [1:-3]          ==> []
+              [0:1:#5]        ==> [0.0, 0.25, 0.50, 0.75, 1.0]
+              [0:-1:#3]       ==> [0.0, -0.5, -1.0]
 
   Currently Int_Type is the only integer type supported by range
   arrays--- arbitrary integer types will be supported in a future
@@ -2930,7 +2999,7 @@
   The _reshape function works like reshape except that it creates a new
   array instead of changing the shape of an existing array:
 
-            new_a = _reshape (a, [10,10]);
+       new_a = _reshape (a, [10,10]);
 
   [1m11.3.  Simple Array Indexing[0m
 
@@ -3029,8 +3098,8 @@
   defines a to be a 10 element array of doubles, and i to be 2x3 array
   of integers.  Then a[i] will be a 2x3 array of doubles with elements:
 
-      a[4]   a[5]   a[6]
-      a[7]   a[8]   a[9]
+           a[4]   a[5]   a[6]
+           a[7]   a[8]   a[9]
 
   Often, it is convenient to use a ``rubber'' range to specify indices.
   For example, a[[500:]] specifies all elements of a whose index is
@@ -3075,7 +3144,6 @@
   frequently in linear algebra.  The trace of a 2d matrix is given by
   the sum of its diagonal elements.  Consider the creation of a function
   that computes the trace of such a matrix.
-
   The most straightforward implementation of such a function uses an
   explicit loop:
 
@@ -3132,6 +3200,7 @@
 
   Another example of this technique is a function that creates an n by n
   unit matrix:
+
              define unit_matrix (n)
              {
                 variable a = Int_Type[n, n];
@@ -3169,8 +3238,8 @@
   initialize the [4mith[24m element.  This function can be used in the follow-
   ing way:
 
-             variable X = Double_Type [100000];
-             init_array (X);
+        variable X = Double_Type [100000];
+        init_array (X);
 
   Since the array is passed to the function by reference, there is no
   need to make a separate copy of the 100000 element array. As pointed
@@ -3182,9 +3251,9 @@
 
   To see the downside of this representation, consider:
 
-        a = Double_Type [10];
-        b = a;
-        a[0] = 7;
+             a = Double_Type [10];
+             b = a;
+             a[0] = 7;
 
   What will be the value of b[0]?  Since the value of a is really a ref-
   erence to the array of ten doubles, and that reference was assigned to
@@ -3232,12 +3301,12 @@
   correspond to real-valued solutions.  In terms of for loops, we can
   write:
 
-       index_array = Char_Type [n];
-       _for i (0, n-1, 1)
-         {
-            d = b[i]^2 - 4 * a[i] * c[i];
-            index_array [i] = (d >= 0.0);
-         }
+            index_array = Char_Type [n];
+            _for i (0, n-1, 1)
+              {
+                 d = b[i]^2 - 4 * a[i] * c[i];
+                 index_array [i] = (d >= 0.0);
+              }
 
   In this example, the array index_array will contain a non-zero value
   if the corresponding set of coefficients has a real-valued solution.
@@ -3279,28 +3348,28 @@
   coefficients of the previous example that generated non-real
   solutions.  Using an explicit for loop requires code such as:
 
-       nn = 0;
-       _for i (0, n-1, 1)
-         if (index_array [i]) nn++;
+            nn = 0;
+            _for i (0, n-1, 1)
+              if (index_array [i]) nn++;
 
-       tmp_a = Double_Type [nn];
-       tmp_b = Double_Type [nn];
-       tmp_c = Double_Type [nn];
+            tmp_a = Double_Type [nn];
+            tmp_b = Double_Type [nn];
+            tmp_c = Double_Type [nn];
 
-       j = 0;
-       _for i (0, n-1, 1)
-         {
-            if (index_array [i])
+            j = 0;
+            _for i (0, n-1, 1)
               {
-                 tmp_a [j] = a[i];
-                 tmp_b [j] = b[i];
-                 tmp_c [j] = c[i];
-                 j++;
+                 if (index_array [i])
+                   {
+                      tmp_a [j] = a[i];
+                      tmp_b [j] = b[i];
+                      tmp_c [j] = c[i];
+                      j++;
+                   }
               }
-         }
-       a = tmp_a;
-       b = tmp_b;
-       c = tmp_c;
+            a = tmp_a;
+            b = tmp_b;
+            c = tmp_c;
 
   Not only is this a lot of code, making it hard to digest, but it is
   also clumsy and error-prone.  Using the where function, this task is
@@ -3319,10 +3388,10 @@
   array.  It may be used to determine the number of rows of an array as
   follows:
 
-            define num_rows (a)
-            {
-               return array_shape (a)[0];
-            }
+       define num_rows (a)
+       {
+          return array_shape (a)[0];
+       }
 
   The number of columns may be obtained in a similar manner:
 
@@ -5187,7 +5256,65 @@
 
           (sldb) watchfpu FE_INVALID | FE_OVERFLOW
 
-  [1m20.  Regular Expressions[0m
+  [1m20.  Profiling[0m
+
+  [1m20.1.  Introduction[0m
+
+  This chapter deals with the subject of writing efficient [1mS-Lang [22mcode,
+  and using the [1mS-Lang [22mprofiler to isolate places in the code that could
+  benefit from optimization.
+
+  The most important consideration in writing efficient code is the
+  choice of algorithm.  A poorly optimized good algorithm will almost
+  always execute faster than a highly optimized poor algorithm.  In
+  choosing an algorithm, it is also important to choose the right data
+  structures for its implementation.  As a simple example, consider the
+  task of counting words.  Any algorithm would involve a some sort of
+  table with word/number pairs.  Such a table could be implemented using
+  a variety of data structures, e.g., as a pair of arrays or lists
+  representing the words and corresponding numbers, as an array of
+  structures, etc. But in this case, the associative array is ideally
+  suited to the task:
+
+          a = Assoc_Type[Int_Type, 0];
+          while (get_word (&word))
+            a[word]++;
+
+  Note the concisness of the above code.  It is important to appreciate
+  the fact that [1mS-Lang [22mis an byte-compiled interpreter that executes
+  statements much slower than that of a language that compiles to
+  machine code. The roughly overhead of the processing of byte-codes by
+  the interpreter may be used to justify the rule of thumb that the
+  smaller the code is, the faster it will run.
+
+  When possible, always take advantage of [1mS-Lang[22m's powerful array
+  facilities.  For example, consider the act of clipping an array by
+  setting all values greater than 10 to 10.  Rather than coding this as
+
+           n = length(a);
+           for (i = 0; i < n; i++)
+             if (a[i] > 10) a[i] = 10;
+
+  it should be written as
+
+           a[where(a>10)] = 10;
+
+  Finally, do not overlook the specialized modules that are available
+  for [1mS-Lang[22m.
+
+  [1m20.2.  Using the profiler[0m
+
+  [1mslprof [22mis an executable [1mslsh [22mscript that implements a standalone
+  profiler for [1mslsh [22mscripts.  The script is essentually a front-end for
+  a set of interpreter hooks defined in a file called profile.sl, which
+  may be used by any application embedding [1mS-Lang[22m.  The use of the
+  profiler will first be demonstrated in the context of [1mslprof[22m, and
+  after that follows a discussion of how to use profile.sl for other [1mS-[0m
+  [1mLang [22mapplications.
+
+  (To be completed...)
+
+  [1m21.  Regular Expressions[0m
 
   The S-Lang library includes a regular expression (RE) package that may
   be used by an application embedding the library.  The RE syntax should
@@ -5200,7 +5327,7 @@
   the [1mS-Lang [22mREs in the process.  For these reasons, the user is
   encouraged to make use of the pcre module if possible.
 
-  [1m20.1.  S-Lang  RE Syntax[0m
+  [1m21.1.  S-Lang  RE Syntax[0m
 
   A regular expression specifies a pattern to be matched against a
   string, and has the property that the contcatenation of two REs is
@@ -5253,7 +5380,7 @@
   the '\' character since both languages treat it as an escape
   character.
 
-  [1m20.2.  Differences between S-Lang  and egrep REs[0m
+  [1m21.2.  Differences between S-Lang  and egrep REs[0m
 
   There are several differences between [1mS-Lang [22mregular expressions and,
   e.g., [1megrep [22mregular expressions.

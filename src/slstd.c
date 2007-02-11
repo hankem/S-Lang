@@ -872,6 +872,11 @@ static void qualifier_intrin (void)
 }
 #endif
 
+static void clear_error_intrin (void)
+{
+   (void) _pSLerr_clear_error (1);
+}
+
 static void set_argv_intrinsic (void);
 static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
 {
@@ -925,7 +930,7 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_0("_print_stack", lang_print_stack, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_I("_stk_roll", intrin_roll_stack, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_SI("byte_compile_file", byte_compile_file, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("_clear_error", _pSLerr_clear_error, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_clear_error", clear_error_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_function_name", intrin_function_name, SLANG_STRING_TYPE),
 #if SLANG_HAS_FLOAT
    MAKE_INTRINSIC_S("set_float_format", _pSLset_double_format, SLANG_VOID_TYPE),

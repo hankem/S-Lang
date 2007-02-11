@@ -1,4 +1,4 @@
-_debug_info = 1; () = evalfile ("inc.sl");
+_debug_info = 1; () = evalfile ("./inc.sl");
 _traceback=1;
 testing_feature ("exceptions");
 
@@ -15,6 +15,7 @@ define test_exceptions ()
      };
 
    e_caught = NULL;
+   variable math_error_caught = 0;
    try (e)
      {
 	try (e)
@@ -30,11 +31,17 @@ define test_exceptions ()
      }
    catch MathError:
      {
+	math_error_caught = 1;
 	if (e.line != Exception_Line)
 	  failed ("e.line: %d != %d", e.line, Exception_Line);
 	e_caught = e;
      }
    
+   if (math_error_caught == 0)
+     {
+	failed ("to catch MathError from inner catch");
+     }
+
    if (e_caught.error != MathError)
      failed ("throw not MathError: %S", e_caught);
    
@@ -138,6 +145,45 @@ define syntax_error ()
 syntax_error ();
 stack_underflow ();
 
+private define throw_exception (err, msg)
+{
+   throw err, msg;
+}
+
+private define test_finally ()
+{
+   variable finally_ran = 0;
+   variable ioerror_caught = 0;
+   try
+     {
+	try
+	  {
+	     throw_exception (IOError, "Oops!");
+	  }
+	catch MathError;
+	finally
+	  {
+	     try
+	       {
+		  throw SyntaxError;
+	       }
+	     catch SyntaxError;
+	     finally_ran = 1;
+	  }
+	failed ("This should not execute");
+     }
+   catch IOError:
+     {
+	ioerror_caught = 1;
+     }
+
+   if (finally_ran == 0)
+     failed ("finally did not run in %s", _function_name);
+   if (ioerror_caught == 0)
+     failed ("IOError not caught in %s", _function_name);
+}
+test_finally ();
+
 private define test_try_with_return ()
 {
    try
@@ -220,6 +266,58 @@ try
 }
 catch MyError;
 
+define test_throw_object (rethrow)
+{
+   variable foo_obj = struct 
+     {
+	foo="foo"
+     };
+   variable bar_obj = struct
+     {
+	foo="bar"
+     };
+
+   variable e;
+   try (e)
+     {
+	try (e)
+	  {
+	     throw IOError, "foo object thrown", foo_obj;
+	  }
+	catch IOError:
+	  {
+	     if (e.object != foo_obj)
+	       failed ("throwing foo_obj failed");
+	     
+	     try (e)
+	       {
+		  throw MathError, "bar object thrown", bar_obj;
+	       }
+	     catch MathError:
+	       {
+		  if (e.object != bar_obj)
+		    failed ("throwing bar_obj failed");
+	       }
+	     
+	     if (rethrow)
+	       throw;
+	     
+	     variable e1 = __get_exception_info ();
+	     if (e1.object != foo_obj)
+	       failed ("e.object not equal to foo_obj after throwing bar_obj");
+	  }
+     }
+   catch IOError:
+     {
+	if (rethrow == 0)
+	  failed ("catching IOError not expected");
+	
+	if (e.object != foo_obj)
+	  failed ("expected e.object=foo_obj after rethrow");
+     }
+}
+test_throw_object (0);
+test_throw_object (1);
 #iffalse
 try ($1)
 {

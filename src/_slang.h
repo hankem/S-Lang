@@ -1314,7 +1314,7 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define _DEREF_FUNCALL_TOKEN		0xCE
 
 #define LOOP_THEN_TOKEN			0xD0
-#define LOOP_ELSE_TOKEN			0xD1
+/* #define LOOP_ELSE_TOKEN			0xD1 */
 
 #define _COMPARE_TOKEN			0xD8   /* (a < b < c ...) */
 #define _ARRAY_ELEM_REF_TOKEN		0xD9   /* &X[i] */
@@ -1379,18 +1379,25 @@ extern int _pSLerr_suspend_messages (void);
 extern int _pSLerr_resume_messages (void);
 extern int _pSLerr_traceback_msg (char *, ...) SLATTRIBUTE_PRINTF(1,2);
 extern void _pSLerr_dump_msg (char *, ...) SLATTRIBUTE_PRINTF(1,2);
-extern void _pSLerr_clear_error (void);
+extern void _pSLerr_clear_error (int);
+
+typedef struct _pSLerr_Error_Queue_Type _pSLerr_Error_Queue_Type;
+extern _pSLerr_Error_Queue_Type *_pSLerr_new_error_queue (int);
+extern int _pSLerr_set_error_queue (_pSLerr_Error_Queue_Type *);
+extern void _pSLerr_delete_error_queue (_pSLerr_Error_Queue_Type *);
+
 extern void _pSLerr_print_message_queue (void);
 
 extern int _pSLerr_set_line_info (char *, int, char *);
-extern int _pSLang_pop_error_context (void);
+extern int _pSLang_pop_error_context (int);
 extern int _pSLang_push_error_context (void);
 extern void (*_pSLinterpreter_Error_Hook)(int);
 extern int _pSLerr_init_interp_exceptions (void);
 extern int _pSLerr_get_last_error (void);
 extern int _pSLerr_pop_exception (int *);
 extern void _pSLerr_free_queued_messages (void);
-extern char *_pSLerr_get_error_from_queue (void);
+
+extern char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *);
 extern int _pSLerr_throw (void);
 extern int (*_pSLerr_New_Exception_Hook)(char *name, char *desc, int error_code);
 

@@ -15,10 +15,12 @@ private define do_the_glob (dir, pat)
    if (files == NULL)
      return String_Type[0];
 
+   files = [files, ".", ".."];
    if (length (files) == 0)
      return files;
 
    pat = glob_to_regexp (pat);
+
    variable i = where (array_map (Int_Type, &string_match, files, pat, 1));
    if (length (i) == 0)
      return String_Type[0];
@@ -28,6 +30,21 @@ private define do_the_glob (dir, pat)
      return files;
 
    return array_map (String_Type, &path_concat, dir, files);
+}
+
+private define is_dir (dirs)
+{
+   variable n = length(dirs);
+   variable ok = Char_Type[n];
+   _for (0, n-1, 1)
+     {
+	variable i = ();
+	variable st = stat_file (dirs[i]);
+	if (st == NULL)
+	  continue;
+	ok[i] = stat_is ("dir", st.st_mode);
+     }
+   return ok;
 }
 
 define glob ();		       %  recursion
@@ -62,7 +79,7 @@ define glob ()
 	     variable dirs = glob (dir);
 	     !if (strlen (base))
 	       {
-		  list = [list, dirs];
+		  list = [list, dirs[where(is_dir (dirs))]];
 		  continue;
 	       }
 

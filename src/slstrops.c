@@ -2015,12 +2015,23 @@ static void glob_to_regexp (char *glob)
    char ch;
 
    len = _pSLstring_bytelen (glob);
-   pat = SLmalloc (2*len + 3);
+   pat = SLmalloc (2*len + 8);
    if (pat == NULL)
      return;
-   
+
    p = pat;
    *p++ = '^';
+
+   /* If the first character of a file is '.', it must be explicitly matched. */
+   if ((*glob == '?') || (*glob == '*'))
+     {
+	*p++ = '[';
+	*p++ = '^';
+	*p++ = '.';
+	*p++ = ']';
+	if (*glob == '?')
+	  glob++;
+     }
 
    while (0 != (ch = *glob++))
      {
@@ -2047,25 +2058,33 @@ static void glob_to_regexp (char *glob)
 	     continue;
 	  }
 	
+	/* Otherwise ch = '[' */
 	if (*glob != 0)
 	  {
 	     char *g = glob;
-	     
+	     int is_complement = 0;
+
 	     ch = *g;
-	     if (ch == '^')
+	     if ((ch == '^') || (ch == '!'))
 	       {
+		  is_complement = 1;
 		  g++;
 		  ch = *g;
 	       }
 	     if (ch == ']')
 	       g++;
-	     
+
 	     while (((ch = *g) != 0) && (ch != ']'))
 	       g++;
 	     
 	     if (ch == ']')
 	       {
 		  *p++ = '[';
+		  if (is_complement)
+		    {
+		       *p++ = '^';
+		       glob++;
+		    }
 		  while (glob <= g)
 		    *p++ = *glob++;
 		  

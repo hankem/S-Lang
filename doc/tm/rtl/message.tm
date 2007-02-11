@@ -221,3 +221,38 @@
 \seealso{message, sprintf, Sprintf, verror}
 \done
 
+
+\function{__get_exception_info}
+\synopsis{Get information about the current exception}
+\usage{Struct_Type __get_exception_info ()}
+\description
+ This function returns information about the currently active
+ exception in the form as a structure with the
+ following fields:
+#v+
+    error            The current exception, e.g., RunTimeError
+    descr            A description of the exception
+    file             Name of the file generating the exception
+    line             Line number where the exception originated
+    function         Function where the exception originated
+    object           A user-defined object thrown by the exception
+    message          A user-defined message 
+#v-
+ If no exception is active, \NULL will be returned.
+
+ This same information may also be obtained via the optional argument
+ to the \kw{try} statement:
+#v+
+     variable e = NULL;
+     try (e)
+       {
+          do_something ();
+       }
+     finally
+       {
+          if (e != NULL)
+            vmessage ("An error occured: %s", e.message);
+       }
+#v-
+\seealso{error}
+\done

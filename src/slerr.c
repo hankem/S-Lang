@@ -379,19 +379,19 @@ typedef struct _Error_Message_Type
    int msg_type;
 #define _SLERR_MSG_ERROR	1
 #define _SLERR_MSG_WARNING	2
-#define _SLERR_MSG_TRACEBACK	4
+#define _SLERR_MSG_TRACEBACK	3
    struct _Error_Message_Type *next;
 }
 Error_Message_Type;
 
-typedef struct
+struct _pSLerr_Error_Queue_Type
 {
    Error_Message_Type *head;
    Error_Message_Type *tail;
-}
-Error_Queue_Type;
+};
 
-static Error_Queue_Type *Default_Error_Queue;
+static _pSLerr_Error_Queue_Type *Default_Error_Queue;
+static _pSLerr_Error_Queue_Type *Active_Error_Queue;
 
 static void free_error_msg (Error_Message_Type *m)
 {
@@ -418,7 +418,7 @@ static Error_Message_Type *allocate_error_msg (char *msg, int msg_type)
    return m;
 }
 
-static void free_queued_messages (Error_Queue_Type *q)
+static void free_queued_messages (_pSLerr_Error_Queue_Type *q)
 {
    Error_Message_Type *m;
 
@@ -436,7 +436,7 @@ static void free_queued_messages (Error_Queue_Type *q)
    q->tail = NULL;
 }
 
-static void delete_msg_queue (Error_Queue_Type *q)
+void _pSLerr_delete_error_queue (_pSLerr_Error_Queue_Type *q)
 {
    if (q == NULL)
      return;
@@ -446,17 +446,19 @@ static void delete_msg_queue (Error_Queue_Type *q)
 }
 
    
-static Error_Queue_Type *create_msg_queue (void)
+_pSLerr_Error_Queue_Type *_pSLerr_new_error_queue (int make_active)
 {
-   Error_Queue_Type *q;
+   _pSLerr_Error_Queue_Type *q;
 
-   if (NULL == (q = (Error_Queue_Type *)SLcalloc (1, sizeof(Error_Queue_Type))))
+   if (NULL == (q = (_pSLerr_Error_Queue_Type *)SLcalloc (1, sizeof(_pSLerr_Error_Queue_Type))))
      return NULL;
    
+   if (make_active)
+     Active_Error_Queue = q;
    return q;
 }
 
-static int queue_message (Error_Queue_Type *q, char *msg, int msg_type)
+static int queue_message (_pSLerr_Error_Queue_Type *q, char *msg, int msg_type)
 {
    Error_Message_Type *m;
    
@@ -468,7 +470,7 @@ static int queue_message (Error_Queue_Type *q, char *msg, int msg_type)
    if (q->head == NULL)
      q->head = m;
    q->tail = m;
-   
+
    return 0;
 }
 
@@ -515,9 +517,9 @@ static void print_queue (void)
    if (_pSLang_Error == 0)
      return;
 
-   if (Default_Error_Queue != NULL)
+   if (Active_Error_Queue != NULL)
      {
-	Error_Queue_Type *q = Default_Error_Queue;
+	_pSLerr_Error_Queue_Type *q = Active_Error_Queue;
 	Error_Message_Type *m = q->head;
 	while (m != NULL)
 	  {
@@ -540,14 +542,14 @@ static void print_queue (void)
 /* This function returns a pointer to the first error message in the queue.
  * Make no attempts to free the returned pointer.
  */
-char *_pSLerr_get_error_from_queue (void)
+char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q)
 {
-   Error_Queue_Type *q;
    Error_Message_Type *m;
    unsigned int len;
    char *err, *err1, *err_max;
 
-   if (NULL == (q = Default_Error_Queue))
+   if ((q == NULL) 
+       && (NULL == (q = Default_Error_Queue)))
      return NULL;
 
    len = 0;
@@ -586,6 +588,7 @@ char *_pSLerr_get_error_from_queue (void)
    return _pSLcreate_via_alloced_slstring (err, len);
 }
 
+
 void _pSLerr_print_message_queue (void)
 {
    print_queue ();
@@ -612,7 +615,7 @@ int _pSLerr_suspend_messages (void)
 
 void _pSLerr_free_queued_messages (void)
 {
-   free_queued_messages (Default_Error_Queue);
+   free_queued_messages (Active_Error_Queue);
 }
 
 
@@ -638,7 +641,7 @@ void SLang_verror_va (int err_code, char *fmt, va_list ap)
    (void) SLvsnprintf (err, sizeof (err), fmt, ap);
 
    if (Suspend_Error_Messages)
-     (void) queue_message (Default_Error_Queue, err, _SLERR_MSG_ERROR);
+     (void) queue_message (Active_Error_Queue, err, _SLERR_MSG_ERROR);
    else
      print_error (_SLERR_MSG_ERROR, err);
 }
@@ -661,7 +664,7 @@ int _pSLerr_traceback_msg (char *fmt, ...)
    (void) SLvsnprintf (msg, sizeof (msg), fmt, ap);
    va_end(ap);
 
-   return queue_message (Default_Error_Queue, msg, _SLERR_MSG_TRACEBACK);
+   return queue_message (Active_Error_Queue, msg, _SLERR_MSG_TRACEBACK);
 }
 
 void SLang_exit_error (char *fmt, ...)
@@ -748,12 +751,24 @@ void _pSLerr_dump_msg (char *fmt, ...)
    va_end (ap);
 }
 
+int _pSLerr_set_error_queue (_pSLerr_Error_Queue_Type *q)
+{
+   if (q == NULL)
+     {
+	q = Default_Error_Queue;
+	if (Default_Error_Queue == NULL)
+	  return _pSLerr_init ();
+     }
+   Active_Error_Queue = q;
+   return 0;
+}
+
 int _pSLerr_init (void)
 {
    if (Default_Error_Queue == NULL)
      {
 	Suspend_Error_Messages = 0;
-	if (NULL == (Default_Error_Queue = create_msg_queue ()))
+	if (NULL == (Default_Error_Queue = _pSLerr_new_error_queue (1)))
 	  return -1;
      }
 
@@ -766,8 +781,9 @@ int _pSLerr_init (void)
 void _pSLerr_deinit (void)
 {
    deinit_exceptions ();
-   delete_msg_queue (Default_Error_Queue);
+   _pSLerr_delete_error_queue (Default_Error_Queue);
    Suspend_Error_Messages = 0;
    Default_Error_Queue = NULL;
+   Active_Error_Queue = NULL;
 }
 

@@ -1530,6 +1530,7 @@ void _pSLcompile_byte_compiled (void)
 	   case _STRUCT_MINUSMINUS_TOKEN:
 	   case _STRUCT_POST_PLUSPLUS_TOKEN:
 	   case _STRUCT_PLUSPLUS_TOKEN:
+	   case _STRUCT_FIELD_REF_TOKEN:
 	     if (NULL == (ebuf = check_byte_compiled_token (buf)))
 	       return;
 	     tok.v.s_val = buf;
@@ -1746,6 +1747,7 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
       case _STRUCT_MINUSMINUS_TOKEN:
       case _STRUCT_POST_PLUSPLUS_TOKEN:
       case _STRUCT_PLUSPLUS_TOKEN:
+      case _STRUCT_FIELD_REF_TOKEN:
 	strcpy (b3, tok->v.s_val);
 	break;
 

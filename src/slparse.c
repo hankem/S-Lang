@@ -613,7 +613,7 @@ static void check_for_loop_then_else (_pSLang_Token_Type *ctok)
    while (1)
      {
 	unsigned char type = ctok->type;
-
+#ifdef LOOP_ELSE_TOKEN
 	if ((type == ELSE_TOKEN) && ((b & 1) == 0))
 	  {
 	     get_token (ctok);
@@ -623,6 +623,7 @@ static void check_for_loop_then_else (_pSLang_Token_Type *ctok)
 	     b |= 1;
 	     continue;
 	  }
+#endif
 	if ((type == THEN_TOKEN) && ((b & 2) == 0))
 	  {
 	     get_token (ctok);
@@ -1244,6 +1245,7 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
 
 /*
  * throw-statement:
+ *   throw ;
  *   throw exception_expr ;
  *   throw exception_expr , simple_expression
  *   throw exception_expr , simple_expression ;
@@ -1257,26 +1259,31 @@ static void handle_throw_statement (_pSLang_Token_Type *ctok)
 
    push_token_list ();
 
+   if (ctok->type == SEMICOLON_TOKEN)
+     append_token_of_type (ARG_TOKEN);
+   else
+     {
 #if SLANG_HAS_BOSEOS
-   eos = append_bos (ctok, 2);
+	eos = append_bos (ctok, 2);
 #endif
-   append_token_of_type (ARG_TOKEN);
-   simple_expression (ctok);
-   if (ctok->type == COMMA_TOKEN)
-     {
-	get_token (ctok);
+	append_token_of_type (ARG_TOKEN);
 	simple_expression (ctok);
-     }
-   if (ctok->type == COMMA_TOKEN)
-     {
-	get_token (ctok);
-	simple_expression (ctok);
-     }
-   handle_semicolon (ctok);
+	if (ctok->type == COMMA_TOKEN)
+	  {
+	     get_token (ctok);
+	     simple_expression (ctok);
+	  }
+	if (ctok->type == COMMA_TOKEN)
+	  {
+	     get_token (ctok);
+	     simple_expression (ctok);
+	  }
+	handle_semicolon (ctok);
    /* not-necessary -- append_token_of_type (EARG_TOKEN); */
 #if SLANG_HAS_BOSEOS
-   if (eos) append_eos ();
+	if (eos) append_eos ();
 #endif
+     }
    compile_token_list ();
    compile_token_of_type (THROW_TOKEN);
 }

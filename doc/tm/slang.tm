@@ -5521,6 +5521,8 @@ profiler will first be demonstrated in the context of \slprof, and
 after that follows a discussion of how to use \file{profile.sl} for
 other \slang applications.
 
+(To be completed...)
+
 #i regexp.tm
 
 #%}}}

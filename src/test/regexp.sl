@@ -35,7 +35,7 @@ static define test_globbing (glob, re)
 	     glob, pat, re);
 }
 
-test_globbing ("*.c", "^.*\\.c$");
+test_globbing ("*.c", "^[^.].*\\.c$");
 test_globbing ("[*].c", "^[*]\\.c$");
 test_globbing ("x+??$.$", "^x\\+..\\$\\.\\$$");
 test_globbing ("x+[file$", "^x\\+\\[file\\$$");

@@ -73,6 +73,9 @@ Changes since 2.0.7
 	     {
 	        % This block executes if the loop was broken prematurely
 	     }
+	     
+    *** NOTE: This change broke backward-compatibility.  For this
+    reason, support for the else clause was dropped".  See #48 below.
 
 18. slsh/scripts/slprof: Rewrote much of this script to make it more
     friendly and useful.
@@ -132,6 +135,27 @@ Changes since 2.0.7
 42. autoconf/aclocal.m4: Add support for rpath on OpenBSD.
 43. src/slarray.c: Single element arrays specified via, e.g., [a:b:#1]
     produced the array [b] instead of the "more" correct answer [a].
+44. src/slexcept.c: __get_exception_info will NULL if no exception is
+    active.  Previously it reported an unknown exception.
+45. src/slang.c: If a finally-block threw an exception and then caught
+    it, the outer exception was getting lost.
+46. slsh/lib/glob.sl: glob("*") nolonger matches files that begin with
+    ".".  A leading dot in a filename must be matched explicitely.  A
+    similar change was made to glob_to_regexp.
+47. src/slang.c,src/slexcept.c: An exception may be rethrown by using
+    "throw" without any arguments.  This required support for multiple
+    error-queues.
+48. src/slparse.c: The "loop-else" feature added in change #17 was
+    dropped because the change was not backwards compatible, changing
+    the meaning of connstructs such as
+    
+           if (some_condition)
+	     loop (N) {...}
+	   else
+	     something_else();
+
+    "loop-then" is still supported.  (Thanks go to Paul Boekholt for
+    picking up on this).
 
 {{{ Previous Versions
 

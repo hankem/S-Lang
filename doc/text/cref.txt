@@ -1,6 +1,6 @@
   {The [1mS-Lang [22mC Library Reference}
   John E. Davis, davis@space.mit.edu
-  Nov 20, 2006
+  Feb 7, 2007
   ____________________________________________________________
 
 

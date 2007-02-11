@@ -2888,9 +2888,8 @@ static void lang_do_and_orelse (int is_or, SLBlock_Type *addr, SLBlock_Type *add
 
 
 /* Executes the block in error-free context.  If execution goes wrong, returns -1 */
-static int try_interp_block (SLBlock_Type **bp, int clear_error)
+static int try_interp_block (SLBlock_Type **bp)
 {
-   int status = 0;
    SLBlock_Type *b = *bp;
 
 #if USE_BC_LINE_NUM
@@ -2900,24 +2899,18 @@ static int try_interp_block (SLBlock_Type **bp, int clear_error)
 #endif
 
    b = b->b.blk;
-   if ((0 == clear_error) && (b->bc_main_type == 0))
+   if (b->bc_main_type == 0)
      return 0;
-
-   if (-1 == _pSLang_push_error_context ())
-     return -1;
-
-   if (clear_error)
-     _pSLerr_clear_error ();
 
    (void) inner_interp (b);
 
    if (IS_SLANG_ERROR)
-     status = -1;
-   _pSLang_pop_error_context ();
-   return status;
+     return -1;
+
+   return 0;
 }
 
-static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
+static int do_try_internal (SLBlock_Type *ev_block, SLBlock_Type *final)
 {
    SLBlock_Type *b;
    int stack_depth, num;
@@ -2925,6 +2918,7 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
    int bos_stack_depth;
 #endif
    int e1;
+   int status;
 
    /* Try blocks have the form:
     * {ev_block} {try-statements} {exception-list}{catch-block}...{final}
@@ -2944,17 +2938,8 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
    (void) inner_interp (b->b.blk); /* try-block */
 
    if (0 == (e1 = SLang_get_error ()))
-     {
-	if (final->b.blk->bc_main_type)
-	  {
-	     int bc = Lang_Break_Condition, r = Lang_Return, br = Lang_Break;
-	     /* Need to reset these so that loops work in the finally block */
-	     Lang_Break_Condition = Lang_Break = Lang_Return = 0;
-	     inner_interp (final->b.blk);
-	     Lang_Break = br; Lang_Return = r; Lang_Break_Condition = bc;
-	  }
-	return;
-     }
+     return 0;
+
    num = SLstack_depth () - stack_depth;
    if (num > 0)
      SLdo_pop_n (num);
@@ -2967,8 +2952,13 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
      }
 #endif
 
-   if (-1 == try_interp_block (&ev_block, 0))   /* evaluate the exception */
-     return;
+   if (-1 == _pSLang_push_error_context ())
+     return -1;
+
+   status = -1;
+
+   if (-1 == try_interp_block (&ev_block))   /* evaluate the exception */
+     goto return_error;
 
    b++;				       /* skip try-block */
 
@@ -2976,15 +2966,14 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
      {
 	stack_depth = SLstack_depth ();
 
-	if (-1 == try_interp_block (&b, 0))/* exception-list */
-	  return;
+	if (-1 == try_interp_block (&b))/* exception-list */
+	  goto return_error;
 
 	num = SLstack_depth () - stack_depth;
 	if (num < 0)
 	  {
-	     (void) _pSLang_pop_error_context ();
 	     SLang_verror (SL_StackUnderflow_Error, "Exception list is invalid");
-	     return;
+	     goto return_error;
 	  }
 
 	if (num > 0)
@@ -2993,7 +2982,7 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
 	       {
 		  int e;
 		  if (-1 == _pSLerr_pop_exception (&e))
-		    return;
+		    goto return_error;
 
 		  if (SLerr_exception_eqs (e1, e))
 		    break;
@@ -3018,26 +3007,51 @@ static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
 
 	/* Found a match--- move on to the code to be executed */
 	b++;
-	_pSLerr_clear_error ();
+	/* _pSLerr_clear_error (); */
 #if USE_BC_LINE_NUM
 	while (b->bc_main_type == SLANG_BC_LINE_NUM)
 	  b++;
 #endif
-	inner_interp (b->b.blk);
-	if (IS_SLANG_ERROR)
-	  return;
-	break;
+	status = try_interp_block (&b);
+	_pSLang_pop_error_context (status);
+	if (status == 0)
+	  _pSLerr_clear_error (0);
+	return status;
      }
+   
+   if (b == final)
+     {
+	/* No matching catch block */
+	status = 0;
+     }
+
+   return_error:
+   _pSLang_pop_error_context (status);
+
+   return -1;
+}
+
+static void do_try (SLBlock_Type *ev_block, SLBlock_Type *final)
+{
+   (void) do_try_internal (ev_block, final);
 
    if (final->b.blk->bc_main_type)
      {
 	int bc = Lang_Break_Condition, r = Lang_Return, br = Lang_Break;
 	/* Need to reset these so that loops work in the finally block */
 	Lang_Break_Condition = Lang_Break = Lang_Return = 0;
-	try_interp_block (&final, 0);
+	if (-1 == _pSLang_push_error_context ())
+	  return;
+
+	if (-1 == try_interp_block (&final))
+	  _pSLang_pop_error_context (1);
+	else
+	  _pSLang_pop_error_context (0);
+
 	Lang_Break = br; Lang_Return = r; Lang_Break_Condition = bc;
      }
 }
+
 
 /* This evaluates:
  *  (x0 op1 x1) and (x1 op2 x2) ... and (x{N-1} opN xN)
@@ -3917,7 +3931,7 @@ do_inner_interp_error (SLBlock_Type *err_block,
 
    inner_interp (err_block->b.blk);
 
-   (void) _pSLang_pop_error_context ();
+   (void) _pSLang_pop_error_context (0);
    if (SLang_get_error () == 0)
      return 0;
 
@@ -4356,6 +4370,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 				 addr1++;
 				 continue;
 			      }
+#ifdef LOOP_ELSE_TOKEN
 			    if (addr1->bc_sub_type == SLANG_BCST_LOOP_ELSE)
 			      {
 				 addr = addr1;
@@ -4364,6 +4379,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 				 addr1++;
 				 continue;
 			      }
+#endif
 			    break;
 			 }
 		    }
@@ -6792,7 +6808,7 @@ void SLang_restart (int localv)
      }
    _pSLerr_print_message_queue ();
 
-   _pSLerr_clear_error ();	       /* sets SLang_Error to 0 */
+   _pSLerr_clear_error (0);
 }
 
 #if SLANG_HAS_DEBUG_CODE
@@ -7510,11 +7526,11 @@ static void compile_directive_mode (_pSLang_Token_Type *t)
       case ELSE_TOKEN:
 	bc_sub_type = SLANG_BCST_ELSE;
 	break;
-
+#ifdef LOOP_ELSE_TOKEN
       case LOOP_ELSE_TOKEN:
 	bc_sub_type = SLANG_BCST_LOOP_ELSE;
 	break;
-
+#endif
       case LOOP_THEN_TOKEN:
 	bc_sub_type = SLANG_BCST_LOOP_THEN;
 	break;

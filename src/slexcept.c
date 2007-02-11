@@ -35,6 +35,7 @@ static SLang_Object_Type Object_Thrown;
 static char *File_With_Error = NULL;
 static char *Function_With_Error = NULL;
 static char *Last_Function_With_Error = NULL;   /* either slstring or "<top-level>" */
+static _pSLerr_Error_Queue_Type *Error_Message_Queue;
 
 static int Linenum_With_Error = -1;
 
@@ -52,9 +53,13 @@ typedef struct Error_Context_Type
 {
    int err;
    int err_cleared;
+   int rethrow;
    int linenum;
    char *file;
    char *function;
+   _pSLerr_Error_Queue_Type *err_queue;
+   int object_was_thrown;
+   SLang_Object_Type object_thrown;
    struct Error_Context_Type *next;
 }
 Error_Context_Type;
@@ -64,30 +69,55 @@ static Error_Context_Type *Error_Context;
 int _pSLang_push_error_context (void)
 {
    Error_Context_Type *c;
+
    if (NULL == (c = (Error_Context_Type *)SLmalloc (sizeof (Error_Context_Type))))
      return -1;
    
    c->next = Error_Context;
    c->err = _pSLang_Error;
    c->err_cleared = 0;
+   c->rethrow = 0;
    c->file = File_With_Error;
    c->linenum = Linenum_With_Error;
    c->function = Function_With_Error;
+   c->err_queue = Error_Message_Queue;
+
+   if (NULL == (Error_Message_Queue = _pSLerr_new_error_queue (1)))
+     {
+	Error_Message_Queue = c->err_queue;
+	SLfree ((char *) c);
+	return -1;
+     }
 
    File_With_Error = NULL;
    Linenum_With_Error = -1;
 
    Error_Context = c;
    SLKeyBoard_Quit = 0;
+
+   c->object_was_thrown = (Object_Thrownp != NULL);
+   if (c->object_was_thrown)
+     {
+	c->object_thrown = Object_Thrown;
+	Object_Thrownp = NULL;
+     }
+
    if (-1 == SLang_set_error (0))
      {
-	_pSLang_pop_error_context ();
+	_pSLang_pop_error_context (1);
 	return -1;
      }
    return 0;
 }
 
-int _pSLang_pop_error_context (void)
+/* this will be called with use_current_queue set to 0 if the catch block
+ * was processed with no error.  If an error occurs processing the catch
+ * block, then that error will take precedence over the one triggering the
+ * catch block.  However, if the original error is rethrown, then this routine
+ * will still be called with use_current_queue non-zero since all the caller
+ * knows is that an error occured and cannot tell if it was a rethrow.
+ */
+int _pSLang_pop_error_context (int use_current_queue)
 {
    Error_Context_Type *e;
 
@@ -97,6 +127,26 @@ int _pSLang_pop_error_context (void)
    
    Error_Context = e->next;
 
+   if ((use_current_queue == 0) || (e->rethrow))
+     {
+	(void) _pSLerr_set_error_queue (e->err_queue);
+	_pSLerr_delete_error_queue (Error_Message_Queue);
+	Error_Message_Queue = e->err_queue;
+	free_thrown_object ();
+	if (e->object_was_thrown)
+	  {
+	     Object_Thrownp = &Object_Thrown;
+	     Object_Thrown = e->object_thrown;
+	  }
+     }
+   else
+     {
+	_pSLerr_delete_error_queue (e->err_queue);
+	if (e->object_was_thrown)
+	  SLang_free_object (&e->object_thrown);
+     }
+     
+				     
    if (_pSLang_Error == 0)
      {
 	if (e->err_cleared == 0)
@@ -197,20 +247,49 @@ static int _pSLerr_get_last_error_line_info (char **filep, int *linep, char **fu
    return 0;
 }
 
-   
+static char *get_error_msg_from_queue (void)
+{
+   Error_Context_Type *e = Error_Context;
+
+   if (e == NULL)
+     return NULL;
+
+   return _pSLerr_get_error_from_queue (e->err_queue);
+}
+
+
 void (*SLang_User_Clear_Error)(void);
-void _pSLerr_clear_error (void)
+void _pSLerr_clear_error (int set_clear_err_flag)
 {
    SLang_set_error (0);
    free_thrown_object ();
-   if (Error_Context != NULL)
-     Error_Context->err_cleared = 1;
+   
+   if ((Error_Context != NULL)
+       && (set_clear_err_flag))
+     {
+	/* This is used only for error blocks */
+	Error_Context->err_cleared = 1;
+     }
+
    SLang_free_slstring (File_With_Error); File_With_Error = NULL;
    SLang_free_slstring (Function_With_Error); Function_With_Error = NULL;
    Linenum_With_Error = -1;
    Last_Function_With_Error = NULL;
    if (SLang_User_Clear_Error != NULL) (*SLang_User_Clear_Error)();
    _pSLerr_free_queued_messages ();
+}
+
+static int rethrow_error (void)
+{
+   Error_Context_Type *e = Error_Context;
+   
+   if (e == NULL)
+     return 0;
+   
+   SLang_set_error (e->err);
+   e->rethrow=1;
+   e->err_cleared = 0;
+   return 0;
 }
 
 int _pSLerr_throw (void)
@@ -243,7 +322,10 @@ int _pSLerr_throw (void)
 	     return -1;
 	  }
 	break;
-	
+
+      case 0:			       /* rethrow */
+	return rethrow_error ();
+
       default:
 	SLang_verror (SL_NumArgs_Error, "expecting: throw error [, optional-message [, optional-arg]]");
 	return -1;
@@ -303,6 +385,12 @@ static void get_exception_info_intrinsic (void)
    int linenum;
 
    err = _pSLerr_get_last_error ();
+   if (err == 0)
+     {
+	(void) SLang_push_null ();
+	return;
+     }
+	
    desc = SLerr_strerror (err);
    (void) _pSLerr_get_last_error_line_info (&file, &linenum, &function);
    
@@ -321,7 +409,8 @@ static void get_exception_info_intrinsic (void)
    field_types[4] = SLANG_STRING_TYPE;
    field_values[4] = (VOID_STAR) &function;
 
-   if (Object_Thrownp == NULL)
+   if ((Error_Context == NULL) 
+       || (Error_Context->object_was_thrown == 0))
      {
 	char *null = NULL;
 	field_types[5] = SLANG_NULL_TYPE;
@@ -329,11 +418,12 @@ static void get_exception_info_intrinsic (void)
      }
    else
      {
-	field_types[5] = Object_Thrownp->data_type;
-	field_values[5] = _pSLclass_get_ptr_to_value (_pSLclass_get_class (Object_Thrownp->data_type),
-						     Object_Thrownp);
+	SLtype data_type = Error_Context->object_thrown.data_type;
+	field_types[5] = data_type;
+	field_values[5] = _pSLclass_get_ptr_to_value (_pSLclass_get_class (data_type),
+						      &Error_Context->object_thrown);
      }
-   msg = _pSLerr_get_error_from_queue ();
+   msg = get_error_msg_from_queue  ();
    if ((msg == NULL) || (*msg == 0))
      msg = desc;
    field_types[6] = SLANG_STRING_TYPE;
