@@ -1808,7 +1808,8 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 #endif
    /* Find where the last non-blank character on old/new screen is */
 
-   if (CHAR_EQS_SPACE(pmax-1))
+   /* if (CHAR_EQS_SPACE(pmax-1)) */
+   if (((pmax-1)->wchars[0]==' ') && ((pmax-1)->nchars==1))
      {
 	/* If we get here, then we can erase to the end of the line to create
 	 * the final space.  However, this will only work _if_ erasing will 

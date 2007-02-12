@@ -156,6 +156,10 @@ Changes since 2.0.7
 
     "loop-then" is still supported.  (Thanks go to Paul Boekholt for
     picking up on this).
+49. src/sldisply.c: If the terminal supports BCE, then ignore the
+    background color of space characters that occur as trailing
+    whitespace (Miroslav Lichvar).
+
 
 {{{ Previous Versions
 
