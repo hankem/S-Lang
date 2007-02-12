@@ -1433,9 +1433,9 @@ int SLrline_set_point (SLrline_Type *rli, unsigned int point)
    if (rli->state == RLI_LINE_INVALID)
      return -1;
 
-   if (rli->len > point)
+   if (point > rli->len)
      point = rli->len;
-   
+
    rli->point = point;
    return 0;
 }
@@ -1614,8 +1614,46 @@ static int rline_get_point_intrinsic (void)
    if ((Active_Rline_Info == NULL) 
        || (-1 == SLrline_get_point (Active_Rline_Info, &p)))
      return 0;
-   
+
    return (int) p;
+}
+
+static void rline_set_point_intrinsic (int *pp)
+{
+   int p;
+   SLrline_Type *rli;
+
+   if (NULL == (rli = Active_Rline_Info))
+     return;
+   
+   p = *pp;
+   if (p < 0)
+     {
+	p = (int)rli->len + (p + 1);
+	if (p < 0)
+	  p = 0;
+     }
+
+   if ((unsigned int)p > rli->len)
+     p = (int)rli->len;
+	
+   (void) SLrline_set_point (rli, (unsigned int) p);
+}
+
+static void rline_call_intrinsic (char *fun)
+{
+   int (*f)(SLrline_Type *);
+
+   if (Active_Rline_Info == NULL)
+     return;
+   
+   if (NULL == (f = (int (*)(SLrline_Type *)) (SLang_find_key_function(fun, Active_Rline_Info->keymap))))
+     {
+	SLang_verror (SL_UndefinedName_Error, "rline internal function %s does not exist", fun);
+	return;
+     }
+
+   (void) (*f)(Active_Rline_Info);
 }
 
 static void rline_get_line_intrinsic (void)
@@ -1629,6 +1667,15 @@ static void rline_get_line_intrinsic (void)
 	return;
      }
    (void) SLang_push_malloced_string (s);
+}
+
+static void rline_set_line_intrinsic (char *str)
+{
+
+   if (Active_Rline_Info == NULL)
+     return;
+
+   (void) SLrline_set_line (Active_Rline_Info, str);
 }
 
 static void rline_set_completion_callback (void)
@@ -1655,10 +1702,13 @@ static void rline_set_list_completions_callback (void)
 
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
+   MAKE_INTRINSIC_S("rline_call", rline_call_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("rline_ins", rline_ins_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_I("rline_del", rline_del_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_0("rline_get_point", rline_get_point_intrinsic, INT_TYPE),
+   MAKE_INTRINSIC_I("rline_set_point", rline_set_point_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_0("rline_get_line", rline_get_line_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_S("rline_set_line", rline_set_line_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("rline_setkey", rline_setkey_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("rline_unsetkey", rline_unsetkey_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_0("rline_set_completion_callback", rline_set_completion_callback, VOID_TYPE),
@@ -1678,6 +1728,7 @@ int SLrline_init (char *appdef, char *user_initfile, char *sys_initfile)
 # endif
 #endif
    char *file = NULL;
+   int status;
 
    if (sys_initfile == NULL)
      sys_initfile = SLRLINE_SYS_INIT_FILE;
@@ -1691,21 +1742,26 @@ int SLrline_init (char *appdef, char *user_initfile, char *sys_initfile)
      return -1;
 
    if (user_initfile != NULL)
-     file = SLpath_find_file_in_path (home_dir, user_initfile);
-
-   if (file == NULL)
      {
-	if (sys_initfile != NULL)
-	  file = _pSLpath_find_file (sys_initfile, 0);
+	file = SLpath_find_file_in_path (home_dir, user_initfile);
+	if (file != NULL)
+	  {
+	     status = SLns_load_file (file, NULL);
+	     SLfree (file);
+	     return status;
+	  }
      }
-   if (file == NULL)
-     return 0;
 
-   if (-1 == SLns_load_file (file, NULL))
+   if (sys_initfile != NULL)
      {
-	SLang_free_slstring (file);
-	return -1;
+	file = _pSLpath_find_file (sys_initfile, 0);
+	if (file != NULL)
+	  {
+	     status = SLns_load_file (file, NULL);
+	     SLang_free_slstring (file);
+	     return status;
+	  }
      }
-   SLang_free_slstring (file);
+
    return 0;
 }

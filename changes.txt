@@ -159,7 +159,15 @@ Changes since 2.0.7
 49. src/sldisply.c: If the terminal supports BCE, then ignore the
     background color of space characters that occur as trailing
     whitespace (Miroslav Lichvar).
+50. src/slrline.c: Added additional rline intrinsic functions:
 
+      rline_call
+      rline_set_point
+      rline_set_line
+
+51. src/slrline.c:   SLrline_init was using SLang_free_slstring
+    instead of SLfree.  Also SLrline_set_point was using < instead of
+    > when comparing point to len.
 
 {{{ Previous Versions
 
