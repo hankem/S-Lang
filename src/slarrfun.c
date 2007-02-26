@@ -92,6 +92,8 @@ static int check_for_empty_array (char *fun, unsigned int num)
 #endif
 #define SUM_FUNCTION sum_floats
 #define SUM_RESULT_TYPE float
+#define PROD_FUNCTION prod_floats
+#define PROD_RESULT_TYPE float
 #define CUMSUM_FUNCTION cumsum_floats
 #define CUMSUM_RESULT_TYPE float
 #define MIN_FUNCTION min_floats
@@ -116,6 +118,8 @@ static int check_for_empty_array (char *fun, unsigned int num)
 #define SUM_RESULT_TYPE double
 #define CUMSUM_FUNCTION cumsum_doubles
 #define CUMSUM_RESULT_TYPE double
+#define PROD_FUNCTION prod_doubles
+#define PROD_RESULT_TYPE double
 #define MIN_FUNCTION min_doubles
 #define MAX_FUNCTION max_doubles
 #define ANY_FUNCTION any_doubles
@@ -150,6 +154,8 @@ static int check_for_empty_array (char *fun, unsigned int num)
 #define SUM_RESULT_TYPE double
 #define CUMSUM_FUNCTION cumsum_ints
 #define CUMSUM_RESULT_TYPE double
+#define PROD_FUNCTION prod_ints
+#define PROD_RESULT_TYPE double
 #define MIN_FUNCTION min_ints
 #define MAX_FUNCTION max_ints
 #define ANY_FUNCTION any_ints
@@ -172,6 +178,7 @@ static int check_for_empty_array (char *fun, unsigned int num)
 # define TRANSPOSE_2D_ARRAY transpose_longs
 # define SUM_FUNCTION sum_longs
 # define SUM_RESULT_TYPE double
+#define PROD_FUNCTION prod_longs
 # define MIN_FUNCTION min_longs
 # define MAX_FUNCTION max_longs
 #define ANY_FUNCTION any_longs
@@ -870,6 +877,32 @@ static int cumsum_complex (SLtype xtype, VOID_STAR xp, unsigned int inc,
      }
    return 0;
 }
+
+static int prod_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID_STAR sp)
+{
+   double *z, *zmax;
+   double sr, si;
+   double *s;
+
+   z = (double *)zp;
+   zmax = z + 2*num;
+   inc *= 2;
+   sr = 1.0; si = 0.0;
+   while (z < zmax)
+     {
+	double a = sr, b = si;
+	double c = z[0], d = z[1];
+	sr = (a*c-b*d);
+	si = (b*c-a*d);
+	z += inc;
+     }
+   s = (double *)sp;
+   s[0] = sr;
+   s[1] = si;
+   return 0;
+}
+
+
 #endif
 #if SLANG_HAS_FLOAT
 static SLCONST SLarray_Contract_Type Sum_Functions [] =
@@ -893,6 +926,30 @@ static SLCONST SLarray_Contract_Type Sum_Functions [] =
 static void array_sum (void)
 {
    (void) SLarray_contract_array (Sum_Functions);
+}
+
+static SLCONST SLarray_Contract_Type Prod_Functions [] =
+{
+     {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},
+     {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_ints},
+     {SLANG_LONG_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},
+     {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) prod_floats},
+     {SLANG_UINT_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},
+     {SLANG_ULONG_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},
+     {SLANG_CHAR_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) prod_floats},
+     {SLANG_UCHAR_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) prod_floats},
+     {SLANG_SHORT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) prod_floats},
+     {SLANG_USHORT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) prod_floats},
+     {SLANG_VOID_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},
+#if SLANG_HAS_COMPLEX
+     {SLANG_COMPLEX_TYPE, SLANG_COMPLEX_TYPE, SLANG_COMPLEX_TYPE, (SLarray_Contract_Fun_Type *) prod_complex},
+#endif
+     {0, 0, 0, NULL}
+};
+
+static void array_prod (void)
+{
+   (void) SLarray_contract_array (Prod_Functions);
 }
 #endif
 
@@ -1277,6 +1334,7 @@ static SLang_Intrin_Fun_Type Array_Fun_Table [] =
 {
    MAKE_INTRINSIC_1("transpose", array_transpose, SLANG_VOID_TYPE, SLANG_ARRAY_TYPE),
 #if SLANG_HAS_FLOAT
+   MAKE_INTRINSIC_0("prod", array_prod, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("sum", array_sum, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("cumsum", array_cumsum, SLANG_VOID_TYPE),
 #endif

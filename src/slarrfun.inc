@@ -454,6 +454,30 @@ CUMSUM_FUNCTION (SLtype xtype, VOID_STAR xp, unsigned int inc,
 #undef CUMSUM_RESULT_TYPE
 #endif
 
+#ifdef PROD_FUNCTION
+#if SLANG_HAS_FLOAT
+static int PROD_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+{
+   GENERIC_TYPE *x, *xmax;
+   double prod;
+   
+   prod = 1.0;
+
+   x = (GENERIC_TYPE *) xp;
+   xmax = x + num;
+   while (x < xmax)
+     {
+	prod *= (double) *x;
+	x += inc;
+     }
+   *(PROD_RESULT_TYPE *)yp = (PROD_RESULT_TYPE) (prod);
+   return 0;
+}
+#endif				       /* SLANG_HAS_FLOAT */
+#undef PROD_FUNCTION
+#undef PROD_RESULT_TYPE
+#endif
+
 #ifdef GENERIC_TYPE
 # undef GENERIC_TYPE
 #endif

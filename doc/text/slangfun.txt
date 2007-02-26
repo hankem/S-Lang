@@ -3045,14 +3045,14 @@ cosh
 _diff
 
  SYNOPSIS
-  Compute the absolute difference between two values
+  Compute the absolute difference of two values
 
  USAGE
   y = _diff (x, y)
 
  DESCRIPTION
   The `_diff' function returns a floating point number equal to
-  the absolute value of the difference between its two arguments.
+  the absolute value of the difference of its two arguments.
   If either argument is an array, an array of the corresponding values
   will be returned.
 
@@ -3080,6 +3080,57 @@ exp
 
 --------------------------------------------------------------
 
+feqs
+
+ SYNOPSIS
+  Test the approximate equality of two numbers
+
+ USAGE
+  Char_Type feqs (a, b [,reldiff [,absdiff]]
+
+ DESCRIPTION
+ This function compares two floating point numbers `a' and
+ `b', and returns a non-zero value if they are equal to within a
+ specified tolerance; otherwise 0 will be returned.  If either is an
+ array, a corresponding boolean array will be returned.
+
+ The tolerances are specified as relative and absolute differences via
+ the optional third and fourth arguments.  If no optional arguments
+ are present, the tolerances default to `reldiff=0.001' and
+ `absdiff=1e-6'.  If only the relative difference has been
+ specified, the absolute difference (`absdiff') will be taken to
+ be 0.0.
+
+ For the case when `|b|>=|a|', `a' and `b' are
+ considered to be equal to within the specified tolerances if either
+ `|b-a|<=absdiff' or `|b-a|/|b|<=reldiff' is true.
+
+ SEE ALSO
+  fneqs, fgteqs, flteqs
+
+--------------------------------------------------------------
+
+fgteqs
+
+ SYNOPSIS
+  Compare two numbers using specified tolerances
+.
+
+ USAGE
+  Char_Type feqs (a, b [,reldiff [,absdiff]]
+
+ DESCRIPTION
+  This function is functionally equivalent to:
+
+     (a >= b) or feqs(a,b,...)
+
+  See the documentation of `feqs' for more information.
+
+ SEE ALSO
+  feqs, fneqs, flteqs
+
+--------------------------------------------------------------
+
 floor
 
  SYNOPSIS
@@ -3095,6 +3146,47 @@ floor
 
  SEE ALSO
   ceil, round, nint
+
+--------------------------------------------------------------
+
+flteqs
+
+ SYNOPSIS
+  Compare two numbers using specified tolerances
+.
+
+ USAGE
+  Char_Type feqs (a, b [,reldiff [,absdiff]]
+
+ DESCRIPTION
+  This function is functionally equivalent to:
+
+     (a <= b) or feqs(a,b,...)
+
+  See the documentation of `feqs' for more information.
+
+ SEE ALSO
+  feqs, fneqs, fgteqs
+
+--------------------------------------------------------------
+
+fneqs
+
+ SYNOPSIS
+  Test the approximate inequality of two numbers
+
+ USAGE
+  Char_Type feqs (a, b [,reldiff [,absdiff]]
+
+ DESCRIPTION
+  This function is functionally equivalent to:
+
+    not fneqs(a,b,...)
+
+  See the documentation of `feqs' for more information.
+
+ SEE ALSO
+  feqs, fgteqs, flteqs
 
 --------------------------------------------------------------
 
@@ -3659,6 +3751,49 @@ error
 
 --------------------------------------------------------------
 
+__get_exception_info
+
+ SYNOPSIS
+  Get information about the current exception
+
+ USAGE
+  Struct_Type __get_exception_info ()
+
+ DESCRIPTION
+ This function returns information about the currently active
+ exception in the form as a structure with the
+ following fields:
+
+    error            The current exception, e.g., RunTimeError
+    descr            A description of the exception
+    file             Name of the file generating the exception
+    line             Line number where the exception originated
+    function         Function where the exception originated
+    object           A user-defined object thrown by the exception
+    message          A user-defined message
+
+ If no exception is active, NULL will be returned.
+
+ This same information may also be obtained via the optional argument
+ to the `try' statement:
+
+     variable e = NULL;
+     try (e)
+       {
+          do_something ();
+       }
+     finally
+       {
+          if (e != NULL)
+            vmessage ("An error occured: %s", e.message);
+       }
+
+
+ SEE ALSO
+  error
+
+--------------------------------------------------------------
+
 message
 
  SYNOPSIS
@@ -3821,49 +3956,6 @@ vmessage
 
  SEE ALSO
   message, sprintf, Sprintf, verror
-
---------------------------------------------------------------
-
-__get_exception_info
-
- SYNOPSIS
-  Get information about the current exception
-
- USAGE
-  Struct_Type __get_exception_info ()
-
- DESCRIPTION
- This function returns information about the currently active
- exception in the form as a structure with the
- following fields:
-
-    error            The current exception, e.g., RunTimeError
-    descr            A description of the exception
-    file             Name of the file generating the exception
-    line             Line number where the exception originated
-    function         Function where the exception originated
-    object           A user-defined object thrown by the exception
-    message          A user-defined message
-
- If no exception is active, NULL will be returned.
-
- This same information may also be obtained via the optional argument
- to the `try' statement:
-
-     variable e = NULL;
-     try (e)
-       {
-          do_something ();
-       }
-     finally
-       {
-          if (e != NULL)
-            vmessage ("An error occured: %s", e.message);
-       }
-
-
- SEE ALSO
-  error
 
 --------------------------------------------------------------
 
@@ -5026,6 +5118,53 @@ uname
 
 --------------------------------------------------------------
 
+qualifier
+
+ SYNOPSIS
+  Get the value of a qualifier
+
+ USAGE
+  value = qualifier (String_Type name [,default_value])
+
+ DESCRIPTION
+ This function may be used to get the value of a qualifer.  If the
+ specified qualifier does not exist, `NULL' will be returned,
+ unless a default value has been provided.
+
+ EXAMPLE
+
+    define echo (text)
+    {
+       variable fp = qualifier ("out", stdout);
+       () = fputs (text, fp);
+    }
+    echo ("hello");              % writes hello to stdout
+    echo ("hello"; out=stderr);  % writes hello to stderr
+
+
+ NOTES
+ Since `NULL' is a valid value for a qualifier, this function is
+ unable to distinguish between a non-existent qualifier and one whose
+ value is `NULL'.  If such a distinction is important, the
+ `qualifier_exists' function can be used.  For example,
+
+    define echo (text)
+    {
+       variable fp = stdout;
+       if (qualifier_exists ("use_stderr"))
+         fp = stderr;
+       () = fputs (text, fp);
+    }
+    echo ("hello"; use_stderr);  % writes hello to stderr
+
+ In this case, no value was provided for the `use_stderr'
+ qualifier: it exists but has a value of `NULL'.
+
+ SEE ALSO
+  qualifier_exists, __qualifiers
+
+--------------------------------------------------------------
+
 __qualifiers
 
  SYNOPSIS
@@ -5089,53 +5228,6 @@ __qualifiers
 
  SEE ALSO
   qualifier, qualifier_exists
-
---------------------------------------------------------------
-
-qualifier
-
- SYNOPSIS
-  Get the value of a qualifier
-
- USAGE
-  value = qualifier (String_Type name [,default_value])
-
- DESCRIPTION
- This function may be used to get the value of a qualifer.  If the
- specified qualifier does not exist, `NULL' will be returned,
- unless a default value has been provided.
-
- EXAMPLE
-
-    define echo (text)
-    {
-       variable fp = qualifier ("out", stdout);
-       () = fputs (text, fp);
-    }
-    echo ("hello");              % writes hello to stdout
-    echo ("hello"; out=stderr);  % writes hello to stderr
-
-
- NOTES
- Since `NULL' is a valid value for a qualifier, this function is
- unable to distinguish between a non-existent qualifier and one whose
- value if `NULL'.  If such a distinction is important, the
- `qualifier_exists' function can be used.  For example,
-
-    define echo (text)
-    {
-       variable fp = stdout;
-       if (qualifier_exists ("use_stderr"))
-         fp = stderr;
-       () = fputs (text, fp);
-    }
-    echo ("hello"; use_stderr);  % writes hello to stderr
-
- In this case, no value was provided for the `use_stderr'
- qualifier: it exists but has a value of `NULL'.
-
- SEE ALSO
-  qualifier_exists, __qualifiers
 
 --------------------------------------------------------------
 
@@ -8342,23 +8434,29 @@ atoll
 char
 
  SYNOPSIS
-  Convert an ascii value into a string
+  Convert a character code to a string
 
  USAGE
   String_Type char (Integer_Type c)
 
  DESCRIPTION
-  The `char' function converts an integer ascii value `c' to a
-  string of unit character length such that the first character of the
-  string is `c'.  For example, `char('a')' returns the string
-  `"a"'.
+  The `char' function converts an integer character code (ascii)
+  value `c' to a string of unit character length such that the
+  first character of the string is `c'.  For example,
+  `char('a')' returns the string `"a"'.
 
- NOTES
   If UTF-8 mode is in effect  (`_slang_utf8_ok' is non-zero), the
   resulting single character may be represented by several bytes.
 
+  If the character code `c' is less than 0, then byte-semantics
+  will be used with the resulting string consisting of a single byte
+  whose value is that of `-c&0xFF'.
+
+ NOTES
+  A better name should have been chosen for this function.
+
  SEE ALSO
-  integer, string, typedef
+  integer, string, typedef, sprintf
 
 --------------------------------------------------------------
 

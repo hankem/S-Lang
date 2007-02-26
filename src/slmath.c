@@ -749,112 +749,102 @@ static int complex_math_op (int op,
 }
 #endif
 
-static int do_dd_fun (double (*f)(double, double),
-		      double *a, unsigned int a_inc,
-		      double *b, unsigned int b_inc, 
-		      double *c, unsigned int n)
+typedef struct
 {
-   unsigned int i;
-   for (i = 0; i < n; i++)
-     {
-	c[i] = (*f)(*a, *b);
-	a += a_inc;
-	b += b_inc;
-     }
-   return 0;
+   SLang_Array_Type *at;
+   int is_float;		       /* if non-zero, use fptr */
+   float f;
+   double d;
+   char c;
+   float *fptr;			       /* points at at->data or &f */
+   double *dptr;
+   char *cptr;
+   unsigned int inc;		       /* inc = 0, if at==NULL */
+   unsigned int num;
+}
+Array_Or_Scalar_Type;
+
+
+static void free_array_or_scalar (Array_Or_Scalar_Type *ast)
+{
+   if (ast->at != NULL)
+     SLang_free_array (ast->at);
 }
 
-static int do_ff_fun (double (*f)(double, double),
-		      float *a, unsigned int a_inc,
-		      float *b, unsigned int b_inc, 
-		      float *c, unsigned int n)
-{
-   unsigned int i;
-   for (i = 0; i < n; i++)
-     {
-	c[i] = (float) (*f)(*a, *b);
-	a += a_inc;
-	b += b_inc;
-     }
-   return 0;
-}
-
-static int do_fd_fun (double (*f)(double, double),
-		      float *a, unsigned int a_inc,
-		      double *b, unsigned int b_inc, 
-		      double *c, unsigned int n)
-{
-   unsigned int i;
-   for (i = 0; i < n; i++)
-     {
-	c[i] = (*f)(*a, *b);
-	a += a_inc;
-	b += b_inc;
-     }
-   return 0;
-}
-
-static int do_df_fun (double (*f)(double, double),
-		      double *a, unsigned int a_inc,
-		      float *b, unsigned int b_inc, 
-		      double *c, unsigned int n)
-{
-   unsigned int i;
-   for (i = 0; i < n; i++)
-     {
-	c[i] = (*f)(*a, *b);
-	a += a_inc;
-	b += b_inc;
-     }
-   return 0;
-}
-
-static int pop_array_or_scalar (SLang_Array_Type **atp, 
-				float *f, float **fp, 
-				double *d, double **dp,
-				int *is_floatp)
+static int pop_array_or_scalar (Array_Or_Scalar_Type *ast)
 {
    SLang_Array_Type *at;
 
-   *atp = NULL;
+   ast->at = NULL;
+   ast->inc = 0;
+   ast->num = 1;
    switch (SLang_peek_at_stack1 ())
      {
       case -1:
 	return -1;
 
       case SLANG_FLOAT_TYPE:
-	*is_floatp = 1;
+	ast->is_float = 1;
 	if (SLang_peek_at_stack () == SLANG_ARRAY_TYPE)
 	  {
 	     if (-1 == SLang_pop_array_of_type (&at, SLANG_FLOAT_TYPE))
 	       return -1;
-	     *fp = (float *) at->data;
-	     *atp = at;
+	     ast->fptr = (float *) at->data;
+	     ast->inc = 1;
+	     ast->num = at->num_elements;
+	     ast->at = at;
 	     return 0;
 	  }
 
-	if (-1 == SLang_pop_float (f))
+	ast->fptr = &ast->f;
+	if (-1 == SLang_pop_float (ast->fptr))
 	  return -1;
-	*fp = f;
 	return 0;
 
       default:
-	*is_floatp = 0;
+	ast->is_float = 0;
 	if (SLang_peek_at_stack () == SLANG_ARRAY_TYPE)
 	  {
 	     if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
 	       return -1;
-	     *dp = (double *) at->data;
-	     *atp = at;
+	     ast->dptr = (double *) at->data;
+	     ast->inc = 1;
+	     ast->num = at->num_elements;
+	     ast->at = at;
 	     return 0;
 	  }
 
-	if (-1 == SLang_pop_double (d))
+	ast->dptr = &ast->d;
+	if (-1 == SLang_pop_double (ast->dptr))
 	  return -1;
-	*dp = d;
 	return 0;
      }
 }
+
+static int pop_2_arrays_or_scalar (Array_Or_Scalar_Type *a, Array_Or_Scalar_Type *b)
+{
+   if (-1 == pop_array_or_scalar (b))
+     return -1;
+
+   if (-1 == pop_array_or_scalar (a))
+     {
+	free_array_or_scalar (b);
+	return -1;
+     }
+
+   if ((a->at != NULL) && (b->at != NULL))
+     {
+	if (a->num != b->num)
+	  {
+	     SLang_verror (SL_TypeMismatch_Error, "Array sizes do not match");
+	     free_array_or_scalar (a);
+	     free_array_or_scalar (b);
+	     return -1;
+	  }
+     }
+   return 0;
+}
+
 
 static SLang_Array_Type *create_from_tmp_array (SLang_Array_Type *a, SLang_Array_Type *b, SLtype type)
 {
@@ -879,100 +869,149 @@ static SLang_Array_Type *create_from_tmp_array (SLang_Array_Type *a, SLang_Array
    return SLang_create_array1 (type, 0, NULL, c->dims, c->num_dims, 1);
 }
 
+static int do_dd_fun (double (*f)(double, double),
+		      Array_Or_Scalar_Type *a_ast,
+		      Array_Or_Scalar_Type *b_ast,
+		      Array_Or_Scalar_Type *c_ast)
+{
+   double *a = a_ast->dptr;
+   double *b = b_ast->dptr;
+   double *c = c_ast->dptr;
+   unsigned int a_inc = a_ast->inc;
+   unsigned int b_inc = b_ast->inc;
+   unsigned int i, n = c_ast->num;
+
+   for (i = 0; i < n; i++)
+     {
+	c[i] = (*f)(*a, *b);
+	a += a_inc;
+	b += b_inc;
+     }
+   return 0;
+}
+
+static int do_ff_fun (double (*f)(double, double),
+		      Array_Or_Scalar_Type *a_ast,
+		      Array_Or_Scalar_Type *b_ast,
+		      Array_Or_Scalar_Type *c_ast)
+{
+   float *a = a_ast->fptr;
+   float *b = b_ast->fptr;
+   float *c = c_ast->fptr;
+   unsigned int a_inc = a_ast->inc;
+   unsigned int b_inc = b_ast->inc;
+   unsigned int i, n = c_ast->num;
+
+   for (i = 0; i < n; i++)
+     {
+	c[i] = (float) (*f)(*a, *b);
+	a += a_inc;
+	b += b_inc;
+     }
+   return 0;
+}
+
+static int do_fd_fun (double (*f)(double, double),
+		      Array_Or_Scalar_Type *a_ast,
+		      Array_Or_Scalar_Type *b_ast,
+		      Array_Or_Scalar_Type *c_ast)
+{
+   float *a = a_ast->fptr;
+   double *b = b_ast->dptr;
+   double *c = c_ast->dptr;
+   unsigned int a_inc = a_ast->inc;
+   unsigned int b_inc = b_ast->inc;
+   unsigned int i, n = c_ast->num;
+
+   for (i = 0; i < n; i++)
+     {
+	c[i] = (*f)(*a, *b);
+	a += a_inc;
+	b += b_inc;
+     }
+   return 0;
+}
+
+static int do_df_fun (double (*f)(double, double),
+		      Array_Or_Scalar_Type *a_ast,
+		      Array_Or_Scalar_Type *b_ast,
+		      Array_Or_Scalar_Type *c_ast)
+{
+   double *a = a_ast->dptr;
+   float *b = b_ast->fptr;
+   double *c = c_ast->dptr;
+   unsigned int a_inc = a_ast->inc;
+   unsigned int b_inc = b_ast->inc;
+   unsigned int i, n = c_ast->num;
+
+   for (i = 0; i < n; i++)
+     {
+	c[i] = (*f)(*a, *b);
+	a += a_inc;
+	b += b_inc;
+     }
+   return 0;
+}
+
 static int do_binary_function (double (*f)(double, double))
 {
-   int a_is_float, b_is_float, c_is_float;
-   SLang_Array_Type *at = NULL;
-   SLang_Array_Type *bt = NULL;
-   SLang_Array_Type *ct;
-   float *af, *bf, *cf, afbuf, bfbuf, cfbuf;
-   double *ad, *bd, *cd, adbuf, bdbuf, cdbuf;
-   unsigned int ainc, binc;
-   unsigned int na, nb, nc;
    SLtype type;
-   int is_scalar;
+   Array_Or_Scalar_Type a_ast, b_ast, c_ast;
 
-   if (-1 == pop_array_or_scalar (&bt, &bfbuf, &bf, &bdbuf, &bd, &b_is_float))
+   if (-1 == pop_2_arrays_or_scalar (&a_ast, &b_ast))
      return -1;
 
-   if (-1 == pop_array_or_scalar (&at, &afbuf, &af, &adbuf, &ad, &a_is_float))
+   c_ast.is_float = (a_ast.is_float && b_ast.is_float);
+   c_ast.at = NULL;
+   c_ast.num = 1;
+   c_ast.inc = 0;
+   if (c_ast.is_float)
      {
-	if (bt != NULL)
-	  SLang_free_array (bt);
-	return -1;
-     }
-
-   c_is_float = (a_is_float && b_is_float);
-   if (c_is_float) 
-     type = SLANG_FLOAT_TYPE;
-   else
-     type = SLANG_DOUBLE_TYPE;
-
-   is_scalar = 1;
-   ainc = binc = 0;
-   na = nb = nc = 1;
-
-   if (at != NULL)
-     {
-	ainc = 1;
-	na = at->num_elements;
-	is_scalar = 0;
-     }
-
-   if (bt != NULL)
-     {
-	binc = 1;
-	nb = bt->num_elements;
-	is_scalar = 0;
-	if ((at != NULL) && (nb != na))
-	  {
-	     SLang_verror (SL_TypeMismatch_Error, "Array sizes do not match");
-	     SLang_free_array (at);
-	     SLang_free_array (bt);
-	     return -1;
-	  }
-     }
-
-   if (is_scalar == 0)
-     {
-	if (NULL == (ct = create_from_tmp_array (at, bt, type)))
-	  {
-	     SLang_free_array (at);    /* NULL ok */
-	     SLang_free_array (bt);    /* NULL ok */
-	     return -1;
-	  }
-	cf = (float *) ct->data;
-	cd = (double *) ct->data;
-	nc = ct->num_elements;
+	type = SLANG_FLOAT_TYPE;
+	c_ast.fptr = &c_ast.f;
      }
    else
      {
-	cf = (float *) &cfbuf;
-	cd = (double *) &cdbuf;
-	ct = NULL;
+	type = SLANG_DOUBLE_TYPE;
+	c_ast.dptr = &c_ast.d;
      }
 
-   if (a_is_float)
+   if ((a_ast.at != NULL) || (b_ast.at != NULL))
      {
-	if (b_is_float)
-	  (void) do_ff_fun (f, af, ainc, bf, binc, cf, nc);
+	if (NULL == (c_ast.at = create_from_tmp_array (a_ast.at, b_ast.at, type)))
+	  {
+	     free_array_or_scalar (&a_ast);
+	     free_array_or_scalar (&b_ast);
+	     return -1;
+	  }
+	c_ast.fptr = (float *) c_ast.at->data;
+	c_ast.dptr = (double *) c_ast.at->data;
+	c_ast.num = c_ast.at->num_elements;
+	c_ast.inc = 1;
+     }
+
+   if (a_ast.is_float)
+     {
+	if (b_ast.is_float)
+	  (void) do_ff_fun (f, &a_ast, &b_ast, &c_ast);
 	else
-	  (void) do_fd_fun (f, af, ainc, bd, binc, cd, nc);
+	  (void) do_fd_fun (f, &a_ast, &b_ast, &c_ast);
      }
-   else if (b_is_float)
-     (void) do_df_fun (f, ad, ainc, bf, binc, cd, nc);
+   else if (b_ast.is_float)
+     (void) do_df_fun (f, &a_ast, &b_ast, &c_ast);
    else
-     (void) do_dd_fun (f, ad, ainc, bd, binc, cd, nc);
+     (void) do_dd_fun (f, &a_ast, &b_ast, &c_ast);
    
-   SLang_free_array (at);
-   SLang_free_array (bt);
-   if (ct != NULL)
-     return SLang_push_array (ct, 1);
+   free_array_or_scalar (&a_ast);
+   free_array_or_scalar (&b_ast);
 
-   if (c_is_float)
-     return SLang_push_float (cfbuf);
+   if (c_ast.at != NULL)
+     return SLang_push_array (c_ast.at, 1);
 
-   return SLang_push_double (cdbuf);
+   if (c_ast.is_float)
+     return SLang_push_float (c_ast.f);
+
+   return SLang_push_double (c_ast.d);
 }
 
 static void hypot_fun (void)
@@ -1013,6 +1052,232 @@ static void diff_fun (void)
 {
    (void) do_binary_function (do_diff);
 }
+
+#if 1
+
+static int do_c_dd_fun (int (*f)(double, double, VOID_STAR),
+			VOID_STAR cd,
+			Array_Or_Scalar_Type *a_ast,
+			Array_Or_Scalar_Type *b_ast,
+			Array_Or_Scalar_Type *c_ast)
+{
+   double *a = a_ast->dptr;
+   double *b = b_ast->dptr;
+   char *c = c_ast->cptr;
+   unsigned int a_inc = a_ast->inc;
+   unsigned int b_inc = b_ast->inc;
+   unsigned int i, n = c_ast->num;
+
+   for (i = 0; i < n; i++)
+     {
+	c[i] = (char) (*f)(*a, *b, cd);
+	a += a_inc;
+	b += b_inc;
+     }
+   return 0;
+}
+
+static int do_c_ff_fun (int (*f)(double, double, VOID_STAR),
+			VOID_STAR cd,
+			Array_Or_Scalar_Type *a_ast,
+			Array_Or_Scalar_Type *b_ast,
+			Array_Or_Scalar_Type *c_ast)
+{
+   float *a = a_ast->fptr;
+   float *b = b_ast->fptr;
+   char *c = c_ast->cptr;
+   unsigned int a_inc = a_ast->inc;
+   unsigned int b_inc = b_ast->inc;
+   unsigned int i, n = c_ast->num;
+
+   for (i = 0; i < n; i++)
+     {
+	c[i] = (char) (*f)(*a, *b, cd);
+	a += a_inc;
+	b += b_inc;
+     }
+   return 0;
+}
+
+static int do_c_fd_fun (int (*f)(double, double, VOID_STAR),
+			VOID_STAR cd,
+			Array_Or_Scalar_Type *a_ast,
+			Array_Or_Scalar_Type *b_ast,
+			Array_Or_Scalar_Type *c_ast)
+{
+   float *a = a_ast->fptr;
+   double *b = b_ast->dptr;
+   char *c = c_ast->cptr;
+   unsigned int a_inc = a_ast->inc;
+   unsigned int b_inc = b_ast->inc;
+   unsigned int i, n = c_ast->num;
+
+   for (i = 0; i < n; i++)
+     {
+	c[i] = (char) (*f)(*a, *b, cd);
+	a += a_inc;
+	b += b_inc;
+     }
+   return 0;
+}
+
+static int do_c_df_fun (int (*f)(double, double, VOID_STAR),
+			VOID_STAR cd,
+			Array_Or_Scalar_Type *a_ast,
+			Array_Or_Scalar_Type *b_ast,
+			Array_Or_Scalar_Type *c_ast)
+{
+   double *a = a_ast->dptr;
+   float *b = b_ast->fptr;
+   char *c = c_ast->cptr;
+   unsigned int a_inc = a_ast->inc;
+   unsigned int b_inc = b_ast->inc;
+   unsigned int i, n = c_ast->num;
+
+   for (i = 0; i < n; i++)
+     {
+	c[i] = (char) (*f)(*a, *b, cd);
+	a += a_inc;
+	b += b_inc;
+     }
+   return 0;
+}
+
+static int do_binary_function_c (int (*f)(double, double,VOID_STAR), VOID_STAR cd)
+{
+   Array_Or_Scalar_Type a_ast, b_ast, c_ast;
+
+   if (-1 == pop_2_arrays_or_scalar (&a_ast, &b_ast))
+     return -1;
+
+   c_ast.at = NULL;
+   c_ast.num = 1;
+   c_ast.inc = 0;
+   c_ast.cptr = &c_ast.c;
+
+   if ((a_ast.at != NULL) || (b_ast.at != NULL))
+     {
+	if (NULL == (c_ast.at = SLang_create_array1 (SLANG_CHAR_TYPE, 0, NULL, a_ast.at->dims, a_ast.at->num_dims, 1)))
+	  {
+	     free_array_or_scalar (&a_ast);
+	     free_array_or_scalar (&b_ast);
+	     return -1;
+	  }
+	c_ast.cptr = (char *) c_ast.at->data;
+	c_ast.num = c_ast.at->num_elements;
+	c_ast.inc = 1;
+     }
+
+   if (a_ast.is_float)
+     {
+	if (b_ast.is_float)
+	  (void) do_c_ff_fun (f, cd, &a_ast, &b_ast, &c_ast);
+	else
+	  (void) do_c_fd_fun (f, cd, &a_ast, &b_ast, &c_ast);
+     }
+   else if (b_ast.is_float)
+     (void) do_c_df_fun (f, cd, &a_ast, &b_ast, &c_ast);
+   else
+     (void) do_c_dd_fun (f, cd, &a_ast, &b_ast, &c_ast);
+
+   free_array_or_scalar (&a_ast);
+   free_array_or_scalar (&b_ast);
+
+   if (c_ast.at != NULL)
+     return SLang_push_array (c_ast.at, 1);
+
+   return SLang_push_char (c_ast.c);
+}
+
+typedef struct 
+{
+   double relerr;
+   double abserr;
+}
+Feqs_Err_Type;
+
+static int get_tolorances (int nargs, Feqs_Err_Type *ep)
+{
+   switch (nargs)
+     {
+      case 2:
+	if ((-1 == SLang_pop_double (&ep->abserr))
+	    || (-1 == SLang_pop_double (&ep->relerr)))
+	  return -1;
+	break;
+	
+      case 1:
+	if (-1 == SLang_pop_double (&ep->relerr))
+	  return -1;
+	ep->abserr = 0.0;
+	break;
+	
+      default:
+	ep->relerr = 0.01;
+	ep->abserr = 1e-6;
+	break;
+     }
+   return 0;
+}
+	  
+static int do_feqs (double a, double b, VOID_STAR cd)
+{   
+   Feqs_Err_Type *e = (Feqs_Err_Type *)cd;
+   
+   if (fabs (a-b) <= e->abserr)
+     return 1;
+   
+   if (fabs(a) > fabs(b))
+     return fabs ((a-b)/a) <= e->relerr;
+   
+   return fabs ((b-a)/b) <= e->relerr;
+}
+
+static int do_fneqs (double a, double b, VOID_STAR cd)
+{
+   return !do_feqs (a, b, cd);
+}
+
+static int do_fleqs (double a, double b, VOID_STAR cd)
+{
+   return (a < b) || do_feqs (a, b, cd);
+}
+
+static int do_fgeqs (double a, double b, VOID_STAR cd)
+{
+   return (a > b) || do_feqs (a, b, cd);
+}
+
+static void do_an_feqs_fun (int (*f)(double, double, VOID_STAR))
+{
+   Feqs_Err_Type e;
+   if (-1 == get_tolorances (SLang_Num_Function_Args-2, &e))
+     return;
+   
+   do_binary_function_c (f, (VOID_STAR)&e);
+}
+
+static void feqs_fun (void)
+{
+   do_an_feqs_fun (do_feqs);
+}
+
+static void fgeqs_fun (void)
+{
+   do_an_feqs_fun (do_fgeqs);
+}
+
+static void fleqs_fun (void)
+{
+   do_an_feqs_fun (do_fleqs);
+}
+
+static void fneqs_fun (void)
+{
+   do_an_feqs_fun (do_fneqs);
+}
+#endif
+
 
 static int do_nint (double x)
 {
@@ -1170,6 +1435,10 @@ static SLang_Intrin_Fun_Type SLang_Math_Table [] =
    MAKE_INTRINSIC_0("_min", min_fun, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_max", max_fun, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_diff", diff_fun, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("feqs", feqs_fun, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("fneqs", fneqs_fun, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("flteqs", fleqs_fun, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("fgteqs", fgeqs_fun, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("fpu_clear_except_bits", fpu_clear_except_bits, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_1("fpu_test_except_bits", fpu_test_except_bits, _pSLANG_LONG_TYPE, _pSLANG_LONG_TYPE),
    SLANG_END_INTRIN_FUN_TABLE

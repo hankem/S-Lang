@@ -366,6 +366,20 @@ private define test_foreach ()
 }
 test_foreach ();
 
-   
+
+define test_char (c, s)
+{
+   variable cs = char (c);
+   variable ss = sprintf ("%b", -c);
+   if (s != cs)
+     failed ("char(%d) ==> %s, not %s as expected", c, cs, s);
+
+   if (s != ss)
+     failed ("sprintf using %%b with %d ==> %s, not %s as expected",
+	     -c, cs, s);
+}
+test_char (-0x78, "\x78");
+test_char (-0xAB, "\xAB");
+
 print ("Ok\n");
 exit (0);

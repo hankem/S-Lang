@@ -168,6 +168,36 @@ Changes since 2.0.7
 51. src/slrline.c:   SLrline_init was using SLang_free_slstring
     instead of SLfree.  Also SLrline_set_point was using < instead of
     > when comparing point to len.
+52. src/slrline.c: Added rline_getkey and rline_input_pending
+    intrinsic functions.
+53. src/slstd.c: If the "char" function is passed a negative integer,
+    byte-semantics will be used.
+54. src/slrline.c: When browsing previous history items, the item that
+    is currently being edited will not be lost.
+55. src/slrline.c: A new function called SLrline_open2 was added to
+    the API.  It is like SLrline_open except that it associates a name
+    with the underlying SLrline_Type object and calls an interpreter
+    hook (rline_open_hook)  with that name.  This mechanism permits
+    the readline history to be saved to a file and then later retrieved.
+56. slsh/lib/rline/*.sl: A few .sl files were added:
+      vikeys.sl:    A simple vi-like emulation
+      emacs.sl:     A emacs-like emulation
+      editfuns.sl:  Some utility editing functions
+      history.sl:   Functions to save/restore history
+57. slsh/scripts/sldb: If the file was specified using a relative
+    path, prefix its name with the cwd to ensure that it loads.
+58. src/slmath.c: Add "fuzzy" floating point comparison functions
+    feqs, fneqs, flteqs, fgteqs, which compare numbers using a
+    specified relative and absolute error.
+59. slsh/readline.c: Readline objects were made available to the
+    interpreter.
+60. slsh/scripts/svnsh, slsh/lib/sldb.sl: Added readline-specific
+    calls to enable the saving/loading of history.
+61. src/slrline.c: Added rline_get_edit_width intrinsic.
+62. src/slarrfuns.c: prod function added (Mike Noble).
+63. src/slstrops.c: %b may be used in sprintf to specify a byte
+    conversion.  This is equivalent to %c when UTF-8 mode is not in
+    effect.
 
 {{{ Previous Versions
 

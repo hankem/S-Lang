@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20100
-#define SLANG_VERSION_STRING "pre2.1.0-51"
+#define SLANG_VERSION_STRING "pre2.1.0-63"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1496,6 +1496,7 @@ SL_EXTERN int SLang_Key_TimeOut_Flag;
 
 typedef struct _pSLrline_Type SLrline_Type;
 SL_EXTERN SLrline_Type *SLrline_open (unsigned int width, unsigned int flags);
+SL_EXTERN SLrline_Type *SLrline_open2 (char *, unsigned int width, unsigned int flags);
 #define SL_RLINE_NO_ECHO	1
 #define SL_RLINE_USE_ANSI	2
 #define SL_RLINE_BLINK_MATCH	4

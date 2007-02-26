@@ -31,6 +31,8 @@
 @demo/pager.c
 @demo/smgtest.c
 @demo/useropen.c
+@demo/rline.c
+
 @doc/OLD/help/README
 @doc/OLD/help/makefile.djg
 @doc/OLD/help/makefile.os2
@@ -192,6 +194,10 @@
 @slsh/lib/print.sl
 @slsh/lib/slshhelp.sl
 
+@slsh/lib/rline/editfuns.sl
+@slsh/lib/rline/emacskeys.sl
+@slsh/lib/rline/history.sl
+@slsh/lib/rline/vikeys.sl
 @slsh/lib/rline/complete.sl
 @slsh/lib/rline/slrline.rc
 

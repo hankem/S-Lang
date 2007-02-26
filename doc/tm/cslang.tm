@@ -1600,6 +1600,92 @@
 
 #%}}}
 
+\chapter{Readline Interface}
+
+  The \slang library includes simple but capable readline
+  functionality in its \verb{SLrline} layer.  The \verb{SLrline}
+  routines provide a simple mechanism for an application to get
+  prompted input from a user with command line editing, completions,
+  and history recall. 
+
+  The use of the \verb{SLrline} routines will be illustrated with a
+  few simple examples.  All of the examples given in this section may
+  be found in the file \verb{demo/rline.c} in the \slang source code
+  distribution.  For clarity, the code shown below omits most error
+  checking.
+
+\sect{Introduction}
+
+  The first example simply reads input from the user until the user
+  enters \exmp{quit}:
+#v+
+   SLrline_Type *rl;
+   SLang_init_tty (-1, 0, 1);
+   rl = SLrline_open (80, SL_RLINE_BLINK_MATCH);
+   while (1)
+     {
+       char *line;
+       unsigned int len;
+       
+       line = SLrline_read_line (rl, "prompt>", &len);
+       if (line == NULL) break;
+       if (0 == strcmp (line, "quit"))
+         {
+            SLfree (line);
+            break;
+         }
+       (void) fprintf (stdout, "\nRead %d bytes: %s\n", strlen(line), line);
+       SLfree (line);
+     }
+   SLrline_close (rl);
+   SLang_reset_tty ();
+#v-
+  In this example, the \verb{SLtt} interface functions
+  \cfun{SLang_init_tty} and \cfun{SLang_reset_tty} functions have been
+  used to open and close the terminal for reading input.  By default,
+  the \verb{SLrline} functions use the \verb{SLang_getkey} function to
+  read characters and assume that the terminal has been properly
+  initialized before use.
+  
+  The \cfun{SLrline_open} function was used to create an instance of
+  an \verb{SLrline_Type} object.  The function takes two arguments:
+  and edit window display width (80 above), and a set of flags.  In
+  this case, the \verb{SL_RLINE_BLINK_MATCH} flags has been used to
+  turn on parenthesis blinking.  Once finished, the
+  \exmp{SLrline_Type} object must be freed using the
+  \exmp{SLrline_close} function.
+  
+  The actual reading of the line occurs in the
+  \cfun{SLrline_read_line} function, which takes an
+  \verb{SLrline_Type} instance and a string representing the prompt to
+  be used.  The line itself is returned as a malloced \exmp{char *}
+  and must be freed using the \cfun{SLfree} function after used.  The
+  length (in bytes) of the line is returned via the parameter list.
+  
+  If an end-of-file character (\exmp{^D} on Unix) was entered at the
+  beginning of a line, the \cfun{SLrline_read_line} function will
+  return \NULL.  However, it also return \NULL if an error of
+  some sort was encountered.  The only way to tell the difference
+  between these two conditions is to call \cfun{SLang_get_error}.
+  
+  The above code fragment did not provide for any sort of
+  \exmp{SIGINT} handling.  Without such a provision, pressing
+  \exmp{^C} at the prompt could be enough to kill the application.
+  This is especially undesirable if one wants to press \exmp{^C} to
+  abort the call to \exmp{SLrline_read_line}.  The function
+  \exmp{example_2} in \exmp{demo/rline.c} shows code to handle this
+  situation as well as distinguish between EOF and other errors.
+
+\sect{Interpreter Interface}
+
+  \verb{SLrline} features such as command-line completion,
+  vi-emulation, and so on are implemented through callbacks or hooks from
+  the \verb{SLrline} functions to the \slang interpreter.  Hence, this
+  functionality is only available to applications that make use of the
+  interpreter.
+  
+  TBD...
+
 \chapter{Screen Management} #%{{{
 
   The \slang library provides two interfaces to terminal independent

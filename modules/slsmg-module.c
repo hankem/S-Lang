@@ -1,4 +1,4 @@
-/* This module implements and interface to the SLang SMG routines */
+/* This module implements an interface to the SLang SMG routines */
 #include <stdio.h>
 #include <slang.h>
 

@@ -16,6 +16,8 @@ static variable Repository;
 static variable Repository_CWD;
 static variable Echo_Commands = 0;
 
+static variable Rline;
+
 new_exception ("SVNError", AnyError, "svn error");
 
 static define expand_path (path)
@@ -225,6 +227,7 @@ static define _svn_help (argv)
 
 static define _svn_quit (argv)
 {
+   Rline = NULL;
    exit (0);
 }
 
@@ -259,7 +262,7 @@ static define take_input ()
      {
 	try
 	  {
-	     line = slsh_readline (sprintf ("%s> ", Repository_CWD));
+	     line = slsh_readline (Rline, sprintf ("%s> ", Repository_CWD));
 	  }
 	catch UserBreakError: continue;
 	if (line == NULL)
@@ -327,5 +330,9 @@ public define slsh_main ()
      repos = strcat ("file://", repos);
    
    svn_set_repository (repos);
+
+   slsh_readline_init ("SVNSH");
+   Rline = slsh_readline_new ("svnsh");
+
    take_input ();
 }

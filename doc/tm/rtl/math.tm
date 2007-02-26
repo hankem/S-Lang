@@ -131,11 +131,11 @@
 \done
 
 \function{_diff}
-\synopsis{Compute the absolute difference between two values}
+\synopsis{Compute the absolute difference of two values}
 \usage{y = _diff (x, y)}
 \description
   The \ifun{_diff} function returns a floating point number equal to
-  the absolute value of the difference between its two arguments.
+  the absolute value of the difference of its two arguments.
   If either argument is an array, an array of the corresponding values
   will be returned.
 \seealso{abs}
@@ -152,6 +152,40 @@
 \seealso{cos, atan, acosh, cosh}
 \done
 
+\function{feqs}
+\synopsis{Test the approximate equality of two numbers}
+\usage{Char_Type feqs (a, b [,reldiff [,absdiff]]}
+\description
+ This function compares two floating point numbers \exmp{a} and
+ \exmp{b}, and returns a non-zero value if they are equal to within a
+ specified tolerance; otherwise 0 will be returned.  If either is an
+ array, a corresponding boolean array will be returned.
+
+ The tolerances are specified as relative and absolute differences via
+ the optional third and fourth arguments.  If no optional arguments
+ are present, the tolerances default to \exmp{reldiff=0.001} and
+ \exmp{absdiff=1e-6}.  If only the relative difference has been
+ specified, the absolute difference (\exmp{absdiff}) will be taken to
+ be 0.0.
+ 
+ For the case when \exmp{|b|>=|a|}, \exmp{a} and \exmp{b} are
+ considered to be equal to within the specified tolerances if either
+ \exmp{|b-a|<=absdiff} or \exmp{|b-a|/|b|<=reldiff} is true.
+\seealso{fneqs, fgteqs, flteqs}
+\done
+
+\function{fgteqs}
+\synopsis{Compare two numbers using specified tolerances}.
+\usage{Char_Type feqs (a, b [,reldiff [,absdiff]]}
+\description
+  This function is functionally equivalent to:
+#v+
+     (a >= b) or feqs(a,b,...)
+#v-
+  See the documentation of \ifun{feqs} for more information.
+\seealso{feqs, fneqs, flteqs}
+\done
+
 \function{floor}
 \synopsis{Round x down to the nearest integer}
 \usage{y = floor (x)}
@@ -160,6 +194,30 @@
   integral value. If the argument is an array, the corresponding array
   will be returned.
 \seealso{ceil, round, nint}
+\done
+
+\function{flteqs}
+\synopsis{Compare two numbers using specified tolerances}.
+\usage{Char_Type feqs (a, b [,reldiff [,absdiff]]}
+\description
+  This function is functionally equivalent to:
+#v+
+     (a <= b) or feqs(a,b,...)
+#v-
+  See the documentation of \ifun{feqs} for more information.
+\seealso{feqs, fneqs, fgteqs}
+\done
+
+\function{fneqs}
+\synopsis{Test the approximate inequality of two numbers}
+\usage{Char_Type feqs (a, b [,reldiff [,absdiff]]}
+\description
+  This function is functionally equivalent to:
+#v+
+    not fneqs(a,b,...)
+#v-
+  See the documentation of \ifun{feqs} for more information.
+\seealso{feqs, fgteqs, flteqs}
 \done
 
 \function{hypot}

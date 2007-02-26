@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide, V2.0.4
   John E. Davis, davis@space.mit.edu
-  Feb 7, 2007
+  Feb 25, 2007
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -37,23 +37,26 @@
   6.6. Reading Keyboard Input with SLkp_getkey
   6.7. Buffering Input
   6.8. Global Variables
-  7. Screen Management
-  7.1. Initialization
-  7.2. Resetting SLsmg
-  7.3. Handling Screen Resize Events
-  7.4. SLsmg Functions
-  7.4.1. Positioning the cursor
-  7.4.2. Writing to the Display
-  7.4.3. Erasing the Display
-  7.4.4. Setting Character Attributes
-  7.4.5. Lines and Alternate Character Sets
-  7.4.6. Miscellaneous Functions
-  7.5. Variables
-  7.6. Hints for using SLsmg
-  8. Signal Functions
-  9. Searching Functions
-  9.1. Simple Searches
-  9.2. Regular Expressions
+  7. Readline Interface
+  7.1. Introduction
+  7.2. Interpreter Interface
+  8. Screen Management
+  8.1. Initialization
+  8.2. Resetting SLsmg
+  8.3. Handling Screen Resize Events
+  8.4. SLsmg Functions
+  8.4.1. Positioning the cursor
+  8.4.2. Writing to the Display
+  8.4.3. Erasing the Display
+  8.4.4. Setting Character Attributes
+  8.4.5. Lines and Alternate Character Sets
+  8.4.6. Miscellaneous Functions
+  8.5. Variables
+  8.6. Hints for using SLsmg
+  9. Signal Functions
+  10. Searching Functions
+  10.1. Simple Searches
+  10.2. Regular Expressions
   A. S-Lang 2 API NEWS and UPGRADE information
   A.1. SLang_Error
   A.2. SLsmg/SLtt Functions
@@ -1605,7 +1608,87 @@
   set to the value of the terminal's baud rate after the call to
   SLang_init_tty.
 
-  [1m7.  Screen Management[0m
+  [1m7.  Readline Interface[0m
+
+  The [1mS-Lang [22mlibrary includes simple but capable readline functionality
+  in its SLrline layer.  The SLrline routines provide a simple mechanism
+  for an application to get prompted input from a user with command line
+  editing, completions, and history recall.
+
+  The use of the SLrline routines will be illustrated with a few simple
+  examples.  All of the examples given in this section may be found in
+  the file demo/rline.c in the [1mS-Lang [22msource code distribution.  For
+  clarity, the code shown below omits most error checking.
+
+  [1m7.1.  Introduction[0m
+
+  The first example simply reads input from the user until the user
+  enters quit:
+
+          SLrline_Type *rl;
+          SLang_init_tty (-1, 0, 1);
+          rl = SLrline_open (80, SL_RLINE_BLINK_MATCH);
+          while (1)
+            {
+              char *line;
+              unsigned int len;
+
+              line = SLrline_read_line (rl, "prompt>", &len);
+              if (line == NULL) break;
+              if (0 == strcmp (line, "quit"))
+                {
+                   SLfree (line);
+                   break;
+                }
+              (void) fprintf (stdout, "\nRead %d bytes: %s\n", strlen(line), line);
+              SLfree (line);
+            }
+          SLrline_close (rl);
+          SLang_reset_tty ();
+
+  In this example, the SLtt interface functions SLang_init_tty and
+  SLang_reset_tty functions have been used to open and close the termi-
+  nal for reading input.  By default, the SLrline functions use the
+  SLang_getkey function to read characters and assume that the terminal
+  has been properly initialized before use.
+
+  The SLrline_open function was used to create an instance of an
+  SLrline_Type object.  The function takes two arguments: and edit
+  window display width (80 above), and a set of flags.  In this case,
+  the SL_RLINE_BLINK_MATCH flags has been used to turn on parenthesis
+  blinking.  Once finished, the SLrline_Type object must be freed using
+  the SLrline_close function.
+
+  The actual reading of the line occurs in the SLrline_read_line
+  function, which takes an SLrline_Type instance and a string
+  representing the prompt to be used.  The line itself is returned as a
+  malloced char * and must be freed using the SLfree function after
+  used.  The length (in bytes) of the line is returned via the parameter
+  list.
+
+  If an end-of-file character (^D on Unix) was entered at the beginning
+  of a line, the SLrline_read_line function will return NULL.  However,
+  it also return NULL if an error of some sort was encountered.  The
+  only way to tell the difference between these two conditions is to
+  call SLang_get_error.
+
+  The above code fragment did not provide for any sort of SIGINT
+  handling.  Without such a provision, pressing ^C at the prompt could
+  be enough to kill the application.  This is especially undesirable if
+  one wants to press ^C to abort the call to SLrline_read_line.  The
+  function example_2 in demo/rline.c shows code to handle this situation
+  as well as distinguish between EOF and other errors.
+
+  [1m7.2.  Interpreter Interface[0m
+
+  SLrline features such as command-line completion, vi-emulation, and so
+  on are implemented through callbacks or hooks from the SLrline
+  functions to the [1mS-Lang [22minterpreter.  Hence, this functionality is
+  only available to applications that make use of the interpreter.
+
+  TBD...
+
+  [1m8.  Screen Management[0m
 
   The [1mS-Lang [22mlibrary provides two interfaces to terminal independent
   routines for manipulating the display on a terminal.  The highest
@@ -1630,7 +1713,7 @@
   The following subsections explore [1mS-Lang[22m's screen management system in
   greater detail.
 
-  [1m7.1.  Initialization[0m
+  [1m8.1.  Initialization[0m
 
   The function SLsmg_init_smg must be called before any other SLsmg
   function can be used.  It has the simple prototype:
@@ -1658,7 +1741,7 @@
   to read characters from the keyboard, it is also a good idea to
   initialize the keyboard routines at this point as well.
 
-  [1m7.2.  Resetting SLsmg[0m
+  [1m8.2.  Resetting SLsmg[0m
 
   Before the program exits or suspends, the function SLsmg_reset_smg
   should be called to shutdown the display system.  This function has
@@ -1691,7 +1774,7 @@
   following sections, other SLsmg functions will be introduced which may
   be used to make this simple program do much more.
 
-  [1m7.3.  Handling Screen Resize Events[0m
+  [1m8.3.  Handling Screen Resize Events[0m
 
   The function SLsmg_reinit_smg is designed to be used in conjunction
   with resize events.
@@ -1734,7 +1817,7 @@
          return 0;
        }
 
-  [1m7.4.  SLsmg Functions[0m
+  [1m8.4.  SLsmg Functions[0m
 
   In the previous sections, functions for initializing and shutting down
   the SLsmg routines were discussed.  In this section, the rest of the
@@ -1745,7 +1828,7 @@
 
             void SLsmg_refresh (void);
 
-  [1m7.4.1.  Positioning the cursor[0m
+  [1m8.4.1.  Positioning the cursor[0m
 
   The SLsmg_gotorc function is used to position the cursor at a given
   row and column.  The prototype for this function is:
@@ -1774,7 +1857,7 @@
   sets the origin to (10, 0) and after the function returns, the vari-
   able r will have the value of the previous row origin.
 
-  [1m7.4.2.  Writing to the Display[0m
+  [1m8.4.2.  Writing to the Display[0m
 
   SLsmg has several routines for outputting text to the virtual display.
   The following points should be understood:
@@ -1857,7 +1940,7 @@
      void SLsmg_vprintf (char *, va_list);
         Like SLsmg_printf but uses a variable argument list.
 
-  [1m7.4.3.  Erasing the Display[0m
+  [1m8.4.3.  Erasing the Display[0m
 
   The following functions may be used to fill portions of the display
   with blank characters.  The attributes of blank character are the
@@ -1873,7 +1956,7 @@
      void SLsmg_cls (void);
         Clear the entire virtual display.
 
-  [1m7.4.4.  Setting Character Attributes[0m
+  [1m8.4.4.  Setting Character Attributes[0m
 
   Character attributes define the visual characteristics the character
   possesses when it is displayed.  Visual characteristics include the
@@ -1996,7 +2079,7 @@
   lightgray;blue, the default color object will be initialized to
   represent a lightgray foreground upon a blue background.
 
-  [1m7.4.5.  Lines and Alternate Character Sets[0m
+  [1m8.4.5.  Lines and Alternate Character Sets[0m
 
   The [1mS-Lang [22mscreen management library also includes routines for
   turning on and turning off alternate character sets.  This is
@@ -2020,7 +2103,7 @@
         The box spans dr rows and dc columns.  The current position will
         be left at row r and column c.
 
-  [1m7.4.6.  Miscellaneous Functions[0m
+  [1m8.4.6.  Miscellaneous Functions[0m
 
      void SLsmg_touch_lines (int r, int n);
         Mark screen rows numbered r, r + 1, ... r + (n - 1) as modified.
@@ -2057,7 +2140,7 @@
      alternate-character set setting is in effect for the cell (zero or
      non-zero).
 
-  [1m7.5.  Variables[0m
+  [1m8.5.  Variables[0m
 
   The following [1mS-Lang [22mglobal variables are used by the SLsmg interface.
   Some of these have been previously discussed.
@@ -2088,13 +2171,13 @@
   optimization.  For some applications, this variable should be set to
   zero.  The default value is set by the SLtt_get_terminfo function.
 
-  [1m7.6.  Hints for using SLsmg[0m
+  [1m8.6.  Hints for using SLsmg[0m
 
   This section discusses some general design issues that one must face
   when writing an application that requires some sort of screen
   management.
 
-  [1m8.  Signal Functions[0m
+  [1m9.  Signal Functions[0m
 
   Almost all non-trivial programs must worry about signals.  This is
   especially true for programs that use the [1mS-Lang [22mterminal input/output
@@ -2168,12 +2251,12 @@
 
   See demo/pager.c for examples.
 
-  [1m9.  Searching Functions[0m
+  [1m10.  Searching Functions[0m
 
   The S-Lang library incorporates two types of searches: Regular
   expression pattern matching and ordinary searching.
 
-  [1m9.1.  Simple Searches[0m
+  [1m10.1.  Simple Searches[0m
 
   [1mS-Lang[22m's [1mSLsearch [22minterface functions a convenient interface to the
   famous Boyer-Moore fast searching algrothim.  The searches can go in
@@ -2181,7 +2264,7 @@
   or without regard to case.  Moreover, UTF-8 encoded strings are fully
   supported by the interface.
 
-  [1m9.2.  Regular Expressions[0m
+  [1m10.2.  Regular Expressions[0m
 
   !!! No documentation available yet !!!
 

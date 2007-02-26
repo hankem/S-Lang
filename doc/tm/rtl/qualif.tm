@@ -1,3 +1,40 @@
+\function{qualifier}
+\synopsis{Get the value of a qualifier}
+\usage{value = qualifier (String_Type name [,default_value])}
+\description
+ This function may be used to get the value of a qualifer.  If the
+ specified qualifier does not exist, \exmp{NULL} will be returned,
+ unless a default value has been provided.
+\example
+#v+
+    define echo (text)
+    {
+       variable fp = qualifier ("out", stdout);
+       () = fputs (text, fp);
+    }
+    echo ("hello");              % writes hello to stdout
+    echo ("hello"; out=stderr);  % writes hello to stderr
+#v-
+\notes
+ Since \exmp{NULL} is a valid value for a qualifier, this function is
+ unable to distinguish between a non-existent qualifier and one whose
+ value is \exmp{NULL}.  If such a distinction is important, the
+ \ifun{qualifier_exists} function can be used.  For example,
+#v+
+    define echo (text)
+    {
+       variable fp = stdout;
+       if (qualifier_exists ("use_stderr"))
+         fp = stderr;
+       () = fputs (text, fp);
+    }
+    echo ("hello"; use_stderr);  % writes hello to stderr
+#v-
+ In this case, no value was provided for the \exmp{use_stderr}
+ qualifier: it exists but has a value of \exmp{NULL}.
+\seealso{qualifier_exists, __qualifiers}
+\done
+
 \function{__qualifiers}
 \synopsis{Get the active set of qualifiers}
 \usage{Struct_Type __qualifiers ()}
@@ -56,43 +93,6 @@
 \seealso{qualifier, qualifier_exists}
 \done
 
-\function{qualifier}
-\synopsis{Get the value of a qualifier}
-\usage{value = qualifier (String_Type name [,default_value])}
-\description
- This function may be used to get the value of a qualifer.  If the
- specified qualifier does not exist, \exmp{NULL} will be returned,
- unless a default value has been provided.
-\example
-#v+
-    define echo (text)
-    {
-       variable fp = qualifier ("out", stdout);
-       () = fputs (text, fp);
-    }
-    echo ("hello");              % writes hello to stdout
-    echo ("hello"; out=stderr);  % writes hello to stderr
-#v-
-\notes
- Since \exmp{NULL} is a valid value for a qualifier, this function is
- unable to distinguish between a non-existent qualifier and one whose
- value if \exmp{NULL}.  If such a distinction is important, the
- \ifun{qualifier_exists} function can be used.  For example,
-#v+
-    define echo (text)
-    {
-       variable fp = stdout;
-       if (qualifier_exists ("use_stderr"))
-         fp = stderr;
-       () = fputs (text, fp);
-    }
-    echo ("hello"; use_stderr);  % writes hello to stderr
-#v-
- In this case, no value was provided for the \exmp{use_stderr}
- qualifier: it exists but has a value of \exmp{NULL}.
-\seealso{qualifier_exists, __qualifiers}
-\done
-
 \function{qualifier_exists}
 \synopsis{Check for the existence of a qualifier}
 \usage{Int_Type qualifier_exists (String_Type name)}
@@ -101,3 +101,4 @@
  exists, or 0 otherwise.
 \seealso{qualifier, __qualifiers}
 \done
+

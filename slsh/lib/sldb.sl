@@ -46,6 +46,17 @@ private define list_method (file, linemin, linemax)
      }
 }
 
+#ifexists slsh_readline
+slsh_readline_init ("SLDB");
+private variable Rline = NULL;
+private define close_readline ()
+{
+   Rline = NULL;
+}
+Rline = slsh_readline_new ("sldb");
+atexit (&close_readline);
+#endif
+
 private define read_input_method (prompt, default_cmd)
 {
    variable line;
@@ -54,7 +65,7 @@ private define read_input_method (prompt, default_cmd)
 	try
 	  {
 #ifexists slsh_readline
-	     line = slsh_readline (prompt);
+	     line = slsh_readline (Rline, prompt);
 #else
 	     () = fputs (prompt, stdout); () = fflush(stdout);
 	     if (-1 == fgets (&line, stdin))

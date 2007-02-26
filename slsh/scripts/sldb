@@ -28,7 +28,10 @@ if (__argv[1] == "--pid")
 }
 
 __set_argc_argv (__argv[[1:]]);
-sldb (__argv[0]);
+$0 = __argv[0];
+if (not path_is_absolute ($0))
+  $0 = path_concat (getcwd (), $0);
+sldb ($0);
 
 #ifexists slsh_main
 slsh_main ();

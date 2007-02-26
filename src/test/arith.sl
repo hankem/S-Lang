@@ -249,6 +249,13 @@ define check_hypot (a, b, c)
      failed ("Wrong return type for hypot");
    if (0 == _eqs(c, cc))
      failed ("hypot: expected %S, got %S", c, cc);
+   
+   if (length (a) != length(b))
+     return;
+
+   cc = hypot ([a,a,a,a],[b,b,b,b]);
+   if (0 == _eqs([c,c,c,c], cc))
+     failed ("hypot ([a,a,a,a],[b,b,b,b])");
 }
 
 check_hypot (3.0, 4.0, 5.0);
@@ -347,6 +354,107 @@ check_nint (-1.4, -1);
 check_nint (-1.5, -2);
 check_nint (-1.51, -2);
 
+private define sl_feqs (a, b, relerr, abserr)
+{
+   if (abs(a-b) <= abserr)
+     return 1;
+   if (abs(a) > abs(b)) (b,a)=(a,b);
+   
+   return (abs((b-a)/b) <= relerr);
+}
+
+define test_feqs (a, b, relerr, abserr)
+{
+   variable c = feqs (a, b, relerr, abserr);
+   variable d = array_map (Char_Type, &sl_feqs, a, b, relerr, abserr);
+   if (typeof (c) != Array_Type)
+     d = d[0];
+   if (not _eqs(c,d))
+     failed ("feqs(4 args) did not return expected result");
+   
+   c = feqs (a, b, relerr);
+   d = array_map (Char_Type, &sl_feqs, a, b, relerr, 0.0);
+   if (typeof (c) != Array_Type)
+     d = d[0];
+   if (not _eqs(c, d))
+     failed ("feqs(3 args) did not return expected result");
+   
+   a = typecast (a, Double_Type);
+   b = typecast (b, Float_Type);
+   c = feqs (a, b, relerr);
+   d = array_map (Char_Type, &sl_feqs, a, b, relerr, 0.0);
+   if (typeof (c) != Array_Type)
+     d = d[0];
+   if (not _eqs(c, d))
+     failed ("feqs(double,float) did not return expected result");
+
+   a = typecast (a, Float_Type);
+   b = typecast (b, Double_Type);
+   c = feqs (a, b, relerr);
+   d = array_map (Char_Type, &sl_feqs, a, b, relerr, 0.0);
+   if (typeof (c) != Array_Type)
+     d = d[0];
+   if (not _eqs(c, d))
+     failed ("feqs(float,double) did not return expected result");
+
+   a = typecast (a, Float_Type);
+   b = typecast (b, Float_Type);
+   c = feqs (a, b, relerr);
+   d = array_map (Char_Type, &sl_feqs, a, b, relerr, 0.0);
+   if (typeof (c) != Array_Type)
+     d = d[0];
+   if (not _eqs(c, d))
+     failed ("feqs(float,float) did not return expected result");
+}
+
+foreach (10.0^[-12:20])
+{
+   $1 = ();
+   $2 = $1 * 1.01;
+   test_feqs ($1, $2, 0.001, 1e-6);
+
+   $2 = -$1 * 1.01;
+   test_feqs ($1, $2, 0.001, 1e-6);
+
+   $1 = -$1;
+   $2 = $1 * 1.01;
+   test_feqs ($1, $2, 0.001, 1e-6);
+
+   $2 = -$1 * 1.01;
+   test_feqs ($1, $2, 0.001, 1e-6);
+}
+
+$1 = 10.0^[-12:20];
+$2 = $1 * 1.01;
+test_feqs ($1, $2, 0.001, 1e-6);
+
+$2 = -$1 * 1.01;
+test_feqs ($1, $2, 0.001, 1e-6);
+
+$1 = -$1;
+$2 = $1 * 1.01;
+test_feqs ($1, $2, 0.001, 1e-6);
+
+$2 = -$1 * 1.01;
+test_feqs ($1, $2, 0.001, 1e-6);
+
+if (feqs (_NaN,_NaN,0.1, 1.0))
+  failed ("feqs (_NaN,_NaN)");
+
+if (not fneqs (_NaN,_NaN,0.1, 1.0))
+  failed ("fneqs (_NaN,_NaN)");
+
+if (fgteqs (_NaN,_NaN,0.1, 1.0))
+  failed ("fgteqs (_NaN,_NaN)");
+
+if (flteqs (_NaN,_NaN,0.1, 1.0))
+  failed ("flteqs (_NaN,_NaN)");
+
+if (fgteqs (2.0, 3.0, 0.001, 0.1))
+  failed ("fgteqs(2,3)");
+
+if (flteqs (2.0, 1.0, 0.001, 0.1))
+  failed ("fgteqs(2,1)");
 
 print ("Ok\n");
 exit (0);

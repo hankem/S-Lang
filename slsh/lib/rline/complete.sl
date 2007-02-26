@@ -2,11 +2,7 @@
 % reaadline code.  It may also be used by other slang applications.
 %
 % Version 0.1.0
-#ifexists require
 require ("glob");
-#else
-() = evalfile ("glob");
-#endif
 
 private variable Word_Bytes = Char_Type[256];
 Word_Bytes[[['0':'9'], ['A':'Z'], ['a':'z'], '_', [128:255]]] = 1;
@@ -127,10 +123,13 @@ private define completion_callback (line, point)
 private define list_completions (completions)
 {
    variable max_len = 1 + max (array_map(Int_Type, &strlen, completions));
-   variable max_cols = 80;
+   variable max_cols = rline_get_edit_width ();
    
-   if (max_len > 80)
-     max_len = 80;
+   if (max_cols < 1)
+     max_cols = 80;
+
+   if (max_len > max_cols)
+     max_len = max_cols;
    
    variable ncols = max_cols/max_len;
    variable fmt = sprintf ("%%-%ds", max_len);

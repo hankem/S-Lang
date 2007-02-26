@@ -637,7 +637,7 @@ int main (int argc, char **argv)
    /* Initializing the readline interface causes the .slrlinerc file
     * to be loaded.  It is put here after the startup files have been loaded.
     */
-   if (-1 == slsh_use_readline (use_readline))
+   if (-1 == slsh_use_readline (SLpath_basename (argv[0]), use_readline, is_interactive))
      return 1;
 
    if ((init_file != NULL)

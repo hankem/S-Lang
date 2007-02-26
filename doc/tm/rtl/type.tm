@@ -53,17 +53,23 @@
 \done
 
 \function{char}
-\synopsis{Convert an ascii value into a string}
+\synopsis{Convert a character code to a string}
 \usage{String_Type char (Integer_Type c)}
 \description
-  The \ifun{char} function converts an integer ascii value \exmp{c} to a
-  string of unit character length such that the first character of the
-  string is \exmp{c}.  For example, \exmp{char('a')} returns the string
-  \exmp{"a"}.
-\notes
+  The \ifun{char} function converts an integer character code (ascii)
+  value \exmp{c} to a string of unit character length such that the
+  first character of the string is \exmp{c}.  For example,
+  \exmp{char('a')} returns the string \exmp{"a"}.
+
   If UTF-8 mode is in effect  (\ivar{_slang_utf8_ok} is non-zero), the
   resulting single character may be represented by several bytes.
-\seealso{integer, string, typedef}
+
+  If the character code \exmp{c} is less than 0, then byte-semantics
+  will be used with the resulting string consisting of a single byte
+  whose value is that of \exmp{-c&0xFF}.
+\notes
+  A better name should have been chosen for this function.
+\seealso{integer, string, typedef, sprintf}
 \done
 
 \function{define_case}

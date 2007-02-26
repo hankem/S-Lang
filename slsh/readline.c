@@ -64,7 +64,7 @@ static int Slsh_Quit = 0;
 static SLang_Load_Type *Readline_Load_Object;
 static SLang_RLine_Info_Type *Rline_Info;
 
-static int open_readline (void);
+static int open_readline (char *);
 static void close_readline (void);
 
 static void init_tty (void);
@@ -188,13 +188,13 @@ static void close_readline ()
 #endif
 }
 
-static int open_readline (void)
+static int open_readline (char *name)
 {
 #if USE_GNU_READLINE
    return 0;
 #else
    close_readline ();
-   if (NULL == (Rline_Info = SLrline_open (SLtt_Screen_Cols, SL_RLINE_BLINK_MATCH)))
+   if (NULL == (Rline_Info = SLrline_open2 (name, SLtt_Screen_Cols, SL_RLINE_BLINK_MATCH)))
      return -1;
    return 0;
 #endif
@@ -474,7 +474,7 @@ static void close_interactive (void)
 static int open_interactive (void)
 {
    if (Use_Readline
-       && (-1 == open_readline ()))
+       && (-1 == open_readline ("slsh")))
      return -1;
 
    if (NULL == (Readline_Load_Object = SLallocate_load_type ("<stdin>")))
@@ -500,14 +500,35 @@ static int open_interactive (void)
 }
 
 
-int slsh_use_readline (int use_readline)
+static int init_readline (char *appname)
+{
+   static int inited = 0;
+   
+   if (inited)
+     return 0;
+
+#if USE_SLANG_READLINE
+   if (Use_Readline == 0)
+     {
+	inited = 1;
+	return 0;
+     }
+   if (-1 == SLrline_init (appname, NULL, NULL))
+     return -1;
+#endif
+
+   inited = 1;
+   return 0;
+}
+
+int slsh_use_readline (char *app_name, int use_readline, int is_interactive)
 {
    Use_Readline = use_readline;
 
 #if USE_SLANG_READLINE
-   if (use_readline)
+   if (is_interactive)
      {
-	if (-1 == SLrline_init ("SLSH", NULL, NULL))
+	if (-1 == init_readline (app_name))
 	  return -1;
      }
 #endif
@@ -555,41 +576,106 @@ static void close_intrinsic_readline (void)
 }
 #endif
 	
-static int readline_intrinsic_internal (char *prompt, int noecho)
+static int readline_intrinsic_internal (SLang_RLine_Info_Type *rli, char *prompt, int noecho)
 {
    char *line;
 
+   if (rli == NULL)
+     rli = Intrinsic_Rline_Info;
+
 #if USE_SLANG_READLINE
-   if ((Intrinsic_Rline_Info == NULL) 
-       && Use_Readline)
+   if ((rli == NULL) && Use_Readline)
      {
 	Intrinsic_Rline_Info = SLrline_open (SLtt_Screen_Cols, SL_RLINE_BLINK_MATCH);
 	if (Intrinsic_Rline_Info == NULL)
 	  return -1;
 	(void) SLang_add_cleanup_function (close_intrinsic_readline);
+	rli = Intrinsic_Rline_Info;
      }
 #endif
    enable_keyboard_interrupt ();
 
-   line = read_input_line (Intrinsic_Rline_Info, prompt, noecho);
+   line = read_input_line (rli, prompt, noecho);
    if (noecho == 0)
-     (void) save_input_line (Intrinsic_Rline_Info, line);
+     (void) save_input_line (rli, line);
    (void) SLang_push_malloced_string (line);
    return 0;
 }
 
+static int Rline_Type_Id = 0;
+
+static SLang_MMT_Type *pop_rli_type (SLang_RLine_Info_Type **rlip)
+{
+   SLang_MMT_Type *mmt;
+
+   if (NULL == (mmt = SLang_pop_mmt (Rline_Type_Id)))
+     return NULL;
+   if (NULL == (*rlip = (SLang_RLine_Info_Type *)SLang_object_from_mmt (mmt)))
+     {
+	SLang_free_mmt (mmt);
+	return NULL;
+     }
+   return mmt;
+}
+
 static void readline_intrinsic (char *prompt)
 {
-   (void) readline_intrinsic_internal (prompt, 0);
+   SLang_RLine_Info_Type *rli = NULL;
+   SLang_MMT_Type *mmt = NULL;
+
+   if (SLang_Num_Function_Args == 2)
+     {
+	if (NULL == (mmt = pop_rli_type (&rli)))
+	  return;
+     }
+   (void) readline_intrinsic_internal (rli, prompt, 0);
+
+   if (mmt != NULL)
+     SLang_free_mmt (mmt);
 }
 
 static void readline_noecho_intrinsic (char *prompt)
 {
-   (void) readline_intrinsic_internal (prompt, 1);
+   SLang_RLine_Info_Type *rli = NULL;
+   SLang_MMT_Type *mmt = NULL;
+
+   if (SLang_Num_Function_Args == 2)
+     {
+	if (NULL == (mmt = pop_rli_type (&rli)))
+	  return;
+     }
+   (void) readline_intrinsic_internal (rli, prompt, 1);
+   if (mmt != NULL)
+     SLang_free_mmt (mmt);
 }
+
+static void new_slrline_intrinsic (char *name)
+{
+   SLang_RLine_Info_Type *rli;
+   SLang_MMT_Type *mmt;
+
+   if (NULL == (rli = SLrline_open2 (name, SLtt_Screen_Cols, SL_RLINE_BLINK_MATCH)))
+     return;
    
+   if (NULL == (mmt = SLang_create_mmt (Rline_Type_Id, (VOID_STAR) rli)))
+     {
+	SLrline_close (rli);
+	return;
+     }
+
+   if (-1 == SLang_push_mmt (mmt))
+     SLang_free_mmt (mmt);
+}
+
+static void init_readline_intrinsic (char *appname)
+{
+   (void) init_readline (appname);
+}
+
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
+   MAKE_INTRINSIC_S("slsh_readline_init", init_readline_intrinsic, VOID_TYPE),
+   MAKE_INTRINSIC_S("slsh_readline_new", new_slrline_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("slsh_readline", readline_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("slsh_readline_noecho", readline_noecho_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_0("slsh_set_prompt_hook", set_prompt_hook, VOID_TYPE),
@@ -597,8 +683,46 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    SLANG_END_INTRIN_FUN_TABLE
 };
 
+static void destroy_rline (SLtype type, VOID_STAR f)
+{
+   SLang_RLine_Info_Type *rli;
+   (void) type;
+   
+   rli = (SLang_RLine_Info_Type *) f;
+   if (rli != NULL)
+     SLrline_close (rli);
+}
+
+static int register_rline_type (void)
+{
+   SLang_Class_Type *cl;
+
+   if (Rline_Type_Id != 0)
+     return 0;
+
+   if (NULL == (cl = SLclass_allocate_class ("RLine_Type")))
+     return -1;
+
+   if (-1 == SLclass_set_destroy_function (cl, destroy_rline))
+     return -1;
+
+   /* By registering as SLANG_VOID_TYPE, slang will dynamically allocate a
+    * type.
+    */
+   if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE, sizeof (SLang_RLine_Info_Type*), SLANG_CLASS_TYPE_MMT))
+     return -1;
+
+   Rline_Type_Id = SLclass_get_class_id (cl);
+
+   return 0;
+}
+
+
 int slsh_init_readline_intrinsics ()
 {
+   if (-1 == register_rline_type ())
+     return -1;
+
    if (-1 == SLadd_intrin_fun_table (Intrinsics, NULL))
      return -1;
    

@@ -102,8 +102,16 @@ static int length_cmd (void)
 static void char_cmd (SLwchar_Type *x) /*{{{*/
 {
    SLuchar_Type buf[SLUTF8_MAX_MBLEN + 1];
-
-   if ((_pSLinterp_UTF8_Mode == 0) || (*x < 0x80))
+   int is_byte;
+   
+   is_byte = ((signed)*x < 0);
+   if (is_byte)
+     {
+	buf[0] = (SLuchar_Type) (-(signed)*x);
+	buf[1] = 0;
+     }
+   else if ((_pSLinterp_UTF8_Mode == 0) 
+	    || (*x < 0x80))
      {
         buf[0] = (SLuchar_Type) *x;
         buf[1] = 0;

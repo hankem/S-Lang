@@ -10474,13 +10474,30 @@ echo "$as_me: error: --with-pcreinc requres a value" >&2;}
   	  /opt/lib/pcre \
   	  /opt/pcre/lib"
 
+       case "$host_os" in
+         *darwin* )
+	   exts="dylib so a"
+	   ;;
+	 * )
+	   exts="so a"
+       esac
+
+       found=0
        for X in $lib_library_dirs
        do
-        if test -r "$X/libpcre.so" -o -r "$X/libpcre.a"
-  	then
-  	  jd_pcre_library_dir="$X"
-	  break
-        fi
+         for E in $exts
+	 do
+           if test -r "$X/libpcre.$E"
+	   then
+  	     jd_pcre_library_dir="$X"
+	     found=1
+	     break
+           fi
+         done
+	 if test $found -eq 1
+	 then
+	   break
+	 fi
        done
        if test X"$jd_pcre_library_dir" = X
        then
@@ -10705,13 +10722,30 @@ echo "$as_me: error: --with-pnginc requres a value" >&2;}
   	  /opt/lib/png \
   	  /opt/png/lib"
 
+       case "$host_os" in
+         *darwin* )
+	   exts="dylib so a"
+	   ;;
+	 * )
+	   exts="so a"
+       esac
+
+       found=0
        for X in $lib_library_dirs
        do
-        if test -r "$X/libpng.so" -o -r "$X/libpng.a"
-  	then
-  	  jd_png_library_dir="$X"
-	  break
-        fi
+         for E in $exts
+	 do
+           if test -r "$X/libpng.$E"
+	   then
+  	     jd_png_library_dir="$X"
+	     found=1
+	     break
+           fi
+         done
+	 if test $found -eq 1
+	 then
+	   break
+	 fi
        done
        if test X"$jd_png_library_dir" = X
        then

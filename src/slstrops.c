@@ -1265,8 +1265,6 @@ static int strbytelen_cmd (SLstr_Type *s)
 /*}}}*/
 
 
-/* sprintf functionality for S-Lang */
-
 static char *SLdo_sprintf (char *fmt) /*{{{*/
 {
    register char *p = fmt, ch;
@@ -1287,6 +1285,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
    int use_double;
    double x;
 #endif
+   unsigned char uch;
    int use_long = 0;
 
    while (1)
@@ -1470,11 +1469,17 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 		  use_string = 1;
 		  break;
 	       }
-#if 0
-	     guess_size = 1;
+	     break;
+	     
+	   case 'b':
 	     use_long = 0;
-	     /* drop */
-#endif
+	     guess_size = 1;
+	     if (-1 == SLang_pop_uchar (&uch))
+	       return out;
+	     int_var = (int) uch;
+	     ch = 'c';
+	     break;
+
 	   case 'd':
 	   case 'i':
 	   case 'o':
