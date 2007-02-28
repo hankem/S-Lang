@@ -198,6 +198,8 @@ Changes since 2.0.7
 63. src/slstrops.c: %b may be used in sprintf to specify a byte
     conversion.  This is equivalent to %c when UTF-8 mode is not in
     effect.
+64. src/slarrfuns.c: PROD_RESULT_TYPE was not getting defined on 64
+    bit systems (Brian McQueen)
 
 {{{ Previous Versions
 

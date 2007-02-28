@@ -178,7 +178,8 @@ static int check_for_empty_array (char *fun, unsigned int num)
 # define TRANSPOSE_2D_ARRAY transpose_longs
 # define SUM_FUNCTION sum_longs
 # define SUM_RESULT_TYPE double
-#define PROD_FUNCTION prod_longs
+# define PROD_FUNCTION prod_longs
+# define PROD_RESULT_TYPE double
 # define MIN_FUNCTION min_longs
 # define MAX_FUNCTION max_longs
 #define ANY_FUNCTION any_longs
