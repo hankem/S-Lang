@@ -128,7 +128,8 @@ UPDATE_VERSION_SCRIPT = $(HOME)/bin/update_changes_version
 #---------------------------------------------------------------------------
 # Rules
 #---------------------------------------------------------------------------
-all: $(OBJDIR) $(CONFIG_H) $(OBJDIR_NORMAL_LIB) $(OTHERSTUFF)
+all: static elf
+static: $(OBJDIR) $(CONFIG_H) $(OBJDIR_NORMAL_LIB) $(OTHERSTUFF)
 elf: $(ELFDIR) $(CONFIG_H) $(ELFDIR_ELF_LIB)
 
 $(OBJDIR_NORMAL_LIB): $(OBJDIR) $(CONFIG_H) $(OBJS)
@@ -156,27 +157,27 @@ $(CONFIG_H) : sysconf.h
 #---------------------------------------------------------------------------
 # Intallation rules
 #---------------------------------------------------------------------------
-install: install_basic_lib install_docs
-install_basic_lib: $(DEST_LIBDIR) $(DEST_INCDIR) $(OBJDIR_NORMAL_LIB)
-	@echo installing $(OBJDIR_NORMAL_LIB) in $(DEST_LIBDIR)
-	$(INSTALL_DATA) $(OBJDIR_NORMAL_LIB) $(DEST_LIBDIR)
-	$(RANLIB) $(DEST_LIBDIR)/$(NORMAL_LIB)
-	@echo installing slang.h and slcurses.h in $(DEST_INCDIR)
-	$(INSTALL_DATA) $(SRCDIR)/slang.h $(DEST_INCDIR)
-	$(INSTALL_DATA) $(SRCDIR)/slcurses.h $(DEST_INCDIR)
-install_docs: $(DEST_DOCDIR)
-	@for i in $(DOC_FILES); \
-	do \
-		echo $(INSTALL_DATA) $$i $(DEST_DOCDIR)/; \
-		$(INSTALL_DATA) $$i $(DEST_DOCDIR); \
-	done
 $(DEST_DOCDIR):
 	$(MKINSDIR) $(DEST_DOCDIR)
 $(DEST_INCDIR):
 	$(MKINSDIR) $(DEST_INCDIR)
 $(DEST_LIBDIR):
 	$(MKINSDIR) $(DEST_LIBDIR)
-install-elf: elf install
+install-headers: $(DEST_INCDIR)
+	@echo installing slang.h and slcurses.h in $(DEST_INCDIR)
+	$(INSTALL_DATA) $(SRCDIR)/slang.h $(DEST_INCDIR)
+	$(INSTALL_DATA) $(SRCDIR)/slcurses.h $(DEST_INCDIR)
+install-docs: $(DEST_DOCDIR)
+	@for i in $(DOC_FILES); \
+	do \
+		echo $(INSTALL_DATA) $$i $(DEST_DOCDIR)/; \
+		$(INSTALL_DATA) $$i $(DEST_DOCDIR); \
+	done
+install-static: static install-headers install-docs $(DEST_LIBDIR)
+	@echo installing $(OBJDIR_NORMAL_LIB) in $(DEST_LIBDIR)
+	$(INSTALL_DATA) $(OBJDIR_NORMAL_LIB) $(DEST_LIBDIR)
+	$(RANLIB) $(DEST_LIBDIR)/$(NORMAL_LIB)
+install-elf: elf install-headers install-docs $(DEST_LIBDIR)
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB)
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB_MAJOR)
 	@echo installing $(ELFLIB_MAJOR_MINOR) in $(DEST_LIBDIR)
@@ -193,6 +194,7 @@ install-elf: elf install
 	   $(INSTALL) $(ELFDIR_ELF_LIB) $(DEST_BINDIR) ; \
 	fi
 	@echo ""
+install-all: install-elf install-static
 install-links:
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB)
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB_MAJOR)
@@ -202,6 +204,7 @@ install-links:
 	@echo A link $(ELFLIB_MAJOR) to $(ELFLIB_MAJOR_MINOR) was created.
 	@echo A link $(ELFLIB) to $(ELFLIB_MAJOR) was created.
 	@echo ""
+install: install-all
 #---------------------------------------------------------------------------
 # Tests
 #---------------------------------------------------------------------------

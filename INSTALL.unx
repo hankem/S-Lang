@@ -29,7 +29,7 @@ The process may be as simple as:
    ./configure
    make
    make runtests
-   make install  (or 'make install-elf' for ELF systems)
+   make install  (or `make install-static` to install the static library)
    make clean
 
 The first two steps:
@@ -84,22 +84,23 @@ will cause the library and the .o files to be placed src/objs.  The
 	  does not bring you back where you started if foo is a
 	  symbolic link.
 
-By default, the slang library (libslang.a) will be installed into
+By default, the slang library (libslang.so.*) will be installed into
 /usr/local/lib and slang.h into /usr/local/include.  To install it
 under some other directory, e.g.., /opt, the use the --prefix argument
 when running the configure script, e.g.,
 
     ./configure --prefix=/opt
 
-On systems with ELF support (linux, solaris, others), in addition to
-the above commands, use
+By default, a shared version of the library will be created.  If your
+system does not support such libraries, or the build process fails to
+create a shared version of the library, you may want to install the
+static version:
     
-   make elf
-   make install-elf
+   make static
+   make install-static
 
-This will not only create and install a shared version of the library
-(libslang.so), it also causes slsh and the modules to be built and
-installed.
+This will not only create and install a static version of the library
+(libslang.a).
 
 Below, I have attached the generic INSTALL instructions included in the
 autoconf distribution.

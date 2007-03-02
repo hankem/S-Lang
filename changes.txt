@@ -200,6 +200,9 @@ Changes since 2.0.7
     effect.
 64. src/slarrfuns.c: PROD_RESULT_TYPE was not getting defined on 64
     bit systems (Brian McQueen)
+65. src/Makefile.in,autoconf/Makefile.in: Now `make install` installs
+    the shared library but not the static one.  Use `make
+    install-static` to install the static one.
 
 {{{ Previous Versions
 

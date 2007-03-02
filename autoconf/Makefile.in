@@ -6,17 +6,22 @@
 @SET_MAKE@
 SHELL = /bin/sh
 
-all:
-	cd src; $(MAKE) all
+all: static elf
+help:
+	@echo "make install : install a shared version of the library"
+	@echo "make install-static : install a static version"
+	@echo "make install-all : install both shared and static versions"
+	@echo "make check : Build the library and run the regression tests"
+static:
+	cd src; $(MAKE) static
 	cd slsh; $(MAKE) all
-	cd modules; $(MAKE) all
 elf:
 	cd src; $(MAKE) elf
 	cd slsh; $(MAKE) all
 	cd modules; $(MAKE) all
-	@echo Use make install-elf to install it.
+	@echo Use make install to install it.
 runtests:
-	cd src; $(MAKE) all
+	cd src; $(MAKE) static
 	cd src; $(MAKE) runtests
 check: runtests
 
@@ -28,8 +33,8 @@ clean:
 	cd modules; $(MAKE) clean
 	cd slsh; $(MAKE) clean
 	cd demo; $(MAKE) clean
-install:
-	cd src; $(MAKE) install
+install-static:
+	cd src; $(MAKE) install-static
 install-elf:
 	cd src; $(MAKE) install-elf
 	@echo Now installing slsh
@@ -39,6 +44,8 @@ install-elf:
 	@echo ""
 	@echo "On some systems, e.g., linux, you may also have to run ldconfig."
 	@echo ""
+install: install-elf
+install-all: install-elf install-static
 install-links:
 	cd src; $(MAKE) install-links
 #
@@ -57,5 +64,5 @@ autoconf/config.guess: /usr/share/misc/config.guess
 autoconf/config.sub: /usr/share/misc/config.sub
 	/bin/cp -f /usr/share/misc/config.sub autoconf/config.sub
 #
-.PHONY: all install clean check update
+.PHONY: all help static elf install clean check update install-elf install-static
 #
