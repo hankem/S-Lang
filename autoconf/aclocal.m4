@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# Version 0.1.10: rpath support for netbsd
 dnl# Version 0.1.9: When searching for libs, use dylib on darwin
 dnl# Version 0.1.8: Add rpath support for OpenBSD
 dnl# Version 0.1.7: removed "-K pic" from IRIX compiler lines
@@ -119,6 +120,12 @@ case "$host_os" in
       RPATH="-Wl,-rpath,"
     else
       RPATH="-rpath "
+    fi
+  ;;
+  *netbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-R"
     fi
   ;;
 esac

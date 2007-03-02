@@ -6720,6 +6720,12 @@ case "$host_os" in
       RPATH="-rpath "
     fi
   ;;
+  *netbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-R"
+    fi
+  ;;
 esac
 
     if test "X$RPATH" != "X"
@@ -10548,6 +10554,12 @@ case "$host_os" in
       RPATH="-rpath "
     fi
   ;;
+  *netbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-R"
+    fi
+  ;;
 esac
 
     if test "X$RPATH" != "X"
@@ -10794,6 +10806,12 @@ case "$host_os" in
       RPATH="-Wl,-rpath,"
     else
       RPATH="-rpath "
+    fi
+  ;;
+  *netbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-R"
     fi
   ;;
 esac

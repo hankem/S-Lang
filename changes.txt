@@ -203,6 +203,7 @@ Changes since 2.0.7
 65. src/Makefile.in,autoconf/Makefile.in: Now `make install` installs
     the shared library but not the static one.  Use `make
     install-static` to install the static one.
+66. autoconf/aclocal.m4: rpath support for netbsd
 
 {{{ Previous Versions
 
