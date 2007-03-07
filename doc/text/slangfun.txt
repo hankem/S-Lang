@@ -4244,20 +4244,41 @@ __is_numeric
 
  DESCRIPTION
   This function may be used to determine if an object represents a
-  numeric type.  It returns 1 if the argument is numeric, or zero
-  otherwise.  If the argument is an array, then the array type will be
-  used for the test.
+  numeric type.  It returns 0 if the argument is non-numeric, 1 if it
+  is an integer, 2 if a floating point number, and 3 if it is complex.
+  If the argument is an array, then the array type will be used for
+  the test.
 
  EXAMPLE
    __is_numeric ("foo");  ==> 0
    __is_numeric ("0");    ==> 0
    __is_numeric (0);      ==> 1
-   __is_numeric (PI);     ==> 1
+   __is_numeric (PI);     ==> 2
+   __is_numeric (2j);     ==> 3
    __is_numeric ([1,2]);  ==> 1
    __is_numeric ({1,2});  ==> 0
 
  SEE ALSO
-  typeof
+  typeof, __is_datatype_numeric
+
+--------------------------------------------------------------
+
+__is_datatype_numeric
+
+ SYNOPSIS
+  Determine whether or not a type is a numeric type
+
+ USAGE
+  Int_Type __is_datatype_numeric (DataType_Type type)
+
+ DESCRIPTION
+  This function may be used to determine if the specified datatype
+  represents a numeric type.  It returns 0 if the datatype does not
+  represents a numeric type; otherwise it returns 1 for an
+  integer type, 2 for a floating point type, and 3 for a complex type.
+
+ SEE ALSO
+  typeof, __is_numeric, __is_callable
 
 --------------------------------------------------------------
 

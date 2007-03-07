@@ -204,6 +204,16 @@ Changes since 2.0.7
     the shared library but not the static one.  Use `make
     install-static` to install the static one.
 66. autoconf/aclocal.m4: rpath support for netbsd
+67. slsh/slsh.c: A preprocessor symbol may be added using -Dname
+    command-line option.
+68. src/slstd.c: changed __is_numeric to return 1 if an integer, 2 if
+    a floating point, and 3 if complex.
+69. src/slang.c: missing break statement in the handling of the
+    qualifier token.  This bug manifested itself only when running
+    with slprof or sldb.
+70. slsh/lib/cmdopt.sl: Functions to facilitate the processing of
+    command line options.
+71. slsh/scripts/slprof: modified slprof to use the cmdopt interface.
 
 {{{ Previous Versions
 

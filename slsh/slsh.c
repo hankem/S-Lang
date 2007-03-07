@@ -35,7 +35,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.8.0-0";
+static char *Slsh_Version = "0.8.1-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -427,6 +427,7 @@ Usage: slsh [OPTIONS] [-|file [args...]]\n\
  -i               Force interactive input\n\
  -t               Test mode.  If slsh_main exists, do not call it\n\
  -v               Show verbose loading messages\n\
+ -Dname           Define \"name\" as a preprocessor symbol\n\
 \n\
   Note: - and -i are mutually exclusive\n\
 \n\
@@ -593,6 +594,16 @@ int main (int argc, char **argv)
 	     argv += 2;
 	     continue;
 	  }
+	
+	if (0 == strncmp (argv[1], "-D", 2))
+	  {
+	     char *prep = argv[1] + 2;
+	     if (*prep != 0)
+	       (void) SLdefine_for_ifdef (prep);
+	     argc--;
+	     argv++;
+	  }
+
 	break;
      }
 

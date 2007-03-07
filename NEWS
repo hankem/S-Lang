@@ -1,2 +1,58 @@
 S-Lang 2 NEWS is now contained in the appendices of doc/text/slang.txt
 (interpreter news) and doc/txt/cslang.txt (C API news).
+
+NEWS for version 2.1
+
+Interpreter News
+----------------
+
+Syntax enhancements:
+
+   1.  Short circuiting boolean operators:
+   
+           if ((x == y) || (y == 3) && (x != 4)) ...
+
+       (orelse and andelse are deprecated)
+       
+   2.  Structure definitions allow embdedded assignment expressions:
+   
+           s = struct {x = 3, name="foo", a = [1:10]};
+
+   3.  Qualifiers (aka "keywords") added to the language:
+   
+           save_file ("foo.c"; overwrite=1);
+	   plot_points ([1:10], sin([1:10]); color="red", style="solid");
+
+   3.  Expressions such as (a < b < c) now interpreted to mean
+       (a<b)and(b<c).
+
+   4.  New keywords: ifnot, then
+   
+       ifnot may be used instead of !if, which has been deprecated.
+       For "then" see the next item.
+
+   5.  Looping constructs support a "then" clause that will get
+       executed if the loop runs to completion, e.g.,
+       
+           loop (20)
+	    {
+	       if (this ())
+	         break;  % The then clause will NOT get executed
+	    }
+	   then do_that ();
+	   
+   6.  A floating point array of exactly N elements may be created
+       using the form [a:b:#N], where the elements are uniformly
+       spaced and run from a to b, inclusive.
+       
+   7.  References to array elements and structure fields are
+       supported, e.g., &A[3], &s.foo.
+       
+   8.  An exception may be rethrown by calling "throw" without any
+       arguments:
+       
+           try { something (); }
+	   catch AnyError: { do_this (); throw; }
+
+ 
+	   

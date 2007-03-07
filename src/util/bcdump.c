@@ -505,10 +505,10 @@ static void dump_token (_pSLang_Token_Type *t)
 	
       case LOOP_THEN_TOKEN:
 	b = "__loopthen__"; break;
-
+#if 0
       case LOOP_ELSE_TOKEN:
 	b = "__loopelse__"; break;
-	
+#endif	
       case TRY_TOKEN:
 	b = "try"; break;
 	

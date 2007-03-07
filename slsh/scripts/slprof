@@ -1,7 +1,8 @@
 #!/usr/bin/env slsh
 require ("profile");
+require ("cmdopt");
 
-private variable Version = "0.2.1-1";
+private variable Version = "0.2.2-0";
 private variable Profile_Fp;
 
 private define _slprof_version ()
@@ -30,6 +31,11 @@ private define _slprof_usage ()
    exit (1);
 }
 
+private define _slprof_cmdopt_error (msg)
+{
+   () = fprintf (stderr, "%s\n", msg);
+   _slprof_usage ();
+}
 
 private define _slprof_write_profile ()
 {
@@ -53,64 +59,22 @@ private define _slprof_main ()
    variable line_by_line = 0;
    variable cal_n = 1000;
 
-   variable i = 1;
-   while (i < __argc)
-     {
-	variable arg = __argv[i]; i++;
-	if ((arg == "-c") or (arg == "--calibrate"))
-	  {
-	     if (i == __argc)
-	       _slprof_usage ();
-	     if (1 != sscanf (__argv[i], "%d", &cal_n))
-	       _slprof_usage ();
-	     if (cal_n < 0)
-	       cal_n = 0;
-	     i++;
-	     continue;
-	  }
-	     
-	if ((arg == "-f") or (arg == "--func"))
-	  {
-	     if (i == __argc)
-	       _slprof_usage ();
-	     func = strtrim (__argv[i]);
-	     if (func == "")
-	       _slprof_usage ();
-	     i++;
-	     continue;
-	  }
-	if ((arg == "-l") or (arg == "--lines"))
-	  {
-	     line_by_line = 1;
-	     continue;
-	  }
-	if ((arg == "-o") or (arg == "--output"))
-	  {
-	     if (i == __argc)
-	       _slprof_usage ();
-	     output = __argv[i];
-	     i++;
-	     continue;
-	  }
-	if ((arg == "-v") or (arg == "--version"))
-	  {
-	     _slprof_version ();
-	     exit (0);
-	  }
+   variable opts = cmdopt_new (&_slprof_cmdopt_error);
+   opts.add("c|calibrate", &cal_n; type="int");
+   opts.add("f|funct", &func; type="string");
+   opts.add("l|lines", &line_by_line);
+   opts.add("o|output",&output; type="string");
+   opts.add("v|version", &_slprof_version),
+   opts.add("h|help", &_slprof_usage);
+   variable i = opts.process (__argv, 1);
 
-	if ((arg == "-h") or (arg == "--help"))
-	  _slprof_usage ();
-	
-	if (arg[0] == '-')
-	  _slprof_usage ();
-
-	i--;
-	break;
-     }
-   
-   if (i == __argc)
+   if (cal_n < 0) cal_n = 0;
+   if (func == "")
      _slprof_usage ();
    
+   if (i >= __argc)
+     _slprof_usage ();
+
    variable main = strtok (func, " \t(;")[0];
    variable main_args = strtrim (substrbytes (func, 1+strlen(main), -1));
    

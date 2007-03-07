@@ -8085,6 +8085,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 #if SLANG_HAS_QUALIFIERS
       case QUALIFIER_TOKEN:
 	compile_call_direct (set_qualifier, SLANG_BC_CALL_DIRECT);
+	break;
 #endif
       case BOS_TOKEN:
 #if SLANG_HAS_DEBUG_CODE && SLANG_HAS_BOSEOS

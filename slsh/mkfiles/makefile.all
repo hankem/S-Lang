@@ -37,12 +37,6 @@ add a 'DLL' parameter to mkmake:
    
 (right now this is known to work only with Visual Studio).
 
-Features include (also edit features.h!)
-
-   NO_FOLD   (The default is to get folding support)
-
-More will be added in the future.
-
 Each section must define the following macros:
 
  CC             : The C compiler
