@@ -187,7 +187,8 @@ static Handle_Type *dynamic_link_module (char *module)
    int api_version;
    int *api_version_ptr;
 #define MAX_MODULE_NAME_SIZE 256
-   char module_name[MAX_MODULE_NAME_SIZE + 32];
+   char module_so[MAX_MODULE_NAME_SIZE + 32];
+   char *module_name;
    char *file, *pathfile;
 
    if (strlen (module) >= MAX_MODULE_NAME_SIZE)
@@ -195,23 +196,23 @@ static Handle_Type *dynamic_link_module (char *module)
 	SLang_verror (SL_LimitExceeded_Error, "module name too long");
 	return NULL;
      }
-   SLsnprintf (module_name, sizeof(module_name), "%s-module.%s", module, SO_SUFFIX);
+   SLsnprintf (module_so, sizeof(module_so), "%s-module.%s", module, SO_SUFFIX);
 
    if (Module_Path != NULL)
-     pathfile = SLpath_find_file_in_path (Module_Path, module_name);
+     pathfile = SLpath_find_file_in_path (Module_Path, module_so);
    else pathfile = NULL;
 
    if ((pathfile == NULL)
        && (NULL != (pathfile = _pSLsecure_getenv (MODULE_PATH_ENV_NAME))))
-     pathfile = SLpath_find_file_in_path (pathfile, module_name);
+     pathfile = SLpath_find_file_in_path (pathfile, module_so);
 
    if (pathfile == NULL)
-     pathfile = SLpath_find_file_in_path (MODULE_INSTALL_DIR, module_name);
+     pathfile = SLpath_find_file_in_path (MODULE_INSTALL_DIR, module_so);
 
    if (pathfile != NULL)
      file = pathfile;
    else
-     file = module_name;
+     file = module_so;
 
    save_err = NULL;
    save_file = file;
@@ -262,10 +263,13 @@ static Handle_Type *dynamic_link_module (char *module)
 
 	return NULL;
      }
-   
-   api_version_ptr = (int *) do_dlsym (handle, file, 0, "SLmodule_%s_api_version", module);
+
+   /* Using SLpath_basename allows, e.g., import ("/path/to/module"); */
+   module_name = SLpath_basename (module);
+
+   api_version_ptr = (int *) do_dlsym (handle, file, 0, "SLmodule_%s_api_version", module_name);
    if (api_version_ptr == NULL)
-     api_version_ptr = (int *) do_dlsym (handle, file, 0, "_SLmodule_%s_api_version", module);
+     api_version_ptr = (int *) do_dlsym (handle, file, 0, "_SLmodule_%s_api_version", module_name);
 
    if (api_version_ptr == NULL)
      api_version = 0;
@@ -280,14 +284,14 @@ static Handle_Type *dynamic_link_module (char *module)
 	return NULL;
      }
 
-   if (NULL == (h->ns_init_fun = (int (*)(char *)) do_dlsym (handle, file, 1, "init_%s_module_ns", module)))
+   if (NULL == (h->ns_init_fun = (int (*)(char *)) do_dlsym (handle, file, 1, "init_%s_module_ns", module_name)))
      {
 	SLfree (pathfile);
 	free_handle_type (h);
 	dlclose (handle);
 	return NULL;
      }
-   h->deinit_fun = (void (*)(void)) do_dlsym (handle, file, 0, "deinit_%s_module", module);
+   h->deinit_fun = (void (*)(void)) do_dlsym (handle, file, 0, "deinit_%s_module", module_name);
 
    SLfree (pathfile);		       /* NULL ok */
    h->next = Handle_List;

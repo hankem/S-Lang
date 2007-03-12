@@ -1,15 +1,48 @@
 % Struct functions
 
+private define make_indices (num_dims, d, i)
+{
+   _for (0, num_dims-1, 1)
+     {
+	variable j = ();
+	if (j == d)
+	  i;
+	else
+	  [:];
+     }
+}
+	
 define struct_filter (s, i)
 {
+   variable dim = qualifier ("dim");
+   variable copy = qualifier_exists ("copy");
+   if (copy)
+     s = @s;
+
    variable field;
-   
    foreach field (get_struct_field_names (s))
      {
 	variable value = get_struct_field (s, field);
-	if (typeof (value) == Array_Type)
-	  set_struct_field (s, field, value[i]);
+	if (typeof (value) != Array_Type)
+	  continue;
+	if (dim == NULL)
+	  {
+	     set_struct_field (s, field, value[i]);
+	     continue;
+	  }
+	variable dims = array_shape (value);
+	variable num_dims = length (dims);
+	variable d = dim;
+	if (d < 0)
+	  d += num_dims;
+	
+	if ((d < 0) || (d >= num_dims))
+	  continue;
+	
+	set_struct_field (s, field, value[make_indices(num_dims, d, i)]);
      }
+   if (copy)
+     return s;
 }
 
 define struct_combine ()

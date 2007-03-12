@@ -214,6 +214,11 @@ Changes since 2.0.7
 70. slsh/lib/cmdopt.sl: Functions to facilitate the processing of
     command line options.
 71. slsh/scripts/slprof: modified slprof to use the cmdopt interface.
+72. slsh/lib/structfuns.sl: Enhanced the struct_filter function to
+    filter on specific array dimensions and to return a new structure
+    when given the "copy" qualifier.
+73. src/slimport.c: Allow pathname in an import statement, e.g.,
+    import("/path/to/module");
 
 {{{ Previous Versions
 

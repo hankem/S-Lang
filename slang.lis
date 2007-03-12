@@ -216,6 +216,7 @@
 @slsh/lib/tm/cmdopt.tm
 
 @slsh/lib/test/test_cmdopt.sl
+@slsh/lib/test/test_structfuns.sl
 
 @slsh/doc/tm/slsh.tm
 @slsh/doc/tm/Makefile

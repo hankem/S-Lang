@@ -8,6 +8,29 @@
     s.field = s.field[i];
 #v-
   on each array field of the structure.  Scalar fields will not be modified.
+  
+  The \exmp{dim} qualifier may be used to filter on a specific array
+  dimension.  For example, consider the structure
+#v+
+    s = struct { a = Int_Type[10], b = Int_Type[10,20] };
+#v-
+  Then 
+#v+
+    struct_filter (s, i; dim=0);
+#v-
+  would produce the same result as
+#v+
+    s.a = s.a[i];
+    s.b = s.b[i,*];
+#v-
+\notes
+  By default this function modifies the fields of the structure passed
+  to it.  Sometimes it is desirable to create a new structure and
+  leave the old one untouched.  This may be achieved using the
+  \exmp{copy} qualifier, e.g.,
+#v+
+     filtered_s = struct_filter (s, i; copy);
+#v-
 \seealso{where}
 \done
 
