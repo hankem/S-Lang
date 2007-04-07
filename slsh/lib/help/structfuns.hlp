@@ -14,6 +14,30 @@ struct_filter
 
   on each array field of the structure.  Scalar fields will not be modified.
 
+  The `dim' qualifier may be used to filter on a specific array
+  dimension.  For example, consider the structure
+
+    s = struct { a = Int_Type[10], b = Int_Type[10,20] };
+
+  Then
+
+    struct_filter (s, i; dim=0);
+
+  would produce the same result as
+
+    s.a = s.a[i];
+    s.b = s.b[i,*];
+
+
+ NOTES
+  By default this function modifies the fields of the structure passed
+  to it.  Sometimes it is desirable to create a new structure and
+  leave the old one untouched.  This may be achieved using the
+  `copy' qualifier, e.g.,
+
+     filtered_s = struct_filter (s, i; copy);
+
+
  SEE ALSO
   where
 

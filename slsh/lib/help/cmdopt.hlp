@@ -42,7 +42,7 @@ cmdopt_new
       variable c = cmdopt_new (&error_handler);
       cmdopt_add (c, "v|verbose", &verbose; inc);
       cmdopt_add (c, "h|help", &help_callback);
-      cmdopt_add (c, "s:o|output", &outfile; required);
+      cmdopt_add (c, "s:o|output", &outfile; type="str");
       variable iend = cmdopt_process (c, __argv, 1);
 
       if (verbose) message ("some informative message");
@@ -195,7 +195,7 @@ cmdopt_add
   Options that take a value and cause a function to be called with
   additional arguments `a0,...':
 
-    cmdopt_add (optobj, "f|foo", &func, a0,...; required);
+    cmdopt_add (optobj, "f|foo", &func, a0,...; type="int");
     cmdline: pgm --foo=VAL
     cmdline: pgm -f VAL
     cmdline: pgm -fVAL
@@ -205,11 +205,11 @@ cmdopt_add
     define func (value, a0, ...) {...}
 
 
-  As the above example illustrate, the data-type of the value assigned
+  As the above examples illustrate, the data-type of the value assigned
   to a variable must be specified using the `type' qualifier.
   Currently the `type' must be set to one of the following values:
 
-     "string"       (String_Type)
+     "str"          (String_Type)
      "int"          (Int_Type)
      "float"        (Double_Type)
 
@@ -219,7 +219,7 @@ cmdopt_add
   `add' method:
 
        optobj = cmdopt_new (...);
-       optobj.add ("f|foo", &func, a0,...; required);
+       optobj.add ("f|foo", &func, a0,...; type="int");
 
 
  SEE ALSO

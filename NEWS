@@ -4,9 +4,10 @@ S-Lang 2 NEWS is now contained in the appendices of doc/text/slang.txt
 NEWS for version 2.1
 
 Interpreter News
-----------------
+=================
 
 Syntax enhancements:
+--------------------
 
    1.  Short circuiting boolean operators:
    
@@ -54,5 +55,23 @@ Syntax enhancements:
            try { something (); }
 	   catch AnyError: { do_this (); throw; }
 
- 
-	   
+New Intrinsic Functions:
+------------------------
+
+   wherenot(x) :
+              Equivalent to where (not(x))
+
+   _$(str) :
+              Evaluates strings with embedded "dollar" variables, e.g.,
+              _$("$TERM");
+
+   __push_list/__pop_list :
+              Push list items onto the stack
+
+   prod(x) :
+              Computes the product of an array a[0]*a[1]*...
+
+   minabs(x), maxabs(x):
+              Equivalent to min(abs(x)) and max(abs(x))
+
+              

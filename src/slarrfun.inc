@@ -324,6 +324,39 @@ MIN_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 #undef MIN_FUNCTION
 #endif
 
+#ifdef MINABS_FUNCTION
+static int 
+MINABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
+{
+   unsigned int n, n0;
+   GENERIC_TYPE m;
+   GENERIC_TYPE *i = (GENERIC_TYPE *)ip;
+
+   if (-1 == check_for_empty_array ("minabs", num))
+     return -1;
+
+# ifdef IS_NAN_FUNCTION
+   n0 = 0;
+   do 
+     {
+	m = ABS_FUNCTION(i[n0]);
+	n0 += inc;
+     }
+   while (IS_NAN_FUNCTION(m) && (n0 < num));
+# else
+   m = ABS_FUNCTION(i[0]);
+   n0 = inc;
+# endif
+
+   for (n = n0; n < num; n += inc)
+     if (m > ABS_FUNCTION(i[n])) m = ABS_FUNCTION(i[n]);
+   
+   *(GENERIC_TYPE *)sp = m;
+   return 0;
+}
+#undef MINABS_FUNCTION
+#endif
+
 #ifdef MAX_FUNCTION
 static int
 MAX_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
@@ -355,6 +388,39 @@ MAX_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
    return 0;
 }
 #undef MAX_FUNCTION
+#endif
+
+#ifdef MAXABS_FUNCTION
+static int
+MAXABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
+{
+   unsigned int n, n0;
+   GENERIC_TYPE m;
+   GENERIC_TYPE *i = (GENERIC_TYPE *) ip;
+
+   if (-1 == check_for_empty_array ("maxabs", num))
+     return -1;
+
+# ifdef IS_NAN_FUNCTION
+   n0 = 0;
+   do 
+     {
+	m = ABS_FUNCTION(i[n0]);
+	n0 += inc;
+     }
+   while (IS_NAN_FUNCTION(m) && (n0 < num));
+# else
+   m = ABS_FUNCTION(i[0]);
+   n0 = inc;
+# endif
+   
+   for (n = n0; n < num; n += inc)
+     if (m < ABS_FUNCTION(i[n])) m = ABS_FUNCTION(i[n]);
+   
+   *(GENERIC_TYPE *)s = m;
+   return 0;
+}
+#undef MAXABS_FUNCTION
 #endif
 
 #ifdef ANY_FUNCTION
@@ -484,4 +550,8 @@ static int PROD_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID
 
 #ifdef IS_NAN_FUNCTION
 # undef IS_NAN_FUNCTION
+#endif
+
+#ifdef ABS_FUNCTION
+# undef ABS_FUNCTION
 #endif

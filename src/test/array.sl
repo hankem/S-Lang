@@ -623,35 +623,69 @@ define test_eqs (what, a, b)
      failed ("%s: %S != %S", what, a, b);
 }
 
+private define shuffle (a)
+{
+   variable i, n = length (a);
+   variable list = {};
+   _for i (0, n-1, 1)
+     list_append (list, a[i]);
+
+   variable b = @a;
+   i = 0;
+   do
+     {
+	variable j = int (n*urand ());
+	b[i] = sign (0.5-urand()) * list_pop (list, j);
+	n--; i++;
+     }
+   while (n);
+   return b;
+}
+
+private define test_min_maxabs (a)
+{
+   a = shuffle (a);
+   test_eqs ("minabs", minabs(a), min(abs(a)));
+   test_eqs ("maxabs", maxabs(a), max(abs(a)));
+}
+
 A = [1:10];
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
+test_min_maxabs(A);
 #ifexists Double_Type
 A *= 1.0f;
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
+test_min_maxabs(A);
 A *= 1.0;
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
+test_min_maxabs(A);
 #endif
 A = [1h:10h];
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
+test_min_maxabs(A);
 A = ['0':'9'];
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
+test_min_maxabs(A);
 
 A = [1.0:10]; A[0] = _NaN;
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
+test_min_maxabs(A);
 
 A = [1.0:10]; A[-1] = _NaN;
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
+test_min_maxabs(A);
 
 A = [1.0:10]; A[3] = _NaN;
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
+test_min_maxabs(A);
 
 if ((_min(2, 1) != 1) or (_min(1,2) != 1))
   failed ("_min");

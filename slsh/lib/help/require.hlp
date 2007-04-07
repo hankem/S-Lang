@@ -59,7 +59,8 @@ require
 
   If after loading the file, if the feature is not present,
   a warning message will be issued.
-\examples
+
+ EXAMPLE
 
     require ("histogram");
     require ("histogram", "foo");

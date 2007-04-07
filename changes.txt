@@ -219,6 +219,13 @@ Changes since 2.0.7
     when given the "copy" qualifier.
 73. src/slimport.c: Allow pathname in an import statement, e.g.,
     import("/path/to/module");
+74. src/slarrfun.c: Added minabs/maxabs functions.
+75. lib/cmdopt.sl: Added support for type="str" qualifier.  Also,
+    cmdopt documentation corrected.
+76. src/slassoc.c: When resizing an associative array that had
+    elements deleted, the num_occupied field was not being properly
+    updated.  This was causing the length of the array to be
+    incorrectly computed.
 
 {{{ Previous Versions
 

@@ -21,6 +21,9 @@ USA.
 */
 
 #include "slinclud.h"
+#if SLANG_HAS_FLOAT
+# include <math.h>
+#endif
 
 #include "slang.h"
 #include "_slang.h"
@@ -97,10 +100,13 @@ static int check_for_empty_array (char *fun, unsigned int num)
 #define CUMSUM_FUNCTION cumsum_floats
 #define CUMSUM_RESULT_TYPE float
 #define MIN_FUNCTION min_floats
+#define MINABS_FUNCTION minabs_floats
 #define MAX_FUNCTION max_floats
+#define MAXABS_FUNCTION maxabs_floats
 #define ANY_FUNCTION any_floats
 #define ALL_FUNCTION all_floats
 #define IS_NAN_FUNCTION _pSLmath_isnan
+#define ABS_FUNCTION fabs
 #include "slarrfun.inc"
 
 /* -------------- DOUBLE --------------------- */
@@ -121,10 +127,13 @@ static int check_for_empty_array (char *fun, unsigned int num)
 #define PROD_FUNCTION prod_doubles
 #define PROD_RESULT_TYPE double
 #define MIN_FUNCTION min_doubles
+#define MINABS_FUNCTION minabs_doubles
 #define MAX_FUNCTION max_doubles
+#define MAXABS_FUNCTION maxabs_doubles
 #define ANY_FUNCTION any_doubles
 #define ALL_FUNCTION all_doubles
 #define IS_NAN_FUNCTION _pSLmath_isnan
+#define ABS_FUNCTION fabs
 #include "slarrfun.inc"
 
 #define GENERIC_TYPE_A double
@@ -157,9 +166,12 @@ static int check_for_empty_array (char *fun, unsigned int num)
 #define PROD_FUNCTION prod_ints
 #define PROD_RESULT_TYPE double
 #define MIN_FUNCTION min_ints
+#define MINABS_FUNCTION minabs_ints
 #define MAX_FUNCTION max_ints
+#define MAXABS_FUNCTION maxabs_ints
 #define ANY_FUNCTION any_ints
 #define ALL_FUNCTION all_ints
+#define ABS_FUNCTION abs
 #include "slarrfun.inc"
 
 /* -------------- UNSIGNED INT --------------------- */
@@ -181,9 +193,12 @@ static int check_for_empty_array (char *fun, unsigned int num)
 # define PROD_FUNCTION prod_longs
 # define PROD_RESULT_TYPE double
 # define MIN_FUNCTION min_longs
+# define MINABS_FUNCTION minabs_longs
 # define MAX_FUNCTION max_longs
-#define ANY_FUNCTION any_longs
-#define ALL_FUNCTION all_longs
+# define MAXABS_FUNCTION maxabs_longs
+# define ANY_FUNCTION any_longs
+# define ALL_FUNCTION all_longs
+# define ABS_FUNCTION labs
 # include "slarrfun.inc"
 /* -------------- UNSIGNED LONG --------------------- */
 # define GENERIC_TYPE unsigned long
@@ -199,8 +214,10 @@ static int check_for_empty_array (char *fun, unsigned int num)
 # define sum_longs sum_ints
 # define sum_ulongs sum_uints
 # define min_longs min_ints
+# define minabs_longs minabs_ints
 # define min_ulongs min_uints
 # define max_longs max_ints
+# define maxabs_longs maxabs_ints
 # define max_ulongs max_uints
 # define any_longs any_ints
 # define any_ulongs any_uints
@@ -215,9 +232,12 @@ static int check_for_empty_array (char *fun, unsigned int num)
 # define SUM_FUNCTION sum_shorts
 # define SUM_RESULT_TYPE double
 # define MIN_FUNCTION min_shorts
+# define MINABS_FUNCTION minabs_shorts
 # define MAX_FUNCTION max_shorts
+# define MAXABS_FUNCTION maxabs_shorts
 # define ANY_FUNCTION any_shorts
 # define ALL_FUNCTION all_shorts
+# define ABS_FUNCTION abs
 # include "slarrfun.inc"
 /* -------------- UNSIGNED SHORT --------------------- */
 # define GENERIC_TYPE unsigned short
@@ -233,8 +253,10 @@ static int check_for_empty_array (char *fun, unsigned int num)
 # define sum_shorts sum_ints
 # define sum_ushorts sum_uints
 # define min_shorts min_ints
+# define minabs_shorts minabs_ints
 # define min_ushorts min_uints
 # define max_shorts max_ints
+# define maxabs_shorts maxabs_ints
 # define max_ushorts max_uints
 # define any_shorts any_ints
 # define any_ushorts any_uints
@@ -248,9 +270,12 @@ static int check_for_empty_array (char *fun, unsigned int num)
 #define SUM_FUNCTION sum_chars
 #define SUM_RESULT_TYPE double
 #define MIN_FUNCTION min_chars
+#define MINABS_FUNCTION minabs_chars
 #define MAX_FUNCTION max_chars
+#define MAXABS_FUNCTION maxabs_chars
 #define ANY_FUNCTION any_chars
 #define ALL_FUNCTION all_chars
+#define ABS_FUNCTION abs
 #include "slarrfun.inc"
 /* -------------- UNSIGNED CHAR --------------------- */
 #define GENERIC_TYPE unsigned char
@@ -1000,6 +1025,52 @@ array_max (void)
    (void) SLarray_contract_array (Array_Max_Funs);
 }
 
+static SLCONST SLarray_Contract_Type Array_Maxabs_Funs [] =
+{
+     {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) maxabs_chars},
+     {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, (SLarray_Contract_Fun_Type *) max_uchars},
+     {SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, (SLarray_Contract_Fun_Type *) maxabs_shorts},
+     {SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, (SLarray_Contract_Fun_Type *) max_ushorts},
+     {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_INT_TYPE, (SLarray_Contract_Fun_Type *) maxabs_ints},
+     {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) max_uints},
+     {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) maxabs_longs},
+     {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) max_ulongs},
+#if SLANG_HAS_FLOAT
+     {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) maxabs_floats},
+     {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) maxabs_doubles},
+#endif
+     {0, 0, 0, NULL}
+};
+
+static void 
+array_maxabs (void)
+{
+   (void) SLarray_contract_array (Array_Maxabs_Funs);
+}
+
+
+static SLCONST SLarray_Contract_Type Array_Minabs_Funs [] = 
+{
+     {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) minabs_chars},
+     {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, (SLarray_Contract_Fun_Type *) min_uchars},
+     {SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, (SLarray_Contract_Fun_Type *) minabs_shorts},
+     {SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, (SLarray_Contract_Fun_Type *) min_ushorts},
+     {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_INT_TYPE, (SLarray_Contract_Fun_Type *) minabs_ints},
+     {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) min_uints},
+     {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) minabs_longs},
+     {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) min_ulongs},
+#if SLANG_HAS_FLOAT
+     {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) minabs_floats},
+     {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) minabs_doubles},
+#endif
+     {0, 0, 0, NULL}
+};
+   
+static void 
+array_minabs (void)
+{
+   (void) SLarray_contract_array (Array_Minabs_Funs);
+}
 
 static SLCONST SLarray_Map_Type CumSum_Functions [] =
 {
@@ -1343,6 +1414,8 @@ static SLang_Intrin_Fun_Type Array_Fun_Table [] =
    MAKE_INTRINSIC_0("array_reverse", array_reverse, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("min", array_min, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("max", array_max, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("maxabs", array_maxabs, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("minabs", array_minabs, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("any", array_any, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("all", array_all, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE

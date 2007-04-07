@@ -187,6 +187,7 @@ static int resize_table (SLang_Assoc_Array_Type *a)
      }
    a->elements = new_es;
    a->table_len = new_table_len;
+   a->num_occupied -= a->num_deleted;
    a->num_deleted = 0;
    a->resize_num = 13*(new_table_len>>4);
    

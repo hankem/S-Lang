@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20100
-#define SLANG_VERSION_STRING "pre2.1.0-73"
+#define SLANG_VERSION_STRING "pre2.1.0-76"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -861,10 +861,10 @@ typedef struct _pSLang_Array_Type
 }
 SLang_Array_Type;
 
-SL_EXTERN int SLang_pop_array_of_type (SLang_Array_Type **, SLtype);
-SL_EXTERN int SLang_pop_array (SLang_Array_Type **, int);
-SL_EXTERN int SLang_push_array (SLang_Array_Type *, int);
-SL_EXTERN void SLang_free_array (SLang_Array_Type *);
+SL_EXTERN int SLang_pop_array_of_type (SLang_Array_Type **atp, SLtype type);
+SL_EXTERN int SLang_pop_array (SLang_Array_Type **atp, int convert_scalar);
+SL_EXTERN int SLang_push_array (SLang_Array_Type *at, int do_free);
+SL_EXTERN void SLang_free_array (SLang_Array_Type *at);
 SL_EXTERN SLang_Array_Type *SLang_create_array (SLtype, int, VOID_STAR, SLindex_Type *, unsigned int);
 SL_EXTERN SLang_Array_Type *SLang_duplicate_array (SLang_Array_Type *);
 SL_EXTERN int SLang_get_array_element (SLang_Array_Type *, SLindex_Type *, VOID_STAR);

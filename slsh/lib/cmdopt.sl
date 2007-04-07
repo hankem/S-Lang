@@ -66,7 +66,7 @@ define cmdopt_add ()
    variable type = qualifier ("type");
    switch (type)
      {
-      case "string":
+      case "string" or case "str":
 	s.convert_method = &convert_to_string;
      }
      {

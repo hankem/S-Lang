@@ -1,4 +1,4 @@
-#! /usr/bin/env slsh
+#!/usr/bin/env slsh
 % -*- slang -*-
 
 % This file is used to determine what functions still need documenting.
@@ -110,7 +110,7 @@ define get_doc_intrinsics ()
 }
 
 
-define main ()
+define slsh_main ()
 {
    variable k;
    variable src, doc;
@@ -138,7 +138,4 @@ define main ()
 	  message ();
      }
 }
-
-main ();
-   
    

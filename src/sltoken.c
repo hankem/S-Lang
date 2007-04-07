@@ -766,7 +766,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
 
 	if (len == (MAX_TOKEN_LEN - 1))
 	  {
-	     _pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "String too long for buffer", NULL, 0);
+	     _pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Literal string exceeds the maximum allowable size--- use concatenation", NULL, 0);
 	     return (tok->type = EOF_TOKEN);
 	  }
 

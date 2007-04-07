@@ -36,7 +36,7 @@
       variable c = cmdopt_new (&error_handler);
       cmdopt_add (c, "v|verbose", &verbose; inc);
       cmdopt_add (c, "h|help", &help_callback);
-      cmdopt_add (c, "s:o|output", &outfile; required);
+      cmdopt_add (c, "s:o|output", &outfile; type="str");
       variable iend = cmdopt_process (c, __argv, 1);
        
       if (verbose) message ("some informative message");
@@ -173,7 +173,7 @@
   Options that take a value and cause a function to be called with
   additional arguments \exmp{a0,...}:
 #v+
-    cmdopt_add (optobj, "f|foo", &func, a0,...; required);
+    cmdopt_add (optobj, "f|foo", &func, a0,...; type="int");
     cmdline: pgm --foo=VAL
     cmdline: pgm -f VAL
     cmdline: pgm -fVAL
@@ -183,11 +183,11 @@
     define func (value, a0, ...) {...}
 #v-
   
-  As the above example illustrate, the data-type of the value assigned
+  As the above examples illustrate, the data-type of the value assigned
   to a variable must be specified using the \exmp{type} qualifier.
   Currently the \exmp{type} must be set to one of the following values:
 #v+
-     "string"       (String_Type)
+     "str"          (String_Type)
      "int"          (Int_Type)
      "float"        (Double_Type)
 #v-
@@ -196,7 +196,7 @@
   \exmp{add} method:
 #v+
        optobj = cmdopt_new (...);
-       optobj.add ("f|foo", &func, a0,...; required);
+       optobj.add ("f|foo", &func, a0,...; type="int");
 #v-
 \seealso{cmdopt_new, cmdopt_process}
 \done

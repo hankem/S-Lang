@@ -38,7 +38,7 @@
   
   If after loading the file, if the feature is not present, 
   a warning message will be issued.
-\examples
+\example
 #v+
     require ("histogram");
     require ("histogram", "foo");
