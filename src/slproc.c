@@ -20,6 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.  
 */
 
+#ifndef _XOPEN_SOURCE
+# define _XOPEN_SOURCE
+#endif
+#ifndef _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED
+#endif
+
 #include "slinclud.h"
 
 #ifdef HAVE_IO_H
@@ -115,6 +122,38 @@ static int setpgid_cmd (int *pid, int *pgid)
 }
 #endif
 
+#ifdef HAVE_GETPGID
+static int getpgid_cmd (int *pid)
+{
+   int pgid = getpgid (*pid);
+   if (-1 != pgid)
+     return pgid;
+   _pSLerrno_errno = errno;
+   return -1;
+}
+#endif
+
+#ifdef HAVE_GETPGRP
+static int getpgrp_cmd (void)
+{
+   int pgid = getpgrp ();
+   if (-1 != pgid)
+     return pgid;
+   _pSLerrno_errno = errno;
+   return -1;
+}
+#endif
+
+#ifdef HAVE_SETPGRP
+static int setpgrp_cmd (void)
+{
+   if (0 == setpgrp ())
+     return 0;
+   _pSLerrno_errno = errno;
+   return -1;
+}
+#endif
+
 #ifdef HAVE_SETUID
 static int setuid_cmd (int *uid)
 {
@@ -144,11 +183,23 @@ static SLang_Intrin_Fun_Type Process_Name_Table[] =
 #ifdef HAVE_GETUID
    MAKE_INTRINSIC_0("getuid", getuid_cmd, SLANG_INT_TYPE),
 #endif
+#ifdef HAVE_GETGID
+   MAKE_INTRINSIC_0("getgid", getgid_cmd, SLANG_INT_TYPE),
+#endif
 #ifdef HAVE_SETGID
    MAKE_INTRINSIC_I("setgid", setgid_cmd, SLANG_INT_TYPE),
 #endif
+#ifdef HAVE_GETPGID
+   MAKE_INTRINSIC_I("getpgid", getpgid_cmd, SLANG_INT_TYPE),
+#endif
 #ifdef HAVE_SETPGID
    MAKE_INTRINSIC_II("setpgid", setpgid_cmd, SLANG_INT_TYPE),
+#endif
+#ifdef HAVE_GETPGRP
+   MAKE_INTRINSIC_0("getpgrp", getpgrp_cmd, SLANG_INT_TYPE),
+#endif
+#ifdef HAVE_SETPGRP
+   MAKE_INTRINSIC_0("setpgrp", setpgrp_cmd, SLANG_INT_TYPE),
 #endif
 #ifdef HAVE_SETUID
    MAKE_INTRINSIC_I("setuid", setuid_cmd, SLANG_INT_TYPE),

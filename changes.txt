@@ -226,6 +226,10 @@ Changes since 2.0.7
     elements deleted, the num_occupied field was not being properly
     updated.  This was causing the length of the array to be
     incorrectly computed.
+77. src/slproc.c: Added getpgrp,setpgrp,getgid functions.
+78. src/slutty.c: In the getkey function, if a SIGINT caused
+    SLKeyBoard_Quit to be a non-zero value, the interrupt_hook was not
+    getting executed.
 
 {{{ Previous Versions
 

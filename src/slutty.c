@@ -554,16 +554,19 @@ unsigned int _pSLsys_getkey (void)
 	if (ret != -1)
 	  break;
 
-	if (SLKeyBoard_Quit)
-	  return SLang_Abort_Char;
-
 	if (errno == EINTR)
 	  {
 	     if (-1 == handle_interrupt ())
 	       return SLANG_GETKEY_ERROR;
+	     
+	     if (SLKeyBoard_Quit)
+	       return SLang_Abort_Char;
 
 	     continue;
 	  }
+
+	if (SLKeyBoard_Quit)
+	  return SLang_Abort_Char;
 
 	break;			       /* let read handle it */
      }

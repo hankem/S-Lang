@@ -121,8 +121,12 @@
 #undef HAVE_GETUID
 
 #undef HAVE_SETGID 
-#undef HAVE_SETPGID
 #undef HAVE_SETUID
+
+#undef HAVE_GETPGID
+#undef HAVE_GETPGRP
+#undef HAVE_SETPGID
+#undef HAVE_SETPGRP
 
 #undef HAVE_ISSETUGID
 

@@ -90,7 +90,8 @@ vfscanf \
 lstat readlink symlink link \
 kill \
 snprintf vsnprintf \
-getppid getegid geteuid getuid getgid setgid setpgid setuid \
+getppid getegid geteuid getuid getgid setgid setuid \
+setpgid getpgid setpgrp getpgrp \
 mmap \
 chown popen mkfifo \
 atexit on_exit umask uname \

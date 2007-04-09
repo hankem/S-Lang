@@ -120,6 +120,9 @@ sllower_O_DEP = sllower.h
 slupper_O_DEP = slupper.h
 slwcwidth_O_DEP = slwcwidth.h
 slcommon_O_DEP = slang.h
+slstd_O_DEP = Makefile
+slimport_O_DEP = Makefile
+sltermin_O_DEP = Makefile
 slstd_C_FLAGS = -DSLANG_DOC_DIR='"$(install_doc_dir)"' -DSLANG_INSTALL_PREFIX='"$(prefix)"'
 slimport_C_FLAGS = -DMODULE_INSTALL_DIR='"$(MODULE_INSTALL_DIR)"' -DMODULE_PATH_ENV_NAME='$(MODULE_PATH_ENV_NAME)'
 sltermin_C_FLAGS = -DMISC_TERMINFO_DIRS='"$(MISC_TERMINFO_DIRS)"'

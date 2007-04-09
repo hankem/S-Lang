@@ -72,9 +72,9 @@ slsh_exe: slsh.o readline.o
 	$(CC) $(CFLAGS) slsh.o readline.o -o slsh_exe $(LDFLAGS) $(SRC_LIBS)
 slsh: slsh.o readline.o
 	$(CC) $(CFLAGS) slsh.o readline.o -o slsh $(LDFLAGS) $(INST_LIBS)
-slsh.o: slsh.c slsh.h config.h
+slsh.o: slsh.c slsh.h config.h Makefile
 	$(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) slsh.c
-readline.o: readline.c slsh.h config.h
+readline.o: readline.c slsh.h config.h Makefile
 	$(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) -DUSE_GNU_READLINE=$(GNU_READLINE) readline.c
 config.h: ../src/config.h
 	cp ../src/config.h .
