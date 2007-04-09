@@ -230,6 +230,8 @@ Changes since 2.0.7
 78. src/slutty.c: In the getkey function, if a SIGINT caused
     SLKeyBoard_Quit to be a non-zero value, the interrupt_hook was not
     getting executed.
+79. autoconf/Makefile.in: Tell the user to re-run the configure script
+    if it is more recent than the Makefile.
 
 {{{ Previous Versions
 

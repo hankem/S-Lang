@@ -11,6 +11,7 @@
 @mkfiles/makefile.dos
 @mkfiles/makefile.sh
 
+@autoconf/Makefile
 @autoconf/Makefile.in
 @autoconf/aclocal.m4
 @autoconf/config.guess 0755
