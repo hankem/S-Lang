@@ -740,11 +740,15 @@ static int is_numeric (SLtype type)
     * Also clarify exactly what _pSLang_is_arith_type is supposed to return.
     */
    if (0 == _pSLang_is_arith_type ((SLtype) type))
-     return 0;
+     {
+	if (type == SLANG_COMPLEX_TYPE)
+	  return 3;
+	
+	return 0;
+     }
    if ((type == SLANG_DOUBLE_TYPE) || (type == SLANG_FLOAT_TYPE))
      return 2;
-   if (type == SLANG_COMPLEX_TYPE)
-     return 3;
+
    return 1;
 }
 

@@ -232,6 +232,7 @@ Changes since 2.0.7
     getting executed.
 79. autoconf/Makefile.in: Tell the user to re-run the configure script
     if it is more recent than the Makefile.
+80. src/slstd.c: __is_numeric was not returning 3 for Complex_Type.
 
 {{{ Previous Versions
 

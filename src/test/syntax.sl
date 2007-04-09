@@ -148,9 +148,9 @@ static define check_isnumeric (x, y)
 check_isnumeric ("foo", 0);
 check_isnumeric ("0", 0);
 check_isnumeric (0, 1);
-check_isnumeric (PI, 1);
+check_isnumeric (PI, 2);
 #ifexists Complex_Type
-check_isnumeric (2i, 1);
+check_isnumeric (2i, 3);
 #endif
 check_args (1, 1);
 check_args (1,2,2);
