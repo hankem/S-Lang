@@ -3491,7 +3491,8 @@ static void do_function_traceback (Function_Header_Type *header, unsigned int li
    /* Doing this will allow line number errors in recursive functions to be reported */
    _pSLerr_set_line_info (header->file, (int)linenum, "");
 
-   if ((SLang_Traceback & SL_TB_OMIT_LOCALS)
+   if ((0 == (SLang_Traceback & SL_TB_FULL))
+       || (SLang_Traceback & SL_TB_OMIT_LOCALS)
        || (0 == (nlocals = header->nlocals))
        || (header->local_variables == NULL))
      return;

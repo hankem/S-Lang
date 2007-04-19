@@ -240,6 +240,8 @@ Changes since 2.0.7
 83. src/slang.c: SLang_Traceback is now a bitmapped variable, but
     defined in a backward compatible manner.  See slang.h and the
     documentation for the _traceback variable for more information.
+84. src/slang.c,slexcept.c: Change 83 required a small tweak to the testing of
+    traceback variable.
 
 {{{ Previous Versions
 

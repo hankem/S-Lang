@@ -193,7 +193,7 @@ int _pSLerr_set_line_info (char *file, int linenum, char *fun)
    if (linenum == 0)
      linenum = -1;
 
-   if (SLang_Traceback == SL_TB_NONE)
+   if (0 == (SLang_Traceback == SL_TB_FULL))
      {
 	if ((File_With_Error != NULL) && (Linenum_With_Error != -1))
 	  return 0;
