@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20100
-#define SLANG_VERSION_STRING "pre2.1.0-79"
+#define SLANG_VERSION_STRING "pre2.1.0-81"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -325,19 +325,21 @@ SL_EXTERN int SLwchar_isxdigit (SLwchar_Type);
 #define SLWCWIDTH_SINGLE_WIDTH	0x0001
 SL_EXTERN int SLwchar_set_wcwidth_flags (int flags);
 
+/* The skip_char functions also skip over malformed strings counting each byte
+ * in the malformed sequence.
+ */
 SL_EXTERN SLuchar_Type *SLutf8_skip_char (SLuchar_Type *u, SLuchar_Type *umax);
 SL_EXTERN SLuchar_Type *SLutf8_bskip_char (SLuchar_Type *umin, SLuchar_Type *u);
-
-/* The SLutf8_strup/lo functions return slstrings -- free with SLang_free_slstring */
-SL_EXTERN SLuchar_Type *SLutf8_strup (SLuchar_Type *u, SLuchar_Type *umax);
-SL_EXTERN SLuchar_Type *SLutf8_strlo (SLuchar_Type *u, SLuchar_Type *umax);
-
 SL_EXTERN SLuchar_Type *SLutf8_skip_chars (SLuchar_Type *u, SLuchar_Type *umax,
 					unsigned int num, unsigned int *dnum,
 					int ignore_combining );
 SL_EXTERN SLuchar_Type *SLutf8_bskip_chars (SLuchar_Type *umin, SLuchar_Type *u,
 					  unsigned int num, unsigned int *dnum,
 					 int ignore_combining);
+
+/* The SLutf8_strup/lo functions return slstrings -- free with SLang_free_slstring */
+SL_EXTERN SLuchar_Type *SLutf8_strup (SLuchar_Type *u, SLuchar_Type *umax);
+SL_EXTERN SLuchar_Type *SLutf8_strlo (SLuchar_Type *u, SLuchar_Type *umax);
 
 SL_EXTERN SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
 				       SLwchar_Type wch, unsigned int pos,
@@ -2287,7 +2289,7 @@ SL_EXTERN int SLregexp_get_hints (SLRegexp_Type *, unsigned int *flagsp);
 #define SLREGEXP_HINT_BOL		0x01   /* pattern must match bol */
 #define SLREGEXP_HINT_OSEARCH		0x02   /* ordinary search will do */
 
-SL_EXTERN char *SLregexp_quote_string (char *, char *, unsigned int);
+SL_EXTERN char *SLregexp_quote_string (char *pattern, char *buf, unsigned int buflen);
 
 /*}}}*/
 

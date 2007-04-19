@@ -184,7 +184,7 @@ static void do_file_line_funct_error (char *file, int linenum, char *function)
    if (Last_Function_With_Error == function)	       /* either slstring or "<top-level>" */
      return;
    Last_Function_With_Error = function;
-   if (*function)
+   if (SLang_Traceback && *function)
      _pSLerr_traceback_msg ("%s:%d:%s:%s\n", file, linenum, function, SLerr_strerror (_pSLang_Error));
 }
 
