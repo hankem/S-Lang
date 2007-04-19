@@ -411,31 +411,6 @@ static SLang_IConstant_Type PCRE_Consts [] =
 #undef V
 #undef S
 
-static void patchup_intrinsic_table (SLang_Intrin_Fun_Type *table, 
-				     SLtype dummy, SLtype type)
-{
-   while (table->name != NULL)
-     {
-	unsigned int i, nargs;
-	SLtype *args;
-	
-	nargs = table->num_args;
-	args = table->arg_types;
-	for (i = 0; i < nargs; i++)
-	  {
-	     if (args[i] == dummy)
-	       args[i] = type;
-	  }
-	
-	/* For completeness */
-	if (table->return_type == dummy)
-	  table->return_type = type;
-
-	table++;
-     }
-}
-
-
 static int register_pcre_type (void)
 {
    SLang_Class_Type *cl;
@@ -456,7 +431,8 @@ static int register_pcre_type (void)
      return -1;
 
    PCRE_Type_Id = SLclass_get_class_id (cl);
-   patchup_intrinsic_table (PCRE_Intrinsics, DUMMY_PCRE_TYPE, PCRE_Type_Id);
+   if (-1 == SLclass_patch_intrin_fun_table1 (PCRE_Intrinsics, DUMMY_PCRE_TYPE, PCRE_Type_Id))
+     return -1;
 
    return 0;
 }

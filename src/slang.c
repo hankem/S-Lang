@@ -162,9 +162,8 @@ int _pSLang_Trace = 0;
 static int Trace_Mode = 0;
 
 static char *Trace_Function;	       /* function to be traced */
-int SLang_Traceback = 0;
-/* non zero means do traceback.  If less than 0, do not show local variables */
 
+int SLang_Traceback = SL_TB_PARTIAL;
 
 #if SLANG_HAS_BOSEOS
 static int BOS_Stack_Depth;
@@ -3471,7 +3470,7 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
 
 static void do_traceback (char *message)
 {
-   if (SLang_Traceback == 0)
+   if (SLang_Traceback == SL_TB_NONE)
      return;
 
    if (message != NULL)
@@ -3486,13 +3485,13 @@ static void do_function_traceback (Function_Header_Type *header, unsigned int li
    SLang_Object_Type *objp;
    SLtype stype;
 
-   if (SLang_Traceback == 0)
+   if (SLang_Traceback == SL_TB_NONE)
      return;
 
    /* Doing this will allow line number errors in recursive functions to be reported */
    _pSLerr_set_line_info (header->file, (int)linenum, "");
 
-   if ((SLang_Traceback < 0)
+   if ((SLang_Traceback & SL_TB_OMIT_LOCALS)
        || (0 == (nlocals = header->nlocals))
        || (header->local_variables == NULL))
      return;
@@ -3938,7 +3937,7 @@ do_inner_interp_error (SLBlock_Type *err_block,
    return_error:
 #if SLANG_HAS_DEBUG_CODE
    if ((_pSLang_Error == SL_USAGE_ERROR)
-       && (SLang_Traceback == 0))
+       && (SLang_Traceback == SL_TB_NONE))
      return -1;
 
    if (file != NULL)
@@ -6017,7 +6016,7 @@ int SLexecute_function (SLang_Name_Type *nt)
 
    if (IS_SLANG_ERROR)
      {
-	if (SLang_Traceback)
+	if (SLang_Traceback & SL_TB_FULL)
 	  SLang_verror (0, "Error encountered while executing %s", name);
 	status = -1;
      }

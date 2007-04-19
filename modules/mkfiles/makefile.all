@@ -197,6 +197,9 @@ COPY = copy
 LINK_CMD = link /DLL /SUBSYSTEM:console /LIBPATH:$(SLANGLIB) wslang32.lib -out:$(MOD_DLL) $(MOD_OBJ)#
 # This needs changing for Windows NT on non-Intel processors
 CPU = _X86_
+ICONVDIR=..$(P)..$(P)iconv
+ICONVLIBPATH=/LIBPATH:$(ICONVDIR)$(P)lib
+ICONVINCPATH=/I$(ICONVDIR)$(P)include
 #}}}
 ! elifdef CYGWIN32 MINGW32 #{{{
 CC = $(TOOL_PREFIX)gcc
@@ -282,36 +285,50 @@ COPY = copy
 ! endif
 #}}}
 !endif
-#-------------------------------------------------------------------------------
-
 # End of compiler specific section
+# ---------------------------------------------------------------------------
+# List of modules to compile.  Some/Most require additional libraries to be
+# installed.
+MODULES = slsmg iconv png
+# slsmg: no external dependencies
+# iconv: iconv library
+# png:   png library
+# pcre: Ported to Win32 by GnuWin32 group.
+# varray-module.c: No external libs but requires porting to windows.
+# ---------------------------------------------------------------------------
+# Module-specific paths --- these may need tweaked for the compiler
+ICONVDIR=..$(P)..$(P)iconv
+ICONVLIBPATH=/LIBPATH:$(ICONVDIR)$(P)lib
+ICONVINCPATH=/I$(ICONVDIR)$(P)include
+PNGINCPATH=
+PNGLIBPATH=
+#----------------------------------------------------------------------------
 
-MOD_DLL=$(OBJDIR)$(P)$(MODNAME).dll
-MOD_OBJ=$(OBJDIR)$(P)$(MODNAME).$(O)
-MOD_SRC=$(SRCDIR)$(P)$(MODNAME).c
+all: $(MODULES)
+$(OBJDIR)$(P)slsmg-module.dll $(OBJDIR)$(P)iconv-module.dll
 
-#fcntl-module.c: Not for Dos/Win
-#newt-module.c: ???
-#pcre-module.c: Ported to Win by GnuWin32 group.
-#select-module.c: Not for Dos/Win
-#termios-module.c: Not for Dos/Win
-#varray-module.c: freasible, but the Win API to mm files is completely 
-#                 different form Unix, so not today...
+#iconv-module.c
+$(OBJDIR)$(P)iconv-module.dll: $(OBJDIR) $(OBJDIR)$(P)iconv-module.$(O)
+	$(LINK_CMD)$(OBJDIR)$(P)iconv-module.dll $(ICONVLIBPATH) $(OBJDIR)$(P)iconv-module.$(O) iconv.lib
+$(OBJDIR)$(P)iconv-module.$(O): $(SRCDIR)$(P)iconv-module.c
+	$(COMPILE_CMD)$(OBJDIR)$(P)iconv-module.$(O) $(ICONVINCPATH) $(SRCDIR)$(P)iconv-module.c
 
-dlls: $(OBJDIR)
-	$(MAKE) dll MODNAME=slsmg-module
-	@echo If you have libpng installed, uncomment the PNG module build
-#	$(MAKE) dll MODNAME=png-module
+#slsmg-module.c
+$(OBJDIR)$(P)slsmg-module.dll: $(OBJDIR) $(OBJDIR)$(P)slsmg-module.$(O)
+	$(LINK_CMD)$(OBJDIR)$(P)slsmg-module.dll $(OBJDIR)$(P)slsmg-module.$(O)
+$(OBJDIR)$(P)slsmg-module.$(O): $(SRCDIR)$(P)slsmg-module.c
+	$(COMPILE_CMD)$(OBJDIR)$(P)slsmg-module.$(O) $(SRCDIR)$(P)slsmg-module.c
 
-dll:  $(MOD_DLL)
-$(MOD_DLL): $(MOD_OBJ)
-	$(LINK_CMD)
-
-$(MOD_OBJ): $(MOD_SRC)
-	$(COMPILE_CMD)$(MOD_OBJ) $(MOD_SRC)
+#png-module.c
+$(OBJDIR)$(P)png-module.dll: $(OBJDIR) $(OBJDIR)$(P)png-module.$(O)
+	$(LINK_CMD)$(OBJDIR)$(P)png-module.dll $(PNGLIBPATH) $(OBJDIR)$(P)png-module.$(O) png.lib
+$(OBJDIR)$(P)png-module.$(O): $(SRCDIR)$(P)png-module.c
+	$(COMPILE_CMD)$(OBJDIR)$(P)png-module.$(O) $(PNGINCPATH) $(SRCDIR)$(P)png-module.c
+#
 $(OBJDIR) :
 	-mkdir $(OBJDIR)
 clean:
 	$(RM) $(OBJDIR)$(P)*.$(O)
-
+#
+.PHONY: $(MODULES)
 !endif   #NOT HELP

@@ -1872,3 +1872,40 @@ int SLang_get_int_size (SLtype type)
      }
    return 0;
 }
+
+int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table, 
+				  SLtype *from_types, SLtype *to_types, unsigned int n)
+{
+   unsigned int i, j;
+   
+   for (i = 0; i < n; i++)
+     {
+	SLang_Intrin_Fun_Type *t = table;
+	SLtype dummy = from_types[i];
+	SLtype type = to_types[i];
+
+	while (t->name != NULL)
+	  {
+	     unsigned int nargs = t->num_args;
+	     SLtype *args = t->arg_types;
+
+	     for (j = 0; j < nargs; j++)
+	       {
+		  if (args[j] == dummy)
+		    args[j] = type;
+	       }
+
+	     /* For completeness */
+	     if (t->return_type == dummy)
+	       t->return_type = type;
+	     t++;
+	  }
+     }
+   return 0;
+}
+int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table, 
+				   SLtype from_type, SLtype to_type)
+{
+   return SLclass_patch_intrin_fun_table (table, &from_type, &to_type, 1);
+}
+

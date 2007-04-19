@@ -546,7 +546,7 @@ int main (int argc, char **argv)
 	if (0 == strcmp (argv[1], "-g"))
 	  {
 	     SLang_generate_debug_info (1);
-	     SLang_Traceback = 1;
+	     SLang_Traceback = SL_TB_FULL;
 	     argc--;
 	     argv++;
 	     continue;

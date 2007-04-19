@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20100
-#define SLANG_VERSION_STRING "pre2.1.0-81"
+#define SLANG_VERSION_STRING "pre2.1.0-83"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -596,6 +596,7 @@ SL_EXTERN void SLns_delete_namespace (SLang_NameSpace_Type *);
 SL_EXTERN int SLns_load_file (char *, char *);
 SL_EXTERN int SLns_load_string (char *, char *);
 SL_EXTERN int (*SLns_Load_File_Hook) (char *, char *);
+
 SL_EXTERN int SLang_load_file_verbose (int);    
 /* if non-zero, display file loading messages */
 
@@ -993,6 +994,11 @@ SL_EXTERN int SL_Import_Error;
 #define SL_INVALID_UTF8			SL_InvalidUTF8_Error
 
   SL_EXTERN int SLang_Traceback;
+#define SL_TB_NONE		0x0
+#define SL_TB_FULL		0x1    /* full traceback */
+#define SL_TB_OMIT_LOCALS	0x2    /* full, but omit local vars */
+#define SL_TB_PARTIAL		0x4    /* show just on line of traceback */
+
   /* If non-zero, dump an S-Lang traceback upon error.  Available as
      _traceback in S-Lang. */
 
@@ -2127,6 +2133,16 @@ SL_EXTERN int SLadd_intrinsic_function (char *, FVOID_STAR, SLtype, unsigned int
 
 SL_EXTERN int SLns_add_intrinsic_variable (SLang_NameSpace_Type *, char *, VOID_STAR, SLtype, int);
 SL_EXTERN int SLns_add_intrinsic_function (SLang_NameSpace_Type *, char *, FVOID_STAR, SLtype, unsigned int,...);
+
+/* These functions are used to patch intrinsic tables that make use of 
+ * dynamically allocated types whose type id is determined at
+ * run-time.  The second version is useful for the most common case of a 
+ * single mapping.
+ */
+extern int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table, 
+					 SLtype *from_types, SLtype *to_types, unsigned int num);
+extern int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table, 
+					  SLtype from_types, SLtype to_types);
 
 #define MAKE_INTRINSIC_N(n,f,out,in,a1,a2,a3,a4,a5,a6,a7) \
     {(n), NULL, SLANG_INTRINSIC, (FVOID_STAR) (f), \

@@ -205,14 +205,17 @@
 \synopsis{Generate a traceback upon error}
 \usage{Integer_Type _traceback}
 \description
-  \ivar{_traceback} is an intrinsic integer variable whose value
-  controls whether or not a traceback of the call stack is to be
-  generated upon error.  If \ivar{_traceback} is greater than zero, a
-  full traceback will be generated, which includes the values of local
-  variables.  If the value is less than zero, a traceback will be
-  generated without local variable information, and if
-  \ivar{_traceback} is zero the traceback will not be generated.
-  
+  \ivar{_traceback} is an intrinsic integer variable whose bitmapped value
+  controls the generation of the call-stack traceback upon error.
+  When set to 0, no traceback will be generated.  Otherwise its value
+  is the bitwise-or of the following integers:
+#v+
+       1        Create a full traceback
+       2        Omit local variable information
+       4        Generate just one line of traceback
+#v-
+  The default value of this variable is 4.
+\notes  
   Running \slsh with the \exmp{-g} option causes this variable to be
   set to 1.
 \seealso{_boseos_info}

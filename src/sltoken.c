@@ -1280,7 +1280,7 @@ int SLns_load_string (char *string, char *ns_name)
 
    data.ptr = data.string = string;
    if ((-1 == (ret = SLang_load_object (x)))
-       && (SLang_Traceback))
+       && (SLang_Traceback & SL_TB_FULL))
      _pSLerr_traceback_msg ("Traceback: called from eval: %s\n", string);
 
    SLang_free_slstring (string);
