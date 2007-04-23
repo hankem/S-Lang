@@ -124,7 +124,7 @@ typedef struct
 }
 Token_List_Type;
 
-#define MAX_TOKEN_LISTS 16
+#define MAX_TOKEN_LISTS 256
 static Token_List_Type Token_List_Stack [MAX_TOKEN_LISTS];
 static unsigned int Token_List_Stack_Depth = 0;
 static Token_List_Type *Token_List = NULL;
@@ -1619,11 +1619,14 @@ static _pSLang_Token_Type *
 	if (assign_ok && (ASSIGN_TOKEN == ctok->type))
 	  {
 	     /* name = ... */
+#if SLANG_HAS_BOSEOS
 	     int eos = compile_bos (ctok, 1);
+#endif
 	     get_token (ctok);
 	     simple_expression (ctok);
+#if SLANG_HAS_BOSEOS
 	     if (eos) compile_eos ();
-
+#endif
 	     if (-1 == append_copy_of_string_token (new_tok))
 	       break;
 	     

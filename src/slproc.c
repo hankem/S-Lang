@@ -145,6 +145,7 @@ static int getpgrp_cmd (void)
 #endif
 
 #ifdef HAVE_SETPGRP
+#if 0
 static int setpgrp_cmd (void)
 {
    if (0 == setpgrp ())
@@ -152,6 +153,7 @@ static int setpgrp_cmd (void)
    _pSLerrno_errno = errno;
    return -1;
 }
+#endif
 #endif
 
 #ifdef HAVE_SETUID
@@ -199,7 +201,7 @@ static SLang_Intrin_Fun_Type Process_Name_Table[] =
    MAKE_INTRINSIC_0("getpgrp", getpgrp_cmd, SLANG_INT_TYPE),
 #endif
 #ifdef HAVE_SETPGRP
-   MAKE_INTRINSIC_0("setpgrp", setpgrp_cmd, SLANG_INT_TYPE),
+   /* MAKE_INTRINSIC_0("setpgrp", setpgrp_cmd, SLANG_INT_TYPE), */
 #endif
 #ifdef HAVE_SETUID
    MAKE_INTRINSIC_I("setuid", setuid_cmd, SLANG_INT_TYPE),

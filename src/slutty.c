@@ -65,7 +65,7 @@ USA.
 # include <sys/select.h>	/* for FD_ISSET, FD_SET, FD_ZERO */
 #endif
 
-#ifndef O_RDWR
+#if !defined(O_RDWR) || !defined(FD_CLOEXEC)
 # include <fcntl.h>
 #endif
 
@@ -259,6 +259,12 @@ int SLang_init_tty (int abort_char, int no_flow_control, int opost)
 	/* I have been told that BEOS will HANG if passed /dev/tty */
 	if ((SLang_TT_Read_FD = open("/dev/tty", O_RDWR)) >= 0)
 	  {
+#  ifdef FD_CLOEXEC
+	     /* Make sure /dev/tty is closed upon exec */
+	     int flags = fcntl (SLang_TT_Read_FD, F_GETFD);
+	     if (flags >= 0)
+	       (void) fcntl(SLang_TT_Read_FD, F_SETFD, flags | FD_CLOEXEC);
+#  endif
 	     TTY_Open = 1;
 	  }
 # endif

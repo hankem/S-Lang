@@ -242,6 +242,16 @@ Changes since 2.0.7
     documentation for the _traceback variable for more information.
 84. src/slang.c,slexcept.c: Change 83 required a small tweak to the testing of
     traceback variable.
+85. src/slparse.c: MAX_TOKEN_LISTS increased to 256.
+86. src/slparse.c: Added a couple of #if..#endif constructs to avoid
+    compiling bos/eos hooks when the debug feature has been disabled.
+    (Tijs Michels tijs, michels at t-online, de)
+87. src/slproc.c: The setpgrp function that was added in change #77
+    has been removed because on some systems it takes arguments, and
+    on others it takes none.  It is also equivalent to setpgid(0,0),
+    so there is no net loss.
+88. src/slutty.c: Set the FD_CLOEXEC flag on the /dev/tty file
+    descriptor.
 
 {{{ Previous Versions
 
