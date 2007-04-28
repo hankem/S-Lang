@@ -311,7 +311,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='RPATH SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CONFIG_DIR CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP SET_MAKE RANLIB ac_ct_RANLIB INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS DYNAMIC_LINK_LIB ELF_CC ELF_CFLAGS ELF_LINK ELF_LINK_CMD ELF_DEP_LIBS DYNAMIC_LINK_FLAGS CC_SHARED ELFLIB ELFLIB_MAJOR ELFLIB_MAJOR_MINOR SLANG_LIB_FOR_MODULES DLL_IMPLIB_NAME INSTALL_MODULE TERMCAP MISC_TERMINFO_DIRS SRCDIR OBJDIR ELFDIR PCRE_LIB PCRE_INC PCRE_MODULE PNG_LIB PNG_INC PNG_MODULE GNU_READLINE LIB_READLINE PROGRAM_OFILES PROGRAM_CFILES PROGRAM_HFILES PROGRAM_OBJECTS PROGRAM_ELFOBJECTS slang_major_version slang_minor_version slang_version LIBOBJS LTLIBOBJS'
+ac_subst_vars='RPATH SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CONFIG_DIR CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP SET_MAKE RANLIB ac_ct_RANLIB INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS DYNAMIC_LINK_LIB ELF_CC ELF_CFLAGS ELF_LINK ELF_LINK_CMD ELF_DEP_LIBS DYNAMIC_LINK_FLAGS CC_SHARED ELFLIB ELFLIB_MAJOR ELFLIB_MAJOR_MINOR SLANG_LIB_FOR_MODULES DLL_IMPLIB_NAME INSTALL_MODULE TERMCAP MISC_TERMINFO_DIRS SRCDIR OBJDIR ELFDIR PCRE_LIB PCRE_INC PCRE_MODULE PNG_LIB PNG_INC PNG_MODULE ICONV_LIB ICONV_INC ICONV_MODULE GNU_READLINE LIB_READLINE PROGRAM_OFILES PROGRAM_CFILES PROGRAM_HFILES PROGRAM_OBJECTS PROGRAM_ELFOBJECTS slang_major_version slang_minor_version slang_version LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -863,6 +863,9 @@ Optional Packages:
   --with-png=DIR      Use DIR/lib and DIR/include for png
   --with-pnglib=DIR   png library in DIR
   --with-pnginc=DIR   png include files in DIR
+  --with-iconv=DIR      Use DIR/lib and DIR/include for iconv
+  --with-iconvlib=DIR   iconv library in DIR
+  --with-iconvinc=DIR   iconv include files in DIR
   --with-readline=xxx       use slang(default) or gnu readline for slsh
 
 Some influential environment variables:
@@ -10857,6 +10860,476 @@ else
 fi
 
 
+#serial AM2
+
+
+
+
+
+ICONV_MODULE=""
+
+    echo "$as_me:$LINENO: checking for the iconv library and header files " >&5
+echo $ECHO_N "checking for the iconv library and header files ... $ECHO_C" >&6
+
+
+
+ jd_iconv_include_dir=""
+ jd_iconv_library_dir=""
+ jd_with_iconv_library=""
+
+
+# Check whether --with-iconv or --without-iconv was given.
+if test "${with_iconv+set}" = set; then
+  withval="$with_iconv"
+  jd_with_iconv_arg=$withval
+else
+  jd_with_iconv_arg=unspecified
+fi;
+
+ case "x$jd_with_iconv_arg" in
+   xno)
+     jd_with_iconv_library="no"
+    ;;
+   x)
+    { { echo "$as_me:$LINENO: error: --with-iconv requires a value-- try yes or no" >&5
+echo "$as_me: error: --with-iconv requires a value-- try yes or no" >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+   xunspecified)
+    ;;
+   xyes)
+    ;;
+   *)
+    jd_iconv_include_dir="$jd_with_iconv_arg"/include
+    jd_iconv_library_dir="$jd_with_iconv_arg"/lib
+    ;;
+ esac
+
+
+# Check whether --with-iconvlib or --without-iconvlib was given.
+if test "${with_iconvlib+set}" = set; then
+  withval="$with_iconvlib"
+  jd_with_iconvlib_arg=$withval
+else
+  jd_with_iconvlib_arg=unspecified
+fi;
+ case "x$jd_with_iconvlib_arg" in
+   xunspecified)
+    ;;
+   xno)
+    ;;
+   x)
+    { { echo "$as_me:$LINENO: error: --with-iconvlib requres a value" >&5
+echo "$as_me: error: --with-iconvlib requres a value" >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+   *)
+    jd_iconv_library_dir="$jd_with_iconvlib_arg"
+    ;;
+ esac
+
+
+# Check whether --with-iconvinc or --without-iconvinc was given.
+if test "${with_iconvinc+set}" = set; then
+  withval="$with_iconvinc"
+  jd_with_iconvinc_arg=$withval
+else
+  jd_with_iconvinc_arg=unspecified
+fi;
+ case "x$jd_with_iconvinc_arg" in
+   x)
+     { { echo "$as_me:$LINENO: error: --with-iconvinc requres a value" >&5
+echo "$as_me: error: --with-iconvinc requres a value" >&2;}
+   { (exit 1); exit 1; }; }
+     ;;
+   xunspecified)
+     ;;
+   xno)
+     ;;
+   *)
+    jd_iconv_include_dir="$jd_with_iconvinc_arg"
+   ;;
+ esac
+
+  if test X"$jd_with_iconv_library" = X
+  then
+    jd_iconv_inc_file=
+    jd_with_iconv_library="yes"
+
+    if test "X$jd_iconv_inc_file" = "X"
+    then
+       jd_iconv_inc_file=iconv.h
+    fi
+    if test X"$jd_iconv_include_dir" = X
+    then
+       lib_include_dirs="\
+            $jd_prefix_incdir \
+            /usr/local/iconv/include \
+            /usr/local/include/iconv \
+  	  /usr/local/include \
+  	  /usr/include/iconv \
+  	  /usr/iconv/include \
+  	  /usr/include \
+  	  /opt/include/iconv \
+  	  /opt/iconv/include \
+  	  /opt/include"
+
+       for X in $lib_include_dirs
+       do
+          if test -r "$X/$jd_iconv_inc_file"
+	  then
+  	  jd_iconv_include_dir="$X"
+            break
+          fi
+       done
+       if test X"$jd_iconv_include_dir" = X
+       then
+         jd_with_iconv_library="no"
+       fi
+    fi
+
+    if test X"$jd_iconv_library_dir" = X
+    then
+       lib_library_dirs="\
+            $jd_prefix_libdir \
+            /usr/local/lib \
+            /usr/local/lib/iconv \
+            /usr/local/iconv/lib \
+  	  /usr/lib \
+  	  /usr/lib/iconv \
+  	  /usr/iconv/lib \
+  	  /opt/lib \
+  	  /opt/lib/iconv \
+  	  /opt/iconv/lib"
+
+       case "$host_os" in
+         *darwin* )
+	   exts="dylib so a"
+	   ;;
+	 * )
+	   exts="so a"
+       esac
+
+       found=0
+       for X in $lib_library_dirs
+       do
+         for E in $exts
+	 do
+           if test -r "$X/libiconv.$E"
+	   then
+  	     jd_iconv_library_dir="$X"
+	     found=1
+	     break
+           fi
+         done
+	 if test $found -eq 1
+	 then
+	   break
+	 fi
+       done
+       if test X"$jd_iconv_library_dir" = X
+       then
+         jd_with_iconv_library="no"
+       fi
+    fi
+  fi
+
+  if test "$jd_with_iconv_library" = "yes"
+  then
+    echo "$as_me:$LINENO: result: yes: $jd_iconv_library_dir and $jd_iconv_include_dir" >&5
+echo "${ECHO_T}yes: $jd_iconv_library_dir and $jd_iconv_include_dir" >&6
+            ICONV_LIB=-L$jd_iconv_library_dir
+    if test "X$jd_iconv_library_dir" = "X/usr/lib"
+    then
+      ICONV_LIB=""
+    else
+
+if test "X$jd_iconv_library_dir" != "X"
+then
+  if test "X$RPATH" = "X"
+  then
+
+case "$host_os" in
+  *linux*|*solaris* )
+    if test "X$GCC" = Xyes
+    then
+      if test "X$ac_R_nospace" = "Xno"
+      then
+        RPATH="-Wl,-R,"
+      else
+        RPATH="-Wl,-R"
+      fi
+    else
+      if test "X$ac_R_nospace" = "Xno"
+      then
+        RPATH="-R "
+      else
+	RPATH="-R"
+      fi
+    fi
+  ;;
+  *osf*|*openbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-rpath,"
+    else
+      RPATH="-rpath "
+    fi
+  ;;
+  *netbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-R"
+    fi
+  ;;
+esac
+
+    if test "X$RPATH" != "X"
+    then
+      RPATH="$RPATH$jd_iconv_library_dir"
+    fi
+  else
+    RPATH="$RPATH:$jd_iconv_library_dir"
+  fi
+fi
+
+    fi
+
+    ICONV_INC=-I$jd_iconv_include_dir
+    if test "X$jd_iconv_include_dir" = "X/usr/include"
+    then
+      ICONV_INC=""
+    fi
+  else
+    echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+    ICONV_INC=""
+    ICONV_LIB=""
+  fi
+
+
+
+if test $jd_with_iconv_library = yes
+then
+  ICONV_MODULE="iconv-module.so"
+  cat >>confdefs.h <<\_ACEOF
+#define HAVE_ICONV_H 1
+_ACEOF
+
+else
+
+
+  echo "$as_me:$LINENO: checking for iconv" >&5
+echo $ECHO_N "checking for iconv... $ECHO_C" >&6
+if test "${am_cv_func_iconv+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+    am_cv_func_iconv="no, consider installing GNU libiconv"
+    am_cv_lib_iconv=no
+    cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <stdlib.h>
+#include <iconv.h>
+int
+main ()
+{
+iconv_t cd = iconv_open("","");
+       iconv(cd,NULL,NULL,NULL,NULL);
+       iconv_close(cd);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  am_cv_func_iconv=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+    if test "$am_cv_func_iconv" != yes; then
+      am_save_LIBS="$LIBS"
+      LIBS="$LIBS -liconv"
+      cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <stdlib.h>
+#include <iconv.h>
+int
+main ()
+{
+iconv_t cd = iconv_open("","");
+         iconv(cd,NULL,NULL,NULL,NULL);
+         iconv_close(cd);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  am_cv_lib_iconv=yes
+        am_cv_func_iconv=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+      LIBS="$am_save_LIBS"
+    fi
+
+fi
+echo "$as_me:$LINENO: result: $am_cv_func_iconv" >&5
+echo "${ECHO_T}$am_cv_func_iconv" >&6
+  if test "$am_cv_func_iconv" = yes; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_ICONV 1
+_ACEOF
+
+    echo "$as_me:$LINENO: checking for iconv declaration" >&5
+echo $ECHO_N "checking for iconv declaration... $ECHO_C" >&6
+    if test "${am_cv_proto_iconv+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+      cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#include <stdlib.h>
+#include <iconv.h>
+extern
+#ifdef __cplusplus
+"C"
+#endif
+#if defined(__STDC__) || defined(__cplusplus)
+size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+#else
+size_t iconv();
+#endif
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  am_cv_proto_iconv_arg1=""
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+am_cv_proto_iconv_arg1="const"
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+      am_cv_proto_iconv="extern size_t iconv (iconv_t cd, $am_cv_proto_iconv_arg1 char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);"
+fi
+
+    am_cv_proto_iconv=`echo "$am_cv_proto_iconv" | tr -s ' ' | sed -e 's/( /(/'`
+    echo "$as_me:$LINENO: result: ${ac_t:-
+         }$am_cv_proto_iconv" >&5
+echo "${ECHO_T}${ac_t:-
+         }$am_cv_proto_iconv" >&6
+
+cat >>confdefs.h <<_ACEOF
+#define ICONV_CONST $am_cv_proto_iconv_arg1
+_ACEOF
+
+  fi
+  LIBICONV=
+  if test "$am_cv_lib_iconv" = yes; then
+    LIBICONV="-liconv"
+  fi
+
+  if test "$am_cv_func_iconv" = yes
+  then
+    ICONV_MODULE="iconv-module.so"
+    if test "$am_cv_lib_iconv" = yes
+    then
+       ICONV_LIB=$LIBICONV
+       ICONV_INC=""
+    fi
+  fi
+fi
+
+
 
 # Check whether --with-readline or --without-readline was given.
 if test "${with_readline+set}" = set; then
@@ -11620,6 +12093,9 @@ s,@PCRE_MODULE@,$PCRE_MODULE,;t t
 s,@PNG_LIB@,$PNG_LIB,;t t
 s,@PNG_INC@,$PNG_INC,;t t
 s,@PNG_MODULE@,$PNG_MODULE,;t t
+s,@ICONV_LIB@,$ICONV_LIB,;t t
+s,@ICONV_INC@,$ICONV_INC,;t t
+s,@ICONV_MODULE@,$ICONV_MODULE,;t t
 s,@GNU_READLINE@,$GNU_READLINE,;t t
 s,@LIB_READLINE@,$LIB_READLINE,;t t
 s,@PROGRAM_OFILES@,$PROGRAM_OFILES,;t t

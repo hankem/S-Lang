@@ -19,6 +19,8 @@
 @autoconf/configure.ac
 @autoconf/install.sh 0755
 @autoconf/mkinsdir.sh 0755
+@autoconf/iconv.m4
+
 @changes.txt
 @configure 0755
 @demo/Makefile.in
@@ -134,6 +136,8 @@
 @modules/newt-module.c
 @modules/socket-module.c
 @modules/socket.sl
+@modules/iconv-module.c
+@modules/iconv.sl
 
 @modules/tm/pcrefuns.tm
 @modules/tm/pngfuns.tm

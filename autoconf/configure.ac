@@ -165,6 +165,28 @@ else
 fi
 AC_SUBST(PNG_MODULE)
 
+m4_include([./iconv.m4])
+
+ICONV_MODULE=""
+JD_CHECK_FOR_LIBRARY(iconv)
+if test $jd_with_iconv_library = yes
+then 
+  ICONV_MODULE="iconv-module.so"
+  AC_DEFINE(HAVE_ICONV_H)
+else
+  SLANG_AM_ICONV
+  if test "$am_cv_func_iconv" = yes
+  then
+    ICONV_MODULE="iconv-module.so"
+    if test "$am_cv_lib_iconv" = yes
+    then 
+       ICONV_LIB=$LIBICONV
+       ICONV_INC=""
+    fi
+  fi
+fi
+AC_SUBST(ICONV_MODULE)
+
 dnl # Readline support for slsh
 AC_ARG_WITH(readline,
    [  --with-readline=xxx       use slang(default) or gnu readline for slsh ],

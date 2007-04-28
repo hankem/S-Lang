@@ -1467,7 +1467,6 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 		  ch = 's';
 		  str = (char *)utf8_buf;
 		  use_string = 1;
-		  break;
 	       }
 	     break;
 	     

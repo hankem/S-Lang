@@ -27,6 +27,10 @@ USA.
 # define _XOPEN_SOURCE_EXTENDED
 #endif
 
+#ifndef __EXTENSIONS__
+# define __EXTENSIONS__
+#endif
+  
 #include "slinclud.h"
 
 #ifdef HAVE_IO_H

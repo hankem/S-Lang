@@ -252,6 +252,10 @@ Changes since 2.0.7
     so there is no net loss.
 88. src/slutty.c: Set the FD_CLOEXEC flag on the /dev/tty file
     descriptor.
+89. src/doc/tm/cslang.tm: Changed the array examples to use
+    `SLindex_Type' instead of `int'.  I also added a note about this
+    to the NEWS file.
+90. modules/iconv-module.c: a new module (Dino Sangoid).
 
 {{{ Previous Versions
 

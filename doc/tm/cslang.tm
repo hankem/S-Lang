@@ -336,6 +336,14 @@
   well as from interpeted code via the \ifun{set_slang_load_path}
   function.  By default, no search path is defined.
   
+  NOTE: It is highly recommended that an application embedding the
+  interpreter include the \slsh lib directory in the search path.  The
+  \exfile{.sl} files that are part of \slsh are both useful and
+  and should work with any application embedding the interpreter.
+  Moreover, if the application permits dynamically loaded modules,
+  then there are a growing number of excellent quality modules for
+  \slsh that can be utilized by it.
+  
   Files are searched as follows: If the name begins with the
   equivalent of \exstr{./} or \exstr{../}, then it is searched for
   with respect to the current directory, and not along the load-path.
@@ -796,7 +804,7 @@
             "Spring", "Summer", "Autumn", "Winter"
          };
        SLang_Array_Type *at;
-       int i, four;
+       SLindex_Type i, four;
        
        four = 4;
        at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &four, 1);
@@ -817,10 +825,18 @@
       SLang_free_array (at);
     }
 #v-
- This example illustrates several points.  First of all, the
+
+ This example illustrates several points:
+ 
+ First of all, the
  \cfun{SLang_create_array} function was used to create a 1 dimensional
  array of 4 strings.  Since this function could fail, its return value
- was checked.  Then the \cfun{SLang_set_array_element} function was
+ was checked.  Also \var{SLindex_Type} was used for the array size and
+ index types.  In \slang version 2, \var{SLindex_Type} is typedefed to
+ be an \var{int}.  However, as this will change in a future version of
+ the library, \var{SLindex_Type} should be used.
+
+ The \cfun{SLang_set_array_element} function was
  used to set the elements of the newly created array.  Note that the
  address containing the value of the array element was passed and not
  the value of the array element itself.  That is,
@@ -828,16 +844,18 @@
     SLang_set_array_element (at, &i, seasons[i])
 #v-
  was not used.  The return value from this function was also checked
- because it too could also fail.  Finally, the array was pushed onto
- the interpreter's stack and then it was freed.  It is important to
- understand why it was freed.  This is because arrays are
- reference-counted.  When the array was created, it was returned with
- a reference count of \var{1}.  When it was pushed, the reference
- count was bumped up to \var{2}.  Then since it was nolonger needed by
- the function, \cfun{SLang_free_array} was called to decrement the
- reference count back to \var{1}.  For convenience, the second
- argument to \cfun{SLang_push_array} determines whether or not it is to
- also free the array.  So, instead of the two function calls:
+ because it too could also fail. 
+ 
+ Finally, the array was pushed onto the interpreter's stack and then
+ it was freed.  It is important to understand why it was freed.  This
+ is because arrays are reference-counted.  When the array was created,
+ it was returned with a reference count of \var{1}.  When it was
+ pushed, the reference count was bumped up to \var{2}.  Then since it
+ was nolonger needed by the function, \cfun{SLang_free_array} was
+ called to decrement the reference count back to \var{1}.  For
+ convenience, the second argument to \cfun{SLang_push_array}
+ determines whether or not it is to also free the array.  So, instead
+ of the two function calls:
 #v+
    (void) SLang_push_array (at, 0);
    SLang_free_array (at);
@@ -851,11 +869,11 @@
  the stack.  A diagonal array is a 2-d array with all elements zero
  except for those along the diagonal, which have a value of one:
 #v+
-   void make_diagonal_array (int n)
+   void make_diagonal_array (SLindex_Type n)
    {
       SLang_Array_Type *at;
-      int dims[2];
-      int i, one;
+      SLindex_Type dims[2];
+      SLindex_Type i, one;
 
       dims[0] = dims[1] = n;
       at = SLang_create_array (SLANG_INT_TYPE, 0, NULL, dims, 2);
@@ -888,7 +906,7 @@
    {
       SLang_Array_Type *at;
       double trace;
-      int dims[2];
+      SLindex_Type dims[2];
 
       if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
         return 0.0;
@@ -900,7 +918,7 @@
           || ((at->num_dims == 2) && (at->dims[0] == at->dims[1])))
         {
            double dtrace;
-           int n = at->dims[0];
+           SLindex_Type n = at->dims[0];
 
            for (i = 0; i < n; i++)
              {

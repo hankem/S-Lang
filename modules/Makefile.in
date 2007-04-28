@@ -1,7 +1,7 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
-  varray-module.so socket-module.so @PCRE_MODULE@ @PNG_MODULE@
-SLFILES = slsmg termios select fcntl varray socket pcre png 
+  varray-module.so socket-module.so @PCRE_MODULE@ @PNG_MODULE@ @ICONV_MODULE@
+SLFILES = slsmg termios select fcntl varray socket pcre png iconv
 #---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@
@@ -32,6 +32,11 @@ PCRE_LIB	= @PCRE_LIB@ -lpcre
 #---------------------------------------------------------------------------
 PNG_INC	= @PNG_INC@
 PNG_LIB	= @PNG_LIB@ -lpng
+#---------------------------------------------------------------------------
+# If building the ICONV module, you may need to set these
+#---------------------------------------------------------------------------
+ICONV_INC	= @ICONV_INC@
+ICONV_LIB	= @ICONV_LIB@
 #---------------------------------------------------------------------------
 # If building the SOCKET module, you may need to set these
 #---------------------------------------------------------------------------
@@ -85,6 +90,8 @@ png-module.so: png-module.c config.h
 	$(CC_SHARED) $(INCS) $(PNG_INC) png-module.c -o png-module.so $(PNG_LIB) $(LIBS)
 socket-module.so: socket-module.c config.h
 	$(CC_SHARED) $(INCS) socket-module.c -o socket-module.so $(SOCKET_LIBS) $(LIBS)
+iconv-module.so: iconv-module.c config.h
+	$(CC_SHARED) $(INCS) $(ICONV_INC) iconv-module.c -o iconv-module.so $(ICONV_LIB) $(LIBS)
 
 # Note that Windows/Cygwin modules need execute permissions
 install: all

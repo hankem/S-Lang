@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20100
-#define SLANG_VERSION_STRING "pre2.1.0-88"
+#define SLANG_VERSION_STRING "pre2.1.0-90"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -2142,7 +2142,7 @@ SL_EXTERN int SLns_add_intrinsic_function (SLang_NameSpace_Type *, char *, FVOID
 extern int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table, 
 					 SLtype *from_types, SLtype *to_types, unsigned int num);
 extern int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table, 
-					  SLtype from_types, SLtype to_types);
+					  SLtype from_type, SLtype to_type);
 
 #define MAKE_INTRINSIC_N(n,f,out,in,a1,a2,a3,a4,a5,a6,a7) \
     {(n), NULL, SLANG_INTRINSIC, (FVOID_STAR) (f), \

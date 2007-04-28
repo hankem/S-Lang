@@ -21,7 +21,7 @@
 #endif
 
 #ifdef HAVE_MALLOC_H
-# if !defined(__FreeBSD__)
+# if !defined(__FreeBSD__) && !defined(__OpenBSD__)
 #  include <malloc.h>
 # endif
 #endif

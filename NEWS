@@ -3,6 +3,15 @@ S-Lang 2 NEWS is now contained in the appendices of doc/text/slang.txt
 
 NEWS for version 2.1
 
+Building the library
+====================
+
+   `make install' installs the shared version of the library.
+   Previously `make install' installed just the static version and a
+   separate step (`make install-elf') was required to install the
+   shared version.  Now, `make install-static' is necessary to install
+   the static one.
+
 Interpreter News
 =================
 
@@ -73,5 +82,56 @@ New Intrinsic Functions:
 
    minabs(x), maxabs(x):
               Equivalent to min(abs(x)) and max(abs(x))
+	      
+   getpgrp,setgid, getpgid:
+              Get and set the process group (Unix)
 
-              
+
+
+API News
+========
+
+  Although not new I feel that this point should be stressed now
+  because it was not emphasized earlier:  The SLarray_* functions that
+  deal with indices or sizes use `SLindex_Type' instead of `int'.
+  Currently, `SLindex_Type' is typedefed to be an `int', but this will
+  change in a future version.  So for future compatibility, use
+  `SLindex_Type' instead of `int' in functions that deal with slang
+  arrays.  See the array-specific examples in the documentation for
+  more information.
+
+  There have been significant enhancements to the slang readline
+  interface.  The interface has been opened up to the interpreter
+  allowing for such features as completion and a persistent history
+  mechanism.  Applications wishing to take advantage of these features
+  should use the new function `SLrline_open2' instead of
+  `SLrline_open'.  For an example, see how this function is used in
+  slsh/src/readline.c.
+
+  SLclass_patch_intrin_fun_table was added to facilitiate the patching
+  of intrinsic tables during runtime.  If you have created dynamically
+  loaded modules, then you may have a good idea what this function is
+  for.
+
+  The SLang_Traceback variable is now interpreted as a bitmapped
+  integer providing greater flexibility and control over traceback
+  messages.
+  
+  SLerr_throw was added to permit applications to mimic the semantics
+  of the `throw' statement.
+  
+  SLang_verror_va was added to support calling the error routines with
+  a va_list argument.
+
+
+slsh enhancements
+=================
+
+  When configured to use slang's readline routines, new features
+  include filename completion and persistent history.
+  
+  The profiler was rewritten to be much more friendly, flexible, and
+  more accurate.
+  
+  struct_filter and struct_combine defined in structfuns.sl have been
+  made more flxible.  See their documentation for more information.
