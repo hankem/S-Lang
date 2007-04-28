@@ -458,7 +458,7 @@ static void signal_intrinsic (void)
 	return;
      }
 
-   old_handler = SLsignal (s->sig, signal_handler);
+   old_handler = SLsignal_intr (s->sig, signal_handler);
    if (-1 == set_old_handler (s, old_ref, old_handler))
      {
 	SLang_free_ref (old_ref);

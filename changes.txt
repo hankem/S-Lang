@@ -256,6 +256,9 @@ Changes since 2.0.7
     `SLindex_Type' instead of `int'.  I also added a note about this
     to the NEWS file.
 90. modules/iconv-module.c: a new module (Dino Sangoid).
+91. src/slsig.c: SLsignal was used instead of SLsignal_intr.  The
+    difference is that SLsignal_intr interrupts system calls, which is
+    a better choice for the interpreter.
 
 {{{ Previous Versions
 
