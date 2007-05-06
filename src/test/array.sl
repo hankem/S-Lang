@@ -1360,7 +1360,12 @@ test_where_2_args (([1:-1] mod 2)==2);
 
 private define test_arrayn (a, b, n)
 {
-   variable a0 = a + ([0:n-1])*((b-a)/double(n-1));
+   variable a0;
+   
+   if (n == 1)
+     a0 = a;
+   else
+     a0 = a + ([0:n-1])*((b-a)/double(n-1));
    variable a1 = [a:b:#n];
    
    if ((typeof (a) == Float_Type) && (_typeof(a1) != Float_Type))
@@ -1382,6 +1387,7 @@ private define test_arrayn (a, b, n)
      failed ("[$a:$b:$n] max_diff=%g"$, max(_diff(a1,a0)));
 }
 
+test_arrayn (1,10, 1);
 test_arrayn (1,10, 10);
 test_arrayn (1,20, 10);
 test_arrayn (-5, 5, 10);

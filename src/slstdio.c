@@ -104,6 +104,47 @@ static SL_File_Table_Type *get_free_file_table_entry (void)
    return NULL;
 }
 
+/* This function returns 1 if a system call should be restarted, otherwise 0 */
+static int handle_errno (int e)
+{
+#ifdef EINTR
+   if (e == EINTR)
+     {
+	if (0 == SLang_handle_interrupt ())
+	  {
+	     errno = 0;
+	     return 1;
+	  }
+     }
+#endif
+   _pSLerrno_errno = errno;
+   return 0;
+}
+
+/* The man page for fputs indicates that it returns a non-negative integer, or
+ * EOF.  It says nothing about how many bytes were sucessfully written.  Sigh.
+ */
+static int signal_safe_fputs (char *buf, FILE *fp)
+{
+   errno = 0;
+   if (EOF != fputs (buf, fp))
+     return 0;
+   _pSLerrno_errno = errno;
+   return -1;
+}
+
+static int signal_safe_fgets (char *buf, unsigned int buflen, FILE *fp)
+{
+   errno = 0;
+
+   if (NULL != fgets (buf, buflen, fp))
+     return 0;
+   _pSLerrno_errno = errno;
+   return -1;
+}
+
+
+
 static unsigned int file_process_flags (char *mode)
 {
    char ch;
@@ -152,16 +193,20 @@ static int open_file_type (char *file, int fd, char *mode,
    if ((NULL == (t = get_free_file_table_entry ()))
        || (0 == (flags = file_process_flags(mode))))
      goto return_error;
-   
-   if (fd != -1)
-     fp = fdopen (fd, mode);
-   else
-     fp = open_fun (file, mode);
 
-   if (fp == NULL)
+   while (1)
      {
-	_pSLerrno_errno = errno;
-	goto return_error;
+	errno = 0;
+	if (fd != -1)
+	  fp = fdopen (fd, mode);
+	else
+	  fp = open_fun (file, mode);
+
+	if (fp != NULL)
+	  break;
+
+	if (0 == handle_errno (errno))
+	  goto return_error;
      }
 
    if (NULL == (mmt = SLang_create_mmt (SLANG_FILE_PTR_TYPE, (VOID_STAR) t)))
@@ -353,7 +398,7 @@ static int read_one_line (FILE *fp, char **strp, unsigned int *lenp, int trim_tr
    len = 0;
    str = NULL;
 
-   while (NULL != fgets (buf, sizeof (buf), fp))
+   while (-1 != signal_safe_fgets (buf, sizeof (buf), fp))
      {
 	unsigned int dlen;
 	char *new_str;
@@ -570,11 +615,9 @@ static int stdio_fputslines (void)
    while (lines < lines_max)
      {
 	if ((*lines != NULL)
-	    && (EOF == fputs (*lines, fp)))
-	  {
-	     _pSLerrno_errno = errno;
-	     break;
-	  }
+	    && (-1 == signal_safe_fputs (*lines, fp)))
+	  break;
+
 	lines++;
      }
    SLang_free_mmt (mmt);
@@ -591,7 +634,9 @@ static int stdio_fputs (char *s, SL_File_Table_Type *t)
    if (NULL == (fp = check_fp (t, SL_WRITE)))
      return -1;
 
-   if (EOF == fputs(s, fp)) return -1;
+   if (-1 == signal_safe_fputs (s, fp))
+     return -1;
+
    return (int) _pSLstring_bytelen (s);
 }
 
@@ -650,8 +695,13 @@ static void stdio_fread_bytes (SLang_Ref_Type *ref, unsigned int *num_wantedp, S
    if (NULL == (buf = SLmalloc (num_wanted + 1)))
      goto the_return;
    
-   num_read = fread (buf, sizeof(char), num_wanted, fp);
-   
+   errno = 0;
+   while (0 == (num_read = fread (buf, sizeof(char), num_wanted, fp)))
+     {
+	if (0 == handle_errno (errno))
+	  break;
+     }
+
    ret = check_ferror_and_realloc (fp, 0, &buf, num_wanted, num_read, sizeof (char));
    if (ret == -1)
      goto the_return;
@@ -798,6 +848,7 @@ static void stdio_fwrite (SL_File_Table_Type *t)
 	goto the_return;
      }
 
+   /* The cl_fwrite method should handle EINTR */
    ret = cl->cl_fwrite (cl->cl_data_type, fp, s, num_to_write, &num_write);
 
    if ((ret == -1) && ferror (fp))
@@ -823,10 +874,11 @@ static int stdio_fseek (SL_File_Table_Type *t, _pSLc_off_t_Type *ofs, int *whenc
    if (NULL == (fp = check_fp (t, 0xFFFF)))
      return -1;
 
-   if (-1 == FSEEK (fp, *ofs, *whence))
+   errno = 0;
+   while (-1 == FSEEK (fp, *ofs, *whence))
      {
-	_pSLerrno_errno = errno;
-	return -1;
+	if (0 == handle_errno (errno))
+	  return -1;
      }
    return 0;
 }
@@ -842,11 +894,14 @@ static void stdio_ftell (SL_File_Table_Type *t)
 	return;
      }
 
-   if (-1L == (ofs = FTELL (fp)))
+   errno = 0;
+   while (-1L == (ofs = FTELL (fp)))
      {
-	_pSLerrno_errno = errno;
-	(void) SLang_push_int (-1);
-	return;
+	if (0 == handle_errno (errno))
+	  {
+	     (void) SLang_push_int (-1);
+	     return;
+	  }
      }
    (void) SLANG_PUSH_OFF_T (ofs);
 }
@@ -899,7 +954,7 @@ static int stdio_fprintf (void)
 	return -1;
      }
    
-   if (EOF == fputs(s, fp))
+   if (-1 == signal_safe_fputs (s, fp))
      status = -1;
    else
      status = (int) _pSLstring_bytelen (s);
@@ -920,7 +975,7 @@ static int stdio_printf (void)
    if (-1 == SLang_pop_slstring (&s))
      return -1;
    
-   if (EOF == fputs(s, stdout))
+   if (-1 == signal_safe_fputs (s, stdout))
      status = -1;
    else
      status = (int) _pSLstring_bytelen (s);

@@ -85,7 +85,8 @@ New Intrinsic Functions:
 	      
    getpgrp,setgid, getpgid:
               Get and set the process group (Unix)
-
+   setsid  :
+              Create a new session
 
 
 API News

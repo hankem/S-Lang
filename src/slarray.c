@@ -2261,7 +2261,13 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 	     n = 0;
 	     dx = 1.0;
 	  }
-	else dx = (xmax-xmin)/(n-1);
+	else
+	  {
+	     if (n == 1)
+	       dx = 0.0;
+	     else
+	       dx = (xmax-xmin)/(n-1);
+	  }
      }
    else
      {

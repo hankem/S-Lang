@@ -170,9 +170,24 @@ static int setuid_cmd (int *uid)
 }
 #endif
 
+#ifdef HAVE_SETSID
+static int setsid_cmd (void)
+{
+   pid_t pid = setsid ();
+   
+   if (pid == (pid_t)-1)
+     _pSLerrno_errno = errno;
+   return pid;
+}
+#endif
+
 static SLang_Intrin_Fun_Type Process_Name_Table[] =
 {
    MAKE_INTRINSIC_0("getpid", getpid_cmd, SLANG_INT_TYPE),
+
+#ifdef HAVE_SETSID
+   MAKE_INTRINSIC_0("setsid", setsid_cmd, SLANG_INT_TYPE),
+#endif
 
 #ifdef HAVE_GETPPID
    MAKE_INTRINSIC_0("getppid", getppid_cmd, SLANG_INT_TYPE),

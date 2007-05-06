@@ -259,6 +259,8 @@ Changes since 2.0.7
 91. src/slsig.c: SLsignal was used instead of SLsignal_intr.  The
     difference is that SLsignal_intr interrupts system calls, which is
     a better choice for the interpreter.
+92. src/slproc.c: added setsid intrinsic
+93. src/slarray.c: [a:b:#1] was producing [NaN] instead of [a].
 
 {{{ Previous Versions
 
