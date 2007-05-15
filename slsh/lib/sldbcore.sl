@@ -477,6 +477,7 @@ Cmd_Table["help"] = &help_cmd;
 private define sigint_handler (sig)
 {
    Debugger_Step = STEP_STEP;
+   Stop_Depth = INT_MAX;
 }
 
 private variable Old_Sigint_Handler;
