@@ -743,6 +743,7 @@ extern unsigned int _pSLpc_convert_scancode (unsigned int, unsigned int, int);
 
 typedef struct _pSLterminfo_Type SLterminfo_Type;
 extern SLterminfo_Type *_pSLtt_tigetent (char *);
+extern void _pSLtt_tifreeent (SLterminfo_Type *);
 extern char *_pSLtt_tigetstr (SLterminfo_Type *, char *);
 extern int _pSLtt_tigetnum (SLterminfo_Type *, char *);
 extern int _pSLtt_tigetflag (SLterminfo_Type *, char *);

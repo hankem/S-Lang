@@ -2374,6 +2374,9 @@ int SLtt_initialize (char *term)
 		   || !strcmp (term, "screen"));
 
 # ifndef USE_TERMCAP
+   if (Terminfo != NULL)
+     _pSLtt_tifreeent (Terminfo);
+
    if (NULL == (Terminfo = _pSLtt_tigetent (term)))
      {
 	if (almost_vtxxx) /* Special cases. */

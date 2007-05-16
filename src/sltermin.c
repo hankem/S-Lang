@@ -245,6 +245,19 @@ static char *Terminfo_Dirs [] =
    ""
 };
 
+void _pSLtt_tifreeent (SLterminfo_Type *t)
+{
+   if (t == NULL)
+     return;
+
+   SLfree ((char *)t->string_table);
+   SLfree ((char *)t->string_offsets);
+   SLfree ((char *)t->numbers);
+   SLfree ((char *)t->boolean_flags);
+   SLfree ((char *)t->terminal_names);
+   SLfree ((char *)t);
+}
+
 SLterminfo_Type *_pSLtt_tigetent (char *term)
 {
    char *tidir;
@@ -271,6 +284,7 @@ SLterminfo_Type *_pSLtt_tigetent (char *term)
      {
 	return NULL;
      }
+   memset ((char *)ti, 0, sizeof (SLterminfo_Type));
 
 #ifdef SLANG_UNTIC
    if (SLang_Untic_Terminfo_File != NULL)
@@ -315,36 +329,24 @@ SLterminfo_Type *_pSLtt_tigetent (char *term)
    fp_open_label:
 #endif
 
-   if (fp != NULL)
+   if (fp == NULL)
      {
-	if (NULL != read_terminal_names (fp, ti))
-	  {
-	     if (NULL != read_boolean_flags (fp, ti))
-	       {
-		  if (NULL != read_numbers (fp, ti))
-		    {
-		       if (NULL != read_string_offsets (fp, ti))
-			 {
-			    if (NULL != read_string_table (fp, ti))
-			      {
-				 /* success */
-				 fclose (fp);
-				 ti->flags = SLTERMINFO;
-				 return ti;
-			      }
-			    SLfree ((char *)ti->string_offsets);
-			 }
-		       SLfree ((char *)ti->numbers);
-		    }
-		  SLfree ((char *)ti->boolean_flags);
-	       }
-	     SLfree ((char *)ti->terminal_names);
-	  }
-	fclose (fp);
+	SLfree ((char *) ti);
+	return NULL;
      }
 
-   SLfree ((char *)ti);
-   return NULL;
+   ti->flags = SLTERMINFO;
+   if ((NULL == read_terminal_names (fp, ti))
+       || (NULL == read_boolean_flags (fp, ti))
+       || (NULL == read_numbers (fp, ti))
+       || (NULL == read_string_offsets (fp, ti))
+       || (NULL == read_string_table (fp, ti)))
+     {
+	_pSLtt_tifreeent (ti);
+	ti = NULL;
+     }
+   (void) fclose (fp);
+   return ti;
 }
 
 #ifdef SLANG_UNTIC

@@ -262,6 +262,9 @@ Changes since 2.0.7
 92. src/slproc.c: added setsid intrinsic
 93. src/slarray.c: [a:b:#1] was producing [NaN] instead of [a].
 94. src/sldbcore.c: The debugger was not stopping upon SIGINT.
+95. src/sltermin.c: Added _pSLtt_tifreeent to free the SLterminfo_Type
+    object and avoid a memory leak (Miroslav Lichvar
+    mlichvar at redhat, com)
 
 {{{ Previous Versions
 
