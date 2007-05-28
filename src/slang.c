@@ -5358,23 +5358,50 @@ static int setup_compile_namespaces (char *name, char *namespace_name)
 
 int _pSLcompile_push_context (SLang_Load_Type *load_object)
 {
-   if (-1 == push_compile_context (load_object->name))
-     return -1;
+   char *name = load_object->name;
+   char *ext;
+   int status = -1;
+   int free_name = 0;
    
-   if (-1 == setup_compile_namespaces (load_object->name, load_object->namespace_name))
+   ext = SLpath_extname (name);
+   if (((0 == strncmp (ext, ".slc", 4)) || (0 == strncmp (ext, ".SLC", 4)))
+       && ((ext[4] == 0)
+#ifdef VMS
+	   || (ext[4] == ';')
+#endif
+	  ))
+     {
+	unsigned int len = (unsigned int) (ext - name) + 3;
+
+	if (NULL == (name = SLang_create_nslstring (name, len)))
+	  return -1;
+	free_name = 1;
+     }
+
+   if (-1 == push_compile_context (name))
+     goto free_return;
+   
+   if (-1 == setup_compile_namespaces (name, load_object->namespace_name))
      {
 	pop_compile_context ();
-	return -1;
+	goto free_return;
      }
 
    if (-1 == push_block_context (COMPILE_BLOCK_TYPE_TOP_LEVEL))
      {
 	pop_compile_context ();
-	return -1;
+	goto free_return;
      }
 
    (void) _pSLerr_suspend_messages ();
-   return 0;
+   status = 0;
+   /* drop */
+   
+   free_return:
+   if (free_name)
+     SLang_free_slstring (name);
+
+   return status;
 }
 
 static void reset_compiler_state (void);

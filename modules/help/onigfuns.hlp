@@ -61,7 +61,7 @@ onig_new
  If unspecified, the syntax defaults to `"perl"'.
 
  SEE ALSO
-  onig_exec, onig_nth_match, onig_nth_substr
+  onig_search, onig_nth_match, onig_nth_substr
 
 --------------------------------------------------------------
 
@@ -71,7 +71,7 @@ onig_search
   Search a string using an Onig compiled pattern
 
  USAGE
-  Int_Type onig_exec(p, str [,start_pos, end_pos] [,option])
+  Int_Type onig_search (p, str [,start_pos, end_pos] [,option])
 
    Onig_Type p;
    String_Type str;
@@ -99,7 +99,7 @@ onig_search
  failed to match the string.
 
  SEE ALSO
-  onig_compile, onig_nth_match, onig_nth_substr
+  onig_new, onig_nth_match, onig_nth_substr
 
 --------------------------------------------------------------
 
@@ -112,11 +112,12 @@ onig_nth_match
   Int_Type[2] onig_nth_match (Onig_Type p, Int_Type nth)
 
  DESCRIPTION
- The `onig_nth_match' function returns an integer array whose values
- specify the locations of the beginning and end of the `nth' captured
- substrings of the most recent call to `onig_search' with the compiled
- pattern.  A value of `nth' equal to 0 represents the substring
- representing the entire match of the pattern.
+ The `onig_nth_match' function returns an integer array whose
+ values specify the locations as byte-offsets to the beginning and end
+ of the `nth' captured substring of the most recent call to
+ `onig_search' with the compiled pattern.  A value of `nth'
+ equal to 0 represents the substring representing the entire match of
+ the pattern.
 
  If the `nth' match did not take place, the function returns NULL.
 
@@ -147,7 +148,7 @@ onig_nth_match
 
 
  SEE ALSO
-  onig_compile, onig_search, onig_nth_substr
+  onig_new, onig_search, onig_nth_substr
 
 --------------------------------------------------------------
 
@@ -168,6 +169,6 @@ onig_nth_substr
  pattern is a required argument.
 
  SEE ALSO
-  onig_compile, onig_search, onig_nth_match
+  onig_new, onig_search, onig_nth_match
 
 --------------------------------------------------------------

@@ -54,12 +54,12 @@
   "perl_ng" "ruby"
 #v-
  If unspecified, the syntax defaults to \exmp{"perl"}.
-\seealso{onig_exec, onig_nth_match, onig_nth_substr}
+\seealso{onig_search, onig_nth_match, onig_nth_substr}
 \done
 
 \function{onig_search}
 \synopsis{Search a string using an Onig compiled pattern}
-\usage{Int_Type onig_exec(p, str [,start_pos, end_pos] [,option])}
+\usage{Int_Type onig_search (p, str [,start_pos, end_pos] [,option])}
 #v+
    Onig_Type p;
    String_Type str;
@@ -84,18 +84,19 @@
  Upon success, this function returns a positive integer equal to 1 plus the
  number of so-called captured substrings.  It will return 0 if the pattern
  failed to match the string.
-\seealso{onig_compile, onig_nth_match, onig_nth_substr}
+\seealso{onig_new, onig_nth_match, onig_nth_substr}
 \done
 
 \function{onig_nth_match}
 \synopsis{Return the location of the nth match of an onig regular expression}
 \usage{Int_Type[2] onig_nth_match (Onig_Type p, Int_Type nth)}
 \description
- The \ifun{onig_nth_match} function returns an integer array whose values
- specify the locations of the beginning and end of the \var{nth} captured 
- substrings of the most recent call to \ifun{onig_search} with the compiled
- pattern.  A value of \var{nth} equal to 0 represents the substring 
- representing the entire match of the pattern.
+ The \ifun{onig_nth_match} function returns an integer array whose
+ values specify the locations as byte-offsets to the beginning and end
+ of the \var{nth} captured substring of the most recent call to
+ \ifun{onig_search} with the compiled pattern.  A value of \var{nth}
+ equal to 0 represents the substring representing the entire match of
+ the pattern.
 
  If the \var{nth} match did not take place, the function returns \NULL.
 \example
@@ -123,7 +124,7 @@
 #v+
      file = onig_nth_substr (p, str, 0);
 #v-
-\seealso{onig_compile, onig_search, onig_nth_substr}
+\seealso{onig_new, onig_search, onig_nth_substr}
 \done
 
 \function{onig_nth_substr}
@@ -136,5 +137,5 @@
  function returns the specified captured substring itself and not the
  position of the substring. For this reason, the subject string of the
  pattern is a required argument.
-\seealso{onig_compile, onig_search, onig_nth_match}
+\seealso{onig_new, onig_search, onig_nth_match}
 \done
