@@ -272,6 +272,8 @@ Changes since 2.0.7
 98. src/slang.c: If a file defining a namespace was loaded, a
     duplicate namespace error was getting generated when also loading
     a byte-compiled version of the same file.
+99. src/slclass.c: In _pSLclass_copy_class, a possible NULL return
+    value by alloc_class_slot was not being handled.
 
 {{{ Previous Versions
 

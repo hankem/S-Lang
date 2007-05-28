@@ -179,7 +179,8 @@ int _pSLclass_copy_class (SLtype to, SLtype from)
    Class_Table_Type *t;
 
    cl = _pSLclass_get_class (from);
-   clp = alloc_class_slot (to, &t);
+   if (NULL == (clp = alloc_class_slot (to, &t)))
+     return -1;
    
    if (*clp != NULL)
      {

@@ -202,6 +202,7 @@
 @slsh/lib/slshrl.sl
 @slsh/lib/sldb.sl
 @slsh/lib/sldbcore.sl
+@slsh/lib/sldbsock.sl
 @slsh/lib/profile.sl
 @slsh/lib/print.sl
 @slsh/lib/slshhelp.sl

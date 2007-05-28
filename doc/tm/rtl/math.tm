@@ -476,3 +476,33 @@
 \seealso{cos, atan, acosh, cosh}
 \done
 
+
+\function{_ispos}
+\synopsis{Test if a number is greater than 0}
+\usage{Char_Type _ispos(x)}
+\description
+  This function returns 1 if a number is greater than 0, and zero
+  otherwise.  If the argument is an array, then the corresponding
+  array of boolean (\dtype{Char_Type}) values will be returned.
+\seealso{_isneg, _isnonneg}
+\done
+
+\function{_isneg}
+\synopsis{Test if a number is less than 0}
+\usage{Char_Type _isneg(x)}
+\description
+  This function returns 1 if a number is less than 0, and zero
+  otherwise.  If the argument is an array, then the corresponding
+  array of boolean (\dtype{Char_Type}) values will be returned.
+\seealso{_ispos, _isnonneg}
+\done
+
+\function{_isnonneg}
+\synopsis{Test if a number is greater than or equal to 0}
+\usage{Char_Type _isnonneg(x)}
+\description
+  This function returns 1 if a number is greater or equal to 0, and zero
+  otherwise.  If the argument is an array, then the corresponding
+  array of boolean (\dtype{Char_Type}) values will be returned.
+\seealso{_isneg, _isnonneg}
+\done

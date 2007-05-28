@@ -136,3 +136,11 @@ slsh enhancements
   
   struct_filter and struct_combine defined in structfuns.sl have been
   made more flxible.  See their documentation for more information.
+
+New modules
+===========
+
+  The following modules have been added:
+   
+      iconv:  Performs character-set conversion using the iconv library.
+      onig:   A regular expression module using oniguruma RE library.

@@ -447,7 +447,6 @@
 \done
 
 \function{where}
-\synopsis{Get indices where a numeric array is non-zero}
 \usage{Array_Type where (Array_Type a [, Ref_Type jp])}
 \description
   The \ifun{where} function examines a numeric array \exmp{a} and
@@ -488,7 +487,17 @@
   corresponding elements of \exmp{X}.
 \notes
   Support for the optional argument was added to version 2.1.0.
-\seealso{wherefirst, wherelast, array_info, array_shape, _isnull}
+\seealso{wherefirst, wherelast, wherenot, array_info, array_shape, _isnull}
+\done
+
+
+\function{wherenot}
+\synopsis{Get indices where a numeric array is 0}
+\usage{Array_Type wherenot (Array_Type)}
+\description
+  This function is equivalent to \exmp{where(not a)}.  See the
+  documentation for \ifun{where} for more information.
+\seealso{where, wherefirst, wherelast}
 \done
 
 \function{wherefirst}

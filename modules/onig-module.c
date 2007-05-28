@@ -506,7 +506,7 @@ static int do_onig_search (void)
    char *str, *str_end;
    Onig_Type *o; 
    SLang_MMT_Type *mmt;
-   int status;
+   int status = -1;
    OnigOptionType option = ONIG_OPTION_NONE;
 
    switch (SLang_Num_Function_Args)
