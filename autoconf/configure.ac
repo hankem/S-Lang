@@ -155,6 +155,16 @@ else
 fi
 AC_SUBST(PCRE_MODULE)
 
+JD_CHECK_FOR_LIBRARY(onig,oniguruma.h)
+if test $jd_with_onig_library = yes
+then 
+  ONIG_MODULE="onig-module.so"
+  AC_DEFINE(HAVE_ONIGURUMA_H)
+else
+  ONIG_MODULE=""
+fi
+AC_SUBST(ONIG_MODULE)
+
 JD_CHECK_FOR_LIBRARY(png)
 if test $jd_with_png_library = yes
 then 

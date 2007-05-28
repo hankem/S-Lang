@@ -9,10 +9,12 @@ private variable CMDOPT_REQ_VALUE =	0x1;   %  value required
 private variable CMDOPT_OPT_VALUE =	0x2;   %  value optional
 private variable CMDOPT_INC_VALUE =	0x4;   %  increment value by 1
 private variable CMDOPT_APPEND_VALUE =	0x8;   %  append to list
+private variable CMDOPT_BOR_VALUE =    0x10;   %  bitwise-or
+private variable CMDOPT_BAND_VALUE =   0x20;   %  bitwise-and
 
 private variable CmdOpt_Type = struct
 {
-   names, flags, convert_method, valuep, default_value, callback_args
+   names, flags, convert_method, valuep, bor_value, band_value, default_value, callback_args
 };
 
 private define usage_error (opts, name, str)
@@ -96,7 +98,18 @@ define cmdopt_add ()
      }
    else if (type != NULL)
      s.flags |= CMDOPT_REQ_VALUE;
-   
+
+   if (qualifier_exists ("bor"))
+     {
+	s.bor_value = qualifier ("bor");
+	s.flags |= CMDOPT_BOR_VALUE;
+     }
+   if (qualifier_exists ("band"))
+     {
+	s.band_value = qualifier ("band");
+	s.flags |= CMDOPT_BAND_VALUE;
+     }
+
    s.names = strchop (name, '|', 0);
    s.valuep = valuep;
    s.default_value = qualifier ("default", default_value);
@@ -174,8 +187,19 @@ private define process_option (opts, opt, name, value)
 	@opt.valuep += 1;
 	return;
      }
+   
+   ifnot (opt.flags & (CMDOPT_BAND_VALUE|CMDOPT_BOR_VALUE))
+     {
+	set_opt_value (opt, opt.default_value);
+	return;
+     }
+   
+   if (opt.flags & CMDOPT_BAND_VALUE)
+     @opt.valuep &= opt.band_value;
 
-   set_opt_value (opt, opt.default_value);
+   if (opt.flags & CMDOPT_BOR_VALUE)
+     @opt.valuep |= opt.bor_value;
+   
 }
 
 private define find_opt (opts, name)
@@ -300,8 +324,12 @@ define cmdopt_process (opts, argv, istart)
    return i;
 }
 
-define cmdopt_new (error_routine)
+define cmdopt_new ()
 {
+   variable error_routine = NULL;
+   if (_NARGS == 1)
+     error_routine = ();
+
    variable s = struct 
      {
 	usage_error = error_routine,

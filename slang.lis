@@ -120,6 +120,8 @@
 @modules/README
 @modules/fcntl-module.c
 @modules/fcntl.sl
+@modules/onig-module.c
+@modules/onig.sl
 @modules/pcre-module.c
 @modules/pcre.sl
 @modules/png-module.c
@@ -142,15 +144,20 @@
 @modules/tm/pcrefuns.tm
 @modules/tm/pngfuns.tm
 @modules/tm/sockfuns.tm
+@modules/tm/onigfuns.tm
 @modules/tm/Makefile
 @modules/help/pcrefuns.hlp
 @modules/help/pngfuns.hlp
 @modules/help/sockfuns.hlp
+@modules/help/onigfuns.hlp
 
 @modules/examples/newt_ex.sl
 @modules/examples/slsmg_ex.sl
 @modules/examples/grep 0755
 @modules/examples/varray_ex.sl
+@modules/examples/echosrv.sl
+@modules/examples/oniggrep
+@modules/examples/echoclnt.sl
 
 @modules/cmaps/cool.map
 @modules/cmaps/globe.map

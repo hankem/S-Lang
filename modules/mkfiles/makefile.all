@@ -197,9 +197,6 @@ COPY = copy
 LINK_CMD = link /DLL /SUBSYSTEM:console /LIBPATH:$(SLANGLIB) wslang32.lib -out:$(MOD_DLL) $(MOD_OBJ)#
 # This needs changing for Windows NT on non-Intel processors
 CPU = _X86_
-ICONVDIR=..$(P)..$(P)iconv
-ICONVLIBPATH=/LIBPATH:$(ICONVDIR)$(P)lib
-ICONVINCPATH=/I$(ICONVDIR)$(P)include
 #}}}
 ! elifdef CYGWIN32 MINGW32 #{{{
 CC = $(TOOL_PREFIX)gcc
@@ -294,6 +291,7 @@ MODULES = slsmg iconv png
 # iconv: iconv library
 # png:   png library
 # pcre: Ported to Win32 by GnuWin32 group.
+# onig
 # varray-module.c: No external libs but requires porting to windows.
 # ---------------------------------------------------------------------------
 # Module-specific paths --- these may need tweaked for the compiler
@@ -302,16 +300,24 @@ ICONVLIBPATH=/LIBPATH:$(ICONVDIR)$(P)lib
 ICONVINCPATH=/I$(ICONVDIR)$(P)include
 PNGINCPATH=
 PNGLIBPATH=
+ONIGDIR=..$(P)..$(P)onig
+ONIGLIBPATH=/LIBPATH:$(ONIGDIR)$(P)lib
+ONIGINCPATH=/I$(ONIGDIR)$(P)include
 #----------------------------------------------------------------------------
 
 all: $(MODULES)
-$(OBJDIR)$(P)slsmg-module.dll $(OBJDIR)$(P)iconv-module.dll
 
 #iconv-module.c
 $(OBJDIR)$(P)iconv-module.dll: $(OBJDIR) $(OBJDIR)$(P)iconv-module.$(O)
 	$(LINK_CMD)$(OBJDIR)$(P)iconv-module.dll $(ICONVLIBPATH) $(OBJDIR)$(P)iconv-module.$(O) iconv.lib
 $(OBJDIR)$(P)iconv-module.$(O): $(SRCDIR)$(P)iconv-module.c
 	$(COMPILE_CMD)$(OBJDIR)$(P)iconv-module.$(O) $(ICONVINCPATH) $(SRCDIR)$(P)iconv-module.c
+
+#onig-module.c
+$(OBJDIR)$(P)onig-module.dll: $(OBJDIR) $(OBJDIR)$(P)onig-module.$(O)
+	$(LINK_CMD)$(OBJDIR)$(P)onig-module.dll $(ONIGLIBPATH) $(OBJDIR)$(P)onig-module.$(O) onig.lib
+$(OBJDIR)$(P)onig-module.$(O): $(SRCDIR)$(P)onig-module.c
+	$(COMPILE_CMD)$(OBJDIR)$(P)onig-module.$(O) $(ONIGINCPATH) $(SRCDIR)$(P)onig-module.c
 
 #slsmg-module.c
 $(OBJDIR)$(P)slsmg-module.dll: $(OBJDIR) $(OBJDIR)$(P)slsmg-module.$(O)

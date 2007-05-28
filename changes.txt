@@ -265,6 +265,10 @@ Changes since 2.0.7
 95. src/sltermin.c: Added _pSLtt_tifreeent to free the SLterminfo_Type
     object and avoid a memory leak (Miroslav Lichvar
     mlichvar at redhat, com)
+96. slsh/lib/cmdopt.sl: Add bor=FLAG and band=MASK qualifiers to support
+    bitmapped options.
+97. modules/onig-module.c: New module that wraps the oniguruma regular
+    expression library.
 
 {{{ Previous Versions
 

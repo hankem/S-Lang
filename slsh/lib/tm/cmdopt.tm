@@ -128,6 +128,24 @@
     cmdline: pgm --foo --foo ... % gets incremented twice
 #v-
 
+  Options that bitwise-or an integer variable \exmp{v} with \exmp{FLAG}:
+#v+
+    cmdopt_add (optobj, "f|foo" &v; bor=FLAG);
+    cmdline: pgm -f ...       % v = v | FLAG
+    cmdline: pgm --foo ...    % v = v | FLAG
+#v-
+  Options that bitwise-and an integer variable \exmp{v} with \exmp{MASK}:
+#v+
+    cmdopt_add (optobj, "f|foo" &v; band=MASK);
+    cmdline: pgm -f ...       % v = v & MASK;
+    cmdline: pgm --foo ...    % v = v & MASK;
+#v-
+  The above two options may be combined:
+#v+
+    cmdopt_add (optobj, "f|foo" &v; bor=FLAG1, band=~FLAG2);
+    cmdline: pgm -f ...       % v &= ~FLAG2; v |= FLAG1;
+#v-
+
   Options that require a value and set \exmp{v} to the value VAL.
 #v+
     cmdopt_add (optobj, "f|foo" &v; type="int");

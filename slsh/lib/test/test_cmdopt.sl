@@ -77,7 +77,8 @@ define slsh_main ()
 	f = 1.0,
 	l = 0,
 	g, h,
-	list
+	list,
+	b = 0,
      };
    cmdopt_add (opts, "f|foo", &s.foo; type="int");
    cmdopt_add (opts, "v|verb", &s.verb; inc);
@@ -122,4 +123,12 @@ define slsh_main ()
    opts.add ("list", &s.list; type="string", optional="foo", append);
    args = ["--list", "--list=3", "--list=bar"];
    test_list_args (opts, args, 3, &s.list, {"foo", "3", "bar"}, 0);
+   
+   s = struct {bitmap = 1, flags=0x4|0x2};
+   opts = cmdopt_new (NULL);
+   opts.add ("a|b8000", &s.bitmap; bor=0x8000);
+   opts.add ("b|b4000", &s.bitmap; bor=0x4000);
+   opts.add ("f", &s.flags; bor=1, band=~0x2);
+   args = ["-a", "-f", "--b4000"];
+   test_args (opts, args, 3, s, {0x8000|0x4000|1, 0x4|0x1}, 0);
 }

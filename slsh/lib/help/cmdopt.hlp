@@ -150,6 +150,13 @@ cmdopt_add
     cmdline: pgm --foo --foo ... % gets incremented twice
 
 
+  Options that bitwise-or an integer variable `v' with `FLAG':
+
+    cmdopt_add (optobj, "f|foo" &v; bor=flag);
+    cmdline: pgm -f ...       % v = v | FLAG
+    cmdline: pgm --foo ...    % v = v | FLAG
+
+
   Options that require a value and set `v' to the value VAL.
 
     cmdopt_add (optobj, "f|foo" &v; type="int");

@@ -704,6 +704,9 @@ ELFDIR
 PCRE_LIB
 PCRE_INC
 PCRE_MODULE
+ONIG_LIB
+ONIG_INC
+ONIG_MODULE
 PNG_LIB
 PNG_INC
 PNG_MODULE
@@ -1319,6 +1322,9 @@ Optional Packages:
   --with-pcre=DIR      Use DIR/lib and DIR/include for pcre
   --with-pcrelib=DIR   pcre library in DIR
   --with-pcreinc=DIR   pcre include files in DIR
+  --with-onig=DIR      Use DIR/lib and DIR/include for onig
+  --with-oniglib=DIR   onig library in DIR
+  --with-oniginc=DIR   onig include files in DIR
   --with-png=DIR      Use DIR/lib and DIR/include for png
   --with-pnglib=DIR   png library in DIR
   --with-pnginc=DIR   png include files in DIR
@@ -10931,6 +10937,260 @@ fi
 
 
 
+    { echo "$as_me:$LINENO: checking for the onig library and header files oniguruma.h" >&5
+echo $ECHO_N "checking for the onig library and header files oniguruma.h... $ECHO_C" >&6; }
+
+
+
+ jd_onig_include_dir=""
+ jd_onig_library_dir=""
+ jd_with_onig_library=""
+
+
+# Check whether --with-onig was given.
+if test "${with_onig+set}" = set; then
+  withval=$with_onig; jd_with_onig_arg=$withval
+else
+  jd_with_onig_arg=unspecified
+fi
+
+
+ case "x$jd_with_onig_arg" in
+   xno)
+     jd_with_onig_library="no"
+    ;;
+   x)
+    { { echo "$as_me:$LINENO: error: --with-onig requires a value-- try yes or no" >&5
+echo "$as_me: error: --with-onig requires a value-- try yes or no" >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+   xunspecified)
+    ;;
+   xyes)
+    ;;
+   *)
+    jd_onig_include_dir="$jd_with_onig_arg"/include
+    jd_onig_library_dir="$jd_with_onig_arg"/lib
+    ;;
+ esac
+
+
+# Check whether --with-oniglib was given.
+if test "${with_oniglib+set}" = set; then
+  withval=$with_oniglib; jd_with_oniglib_arg=$withval
+else
+  jd_with_oniglib_arg=unspecified
+fi
+
+ case "x$jd_with_oniglib_arg" in
+   xunspecified)
+    ;;
+   xno)
+    ;;
+   x)
+    { { echo "$as_me:$LINENO: error: --with-oniglib requres a value" >&5
+echo "$as_me: error: --with-oniglib requres a value" >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+   *)
+    jd_onig_library_dir="$jd_with_oniglib_arg"
+    ;;
+ esac
+
+
+# Check whether --with-oniginc was given.
+if test "${with_oniginc+set}" = set; then
+  withval=$with_oniginc; jd_with_oniginc_arg=$withval
+else
+  jd_with_oniginc_arg=unspecified
+fi
+
+ case "x$jd_with_oniginc_arg" in
+   x)
+     { { echo "$as_me:$LINENO: error: --with-oniginc requres a value" >&5
+echo "$as_me: error: --with-oniginc requres a value" >&2;}
+   { (exit 1); exit 1; }; }
+     ;;
+   xunspecified)
+     ;;
+   xno)
+     ;;
+   *)
+    jd_onig_include_dir="$jd_with_oniginc_arg"
+   ;;
+ esac
+
+  if test X"$jd_with_onig_library" = X
+  then
+    jd_onig_inc_file=oniguruma.h
+    jd_with_onig_library="yes"
+
+    if test "X$jd_onig_inc_file" = "X"
+    then
+       jd_onig_inc_file=onig.h
+    fi
+    if test X"$jd_onig_include_dir" = X
+    then
+       lib_include_dirs="\
+            $jd_prefix_incdir \
+            /usr/local/onig/include \
+            /usr/local/include/onig \
+  	  /usr/local/include \
+  	  /usr/include/onig \
+  	  /usr/onig/include \
+  	  /usr/include \
+  	  /opt/include/onig \
+  	  /opt/onig/include \
+  	  /opt/include"
+
+       for X in $lib_include_dirs
+       do
+          if test -r "$X/$jd_onig_inc_file"
+	  then
+  	  jd_onig_include_dir="$X"
+            break
+          fi
+       done
+       if test X"$jd_onig_include_dir" = X
+       then
+         jd_with_onig_library="no"
+       fi
+    fi
+
+    if test X"$jd_onig_library_dir" = X
+    then
+       lib_library_dirs="\
+            $jd_prefix_libdir \
+            /usr/local/lib \
+            /usr/local/lib/onig \
+            /usr/local/onig/lib \
+  	  /usr/lib \
+  	  /usr/lib/onig \
+  	  /usr/onig/lib \
+  	  /opt/lib \
+  	  /opt/lib/onig \
+  	  /opt/onig/lib"
+
+       case "$host_os" in
+         *darwin* )
+	   exts="dylib so a"
+	   ;;
+	 * )
+	   exts="so a"
+       esac
+
+       found=0
+       for X in $lib_library_dirs
+       do
+         for E in $exts
+	 do
+           if test -r "$X/libonig.$E"
+	   then
+  	     jd_onig_library_dir="$X"
+	     found=1
+	     break
+           fi
+         done
+	 if test $found -eq 1
+	 then
+	   break
+	 fi
+       done
+       if test X"$jd_onig_library_dir" = X
+       then
+         jd_with_onig_library="no"
+       fi
+    fi
+  fi
+
+  if test "$jd_with_onig_library" = "yes"
+  then
+    { echo "$as_me:$LINENO: result: yes: $jd_onig_library_dir and $jd_onig_include_dir" >&5
+echo "${ECHO_T}yes: $jd_onig_library_dir and $jd_onig_include_dir" >&6; }
+            ONIG_LIB=-L$jd_onig_library_dir
+    if test "X$jd_onig_library_dir" = "X/usr/lib"
+    then
+      ONIG_LIB=""
+    else
+
+if test "X$jd_onig_library_dir" != "X"
+then
+  if test "X$RPATH" = "X"
+  then
+
+case "$host_os" in
+  *linux*|*solaris* )
+    if test "X$GCC" = Xyes
+    then
+      if test "X$ac_R_nospace" = "Xno"
+      then
+        RPATH="-Wl,-R,"
+      else
+        RPATH="-Wl,-R"
+      fi
+    else
+      if test "X$ac_R_nospace" = "Xno"
+      then
+        RPATH="-R "
+      else
+	RPATH="-R"
+      fi
+    fi
+  ;;
+  *osf*|*openbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-rpath,"
+    else
+      RPATH="-rpath "
+    fi
+  ;;
+  *netbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-R"
+    fi
+  ;;
+esac
+
+    if test "X$RPATH" != "X"
+    then
+      RPATH="$RPATH$jd_onig_library_dir"
+    fi
+  else
+    RPATH="$RPATH:$jd_onig_library_dir"
+  fi
+fi
+
+    fi
+
+    ONIG_INC=-I$jd_onig_include_dir
+    if test "X$jd_onig_include_dir" = "X/usr/include"
+    then
+      ONIG_INC=""
+    fi
+  else
+    { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+    ONIG_INC=""
+    ONIG_LIB=""
+  fi
+
+
+
+if test $jd_with_onig_library = yes
+then
+  ONIG_MODULE="onig-module.so"
+  cat >>confdefs.h <<\_ACEOF
+#define HAVE_ONIGURUMA_H 1
+_ACEOF
+
+else
+  ONIG_MODULE=""
+fi
+
+
+
     { echo "$as_me:$LINENO: checking for the png library and header files " >&5
 echo $ECHO_N "checking for the png library and header files ... $ECHO_C" >&6; }
 
@@ -12453,14 +12713,14 @@ ELFDIR!$ELFDIR$ac_delim
 PCRE_LIB!$PCRE_LIB$ac_delim
 PCRE_INC!$PCRE_INC$ac_delim
 PCRE_MODULE!$PCRE_MODULE$ac_delim
+ONIG_LIB!$ONIG_LIB$ac_delim
+ONIG_INC!$ONIG_INC$ac_delim
+ONIG_MODULE!$ONIG_MODULE$ac_delim
 PNG_LIB!$PNG_LIB$ac_delim
 PNG_INC!$PNG_INC$ac_delim
 PNG_MODULE!$PNG_MODULE$ac_delim
 ICONV_LIB!$ICONV_LIB$ac_delim
 ICONV_INC!$ICONV_INC$ac_delim
-ICONV_MODULE!$ICONV_MODULE$ac_delim
-GNU_READLINE!$GNU_READLINE$ac_delim
-LIB_READLINE!$LIB_READLINE$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -12502,6 +12762,9 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ICONV_MODULE!$ICONV_MODULE$ac_delim
+GNU_READLINE!$GNU_READLINE$ac_delim
+LIB_READLINE!$LIB_READLINE$ac_delim
 PROGRAM_OFILES!$PROGRAM_OFILES$ac_delim
 PROGRAM_CFILES!$PROGRAM_CFILES$ac_delim
 PROGRAM_HFILES!$PROGRAM_HFILES$ac_delim
@@ -12514,7 +12777,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 10; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 13; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

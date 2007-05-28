@@ -1,7 +1,8 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
-  varray-module.so socket-module.so @PCRE_MODULE@ @PNG_MODULE@ @ICONV_MODULE@
-SLFILES = slsmg termios select fcntl varray socket pcre png iconv
+  varray-module.so socket-module.so @PCRE_MODULE@ @PNG_MODULE@ \
+  @ICONV_MODULE@ @ONIG_MODULE@
+SLFILES = slsmg termios select fcntl varray socket pcre png iconv onig
 #---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@
@@ -37,6 +38,11 @@ PNG_LIB	= @PNG_LIB@ -lpng
 #---------------------------------------------------------------------------
 ICONV_INC	= @ICONV_INC@
 ICONV_LIB	= @ICONV_LIB@
+#---------------------------------------------------------------------------
+# If building the ONIG module, you may need to set these
+#---------------------------------------------------------------------------
+ONIG_INC	= @ONIG_INC@
+ONIG_LIB	= @ONIG_LIB@ -lonig
 #---------------------------------------------------------------------------
 # If building the SOCKET module, you may need to set these
 #---------------------------------------------------------------------------
@@ -86,6 +92,8 @@ varray-module.so: varray-module.c config.h
 	$(CC_SHARED) $(INCS) varray-module.c -o varray-module.so $(LIBS)
 pcre-module.so: pcre-module.c config.h
 	$(CC_SHARED) $(INCS) $(PCRE_INC) pcre-module.c -o pcre-module.so $(PCRE_LIB) $(LIBS)
+onig-module.so: onig-module.c config.h
+	$(CC_SHARED) $(INCS) $(ONIG_INC) onig-module.c -o onig-module.so $(ONIG_LIB) $(LIBS)
 png-module.so: png-module.c config.h
 	$(CC_SHARED) $(INCS) $(PNG_INC) png-module.c -o png-module.so $(PNG_LIB) $(LIBS)
 socket-module.so: socket-module.c config.h

@@ -6,7 +6,7 @@
 TMEXPAND = $(HOME)/lib/tmexpand/bin/tmexpand
 MACRODIR = $(HOME)/lib/tmexpand/macros
 
-HLP_FILES = pngfuns.hlp pcrefuns.hlp sockfuns.hlp
+HLP_FILES = pngfuns.hlp pcrefuns.hlp sockfuns.hlp onigfuns.hlp
 
 all: help-files
 help-files: $(HLP_FILES)
@@ -16,6 +16,8 @@ pcrefuns.hlp: pcrefuns.tm
 	$(TMEXPAND) -I$(MACRODIR) -Mslhlp pcrefuns.tm pcrefuns.hlp
 sockfuns.hlp: sockfuns.tm
 	$(TMEXPAND) -I$(MACRODIR) -Mslhlp sockfuns.tm sockfuns.hlp
+onigfuns.hlp: onigfuns.tm
+	$(TMEXPAND) -I$(MACRODIR) -Mslhlp onigfuns.tm onigfuns.hlp
 #----------------------------------------------------------------------------
 clean:
 	-rm -f *~ *.dvi *.log *.aux *.toc *.bak
