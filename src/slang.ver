@@ -6,3 +6,18 @@ SLANG2 {
 	local: 
 		*;
 };
+
+
+SLANG2.1.0 {
+	SLang_push_ref;
+	SLang_verror_va;
+	SLclass_patch_intrin_fun_table;
+	SLclass_patch_intrin_fun_table1;
+	SLerr_throw;
+	SLrline_bol;
+	SLrline_eol;
+	SLrline_init;
+	SLrline_move;
+	SLrline_open2;
+} SLANG2;
+

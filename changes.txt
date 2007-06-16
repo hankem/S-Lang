@@ -1,4 +1,13 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.1.0
+1. slsh/lib/print.sl: Only the first element of arrays such as
+   Float_Type[1,1,1,10] were getting printed.
+2. src/slscanf.c: strings containing only whitespace were not parsed
+   properly by _pSLang_sscanf when %s was used in the format.
+3. slsh/lib/readascii.sl: A flexible ascii data file reader.
+4. src/slang.ver: Updated the linker version script
+   (mlichvar at redhat, com).
+
 Changes since 2.0.7
 1. src/slrline.c: SLrline_bol/eol functions were missing from the
    interface.

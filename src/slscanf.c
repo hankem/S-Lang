@@ -439,7 +439,10 @@ int _pSLang_sscanf (void)
 
 	if (isspace (chf))
 	  {
-	     s = _pSLskip_whitespace (s);
+	     char *s1 = _pSLskip_whitespace (s);
+	     if (s1 == s)
+	       break;
+	     s = s1;
 	     continue;
 	  }
 	
@@ -492,7 +495,11 @@ int _pSLang_sscanf (void)
 	status = -1;
 
 	if ((chf != 'c') && (chf != '['))
-	  s = _pSLskip_whitespace (s);
+	  {
+	     s = _pSLskip_whitespace (s);
+	     if (*s == 0)
+	       break;
+	  }
 
 	if (has_width)
 	  {

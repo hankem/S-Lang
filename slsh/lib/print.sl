@@ -74,61 +74,87 @@ private define print_list (a, ref)
    () = fputs ("\n", stdout);
 }
 
+private define write_2d_array (fp, a, to_str)
+{
+   variable dims = array_shape (a);
+   variable nrows = dims[0];
+   variable ncols = dims[1];
+
+   _for (0, nrows-1, 1)
+     {
+	variable i = ();
+	_for (0, ncols-1, 1)
+	  {
+	     variable j = ();
+	     if (-1 == fprintf (fp, "%s ", (@to_str)(a[i,j])))
+	       return -1;
+	  }
+	if (-1 == fputs ("\n", fp))
+	  return -1;
+     }
+   return 0;
+}
+
 private define print_array (a, ref)
 {
    variable dims, ndims, type;
-   
+
    (dims, ndims, type) = array_info (a);
    variable nelems = length (a);
    variable nrows = dims[0];
-   variable use_pager = (nrows > Pager_Rows);
+   variable use_pager = (nrows > Pager_Rows) || (prod(dims) > Pager_Rows*10);
    variable is_numeric = __is_numeric (a);
    variable fp = NULL;
-   
-   if (nrows > Pager_Rows)
+
+   if (use_pager)
      fp = open_pager ();
 
    if (fp == NULL)
      fp = stdout;
 
-   EXIT_BLOCK
+   try
+     {
+	variable i, j;
+	variable to_str;
+	if (_is_struct_type (a))
+	  to_str = &struct_to_string;
+	else if (__is_numeric (a))
+	  to_str = &string;
+	else
+	  to_str = &generic_to_string;
+
+	if (ndims == 1)
+	  {
+	     _for i (0, nrows-1, 1)
+	       {
+		  if (-1 == fprintf (fp, "%s\n", (@to_str)(a[i])))
+		    return;
+	       }
+	     return;
+	  }
+
+	if (ndims == 2)
+	  {
+	     () = write_2d_array (fp, a, to_str);
+	     return;
+	  }
+
+	nrows = nint(prod(dims[[0:ndims-3]]));
+	variable new_dims = [nrows, dims[ndims-2], dims[ndims-1]];
+	reshape (a, new_dims);
+	_for i (0, nrows-1, 1)
+	  {
+	     if ((-1 == write_2d_array (fp, a[i,*,*], to_str))
+		 || (-1 == fputs ("\n", fp)))
+	       return;
+	  }
+     }
+   finally
      {
 	if (fp != stdout)
 	  close_pager (fp);
 	reshape (a, dims);
      }
-   
-   variable i, j;
-   variable to_str;
-   if (_is_struct_type (a))
-     to_str = &struct_to_string;
-   else if (__is_numeric (a))
-     to_str = &string;
-   else 
-     to_str = &generic_to_string;
-
-   if (ndims == 1)
-     {
-	_for i (0, nrows-1, 1)
-	  {
-	     if (-1 == fprintf (fp, "%s\n", (@to_str)(a[i])))
-	       return;
-	  }
-	return;
-     }
-
-   reshape (a, [nrows, nelems/nrows]);
-
-   _for i (0, nrows-1, 1)
-     {
-	_for j (0, dims[1]-1, 1)
-	  {
-	     if (-1 == fprintf (fp, "%s ", (@to_str)(a[i,j])))
-	       return;
-	  }
-	if (-1 == fputs ("\n", fp))
-	  return;
-     }     
 }
 
 define print_set_pager (pager)
