@@ -7,6 +7,8 @@ Changes since 2.1.0
 3. slsh/lib/readascii.sl: A flexible ascii data file reader.
 4. src/slang.ver: Updated the linker version script
    (mlichvar at redhat, com).
+5. src/slang.ver: The wildcard for the SLANG2 symbols was picking up
+   the SLANG2.1.0 symbols.  (mlichvar at redhat, com).
 
 Changes since 2.0.7
 1. src/slrline.c: SLrline_bol/eol functions were missing from the
