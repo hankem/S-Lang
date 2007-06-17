@@ -7192,6 +7192,42 @@ static void compile_bstring (SLang_BString_Type *s)
    lang_try_now ();
 }
 
+static SLang_Name_Type *locate_hashed_name_autodeclare (char *name, unsigned long hash,
+							unsigned char assign_type)
+{
+   SLang_Name_Type *v;
+
+   v = locate_hashed_name (name, hash);
+
+   if (v != NULL)
+     return v;
+
+   if ((_pSLang_Auto_Declare_Globals == 0)
+       || Lang_Defining_Function
+       || (NULL != strchr (name, '-'))   /* namespace->name form */
+       || (assign_type != SLANG_BCST_ASSIGN)
+       || (This_Static_NameSpace == NULL))
+     {
+	SLang_verror (SL_UNDEFINED_NAME, "%s is undefined", name);
+	return NULL;
+     }
+   /* Note that function local variables are not at top level */
+
+   /* Variables that are automatically declared are given static
+    * scope.
+    */
+   if ((NULL != SLang_Auto_Declare_Var_Hook)
+       && (-1 == (*SLang_Auto_Declare_Var_Hook) (name)))
+     return NULL;
+
+   if ((-1 == add_global_variable (name, SLANG_GVARIABLE, hash, This_Static_NameSpace))
+       || (NULL == (v = locate_hashed_name (name, hash))))
+     return NULL;
+   
+   return v;
+}
+
+
 /* assign_type is one of SLANG_BCST_ASSIGN, ... values */
 static void compile_assign (unsigned char assign_type,
 			    char *name, unsigned long hash)
@@ -7200,31 +7236,8 @@ static void compile_assign (unsigned char assign_type,
    _pSLang_BC_Type main_type;
    SLang_Class_Type *cl;
 
-   v = locate_hashed_name (name, hash);
-   if (v == NULL)
-     {
-	if ((_pSLang_Auto_Declare_Globals == 0)
-	    || (NULL != strchr (name, '-'))   /* namespace->name form */
-	    || Lang_Defining_Function
-	    || (assign_type != SLANG_BCST_ASSIGN)
-	    || (This_Static_NameSpace == NULL))
-	  {
-	     SLang_verror (SL_UNDEFINED_NAME, "%s is undefined", name);
-	     return;
-	  }
-	/* Note that function local variables are not at top level */
-
-	/* Variables that are automatically declared are given static
-	 * scope.
-	 */
-	if ((NULL != SLang_Auto_Declare_Var_Hook)
-	    && (-1 == (*SLang_Auto_Declare_Var_Hook) (name)))
-	  return;
-
-	if ((-1 == add_global_variable (name, SLANG_GVARIABLE, hash, This_Static_NameSpace))
-	    || (NULL == (v = locate_hashed_name (name, hash))))
-	  return;
-     }
+   if (NULL == (v = locate_hashed_name_autodeclare (name, hash, assign_type)))
+     return;
 
    switch (v->name_type)
      {
@@ -7343,11 +7356,8 @@ static void compile_ref (char *name, unsigned long hash)
    SLang_Name_Type *entry;
    _pSLang_BC_Type main_type;
 
-   if (NULL == (entry = locate_hashed_name (name, hash)))
-     {
-	SLang_verror (SL_UNDEFINED_NAME, "%s is undefined", name);
-	return;
-     }
+   if (NULL == (entry = locate_hashed_name_autodeclare (name, hash, SLANG_BCST_ASSIGN)))
+     return;
 
    main_type = (_pSLang_BC_Type) entry->name_type;
 

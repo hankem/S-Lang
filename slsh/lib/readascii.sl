@@ -24,7 +24,7 @@ define readascii ()
 	usage ("nrows = %s (file, &a1,...; qualifiers);\nQualifiers:\n" 
 	       + "nrows=int, ncols=int, format=string, skip=int, maxlines=int, delim=string\n"
 	       + "size=int, dsize=int, stop_on_mismatch, lastline=&var lastlinenum=&var\n",
-	       + "comment=string\n",
+	       + "type=string cols=array comment=string\n",
 	       _function_name);
      }
 
@@ -37,9 +37,12 @@ define readascii ()
    variable init_size = qualifier("size", NULL);
    variable dsize = qualifier ("dsize", NULL);
    variable stop_on_mismatch = qualifier_exists ("stop_on_mismatch");
-   variable linep = qualifier ("lastread", NULL);
+   variable linep = qualifier ("lastline", NULL);
    variable linenump = qualifier ("lastlinenum", NULL);
    variable comment = qualifier ("comment", NULL);
+   variable want_columns = qualifier("cols", NULL);
+   variable type=qualifier("type", "f");   %  Float_Type
+
    if (comment != NULL)
      variable comment_len = strbytelen (comment);
 
@@ -60,34 +63,47 @@ define readascii ()
      {
 	arg_refs = __pop_list (_NARGS-1);
 	ncols = length (arg_refs);
-     }
-
+     }   
    variable fp = ();
+
+   if (want_columns != NULL)
+     ncols = length (want_columns);
 
    if (fmt == NULL)
      {
-	fmt = String_Type[ncols];
-	fmt[*] = "%lf";
+	type = strtrim_beg (type, "%");
+	if (want_columns != NULL)
+	  {
+	     fmt = String_Type[max(want_columns)];
+	     fmt[*] = strcat ("%*", type);
+	     fmt[want_columns-1] = strcat ("%", type);
+	  }
+	else
+	  {
+	     fmt = String_Type[ncols];
+	     fmt[*] = strcat ("%", type);
+	  }
+
 	fmt = strjoin (fmt, delim);
      }
 
    variable fp_is_array = 0;
-
-   if (typeof (fp) != File_Type)
+   switch (typeof (fp))
      {
-	if (typeof (fp) == Array_Type)
-	  {
-	     if ((maxlines == NULL) || (maxlines > length (fp)))
-	       maxlines = length (fp);
-	     fp_is_array = 1;
-	  }
-	else
-	  {
-	     variable file = fp;
-	     fp = fopen (file, "r");
-	     if (fp == NULL)
-	       throw IOError, "Unable to open $file"$;
-	  }
+      case Array_Type or case List_Type:
+	if ((maxlines == NULL) || (maxlines > length (fp)))
+	  maxlines = length (fp);
+	fp_is_array = 1;
+     }
+     {
+      case File_Type:
+     }
+     {
+	% default:
+	variable file = fp;
+	fp = fopen (file, "r");
+	if (fp == NULL)
+	  throw IOError, "Unable to open $file"$;
      }
 
    if (nrows == NULL)

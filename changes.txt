@@ -9,6 +9,11 @@ Changes since 2.1.0
    (mlichvar at redhat, com).
 5. src/slang.ver: The wildcard for the SLANG2 symbols was picking up
    the SLANG2.1.0 symbols.  (mlichvar at redhat, com).
+6. slsh/lib/readascii.sl: Added type and cols qualifiers.  Updated docs.
+7. src/slang.c: If auto_declare is non-zero, and a reference to an
+   undefined variable is made, that variable will be automatically
+   created and given static scope.
+8. slsh/lib/autoload.sl: readascii added.
 
 Changes since 2.0.7
 1. src/slrline.c: SLrline_bol/eol functions were missing from the

@@ -28,8 +28,12 @@ readascii
    skip=integer         Skip the specified number of lines before
                           scanning
    maxlines=integer     Read no more than this many lines.
+   cols=Array_Type      Read only the specified (1-based) columns.
+                          Used with an implict format
    delim=string         For an implicit format, use this as a field
-                          separator.  The default is whitespace
+                          separator.  The default is whitespace.
+   type=string          For an implicit format, use this sscanf type
+                          specifier.  Default is %f (Float_Type).
    size=integer         Use this value as the initial size for the
                           arrays.
    dsize=integer        Use this value as an increment when
