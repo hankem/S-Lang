@@ -907,17 +907,24 @@ static void RLupdate (SLrline_Type *rli)
 
 void SLrline_redraw (SLrline_Type *rli)
 {
-   unsigned char *p;
-   unsigned char *pmax;
-   
    if (rli == NULL)
      return;
 
-   p = rli->new_upd;
-   pmax = p + rli->edit_width;
-   while (p < pmax) *p++ = ' ';
-   rli->new_upd_len = rli->edit_width;
-   really_update (rli, 0);
+   if (rli->update_hook != NULL)
+     {
+	(*rli->update_hook) (rli, "", "", 0, 0, rli->update_client_data);
+     }
+   else
+     {
+	unsigned char *p;
+	unsigned char *pmax;
+   
+	p = rli->new_upd;
+	pmax = p + rli->edit_width;
+	while (p < pmax) *p++ = ' ';
+	rli->new_upd_len = rli->edit_width;
+	really_update (rli, 0);
+     }
    RLupdate (rli);
 }
 
