@@ -4,7 +4,7 @@ readascii
   Read data from a text file
 
  USAGE
-  Int_Type readascii (file, &v1,...&vN ; qualifiers
+  Int_Type readascii (file, &v1,...&vN ; qualifiers)
 
  DESCRIPTION
  This function may be used to read formatted data from a text (as

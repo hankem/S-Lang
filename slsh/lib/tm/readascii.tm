@@ -2,7 +2,7 @@
 #c __LINE__: 17
 \function{readascii}
 \synopsis{Read data from a text file}
-\usage{Int_Type readascii (file, &v1,...&vN ; qualifiers}
+\usage{Int_Type readascii (file, &v1,...&vN ; qualifiers)}
 \description
  This function may be used to read formatted data from a text (as
  opposed to binary) file and stores the values as arrays in the
@@ -82,6 +82,7 @@
  be \dtype{String_Type} arrays, \exmp{score} will be a
  \dtype{Double_Type} array, and \exmp{flags} will be an
  \exmp{Int_Type} array.
+
 \notes
  This current version of this function does not handle missing data.
  

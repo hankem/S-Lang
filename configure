@@ -11700,6 +11700,7 @@ then
 #define HAVE_ICONV_H 1
 _ACEOF
 
+  ICONV_LIB="$ICONV_LIB -liconv"
 else
 
 
@@ -11813,6 +11814,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
 fi
 { echo "$as_me:$LINENO: result: $am_cv_func_iconv" >&5
 echo "${ECHO_T}$am_cv_func_iconv" >&6; }
+
   if test "$am_cv_func_iconv" = yes; then
 
 cat >>confdefs.h <<\_ACEOF
@@ -11821,6 +11823,7 @@ _ACEOF
 
     { echo "$as_me:$LINENO: checking for iconv declaration" >&5
 echo $ECHO_N "checking for iconv declaration... $ECHO_C" >&6; }
+
     if test "${am_cv_proto_iconv+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -11881,6 +11884,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
       am_cv_proto_iconv="extern size_t iconv (iconv_t cd, $am_cv_proto_iconv_arg1 char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);"
 fi
 
+
     am_cv_proto_iconv=`echo "$am_cv_proto_iconv" | tr -s ' ' | sed -e 's/( /(/'`
     { echo "$as_me:$LINENO: result: ${ac_t:-
          }$am_cv_proto_iconv" >&5
@@ -11892,6 +11896,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
   fi
+
   LIBICONV=
   if test "$am_cv_lib_iconv" = yes; then
     LIBICONV="-liconv"
@@ -11900,7 +11905,7 @@ _ACEOF
   if test "$am_cv_func_iconv" = yes
   then
     ICONV_MODULE="iconv-module.so"
-    if test "$am_cv_lib_iconv" = yes
+    if test "X$am_cv_lib_iconv" = Xyes
     then
        ICONV_LIB=$LIBICONV
        ICONV_INC=""

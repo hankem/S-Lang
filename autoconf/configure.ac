@@ -183,12 +183,13 @@ if test $jd_with_iconv_library = yes
 then 
   ICONV_MODULE="iconv-module.so"
   AC_DEFINE(HAVE_ICONV_H)
+  ICONV_LIB="$ICONV_LIB -liconv"
 else
   SLANG_AM_ICONV
   if test "$am_cv_func_iconv" = yes
   then
     ICONV_MODULE="iconv-module.so"
-    if test "$am_cv_lib_iconv" = yes
+    if test "X$am_cv_lib_iconv" = Xyes
     then 
        ICONV_LIB=$LIBICONV
        ICONV_INC=""
@@ -196,6 +197,8 @@ else
   fi
 fi
 AC_SUBST(ICONV_MODULE)
+dnl # AC_SUBST(ICONV_LIB)
+dnl # AC_SUBST(ICONV_INC)
 
 dnl # Readline support for slsh
 AC_ARG_WITH(readline,
