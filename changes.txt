@@ -19,6 +19,13 @@ Changes since 2.1.0
    requested.
 10. autoconf/configure.ac: -liconv was not getting added when creating
     the iconv module on systems with a standalone iconv library.
+11. slsh/lib/readascii.sl: Added "as_list" qualifier to return values in
+    lists rather than arrays.
+12. src/slscanf.c: Added inf/nan support to sscanf.
+13. src/slboseos.c: Before calling the hooks, push the error context
+    so that they will work in the presence of errors.
+
+{{{ Previous Versions
 
 Changes since 2.0.7
 1. src/slrline.c: SLrline_bol/eol functions were missing from the
@@ -295,8 +302,6 @@ Changes since 2.0.7
     a byte-compiled version of the same file.
 99. src/slclass.c: In _pSLclass_copy_class, a possible NULL return
     value by alloc_class_slot was not being handled.
-
-{{{ Previous Versions
 
 Changes since 2.0.6
 1. src/slmath.c: if a double precision array was passed to nint, it

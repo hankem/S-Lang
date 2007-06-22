@@ -39,6 +39,8 @@
    lastline=&v          Assign the last line read to the variable v.
    lastlinenum=&v       Assign the last line number (1-based to v)
    comment=string       Lines beginning with this string are ignored.
+   as_list              If present, then return data in lists rather
+                          than arrays.
 #v-
 \example
  As a simple example, consider a file called \exmp{imped.dat} containing
@@ -76,13 +78,21 @@
  This file may be read using
 #v+
      n = readascii ("score.dat", &name, &score, &date, &flags;
-                     format="%s %lf %s %d");
+                    format="%s %lf %s %d");
 #v-
  In this case, \exmp{n} will be 3, \exmp{name} and \exmp{date} will
  be \dtype{String_Type} arrays, \exmp{score} will be a
  \dtype{Double_Type} array, and \exmp{flags} will be an
  \exmp{Int_Type} array.
 
+ Now suppose that only the score and flags column are of interest.
+ The \exmp{name} and \exmp{date} fields may be ignored using
+#v+
+     n = readascii ("score.dat", &score, &flags"; 
+                    format="%*s %lf %*s %d");
+#v-
+ Here, \exmp{%*s} indicates that the field is to be parsed as a
+ string, but not assigned to a variable.
 \notes
  This current version of this function does not handle missing data.
  
@@ -91,5 +101,5 @@
  qualifier is not needed.  However, it is useful in conjunction with
  the \exmp{stop_on_mismatch} qualifier to force the parser to skip
  lines beginning with the comment string and continue scanning.
-\seealso{sscanf, fopen, fgets, fgetslines}
+\seealso{sscanf, atof, fopen, fgets, fgetslines}
 \done

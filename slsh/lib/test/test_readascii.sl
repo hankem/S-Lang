@@ -118,6 +118,21 @@ private define run_test (make_lines_func)
      throw RunTimeError, "Arrays have unequal values";
    if (lastline != lines[-1])
      throw RunTimeError, "lastline=$lastline instead of lines[-1]\n";
+
+   na = readascii (lines, &za, &xa; delim=",", list, cols=[1,3],
+		   lastlinenum=&lastlinenum, lastline=&lastline,
+		   comment="@", stop_on_mismatch);
+   if (n+n1 != na)
+     throw RunTimeError, "readascii returned $na, not return $n+$n1 as expected"$;
+   if (lastlinenum != length (lines))
+     throw RunTimeError, "lastlinenum=$lastlinenum instead of $n"$;
+   if ((typeof (za) != List_Type) || (typeof (xa) != List_Type))
+     throw RunTimeError, "Used list qualifier but did not get a list";
+   if (any (fneqs([x,x1], [__push_list(za)]) 
+	    or fneqs([z,z1], [__push_list(xa)] )))
+     throw RunTimeError, "Arrays have unequal values";
+   if (lastline != lines[-1])
+     throw RunTimeError, "lastline=$lastline instead of lines[-1]\n";
 }
 
 define slsh_main ()

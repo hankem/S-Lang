@@ -42,11 +42,15 @@ USA.
 # ifdef HAVE_NAN_H
 #  include <nan.h>
 # endif
-
 #endif
 
 #include "slang.h"
 #include "_slang.h"
+
+#if SLANG_HAS_FLOAT
+double _pSLang_NaN;
+double _pSLang_Inf;
+#endif
 
 /*
  * This file defines binary and unary operations on all integer types.
@@ -1241,6 +1245,40 @@ static SLang_DConstant_Type DConst_Table [] =
    SLANG_END_DCONST_TABLE
 };
 
+static void compute_inf_an_nan (void)
+{
+#if SLANG_HAS_FLOAT
+   volatile double nan_val, inf_val;
+# if SLANG_HAS_IEEE_FP
+   volatile double big;
+   unsigned int max_loops = 256;
+
+   big = 1e16;
+   inf_val = 1.0;
+
+   while (max_loops)
+     {
+	max_loops--;
+	big *= 1e16;
+	if (inf_val == big)
+	  break;
+	inf_val = big;
+     }
+   if (max_loops == 0)
+     {
+	inf_val = DBL_MAX;
+	nan_val = DBL_MAX;
+     }
+   else nan_val = inf_val/inf_val;
+# else
+   inf_val = DBL_MAX;
+   nan_val = DBL_MAX;
+# endif
+   _pSLang_NaN = nan_val;
+   _pSLang_Inf = inf_val;
+#endif
+}
+
 
 int _pSLarith_register_types (void)
 {
@@ -1381,6 +1419,8 @@ int _pSLarith_register_types (void)
 #endif
        )
      return -1;
+
+   compute_inf_an_nan ();
 
    return 0;
 }

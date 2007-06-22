@@ -51,9 +51,6 @@ USA.
 #endif
 #define PI 3.14159265358979323846264338327950288
 
-/* This probably needs to be made system specific */
-#define HAS_IEEE_FP	1
-
 #if defined(__unix__)
 #include <signal.h>
 #include <errno.h>
@@ -1457,34 +1454,8 @@ static SLang_IConstant_Type IConsts [] =
 
 static int add_nan_and_inf (void)
 {
-   volatile double nan_val, inf_val;
-#ifdef HAS_IEEE_FP
-   volatile double big;
-   unsigned int max_loops = 256;
-
-   big = 1e16;
-   inf_val = 1.0;
-
-   while (max_loops)
-     {
-	max_loops--;
-	big *= 1e16;
-	if (inf_val == big)
-	  break;
-	inf_val = big;
-     }
-   if (max_loops == 0)
-     {
-	inf_val = DBL_MAX;
-	nan_val = DBL_MAX;
-     }
-   else nan_val = inf_val/inf_val;
-#else
-   inf_val = DBL_MAX;
-   nan_val = DBL_MAX;
-#endif
-   if ((-1 == SLns_add_dconstant (NULL, "_NaN", nan_val))
-       || (-1 == SLns_add_dconstant (NULL, "_Inf", inf_val)))
+   if ((-1 == SLns_add_dconstant (NULL, "_NaN", _pSLang_NaN))
+       || (-1 == SLns_add_dconstant (NULL, "_Inf", _pSLang_Inf)))
      return -1;
    
    SLfpu_clear_except_bits ();

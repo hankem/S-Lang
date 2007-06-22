@@ -55,94 +55,118 @@ static int Handler_Active = 0;
 
 int _pSLcall_bos_handler (char *file, int line)
 {
+   int status = 0;
+   int err;
+
    if (BOS_Callback_Handler == NULL)
      return 0;
 
    if (Handler_Active)
      return 0;
 
-   if ((-1 == SLang_start_arg_list ())
-       || (-1 == SLang_push_string (file))
-       || (-1 == SLclass_push_int_obj (SLANG_INT_TYPE, line))
-       || (-1 == SLang_end_arg_list ()))
+   if ((0 != (err = _pSLang_Error))
+       && (-1 == _pSLang_push_error_context ()))
      return -1;
 
    Handler_Active++;
-   if (-1 == SLexecute_function (BOS_Callback_Handler))
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_push_string (file))
+       || (-1 == SLclass_push_int_obj (SLANG_INT_TYPE, line))
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (BOS_Callback_Handler)))
      {
-	Handler_Active--;
 	set_bos_eos_handlers (NULL, NULL);
-	return -1;
+	status = -1;
      }
    Handler_Active--;
-   return 0;
+   
+   if (err)
+     _pSLang_pop_error_context (status != 0);
+
+   return status;
 }
 
 int _pSLcall_eos_handler (void)
 {
+   int err, status = 0;
+
    if ((EOS_Callback_Handler == NULL)
        || (Handler_Active))
      return 0;
 
-   if ((-1 == SLang_start_arg_list ())
-       || (-1 == SLang_end_arg_list ()))
+   if ((0 != (err = _pSLang_Error))
+       && (-1 == _pSLang_push_error_context ()))
      return -1;
-   
+
    Handler_Active++;
-   if (-1 == SLexecute_function (EOS_Callback_Handler))
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (EOS_Callback_Handler)))
      {
-	Handler_Active--;
+	status = -1;
 	set_bos_eos_handlers (NULL, NULL);
-	return -1;
      }
    Handler_Active--;
-   return 0;
+   if (err)
+     _pSLang_pop_error_context (status != 0);
+
+   return status;
 }
 
 int _pSLcall_bof_handler (char *fun, char *file)
 {
+   int status = 0, err;
+
    if (BOF_Callback_Handler == NULL)
      return 0;
 
    if (Handler_Active)
      return 0;
 
-   if ((-1 == SLang_start_arg_list ())
-       || (-1 == SLang_push_string (fun))
-       || (-1 == SLang_push_string (file))
-       || (-1 == SLang_end_arg_list ()))
+   if ((0 != (err = _pSLang_Error))
+       && (-1 == _pSLang_push_error_context ()))
      return -1;
 
    Handler_Active++;
-   if (-1 == SLexecute_function (BOF_Callback_Handler))
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_push_string (fun))
+       || (-1 == SLang_push_string (file))
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (BOF_Callback_Handler)))
      {
-	Handler_Active--;
 	set_bof_eof_handlers (NULL, NULL);
-	return -1;
+	status = -1;
      }
    Handler_Active--;
-   return 0;
+   if (err)
+     _pSLang_pop_error_context (status != 0);
+   return status;
 }
 
 int _pSLcall_eof_handler (void)
 {
+   int status = 0, err;
+
    if ((EOF_Callback_Handler == NULL)
        || (Handler_Active))
      return 0;
 
-   if ((-1 == SLang_start_arg_list ())
-       || (-1 == SLang_end_arg_list ()))
+   if ((0 != (err = _pSLang_Error))
+       && (-1 == _pSLang_push_error_context ()))
      return -1;
-   
+
    Handler_Active++;
-   if (-1 == SLexecute_function (EOF_Callback_Handler))
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (EOF_Callback_Handler)))
      {
-	Handler_Active--;
+	status = -1;
 	set_bof_eof_handlers (NULL, NULL);
-	return -1;
      }
    Handler_Active--;
-   return 0;
+   if (err)
+     _pSLang_pop_error_context (status != 0);
+   return status;
 }
 
 static int pop_new_push_old (SLang_Name_Type **handler)
@@ -206,7 +230,7 @@ static void set_debug_hook (SLang_Name_Type *deb)
 /* int _pSLcall_debug_hook (char *file, int line, char *funct) */
 int _pSLcall_debug_hook (char *file, int line)
 {
-   int status;
+   int status, err;
 
    if (Debug_Hook == NULL)
      return 0;
@@ -214,21 +238,25 @@ int _pSLcall_debug_hook (char *file, int line)
    if (Debug_Handler_Active)
      return 0;
 
-   if (-1 == _pSLang_push_error_context ())
-     return -1;
-
-   if ((-1 == SLang_start_arg_list ())
-       || (-1 == SLang_push_string (file))
-       || (-1 == SLclass_push_int_obj (SLANG_INT_TYPE, line))
-       || (-1 == SLang_end_arg_list ()))
+   if ((0 != (err = _pSLang_Error))
+       && (-1 == _pSLang_push_error_context ()))
      return -1;
 
    Debug_Handler_Active++;
-   if (-1 == (status = SLexecute_function (Debug_Hook)))
-     set_debug_hook (NULL);
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_push_string (file))
+       || (-1 == SLclass_push_int_obj (SLANG_INT_TYPE, line))
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (Debug_Hook)))
+     {
+	status = -1;
+	set_debug_hook (NULL);
+     }
    Debug_Handler_Active--;
 
-   (void) _pSLang_pop_error_context (status != 0);
+   if (err)
+     (void) _pSLang_pop_error_context (status != 0);
+
    return status;
 }
 

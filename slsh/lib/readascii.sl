@@ -5,7 +5,7 @@
 % terms of the GNU General Public License.  See the file COPYING for
 % more information.
 
-private define allocate_array_list (list, num)
+private define allocate_array_of_arrays (list, num)
 {
    variable n = length (list);
    variable array_list = Array_Type[n];
@@ -24,7 +24,7 @@ define readascii ()
 	usage ("nrows = %s (file, &a1,...; qualifiers);\nQualifiers:\n" 
 	       + "nrows=int, ncols=int, format=string, skip=int, maxlines=int, delim=string\n"
 	       + "size=int, dsize=int, stop_on_mismatch, lastline=&var lastlinenum=&var\n",
-	       + "type=string cols=array comment=string\n",
+	       + "type=string, cols=array, comment=string, as_list\n",
 	       _function_name);
      }
 
@@ -42,6 +42,7 @@ define readascii ()
    variable comment = qualifier ("comment", NULL);
    variable want_columns = qualifier("cols", NULL);
    variable type=qualifier("type", "f");   %  Float_Type
+   variable is_list = qualifier_exists ("as_list");
 
    if (comment != NULL)
      variable comment_len = strbytelen (comment);
@@ -136,6 +137,15 @@ define readascii ()
 	list_append (ref_list, &ref_buf[i]);
      }
 
+   % If arrays are to be returned, the array_list is an array of arrays
+   % Otherwise, is_list is non-zero, and array_list is a list of lists.
+   if (is_list)
+     {
+	array_list = {};
+	_for i (0, ncols-1, 1)
+	  list_append (array_list, {});
+     }
+
    variable nlines = 0;
    variable line = NULL;
    while ((nitems != nrows) && (nlines != maxlines))
@@ -161,16 +171,26 @@ define readascii ()
 	     continue;
 	  }
 	
+	if (is_list)
+	  {
+	     _for i (0, ncols-1, 1)
+	       {
+		  list_append (array_list[i], ref_buf[i]);
+	       }
+	     nitems++;
+	     continue;
+	  }
+
 	ifnot (max_allocated)
 	  {
 	     max_allocated = init_size;
-	     array_list = allocate_array_list (ref_buf, max_allocated);
+	     array_list = allocate_array_of_arrays (ref_buf, max_allocated);
 	  }
 
 	if (nitems == max_allocated)
 	  {
 	     max_allocated += dsize;
-	     variable new_array_list = allocate_array_list (ref_buf, max_allocated);
+	     variable new_array_list = allocate_array_of_arrays (ref_buf, max_allocated);
 	     k = [0:nitems-1];
 	     _for i (0, ncols-1, 1)
 	       new_array_list[i][k] = array_list[i];
@@ -185,12 +205,13 @@ define readascii ()
 
    if (nitems) 
      {
-	if (max_allocated != nitems)
+	if ((is_list == 0) && (max_allocated != nitems))
 	  {
 	     k = [0:nitems-1];
 	     _for i (0, ncols-1, 1)
 	       array_list[i] = array_list[i][k];
 	  }
+
 	if (has_ncols_qualifier)
 	  @arg_refs = array_list;
 	else _for i (0, ncols-1, 1)

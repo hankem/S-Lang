@@ -1423,6 +1423,8 @@ extern int _pSLang_get_frame_depth (void);
 
 #if SLANG_HAS_FLOAT
 extern int _pSLmath_isnan (double x);
+extern double _pSLang_NaN;
+extern double _pSLang_Inf;
 #endif
 
 #if SLANG_HAS_SIGNALS

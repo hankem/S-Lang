@@ -151,6 +151,7 @@ static int parse_double (char **sp, char *smax, double *d)
    int has_leading_zeros;
    char *start_pos, *sign_pos;
    char *b, *bmax;
+   char ch;
 
    start_pos = *sp;
    s = get_sign (start_pos, smax, &sign);
@@ -160,6 +161,42 @@ static int parse_double (char **sp, char *smax, double *d)
 	return 0;
      }
 
+   ch = *s|0x20;
+   if ((ch == 'n') || (ch == 'i'))
+     {
+	if (s + 3 <= smax)
+	  {
+	     if (ch == 'n')
+	       {
+		  if (((s[1]|0x20) == 'a') && (s[2] == 'n'))
+		    {
+		       *sp = s + 3;
+		       *d = _pSLang_NaN;
+		       return 1;
+		    }
+		  *sp = start_pos;
+		  errno = _pSLerrno_errno = EINVAL;
+		  return 0;
+	       }
+	     if (((s[1] | 0x20) == 'n') && ((s[2] | 0x20) == 'f'))
+	       {
+		  /* check for infinity */
+		  if ((s + 8 <= smax)
+		      && (((s[3]|0x20)=='i')&&((s[4]|0x20)=='n')&&((s[5]|0x20)=='i')
+		     && ((s[6]|0x20)=='t')&&((s[7]|0x20)=='y')))
+		    *sp = s + 8;
+		  else
+		    *sp = s + 3;
+		  *d = _pSLang_Inf;
+		  return 1;
+	       }
+	  }
+	*sp = start_pos;
+	errno = _pSLerrno_errno = EINVAL;
+	return 0;
+     }
+
+   
    /* Prepare the buffer that will be passed to strtod */
    /* Allow the exponent to be 5 significant digits: E+xxxxx\0 */
    bmax = buf + (sizeof (buf) - 8);

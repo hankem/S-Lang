@@ -78,3 +78,6 @@
 
 /* Define this if you want the language to support qualifiers */
 #define SLANG_HAS_QUALIFIERS	1
+
+#define SLANG_HAS_IEEE_FP	1
+

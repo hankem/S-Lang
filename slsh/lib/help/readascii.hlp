@@ -43,6 +43,8 @@ readascii
    lastline=&v          Assign the last line read to the variable v.
    lastlinenum=&v       Assign the last line number (1-based to v)
    comment=string       Lines beginning with this string are ignored.
+   as_list              If present, then return data in lists rather
+                          than arrays.
 
 
  EXAMPLE
@@ -81,12 +83,21 @@ readascii
  This file may be read using
 
      n = readascii ("score.dat", &name, &score, &date, &flags;
-                     format="%s %lf %s %d");
+                    format="%s %lf %s %d");
 
  In this case, `n' will be 3, `name' and `date' will
  be String_Type arrays, `score' will be a
  Double_Type array, and `flags' will be an
  `Int_Type' array.
+
+ Now suppose that only the score and flags column are of interest.
+ The `name' and `date' fields may be ignored using
+
+     n = readascii ("score.dat", &score, &flags";
+                    format="%*s %lf %*s %d");
+
+ Here, `%*s' indicates that the field is to be parsed as a
+ string, but not assigned to a variable.
 
  NOTES
  This current version of this function does not handle missing data.
@@ -98,6 +109,6 @@ readascii
  lines beginning with the comment string and continue scanning.
 
  SEE ALSO
-  sscanf, fopen, fgets, fgetslines
+  sscanf, atof, fopen, fgets, fgetslines
 
 --------------------------------------------------------------
