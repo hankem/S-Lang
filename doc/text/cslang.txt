@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide, V2.0.4
   John E. Davis, davis@space.mit.edu
-  Apr 27, 2007
+  Jun 22, 2007
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -438,8 +438,8 @@
   code via the set_slang_load_path function.  By default, no search path
   is defined.
 
-  NOTE: It is highly recommended that an application embedding the
-  interpreter include the [1mslsh [22mlib directory in the search path.  The
+  [1mNOTE: It is highly recommended that an application embedding the[0m
+  [1minterpreter include the slsh [22mlib directory in the search path.  The
   .sl files that are part of [1mslsh [22mare both useful and and should work
   with any application embedding the interpreter.  Moreover, if the
   application permits dynamically loaded modules, then there are a

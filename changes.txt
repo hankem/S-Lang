@@ -24,6 +24,7 @@ Changes since 2.1.0
 12. src/slscanf.c: Added inf/nan support to sscanf.
 13. src/slboseos.c: Before calling the hooks, push the error context
     so that they will work in the presence of errors.
+14. lib/slsh/tm/profile.tm: Documented the profile_* functions.
 
 {{{ Previous Versions
 

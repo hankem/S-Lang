@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language
   John E. Davis, davis@space.mit.edu
-  Feb 7, 2007
+  Jun 22, 2007
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -224,6 +224,20 @@
   providing the application with much more flexibility and power.
   Examples of applications that take advantage of the interpreter in
   this way include the [1mjed [22meditor and the [1mslrn [22mnewsreader.
+
+  The [1mS-Lang [22mdistribution contains a standalone application called [1mslsh[0m
+  that may be used for writing [1mS-Lang [22mscripts and full-blown [1mS-Lang[0m
+  based applications.  For example, the author has used [1mslsh [22mto create a
+  mediacenter for his home entertainment system that integrates internet
+  radio and tv, podcasts, digital pictures and video, CDs, and so forth.
+  [1mslsh [22malso may be used interactively to evaluate [1mS-Lang [22mexpressions and
+  act as a sophisticated calculator.  In fact, as you are reading this
+  manual, it is recommended that you use [1mslsh [22min its interactive mode as
+  an aid to understanding the language.  Moreover [1mslsh [22mcontains a number
+  of useful routines in its standard library that may be used by other
+  programs that embed the interpreter.  It is important to point out
+  that some binary distributions package [1mslsh [22mseparately from the [1mS-Lang[0m
+  library, and as such must be installed separately.
 
   [1m2.1.  Language Features[0m
 
@@ -4587,6 +4601,13 @@
   control, the lower level interface permits one to access network
   objects as well as disk files.
 
+  For reading data formatted in text files, e.g., columns of numbers,
+  then do not overlook the high-level routines in the [1mslsh [22mlibrary. In
+  particular, the readascii function is quite flexible and can read data
+  from text files that are formatted in a variety of ways.  For data
+  stored in a standard binary format such as HDF or FITS, then the
+  corresponding modules should be used.
+
   [1m18.1.  Input/Output via stdio[0m
 
   [1m18.1.1.  Stdio Overview[0m
@@ -4630,7 +4651,6 @@
 
   In addition, the interface supports the popen and pclose functions on
   systems where the corresponding C functions are available.
-
   Before reading or writing to a file, it must first be opened using the
   fopen function.  The only exceptions to this rule involve use of the
   pre-opened streams: stdin, stdout, and stderr.  fopen accepts two
@@ -4687,7 +4707,6 @@
   The main difficulty with this approach is that it will not work for
   binary files, i.e., files that contain null characters.  For such
   files, the file should be opened in [4mbinary[24m mode via
-
              fp = fopen (file, "rb");
 
   and then the data read using the fread function:
@@ -4736,6 +4755,7 @@
   used to count the number of bytes in a file when that information is
   more readily accessible by another means.  For example, it is
   preferable to get this information via the stat_file function:
+
             define count_chars_in_file (file)
             {
                variable st;

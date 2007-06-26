@@ -7,7 +7,7 @@ TMEXPAND = $(HOME)/lib/tmexpand/bin/tmexpand
 MACRODIR = $(HOME)/lib/tmexpand/macros
 
 HLP_FILES = arrayfuns.hlp glob.hlp require.hlp structfuns.hlp cmdopt.hlp \
-            readascii.hlp
+            readascii.hlp profile.hlp
 
 all: help-files
 help-files: $(HLP_FILES)
@@ -23,6 +23,8 @@ cmdopt.hlp: cmdopt.tm
 	$(TMEXPAND) -I$(MACRODIR) -Mslhlp cmdopt.tm cmdopt.hlp
 readascii.hlp: readascii.tm
 	$(TMEXPAND) -I$(MACRODIR) -Mslhlp readascii.tm readascii.hlp
+profile.hlp: profile.tm
+	$(TMEXPAND) -I$(MACRODIR) -Mslhlp profile.tm profile.hlp
 #----------------------------------------------------------------------------
 clean:
 	-rm -f *~ *.dvi *.log *.aux *.toc *.bak

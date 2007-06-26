@@ -41,6 +41,21 @@
    power.  Examples of applications that take advantage of the
    interpreter in this way include the \jed editor and the \slrn
    newsreader.
+   
+   The \slang distribution contains a standalone application called
+   \slsh that may be used for writing \slang scripts and full-blown
+   \slang based applications.  For example, the author has used \slsh
+   to create a mediacenter for his home entertainment system that
+   integrates internet radio and tv, podcasts, digital pictures and
+   video, CDs, and so forth.  \slsh also may be used interactively to
+   evaluate \slang expressions and act as a sophisticated calculator.
+   In fact, as you are reading this manual, it is recommended that you
+   use \slsh in its interactive mode as an aid to understanding the language.
+   Moreover \slsh contains a number of useful routines in its standard
+   library that may be used by other programs that embed the
+   interpreter.  It is important to point out that some binary
+   distributions package \slsh separately from the \slang library, and
+   as such must be installed separately.
 
 \sect{Language Features}
 
@@ -4760,6 +4775,13 @@
  \ifun{read}, etc.  In addition to permitting more control, the lower
  level interface permits one to access network objects as well as disk
  files.
+
+ For reading data formatted in text files, e.g., columns of numbers,
+ then do not overlook the high-level routines in the \slsh library. In
+ particular, the \sfun{readascii} function is quite flexible and can
+ read data from text files that are formatted in a variety of ways.
+ For data stored in a standard binary format such as HDF or FITS, then
+ the corresponding modules should be used.
 
 \sect{Input/Output via stdio}
 \sect1{Stdio Overview}

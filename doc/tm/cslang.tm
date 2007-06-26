@@ -335,7 +335,8 @@
   path may be set using the \cfun{SLpath_set_load_path} function, as
   well as from interpeted code via the \ifun{set_slang_load_path}
   function.  By default, no search path is defined.
-  
+
+  \bf{
   NOTE: It is highly recommended that an application embedding the
   interpreter include the \slsh lib directory in the search path.  The
   \exfile{.sl} files that are part of \slsh are both useful and
@@ -343,7 +344,8 @@
   Moreover, if the application permits dynamically loaded modules,
   then there are a growing number of excellent quality modules for
   \slsh that can be utilized by it.
-  
+  }
+
   Files are searched as follows: If the name begins with the
   equivalent of \exstr{./} or \exstr{../}, then it is searched for
   with respect to the current directory, and not along the load-path.
