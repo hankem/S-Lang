@@ -25,6 +25,14 @@ Changes since 2.1.0
 13. src/slboseos.c: Before calling the hooks, push the error context
     so that they will work in the presence of errors.
 14. lib/slsh/tm/profile.tm: Documented the profile_* functions.
+15. doc/tm/slang.tm: Added documentation about qualifiers.
+16. src/slarray.c,modules/*.c: Use SLindex_Type instead of int for
+    indexing arrays.  Currently SLindex_Type is typedefd as an int.
+17. src/slang.c: Added SLang_pop_array_index to the API.  Applications
+    should use this function instead of SLang_pop_int for getting
+    array indices.  This new symbol is versioned at 2.1.1.
+18. src/slstruct.c: SLang_pop_cstruct will now force SLang_Array_Type
+    objects to linear ones.
 
 {{{ Previous Versions
 

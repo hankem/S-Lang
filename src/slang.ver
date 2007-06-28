@@ -676,3 +676,8 @@ SLANG2.1.0 {
 		SLrline_move;
 		SLrline_open2;
 } SLANG2;
+
+SLANG2.1.1 {
+        global:
+		SLang_pop_array_index;
+} SLANG2.1.0;

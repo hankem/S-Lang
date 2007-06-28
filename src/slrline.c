@@ -1876,7 +1876,7 @@ static int rline_get_edit_width_intrinsic (void)
 
 static void rline_get_history_intrinsic (void)
 {
-   int i, num;
+   SLindex_Type i, num;
    RL_History_Type *h;
    char **data;
    SLang_Array_Type *at;

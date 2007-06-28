@@ -1,12 +1,105 @@
 \chapter{S-Lang 2 Interpreter NEWS}
 
-\sect{What's new for \slang 2}
+\sect{What's new for \slang 2.1}
+
+ The next section describes the features that were added to version
+ 2.0.  This section is devoted to what's new in version 2.1.  For a
+ much more complete and detailed list of changes, see the
+ \file{changes.txt} file that is distributed with the library.
+
+\begin{itemize}
+\item 
+ Short circuiting boolean operators \exmp{||} and \exmp{&&}
+ have been added to the languange.  The use of \exmp{orelse} and
+ \exmp{andelse} constructs are nolonger necessary nor encouraged.
+\item
+ \em{Qualifiers} have been added to the language as a convenient
+ and powerful mechanism to pass optional information to functions.
+\item
+ Structure definitions allow embeded assignemnts, e.g, 
+#v+
+    s = struct {foo = 3, bar = "hello" };
+#v-
+\item
+  Comparison expressions such as \exmp{a<b<c} are now interpretered as
+  \exmp{(a<b)and(b<c)}.
+\item
+  The \kw{ifnot} keyword was added as an alternative to \kw{!if}.  The
+  use of \kw{!if} has been deprecated.
+\item
+  Looping constructs now support a "then" clause that will get
+  executed if the loop runs to completion, e.g.,
+#v+       
+     loop (20)
+       {
+          if (this ())
+            break;  % The then clause will NOT get executed
+       }
+     then do_that ();
+#v-
+  Note: \kw{then} is now a reserved word.
+\item
+  A floating point array of exactly N elements may be created
+  using the form \exmp{[a:b:#N]}, where the elements are uniformly
+  spaced and run from a to b, inclusive.
+\item
+  References to array elements and structure fields are now
+  supported, e.g., \exmp{&A[3]}, \exmp{&s.foo}.
+\item
+  An exception may be rethrown by calling "throw" without any
+  arguments:
+#v+
+    try { something (); }
+    catch AnyError: { do_this (); throw; }
+#v-
+\end{itemize}
+
+The following intrinsic function were added in version 2.1:
+#d tagexmp#1 \tag{\exmp{$1}}
+\begin{descrip}
+\tagexmp{wherenot(x)} Equivalent to where (not(x))
+\tagexmp{_$(str)}
+  Evaluates strings with embedded "dollar" variables, e.g.,
+  \exmp{_$("$TERM")}.
+\tagexmp{__push_list/__pop_list} 
+  Push list items onto the stack
+\tagexmp{prod(x)}
+  Computes the product of an array \exmp{a[0]*a[1]*...}
+\tagexmp{minabs(x), maxabs(x)}
+  Equivalent to \exmp{min(abs(x))} and \exmp{max(abs(x))}, resp.
+\tagexmp{getpgrp, setgid, getpgid}
+  Get and set the process group ids (Unix).
+\tagexmp{setsid}
+  Create a new session (Unix).
+\end{descrip}
+
+The following modules were added to version 2.1:
+\begin{descrip}
+  \tagexmp{iconv}
+      Performs character-set conversion using the iconv library.
+  \tagexmp{onig}
+     A regular expression module using oniguruma RE library.
+\end{descrip}
+
+The following library files and functions were add to \slsh:
+\begin{descrip}
+\tagexmp{readascii} A flexible and power ascii (as opposed to binary)
+  data file reader.
+\tagexmp{cmdopt}  A set of functions that vastly simplify the parsing
+of command line options.
+\end{descrip}
+
+Also a history and completion mechanism was added to the \slang
+readline interface, and as a result, \slsh now supports history and
+command/file completion.
+
+\sect{What's new for \slang 2.0}
 
 Here is a brief list of some of the new features and improvements in
 \slang 2.0.
 
 \begin{itemize}
-\item \slsh, the generic \slang interpreter now supports and
+\item \slsh, the generic \slang interpreter, now supports and
  interactive command-line mode with readline support.
 \item Native support for Unicode via UTF-8 throughout the library.
 \item A \dtype{List_Type} object has been added to the language, e.g.,

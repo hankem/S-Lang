@@ -201,7 +201,7 @@ static VOID_STAR pop_onig_name_ptr (Name_Map_Type *map, char *onig_object)
 
 static void get_onig_names (Name_Map_Type *map)
 {
-   int i, num;
+   SLindex_Type i, num;
    SLang_Array_Type *at;
    char **names;
    Name_Map_Type *table;
@@ -209,7 +209,7 @@ static void get_onig_names (Name_Map_Type *map)
    table = map;
    while (table->name != NULL)
      table++;
-   num = (int) (table - map);
+   num = (SLindex_Type) (table - map);
    
    if (NULL == (at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &num, 1)))
      return;

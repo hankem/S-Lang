@@ -97,8 +97,22 @@ static void get_c_struct (void)
 
 static void set_c_struct (void)
 {
+   SLang_Array_Type *at;
+
    SLang_free_cstruct ((VOID_STAR) &C_Struct_Buf, C_Struct);
-   (void) SLang_pop_cstruct ((VOID_STAR) &C_Struct_Buf, C_Struct);
+   if (-1 == SLang_pop_cstruct ((VOID_STAR) &C_Struct_Buf, C_Struct))
+     return;
+   
+   at = C_Struct_Buf.a;
+   if ((at != NULL) && (at->data_type == SLANG_INT_TYPE))
+     {
+	/* The point of this is to look for access errors */
+	SLindex_Type i, imax = (SLindex_Type)at->num_elements;
+	int sum = 0;
+	int *data = (int *)at->data;
+	for (i = 0; i < imax; i++)
+	  sum += data[i];
+     }
 }
 
 static void get_c_struct_via_ref (SLang_Ref_Type *r)

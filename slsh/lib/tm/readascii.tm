@@ -93,6 +93,21 @@
 #v-
  Here, \exmp{%*s} indicates that the field is to be parsed as a
  string, but not assigned to a variable.
+
+ Consider the task of reading columns from a file called
+ \exmp{books.dat} that contain quoted strings such as:
+#v+
+     # Year  Author Title
+     "1605" "Miguel de Cervantes"  "Don Quixote de la Mancha"
+     "1885" "Mark Twain" "The Adventures of Huckleberry Finn"
+     "1955" "Vladimir Nabokov" "Lolita"
+#v-
+ Such a file may be read using
+#v+
+     n = readascii ("books.dat", &year, &author, &title;
+                    format="\"%[^\"]\" \"%[^\"]\" \"%[^\"]\"");
+                    
+#v-
 \notes
  This current version of this function does not handle missing data.
  

@@ -1,6 +1,6 @@
-  A Guide to the S-Lang Language
+  A Guide to the S-Lang Language (v2.1)
   John E. Davis, davis@space.mit.edu
-  Jun 22, 2007
+  Jun 26, 2007
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -62,7 +62,7 @@
   8.3.1. Conditional Forms
   8.3.1.1. if
   8.3.1.2. if-else
-  8.3.1.3. !if
+  8.3.1.3. ifnot
   8.3.1.4. orelse, andelse
   8.3.1.5. switch
   8.3.2. Looping Forms
@@ -78,11 +78,12 @@
   9.1. Calling Functions
   9.2. Declaring Functions
   9.3. Parameter Passing Mechanism
-  9.4. Referencing Variables
-  9.5. Functions with a Variable Number of Arguments
-  9.6. Returning Values
-  9.7. Multiple Assignment Statement
-  9.8. Exit-Blocks
+  9.4. Returning Values
+  9.5. Multiple Assignment Statement
+  9.6. Referencing Variables
+  9.7. Functions with a Variable Number of Arguments
+  9.8. Qualifiers
+  9.9. Exit-Blocks
   10. Namespaces
   11. Arrays
   11.1. Creating Arrays
@@ -129,8 +130,9 @@
   21.1. S-Lang  RE Syntax
   21.2. Differences between S-Lang  and egrep REs
   A. S-Lang 2 Interpreter NEWS
-  A.1. What's new for S-Lang  2
-  A.2. Upgrading to S-Lang  2
+  A.1. What's new for S-Lang  2.1
+  A.2. What's new for S-Lang  2.0
+  A.3. Upgrading to S-Lang  2
   B. Copyright
   B.1. The GNU Public License
 
@@ -279,7 +281,7 @@
   The [1mS-Lang [22mlanguage supports several types of looping constructs and
   conditional statements.  The looping constructs include while,
   do...while, for, forever, loop, foreach, and _for. The conditional
-  statements include if, if-then-else, and !if.
+  statements include if, if-then-else, and ifnot.
 
   User defined functions may be defined to return zero, one, or more
   values.  Functions that return zero values are similar to
@@ -380,7 +382,7 @@
             variable x, y, z;
 
   declares three variables, x, y, and z.  Note the semicolon at the end
-  of the statement.  [4mAll[24m [1mS-Lang [22mstatements must end in a semi-colon.
+  of the statement.  [4mAll[24m [1mS-Lang [22mstatements must end in a semicolon.
 
   Unlike compiled languages such as C, it is not necessary to specify
   the data type of a [1mS-Lang [22mvariable.  The data type of a [1mS-Lang[0m
@@ -1287,16 +1289,16 @@
   The following identifiers are reserved by the language for use as
   keywords:
 
-          and           andelse       break         case          catch
-          continue      define        do            else          ERROR_BLOCK
-          exch          EXIT_BLOCK    finally       _for          for
-          foreach       forever       !if           if            loop
-          mod           not           or            orelse        pop
-          private       public        return        shl           shr
-          static        struct        switch        __tmp         throw
-          try           typedef       USER_BLOCK1   USER_BLOCK2   USER_BLOCK0
-          USER_BLOCK4   USER_BLOCK3   using         variable
-          while         xor
+          and          andelse      break         case          catch
+          continue     define       do            else          ERROR_BLOCK
+          exch         EXIT_BLOCK   finally       _for          for
+          foreach      forever      !if           if            ifnot
+          loop         mod          not           or            orelse
+          pop          private      public        return        shl
+          shr          static       struct        switch        __tmp
+          then         throw        try           typedef       USER_BLOCK0
+          USER_BLOCK1  USER_BLOCK2  USER_BLOCK3   USER_BLOCK4   using
+          variable     while        xor
 
   [1m6.  Variables[0m
 
@@ -1308,7 +1310,7 @@
 
   declares three variables, x, y, and z.  This is an example of a vari-
   able declaration statement, and like all statements, it must end in a
-  semi-colon.
+  semicolon.
 
   Variables declared this way are untyped and inherit a type upon
   assignment.  As such, type-checking of function arguments, etc is
@@ -1671,7 +1673,7 @@
 
   Loosely speaking, a [4mstatement[24m is composed of [4mexpressions[24m that are
   grouped according to the syntax or grammar of the language to express
-  a complete computation.  A semi-colon is used to denote the the end of
+  a complete computation.  A semicolon is used to denote the the end of
   a statement.
 
   A statement that occurs within a function is executed only during
@@ -1851,7 +1853,7 @@
   although the indentation indicates otherwise.  It is important to
   understand the grammar and not be seduced by the indentation!
 
-  [1m8.3.1.3.  !if[0m
+  [1m8.3.1.3.  ifnot[0m
 
   One often encounters if statements similar to
 
@@ -1860,14 +1862,18 @@
   or equivalently,
        if (not([4minteger-expression[24m)) [4mstatement-or-block[0m
 
-  The !if statement was added to the language to simplify the handling
+  The ifnot statement was added to the language to simplify the handling
   of such statements.  It obeys the syntax
 
-       !if ([4minteger-expression[24m) [4mstatement-or-block[0m
+       ifnot ([4minteger-expression[24m) [4mstatement-or-block[0m
 
   and is functionally equivalent to
 
        if (not ([4mexpression[24m)) [4mstatement-or-block[0m
+
+  Note: The ifnot keyword was added in version 2.1 and is not supported
+  by earlier versions.  For compatibility with older code, the !if
+  keyword can be used, although its use is deprecated in favor of ifnot.
 
   [1m8.3.1.4.  orelse, andelse[0m
 
@@ -2353,8 +2359,7 @@
   upon the number statements that may occur within a [1mS-Lang [22mfunction, it
   is considered poor programming practice if a function contains many
   statements. This notion stems from the belief that a function should
-  have a simple, well defined purpose.
-
+  have a simple, well-defined purpose.
   [1m9.3.  Parameter Passing Mechanism[0m
 
   Parameters to a function are always passed by value and never by
@@ -2421,7 +2426,108 @@
   a comma.  A mechanism for handling single parameter function calls is
   described later in this chapter.
 
-  [1m9.4.  Referencing Variables[0m
+  [1m9.4.  Returning Values[0m
+
+  As stated earlier, the usual way to return values from a function is
+  via the return statement.  This statement has the simple syntax
+
+       return [4mexpression-list[24m ;
+
+  where [4mexpression-list[24m is a comma separated list of expressions.  If
+  the function does not return any values, the expression list will be
+  empty.  A simple example of a function that can return multiple values
+  (two in this case) is:
+
+               define sum_and_diff (x, y)
+               {
+                   variable sum, diff;
+
+                   sum = x + y;  diff = x - y;
+                   return sum, diff;
+               }
+
+  [1m9.5.  Multiple Assignment Statement[0m
+
+  In the previous section an example of a function returning two values
+  was given.  That function can also be written somewhat simpler as:
+
+         define sum_and_diff (x, y)
+         {
+            return x + y, x - y;
+         }
+
+  This function may be called using
+
+             (s, d) = sum_and_diff (12, 5);
+
+  After the above line is executed, s will have a value of 17 and the
+  value of d will be 7.
+
+  The most general form of the multiple assignment statement is
+
+            ( var_1, var_2, ..., var_n ) = expression;
+
+  Here expression is an arbitrary expression that leaves n items on the
+  stack, and var_k represents an l-value object (permits assignment).
+  The assignment statement removes those values and assigns them to the
+  specified variables.  Usually, expression is a call to a function that
+  returns multiple values, but it need not be.  For example,
+
+            (s,d) = (x+y, x-y);
+
+  produces results that are equivalent to the call to the sum_and_diff
+  function.  Another common use of the multiple assignment statement is
+  to swap values:
+
+            (x,y) = (y,x);
+            (a[i], a[j], a[k]) = (a[j], a[k], a[i]);
+
+  If an l-value is omitted from the list, then the corresponding value
+  will be removed fro the stack.  For example,
+
+            (s, ) = sum_and_diff (9, 4);
+
+  assigns the sum of 9 and 4 to s and the difference (9-4) is removed
+  from the stack.  Similarly,
+
+            () = fputs ("good luck", fp);
+
+  causes the return value of the fputs function to be discarded.
+
+  It is possible to create functions that return a [4mvariable[24m [4mnumber[24m of
+  values instead of a [4mfixed[24m [4mnumber[24m.  Although such functions are
+  discouraged, it is easy to cope with them.  Usually, the value at the
+  top of the stack will indicate the actual number of return values.
+  For such functions, the multiple assignment statement cannot directly
+  be used.  To see how such functions can be dealt with, consider the
+  following function:
+
+            define read_line (fp)
+            {
+               variable line;
+               if (-1 == fgets (&line, fp))
+                 return -1;
+               return (line, 0);
+            }
+
+  This function returns either one or two values, depending upon the
+  return value of fgets.  Such a function may be handled using:
+
+             status = read_line (fp);
+             if (status != -1)
+               {
+                  s = ();
+                  .
+                  .
+               }
+
+  In this example, the [4mlast[24m value returned by read_line is assigned to
+  status and then tested.  If it is non-zero, the second return value is
+  assigned to s.  In particular note the empty set of parenthesis in the
+  assignment to s.  This simply indicates that whatever is on the top of
+  the stack when the statement is executed will be assigned to s.
+
+  [1m9.6.  Referencing Variables[0m
 
   One can achieve the effect of passing by reference by using the
   reference (&) and dereference (@) operators. Consider again the add_10
@@ -2452,23 +2558,39 @@
   which returns an approximation to the derivative of another function
   at a specified point:
 
-       define derivative (f, x)
-       {
-          variable h = 1e-6;
-          return ((@f)(x+h) - (@f)(x)) / h;
-       }
-       define x_squared (x)
-       {
-          return x^2;
-       }
-       dydx = derivative (&x_squared, 3);
+            define derivative (f, x)
+            {
+               variable h = 1e-6;
+               return ((@f)(x+h) - (@f)(x)) / h;
+            }
+            define x_squared (x)
+            {
+               return x^2;
+            }
+            dydx = derivative (&x_squared, 3);
 
   When the derivative function is called, the local variable f will be a
   reference to the x_squared function. The x_squared function is called
   is called with the specified parameters by dereferencing f with the
   dereference operator.
 
-  [1m9.5.  Functions with a Variable Number of Arguments[0m
+  [1m9.7.  Functions with a Variable Number of Arguments[0m
+
+  [1mS-Lang [22mfunctions may be called with a variable number of arguments.  A
+  natural example of such functions is the strcat function, which takes
+  one or more string arguments and returns the concatenated result.  An
+  example of different sort is the strtrim function which moves both
+  leading and trailing whitespace from a string.  In this case, when
+  called with one argument (the string to be ``trimmed''), the
+  characters that are considered to be whitespace are those in the
+  character-set that have the whitespace property (space, tab, newline,
+  ...).  However, when called with two arguments, the second argument
+  may be used to specify the characters that are to be considered as
+  whitespace.  The strtrim function exemplifies a class of variadic
+  functions where the additional arguments are used to pass optional
+  information to the function.  Another more flexible and powerful way
+  of passing optional information is through the use of [4mqualifiers[24m,
+  which is the subject of the next section.
 
   When a [1mS-Lang [22mfunction is called with parameters, those parameters are
   placed on the run-time stack.  The function accesses those parameters
@@ -2584,132 +2706,148 @@
   contains the number of values that were passed to the function.  That
   variable has the name _NARGS and may be used as follows:
 
-          define average_n ()
+     define average_n ()
+     {
+        variable x, s = 0;
+
+        if (_NARGS == 0)
+          usage ("ave = average_n (x, ...);");
+
+        loop (_NARGS)
           {
-             variable x, s = 0;
-
-             if (_NARGS == 0)
-               usage ("ave = average_n (x, ...);");
-
-             loop (_NARGS)
-               {
-                  x = ();
-                  s += x;
-               }
-             return s / _NARGS;
+             x = ();
+             s += x;
           }
+        return s / _NARGS;
+     }
 
   Here, if no arguments are passed to the function, the usage function
   will generate a UsageError exception along with a simple message indi-
   cating how to use the function.
 
-  [1m9.6.  Returning Values[0m
+  [1m9.8.  Qualifiers[0m
 
-  As stated earlier, the usual way to return values from a function is
-  via the return statement.  This statement has the simple syntax
+  One way to pass optional information to a function is to do so using
+  the variable arguments mechanism described in the previous section.
+  However, a much more powerful mechanism is through the use of
+  [4mqualifiers[24m, which were added in version 2.1.
 
-       return [4mexpression-list[24m ;
+  To illustrate the use of qualifiers, consider a graphics application
+  that defines a function called plot that plots a set of (x,y) values
+  specified as 1-d arrays:
 
-  where [4mexpression-list[24m is a comma separated list of expressions.  If
-  the function does not return any values, the expression list will be
-  empty.  A simple example of a function that can return multiple values
-  (two in this case) is:
+            plot(x,y);
 
-               define sum_and_diff (x, y)
-               {
-                   variable sum, diff;
+  Suppose that when called in the above manner, the application will
+  plot the data as black points.  But instead of black points, one might
+  want to plot the data using a red diamond as the plot symbol.  It
+  would be silly to have a separate function such as plot_red_diamond
+  for this purpose.  A much better way to achieve this functionality is
+  through the use of qualifiers:
 
-                   sum = x + y;  diff = x - y;
-                   return sum, diff;
-               }
+           plot(x,y ; color="red", symbol="diamond");
 
-  [1m9.7.  Multiple Assignment Statement[0m
+  Here, a single semicolon is used to separate the argument-list proper
+  (x,y) from the list of qualifiers.  In this case, the qualifiers are
+  ``color'' and ``symbol''.  The order of the qualifiers in unimportant;
+  the function could just as well have been called with the symbol qual-
+  ifier listed first.
 
-  In the previous section an example of a function returning two values
-  was given.  That function can also be written somewhat simpler as:
+  Now consider the implementation of the plot function:
 
-              define sum_and_diff (x, y)
-              {
-                 return x + y, x - y;
-              }
+      define plot (x, y)
+      {
+         variable color = qualifier ("color", "black");
+         variable symbol = qualifier ("symbol", "point");
+         variable symbol_size = qualifier ("size", 1.0);
+            .
+            .
+      }
 
-  This function may be called using
+  Note that the qualifiers are not handled in the parameter list; rather
+  they are handled in the function body using the qualifier function,
+  which is used to obtain the value of the qualifier. The second argu-
+  ment to the qualifier function specifies a the default value to be
+  used if the function was not called with the specified qualifier.
+  Also note that the variable associated with the qualifier need not
+  have the same name as the qualifier.
 
-             (s, d) = sum_and_diff (12, 5);
+  A qualifier need not have a value--- its mere presence may be used to
+  enable or disable a feature or trigger some action.  For example,
 
-  After the above line is executed, s will have a value of 17 and the
-  value of d will be 7.
+            plot (x, y; connect_points);
 
-  The most general form of the multiple assignment statement is
+  specifies a qualifier called connect_points that indicates that a line
+  should be drawn betweeen the data points.  The presence of such a
+  qualifier can be detected using the qualifier_exists function:
 
-            ( var_1, var_2, ..., var_n ) = expression;
-
-  Here expression is an arbitrary expression that leaves n items on the
-  stack, and var_k represents an l-value object (permits assignment).
-  The assignment statement removes those values and assigns them to the
-  specified variables.  Usually, expression is a call to a function that
-  returns multiple values, but it need not be.  For example,
-
-            (s,d) = (x+y, x-y);
-
-  produces results that are equivalent to the call to the sum_and_diff
-  function.  Another common use of the multiple assignment statement is
-  to swap values:
-
-       (x,y) = (y,x);
-       (a[i], a[j], a[k]) = (a[j], a[k], a[i]);
-
-  If an l-value is omitted from the list, then the corresponding value
-  will be removed fro the stack.  For example,
-
-            (s, ) = sum_and_diff (9, 4);
-
-  assigns the sum of 9 and 4 to s and the difference (9-4) is removed
-  from the stack.  Similarly,
-
-            () = fputs ("good luck", fp);
-
-  causes the return value of the fputs function to be discarded.
-
-  It is possible to create functions that return a [4mvariable[24m [4mnumber[24m of
-  values instead of a [4mfixed[24m [4mnumber[24m.  Although such functions are
-  discouraged, it is easy to cope with them.  Usually, the value at the
-  top of the stack will indicate the actual number of return values.
-  For such functions, the multiple assignment statement cannot directly
-  be used.  To see how such functions can be dealt with, consider the
-  following function:
-
-            define read_line (fp)
+            define plot (x,y)
             {
-               variable line;
-               if (-1 == fgets (&line, fp))
-                 return -1;
-               return (line, 0);
+                .
+                .
+              variable connect_points = qualifier_exists ("connect_points");
+                .
+                .
             }
 
-  This function returns either one or two values, depending upon the
-  return value of fgets.  Such a function may be handled using:
+  Sometimes it is useful for a function to pass the qualifiers that it
+  has received to other functions.  Suppose that the plot function calls
+  draw_symbol to plot the specified symbol at a particular location and
+  that it requires the symbol attibutes to be specified using qualfiers.
+  Then the plot function might look like:
 
-             status = read_line (fp);
-             if (status != -1)
-               {
-                  s = ();
-                  .
-                  .
-               }
+      define plot (x, y)
+      {
+         variable color = qualifier ("color", "black");
+         variable symbol = qualifier ("symbol", "point");
+         variable symbol_size = qualifier ("size", 1.0);
+            .
+            .
+         _for i (0, length(x)-1, 1)
+           draw_symbol (x[i],y[i]
+                        ;color=color, size=symbol_size, symbol=symbol);
+            .
+            .
+      }
 
-  In this example, the [4mlast[24m value returned by read_line is assigned to
-  status and then tested.  If it is non-zero, the second return value is
-  assigned to s.  In particular note the empty set of parenthesis in the
-  assignment to s.  This simply indicates that whatever is on the top of
-  the stack when the statement is executed will be assigned to s.
-  [1m9.8.  Exit-Blocks[0m
+  The problem with this approach is that it does not scale well: the
+  plot function has to be aware of all the qualifiers that the draw_sym-
+  bol function takes and explicitly pass them.  In many cases this can
+  be quite cumbersome and error prone.  Rather it is better to simply
+  pass the qualifiers that were passed to the plot function on to the
+  draw_symbol function.  This may be achieved using the __qualifiers
+  function.  The __qualifiers function returns the list of qualifiers in
+  the form of a structure whose field names are the same as the quali-
+  fier names.  In fact, the use of this function can simplify the imple-
+  mentation of the plot function, which may be coded more simply as
+
+           define plot (x, y)
+           {
+              variable i;
+              _for i (0, length(x)-1, 1)
+                draw_symbol (x[i],y[i] ;; __qualifiers());
+           }
+
+  Note the syntax is slightly slightly different.  The two semicolons
+  indicate that the qualifiers are specfied not as name-value pairs, but
+  as a structure.  Using a single semicolon would have created a quali-
+  fier called __qualifiers, which is not what was desired.
+
+  As alluded to above an added benefit of this approach is that the plot
+  function does not need to know nor care about the qualifiers supported
+  by draw_symbol.  When called as
+
+           plot (x, y; symbol="square", size=2.0, fill=0.8);
+
+  the fill qualifier would get passed to the draw_symbol function to
+  specify the ``fill'' value to be used when creating the symbol.
+
+  [1m9.9.  Exit-Blocks[0m
 
   An [4mexit-block[24m is a set of statements that get executed when a
   functions returns.  They are very useful for cleaning up when a
   function returns via an explicit call to return from deep within a
   function.
-
   An exit-block is created by using the EXIT_BLOCK keyword according to
   the syntax
 
@@ -5434,12 +5572,107 @@
 
   [1mA.  S-Lang 2 Interpreter NEWS[0m
 
-  [1mA.1.  What's new for S-Lang  2[0m
+  [1mA.1.  What's new for S-Lang  2.1[0m
+
+  The next section describes the features that were added to version
+  2.0.  This section is devoted to what's new in version 2.1.  For a
+  much more complete and detailed list of changes, see the changes.txt
+  file that is distributed with the library.
+
+  o   Short circuiting boolean operators || and && have been added to
+     the languange.  The use of orelse and andelse constructs are
+     nolonger necessary nor encouraged.
+
+  o  [4mQualifiers[24m have been added to the language as a convenient and
+     powerful mechanism to pass optional information to functions.
+
+  o  Structure definitions allow embeded assignemnts, e.g,
+
+           s = struct {foo = 3, bar = "hello" };
+
+  o  Comparison expressions such as a<b<c are now interpretered as
+     (a<b)and(b<c).
+
+  o  The ifnot keyword was added as an alternative to !if.  The use of
+     !if has been deprecated.
+
+  o  Looping constructs now support a "then" clause that will get
+     executed if the loop runs to completion, e.g.,
+
+            loop (20)
+              {
+                 if (this ())
+                   break;  % The then clause will NOT get executed
+              }
+            then do_that ();
+
+  Note: then is now a reserved word.
+
+  o  A floating point array of exactly N elements may be created using
+     the form [a:b:#N], where the elements are uniformly spaced and run
+     from a to b, inclusive.
+
+  o  References to array elements and structure fields are now
+     supported, e.g., &A[3], &s.foo.
+
+  o  An exception may be rethrown by calling "throw" without any
+     arguments:
+
+           try { something (); }
+           catch AnyError: { do_this (); throw; }
+
+  The following intrinsic function were added in version 2.1:
+
+     wherenot(x)
+        Equivalent to where (not(x))
+
+     _$(str)
+        Evaluates strings with embedded "dollar" variables, e.g.,
+        _$("$TERM").
+
+     __push_list/__pop_list
+        Push list items onto the stack
+
+     prod(x)
+        Computes the product of an array a[0]*a[1]*...
+
+     minabs(x), maxabs(x)
+        Equivalent to min(abs(x)) and max(abs(x)), resp.
+
+     getpgrp, setgid, getpgid
+        Get and set the process group ids (Unix).
+
+     setsid
+        Create a new session (Unix).
+
+  The following modules were added to version 2.1:
+
+     iconv
+        Performs character-set conversion using the iconv library.
+
+     onig
+        A regular expression module using oniguruma RE library.
+
+  The following library files and functions were add to [1mslsh[22m:
+
+     readascii
+        A flexible and power ascii (as opposed to binary) data file
+        reader.
+
+     cmdopt
+        A set of functions that vastly simplify the parsing of command
+        line options.
+
+  Also a history and completion mechanism was added to the [1mS-Lang[0m
+  readline interface, and as a result, [1mslsh [22mnow supports history and
+  command/file completion.
+
+  [1mA.2.  What's new for S-Lang  2.0[0m
 
   Here is a brief list of some of the new features and improvements in
   [1mS-Lang [22m2.0.
 
-  o  [1mslsh[22m, the generic [1mS-Lang [22minterpreter now supports and interactive
+  o  [1mslsh[22m, the generic [1mS-Lang [22minterpreter, now supports and interactive
      command-line mode with readline support.
 
   o  Native support for Unicode via UTF-8 throughout the library.
@@ -5497,7 +5730,7 @@
 
   See the relevent chapters in in the manual for more information.
 
-  [1mA.2.  Upgrading to S-Lang  2[0m
+  [1mA.3.  Upgrading to S-Lang  2[0m
 
   For the most part [1mS-Lang [22m2 is backwards-compatible with [1mS-Lang [22m1.
   However there are a few important differences that need to be
@@ -5519,6 +5752,7 @@
         in effect.  If you use array indexing with functions that use
         character semantics, then your code may not work properly in
         UTF-8 mode.  For example, one might have used
+
                i = is_substr (a, b);
                if (i) c = a[[0:i-2]];
 
@@ -5575,7 +5809,6 @@
 
      If your code passes the structure as the first argument of the
      method call, e.g.,
-
                (@s.foo)(s, moreargs);
 
      then it may be changed to
@@ -5598,18 +5831,18 @@
 
      should be changed to:
 
-            variable e;
-            try (e)
-              {
-                 do_something ();
-                   .
-                   .
-              }
-            catch RunTimeError:
-              {
-                 cleanup_after_error ();
-                 throw e.error, e.message;
-              }
+                 variable e;
+                 try (e)
+                   {
+                      do_something ();
+                        .
+                        .
+                   }
+                 catch RunTimeError:
+                   {
+                      cleanup_after_error ();
+                      throw e.error, e.message;
+                   }
 
      Code that makes use of EXECUTE_ERROR_BLOCK
 
@@ -5621,17 +5854,17 @@
 
      should be changed to make use of a finally clause:
 
-                 variable e;
-                 try (e)
-                   {
-                      do_something ();
-                        .
-                        .
-                   }
-                 finally
-                   {
-                      cleanup_after_error ();
-                   }
+            variable e;
+            try (e)
+              {
+                 do_something ();
+                   .
+                   .
+              }
+            finally
+              {
+                 cleanup_after_error ();
+              }
 
      It is not possible to emulate the complete semantics of the
      _clear_error function.  However, those semantics are flawed and
@@ -5702,6 +5935,7 @@
         [1mS-Lang [22m2, the behavior of fread with respect to UChar_Type and
         Char_Type types was changed to have the same semantics as the
         other data types.
+
         The upshot is that code that used
 
                   nread = fread (&str, Char_Type, num_wanted, fp)

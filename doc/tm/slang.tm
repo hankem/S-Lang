@@ -18,7 +18,7 @@
 
 \begin{\documentstyle}
 
-\title A Guide to the S-Lang Language
+\title A Guide to the S-Lang Language (v2.1)
 \author John E. Davis, \tt{davis@space.mit.edu}
 \date \__today__
 
@@ -102,7 +102,7 @@
    conditional statements.  The looping constructs include \kw{while},
    \kw{do...while}, \kw{for}, \kw{forever}, \kw{loop}, \kw{foreach},
    and \kw{_for}. The conditional statements include \kw{if},
-   \kw{if-then-else}, and \kw{!if}.
+   \kw{if-then-else}, and \kw{ifnot}.
 
    User defined functions may be defined to return zero, one, or more
    values.  Functions that return zero values are similar to
@@ -219,7 +219,7 @@
 #v-
    declares three variables, \exmp{x}, \exmp{y}, and \exmp{z}.  Note the
    semicolon at the end of the statement.  \em{All \slang statements must
-   end in a semi-colon.}
+   end in a semicolon.}
 
    Unlike compiled languages such as C, it is not necessary to specify
    the data type of a \slang variable.  The data type of a \slang
@@ -1195,16 +1195,16 @@
    The following identifiers are reserved by the language for use as
    keywords:
 #v+
-   and           andelse       break         case          catch
-   continue      define        do            else          ERROR_BLOCK
-   exch          EXIT_BLOCK    finally       _for          for
-   foreach       forever       !if           if            loop
-   mod           not           or            orelse        pop
-   private       public        return        shl           shr
-   static        struct        switch        __tmp         throw
-   try           typedef       USER_BLOCK1   USER_BLOCK2   USER_BLOCK0
-   USER_BLOCK4   USER_BLOCK3   using         variable
-   while         xor
+   and          andelse      break         case          catch 
+   continue     define       do            else          ERROR_BLOCK
+   exch         EXIT_BLOCK   finally       _for          for 
+   foreach      forever      !if           if            ifnot 
+   loop         mod          not           or            orelse 
+   pop          private      public        return        shl 
+   shr          static       struct        switch        __tmp 
+   then         throw        try           typedef       USER_BLOCK0
+   USER_BLOCK1  USER_BLOCK2  USER_BLOCK3   USER_BLOCK4   using
+   variable     while        xor
 #v-
 
 #%}}}
@@ -1220,7 +1220,7 @@
 #v-
    declares three variables, \exmp{x}, \exmp{y}, and \exmp{z}.  This
    is an example of a variable declaration statement, and like all
-   statements, it must end in a semi-colon.
+   statements, it must end in a semicolon.
 
    Variables declared this way are untyped and inherit a type upon
    assignment.  As such, type-checking of function arguments, etc is
@@ -1631,7 +1631,7 @@
 
    Loosely speaking, a \em{statement} is composed of \em{expressions}
    that are grouped according to the syntax or grammar of the language
-   to express a complete computation.  A semi-colon is used to denote
+   to express a complete computation.  A semicolon is used to denote
    the the end of a statement.
 
    A statement that occurs within a function is executed only during
@@ -1820,7 +1820,7 @@
    although the indentation indicates otherwise.  It is important to
    understand the grammar and not be seduced by the indentation!
 
-\sect2{!if}
+\sect2{ifnot}
 
    One often encounters \kw{if} statements similar to
 \begin{tscreen}
@@ -1830,15 +1830,20 @@
 \begin{tscreen}
      if (not(\em{integer-expression})) \em{statement-or-block}
 \end{tscreen}
-   The \kw{!if} statement was added to the language to simplify the
+   The \kw{ifnot} statement was added to the language to simplify the
    handling of such statements.  It obeys the syntax
 \begin{tscreen}
-     !if (\em{integer-expression}) \em{statement-or-block}
+     ifnot (\em{integer-expression}) \em{statement-or-block}
 \end{tscreen}
    and is functionally equivalent to
 \begin{tscreen}
      if (not (\em{expression})) \em{statement-or-block}
 \end{tscreen}
+
+  Note: The \kw{ifnot} keyword was added in version 2.1 and is not
+  supported by earlier versions.  For compatibility with older code,
+  the \kw{!if} keyword can be used, although its use is deprecated in
+  favor of \kw{ifnot}.
 
 \sect2{orelse, andelse}
 
@@ -2275,7 +2280,7 @@
    The specification of such functions is the main subject of this
    chapter.
 
-\sect{Calling Functions}
+\sect{Calling Functions} #%{{{
 
    The most important rule to remember in calling a function is that
    \em{if the function returns a value, do something with it}.
@@ -2331,6 +2336,8 @@
    redeeming feature that it presents a visual reminder that the
    function is returning a value that is not being used.   
 
+#%}}}
+
 \sect{Declaring Functions} #%{{{
 
    Like variables, functions must be declared before they can be used. The
@@ -2365,7 +2372,7 @@
    imposed limits upon the number statements that may occur within a
    \slang function, it is considered poor programming practice if a
    function contains many statements. This notion stems from the
-   belief that a function should have a simple, well defined purpose.
+   belief that a function should have a simple, well-defined purpose.
 
    
 #%}}}
@@ -2441,6 +2448,117 @@
 
 #%}}}
 
+\sect{Returning Values} #%{{{
+
+   As stated earlier, the usual way to return values from a function
+   is via the \kw{return} statement.  This statement has the
+   simple syntax
+\begin{tscreen}
+      return \em{expression-list} ;
+\end{tscreen}
+   where \em{expression-list} is a comma separated list of expressions.
+   If the function does not return any values, the expression list
+   will be empty.  A simple example of a function that can return
+   multiple values (two in this case) is:
+#v+
+        define sum_and_diff (x, y)
+        {
+            variable sum, diff;
+
+            sum = x + y;  diff = x - y;
+            return sum, diff;
+        }
+#v-
+
+#%}}}
+
+\labeled_sect{Multiple Assignment Statement} #%{{{
+
+   In the previous section an example of a function returning two
+   values was given.  That function can also be written somewhat
+   simpler as:
+#v+
+       define sum_and_diff (x, y)
+       {
+          return x + y, x - y;
+       }
+#v-
+   This function may be called using
+#v+
+      (s, d) = sum_and_diff (12, 5);
+#v-
+   After the above line is executed, \exmp{s} will have a value of 17
+   and the value of \exmp{d} will be 7.
+
+   The most general form of the multiple assignment statement is
+#v+
+     ( var_1, var_2, ..., var_n ) = expression;
+#v-
+   Here \exmp{expression} is an arbitrary expression that leaves
+   \exmp{n} items on the stack, and \exmp{var_k} represents an l-value
+   object (permits assignment). The assignment statement removes
+   those values and assigns them to the specified variables.  
+   Usually, \exmp{expression} is a call to a function that returns
+   multiple values, but it need not be.  For example,
+#v+
+     (s,d) = (x+y, x-y);
+#v-
+   produces results that are equivalent to the call to the
+   \exmp{sum_and_diff} function.  Another common use of the multiple
+   assignment statement is to swap values:
+#v+ 
+     (x,y) = (y,x);
+     (a[i], a[j], a[k]) = (a[j], a[k], a[i]);
+#v-
+
+   If an l-value is omitted from the list, then the corresponding
+   value will be removed fro the stack.  For example, 
+#v+
+     (s, ) = sum_and_diff (9, 4);
+#v-
+   assigns the sum of 9 and 4 to \exmp{s} and the
+   difference (\exmp{9-4}) is removed from the stack.  Similarly,
+#v+
+     () = fputs ("good luck", fp); 
+#v-
+   causes the return value of the \ifun{fputs} function to be discarded.
+
+   It is possible to create functions that return a \em{variable
+   number} of values instead of a \em{fixed number}.  Although such
+   functions are discouraged, it is easy to cope with them.  Usually,
+   the value at the top of the stack will indicate the actual number
+   of return values.  For such functions, the multiple assignment
+   statement cannot directly be used.  To see how such functions can
+   be dealt with, consider the following function:
+#v+
+     define read_line (fp)
+     {
+        variable line;
+        if (-1 == fgets (&line, fp))
+          return -1;
+        return (line, 0);
+     }
+#v-
+   This function returns either one or two values, depending upon the
+   return value of \ifun{fgets}.  Such a function may be handled using:
+#v+
+      status = read_line (fp);
+      if (status != -1)
+        {
+           s = ();
+           .
+           .
+        }
+#v-
+   In this example, the \em{last} value returned by \exmp{read_line} is
+   assigned to \exmp{status} and then tested.  If it is non-zero, the
+   second return value is assigned to \exmp{s}.  In particular note the
+   empty set of parenthesis in the assignment to \exmp{s}.  This simply
+   indicates that whatever is on the top of the stack when the
+   statement is executed will be assigned to \exmp{s}.
+
+#%}}}
+
 \labeled_sect{Referencing Variables} #%{{{
 
    One can achieve the effect of passing by reference by using the
@@ -2493,6 +2611,23 @@
 #%}}}
 
 \sect{Functions with a Variable Number of Arguments} #%{{{
+
+  \slang functions may be called with a variable number of arguments.
+  A natural example of such functions is the \ifun{strcat} function,
+  which takes one or more string arguments and returns the
+  concatenated result.  An example of different sort is the
+  \ifun{strtrim} function which moves both leading and trailing
+  whitespace from a string.  In this case, when called with one
+  argument (the string to be ``trimmed''), the characters that are
+  considered to be whitespace are those in the character-set that have
+  the whitespace property (space, tab, newline, ...).  However, when
+  called with two arguments, the second argument may be used to
+  specify the characters that are to be considered as whitespace.  The
+  \ifun{strtrim} function exemplifies a class of variadic functions
+  where the additional arguments are used to pass optional information to
+  the function.  Another more flexible and powerful way of passing
+  optional information is through the use of \em{qualifiers}, which is
+  the subject of the next section.
 
   When a \slang function is called with parameters, those parameters
   are placed on the run-time stack.  The function accesses those
@@ -2631,116 +2766,129 @@
 
 #%}}}
 
-\sect{Returning Values}
+\sect{Qualifiers}
 
-   As stated earlier, the usual way to return values from a function
-   is via the \kw{return} statement.  This statement has the
-   simple syntax
-\begin{tscreen}
-      return \em{expression-list} ;
-\end{tscreen}
-   where \em{expression-list} is a comma separated list of expressions.
-   If the function does not return any values, the expression list
-   will be empty.  A simple example of a function that can return
-   multiple values (two in this case) is:
+  One way to pass optional information to a function is to do so using
+  the variable arguments mechanism described in the previous section.
+  However, a much more powerful mechanism is through the use of
+  \em{qualifiers}, which were added in version 2.1.
+  
+  To illustrate the use of qualifiers, consider a graphics application
+  that defines a function called \exmp{plot} that plots a set of (x,y)
+  values specified as 1-d arrays:
 #v+
-        define sum_and_diff (x, y)
-        {
-            variable sum, diff;
+     plot(x,y);
+#v-
+  Suppose that when called in the above manner, the application will
+  plot the data as black points.  But instead of black points, one
+  might want to plot the data using a red diamond as the plot symbol.
+  It would be silly to have a separate function such as
+  \exmp{plot_red_diamond} for this purpose.  A much better way to
+  achieve this functionality is through the use of qualifiers:
+#v+
+    plot(x,y ; color="red", symbol="diamond");
+#v-
+  Here, a single semicolon is used to separate the argument-list
+  proper (\exmp{x,y}) from the list of qualifiers.  In this case, the
+  qualifiers are ``color'' and ``symbol''.  The order of the
+  qualifiers in unimportant; the function could just as well have been
+  called with the symbol qualifier listed first.
 
-            sum = x + y;  diff = x - y;
-            return sum, diff;
-        }
+  Now consider the implementation of the \exmp{plot} function:
+#v+
+    define plot (x, y)
+    {
+       variable color = qualifier ("color", "black");
+       variable symbol = qualifier ("symbol", "point");
+       variable symbol_size = qualifier ("size", 1.0);
+          .
+          .
+    }
 #v-
+  Note that the qualifiers are not handled in the parameter list;
+  rather they are handled in the function body using the
+  \ifun{qualifier} function, which is used to obtain the value of the
+  qualifier. The second argument to the \ifun{qualifier} function
+  specifies a the default value to be used if the function was not
+  called with the specified qualifier.  Also note that the variable
+  associated with the qualifier need not have the same name as the
+  qualifier.
 
-\labeled_sect{Multiple Assignment Statement} #%{{{
-
-   In the previous section an example of a function returning two
-   values was given.  That function can also be written somewhat
-   simpler as:
+  A qualifier need not have a value--- its mere presence may be used
+  to enable or disable a feature or trigger some action.  For example,
 #v+
-       define sum_and_diff (x, y)
-       {
-          return x + y, x - y;
-       }
+     plot (x, y; connect_points);
 #v-
-   This function may be called using
+  specifies a qualifier called \exmp{connect_points} that indicates
+  that a line should be drawn betweeen the data points.  The presence
+  of such a qualifier can be detected using the
+  \ifun{qualifier_exists} function:
 #v+
-      (s, d) = sum_and_diff (12, 5);
-#v-
-   After the above line is executed, \exmp{s} will have a value of 17
-   and the value of \exmp{d} will be 7.
-
-   The most general form of the multiple assignment statement is
-#v+
-     ( var_1, var_2, ..., var_n ) = expression;
-#v-
-   Here \exmp{expression} is an arbitrary expression that leaves
-   \exmp{n} items on the stack, and \exmp{var_k} represents an l-value
-   object (permits assignment). The assignment statement removes
-   those values and assigns them to the specified variables.  
-   Usually, \exmp{expression} is a call to a function that returns
-   multiple values, but it need not be.  For example,
-#v+
-     (s,d) = (x+y, x-y);
-#v-
-   produces results that are equivalent to the call to the
-   \exmp{sum_and_diff} function.  Another common use of the multiple
-   assignment statement is to swap values:
-#v+ 
-     (x,y) = (y,x);
-     (a[i], a[j], a[k]) = (a[j], a[k], a[i]);
-#v-
-
-   If an l-value is omitted from the list, then the corresponding
-   value will be removed fro the stack.  For example, 
-#v+
-     (s, ) = sum_and_diff (9, 4);
-#v-
-   assigns the sum of 9 and 4 to \exmp{s} and the
-   difference (\exmp{9-4}) is removed from the stack.  Similarly,
-#v+
-     () = fputs ("good luck", fp); 
-#v-
-   causes the return value of the \ifun{fputs} function to be discarded.
-
-   It is possible to create functions that return a \em{variable
-   number} of values instead of a \em{fixed number}.  Although such
-   functions are discouraged, it is easy to cope with them.  Usually,
-   the value at the top of the stack will indicate the actual number
-   of return values.  For such functions, the multiple assignment
-   statement cannot directly be used.  To see how such functions can
-   be dealt with, consider the following function:
-#v+
-     define read_line (fp)
-     {
-        variable line;
-        if (-1 == fgets (&line, fp))
-          return -1;
-        return (line, 0);
+     define plot (x,y)
+     { 
+         .
+         .
+       variable connect_points = qualifier_exists ("connect_points");
+         .
+         .
      }
 #v-
-   This function returns either one or two values, depending upon the
-   return value of \ifun{fgets}.  Such a function may be handled using:
+
+  Sometimes it is useful for a function to pass the qualifiers that it
+  has received to other functions.  Suppose that the \exmp{plot}
+  function calls \exmp{draw_symbol} to plot the specified symbol at a
+  particular location and that it requires the symbol attibutes to be
+  specified using qualfiers.  Then the plot function might look like:
 #v+
-      status = read_line (fp);
-      if (status != -1)
-        {
-           s = ();
-           .
-           .
-        }
+    define plot (x, y)
+    {
+       variable color = qualifier ("color", "black");
+       variable symbol = qualifier ("symbol", "point");
+       variable symbol_size = qualifier ("size", 1.0);
+          .
+          .
+       _for i (0, length(x)-1, 1)
+         draw_symbol (x[i],y[i]
+                      ;color=color, size=symbol_size, symbol=symbol);
+          .
+          .
+    }
 #v-
-   In this example, the \em{last} value returned by \exmp{read_line} is
-   assigned to \exmp{status} and then tested.  If it is non-zero, the
-   second return value is assigned to \exmp{s}.  In particular note the
-   empty set of parenthesis in the assignment to \exmp{s}.  This simply
-   indicates that whatever is on the top of the stack when the
-   statement is executed will be assigned to \exmp{s}.
+  The problem with this approach is that it does not scale well: the
+  \exmp{plot} function has to be aware of all the qualifiers that the
+  \exmp{draw_symbol} function takes and explicitly pass them.  In
+  many cases this can be quite cumbersome and error prone.  Rather it
+  is better to simply pass the qualifiers that were passed to the plot
+  function on to the \exmp{draw_symbol} function.  This may be achieved
+  using the \ifun{__qualifiers} function.  The \ifun{__qualifiers}
+  function returns the list of qualifiers in the form of a structure
+  whose field names are the same as the qualifier names.  In fact, the
+  use of this function can simplify the implementation of the
+  \exmp{plot} function, which may be coded more simply as
+#v+
+    define plot (x, y)
+    {
+       variable i;
+       _for i (0, length(x)-1, 1)
+         draw_symbol (x[i],y[i] ;; __qualifiers());
+    }
+#v-
+  Note the syntax is slightly slightly different.  The two semicolons
+  indicate that the qualifiers are specfied not as name-value pairs,
+  but as a structure.  Using a single semicolon would have created a
+  qualifier called \exmp{__qualifiers}, which is not what was desired.
 
-#%}}}
+  As alluded to above an added benefit of this approach is that the
+  \exmp{plot} function does not need to know nor care about the
+  qualifiers supported by \exmp{draw_symbol}.  When called as
+#v+
+    plot (x, y; symbol="square", size=2.0, fill=0.8);
+#v-
+  the \exmp{fill} qualifier would get passed to the \exmp{draw_symbol}
+  function to specify the ``fill'' value to be used when creating
+  the symbol.
 
-\sect{Exit-Blocks}
+\sect{Exit-Blocks} #%{{{
 
    An \em{exit-block} is a set of statements that get executed when a
    functions returns.  They are very useful for cleaning up when a
@@ -2794,6 +2942,9 @@
    second exit-block would get executed.  This example also
    illustrates that it is possible to explicitly return from an
    exit-block, but nested exit-blocks are illegal.
+
+
+#%}}}
 
 #%}}}
 

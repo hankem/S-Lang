@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20101
-#define SLANG_VERSION_STRING "pre2.1.1-14"
+#define SLANG_VERSION_STRING "pre2.1.1-18"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -839,6 +839,7 @@ SL_EXTERN void SLang_inc_mmt (SLang_MMT_Type *);
 typedef int SLindex_Type;
 typedef unsigned int SLuindex_Type;
 #define SLANG_ARRAY_INDEX_TYPE SLANG_INT_TYPE
+extern int SLang_pop_array_index (SLindex_Type *);
 typedef struct _pSLang_Array_Type
 {
    SLtype data_type;

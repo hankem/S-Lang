@@ -99,6 +99,21 @@ readascii
  Here, `%*s' indicates that the field is to be parsed as a
  string, but not assigned to a variable.
 
+ Consider the task of reading columns from a file called
+ `books.dat' that contain quoted strings such as:
+
+     # Year  Author Title
+     "1605" "Miguel de Cervantes"  "Don Quixote"
+     "1885" "Mark Twain" "The Adventures of Huckleberry Finn"
+     "1955" "Vladimir Nabokov" "Lolita"
+
+ Such a file may be read using
+
+     n = readascii ("books.dat", &year, &author, &title;
+                    format="\"%[^\"]\" \"%[^\"]\" \"%[^\"]\"");
+
+
+
  NOTES
  This current version of this function does not handle missing data.
 

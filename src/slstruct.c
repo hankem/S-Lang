@@ -1856,16 +1856,26 @@ int SLang_pop_cstruct (VOID_STAR cs, SLang_CStruct_Field_Type *cfields)
 
    while (NULL != (field_name = cfield->field_name))
      {
-	_pSLstruct_Field_Type *f;
-	SLang_Class_Type *cl;
+	if (cfield->read_only == 0)
+	  {
+	     _pSLstruct_Field_Type *f;
+	     SLang_Class_Type *cl;
+	     VOID_STAR addr = (VOID_STAR) (cs_addr + cfield->offset);
 
-	if ((cfield->read_only == 0)
-	    && ((NULL == (f = pop_field (s, field_name, find_field_via_strcmp)))
-		|| (-1 == _pSLpush_slang_obj (&f->obj))
-		|| (NULL == (cl = _pSLclass_get_class (cfield->type)))
-		|| (-1 == (*cl->cl_apop)(cfield->type, (VOID_STAR) (cs_addr + cfield->offset)))))
-	  goto return_error;
-
+	     if ((NULL == (f = pop_field (s, field_name, find_field_via_strcmp)))
+		 || (-1 == _pSLpush_slang_obj (&f->obj)))
+	       goto return_error;
+	
+	     if (cfield->type == SLANG_ARRAY_TYPE)
+	       {
+		  if (-1 == SLang_pop_array ((SLang_Array_Type **)addr, 1))
+		    goto return_error;
+	       }
+	     else if ((NULL == (cl = _pSLclass_get_class (cfield->type)))
+		      || (-1 == (*cl->cl_apop)(cfield->type, addr)))
+	       goto return_error;
+	  }
+	
 	cfield++;
      }
 

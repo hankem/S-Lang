@@ -675,6 +675,32 @@ int SLang_pop_int (int *i)
    return 0;
 }
 
+_INLINE_
+int SLang_pop_array_index (SLindex_Type *i)
+{
+   SLang_Object_Type *y;
+   SLang_Object_Type obj;
+
+   y = Stack_Pointer;
+   if (y == Run_Stack)
+     return pop_object (&obj);	       /* let it fail */
+   y--;
+   if (y->data_type == SLANG_ARRAY_INDEX_TYPE)
+     {
+	*i = y->v.int_val;
+	Stack_Pointer = y;
+	return 0;
+     }
+   if (-1 == _typecast_object_to_type (y, &obj, SLANG_ARRAY_INDEX_TYPE, 0))
+     {
+	Stack_Pointer = y;
+	return -1;
+     }
+   *i = obj.v.index_val;
+   Stack_Pointer = y;
+   return 0;
+}
+
 _INLINE_ static int pop_object_of_type (SLtype type, SLang_Object_Type *obj,
 					int allow_arrays)
 {

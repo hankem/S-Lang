@@ -976,7 +976,7 @@ convert_nasty_index_objs (SLang_Array_Type *at,
 #if SLANG_ARRAY_INDEX_TYPE != SLANG_INT_TYPE
 	else if (obj->data_type == SLANG_INT_TYPE)
 	  {
-	     range_buf [i] = obj->v.int_val;
+	     range_buf [i] = obj->v.index_val;
 	     max_dims [i] = 1;
 	     index_data[i] = range_buf + i;
 	     is_dim_array[i] = 0;
@@ -2769,11 +2769,11 @@ int _pSLarray_inline_array (void)
 	if (NULL == (at = SLang_create_array (type, 0, NULL, &icount, 1)))
 	  return -1;
 
-	index_obj.data_type = SLANG_INT_TYPE;
+	index_obj.data_type = SLANG_ARRAY_INDEX_TYPE;
 	while (count != 0)
 	  {
 	     count--;
-	     index_obj.v.int_val = (int) count;
+	     index_obj.v.index_val = count;
 	     if (-1 == aput_from_indices (at, &index_obj, 1))
 	       {
 		  SLang_free_array (at);
@@ -3121,7 +3121,7 @@ static int pop_bool_array_and_start (int nargs, SLang_Array_Type **atp, SLindex_
 
    if (nargs == 2)
      {
-	if (-1 == SLang_pop_int (&istart))
+	if (-1 == SLang_pop_array_index (&istart))
 	  return -1;
      }
 

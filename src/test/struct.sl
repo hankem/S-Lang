@@ -98,7 +98,7 @@ if (_eqs (T,S))
   failed ("_eqs(T,S) for S and T different");
 
 T = TT[3];
-static variable i = where (T == T[2]);
+private variable i = where (T == T[2]);
 if (length (i) != 1)
   failed ("where on array of TT, found length=%d", length(i));
 
@@ -110,7 +110,7 @@ if ((typeof (S.h) != Short_Type)
     or (typeof (S.b) != Char_Type))
   failed ("get_c_struct field types");
 
-static define print_struct(s)
+private define print_struct(s)
 {
    foreach (get_struct_field_names (s))
      {
@@ -163,12 +163,12 @@ if ((not __is_same(S.a, T.a))
     or (T.ro_str != "read-only"))
   failed ("C Struct");
 
-static define count_args ()
+private define count_args ()
 {
    if (_NARGS != 0)
      failed ("foreach using with NULL");
 }
-static define test_foreach_using_with_null (s)
+private define test_foreach_using_with_null (s)
 {
    foreach (s) using ("next")
      {
@@ -208,7 +208,7 @@ typedef struct
 }
 Vector_Type;
 
-static define vector (a, b, c)
+private define vector (a, b, c)
 {
    variable v = @Vector_Type;
    v.x = a;
@@ -217,15 +217,15 @@ static define vector (a, b, c)
    return v;
 }
 
-static define vector_sqr (v)
+private define vector_sqr (v)
 {
    return v.x^2 + v.y^2 + v.z^2;
 }
-static define vector_abs (v)
+private define vector_abs (v)
 {
    return sqrt (vector_sqr (v));
 }
-static define vector_chs (v)
+private define vector_chs (v)
 {
    v = @v;
    v.x = -v.x;
@@ -238,7 +238,7 @@ __add_unary ("-", Vector_Type, &vector_chs, Vector_Type);
 __add_unary ("abs", Double_Type, &vector_abs, Vector_Type);
 __add_unary ("sqr", Double_Type, &vector_sqr, Vector_Type);
 
-static define vector_plus (v1, v2)
+private define vector_plus (v1, v2)
 {
    variable v = @Vector_Type;
    v.x = v1.x + v2.x;
@@ -248,7 +248,7 @@ static define vector_plus (v1, v2)
 }
 __add_binary ("+", Vector_Type, &vector_plus, Vector_Type, Vector_Type);
 
-static define vector_minus (v1, v2)
+private define vector_minus (v1, v2)
 {
    variable v = @Vector_Type;
    v.x = v1.x - v2.x;
@@ -258,7 +258,7 @@ static define vector_minus (v1, v2)
 }
 __add_binary ("-", Vector_Type, &vector_minus, Vector_Type, Vector_Type);
 
-static define scalar_vector_mul (a, u)
+private define scalar_vector_mul (a, u)
 {
    variable v = @Vector_Type;
    v.x = a*u.x;
@@ -268,13 +268,13 @@ static define scalar_vector_mul (a, u)
 }
 __add_binary ("*", Vector_Type, &scalar_vector_mul, Any_Type, Vector_Type);
 
-static define vector_scalar_mul (v, a)
+private define vector_scalar_mul (v, a)
 {
    return scalar_vector_mul (a,v);
 }
 __add_binary ("*", Vector_Type, &vector_scalar_mul, Vector_Type, Any_Type);
 
-static define vector_eqs (a,b)
+private define vector_eqs (a,b)
 {
    return ((a.x == b.x)
 	   and (a.y == b.y)
@@ -282,13 +282,13 @@ static define vector_eqs (a,b)
 }
 __add_binary ("==", Char_Type, &vector_eqs, Vector_Type, Vector_Type);
 
-static define vector_neqs (a,b)
+private define vector_neqs (a,b)
 {
    return not vector_eqs (a, b);
 }
 __add_binary ("!=", Char_Type, &vector_neqs, Vector_Type, Vector_Type);
 
-static define vector_string (a)
+private define vector_string (a)
 {
    if (_NARGS != 1)
      failed ("__add_string: _NARGS!=1");
@@ -296,7 +296,7 @@ static define vector_string (a)
 }
 __add_string (Vector_Type, &vector_string);
 
-static variable X = vector (1,2,3);
+private variable X = vector (1,2,3);
 
 if (not vector_eqs (-X, vector_chs (X)))
   failed ("Vector chs(X)");
@@ -312,7 +312,7 @@ if (vector_string (X) != string (X))
 
 
 % test binary
-static variable Y = vector (4, 5, 6);
+private variable Y = vector (4, 5, 6);
 
 if (X == X) ; else failed ("Vector == Vector");
 if (X == Y) failed ("Vector X == Vector Y");
@@ -358,7 +358,7 @@ Y = (X == X);
 if (length (where (Y != 1)))
   failed ("X == X");
 
-static define test_duplicate_fields (fields, isok)
+private define test_duplicate_fields (fields, isok)
 {
    try
      {
