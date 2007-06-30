@@ -93,13 +93,14 @@ API News
 ========
 
   Although not new I feel that this point should be stressed now
-  because it was not emphasized earlier:  The SLarray_* functions that
+  because it was not emphasized earlier: The SLarray_* functions that
   deal with indices or sizes use `SLindex_Type' instead of `int'.
   Currently, `SLindex_Type' is typedefed to be an `int', but this will
   change in a future version.  So for future compatibility, use
   `SLindex_Type' instead of `int' in functions that deal with slang
-  arrays.  See the array-specific examples in the documentation for
-  more information.
+  arrays.  Similarly, instead of using SLang_pop_int for obtaining an
+  array index, use SLang_pop_array_index.  See the array-specific
+  examples in the documentation for more information.
 
   There have been significant enhancements to the slang readline
   interface.  The interface has been opened up to the interpreter
@@ -136,6 +137,9 @@ slsh enhancements
   
   struct_filter and struct_combine defined in structfuns.sl have been
   made more flxible.  See their documentation for more information.
+  
+  A new function called readascii may be used for reading
+  non-binary (or so-called "ascii") data files.
 
 New modules
 ===========

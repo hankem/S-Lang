@@ -33,6 +33,9 @@ Changes since 2.1.0
     array indices.  This new symbol is versioned at 2.1.1.
 18. src/slstruct.c: SLang_pop_cstruct will now force SLang_Array_Type
     objects to linear ones.
+19. ./NEWS: Updated
+20. slsh/lib/test_readascii.sl: Changed the "list" qualifier to
+    "as_list".
 
 {{{ Previous Versions
 
