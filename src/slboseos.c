@@ -230,7 +230,7 @@ static void set_debug_hook (SLang_Name_Type *deb)
 /* int _pSLcall_debug_hook (char *file, int line, char *funct) */
 int _pSLcall_debug_hook (char *file, int line)
 {
-   int status, err;
+   int status = 0, err;
 
    if (Debug_Hook == NULL)
      return 0;
