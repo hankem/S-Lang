@@ -1,4 +1,9 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.1.1
+1. slsh/lib/readascii.sl: Typo in the usage message corrected.
+2. autoconf/aclocal.m4: Fixed elf link problem on freebsd (Renato
+   Botelho)
+
 Changes since 2.1.0
 1. slsh/lib/print.sl: Only the first element of arrays such as
    Float_Type[1,1,1,10] were getting printed.

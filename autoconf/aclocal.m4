@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.1.11: Fixed elf linking on freebsd (Renato Botelho (garga at freebsd, org)
 dnl# Version 0.1.10: rpath support for netbsd
 dnl# Version 0.1.9: When searching for libs, use dylib on darwin
 dnl# Version 0.1.8: Add rpath support for OpenBSD
@@ -638,14 +639,14 @@ case "$host_os" in
      ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).dylib"
      ;;
   *freebsd* )
-    ELFLIB_MAJOR_MINOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION)"
     ELF_CC="\$(CC)"
     ELF_CFLAGS="\$(CFLAGS) -fPIC"
-    if test "X$PORTOBJFORMAT" = "Xelf" ; then
-      ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-soname,\$(ELFLIB_MAJOR)"
-    else
-      ELF_LINK="ld -Bshareable -x"
-    fi
+    #if test "X$PORTOBJFORMAT" = "Xelf" ; then
+    #  ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-soname,\$(ELFLIB_MAJOR)"
+    #else
+    #  ELF_LINK="ld -Bshareable -x"
+    #fi
+    ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-soname,\$(ELFLIB_MAJOR)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm"
     CC_SHARED="\$(CC) \$(CFLAGS) -shared -fPIC"
     ;;

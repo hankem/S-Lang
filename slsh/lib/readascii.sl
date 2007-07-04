@@ -23,7 +23,7 @@ define readascii ()
      {
 	usage ("nrows = %s (file, &a1,...; qualifiers);\nQualifiers:\n" 
 	       + "nrows=int, ncols=int, format=string, skip=int, maxlines=int, delim=string\n"
-	       + "size=int, dsize=int, stop_on_mismatch, lastline=&var lastlinenum=&var\n",
+	       + "size=int, dsize=int, stop_on_mismatch, lastline=&var lastlinenum=&var\n"
 	       + "type=string, cols=array, comment=string, as_list\n",
 	       _function_name);
      }
