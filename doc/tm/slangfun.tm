@@ -42,7 +42,7 @@
 \begin{\documentstyle}
 
 \title S-Lang Run-Time Library Reference: Version 2.0.5
-\author John E. Davis, \tt{davis@space.mit.edu}
+\author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 
 \toc

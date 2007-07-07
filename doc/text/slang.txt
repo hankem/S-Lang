@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.1)
-  John E. Davis, davis@space.mit.edu
-  Jun 26, 2007
+  John E. Davis, jed@jedsoft.org
+  Jul 6, 2007
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -9,13 +9,14 @@
   1.1. A Brief History of S-Lang
   1.2. Acknowledgements
   2. Introduction
-  2.1. Language Features
-  2.2. Data Types and Operators
-  2.3. Statements and Functions
-  2.4. Error Handling
-  2.5. Run-Time Library
-  2.6. Input/Output
-  2.7. Obtaining more information about S-Lang
+  2.1. slsh -- The S-Lang  shell
+  2.2. Language Features
+  2.3. Data Types and Operators
+  2.4. Statements and Functions
+  2.5. Error Handling
+  2.6. Run-Time Library
+  2.7. Input/Output
+  2.8. Obtaining more information about S-Lang
   3. Overview of the Language
   3.1. Variables and Functions
   3.2. Qualifiers
@@ -120,15 +121,18 @@
   18.2. POSIX I/O
   18.3. Advanced I/O techniques
   18.3.1. Example: Reading /var/log/wtmp
-  19. Debugging
-  19.1. Tracebacks
-  19.2. Using the sldb debugger
-  20. Profiling
-  20.1. Introduction
-  20.2. Using the profiler
-  21. Regular Expressions
-  21.1. S-Lang  RE Syntax
-  21.2. Differences between S-Lang  and egrep REs
+  19. slsh
+  19.1. Running slsh
+  19.2. Command line processing
+  20. Debugging
+  20.1. Tracebacks
+  20.2. Using the sldb debugger
+  21. Profiling
+  21.1. Introduction
+  21.2. Using the profiler
+  22. Regular Expressions
+  22.1. S-Lang  RE Syntax
+  22.2. Differences between S-Lang  and egrep REs
   A. S-Lang 2 Interpreter NEWS
   A.1. What's new for S-Lang  2.1
   A.2. What's new for S-Lang  2.0
@@ -227,21 +231,90 @@
   Examples of applications that take advantage of the interpreter in
   this way include the [1mjed [22meditor and the [1mslrn [22mnewsreader.
 
+  [1m2.1.  slsh -- The S-Lang  shell[0m
+
   The [1mS-Lang [22mdistribution contains a standalone application called [1mslsh[0m
   that may be used for writing [1mS-Lang [22mscripts and full-blown [1mS-Lang[0m
   based applications.  For example, the author has used [1mslsh [22mto create a
   mediacenter for his home entertainment system that integrates internet
   radio and tv, podcasts, digital pictures and video, CDs, and so forth.
-  [1mslsh [22malso may be used interactively to evaluate [1mS-Lang [22mexpressions and
-  act as a sophisticated calculator.  In fact, as you are reading this
-  manual, it is recommended that you use [1mslsh [22min its interactive mode as
-  an aid to understanding the language.  Moreover [1mslsh [22mcontains a number
-  of useful routines in its standard library that may be used by other
-  programs that embed the interpreter.  It is important to point out
-  that some binary distributions package [1mslsh [22mseparately from the [1mS-Lang[0m
-  library, and as such must be installed separately.
+  The use of [1mslsh [22min such non-interactive modes is discussed in the
+  chapter on ``slsh''.
 
-  [1m2.1.  Language Features[0m
+  [1mslsh [22malso may be used interactively and has full access to all
+  components of the [1mS-Lang [22minterpreter.  With features such as
+  customizable command-line editing, history recall and completion, [1mslsh[0m
+  is a convenient environment for learning and using the language.  In
+  fact, as you are reading this manual, it is recommended that you use
+  [1mslsh [22min its interactive mode as an aid to understanding the language.
+
+  While a standard [1mS-Lang [22minstallation includes [1mslsh[22m, some some binary
+  distributions package [1mslsh [22mseparately from the [1mS-Lang [22mlibrary, and as
+  such must be installed separately.  For example, on Debian Linux it
+  can be installed via
+
+           apt-get install slsh
+
+  When called without arguments, [1mslsh [22mwill start in interactive mode by
+  issuing a (customizable) slsh> prompt and waits for input.  While most
+  of the time one would enter [1mS-Lang [22mstatements at the prompt, [1mslsh [22malso
+  accepts some other commands, most notably help:
+
+          slsh> help
+          Most commands must end in a semi-colon.
+          If a command begins with '!', then the command is passed to the shell.
+          Examples: !ls, !pwd, !cd foo, ...
+          Special commands:
+            help <help-topic>
+            apropos <something>
+            start_log( <optional-log-file> );
+              start logging input to a file (default is slsh.log)
+            stop_log();
+              stop logging input
+            save_input (<optional-file>);
+              save all previous input to a file (default: slsh.log)
+            quit;
+
+  Although the language normally requires variables to be declared
+  before use, it is not necessary to do so when using [1mslsh[0m
+  interactively.  For example, in this document you will see examples
+  such as
+
+           variable x = [1:10];
+           variable y = sin (x^2);
+
+  At the [1mslsh [22mcommand line, the use of the variable keyword in such
+  statements is optional:
+
+           slsh> x = [1:10]; y = sin(x^2);
+
+  As the above example suggests, one use of [1mslsh [22mis as a sophisticated
+  calculator.  For example,
+
+           slsh> sin (1.24) + 3*cos (1.3*PI);
+           -0.817572
+
+  This is especially true when combined with modules, e.g.,
+
+           slsh> require ("fits");
+           slsh> require ("histogram");
+           slsh> tbl = fit_read_table ("evt1a.fits");
+           slsh> engrid = [min(tbl.energy):max(energy):#1024];
+           slsh> spectrum = hist1d (tbl.energy[where(tbl.status==0)], engrid);
+
+  In this example, the fits module was used to read data from a binary
+  file called evt1a.fits, and the histogram module was used to bin the
+  data in the energy column into a histogram to create a spectrum.  The
+  expression involving where filters the data by accepting only those
+  energy values whose status is set to 0.  The fits and histogram mod-
+  ules are not distributed with [1mS-Lang [22mbut may be obtained separately--
+  see http://www.jedsoft.org/slang/modules/ for links to them.  For more
+  information about modules, see the ``Modules'' chapter in this docu-
+  ment.
+
+  For more information about using [1mslsh[22m, see the chapter on ``slsh''.
+
+  [1m2.2.  Language Features[0m
 
   The language features both global and local variables, branching and
   looping constructs, user-defined functions, structures, datatypes, and
@@ -249,7 +322,7 @@
   concise array syntax rivals that of commercial array-based numerical
   computing environments.
 
-  [1m2.2.  Data Types and Operators[0m
+  [1m2.3.  Data Types and Operators[0m
 
   The language provides built-in support for string, integer (signed and
   unsigned long and short), double precision floating point, and double
@@ -276,7 +349,7 @@
   This permits one to do vector operations without explicitly looping
   over the array indices.
 
-  [1m2.3.  Statements and Functions[0m
+  [1m2.4.  Statements and Functions[0m
 
   The [1mS-Lang [22mlanguage supports several types of looping constructs and
   conditional statements.  The looping constructs include while,
@@ -302,7 +375,7 @@
   stem from the C language and should be quite familiar to any one
   familiar with C.
 
-  [1m2.4.  Error Handling[0m
+  [1m2.5.  Error Handling[0m
 
   The [1mS-Lang [22mlanguage has a try/throw/catch/finally exception model
   whose semantics are similar to that of other languages.  Users may
@@ -310,7 +383,7 @@
   exceptions.  The ERROR_BLOCK based exception model of [1mS-Lang [22m1.x is
   still supported but deprecated.
 
-  [1m2.5.  Run-Time Library[0m
+  [1m2.6.  Run-Time Library[0m
 
   Functions that compose the [1mS-Lang [22mrun-time library are called
   [4mintrinsics[24m.  Examples of [1mS-Lang [22mintrinsic functions available to every
@@ -334,7 +407,7 @@
   are called [1mmodules[22m.  A separate chapter of this manual is devoted to
   this important feature.
 
-  [1m2.6.  Input/Output[0m
+  [1m2.7.  Input/Output[0m
 
   The language supports C-like stdio input/output functions such as
   fopen, fgets, fputs, and fclose.  In addition it provides two
@@ -343,7 +416,7 @@
   I/O mechanisms, e.g., the [1mjed [22meditor supports I/O to files via the
   editor's buffers.
 
-  [1m2.7.  Obtaining more information about S-Lang[0m
+  [1m2.8.  Obtaining more information about S-Lang[0m
 
   Comprehensive information about the library may be obtained via the
   World Wide Web from http://www.jedsoft.org/slang/.  In particular see
@@ -5092,7 +5165,179 @@
   the return values from fprintf and fclose were handled by discarding
   them.
 
-  [1m19.  Debugging[0m
+  [1m19.  slsh[0m
+
+  [1mslsh[22m, also known as the S-Lang shell, is an application that is
+  included in the stock [1mS-Lang [22mdistribution.  As some binary
+  distributions include [1mslsh  [22mas a separate package it must be installed
+  separately, e.g.,
+
+           apt-get install slsh
+
+  on Debian Linux systems.  The use of [1mslsh [22min its interactive mode was
+  discussed briefly in the ``Introduction''.  This chapter concentrates
+  on the use of [1mslsh [22mfor writing executable [1mS-Lang [22mscripts.
+
+  [1m19.1.  Running slsh[0m
+
+  When run the --help command-line argument, [1mslsh [22mdisplays a brief usage
+  message:
+
+          # slsh --help
+          Usage: slsh [OPTIONS] [-|file [args...]]
+           --help           Print this help
+           --version        Show slsh version information
+           -e string        Execute 'string' as S-Lang code
+           -g               Compile with debugging code, tracebacks, etc
+           -n               Don't load personal init file
+           --init file      Use this file instead of ~/.slshrc
+           --no-readline    Do not use readline
+           -i               Force interactive input
+           -t               Test mode.  If slsh_main exists, do not call it
+           -v               Show verbose loading messages
+           -Dname           Define "name" as a preprocessor symbol
+
+            Note: - and -i are mutually exclusive
+
+          Default search path: /usr/local/share/slsh
+
+  When started with no arguments, [1mslsh [22mwill start in interactive mode
+  and take input from the terminal.  As the usage message indicates [1mslsh[0m
+  loads a personal initialization file called .slshrc (on non-Unix
+  systems, this file is called slsh.rc).  The contents of this file must
+  be valid [1mS-Lang [22mcode, but are otherwise arbitrary.  One use of this
+  file is to define commonly used functions and to setup personal search
+  paths.
+
+  [1mslsh [22mwill run in non-interactive mode when started with a file (also
+  known as a ``script'') as its first (non-option) command-line
+  argument.  The rest of the arguments on the command line serve as
+  arguments for the script.  The next section deals with the use of the
+  cmdopt routines for parsing those arguments.
+
+  [1mslsh [22mwill read the script and feed it to the [1mS-Lang [22minterpreter for
+  execution.  If the script defines a public function called slsh_main,
+  then [1mslsh [22mwill call it after the script has been loaded.  In this
+  sense, slsh_main is analagous to main in [1mC [22mor [1mC++[22m.
+
+  A typical [1mslsh [22mscript is be structured as
+
+          #!/usr/bin/env slsh
+             .
+             .
+          define slsh_main ()
+          {
+             .
+             .
+          }
+
+  The first line of the script Unix-specific and should be familiar to
+  Unix users.   Typically, the code before slsh_main will load any
+  required modules or packages, and define other functions to be used by
+  the script.
+
+  Although the use of slsh_main is not required, its use is strongly
+  urged for several reasons.  In addition to lending uniformity to [1mS-[0m
+  [1mLang [22mscripts, slsh_main is well supported by the [1mS-Lang [22mdebugger
+  ([1msldb[22m) and the [1mS-Lang [22mprofiler ([1mslprof[22m), which look for slsh_main as a
+  starting point for script execution.  Also as scripts necessarily do
+  something (otherwise they have no use), [1mslsh[22m's -t command-line option
+  may be used to turn off the automatic execution of slsh_main.  This
+  allows the syntax of the entire script to be checked for errors
+  instead of running it.
+
+  [1m19.2.  Command line processing[0m
+
+  The script's command-line arguments are availble to it via the __argc
+  and __argv intrinsic variables.  Any optional arguments represented by
+  these variables may be parsed using [1mslsh[22m's [1mcmdopt [22mroutines.
+
+  As a useful illustration, consider the script that the author uses to
+  rip tracks from CDs to OGG encoded files.  The name of the script is
+  cd2ogg.sl.  Running the script without arguments causes it to issue a
+  usage message:
+
+          Usage: cd2ogg.sl [options] device
+          Options:
+           --help                 This help
+           --work DIR             Use DIR as working dir [/tmp/29848]
+           --root DIR             Use DIR/GENRE as root for final output [/data/CDs]
+           --genre GENRE          Use GENRE for output dir
+           --no-rip               Skip rip stage
+           --no-normalize         Skip normalizing stage
+           --no-encode            Don't encode to ogg
+           --albuminfo PERFORMER/TITLE
+                                  Use PERFORMER/TITLE if audio.cddb is absent
+
+  As the message shows, some of the options require an argument while
+  others do not.  The cd2ogg.sl script looks like:
+
+     #!/usr/bin/env slsh
+     require ("cmdopt");
+        .
+        .
+     private define exit_usage ()
+     {
+        () = fprintf (stderr, "Usage: %s [options] device\n",
+                      path_basename (__argv[0]));
+        () = fprintf (stderr, "Options:\n");
+           .
+           .
+        exit (1);
+     }
+
+     private define parse_album_info (albuminfo)
+     {
+        ...
+     }
+
+     define slsh_main ()
+     {
+        variable genre = NULL;
+        variable no_rip = 0;
+        variable no_normalize = 0;
+        variable no_encode = 0;
+
+        variable opts = cmdopt_new ();
+        opts.add ("help", &exit_usage);
+        opts.add ("device", &CD_Device; type="str");
+        opts.add ("work", &Work_Dir; type="str");
+        opts.add ("root", &Root_Dir; type="str");
+        opts.add ("genre", &genre; type="str");
+        opts.add ("albuminfo", &parse_album_info; type="str");
+        opts.add ("no-normalize", &no_normalize);
+        opts.add ("no-encode", &no_encode);
+        variable i = opts.process (__argv, 1);
+        if (i + 1 != __argc)
+          exit_usage ();
+        CD_Device = __argv[i];
+           .
+           .
+     }
+
+  There are several points that one should take from the above example.
+  First, to use the cmdopt interface it is necessary to load it.  This
+  is accomplished using the require statement. Second, the above example
+  uses cmdopt's object-oriented style interface through the use of the
+  add and process methods of the cmdopt object created by the call to
+  cmdopt_new. Third, two of the command line options make use of
+  callback functions: the exit_usage function will get called when
+  --help appears on the command line, and the parse_album_info function
+  will get called to handle the --albuminfo option.  Options such as
+  --no-encode do not take a value and the presence of such an option on
+  the command line causes the variable associated with the option to be
+  set to 1.  Other options such as --genre will cause the variable
+  associated with them to be set of the value specified on the command-
+  line.  Finally, the process method returns the index of __argv that
+  corresponds to ``non-option'' argument.  In this case, for proper
+  usage of the script, that argument would correspond to device
+  representing the CD drive.
+
+  For more information about the cmdopt interface, see the documentation
+  for cmdopt_add:
+           slsh> help cmdopt_add
+
+  [1m20.  Debugging[0m
 
   There are several ways to debug a [1mS-Lang [22mscript.  When the interpreter
   encounters an uncaught exception, it can generate a traceback report
@@ -5104,7 +5349,7 @@
   the code to get some idea about what is going on, it may be simpler to
   use the interactive debugger.
 
-  [1m19.1.  Tracebacks[0m
+  [1m20.1.  Tracebacks[0m
 
   When the value of the _traceback variable is non-zero, the interpreter
   will generate a traceback report when it encounters an error.  This
@@ -5145,7 +5390,7 @@
   called "not_found" had a Char_Type value of 1 at the time of the
   error.
 
-  [1m19.2.  Using the sldb debugger[0m
+  [1m20.2.  Using the sldb debugger[0m
 
   The interpreter contains a number of hooks that support a debugger.
   [1msldb [22mconsists of a set of functions that use these hooks to implement
@@ -5414,9 +5659,9 @@
 
           (sldb) watchfpu FE_INVALID | FE_OVERFLOW
 
-  [1m20.  Profiling[0m
+  [1m21.  Profiling[0m
 
-  [1m20.1.  Introduction[0m
+  [1m21.1.  Introduction[0m
 
   This chapter deals with the subject of writing efficient [1mS-Lang [22mcode,
   and using the [1mS-Lang [22mprofiler to isolate places in the code that could
@@ -5460,7 +5705,7 @@
   Finally, do not overlook the specialized modules that are available
   for [1mS-Lang[22m.
 
-  [1m20.2.  Using the profiler[0m
+  [1m21.2.  Using the profiler[0m
 
   [1mslprof [22mis an executable [1mslsh [22mscript that implements a standalone
   profiler for [1mslsh [22mscripts.  The script is essentually a front-end for
@@ -5472,7 +5717,7 @@
 
   (To be completed...)
 
-  [1m21.  Regular Expressions[0m
+  [1m22.  Regular Expressions[0m
 
   The S-Lang library includes a regular expression (RE) package that may
   be used by an application embedding the library.  The RE syntax should
@@ -5485,7 +5730,7 @@
   the [1mS-Lang [22mREs in the process.  For these reasons, the user is
   encouraged to make use of the pcre module if possible.
 
-  [1m21.1.  S-Lang  RE Syntax[0m
+  [1m22.1.  S-Lang  RE Syntax[0m
 
   A regular expression specifies a pattern to be matched against a
   string, and has the property that the contcatenation of two REs is
@@ -5538,7 +5783,7 @@
   the '\' character since both languages treat it as an escape
   character.
 
-  [1m21.2.  Differences between S-Lang  and egrep REs[0m
+  [1m22.2.  Differences between S-Lang  and egrep REs[0m
 
   There are several differences between [1mS-Lang [22mregular expressions and,
   e.g., [1megrep [22mregular expressions.

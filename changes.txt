@@ -3,6 +3,11 @@ Changes since 2.1.1
 1. slsh/lib/readascii.sl: Typo in the usage message corrected.
 2. autoconf/aclocal.m4: Fixed elf link problem on freebsd (Renato
    Botelho)
+3. doc/tm/slang.tm: Some documentation updates
+4. slsh/lib/cmdopt.sl: The value passed to a callback function was not
+   be converted to the specified type, e.g., for
+      cmdopt_add (opt, "foo", &callback; type="int");
+   callback was not being passed an integer.
 
 Changes since 2.1.0
 1. slsh/lib/print.sl: Only the first element of arrays such as

@@ -76,7 +76,7 @@ define cmdopt_add ()
 	s.convert_method = &convert_to_int;
      }
      {
-      case "float":
+      case "float" or case "double":
 	s.convert_method = &convert_to_double;
      }
      {
@@ -150,6 +150,7 @@ private define process_option (opts, opt, name, value)
 
 	if (__is_callable (opt.valuep))
 	  {
+	     value = (@opt.convert_method) (opts, opt, name, value);
 	     (@opt.valuep)(value, __push_args(opt.callback_args));
 	     return;
 	  }
@@ -161,6 +162,9 @@ private define process_option (opts, opt, name, value)
      {
 	if (__is_callable (opt.valuep))
 	  {
+	     if (value != NULL)
+	       value = (@opt.convert_method) (opts, opt, name, value);
+
 	     (@opt.valuep)(value, __push_args(opt.callback_args));
 	     return;
 	  }

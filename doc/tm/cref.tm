@@ -24,7 +24,7 @@
 \begin{\documentstyle}
 
 \title {The \slang C Library Reference}
-\author John E. Davis, \tt{davis@space.mit.edu}
+\author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 
 \toc

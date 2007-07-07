@@ -118,7 +118,7 @@ define slsh_main ()
 
    set_struct_fields (s, 1, 0, "opt", -1, PI, -1, 0, 1);
    args = ["-vv", "-f35", "-g", "-al", "--float", "-1", "-h3", "-v"];
-   test_args (opts, args, 8, s, {35, 3, "opt", 1, -1.0, 3, 1, "3"}, 0);
+   test_args (opts, args, 8, s, {35, 3, "opt", 1, -1.0, 3, 1, 3}, 0);
 
    opts.add ("list", &s.list; type="string", optional="foo", append);
    args = ["--list", "--list=3", "--list=bar"];

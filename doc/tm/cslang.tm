@@ -30,7 +30,7 @@
 \begin{\documentstyle}
 
 \title S-Lang Library C Programmer's Guide, V2.0.4
-\author John E. Davis, \tt{davis@space.mit.edu}
+\author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 
 \toc

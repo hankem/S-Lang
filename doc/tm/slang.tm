@@ -19,7 +19,7 @@
 \begin{\documentstyle}
 
 \title A Guide to the S-Lang Language (v2.1)
-\author John E. Davis, \tt{davis@space.mit.edu}
+\author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 
 \toc
@@ -32,30 +32,103 @@
     -- Carl Sandburg (1878-1967), U.S. poet. New York Times (Feb. 13, 1959).
 #%-
 
-\chapter{Introduction} #%{{{
+\labeled_chapter{Introduction} #%{{{
 
-   \slang is a powerful interpreted language that may be embedded into
-   an application to make the application extensible.  This enables
-   the application to be used in ways not envisioned by the programmer,
-   thus providing the application with much more flexibility and
-   power.  Examples of applications that take advantage of the
-   interpreter in this way include the \jed editor and the \slrn
-   newsreader.
-   
-   The \slang distribution contains a standalone application called
-   \slsh that may be used for writing \slang scripts and full-blown
-   \slang based applications.  For example, the author has used \slsh
-   to create a mediacenter for his home entertainment system that
-   integrates internet radio and tv, podcasts, digital pictures and
-   video, CDs, and so forth.  \slsh also may be used interactively to
-   evaluate \slang expressions and act as a sophisticated calculator.
-   In fact, as you are reading this manual, it is recommended that you
-   use \slsh in its interactive mode as an aid to understanding the language.
-   Moreover \slsh contains a number of useful routines in its standard
-   library that may be used by other programs that embed the
-   interpreter.  It is important to point out that some binary
-   distributions package \slsh separately from the \slang library, and
-   as such must be installed separately.
+ \slang is a powerful interpreted language that may be embedded into
+ an application to make the application extensible.  This enables the
+ application to be used in ways not envisioned by the programmer, thus
+ providing the application with much more flexibility and power.
+ Examples of applications that take advantage of the interpreter in
+ this way include the \jed editor and the \slrn newsreader.
+
+\sect{slsh -- The \slang shell}
+
+ The \slang distribution contains a standalone application called
+ \slsh that may be used for writing \slang scripts and full-blown
+ \slang based applications.  For example, the author has used \slsh to
+ create a mediacenter for his home entertainment system that
+ integrates internet radio and tv, podcasts, digital pictures and
+ video, CDs, and so forth.  The use of \slsh in such non-interactive
+ modes is discussed in \chapterref{slsh}.  
+ 
+ \slsh also may be used interactively and has full access to all
+ components of the \slang interpreter.  With features such as
+ customizable command-line editing, history recall and completion,
+ \slsh is a convenient environment for learning and using the
+ language.  In fact, as you are reading this manual, it is recommended
+ that you use \slsh in its interactive mode as an aid to understanding
+ the language.  
+ 
+ While a standard \slang installation includes \slsh,
+ some some binary distributions package \slsh separately from the
+ \slang library, and as such must be installed separately.  For
+ example, on Debian Linux it can be installed via
+#v+
+    apt-get install slsh
+#v-
+
+ When called without arguments, \slsh will start in interactive mode
+ by issuing a (customizable) \tt{slsh>} prompt and waits for input.
+ While most of the time one would enter \slang statements at the
+ prompt, \slsh also accepts some other commands, most notably
+ \exmp{help}:
+#v+
+   slsh> help
+   Most commands must end in a semi-colon.
+   If a command begins with '!', then the command is passed to the shell.
+   Examples: !ls, !pwd, !cd foo, ...
+   Special commands:
+     help <help-topic>
+     apropos <something>
+     start_log( <optional-log-file> );
+       start logging input to a file (default is slsh.log)
+     stop_log();
+       stop logging input
+     save_input (<optional-file>);
+       save all previous input to a file (default: slsh.log)
+     quit;
+#v-
+
+ Although the language normally requires variables to be declared
+ before use, it is not necessary to do so when using \slsh
+ interactively.  For example, in this document you will see examples
+ such as
+#v+
+    variable x = [1:10];
+    variable y = sin (x^2);
+#v-
+ At the \slsh command line, the use of the \kw{variable} keyword in such
+ statements is optional:
+#v+
+    slsh> x = [1:10]; y = sin(x^2);
+#v-
+ 
+ As the above example suggests, one use of \slsh is as a sophisticated
+ calculator.  For example,
+#v+
+    slsh> sin (1.24) + 3*cos (1.3*PI);
+    -0.817572
+#v-
+ This is especially true when combined with modules, e.g.,
+#v+
+    slsh> require ("fits");
+    slsh> require ("histogram");
+    slsh> tbl = fit_read_table ("evt1a.fits");
+    slsh> engrid = [min(tbl.energy):max(energy):#1024];
+    slsh> spectrum = hist1d (tbl.energy[where(tbl.status==0)], engrid);
+#v-
+ In this example, the \module{fits} module was used to read data
+ from a binary file called \exmp{evt1a.fits}, and the
+ \module{histogram} module was used to bin the data in the energy
+ column into a histogram to create a spectrum.  The expression
+ involving \exmp{where} filters the data by accepting only those
+ energy values whose status is set to 0.  The \module{fits} and
+ \module{histogram} modules are not distributed with \slang but may be
+ obtained separately-- see \url{http://www.jedsoft.org/slang/modules/}
+ for links to them.  For more information about modules, see the
+ \ref{Modules} chapter in this document.
+
+ For more information about using \slsh, see \chapterref{slsh}.
 
 \sect{Language Features}
 
@@ -198,14 +271,14 @@
 #%}}}
 
 #%}}}
-
+ 
 \chapter{Overview of the Language} #%{{{
 
-   This purpose of this section is to give the reader a feel for the
-   \slang language, its syntax, and its capabilities.  The information
-   and examples presented in this section should be sufficient to
-   provide the reader with the necessary background to understand the
-   rest of the document.
+ This purpose of this section is to give the reader a feel for the
+ \slang language, its syntax, and its capabilities.  The information
+ and examples presented in this section should be sufficient to
+ provide the reader with the necessary background to understand the
+ rest of the document.
 
 \sect{Variables and Functions} #%{{{
 
@@ -4842,7 +4915,7 @@
 
 \chapter{Loading Files: evalfile, autoload, and require}
 
-\chapter{Modules} #%{{{
+\labeled_chapter{Modules} #%{{{
 
 \sect{Introduction}
   A module is a shared object that may be dynamically linked into the
@@ -5301,6 +5374,185 @@
   were handled by discarding them.
 
 #%}}}
+
+\labeled_chapter{slsh}
+
+ \slsh, also known as the S-Lang shell, is an application that is
+ included in the stock \slang distribution.  As some binary
+ distributions include \slsh  as a separate package it must be
+ installed separately, e.g.,
+#v+
+    apt-get install slsh
+#v-
+ on Debian Linux systems.  The use of \slsh in its interactive mode
+ was discussed briefly in the \ref{Introduction}.  This chapter
+ concentrates on the use of \slsh for writing executable \slang
+ scripts.
+
+\sect{Running slsh}
+ When run the \exmp{--help} command-line argument, \slsh displays a
+ brief usage message:
+#v+
+   # slsh --help
+   Usage: slsh [OPTIONS] [-|file [args...]]
+    --help           Print this help
+    --version        Show slsh version information
+    -e string        Execute 'string' as S-Lang code
+    -g               Compile with debugging code, tracebacks, etc
+    -n               Don't load personal init file
+    --init file      Use this file instead of ~/.slshrc
+    --no-readline    Do not use readline
+    -i               Force interactive input
+    -t               Test mode.  If slsh_main exists, do not call it
+    -v               Show verbose loading messages
+    -Dname           Define "name" as a preprocessor symbol
+
+     Note: - and -i are mutually exclusive
+
+   Default search path: /usr/local/share/slsh
+#v-
+
+ When started with no arguments, \slsh will start in interactive mode
+ and take input from the terminal.  As the usage message indicates
+ \slsh loads a personal initialization file called \file{.slshrc} (on
+ non-Unix systems, this file is called \file{slsh.rc}).  The contents
+ of this file must be valid \slang code, but are otherwise arbitrary.
+ One use of this file is to define commonly used functions and to
+ setup personal search paths.
+
+ \slsh will run in non-interactive mode when started with a file (also
+ known as a ``script'') as its first (non-option) command-line
+ argument.  The rest of the arguments on the command line serve as
+ arguments for the script.  The next section deals with the use of the
+ \exmp{cmdopt} routines for parsing those arguments.
+
+ \slsh will read the script and feed it to the \slang interpreter for
+ execution.  If the script defines a public function called
+ \sfun{slsh_main}, then \slsh will call it after the script has been
+ loaded.  In this sense, \exmp{slsh_main} is analagous to \exmp{main}
+ in \bf{C} or \bf{C++}.
+ 
+ A typical \slsh script is be structured as
+#v+
+   #!/usr/bin/env slsh
+      .
+      .
+   define slsh_main ()
+   {
+      .
+      .
+   }
+#v-
+ The first line of the script Unix-specific and should be familiar to
+ Unix users.   Typically, the code before \sfun{slsh_main} will load
+ any required modules or packages, and define other functions to be
+ used by the script.
+ 
+ Although the use of \sfun{slsh_main} is not required, its use is
+ strongly urged for several reasons.  In addition to lending
+ uniformity to \slang scripts, \sfun{slsh_main} is well supported by
+ the \slang debugger (\sldb) and the \slang profiler (\slprof), which
+ look for \sfun{slsh_main} as a starting point for script execution.
+ Also as scripts necessarily do something (otherwise they have no
+ use), \slsh's \exmp{-t} command-line option may be used to turn off
+ the automatic execution of \exmp{slsh_main}.  This allows the syntax
+ of the entire script to be checked for errors instead of running it.
+
+\sect{Command line processing}
+
+ The script's command-line arguments are availble to it via the
+ \ivar{__argc} and \ivar{__argv} intrinsic variables.  Any optional
+ arguments represented by these variables may be parsed using \slsh's
+ \bf{cmdopt} routines.
+
+ As a useful illustration, consider the script that the author uses to
+ rip tracks from CDs to OGG encoded files.  The name of the script
+ is \exmp{cd2ogg.sl}.  Running the script without arguments causes it
+ to issue a usage message:
+#v+
+   Usage: cd2ogg.sl [options] device
+   Options:
+    --help                 This help
+    --work DIR             Use DIR as working dir [/tmp/29848]
+    --root DIR             Use DIR/GENRE as root for final output [/data/CDs]
+    --genre GENRE          Use GENRE for output dir
+    --no-rip               Skip rip stage
+    --no-normalize         Skip normalizing stage
+    --no-encode            Don't encode to ogg
+    --albuminfo PERFORMER/TITLE
+                           Use PERFORMER/TITLE if audio.cddb is absent   
+#v-
+ As the message shows, some of the options require an argument while
+ others do not.  The cd2ogg.sl script looks like:
+#v+
+   #!/usr/bin/env slsh
+   require ("cmdopt");
+      .
+      .
+   private define exit_usage ()
+   {
+      () = fprintf (stderr, "Usage: %s [options] device\n",
+                    path_basename (__argv[0]));
+      () = fprintf (stderr, "Options:\n");
+         .
+         .
+      exit (1);
+   }
+
+   private define parse_album_info (albuminfo)
+   {
+      ...
+   }
+
+   define slsh_main ()
+   {
+      variable genre = NULL;
+      variable no_rip = 0;
+      variable no_normalize = 0;
+      variable no_encode = 0;
+                    
+      variable opts = cmdopt_new ();
+      opts.add ("help", &exit_usage);
+      opts.add ("device", &CD_Device; type="str");
+      opts.add ("work", &Work_Dir; type="str");
+      opts.add ("root", &Root_Dir; type="str");
+      opts.add ("genre", &genre; type="str");
+      opts.add ("albuminfo", &parse_album_info; type="str");
+      opts.add ("no-normalize", &no_normalize);
+      opts.add ("no-encode", &no_encode);       
+      variable i = opts.process (__argv, 1);
+      if (i + 1 != __argc)
+        exit_usage ();
+      CD_Device = __argv[i];
+         .
+         .
+   }
+#v-
+
+ There are several points that one should take from the above example.
+ First, to use the \exmp{cmdopt} interface it is necessary to load it.
+ This is accomplished using the \sfun{require} statement. Second, the
+ above example uses \exmp{cmdopt}'s object-oriented style interface
+ through the use of the \exmp{add} and \exmp{process} methods of the
+ \exmp{cmdopt} object created by the call to \exmp{cmdopt_new}. Third,
+ two of the command line options make use of callback functions: the
+ \exmp{exit_usage} function will get called when \exmp{--help} appears
+ on the command line, and the \exmp{parse_album_info} function will
+ get called to handle the \exmp{--albuminfo} option.  Options such as
+ \exmp{--no-encode} do not take a value and the presence of such an
+ option on the command line causes the variable associated with the
+ option to be set to 1.  Other options such as \exmp{--genre} will
+ cause the variable associated with them to be set of the value
+ specified on the command-line.  Finally, the \exmp{process} method
+ returns the index of \ivar{__argv} that corresponds to ``non-option''
+ argument.  In this case, for proper usage of the script, that
+ argument would correspond to device representing the CD drive.
+
+ For more information about the \exmp{cmdopt} interface, see the
+ documentation for \exmp{cmdopt_add}:
+#v+
+    slsh> help cmdopt_add
+#v-
 
 \chapter{Debugging} #%{{{
 
