@@ -22,15 +22,8 @@ USA.
 
 #define USE_NEW_HASH_CODE	1
 
-#define SLSTRING_HASH_TABLE_SIZE	10007
-#if 0
 /* slstring.c: Size of the hash table used for strings (prime numbers) */
-#ifdef __MSDOS_16BIT__
-# define SLSTRING_HASH_TABLE_SIZE	601
-#else
-# define SLSTRING_HASH_TABLE_SIZE	6007 /* 2909 */
-#endif
-#endif
+#define SLSTRING_HASH_TABLE_SIZE	32327 /* 25013 */ /* was: 10007 */
 
 /* slang.c: maximum size of run time stack */
 #ifdef __MSDOS_16BIT__

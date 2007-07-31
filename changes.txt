@@ -8,6 +8,16 @@ Changes since 2.1.1
    be converted to the specified type, e.g., for
       cmdopt_add (opt, "foo", &callback; type="int");
    callback was not being passed an integer.
+5. src/slang.c,slassoc.c: Optimization tweaks for inc/decrementing
+   associative arrays (e.g., foo["bar"]++).
+6. src/slerr.c: When SLang_set_error is called, then add the string
+   representation of the error message to the message queue.
+7. doc/tm/strops.tm: Corrected the documentation for the string_match
+   function. (Guenter Milde)
+8. src/sllimits.h: Increased the size of the hash table that stores
+   SLstrings for better efficiency.
+9. src/slstrops.c:_pSLang_push_nstring: Inlined the call to
+   _pSLang_push_slstring.
 
 Changes since 2.1.0
 1. slsh/lib/print.sl: Only the first element of arrays such as

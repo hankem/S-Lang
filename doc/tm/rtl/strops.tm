@@ -477,9 +477,9 @@
   match regular expression specified by \exmp{pat}.  This function
   performs the match starting at the \exmp{nth} byte in the string
   \exmp{str} (numbered from 1).  This function returns the position in
-  bytes (numbered from 1) of the start of the match in \exmp{str}.  If
-  the match fails, the function will return -1. The exact substring
-  matched may be found using \ifun{string_match_nth}.
+  bytes (numbered from 1) of the start of the match in \exmp{str}.  
+  The exact substring matched may be found using
+  \ifun{string_match_nth}.
 \notes
   Positions in the string are specified using byte-offsets not
   character offsets. The value returned by this function is measured

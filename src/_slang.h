@@ -959,6 +959,8 @@ typedef struct
 SLang_Arith_Binary_Type;
 extern int _pSLadd_arith_binary_table (SLang_Arith_Binary_Type *tbl, char *);
 
+extern int _pSLang_do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *objb);
+
 extern int _pSLang_call_funptr (SLang_Name_Type *);
 extern void _pSLset_double_format (char *);
 extern SLang_Name_Type *_pSLlocate_global_name (char *);
@@ -1013,6 +1015,7 @@ SLang_create_array1 (SLtype, int, VOID_STAR, SLindex_Type *, unsigned int, int);
 
 extern int _pSLassoc_aput (SLtype, unsigned int);
 extern int _pSLassoc_aget (SLtype, unsigned int);
+extern int _pSLassoc_inc_value (unsigned int, int val);
 
 extern int _pSLcompile_push_context (SLang_Load_Type *);
 extern int _pSLcompile_pop_context (void);

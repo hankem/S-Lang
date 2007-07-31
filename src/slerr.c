@@ -619,6 +619,19 @@ void _pSLerr_free_queued_messages (void)
 }
 
 
+static void set_error (int error)
+{
+   /* Only allow an error to be cleared (error==0), but not changed
+    * if there already is an error.
+    */
+   if ((error == 0)
+       || (_pSLang_Error == 0))
+     _pSLang_Error = error;
+
+   if (_pSLinterpreter_Error_Hook != NULL)
+     (*_pSLinterpreter_Error_Hook) (_pSLang_Error);
+}
+
 void SLang_verror_va (int err_code, char *fmt, va_list ap)
 {
    char err [4096];
@@ -633,7 +646,7 @@ void SLang_verror_va (int err_code, char *fmt, va_list ap)
      err_code = SL_INTRINSIC_ERROR;
 
    if (_pSLang_Error == 0)
-     SLang_set_error (err_code);
+     set_error (err_code);
 
    if (fmt == NULL)
      return;
@@ -692,16 +705,24 @@ void SLang_exit_error (char *fmt, ...)
 
 int SLang_set_error (int error)
 {
-   /* Only allow an error to be cleared (error==0), but not changed
-    * if there already is an error.
-    */
-   if ((error == 0)
-       || (_pSLang_Error == 0))
-     _pSLang_Error = error;
+   set_error (error);
 
-   if (_pSLinterpreter_Error_Hook != NULL)
-     (*_pSLinterpreter_Error_Hook) (_pSLang_Error);
+   if (_pSLang_Error == 0)
+     return 0;
+
+   /* If a string is not in the message queue, then add one. */
+   if (Active_Error_Queue != NULL)
+     {
+	Error_Message_Type *m = Active_Error_Queue->head;
+	while (m != NULL)
+	  {
+	     if (m->msg_type == _SLERR_MSG_ERROR)
+	       return 0;
+	     m = m->next;
+	  }
+     }
    
+   SLang_verror (_pSLang_Error, "%s", SLerr_strerror (_pSLang_Error));
    return 0;
 }
 

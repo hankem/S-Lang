@@ -209,13 +209,18 @@ static void strcat_cmd (void) /*{{{*/
 
 /*}}}*/
 
+_INLINE_
 static int _pSLang_push_nstring (char *a, unsigned int len)
 {
    a = SLang_create_nslstring (a, len);
    if (a == NULL)
      return -1;
-   
-   return _pSLang_push_slstring (a);
+
+   if (0 == SLclass_push_ptr_obj (SLANG_STRING_TYPE, (VOID_STAR)a))
+     return 0;
+
+   SLang_free_slstring (a);
+   return -1;
 }
 
 

@@ -148,6 +148,35 @@ _for i (0, length(X)-1, 1)
      failed ("assoc_get_values");
 }
 
+define test_arith ()
+{
+   variable a = Assoc_Type[Int_Type, 1];
+   a["foo"] += 3;
+   if (a["foo"] != 4)
+     failed ("a[foo] += 3");
+
+   a["foo"]--;
+   if (a["foo"] != 3)
+     failed ("a[foo]--");
+
+   a["foo"]++;
+   if (a["foo"] != 4)
+     failed ("a[foo]++");
+
+   a = Assoc_Type [Array_Type, [1,2]];
+   
+   a["bar"] += 3;
+   ifnot (_eqs (a["bar"], [1,2] + 3))
+     failed ("a[bar] += 3");
+   
+   a["bar"]++;
+   ifnot (_eqs (a["bar"], [1,2] + 3 + 1))
+     failed ("a[bar]++");
+}
+test_arith ();
+
+
+  
 print ("Ok\n");
 
 exit (0);
