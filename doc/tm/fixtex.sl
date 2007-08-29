@@ -1,10 +1,10 @@
 #!/usr/bin/env jed-script
 
-% Version 0.3.2-0
+private variable Version = "0.3.2-0";
 
 if (__argc != 2)
 {
-   message ("Usage: ./fixtex.sl <filename>");
+   message ("Version $Version Usage: ./fixtex.sl <filename>"$);
    quit_jed ();
 }
 

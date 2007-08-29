@@ -18,6 +18,15 @@ Changes since 2.1.1
    SLstrings for better efficiency.
 9. src/slstrops.c:_pSLang_push_nstring: Inlined the call to
    _pSLang_push_slstring.
+10. slsh/lib/structfuns.sl: Ignore any NULL arguments.
+11. slsh/src/readline.c: Turned on output processing in the call to
+    SLang_init_tty.
+12. src/slang.h: Several functions were marked as "extern" and not as
+    SL_EXTERN.  This makes a difference for CYGWIN and WIN32.
+13. src/Makefile.in, autoconf/*: Better support for the creation of
+    cygwin DLLs.
+
+{{{ Previous Versions
 
 Changes since 2.1.0
 1. slsh/lib/print.sl: Only the first element of arrays such as
@@ -56,8 +65,6 @@ Changes since 2.1.0
 19. ./NEWS: Updated
 20. slsh/lib/test_readascii.sl: Changed the "list" qualifier to
     "as_list".
-
-{{{ Previous Versions
 
 Changes since 2.0.7
 1. src/slrline.c: SLrline_bol/eol functions were missing from the

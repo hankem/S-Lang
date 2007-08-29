@@ -696,6 +696,7 @@ ELFLIB_MAJOR_MINOR
 SLANG_LIB_FOR_MODULES
 DLL_IMPLIB_NAME
 INSTALL_MODULE
+INSTALL_ELFLIB_TARGET
 TERMCAP
 MISC_TERMINFO_DIRS
 SRCDIR
@@ -722,6 +723,7 @@ PROGRAM_OBJECTS
 PROGRAM_ELFOBJECTS
 slang_major_version
 slang_minor_version
+slang_micro_version
 slang_version
 LIBOBJS
 LTLIBOBJS'
@@ -6934,9 +6936,6 @@ fi
 
 
 
-ELFLIB="lib\$(THIS_LIB).so"
-ELFLIB_MAJOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION)"
-ELFLIB_MAJOR_MINOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION)"
 
 if test "$GCC" = yes
 then
@@ -6946,7 +6945,13 @@ then
   fi
 fi
 
+ELFLIB="lib\$(THIS_LIB).so"
+ELFLIB_MAJOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION)"
+ELFLIB_MAJOR_MINOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).\$(ELF_MICRO_VERSION)"
+
 INSTALL_MODULE="\$(INSTALL_DATA)"
+
+INSTALL_ELFLIB_TARGET="install-elf-with-links"
 
 case "$host_os" in
   *linux*|*gnu*|k*bsd*-gnu )
@@ -7025,7 +7030,7 @@ case "$host_os" in
      CC_SHARED="\$(CC) -bundle -flat_namespace -undefined suppress \$(CFLAGS) -fno-common"
      ELFLIB="lib\$(THIS_LIB).dylib"
      ELFLIB_MAJOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).dylib"
-     ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).dylib"
+     ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).\$(ELF_MICRO_VERSION).dylib"
      ;;
   *freebsd* )
     ELF_CC="\$(CC)"
@@ -7042,13 +7047,18 @@ case "$host_os" in
   *cygwin* )
     DYNAMIC_LINK_FLAGS=""
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) "
+    ELF_CFLAGS="\$(CFLAGS) -DSLANG_DLL"
     DLL_IMPLIB_NAME="lib\$(THIS_LIB)\$(ELFLIB_MAJOR_VERSION).dll.a"
-    ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME) -Wl,-export-all-symbols -Wl,-enable-auto-import"
+    #ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME) -Wl,-export-all-symbols -Wl,-enable-auto-import"
+    ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm"
-    CC_SHARED="\$(CC) \$(CFLAGS) -shared"
+    CC_SHARED="\$(CC) \$(CFLAGS) -shared -DSLANG_DLL=1"
         SLANG_LIB_FOR_MODULES="-L\$(ELFDIR) -lslang"
     INSTALL_MODULE="\$(INSTALL)"
+    INSTALL_ELFLIB_TARGET="install-elf-cygwin"
+    ELFLIB="lib\$(THIS_LIB).dll"
+    ELFLIB_MAJOR="lib\$(THIS_LIB)\$(ELF_MAJOR_VERSION).dll"
+    ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB)$(ELF_MAJOR_VERSION)_$(ELF_MINOR_VERSION)_$(ELF_MICRO_VERSION).dll"
     ;;
   * )
     echo "Note: ELF compiler for host_os=$host_os may be wrong"
@@ -7058,6 +7068,7 @@ case "$host_os" in
     ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
     CC_SHARED="\$(CC) \$(CFLAGS) -shared -fPIC"
 esac
+
 
 
 
@@ -11992,13 +12003,13 @@ slang_major_version=`echo $slang_version |
  awk '{ print int($1/10000) }'`
 slang_minor_version=`echo $slang_version $slang_major_version |
  awk '{ print int(($1 - $2*10000)/100) }'`
-slang_mminor_version=`echo $slang_version $slang_major_version $slang_minor_version |
+slang_micro_version=`echo $slang_version $slang_major_version $slang_minor_version |
  awk '{ print ($1 - $2*10000 - $3*100) }'`
 
-slang_minor_version="$slang_minor_version.$slang_mminor_version"
-slang_version="$slang_major_version.$slang_minor_version"
+slang_version="$slang_major_version.$slang_minor_version.$slang_micro_version"
 { echo "$as_me:$LINENO: result: $slang_version" >&5
 echo "${ECHO_T}$slang_version" >&6; }
+
 
 
 
@@ -12710,6 +12721,7 @@ ELFLIB_MAJOR_MINOR!$ELFLIB_MAJOR_MINOR$ac_delim
 SLANG_LIB_FOR_MODULES!$SLANG_LIB_FOR_MODULES$ac_delim
 DLL_IMPLIB_NAME!$DLL_IMPLIB_NAME$ac_delim
 INSTALL_MODULE!$INSTALL_MODULE$ac_delim
+INSTALL_ELFLIB_TARGET!$INSTALL_ELFLIB_TARGET$ac_delim
 TERMCAP!$TERMCAP$ac_delim
 MISC_TERMINFO_DIRS!$MISC_TERMINFO_DIRS$ac_delim
 SRCDIR!$SRCDIR$ac_delim
@@ -12725,7 +12737,6 @@ PNG_LIB!$PNG_LIB$ac_delim
 PNG_INC!$PNG_INC$ac_delim
 PNG_MODULE!$PNG_MODULE$ac_delim
 ICONV_LIB!$ICONV_LIB$ac_delim
-ICONV_INC!$ICONV_INC$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -12767,6 +12778,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ICONV_INC!$ICONV_INC$ac_delim
 ICONV_MODULE!$ICONV_MODULE$ac_delim
 GNU_READLINE!$GNU_READLINE$ac_delim
 LIB_READLINE!$LIB_READLINE$ac_delim
@@ -12777,12 +12789,13 @@ PROGRAM_OBJECTS!$PROGRAM_OBJECTS$ac_delim
 PROGRAM_ELFOBJECTS!$PROGRAM_ELFOBJECTS$ac_delim
 slang_major_version!$slang_major_version$ac_delim
 slang_minor_version!$slang_minor_version$ac_delim
+slang_micro_version!$slang_micro_version$ac_delim
 slang_version!$slang_version$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 13; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 15; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

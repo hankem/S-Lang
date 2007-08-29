@@ -135,7 +135,7 @@ static void init_tty (void)
    abort_char = -1;		       /* determine from tty */
 # endif
 
-   if (-1 == SLang_init_tty (abort_char, 1, 0))
+   if (-1 == SLang_init_tty (abort_char, 1, 1))   /* opost was 0 */
      {
 # if SYSTEM_SUPPORTS_SIGNALS
 	SLsignal (SIGTSTP, last_sig_sigtstp);

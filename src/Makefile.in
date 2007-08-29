@@ -81,6 +81,8 @@ OTHERSTUFF 		=
 THIS_LIB_DEFINES	= -DSLANG
 ELF_MAJOR_VERSION	= @slang_major_version@#
 ELF_MINOR_VERSION	= @slang_minor_version@#
+ELF_MICRO_VERSION	= @slang_micro_version@#
+INSTALL_ELFLIB_TARGET	= @INSTALL_ELFLIB_TARGET@
 
 CONFIG_H		= config.h
 ALL_CFLAGS		= $(CFLAGS) -Dunix $(THIS_LIB_DEFINES)
@@ -180,7 +182,7 @@ install-static: static install-headers install-docs $(DEST_LIBDIR)
 	@echo installing $(OBJDIR_NORMAL_LIB) in $(DEST_LIBDIR)
 	$(INSTALL_DATA) $(OBJDIR_NORMAL_LIB) $(DEST_LIBDIR)
 	$(RANLIB) $(DEST_LIBDIR)/$(NORMAL_LIB)
-install-elf: elf install-headers install-docs $(DEST_LIBDIR)
+install-elf-with-links:
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB)
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB_MAJOR)
 	@echo installing $(ELFLIB_MAJOR_MINOR) in $(DEST_LIBDIR)
@@ -191,22 +193,15 @@ install-elf: elf install-headers install-docs $(DEST_LIBDIR)
 	@echo ""
 	@echo $(ELFLIB_MAJOR_MINOR) created in $(DEST_LIBDIR).
 	@echo The links $(ELFLIB) and $(ELFLIB_MAJOR) to $(ELFLIB_MAJOR_MINOR) were also created.
-	if test -n "$(DLL_IMPLIB_NAME)" ; then \
-	   $(INSTALL_DATA) $(ELFDIR_DLL_LIB) $(DEST_LIBDIR) ; \
-	   $(MKINSDIR) $(DEST_BINDIR) ; \
-	   $(INSTALL) $(ELFDIR_ELF_LIB) $(DEST_BINDIR) ; \
-	fi
 	@echo ""
+# On cygwin, the DLL must be installed in the bin directory and the import-lib
+# goes in the lib directory
+install-elf-cygwin:
+	$(INSTALL_DATA) $(ELFDIR_DLL_LIB) $(DEST_LIBDIR)
+	$(MKINSDIR) $(DEST_BINDIR)
+	$(INSTALL) $(ELFLIB_MAJOR) $(DEST_BINDIR)
+install-elf: elf install-headers install-docs $(DEST_LIBDIR) $(INSTALL_ELFLIB_TARGET)
 install-all: install-elf install-static
-install-links:
-	-$(RM) $(DEST_LIBDIR)/$(ELFLIB)
-	-$(RM) $(DEST_LIBDIR)/$(ELFLIB_MAJOR)
-	cd $(DEST_LIBDIR); $(LN) $(ELFLIB_MAJOR_MINOR) $(ELFLIB_MAJOR)
-	cd $(DEST_LIBDIR); $(LN) $(ELFLIB_MAJOR) $(ELFLIB)
-	@echo
-	@echo A link $(ELFLIB_MAJOR) to $(ELFLIB_MAJOR_MINOR) was created.
-	@echo A link $(ELFLIB) to $(ELFLIB_MAJOR) was created.
-	@echo ""
 install: install-all
 #---------------------------------------------------------------------------
 # Tests

@@ -52,6 +52,8 @@ define struct_combine ()
    variable arg;
    foreach arg (args)
      {
+	if (arg == NULL)
+	  continue;
 	if (is_struct_type (arg))
 	  arg = get_struct_field_names (arg);
 	fields = [fields, arg];
@@ -59,6 +61,8 @@ define struct_combine ()
    
    % Get just the unique names
    variable i, a = Assoc_Type[Int_Type];
+   ifnot (length (fields))
+     return NULL;
    _for i (0, length (fields)-1, 1)
      a[fields[i]] = i;
    i = assoc_get_values (a);

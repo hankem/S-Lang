@@ -230,14 +230,15 @@ slang_major_version=`echo $slang_version |
  awk '{ print int([$]1/10000) }'`
 slang_minor_version=`echo $slang_version $slang_major_version |
  awk '{ print int(([$]1 - [$]2*10000)/100) }'`
-slang_mminor_version=`echo $slang_version $slang_major_version $slang_minor_version |
+slang_micro_version=`echo $slang_version $slang_major_version $slang_minor_version |
  awk '{ print ([$]1 - [$]2*10000 - [$]3*100) }'`
 
-slang_minor_version="$slang_minor_version.$slang_mminor_version"
-slang_version="$slang_major_version.$slang_minor_version"
+dnl# slang_minor_version="$slang_minor_version.$slang_mminor_version"
+slang_version="$slang_major_version.$slang_minor_version.$slang_micro_version"
 AC_MSG_RESULT($slang_version)
 AC_SUBST(slang_major_version)
 AC_SUBST(slang_minor_version)
+AC_SUBST(slang_micro_version)
 AC_SUBST(slang_version)
 
 AC_CONFIG_HEADER(src/sysconf.h:src/config.hin)

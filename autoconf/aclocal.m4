@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.1.12: Improved support for cygwin
 dnl# 0.1.11: Fixed elf linking on freebsd (Renato Botelho (garga at freebsd, org)
 dnl# Version 0.1.10: rpath support for netbsd
 dnl# Version 0.1.9: When searching for libs, use dylib on darwin
@@ -545,9 +546,6 @@ AC_CHECK_HEADER(dlfcn.h,[
    ])])
 AC_SUBST(DYNAMIC_LINK_LIB)
 
-ELFLIB="lib\$(THIS_LIB).so"
-ELFLIB_MAJOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION)"
-ELFLIB_MAJOR_MINOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION)"
 
 if test "$GCC" = yes
 then
@@ -557,7 +555,15 @@ then
   fi
 fi
 
+dnl #Some defaults
+ELFLIB="lib\$(THIS_LIB).so"
+ELFLIB_MAJOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION)"
+ELFLIB_MAJOR_MINOR="\$(ELFLIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).\$(ELF_MICRO_VERSION)"
+
 INSTALL_MODULE="\$(INSTALL_DATA)"
+
+dnl# This specifies the target to use in the makefile to install the shared library
+INSTALL_ELFLIB_TARGET="install-elf-with-links"
 
 case "$host_os" in
   *linux*|*gnu*|k*bsd*-gnu )
@@ -636,7 +642,7 @@ case "$host_os" in
      CC_SHARED="\$(CC) -bundle -flat_namespace -undefined suppress \$(CFLAGS) -fno-common"
      ELFLIB="lib\$(THIS_LIB).dylib"
      ELFLIB_MAJOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).dylib"
-     ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).dylib"
+     ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).\$(ELF_MICRO_VERSION).dylib"
      ;;
   *freebsd* )
     ELF_CC="\$(CC)"
@@ -653,14 +659,19 @@ case "$host_os" in
   *cygwin* )
     DYNAMIC_LINK_FLAGS=""
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) "
+    ELF_CFLAGS="\$(CFLAGS) -DSLANG_DLL"
     DLL_IMPLIB_NAME="lib\$(THIS_LIB)\$(ELFLIB_MAJOR_VERSION).dll.a"
-    ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME) -Wl,-export-all-symbols -Wl,-enable-auto-import"
+    #ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME) -Wl,-export-all-symbols -Wl,-enable-auto-import"
+    ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm"
-    CC_SHARED="\$(CC) \$(CFLAGS) -shared"
+    CC_SHARED="\$(CC) \$(CFLAGS) -shared -DSLANG_DLL=1"
     dnl# CYGWIN prohibits undefined symbols when linking shared libs
     SLANG_LIB_FOR_MODULES="-L\$(ELFDIR) -lslang"
     INSTALL_MODULE="\$(INSTALL)"
+    INSTALL_ELFLIB_TARGET="install-elf-cygwin"
+    ELFLIB="lib\$(THIS_LIB).dll"
+    ELFLIB_MAJOR="lib\$(THIS_LIB)\$(ELF_MAJOR_VERSION).dll"
+    ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB)$(ELF_MAJOR_VERSION)_$(ELF_MINOR_VERSION)_$(ELF_MICRO_VERSION).dll"
     ;;
   * )
     echo "Note: ELF compiler for host_os=$host_os may be wrong"
@@ -684,6 +695,7 @@ AC_SUBST(ELFLIB_MAJOR_MINOR)
 AC_SUBST(SLANG_LIB_FOR_MODULES)
 AC_SUBST(DLL_IMPLIB_NAME)
 AC_SUBST(INSTALL_MODULE)
+AC_SUBST(INSTALL_ELFLIB_TARGET)
 ])
 
 

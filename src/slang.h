@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20102
-#define SLANG_VERSION_STRING "pre2.1.2-9"
+#define SLANG_VERSION_STRING "pre2.1.2-13"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -231,7 +231,7 @@ typedef int (*FVOID_STAR)(void);
 # endif
 #endif
 
-#if defined(__WIN32__) && SLANG_DLL
+#if SLANG_DLL && (defined(__WIN32__) || defined(__CYGWIN32__))
 # define SL_EXPORT __declspec(dllexport)
 # define SL_IMPORT __declspec(dllimport)
 #else
@@ -839,7 +839,7 @@ SL_EXTERN void SLang_inc_mmt (SLang_MMT_Type *);
 typedef int SLindex_Type;
 typedef unsigned int SLuindex_Type;
 #define SLANG_ARRAY_INDEX_TYPE SLANG_INT_TYPE
-extern int SLang_pop_array_index (SLindex_Type *);
+SL_EXTERN int SLang_pop_array_index (SLindex_Type *);
 typedef struct _pSLang_Array_Type
 {
    SLtype data_type;
@@ -2140,9 +2140,9 @@ SL_EXTERN int SLns_add_intrinsic_function (SLang_NameSpace_Type *, char *, FVOID
  * run-time.  The second version is useful for the most common case of a 
  * single mapping.
  */
-extern int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table, 
+SL_EXTERN int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table, 
 					 SLtype *from_types, SLtype *to_types, unsigned int num);
-extern int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table, 
+SL_EXTERN int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table, 
 					  SLtype from_type, SLtype to_type);
 
 #define MAKE_INTRINSIC_N(n,f,out,in,a1,a2,a3,a4,a5,a6,a7) \

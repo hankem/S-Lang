@@ -503,11 +503,13 @@ static int complex_complex_binary (int op,
       case SLANG_DIVIDE:	       /* / */
 	for (n = 0; n < n_max; n += 2)
 	  {
+#if 0
 	     if ((b[0] == 0.0) && (b[1] == 0.0))
 	       {
 		  SLang_set_error (SL_DIVIDE_ERROR);
 		  return -1;
 	       }
+#endif
 	     SLcomplex_divide (c + n, a, b);
 	     a += da; b += db;
 	  }
