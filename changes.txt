@@ -25,6 +25,11 @@ Changes since 2.1.1
     SL_EXTERN.  This makes a difference for CYGWIN and WIN32.
 13. src/Makefile.in, autoconf/*: Better support for the creation of
     cygwin DLLs.
+14. src/slang.h: Under windows+cygwin, if SLANG_DLL is not defined,
+    the it will get defined as 1.  This means that by default, the
+    application will get compiled against the slang DLL.  To build
+    against a static version of the library. compile your code using
+    -DSLANG_DLL=0.
 
 {{{ Previous Versions
 
