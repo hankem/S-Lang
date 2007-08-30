@@ -27,8 +27,8 @@ Under Unix, the S-Lang library makes use of the GNU autoconf package.
 The process may be as simple as:
 
    ./configure
-   make
-   make runtests
+   make  (or make static)
+   make runtests (this builds the static library)
    make install  (or `make install-static` to install the static library)
    make clean
 
@@ -37,8 +37,16 @@ The first two steps:
    ./configure
    make
 
-will cause the library and the .o files to be placed src/objs.  The
-'runtests' step is designed to test the interpeter.
+will cause the (shared) library and the .o files to be placed
+src/elfobjs.  Using
+
+   make static
+
+will build a static version of the library in src/objs.  By default,
+`make` builds the shared version of the library.
+
+The 'runtests' step is designed to test the interpeter.  It uses the
+static version of the library for this.
 
   ***Note: If you have the png or pcre libraries installed in a
 	   non-standard location, e.g., /opt/software, then the script
@@ -62,8 +70,9 @@ will cause the library and the .o files to be placed src/objs.  The
 	   option.
 
  ***Note: If the ARCH environment variable is set, the library will be
-	  placed in src/${ARCH}objs.  For example, if ARCH is set to
-	  `sun4', then libslang.a and *.o will appear in src/sun4objs.
+	  placed in src/${ARCH}objs and src/elf${ARCH}objs.  For
+	  example, if ARCH is set to `sun4', then libslang.a and *.o
+	  will appear in src/sun4objs.
 
  ***Note: This package does not support the --srcdir command line
           option.  This option is typically used to compile separate
@@ -91,16 +100,13 @@ when running the configure script, e.g.,
 
     ./configure --prefix=/opt
 
-By default, a shared version of the library will be created.  If your
-system does not support such libraries, or the build process fails to
-create a shared version of the library, you may want to install the
-static version:
+As mentioned above, simply running `make` will create a shared version
+of the library.  If your system does not support such libraries, or
+the build process fails to create a shared version of the library, you
+may want to install the static version:
     
    make static
    make install-static
-
-This will not only create and install a static version of the library
-(libslang.a).
 
 Below, I have attached the generic INSTALL instructions included in the
 autoconf distribution.

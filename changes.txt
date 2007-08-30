@@ -30,6 +30,10 @@ Changes since 2.1.1
     application will get compiled against the slang DLL.  To build
     against a static version of the library. compile your code using
     -DSLANG_DLL=0.
+15. Backed out the previous change (#14) to avoid breaking third-party
+    code that compiles against the library.
+16. Makefile: `make` will only build the shared version of the
+    library.  Use `make static` to create the static version.
 
 {{{ Previous Versions
 

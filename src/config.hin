@@ -240,4 +240,11 @@
 # define SIZEOF_LONG_LONG 0
 #endif
 
+#if defined(BUILD_DLL) && BUILD_DLL
+# ifdef __CYGWIN32__
+#  undef SLANG_DLL
+#  define SLANG_DLL=1
+# endif
+#endif
+
 #endif /* SL_CONFIG_H */

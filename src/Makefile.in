@@ -94,14 +94,17 @@ ELF_LINK_CMD		= $(ELF_LINK)
 NORMAL_LIB = lib$(THIS_LIB).a
 OBJDIR_NORMAL_LIB = $(OBJDIR)/$(NORMAL_LIB)
 
-# ELFLIB = lib$(THIS_LIB).so#
-# ELFLIB_MAJOR = $(ELFLIB).$(ELF_MAJOR_VERSION)#
-# ELFLIB_MAJOR_MINOR = $(ELFLIB).$(ELF_MAJOR_VERSION).$(ELF_MINOR_VERSION)#
+# On most systems, these variables have values of the form:
+#   libslang.so, libslang.so.X, libslang.so.X.Y, libslang.so.X.Y.Z
 ELFLIB = @ELFLIB@
 ELFLIB_MAJOR = @ELFLIB_MAJOR@
 ELFLIB_MAJOR_MINOR = @ELFLIB_MAJOR_MINOR@
+ELFLIB_MAJOR_MINOR_MICRO = @ELFLIB_MAJOR_MINOR_MICRO@
 
-ELFDIR_ELF_LIB = $(ELFDIR)/$(ELFLIB_MAJOR_MINOR)#
+# Set this to one of the above ELFLIB_MAJOR_* values
+ELFLIB_BUILD_NAME       = @ELFLIB_BUILD_NAME@
+
+ELFDIR_ELF_LIB = $(ELFDIR)/$(ELFLIB_BUILD_NAME)#
 ELFDIR_DLL_LIB = $(ELFDIR)/$(DLL_IMPLIB_NAME)#
 
 EXECLIBS = -L$(OBJDIR) -lslang $(OTHERLIBS) $(DL_LIB)
@@ -146,11 +149,11 @@ $(OBJDIR_NORMAL_LIB): $(OBJDIR) $(CONFIG_H) $(OBJS)
 
 $(ELFDIR_ELF_LIB): $(ELFDIR) $(CONFIG_H) $(ELFOBJS) $(VERSION_SCRIPT)
 	-$(RM) $(ELFDIR_ELF_LIB)
-	cd $(ELFDIR); $(ELF_LINK_CMD) -o $(ELFLIB_MAJOR_MINOR) $(OFILES) $(ELF_DEP_LIBS)
-	cd $(ELFDIR); $(RM) $(ELFLIB); $(LN) $(ELFLIB_MAJOR_MINOR) $(ELFLIB)
+	cd $(ELFDIR); $(ELF_LINK_CMD) -o $(ELFLIB_BUILD_NAME) $(OFILES) $(ELF_DEP_LIBS)
+	cd $(ELFDIR); $(RM) $(ELFLIB); $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB)
 	@echo ""
-	@echo $(ELFLIB_MAJOR_MINOR) created in $(ELFDIR).
-	@echo The link $(ELFLIB) to $(ELFLIB_MAJOR_MINOR) was also created.
+	@echo $(ELFLIB_BUILD_NAME) created in $(ELFDIR).
+	@echo The link $(ELFLIB) to $(ELFLIB_BUILD_NAME) was also created.
 	@echo ""
 $(OBJDIR) :
 	-$(MKDIR) $(OBJDIR)
@@ -169,44 +172,43 @@ $(DEST_INCDIR):
 $(DEST_LIBDIR):
 	$(MKINSDIR) $(DEST_LIBDIR)
 install-headers: $(DEST_INCDIR)
-	@echo installing slang.h and slcurses.h in $(DEST_INCDIR)
-	$(INSTALL_DATA) $(SRCDIR)/slang.h $(DEST_INCDIR)
-	$(INSTALL_DATA) $(SRCDIR)/slcurses.h $(DEST_INCDIR)
+	@echo installing slang.h and slcurses.h in $(DEST_INCDIR)/
+	$(INSTALL_DATA) $(SRCDIR)/slang.h $(DEST_INCDIR)/
+	$(INSTALL_DATA) $(SRCDIR)/slcurses.h $(DEST_INCDIR)/
 install-docs: $(DEST_DOCDIR)
 	@for i in $(DOC_FILES); \
 	do \
 		echo $(INSTALL_DATA) $$i $(DEST_DOCDIR)/; \
-		$(INSTALL_DATA) $$i $(DEST_DOCDIR); \
+		$(INSTALL_DATA) $$i $(DEST_DOCDIR)/; \
 	done
 install-static: static install-headers install-docs $(DEST_LIBDIR)
-	@echo installing $(OBJDIR_NORMAL_LIB) in $(DEST_LIBDIR)
-	$(INSTALL_DATA) $(OBJDIR_NORMAL_LIB) $(DEST_LIBDIR)
+	@echo installing $(OBJDIR_NORMAL_LIB) in $(DEST_LIBDIR)/
+	$(INSTALL_DATA) $(OBJDIR_NORMAL_LIB) $(DEST_LIBDIR)/
 	$(RANLIB) $(DEST_LIBDIR)/$(NORMAL_LIB)
-install-elf-with-links:
+install-elf-and-links:
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB)
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB_MAJOR)
-	@echo installing $(ELFLIB_MAJOR_MINOR) in $(DEST_LIBDIR)
-	$(INSTALL_DATA) $(ELFDIR_ELF_LIB) $(DEST_LIBDIR)
-	@echo creating symbolic links to $(ELFLIB_MAJOR_MINOR)
-	-cd $(DEST_LIBDIR); $(LN) $(ELFLIB_MAJOR_MINOR) $(ELFLIB_MAJOR)
-	-cd $(DEST_LIBDIR); $(LN) $(ELFLIB_MAJOR_MINOR) $(ELFLIB)
+	@echo installing $(ELFLIB_BUILD_NAME) in $(DEST_LIBDIR)
+	$(INSTALL_DATA) $(ELFDIR_ELF_LIB) $(DEST_LIBDIR)/
+	-cd $(DEST_LIBDIR); $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB_MAJOR)
+	-cd $(DEST_LIBDIR); $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB)
 	@echo ""
-	@echo $(ELFLIB_MAJOR_MINOR) created in $(DEST_LIBDIR).
-	@echo The links $(ELFLIB) and $(ELFLIB_MAJOR) to $(ELFLIB_MAJOR_MINOR) were also created.
+	@echo $(ELFLIB_BUILD_NAME) created in $(DEST_LIBDIR).
+	@echo The links $(ELFLIB) and $(ELFLIB_MAJOR) to $(ELFLIB_BUILD_NAME) were also created.
 	@echo ""
 # On cygwin, the DLL must be installed in the bin directory and the import-lib
 # goes in the lib directory
 install-elf-cygwin:
-	$(INSTALL_DATA) $(ELFDIR_DLL_LIB) $(DEST_LIBDIR)
+	$(INSTALL_DATA) $(ELFDIR_DLL_LIB) $(DEST_LIBDIR)/
 	$(MKINSDIR) $(DEST_BINDIR)
-	$(INSTALL) $(ELFLIB_MAJOR) $(DEST_BINDIR)
+	$(INSTALL) $(ELFLIB_BUILD_NAME) $(DEST_BINDIR)/
 install-elf: elf install-headers install-docs $(DEST_LIBDIR) $(INSTALL_ELFLIB_TARGET)
 install-all: install-elf install-static
 install: install-all
 #---------------------------------------------------------------------------
 # Tests
 #---------------------------------------------------------------------------
-runtests:
+runtests: $(OBJDIR_NORMAL_LIB)
 	cd test; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" OTHERLIBS="$(OTHERLIBS)" SLANGLIB="$(OBJDIR)"
 #---------------------------------------------------------------------------
 # Housekeeping

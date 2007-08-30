@@ -1,5 +1,5 @@
 CC		= @CC@
-CFLAGS		= @CFLAGS@
+CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
 LDFLAGS		= @LDFLAGS@ @DYNAMIC_LINK_FLAGS@
 #---------------------------------------------------------------------------
 # Installation location of the slang library
@@ -11,7 +11,7 @@ SLANG_INST_INC	= -I@includedir@
 SLANG_INST_LIB	= -L$(INST_LIB_DIR)
 #---------------------------------------------------------------------------
 SLANG_SRCINC	= -I@SRCDIR@
-SLANG_SRCLIB	= -L@OBJDIR@ -L@ELFDIR@
+SLANG_SRCLIB	= -L@ELFDIR@
 #---------------------------------------------------------------------------
 OTHER_LIBS	= @TERMCAP@ @DYNAMIC_LINK_LIB@ @LIBS@ -lm
 RPATH		= @RPATH@

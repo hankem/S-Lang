@@ -6,7 +6,7 @@
 @SET_MAKE@
 SHELL = /bin/sh
 
-all: static elf
+all: elf
 Makefile: configure
 	@echo "Makefile is more recent than the configure script".
 	@echo "Please re-run the configure script."

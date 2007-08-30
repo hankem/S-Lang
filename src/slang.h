@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20102
-#define SLANG_VERSION_STRING "pre2.1.2-14"
+#define SLANG_VERSION_STRING "pre2.1.2-16"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -231,13 +231,7 @@ typedef int (*FVOID_STAR)(void);
 # endif
 #endif
 
-#if defined(__WIN32__) || defined(__CYGWIN32__)
-# ifndef SLANG_DLL
-#  define SLANG_DLL 1
-# endif
-#endif
-
-#if (defined(__WIN32__) || defined(__CYGWIN32__)) && SLANG_DLL
+#if (defined(__WIN32__) || defined(__CYGWIN32__)) && defined(SLANG_DLL) && SLANG_DLL
 # define SL_EXPORT __declspec(dllexport)
 # define SL_IMPORT __declspec(dllimport)
 #else
