@@ -201,7 +201,7 @@ install-elf-and-links:
 install-elf-cygwin:
 	$(INSTALL_DATA) $(ELFDIR_DLL_LIB) $(DEST_LIBDIR)/
 	$(MKINSDIR) $(DEST_BINDIR)
-	$(INSTALL) $(ELFLIB_BUILD_NAME) $(DEST_BINDIR)/
+	$(INSTALL) $(ELFDIR_ELF_LIB) $(DEST_BINDIR)/
 install-elf: elf install-headers install-docs $(DEST_LIBDIR) $(INSTALL_ELFLIB_TARGET)
 install-all: install-elf install-static
 install: install-all
