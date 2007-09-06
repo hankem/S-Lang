@@ -45,6 +45,8 @@ Changes since 2.1.1
     wrappers around inlined versions.
 21. src/Makefile.in: Avoid creating a symlink if the target is the
     same as the link (affects cygwin).
+22. src/slsh.c: If exit is called without arguments, interpret that as
+    exit(0).
 
 {{{ Previous Versions
 

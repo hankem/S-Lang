@@ -35,7 +35,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.8.1-0";
+static char *Slsh_Version = "0.8.2-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -187,7 +187,7 @@ static void at_exit (SLang_Ref_Type *ref)
    AtExit_Hooks = a;
 }
 
-static void c_exit (int *code)
+static void c_exit (int status)
 {
    while (AtExit_Hooks != NULL)
      {
@@ -198,10 +198,25 @@ static void c_exit (int *code)
 	SLfree ((char *) AtExit_Hooks);
 	AtExit_Hooks = next;
      }
+
    if (SLang_get_error ())
      SLang_restart (1);
-   exit (*code);
+
+   exit (status);
 }
+
+static void exit_intrin (void)
+{
+   int status;
+   
+   if (SLang_Num_Function_Args == 0)
+     status = 0;
+   else if (-1 == SLang_pop_int (&status))
+     return;
+   
+   c_exit (status);
+}
+
 
 
 static void stat_mode_to_string (void)
@@ -404,7 +419,7 @@ static int setup_paths (void)
 /* Create the Table that S-Lang requires */
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
-   MAKE_INTRINSIC_I("exit", c_exit, VOID_TYPE),
+   MAKE_INTRINSIC_0("exit", exit_intrin, VOID_TYPE),
    MAKE_INTRINSIC_1("atexit", at_exit, VOID_TYPE, SLANG_REF_TYPE),
    MAKE_INTRINSIC_0("stat_mode_to_string", stat_mode_to_string, VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
@@ -679,6 +694,6 @@ int main (int argc, char **argv)
      }
 
    exit_val = SLang_get_error ();
-   c_exit (&exit_val);
+   c_exit (exit_val);
    return SLang_get_error ();
 }
