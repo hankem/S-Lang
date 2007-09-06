@@ -41,6 +41,10 @@ Changes since 2.1.1
 19. src/slrline.c: When completing a quoted string, the final quote
     character will automatically get added (instead of a space as
     before).
+20. src/slrline.c: SLang_peek_at_stack+SLang_pop_int recoded as
+    wrappers around inlined versions.
+21. src/Makefile.in: Avoid creating a symlink if the target is the
+    same as the link (affects cygwin).
 
 {{{ Previous Versions
 

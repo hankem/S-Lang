@@ -374,7 +374,7 @@ static int pop_n_objs_reverse (SLang_Object_Type *x, unsigned int n)
 }
 
 _INLINE_
-int SLang_peek_at_stack (void)
+static int peek_at_stack (void)
 {
    if (Stack_Pointer == Run_Stack)
      {
@@ -383,6 +383,11 @@ int SLang_peek_at_stack (void)
      }
 
    return (int) (Stack_Pointer - 1)->data_type;
+}
+
+int SLang_peek_at_stack (void)
+{
+   return peek_at_stack ();
 }
 
 int _pSLang_peek_at_stack2 (SLtype *_typep)
@@ -446,7 +451,7 @@ static int pop_ctrl_integer (int *i)
 	return 0;
      }
 #else
-   if (-1 == (type = SLang_peek_at_stack ()))
+   if (-1 == (type = peek_at_stack ()))
      return -1;
 #endif
 
@@ -650,7 +655,7 @@ static int _typecast_object_to_type (SLang_Object_Type *y, SLang_Object_Type *ob
 }
 
 _INLINE_
-int SLang_pop_int (int *i)
+  static int pop_int (int *i)
 {
    SLang_Object_Type *y;
    SLang_Object_Type obj;
@@ -675,7 +680,12 @@ int SLang_pop_int (int *i)
    return 0;
 }
 
-_INLINE_
+int SLang_pop_int (int *i)
+{
+   return pop_int (i);
+}
+
+
 int SLang_pop_array_index (SLindex_Type *i)
 {
    SLang_Object_Type *y;
@@ -1004,7 +1014,7 @@ static int increment_slang_frame_pointer (_pSLang_Function_Type *fun, unsigned i
 #if SLANG_HAS_QUALIFIERS
 static int set_qualifier (void)
 {
-   if (SLANG_NULL_TYPE == SLang_peek_at_stack ())
+   if (SLANG_NULL_TYPE == peek_at_stack ())
      {
 	Next_Function_Qualifiers = NULL;
 	return SLang_pop_null ();
@@ -1630,7 +1640,7 @@ set_struct_lvalue (SLBlock_Type *bc_blk)
    char *name;
    int op;
 
-   if (-1 == (type = SLang_peek_at_stack ()))
+   if (-1 == (type = peek_at_stack ()))
      return -1;
 
    GET_CLASS(cl,type);
@@ -1806,7 +1816,7 @@ set_array_lvalue (int op)
 
    if (is_unary)		       /* PLUSPLUS, MINUSMINUS */
      {
-	int type = SLang_peek_at_stack ();
+	int type = peek_at_stack ();
 	if (type == SLANG_ASSOC_TYPE)
 	  {
 	     return _pSLassoc_inc_value (num_args-1, 
@@ -2246,7 +2256,7 @@ static int push_struct_field (char *name)
    int type;
    SLang_Class_Type *cl;
 
-   if (-1 == (type = SLang_peek_at_stack ()))
+   if (-1 == (type = peek_at_stack ()))
      return -1;
 
    GET_CLASS(cl, (SLtype) type);
@@ -2685,7 +2695,7 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
 	next_fn_args = Next_Function_Num_Args;
 	Next_Function_Num_Args = 0;
 	if ((-1 == roll_stack (-(next_fn_args + 1)))
-	    || (-1 == (type = SLang_peek_at_stack ())))
+	    || (-1 == (type = peek_at_stack ())))
 	  goto return_error;
 
 	GET_CLASS(cl, (SLtype)type);
@@ -2815,9 +2825,9 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
 	       goto wrong_num_blocks_error;
 
 	     /* 3 elements: first, last, step */
-	     if ((-1 == SLang_pop_integer (&ctrl))
-		 || (-1 == SLang_pop_integer (&last))
-		 || (-1 == SLang_pop_integer (&first)))
+	     if ((-1 == pop_int (&ctrl))
+		 || (-1 == pop_int (&last))
+		 || (-1 == pop_int (&first)))
 	       goto return_error;
 	     
 #if SLANG_OPTIMIZE_FOR_SPEED	     
@@ -2871,7 +2881,7 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
 	if (num_blocks != 1)
 	  goto wrong_num_blocks_error;
 
-	if (-1 == SLang_pop_integer (&ctrl))
+	if (-1 == pop_int (&ctrl))
 	  goto return_error;
 	while (ctrl > 0)
 	  {
@@ -4407,7 +4417,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LABEL:
 	       {
 		  int test;
-		  if ((0 == SLang_pop_integer (&test))
+		  if ((0 == pop_int (&test))
 		      && (test == 0))
 		    return 0;
 	       }
