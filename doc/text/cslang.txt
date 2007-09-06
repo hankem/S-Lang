@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide, V2.0.4
   John E. Davis, jed@jedsoft.org
-  Jul 6, 2007
+  Sep 4, 2007
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -444,7 +444,8 @@
   with any application embedding the interpreter.  Moreover, if the
   application permits dynamically loaded modules, then there are a
   growing number of excellent quality modules for [1mslsh [22mthat can be
-  utilized by it.
+  utilized by it.  Applications that follow this recommendation are said
+  to be conforming.
 
   Files are searched as follows: If the name begins with the equivalent
   of "./" or "../", then it is searched for with respect to the current
@@ -503,7 +504,6 @@
   made available to the interpreter as a built-in function.  For this
   reason, the words `intrinsic' and `built-in' are often used
   interchangeably.
-
   Applications are expected to add application specific functions to the
   interpreter.  For example, [1mjed [22madds nearly 300 editor-specific
   intrinsic functions.  The application designer should think carefully

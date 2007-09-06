@@ -34,6 +34,13 @@ Changes since 2.1.1
     code that compiles against the library.
 16. Makefile: `make` will only build the shared version of the
     library.  Use `make static` to create the static version.
+17. src/slcmplex.c; Division by zero errors are no longer trapped.
+    This has been the default behavior for reals; this change
+    applies to complex numbers.
+18. */*/*.tm: Documentation updates
+19. src/slrline.c: When completing a quoted string, the final quote
+    character will automatically get added (instead of a space as
+    before).
 
 {{{ Previous Versions
 

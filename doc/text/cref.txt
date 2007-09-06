@@ -1,6 +1,6 @@
   {The [1mS-Lang [22mC Library Reference}
   John E. Davis, jed@jedsoft.org
-  Jul 6, 2007
+  Sep 4, 2007
   ____________________________________________________________
 
 

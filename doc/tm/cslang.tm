@@ -343,7 +343,8 @@
   and should work with any application embedding the interpreter.
   Moreover, if the application permits dynamically loaded modules,
   then there are a growing number of excellent quality modules for
-  \slsh that can be utilized by it.
+  \slsh that can be utilized by it.  Applications that follow this
+  recommendation are said to be conforming.
   }
 
   Files are searched as follows: If the name begins with the

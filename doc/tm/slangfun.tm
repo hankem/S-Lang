@@ -1,4 +1,4 @@
-#% -*- mode: tm; mode: fold; TAB:7 -*-
+#% -*- mode: tm; mode: fold;  -*-
 #%{{{Macros 
 
 #i linuxdoc.tm
@@ -41,11 +41,19 @@
 \linuxdoc
 \begin{\documentstyle}
 
-\title S-Lang Run-Time Library Reference: Version 2.0.5
+\title S-Lang Run-Time Library Intrinsic Function Reference: Version 2.1.0
 \author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 
 \toc
+
+\chapter{Preface} 
+This document describes the intrinsic functions that are available to
+any application that embeds the \slang interpreter.  In addition,
+\slsh defines a number of useful functions that are also available to
+conforming \slang applications.  Those functions are described in
+\href{http://www.jedsoft.org/slang/docs/}{The SLSH Library Reference}.
+
 \chapter{Data Types}
 #i rtl/datatype.tm
 

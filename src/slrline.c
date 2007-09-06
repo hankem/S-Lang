@@ -440,7 +440,7 @@ static int rl_complete (SLrline_Type *rli)
 
    if (-1 == SLang_pop_int (&start_point))
      return -1;
-
+   
    if (start_point < 0)
      start_point = 0;
 
@@ -492,7 +492,28 @@ static int rl_complete (SLrline_Type *rli)
      }
    (void) SLrline_del (rli, (unsigned int) delta);
    (void) SLrline_ins (rli, str0, nbytes);
-   /* if (n == 1) (void) SLrline_ins (rli, " ", 1); */
+
+   /* How should the completion be ended?
+    *   "foo/     -->  "foo/
+    *   "foo/bar  -->  "foo/bar"
+    *   "foo      -->  "foo"
+    *   foo       -->  fooSPACE
+    *   foo/bar   -->  fooSPACE
+    */
+   if ((n == 1) 
+       && nbytes && (str0[nbytes-1] != '/') && (str0[nbytes-1] != '\\'))
+     {
+	char qch = ' ';
+
+	if (start_point > 0)
+	  {
+	     ch0 = rli->buf[start_point-1];
+	     if ((ch0 == '"') || (ch0 == '\''))
+	       qch = ch0;
+	  }
+	if (qch != 0)
+	  (void) SLrline_ins (rli, &qch, 1);
+     }
 
    SLang_free_array (at);
    return 0;

@@ -23,8 +23,6 @@ private define filename_completions (partial_word)
 	variable st = stat_file (file);
 	if ((st != NULL) && (stat_is ("dir", st.st_mode)))
 	  completions[i] = path_concat (file, "");
-	else if (n == 1)
-	  completions[i] = strcat (completions[i], " ");
      }
    return completions;
 }

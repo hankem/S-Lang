@@ -605,11 +605,13 @@ static int complex_double_binary (int op,
 	for (n = 0; n < n_max; n += 2)
 	  {
 	     double b0 = b[0];
+#if 0
 	     if (b0 == 0.0)
 	       {
 		  SLang_set_error (SL_DIVIDE_ERROR);
 		  return -1;
 	       }
+#endif
 	     c[n] = a[0] / b0;
 	     c[n + 1] = a[1] / b0;
 	     a += da; b += db;
@@ -705,11 +707,13 @@ static int double_complex_binary (int op,
 	for (n = 0; n < n_max; n += 2)
 	  {
 	     double z[2];
+#if 0
 	     if ((b[0] == 0.0) && (b[1] == 0.0))
 	       {
 		  SLang_set_error (SL_DIVIDE_ERROR);
 		  return -1;
 	       }
+#endif
 	     z[0] = a[0];
 	     z[1] = 0.0;
 	     SLcomplex_divide (c + n, z, b);
@@ -819,11 +823,13 @@ static int complex_generic_binary (int op,
 	for (n = 0; n < n_max; n += 2)
 	  {
 	     double b0 = to_double((VOID_STAR)b);
+#if 0
 	     if (b0 == 0)
 	       {
 		  SLang_set_error (SL_DIVIDE_ERROR);
 		  return -1;
 	       }
+#endif
 	     c[n] = a[0] / b0;
 	     c[n + 1] = a[1] / b0;
 	     a += da; b += db;
@@ -922,11 +928,13 @@ static int generic_complex_binary (int op,
 	for (n = 0; n < n_max; n += 2)
 	  {
 	     double z[2];
+#if 0
 	     if ((b[0] == 0.0) && (b[1] == 0.0))
 	       {
 		  SLang_set_error (SL_DIVIDE_ERROR);
 		  return -1;
 	       }
+#endif
 	     z[0] = to_double((VOID_STAR)a);
 	     z[1] = 0.0;
 	     SLcomplex_divide (c + n, z, b);
