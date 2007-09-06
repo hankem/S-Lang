@@ -690,6 +690,9 @@ int main (int argc, char **argv)
    if (is_interactive)
      {
 	output_copyright ();
+	if (SLang_Traceback != SL_TB_FULL)
+	  SLang_Traceback = SL_TB_NONE;
+
 	(void) slsh_interactive ();
      }
 
