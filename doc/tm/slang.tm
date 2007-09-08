@@ -4338,7 +4338,7 @@
  representation include:
 #v+
     message ("The value is " + string (V));
-    vmessage ("The result of %S+%S is %S", V);
+    vmessage ("The result of %S+%S is %S", V1, V1, V1+V2);
     str = The value of V is $V"$;
 #v-
  For the \exmp{Vector_Type} one might want to use the string
