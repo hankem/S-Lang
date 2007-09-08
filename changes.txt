@@ -49,6 +49,7 @@ Changes since 2.1.1
     exit(0).
 23. src/slsh.c: Prior to entering interactive mode, turn tracebacks
     off.
+24. src/Makfile.in: LDFLAGS was not getting used.
 
 {{{ Previous Versions
 

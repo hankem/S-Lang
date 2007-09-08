@@ -69,7 +69,7 @@ DEST_HELPDIR	= $(DESTDIR)$(HELP_DIR)
 #---------------------------------------------------------------------------
 RPATH = @RPATH@
 
-LIBS = $(RPATH) $(SLANG_LIB) $(DL_LIB) -lm
+LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) $(DL_LIB) -lm
 #LIBS = $(RPATH) $(DL_LIB) -lm
 INCS = $(SLANG_INC)
 
