@@ -51,6 +51,8 @@ Changes since 2.1.1
     off.
 24. src/Makfile.in: LDFLAGS was not getting used.
 25. doc/tm/: Some typos corrected (Jörg Sommer)
+26. slsh/Makefile.in: slsh/doc/html/*.html gets installed in
+    $prefix/share/doc/slsh/.
 
 {{{ Previous Versions
 

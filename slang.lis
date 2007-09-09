@@ -239,7 +239,17 @@
 
 @slsh/doc/tm/slsh.tm
 @slsh/doc/tm/Makefile
+@slsh/doc/tm/slshfun.tm
+@slsh/doc/tm/local.tm
 @slsh/doc/man/slsh.1
+@slsh/doc/html/slshfun.html
+@slsh/doc/html/slshfun-1.html
+@slsh/doc/html/slshfun-2.html
+@slsh/doc/html/slshfun-3.html
+@slsh/doc/html/slshfun-4.html
+@slsh/doc/html/slshfun-5.html
+@slsh/doc/html/slshfun-6.html
+@slsh/doc/html/slshfun-7.html
 @slsh/scripts/badlinks 0755
 @slsh/scripts/htmlstrip 0755
 @slsh/scripts/ls 0755

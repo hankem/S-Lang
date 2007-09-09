@@ -25,6 +25,8 @@ clean:
 	-rm -f *~ *-error manpage.refs manpage.links
 distclean: clean
 	-rm -f slsh.1 slsh.sgml
-install: slsh.1
+install: slsh.1 slshfun.html
 	-mkdir ../man
 	-mv slsh.1 ../man
+	-mkdir ../html
+	-mv slshfun*.html ../html
