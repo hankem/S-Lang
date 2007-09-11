@@ -1,4 +1,8 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.1.2
+1. autoconf/Makefile.in: If any */Makefile.in is more recent than the
+   corresponding Makefile, request that the configure script be rerun.
+
 Changes since 2.1.1
 1. slsh/lib/readascii.sl: Typo in the usage message corrected.
 2. autoconf/aclocal.m4: Fixed elf link problem on freebsd (Renato
