@@ -2,6 +2,7 @@
 Changes since 2.1.2
 1. autoconf/Makefile.in: If any */Makefile.in is more recent than the
    corresponding Makefile, request that the configure script be rerun.
+2. src/slcmplex.c: If the complex number z is 0, then return 1 for z^0.
 
 Changes since 2.1.1
 1. slsh/lib/readascii.sl: Typo in the usage message corrected.

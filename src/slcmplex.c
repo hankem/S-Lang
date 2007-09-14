@@ -128,11 +128,23 @@ double *SLcomplex_divide (double *c, double *a, double *b)
 /* a^b = exp (b log a); */
 double *SLcomplex_pow (double *c, double *a, double *b)
 {
+   if ((a[0] == 0.0) && (b[0] == 0.0) && (a[1] == 0.0) && (b[1] == 0.0))
+     {
+	c[0] = 1.0;
+	c[1] = 0.0;
+	return c;
+     }
    return SLcomplex_exp (c, SLcomplex_times (c, b, SLcomplex_log (c, a)));
 }
 
 static double *complex_dpow (double *c, double *a, double b)
 {
+   if ((b == 0.0) && (a[0] == 0.0) && (a[1] == 0.0))
+     {
+	c[0] = 1.0;
+	c[1] = 0.0;
+	return c;
+     }
    SLcomplex_log (c, a);
    c[0] *= b;
    c[1] *= b;
@@ -141,6 +153,12 @@ static double *complex_dpow (double *c, double *a, double b)
 
 static double *dcomplex_pow (double *c, double a, double *b)
 {
+   if ((a == 0.0) && (b[0] == 0.0) && (b[1] == 0.0))
+     {
+	c[0] = 1.0;
+	c[1] = 0.0;
+	return c;
+     }
    a = log (a);
    c[0] = a * b[0];
    c[1] = a * b[1];
