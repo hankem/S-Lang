@@ -384,6 +384,8 @@ typedef struct _Error_Message_Type
 }
 Error_Message_Type;
 
+static char *Static_Error_Message = NULL;
+
 struct _pSLerr_Error_Queue_Type
 {
    Error_Message_Type *head;
@@ -531,12 +533,11 @@ static void print_queue (void)
 	
 	free_queued_messages (q);
      }
-#if 0
-   if (_pSLang_Error != SL_Usage_Error)
+   if (Static_Error_Message != NULL)
      {
-	print_error (_SLERR_MSG_ERROR, SLerr_strerror (_pSLang_Error));
+	print_error (_SLERR_MSG_ERROR, Static_Error_Message);
+	Static_Error_Message = NULL;
      }
-#endif
 }
 
 /* This function returns a pointer to the first error message in the queue.
@@ -615,6 +616,7 @@ int _pSLerr_suspend_messages (void)
 
 void _pSLerr_free_queued_messages (void)
 {
+   Static_Error_Message = NULL;
    free_queued_messages (Active_Error_Queue);
 }
 
@@ -626,7 +628,10 @@ static void set_error (int error)
     */
    if ((error == 0)
        || (_pSLang_Error == 0))
-     _pSLang_Error = error;
+     {
+	Static_Error_Message = NULL;
+	_pSLang_Error = error;
+     }
 
    if (_pSLinterpreter_Error_Hook != NULL)
      (*_pSLinterpreter_Error_Hook) (_pSLang_Error);
@@ -707,9 +712,19 @@ int SLang_set_error (int error)
 {
    set_error (error);
 
-   if (_pSLang_Error == 0)
+   if (error == 0)
      return 0;
 
+   if (error == SL_UserBreak_Error)
+     {
+	/* This function may be called from a SIGINT handler, in which case the 
+	 * error code will be SL_Usage_Error.
+	 */
+	/* print_error (_SLERR_MSG_ERROR, SLerr_strerror (_pSLang_Error)); */
+	Static_Error_Message = SLerr_strerror (error);
+	return 0;
+     }	
+   
    /* If a string is not in the message queue, then add one. */
    if (Active_Error_Queue != NULL)
      {
@@ -806,5 +821,6 @@ void _pSLerr_deinit (void)
    Suspend_Error_Messages = 0;
    Default_Error_Queue = NULL;
    Active_Error_Queue = NULL;
+   Static_Error_Message = NULL;
 }
 

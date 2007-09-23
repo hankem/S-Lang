@@ -3,6 +3,12 @@ Changes since 2.1.2
 1. autoconf/Makefile.in: If any */Makefile.in is more recent than the
    corresponding Makefile, request that the configure script be rerun.
 2. src/slcmplex.c: If the complex number z is 0, then return 1 for z^0.
+3. src/slerr.c: SLang_set_error: If the error code is
+   SL_UserBreak_Error, then do not add a string representation to the
+   queue in case this function was called from a signal handler.  This
+   avoids a call to malloc, which is generally a bad idea on systems
+   where malloc is not reentrant.
+4. slsh/lib/sldbcore.sl: The "c" alias was not working.  (John Houck)
 
 Changes since 2.1.1
 1. slsh/lib/readascii.sl: Typo in the usage message corrected.

@@ -433,6 +433,7 @@ Cmd_Table["step"] = &step_cmd;
 Cmd_Table["break"] = &break_cmd;
 Cmd_Table["delete"] = &delete_cmd;
 Cmd_Table["cont"] = &continue_cmd;
+Cmd_Table["continue"] = &continue_cmd;
 Cmd_Table["watch"] = &watch_cmd;
 Cmd_Table["list"] = &list_cmd;
 Cmd_Table["pprint"] = &pprint_cmd;
