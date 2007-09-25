@@ -718,7 +718,7 @@ int SLang_set_error (int error)
    if (error == SL_UserBreak_Error)
      {
 	/* This function may be called from a SIGINT handler, in which case the 
-	 * error code will be SL_Usage_Error.
+	 * error code will be SL_UserBreak_Error.
 	 */
 	/* print_error (_SLERR_MSG_ERROR, SLerr_strerror (_pSLang_Error)); */
 	Static_Error_Message = SLerr_strerror (error);
