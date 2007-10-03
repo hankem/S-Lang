@@ -495,6 +495,9 @@ static void dump_token (_pSLang_Token_Type *t)
 	b = "__deref_minusminus"; break;
       case _DEREF_POST_MINUSMINUS_TOKEN:
 	b = "__deref_pminusminus"; break;
+	
+      case _DEREF_FUNCALL_TOKEN:
+	b = "__deref_funcall"; break;
 
       case _NULL_TOKEN: b = "NULL"; break;
 	

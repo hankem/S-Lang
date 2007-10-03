@@ -17,7 +17,7 @@ define test_do_while (count_fun)
 	  continue;
 	i++;
      }
-   while (@count_fun (&count) < 6);
+   while ((@count_fun)(&count) < 6);
    if ((count != 6) or (i != 3))
      failed ("do_while 1: %S", count_fun);
 
@@ -29,7 +29,7 @@ define test_do_while (count_fun)
 	  break;
 	i++;
      }
-   while (@count_fun (&count) < 6);
+   while ((@count_fun)(&count) < 6);
    if ((count != 3) or (i != 3))
      failed ("do_while 2: %S", count_fun);
 }
@@ -39,7 +39,7 @@ define test_while (count_fun)
    variable i = 0;
    variable count = 0;
 
-   while (@count_fun (&count) < 6)
+   while ((@count_fun)(&count) < 6)
      {
 	if (i == 3)
 	  continue;
@@ -50,7 +50,7 @@ define test_while (count_fun)
 
    i = 0;
    count = 0;
-   while (@count_fun (&count) < 6)
+   while ((@count_fun)(&count) < 6)
      {
 	if (i == 3)
 	  break;
@@ -65,7 +65,7 @@ define test_for (count_fun)
    variable i = 0;
    variable count = 0;
 
-   for (count = 0; @count_fun (&count) < 6; )
+   for (count = 0; (@count_fun)(&count) < 6; )
      {
 	if (i == 3)
 	  continue;
@@ -75,7 +75,7 @@ define test_for (count_fun)
      failed ("while 1: %S", count_fun);
 
    i = 0;
-   for (count = 0; @count_fun (&count) < 6; )
+   for (count = 0; (@count_fun)(&count) < 6; )
      {
 	if (i == 3)
 	  break;

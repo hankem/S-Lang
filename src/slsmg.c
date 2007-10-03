@@ -988,13 +988,19 @@ static void do_copy (SLsmg_Char_Type *a, SLsmg_Char_Type *b)
 int SLsmg_Scroll_Hash_Border = 0;
 static unsigned long compute_hash (SLsmg_Char_Type *c, unsigned int n)
 {
-   SLsmg_Char_Type *csave, *cmax;
+   SLsmg_Char_Type *cmin, *cmax;
    int is_blank = 2;
 
-   c += SLsmg_Scroll_Hash_Border;
-   csave = c;
-   cmax = c + (n - SLsmg_Scroll_Hash_Border);
+   cmin = c;
+   cmax = c + n;
 
+   if (SLsmg_Scroll_Hash_Border > 0)
+     {
+	cmax -= SLsmg_Scroll_Hash_Border;
+	cmin += SLsmg_Scroll_Hash_Border;
+     }
+
+   c = cmin;
    while ((c < cmax) && is_blank)
      {
 	if ((c->wchars[0] != 32) || (c->nchars != 1))
@@ -1003,7 +1009,7 @@ static unsigned long compute_hash (SLsmg_Char_Type *c, unsigned int n)
      }
    if (is_blank) return 0;
 
-   return _pSLstring_hash ((unsigned char *)csave, (unsigned char *)cmax);
+   return _pSLstring_hash ((unsigned char *)cmin, (unsigned char *)cmax);
 }
 
 static unsigned long Blank_Hash;

@@ -2271,6 +2271,30 @@ static int push_struct_field (char *name)
    return (*cl->cl_sget) ((SLtype) type, name);
 }
 
+static int is_nametype_callable (SLang_Name_Type *nt)
+{
+   switch (nt->name_type)
+     {
+      case SLANG_PFUNCTION:
+      case SLANG_FUNCTION:
+      case SLANG_INTRINSIC:
+      case SLANG_ARITH_UNARY:
+      case SLANG_MATH_UNARY:
+      case SLANG_APP_UNARY:
+      case SLANG_ARITH_BINARY:
+	return 1;
+     }
+   return 0;
+}
+
+int _pSLang_ref_is_callable (SLang_Ref_Type *ref)
+{
+   if (ref->data_is_nametype == 0)
+     return 0;
+   
+   return is_nametype_callable (*(SLang_Name_Type **)ref->data);
+}
+
 static int inner_interp(register SLBlock_Type *);
 static int inner_interp_nametype (SLang_Name_Type *nt, int linenum)
 {
@@ -2285,6 +2309,25 @@ static int inner_interp_nametype (SLang_Name_Type *nt, int linenum)
    return inner_interp(bc_blks);
 }
 
+/* This function also frees the object */
+static int deref_call_object (SLang_Object_Type *obj, int linenum)
+{
+   if (obj->data_type == SLANG_REF_TYPE)
+     {
+	SLang_Ref_Type *ref = (SLang_Ref_Type *)obj->v.ref;
+	if ((ref != NULL) && ref->data_is_nametype 
+	    && is_nametype_callable (*(SLang_Name_Type **)ref->data))
+	  {
+	     int ret = inner_interp_nametype (*(SLang_Name_Type**)ref->data, linenum);
+	     SLang_free_ref (ref);
+	     return ret;
+	  }
+     }
+   SLang_verror (SL_TYPE_MISMATCH, "Expected a reference to a function");
+   SLang_free_object (obj);
+   return -1;
+}
+
 /*  This arises from code such as a.f(x,y) with the following on the stack:
  * 
  *     __args x y a
@@ -2297,9 +2340,6 @@ static int inner_interp_nametype (SLang_Name_Type *nt, int linenum)
 static int do_struct_method (char *name, int linenum)
 {
    SLang_Object_Type obj;
-   SLtype type;
-   SLang_Class_Type *cl;
-   int ret;
 
    if (-1 == SLdup_n (1))
      return -1;			       /* stack: __args x y a a */
@@ -2321,24 +2361,7 @@ static int do_struct_method (char *name, int linenum)
 	SLang_free_object (&obj);
 	return -1;
      }
-
-   type = obj.data_type;
-   if (type == SLANG_REF_TYPE)
-     {
-	SLang_Ref_Type *ref = (SLang_Ref_Type *)obj.v.ref;
-	if ((ref != NULL) && (ref->data_is_nametype))
-	  {
-	     ret = inner_interp_nametype (*(SLang_Name_Type**)ref->data, linenum);
-	     SLang_free_ref (ref);
-	     return ret;
-	  }
-     }
-
-   GET_CLASS(cl,type);
-   ret = (*cl->cl_dereference)(type, (VOID_STAR) &obj.v);
-   SLang_free_object (&obj);
-   
-   return ret;
+   return deref_call_object (&obj, linenum);    /* frees obj */
 }
 
 static void trace_dump (char *format, char *name, SLang_Object_Type *objs, int n, int dir)
@@ -3734,12 +3757,18 @@ static int dereference_object (void)
 }
 
 /* End the argument list, and make the function call */
-static int deref_fun_call (void)
+static int deref_fun_call (int linenum)
 {
+   SLang_Object_Type obj;
+
    if (-1 == end_arg_list ())
      return -1;
    Next_Function_Num_Args--;	       /* do not include function to be derefed. */
-   return dereference_object ();
+
+   if (-1 == pop_object(&obj))
+     return -1;
+
+   return deref_call_object (&obj, linenum);
 }
 
 static int case_function (void)
@@ -4299,8 +4328,11 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     (void) _pSLstruct_push_field_ref (addr->b.s_blk);
 	     break;
 
+	   case SLANG_BC_DEREF_FUN_CALL:
+	     (void) deref_fun_call (addr->linenum);
+	     break;
+
 #if USE_UNUSED_BYCODES_IN_SWITCH
-	   case SLANG_BC_UNUSED_0x2D:
 	   case SLANG_BC_UNUSED_0x2E:
 	   case SLANG_BC_UNUSED_0x2F:
 	   case SLANG_BC_UNUSED_0x30:
@@ -6028,29 +6060,6 @@ static void lang_try_now(void)
    Compile_ByteCode_Ptr = This_Compile_Block;
 }
 
-static int is_nametype_callable (SLang_Name_Type *nt)
-{
-   switch (nt->name_type)
-     {
-      case SLANG_PFUNCTION:
-      case SLANG_FUNCTION:
-      case SLANG_INTRINSIC:
-      case SLANG_ARITH_UNARY:
-      case SLANG_MATH_UNARY:
-      case SLANG_APP_UNARY:
-      case SLANG_ARITH_BINARY:
-	return 1;
-     }
-   return 0;
-}
-
-int _pSLang_ref_is_callable (SLang_Ref_Type *ref)
-{
-   if (ref->data_is_nametype == 0)
-     return 0;
-   
-   return is_nametype_callable (*(SLang_Name_Type **)ref->data);
-}
    
 /* returns positive number if name is a function or negative number if it
  is a variable.  If it is intrinsic, it returns magnitude of 1, else 2 */
@@ -7781,7 +7790,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case _DEREF_FUNCALL_TOKEN:
-	compile_call_direct (deref_fun_call, SLANG_BC_CALL_DIRECT);
+	compile_simple (SLANG_BC_DEREF_FUN_CALL);
 	break;
 
       case STRUCT_TOKEN:

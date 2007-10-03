@@ -9,6 +9,12 @@ Changes since 2.1.2
    avoids a call to malloc, which is generally a bad idea on systems
    where malloc is not reentrant.
 4. slsh/lib/sldbcore.sl: The "c" alias was not working.  (John Houck)
+5. src/slsmg.c: Avoid a possible segv if SLsmg_Scroll_Hash_Border is
+   greater than the display size. (Miroslav Lichvar).
+6. src/slang.c: Line number information was not always getting
+   propagated in slang code involving function dereferences, e.g.,
+   (@funcptr)(args).  The bug-fix checks to see that funcptr is
+   callable.
 
 Changes since 2.1.1
 1. slsh/lib/readascii.sl: Typo in the usage message corrected.
