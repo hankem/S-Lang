@@ -235,7 +235,9 @@ static void signal_handler (int sig)
 
    s = find_signal (sig);	       /* cannot fail here */
 
-   s->pending = 1;   
+   s->pending = 1;
+   if (sig == SIGINT)
+     SLKeyBoard_Quit = 1;
    _pSLang_signal_interrupt ();
 }
 

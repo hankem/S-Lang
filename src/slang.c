@@ -4166,7 +4166,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	switch (addr->bc_main_type)
 	  {
 	   case SLANG_BC_LAST_BLOCK:
-	     return 1;
+	     goto return_1;
 	   case SLANG_BC_LVARIABLE:
 	     PUSH_LOCAL_VARIABLE (addr->b.i_blk)
 	     break;
@@ -4451,7 +4451,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 		  int test;
 		  if ((0 == pop_int (&test))
 		      && (test == 0))
-		    return 0;
+		    goto return_0;
 	       }
 	     break;
 	     
@@ -4641,11 +4641,11 @@ static int inner_interp (SLBlock_Type *addr_start)
 	  /* End of SLANG_BC_BLOCK */
 
 	   case SLANG_BC_RETURN:
-	     Lang_Break_Condition = Lang_Return = Lang_Break = 1; return 1;
+	     Lang_Break_Condition = Lang_Return = Lang_Break = 1; goto return_1;
 	   case SLANG_BC_BREAK:
-	     Lang_Break_Condition = Lang_Break = 1; return 1;
+	     Lang_Break_Condition = Lang_Break = 1; goto return_1;
 	   case SLANG_BC_CONTINUE:
-	     Lang_Break_Condition = /* Lang_Continue = */ 1; return 1;
+	     Lang_Break_Condition = /* Lang_Continue = */ 1; goto return_1;
 #if SLANG_OPTIMIZE_FOR_SPEED
 	   case SLANG_BC_IF_BLOCK:
 	       {
@@ -4657,14 +4657,14 @@ static int inner_interp (SLBlock_Type *addr_start)
 		       if (addr1->bc_main_type == SLANG_BC_RETURN)
 			 {
 			    Lang_Break_Condition = Lang_Return = Lang_Break = 1; 
-			    return 1;
+			    goto return_1;
 			 }
 		       if (addr1->bc_main_type == SLANG_BC_RET_LVARIABLE)
 			 {
 			    if (0 != push_local_variable (addr1->b.i_blk))
 			      break;
 			    Lang_Break_Condition = Lang_Return = Lang_Break = 1;
-			    return 1;
+			    goto return_1;
 			 }
 		       inner_interp (addr1);
 		       if (Lang_Break_Condition) goto handle_break_condition;
@@ -5012,13 +5012,13 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     if (0 != push_local_variable (addr->b.i_blk))
 	       break;
 	     Lang_Break_Condition = Lang_Return = Lang_Break = 1; 
-	     return 1;
+	     goto return_1;
 	     
 	   case SLANG_BC_RET_LITERAL_INT:
 	     if (-1 == push_int_object (addr->bc_sub_type, (int) addr->b.l_blk))
 	       break;
 	     Lang_Break_Condition = Lang_Return = Lang_Break = 1;
-	     return 1;
+	     goto return_1;
 	     
 	   case SLANG_BC_MANY_LVARIABLE:
 	     (void) push_local_variable (addr->b.i_blk);
@@ -5245,7 +5245,19 @@ static int inner_interp (SLBlock_Type *addr_start)
    if (Lang_Return)
      Lang_Break = 1;
 
+return_1:
+#if SLANG_HAS_SIGNALS
+   if (Handle_Interrupt)
+     check_signals ();
+#endif
    return 1;
+
+return_0:
+#if SLANG_HAS_SIGNALS
+   if (Handle_Interrupt)
+     check_signals ();
+#endif
+   return 0;
 }
 
 /*}}}*/

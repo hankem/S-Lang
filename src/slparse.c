@@ -1001,6 +1001,10 @@ static void statement (_pSLang_Token_Type *ctok)
 #endif
 
       case SEMICOLON_TOKEN:
+#if SLANG_HAS_BOSEOS
+	eos = compile_bos (ctok, 3);
+	if (eos) compile_eos ();
+#endif
 	handle_semicolon (ctok);
 	break;
 

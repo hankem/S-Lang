@@ -60,6 +60,7 @@ private variable Debugger_Step	= 0;
 private variable STEP_NEXT	= 1;
 private variable STEP_STEP	= 2;
 private variable STEP_FINISH	= 3;
+private variable STEP_EXIT	= 4;
 private variable Breakpoints = NULL;
 private variable Breakpoint_Number = 1;
 private variable Current_Frame;
@@ -479,6 +480,8 @@ private define sigint_handler (sig)
 {
    Debugger_Step = STEP_STEP;
    Stop_Depth = INT_MAX;
+   if (Depth == 0)
+     throw UserBreakError;
 }
 
 private variable Old_Sigint_Handler;
@@ -492,7 +495,10 @@ private define deinit_sigint_handler ()
 private define init_sigint_handler ()
 {
 #ifexists SIGINT
-   signal (SIGINT, &sigint_handler, &Old_Sigint_Handler);
+   variable old;
+   signal (SIGINT, &sigint_handler, &old);
+   ifnot (_eqs(old, &sigint_handler))
+     Old_Sigint_Handler = old;
 #endif
 }
 
@@ -578,8 +584,11 @@ private define do_debug (file, line, bp_num)
    variable debug_hook = _set_debug_hook (NULL);
    EXIT_BLOCK
      {
-	() = _set_debug_hook (debug_hook);
-	init_sigint_handler ();
+	if (Debugger_Step != STEP_EXIT)
+	  {
+	     () = _set_debug_hook (debug_hook);
+	     init_sigint_handler ();
+	  }
      }
 
    variable info = _get_frame_info (Current_Frame);
@@ -783,6 +792,7 @@ define sldb_stop ()
    deinit_sigint_handler ();
    _bofeof_info = 0;
    _boseos_info = 0;
+   Debugger_Step = STEP_EXIT;
 }
 
 provide ("sldbcore");
