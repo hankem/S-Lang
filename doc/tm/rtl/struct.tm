@@ -83,7 +83,19 @@
 #v+
      v=[3,4,5]
 #v-
-\seealso{__add_unary, __add_binary, __add_destroy}
+\seealso{__add_unary, __add_binary, __add_destroy, __add_typecast}
+\done
+
+\function{__add_typecast}
+\synopsis{Add a typecast-function for a user-defined type}
+\usage{__add_typecast (DataType_Type user_type, DataType_Type totype, Ref_Type func)}
+\description
+  The \ifun{__add_typecast} function specifies a function to be called
+  to typecast the user-defined type to an object of type
+  \exmp{totype}.  The function must be defined to take a single
+  argument (the user-type to be converted) and must return an object
+  of type \exmp{totype}.
+\seealso{__add_unary, __add_binary, __add_destroy, __add_string}
 \done
 
 \function{__add_unary}

@@ -23,6 +23,8 @@ Changes since 2.1.2
    from inner_interp.
 10. src/slsig.c: If a slang script establishes a signal handler for
     SIGINT, then set SLKeyBoard_Quit to 1 if SIGINT is received.
+11. src/slstruct.c: New intrinsic:__add_typecast.  This may be used to
+    define a typecast function for a user-defined type.
 
 {{{ Previous Versions
 

@@ -7895,7 +7895,27 @@ __add_string
 
 
  SEE ALSO
-  __add_unary, __add_binary, __add_destroy
+  __add_unary, __add_binary, __add_destroy, __add_typecast
+
+--------------------------------------------------------------
+
+__add_typecast
+
+ SYNOPSIS
+  Add a typecast-function for a user-defined type
+
+ USAGE
+  __add_typecast (DataType_Type user_type, DataType_Type totype, Ref_Type func)
+
+ DESCRIPTION
+  The `__add_typecast' function specifies a function to be called
+  to typecast the user-defined type to an object of type
+  `totype'.  The function must be defined to take a single
+  argument (the user-type to be converted) and must return an object
+  of type `totype'.
+
+ SEE ALSO
+  __add_unary, __add_binary, __add_destroy, __add_string
 
 --------------------------------------------------------------
 

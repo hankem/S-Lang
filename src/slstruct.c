@@ -656,6 +656,14 @@ typedef struct
 }
 Unary_Op_Info_Type;
 
+typedef struct _Typecast_Info_Type
+{
+   SLang_Name_Type *typecast_fun;
+   SLtype totype;
+   struct _Typecast_Info_Type *next;
+}
+Typecast_Info_Type;
+  
 typedef struct _Struct_Info_Type
 {
    SLtype type;
@@ -665,6 +673,8 @@ typedef struct _Struct_Info_Type
    int unary_registered;
    Binary_Op_Info_Type *bi;
    Unary_Op_Info_Type *ui;
+   Typecast_Info_Type *ti;
+
    /* Other methods */
    SLang_Name_Type *destroy_method;
    SLang_Name_Type *string_method;
@@ -1229,6 +1239,95 @@ static void add_string_method (SLtype *typep, SLang_Ref_Type *ref)
    si->string_method = SLang_copy_function (f);
 }
 
+static Typecast_Info_Type *find_typecast (Struct_Info_Type *si, SLtype to)
+{
+   Typecast_Info_Type *ti = si->ti;
+
+   while (ti != NULL) 
+     {
+	if (ti->totype == to)
+	  return ti;
+	ti = ti->next;
+     }
+   return ti;
+}
+
+static int typecast_method (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+			    SLtype b_type, VOID_STAR bp)
+{
+   Struct_Info_Type *si;
+   Typecast_Info_Type *ti;
+   SLuindex_Type i;
+   SLang_Class_Type *acl, *bcl;
+   int (*apush) (SLtype, VOID_STAR);
+   int (*bpop) (SLtype, VOID_STAR);
+   unsigned int ainc, binc;
+   SLang_Name_Type *f;
+
+   if (NULL == (si = find_struct_info (a_type, 1)))
+     return -1;
+   
+   if ((NULL == (ti = find_typecast (si, b_type)))
+       || (NULL == (f = ti->typecast_fun)))
+     {
+	SLang_verror (SL_TYPE_MISMATCH, "Typecast method not found");
+	return -1;
+     }
+   
+   acl = _pSLclass_get_class (a_type);
+   bcl = _pSLclass_get_class (b_type);
+   apush = acl->cl_apush;
+   bpop = bcl->cl_apop;
+   ainc = acl->cl_sizeof_type;
+   binc = bcl->cl_sizeof_type;
+
+   for (i = 0; i < na; i++)
+     {
+	if ((-1 == SLang_start_arg_list ())
+	    || (-1 == (*apush) (a_type, ap))
+	    || (-1 == SLang_end_arg_list ())
+	    || (-1 == SLexecute_function (f))
+	    || (-1 == (*bpop)(b_type, bp)))
+	  return -1;
+
+	ap = (VOID_STAR) ((char *)ap + ainc);
+	bp = (VOID_STAR) ((char *)bp + binc);
+     }
+   
+   return 1;
+}
+   
+static void add_typecast_method (SLtype *fromtype, SLtype *totype, SLang_Ref_Type *ref)
+{
+   Struct_Info_Type *si;
+   SLang_Name_Type *f;
+   SLtype to = *totype, from = *fromtype;
+   Typecast_Info_Type *ti;
+
+   if (NULL == (f = SLang_get_fun_from_ref (ref)))
+     return;
+
+   if (NULL == (si = find_struct_info (from, 1)))
+     return;
+   
+   if (NULL != (ti = find_typecast (si, to)))
+     {
+	if (ti->typecast_fun != NULL)
+	  SLang_free_function (ti->typecast_fun);
+	ti->typecast_fun = SLang_copy_function (f);
+	return;
+     }
+
+   if (NULL == (ti = (Typecast_Info_Type *)SLmalloc (sizeof (Typecast_Info_Type))))
+     return;
+
+   ti->totype = to;
+   ti->typecast_fun = SLang_copy_function (f);
+   ti->next = si->ti;
+   si->ti = ti;
+   (void) SLclass_add_typecast (from, to, typecast_method, 1);
+}
+
 static int init_struct_with_user_methods (SLtype type, _pSLang_Struct_Type *s)
 {
    Struct_Info_Type *si;
@@ -1690,6 +1789,7 @@ static SLang_Intrin_Fun_Type Struct_Table [] =
    MAKE_INTRINSIC_0("__add_binary", add_binary_op_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("__add_destroy", add_destroy_method, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_2("__add_string", add_string_method, SLANG_VOID_TYPE, SLANG_DATATYPE_TYPE, SLANG_REF_TYPE),
+   MAKE_INTRINSIC_3("__add_typecast", add_typecast_method, SLANG_VOID_TYPE, SLANG_DATATYPE_TYPE, SLANG_DATATYPE_TYPE, SLANG_REF_TYPE),
 
    /* MAKE_INTRINSIC_I("_create_struct", create_struct, SLANG_VOID_TYPE), */
    SLANG_END_INTRIN_FUN_TABLE

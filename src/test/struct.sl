@@ -310,6 +310,70 @@ if (abs(X) != vector_abs(X))
 if (vector_string (X) != string (X))
   failed ("Vector string(X)");
 
+private define vector_to_list (v)
+{
+   return {v.x, v.y, v.z};
+}
+private define is_vector_eq_to_list (v, l)
+{
+   return ((length (l) == 3) 
+	   && (l[0] == v.x) && (l[1] == v.y) && (l[2] == v.z));
+}
+__add_typecast (Vector_Type, List_Type, &vector_to_list);
+
+private define vector_to_complex (v)
+{
+   return v.x + 1j*v.y;
+}
+private define is_vector_eq_to_complex (v, z)
+{
+   return (vector_to_complex (v) == z);
+}
+__add_typecast (Vector_Type, Complex_Type, &vector_to_complex);
+
+private define vector_to_stdout (v)
+{
+   return stdout;
+}
+private define is_vector_eq_to_stdout (v, s)
+{
+   return ((vector_to_stdout(v) == s)
+	   && (fileno (s) == fileno (v)));
+}
+__add_typecast (Vector_Type, File_Type, &vector_to_stdout);
+
+private define vector_to_string (v)
+{
+   return sprintf ("%S e_x + %S e_y + %S e_z", v.x, v.y, v.z);
+}
+private define is_vector_eq_to_string (v, z)
+{
+   return ((vector_to_string (v) == z)
+	   && (0 == strcmp (v, z)));
+}
+__add_typecast (Vector_Type, String_Type, &vector_to_string);
+
+private define test_typecast (to, eqsfun)
+{
+   variable v = vector (4,5,6);
+   variable l = typecast (v, to);
+   ifnot ((@eqsfun) (v, l))
+     failed ("simple vector not equal to %S", to);
+   v = [vector(4,5,6), 
+		 vector (7,8,9),
+		 vector (1i,2i,3i)];
+   l = typecast (v, to);
+   _for (0, length (v)-1, 1)
+     {
+	variable i = ();
+	ifnot ((@eqsfun) (v[i], l[i]))
+	  failed ("array of vectors not equal to array of %S", to);
+     }
+}
+test_typecast (List_Type, &is_vector_eq_to_list);
+test_typecast (Complex_Type, &is_vector_eq_to_complex);
+test_typecast (File_Type, &is_vector_eq_to_stdout);
+test_typecast (String_Type, &is_vector_eq_to_string);
 
 % test binary
 private variable Y = vector (4, 5, 6);
