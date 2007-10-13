@@ -700,6 +700,7 @@ INSTALL_MODULE
 INSTALL_ELFLIB_TARGET
 ELFLIB_BUILD_NAME
 SLANG_DLL_CFLAGS
+nc5config
 TERMCAP
 MISC_TERMINFO_DIRS
 SRCDIR
@@ -10606,20 +10607,104 @@ _ACEOF
 
 
 
-{ echo "$as_me:$LINENO: checking for Terminfo" >&5
-echo $ECHO_N "checking for Terminfo... $ECHO_C" >&6; }
-MISC_TERMINFO_DIRS="$FINKPREFIX/share/terminfo"
-if test ! -d $MISC_TERMINFO_DIRS
-then
-   MISC_TERMINFO_DIRS=""
+# Extract the first word of "ncurses5-config", so it can be a program name with args.
+set dummy ncurses5-config; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_path_nc5config+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $nc5config in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_nc5config="$nc5config" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_nc5config="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_nc5config" && ac_cv_path_nc5config="no"
+  ;;
+esac
+fi
+nc5config=$ac_cv_path_nc5config
+if test -n "$nc5config"; then
+  { echo "$as_me:$LINENO: result: $nc5config" >&5
+echo "${ECHO_T}$nc5config" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
 fi
 
-JD_Terminfo_Dirs="/usr/lib/terminfo \
-                 /usr/share/terminfo \
-                 /usr/share/lib/terminfo \
-		 /usr/local/lib/terminfo \
-		 $MISC_TERMINFO_DIRS"
 
+if test "$nc5config" = "no"
+then
+  # Extract the first word of "ncurses5w-config", so it can be a program name with args.
+set dummy ncurses5w-config; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_path_nc5config+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $nc5config in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_nc5config="$nc5config" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_nc5config="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_nc5config" && ac_cv_path_nc5config="no"
+  ;;
+esac
+fi
+nc5config=$ac_cv_path_nc5config
+if test -n "$nc5config"; then
+  { echo "$as_me:$LINENO: result: $nc5config" >&5
+echo "${ECHO_T}$nc5config" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+fi
+{ echo "$as_me:$LINENO: checking for terminfo" >&5
+echo $ECHO_N "checking for terminfo... $ECHO_C" >&6; }
+if test "$nc5config" != "no"
+then
+   MISC_TERMINFO_DIRS=`$nc5config --terminfo`
+else
+   MISC_TERMINFO_DIRS=""
+fi
+JD_Terminfo_Dirs="$MISC_TERMINFO_DIRS \
+                  /usr/lib/terminfo \
+                  /usr/share/terminfo \
+                  /usr/share/lib/terminfo \
+		  /usr/local/lib/terminfo"
 TERMCAP=-ltermcap
 
 for terminfo_dir in $JD_Terminfo_Dirs
@@ -10706,14 +10791,15 @@ EOF
   fi
 
 
-    { echo "$as_me:$LINENO: checking for the pcre library and header files " >&5
-echo $ECHO_N "checking for the pcre library and header files ... $ECHO_C" >&6; }
 
 
 
  jd_pcre_include_dir=""
  jd_pcre_library_dir=""
- jd_with_pcre_library=""
+ if test X"$jd_with_pcre_library" = X
+ then
+   jd_with_pcre_library=""
+ fi
 
 
 # Check whether --with-pcre was given.
@@ -10729,15 +10815,15 @@ fi
      jd_with_pcre_library="no"
     ;;
    x)
-    { { echo "$as_me:$LINENO: error: --with-pcre requires a value-- try yes or no" >&5
-echo "$as_me: error: --with-pcre requires a value-- try yes or no" >&2;}
-   { (exit 1); exit 1; }; }
+        jd_with_pcre_library="yes"
     ;;
    xunspecified)
     ;;
    xyes)
+    jd_with_pcre_library="yes"
     ;;
    *)
+    jd_with_pcre_library="yes"
     jd_pcre_include_dir="$jd_with_pcre_arg"/include
     jd_pcre_library_dir="$jd_with_pcre_arg"/lib
     ;;
@@ -10762,6 +10848,7 @@ echo "$as_me: error: --with-pcrelib requres a value" >&2;}
    { (exit 1); exit 1; }; }
     ;;
    *)
+    jd_with_pcre_library="yes"
     jd_pcre_library_dir="$jd_with_pcrelib_arg"
     ;;
  esac
@@ -10785,14 +10872,16 @@ echo "$as_me: error: --with-pcreinc requres a value" >&2;}
    xno)
      ;;
    *)
+    jd_with_pcre_library="yes"
     jd_pcre_include_dir="$jd_with_pcreinc_arg"
    ;;
  esac
 
-  if test X"$jd_with_pcre_library" = X
+  { echo "$as_me:$LINENO: checking for the pcre library and header files " >&5
+echo $ECHO_N "checking for the pcre library and header files ... $ECHO_C" >&6; }
+  if test X"$jd_with_pcre_library" != Xno
   then
     jd_pcre_inc_file=
-    jd_with_pcre_library="yes"
 
     if test "X$jd_pcre_inc_file" = "X"
     then
@@ -10843,6 +10932,9 @@ echo "$as_me: error: --with-pcreinc requres a value" >&2;}
        case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
+	   ;;
+	 *cygwin* )
+	   exts="dll.a so a"
 	   ;;
 	 * )
 	   exts="so a"
@@ -10941,6 +11033,7 @@ fi
   else
     { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
+    jd_with_pcre_library="no"
     PCRE_INC=""
     PCRE_LIB=""
   fi
@@ -10960,14 +11053,15 @@ fi
 
 
 
-    { echo "$as_me:$LINENO: checking for the onig library and header files oniguruma.h" >&5
-echo $ECHO_N "checking for the onig library and header files oniguruma.h... $ECHO_C" >&6; }
 
 
 
  jd_onig_include_dir=""
  jd_onig_library_dir=""
- jd_with_onig_library=""
+ if test X"$jd_with_onig_library" = X
+ then
+   jd_with_onig_library=""
+ fi
 
 
 # Check whether --with-onig was given.
@@ -10983,15 +11077,15 @@ fi
      jd_with_onig_library="no"
     ;;
    x)
-    { { echo "$as_me:$LINENO: error: --with-onig requires a value-- try yes or no" >&5
-echo "$as_me: error: --with-onig requires a value-- try yes or no" >&2;}
-   { (exit 1); exit 1; }; }
+        jd_with_onig_library="yes"
     ;;
    xunspecified)
     ;;
    xyes)
+    jd_with_onig_library="yes"
     ;;
    *)
+    jd_with_onig_library="yes"
     jd_onig_include_dir="$jd_with_onig_arg"/include
     jd_onig_library_dir="$jd_with_onig_arg"/lib
     ;;
@@ -11016,6 +11110,7 @@ echo "$as_me: error: --with-oniglib requres a value" >&2;}
    { (exit 1); exit 1; }; }
     ;;
    *)
+    jd_with_onig_library="yes"
     jd_onig_library_dir="$jd_with_oniglib_arg"
     ;;
  esac
@@ -11039,14 +11134,16 @@ echo "$as_me: error: --with-oniginc requres a value" >&2;}
    xno)
      ;;
    *)
+    jd_with_onig_library="yes"
     jd_onig_include_dir="$jd_with_oniginc_arg"
    ;;
  esac
 
-  if test X"$jd_with_onig_library" = X
+  { echo "$as_me:$LINENO: checking for the onig library and header files oniguruma.h" >&5
+echo $ECHO_N "checking for the onig library and header files oniguruma.h... $ECHO_C" >&6; }
+  if test X"$jd_with_onig_library" != Xno
   then
     jd_onig_inc_file=oniguruma.h
-    jd_with_onig_library="yes"
 
     if test "X$jd_onig_inc_file" = "X"
     then
@@ -11097,6 +11194,9 @@ echo "$as_me: error: --with-oniginc requres a value" >&2;}
        case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
+	   ;;
+	 *cygwin* )
+	   exts="dll.a so a"
 	   ;;
 	 * )
 	   exts="so a"
@@ -11195,6 +11295,7 @@ fi
   else
     { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
+    jd_with_onig_library="no"
     ONIG_INC=""
     ONIG_LIB=""
   fi
@@ -11214,14 +11315,15 @@ fi
 
 
 
-    { echo "$as_me:$LINENO: checking for the png library and header files " >&5
-echo $ECHO_N "checking for the png library and header files ... $ECHO_C" >&6; }
 
 
 
  jd_png_include_dir=""
  jd_png_library_dir=""
- jd_with_png_library=""
+ if test X"$jd_with_png_library" = X
+ then
+   jd_with_png_library=""
+ fi
 
 
 # Check whether --with-png was given.
@@ -11237,15 +11339,15 @@ fi
      jd_with_png_library="no"
     ;;
    x)
-    { { echo "$as_me:$LINENO: error: --with-png requires a value-- try yes or no" >&5
-echo "$as_me: error: --with-png requires a value-- try yes or no" >&2;}
-   { (exit 1); exit 1; }; }
+        jd_with_png_library="yes"
     ;;
    xunspecified)
     ;;
    xyes)
+    jd_with_png_library="yes"
     ;;
    *)
+    jd_with_png_library="yes"
     jd_png_include_dir="$jd_with_png_arg"/include
     jd_png_library_dir="$jd_with_png_arg"/lib
     ;;
@@ -11270,6 +11372,7 @@ echo "$as_me: error: --with-pnglib requres a value" >&2;}
    { (exit 1); exit 1; }; }
     ;;
    *)
+    jd_with_png_library="yes"
     jd_png_library_dir="$jd_with_pnglib_arg"
     ;;
  esac
@@ -11293,14 +11396,16 @@ echo "$as_me: error: --with-pnginc requres a value" >&2;}
    xno)
      ;;
    *)
+    jd_with_png_library="yes"
     jd_png_include_dir="$jd_with_pnginc_arg"
    ;;
  esac
 
-  if test X"$jd_with_png_library" = X
+  { echo "$as_me:$LINENO: checking for the png library and header files " >&5
+echo $ECHO_N "checking for the png library and header files ... $ECHO_C" >&6; }
+  if test X"$jd_with_png_library" != Xno
   then
     jd_png_inc_file=
-    jd_with_png_library="yes"
 
     if test "X$jd_png_inc_file" = "X"
     then
@@ -11351,6 +11456,9 @@ echo "$as_me: error: --with-pnginc requres a value" >&2;}
        case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
+	   ;;
+	 *cygwin* )
+	   exts="dll.a so a"
 	   ;;
 	 * )
 	   exts="so a"
@@ -11449,6 +11557,7 @@ fi
   else
     { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
+    jd_with_png_library="no"
     PNG_INC=""
     PNG_LIB=""
   fi
@@ -11475,14 +11584,15 @@ fi
 
 ICONV_MODULE=""
 
-    { echo "$as_me:$LINENO: checking for the iconv library and header files " >&5
-echo $ECHO_N "checking for the iconv library and header files ... $ECHO_C" >&6; }
 
 
 
  jd_iconv_include_dir=""
  jd_iconv_library_dir=""
- jd_with_iconv_library=""
+ if test X"$jd_with_iconv_library" = X
+ then
+   jd_with_iconv_library=""
+ fi
 
 
 # Check whether --with-iconv was given.
@@ -11498,15 +11608,15 @@ fi
      jd_with_iconv_library="no"
     ;;
    x)
-    { { echo "$as_me:$LINENO: error: --with-iconv requires a value-- try yes or no" >&5
-echo "$as_me: error: --with-iconv requires a value-- try yes or no" >&2;}
-   { (exit 1); exit 1; }; }
+        jd_with_iconv_library="yes"
     ;;
    xunspecified)
     ;;
    xyes)
+    jd_with_iconv_library="yes"
     ;;
    *)
+    jd_with_iconv_library="yes"
     jd_iconv_include_dir="$jd_with_iconv_arg"/include
     jd_iconv_library_dir="$jd_with_iconv_arg"/lib
     ;;
@@ -11531,6 +11641,7 @@ echo "$as_me: error: --with-iconvlib requres a value" >&2;}
    { (exit 1); exit 1; }; }
     ;;
    *)
+    jd_with_iconv_library="yes"
     jd_iconv_library_dir="$jd_with_iconvlib_arg"
     ;;
  esac
@@ -11554,14 +11665,16 @@ echo "$as_me: error: --with-iconvinc requres a value" >&2;}
    xno)
      ;;
    *)
+    jd_with_iconv_library="yes"
     jd_iconv_include_dir="$jd_with_iconvinc_arg"
    ;;
  esac
 
-  if test X"$jd_with_iconv_library" = X
+  { echo "$as_me:$LINENO: checking for the iconv library and header files " >&5
+echo $ECHO_N "checking for the iconv library and header files ... $ECHO_C" >&6; }
+  if test X"$jd_with_iconv_library" != Xno
   then
     jd_iconv_inc_file=
-    jd_with_iconv_library="yes"
 
     if test "X$jd_iconv_inc_file" = "X"
     then
@@ -11612,6 +11725,9 @@ echo "$as_me: error: --with-iconvinc requres a value" >&2;}
        case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
+	   ;;
+	 *cygwin* )
+	   exts="dll.a so a"
 	   ;;
 	 * )
 	   exts="so a"
@@ -11710,6 +11826,7 @@ fi
   else
     { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
+    jd_with_iconv_library="no"
     ICONV_INC=""
     ICONV_LIB=""
   fi
@@ -12737,6 +12854,7 @@ INSTALL_MODULE!$INSTALL_MODULE$ac_delim
 INSTALL_ELFLIB_TARGET!$INSTALL_ELFLIB_TARGET$ac_delim
 ELFLIB_BUILD_NAME!$ELFLIB_BUILD_NAME$ac_delim
 SLANG_DLL_CFLAGS!$SLANG_DLL_CFLAGS$ac_delim
+nc5config!$nc5config$ac_delim
 TERMCAP!$TERMCAP$ac_delim
 MISC_TERMINFO_DIRS!$MISC_TERMINFO_DIRS$ac_delim
 SRCDIR!$SRCDIR$ac_delim
@@ -12748,7 +12866,6 @@ PCRE_MODULE!$PCRE_MODULE$ac_delim
 ONIG_LIB!$ONIG_LIB$ac_delim
 ONIG_INC!$ONIG_INC$ac_delim
 ONIG_MODULE!$ONIG_MODULE$ac_delim
-PNG_LIB!$PNG_LIB$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -12790,6 +12907,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+PNG_LIB!$PNG_LIB$ac_delim
 PNG_INC!$PNG_INC$ac_delim
 PNG_MODULE!$PNG_MODULE$ac_delim
 ICONV_LIB!$ICONV_LIB$ac_delim
@@ -12810,7 +12928,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 18; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 19; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

@@ -25,6 +25,15 @@ Changes since 2.1.2
     SIGINT, then set SLKeyBoard_Quit to 1 if SIGINT is received.
 11. src/slstruct.c: New intrinsic:__add_typecast.  This may be used to
     define a typecast function for a user-defined type.
+12. autoconf/aclocal.m4: Added support for ncurses5-config to query
+    the terminfo path (Wenchieh Yen).
+13. src/slang.h: If __APPLE__ is defined, then also define __unix__.
+14. src/slmath.c: Avoid a NULL pointer dereference when feqs(a,b) is
+    called with mixed scalar and array arguments.
+15. src/slsmg,c: Avoid writing a double-wide character to the last
+    column of the display.
+16. src/sltermin.c: Search the autoconf-derived terminfo dirs before
+    the hard-coded paths (Wenchieh Yen).
 
 {{{ Previous Versions
 

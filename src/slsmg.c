@@ -709,21 +709,33 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 		  continue;
 	       }
 
-	     if (col + 2 > max_col)
-	       {
-		  ADD_CHAR_OR_BREAK('>');
-		  break;
-	       }
-	     
-	     if (col == start_col - 1)
+	     if (col + 1 == start_col)
 	       {
 		  /* double width character is clipped at left part of screen.
-		   * So, display right edge as a space */
-		  col++;
+		   * So, display right edge as a space 
+		   */
+		  col++;	       /* left edge */
 		  ADD_CHAR_OR_BREAK('<');
 		  continue;
 	       }
+	     
+	     if (i != 0) 	       /* finish active cell */
+	       NEXT_CHAR_CELL;
 
+	     if (last_was_double_width)
+	       {
+		  /* and right half of the cell */
+		  last_was_double_width = 0;
+		  NEXT_CHAR_CELL;
+	       }
+
+	     if (col + 2 > max_col)
+	       {
+		  /* right side of character gets clipped */
+		  ADD_TO_CHAR_CELL('>');
+		  col++;
+		  break;
+	       }
 	     ADD_CHAR_OR_BREAK(wc);
 	     last_was_double_width = 1;
 	     continue;

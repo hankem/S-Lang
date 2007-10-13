@@ -407,36 +407,53 @@ define test_feqs (a, b, relerr, abserr)
      failed ("feqs(float,float) did not return expected result");
 }
 
+private define test_feqs1 (a, b, c, d)
+{
+   test_feqs (a, b, c, d);
+
+   if ((typeof (a) == Array_Type) 
+       && (typeof (b) == Array_Type))
+     {
+	variable i, n = length (a);
+	_for i (0, n-1, 1)
+	  {
+	     test_feqs (a, b[i], c, d);
+	     test_feqs (a[i], b, c, d);
+	  }
+     }
+}
+
+	     
 foreach (10.0^[-12:20])
 {
    $1 = ();
    $2 = $1 * 1.01;
-   test_feqs ($1, $2, 0.001, 1e-6);
+   test_feqs1 ($1, $2, 0.001, 1e-6);
 
    $2 = -$1 * 1.01;
-   test_feqs ($1, $2, 0.001, 1e-6);
+   test_feqs1 ($1, $2, 0.001, 1e-6);
 
    $1 = -$1;
    $2 = $1 * 1.01;
-   test_feqs ($1, $2, 0.001, 1e-6);
+   test_feqs1 ($1, $2, 0.001, 1e-6);
 
    $2 = -$1 * 1.01;
-   test_feqs ($1, $2, 0.001, 1e-6);
+   test_feqs1 ($1, $2, 0.001, 1e-6);
 }
 
 $1 = 10.0^[-12:20];
 $2 = $1 * 1.01;
-test_feqs ($1, $2, 0.001, 1e-6);
+test_feqs1 ($1, $2, 0.001, 1e-6);
 
 $2 = -$1 * 1.01;
-test_feqs ($1, $2, 0.001, 1e-6);
+test_feqs1 ($1, $2, 0.001, 1e-6);
 
 $1 = -$1;
 $2 = $1 * 1.01;
-test_feqs ($1, $2, 0.001, 1e-6);
+test_feqs1 ($1, $2, 0.001, 1e-6);
 
 $2 = -$1 * 1.01;
-test_feqs ($1, $2, 0.001, 1e-6);
+test_feqs1 ($1, $2, 0.001, 1e-6);
 
 if (feqs (_NaN,_NaN,0.1, 1.0))
   failed ("feqs (_NaN,_NaN)");

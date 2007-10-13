@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20103
-#define SLANG_VERSION_STRING "pre2.1.3-11"
+#define SLANG_VERSION_STRING "pre2.1.3-16"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -43,7 +43,7 @@ USA.
 # endif
 #endif /* __watcomc__ */
 
-#if defined(unix) || defined(__unix)
+#if defined(unix) || defined(__unix) || defined(__APPLE__)
 # ifndef __unix__
 #  define __unix__ 1
 # endif

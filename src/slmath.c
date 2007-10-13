@@ -1154,7 +1154,12 @@ static int do_binary_function_c (int (*f)(double, double,VOID_STAR), VOID_STAR c
 
    if ((a_ast.at != NULL) || (b_ast.at != NULL))
      {
-	if (NULL == (c_ast.at = SLang_create_array1 (SLANG_CHAR_TYPE, 0, NULL, a_ast.at->dims, a_ast.at->num_dims, 1)))
+	if (a_ast.at != NULL)
+	  c_ast.at = SLang_create_array1 (SLANG_CHAR_TYPE, 0, NULL, a_ast.at->dims, a_ast.at->num_dims, 1);
+	else
+	  c_ast.at = SLang_create_array1 (SLANG_CHAR_TYPE, 0, NULL, b_ast.at->dims, b_ast.at->num_dims, 1);
+	
+	if (c_ast.at == NULL)
 	  {
 	     free_array_or_scalar (&a_ast);
 	     free_array_or_scalar (&b_ast);

@@ -232,17 +232,18 @@ static char *read_string_table (FILE *fp, SLterminfo_Type *t)
 
 static char *Terminfo_Dirs [] =
 {
-   NULL, /* $HOME/.terminfo */
-   NULL, /* $TERMINFO */
+   "", /* $HOME/.terminfo */
+   "", /* $TERMINFO */
+#ifdef MISC_TERMINFO_DIRS
+   MISC_TERMINFO_DIRS,
+#endif
    "/usr/share/terminfo",
    "/usr/lib/terminfo",
    "/usr/share/lib/terminfo",
    "/etc/terminfo",
+   "/lib/terminfo",
    "/usr/local/lib/terminfo",
-#ifdef MISC_TERMINFO_DIRS
-   MISC_TERMINFO_DIRS,
-#endif
-   ""
+   NULL,
 };
 
 void _pSLtt_tifreeent (SLterminfo_Type *t)
@@ -260,12 +261,11 @@ void _pSLtt_tifreeent (SLterminfo_Type *t)
 
 SLterminfo_Type *_pSLtt_tigetent (char *term)
 {
-   char *tidir;
-   int i;
+   char **tidirs, *tidir;
    FILE *fp = NULL;
    char file[1024];
    static char home_ti [1024];
-   char *home;
+   char *env;
    SLterminfo_Type *ti;
 
    if (
@@ -297,32 +297,29 @@ SLterminfo_Type *_pSLtt_tigetent (char *term)
    /* If we are on a termcap based system, use termcap */
    if (0 == tcap_getent (term, ti)) return ti;
 
-   if (NULL != (home = _pSLsecure_getenv ("HOME")))
+   if (NULL != (env = _pSLsecure_getenv ("HOME")))
      {
-	strncpy (home_ti, home, sizeof (home_ti) - 11);
+	strncpy (home_ti, env, sizeof (home_ti) - 11);
 	home_ti [sizeof(home_ti) - 11] = 0;
 	strcat (home_ti, "/.terminfo");
 	Terminfo_Dirs [0] = home_ti;
      }
 
-   Terminfo_Dirs[1] = _pSLsecure_getenv ("TERMINFO");
-   i = 0;
-   while (1)
-     {
-	tidir = Terminfo_Dirs[i];
-	if (tidir != NULL)
-	  {
-	     if (*tidir == 0)
-	       break;		       /* last one */
+   if (NULL != (env = _pSLsecure_getenv ("TERMINFO")))
+     Terminfo_Dirs[1] = env;
 
-	     if (sizeof (file) > strlen (tidir) + 4 + strlen (term))
-	       {
-		  sprintf (file, "%s/%c/%s", tidir, *term, term);
-		  if (NULL != (fp = open_terminfo (file, ti)))
-		    break;
-	       }
+   tidirs = Terminfo_Dirs;
+   while (NULL != (tidir = *tidirs++))
+     {
+	if (*tidir == 0)
+	  continue;
+
+	if (sizeof (file) > strlen (tidir) + 4 + strlen (term))
+	  {
+	     sprintf (file, "%s/%c/%s", tidir, *term, term);
+	     if (NULL != (fp = open_terminfo (file, ti)))
+	       break;
 	  }
-	i++;
      }
 
 #ifdef SLANG_UNTIC
