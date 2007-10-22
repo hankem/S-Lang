@@ -34,6 +34,12 @@ Changes since 2.1.2
     column of the display.
 16. src/sltermin.c: Search the autoconf-derived terminfo dirs before
     the hard-coded paths (Wenchieh Yen).
+17. doc/tm/rtl/math.tm: feqs documentation updated to reflect a
+    default relative difference of 0.01.
+18. doc/tm/rtl/eval.tm: In one example, get_path_delimiter is
+    incorrectly used (Frank Primini).
+19. src/slstrops.c: Memory corruption was occuring when using a number
+    greater than 10^256 in a "%f" format statement.
 
 {{{ Previous Versions
 

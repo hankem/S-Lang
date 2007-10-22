@@ -156,6 +156,11 @@ static int my_isinf (double x)
 }
 #endif
 
+int _pSLmath_isinf (double x)
+{
+   return ISINF_FUN (x);
+}
+
 #ifdef HAVE_ROUND
 # define ROUND_FUN	round
 #else

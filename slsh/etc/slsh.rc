@@ -22,7 +22,7 @@ static define dir_exists (dir)
 public define prepend_to_slang_load_path (p)
 {
    if (dir_exists (p))
-     set_slang_load_path (strcat (p, ":", get_slang_load_path ()));
+     set_slang_load_path (sprintf ("%s%c%s", p, path_get_delimiter (), get_slang_load_path ()));
 }
 
 %!%+
@@ -37,7 +37,7 @@ public define prepend_to_slang_load_path (p)
 public define append_to_slang_load_path (p)
 {
    if (dir_exists (p))
-     set_slang_load_path (strcat(get_slang_load_path (), ":", p));
+     set_slang_load_path (sprintf ("%s%c%s", get_slang_load_path (), path_get_delimiter (), p));
 }
 
 () = evalfile ("autoload.sl");

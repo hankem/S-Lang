@@ -147,8 +147,8 @@
        if (0 == stat_is ("dir", s.st_mode))
          return;
 
-       variable d = path_get_delimiter ();
-       set_slang_load_path (strcat (p, d, get_slang_load_path ()));
+       p = sprintf ("%s%c%s", p, path_get_delimiter (), get_slang_load_path ());
+       set_slang_load_path (p);
     }
 #v-
 \notes

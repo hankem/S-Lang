@@ -10964,10 +10964,11 @@ echo $ECHO_N "checking for the pcre library and header files ... $ECHO_C" >&6; }
     fi
   fi
 
-  if test "$jd_with_pcre_library" = "yes"
+  if test X"$jd_pcre_include_dir" != X -a "$jd_pcre_library_dir" != X
   then
     { echo "$as_me:$LINENO: result: yes: $jd_pcre_library_dir and $jd_pcre_include_dir" >&5
 echo "${ECHO_T}yes: $jd_pcre_library_dir and $jd_pcre_include_dir" >&6; }
+    jd_with_pcre_library="yes"
             PCRE_LIB=-L$jd_pcre_library_dir
     if test "X$jd_pcre_library_dir" = "X/usr/lib"
     then
@@ -11226,10 +11227,11 @@ echo $ECHO_N "checking for the onig library and header files oniguruma.h... $ECH
     fi
   fi
 
-  if test "$jd_with_onig_library" = "yes"
+  if test X"$jd_onig_include_dir" != X -a "$jd_onig_library_dir" != X
   then
     { echo "$as_me:$LINENO: result: yes: $jd_onig_library_dir and $jd_onig_include_dir" >&5
 echo "${ECHO_T}yes: $jd_onig_library_dir and $jd_onig_include_dir" >&6; }
+    jd_with_onig_library="yes"
             ONIG_LIB=-L$jd_onig_library_dir
     if test "X$jd_onig_library_dir" = "X/usr/lib"
     then
@@ -11488,10 +11490,11 @@ echo $ECHO_N "checking for the png library and header files ... $ECHO_C" >&6; }
     fi
   fi
 
-  if test "$jd_with_png_library" = "yes"
+  if test X"$jd_png_include_dir" != X -a "$jd_png_library_dir" != X
   then
     { echo "$as_me:$LINENO: result: yes: $jd_png_library_dir and $jd_png_include_dir" >&5
 echo "${ECHO_T}yes: $jd_png_library_dir and $jd_png_include_dir" >&6; }
+    jd_with_png_library="yes"
             PNG_LIB=-L$jd_png_library_dir
     if test "X$jd_png_library_dir" = "X/usr/lib"
     then
@@ -11757,10 +11760,11 @@ echo $ECHO_N "checking for the iconv library and header files ... $ECHO_C" >&6; 
     fi
   fi
 
-  if test "$jd_with_iconv_library" = "yes"
+  if test X"$jd_iconv_include_dir" != X -a "$jd_iconv_library_dir" != X
   then
     { echo "$as_me:$LINENO: result: yes: $jd_iconv_library_dir and $jd_iconv_include_dir" >&5
 echo "${ECHO_T}yes: $jd_iconv_library_dir and $jd_iconv_include_dir" >&6; }
+    jd_with_iconv_library="yes"
             ICONV_LIB=-L$jd_iconv_library_dir
     if test "X$jd_iconv_library_dir" = "X/usr/lib"
     then

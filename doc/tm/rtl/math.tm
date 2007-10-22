@@ -163,7 +163,7 @@
 
  The tolerances are specified as relative and absolute differences via
  the optional third and fourth arguments.  If no optional arguments
- are present, the tolerances default to \exmp{reldiff=0.001} and
+ are present, the tolerances default to \exmp{reldiff=0.01} and
  \exmp{absdiff=1e-6}.  If only the relative difference has been
  specified, the absolute difference (\exmp{absdiff}) will be taken to
  be 0.0.

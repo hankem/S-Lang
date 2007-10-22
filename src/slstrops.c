@@ -1518,6 +1518,11 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	     if (SLang_pop_double(&x)) return (out);
 	     use_double = 1;
 	     guess_size = 256;
+	     if (fabs(x) > 1e38)
+	       {
+		  if (0 == _pSLmath_isinf (x))
+		    guess_size += (int) log10 (fabs(x));
+	       }
 	     use_long = 0;
 	     break;
 #endif

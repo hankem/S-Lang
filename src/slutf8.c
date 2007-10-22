@@ -288,9 +288,9 @@ SLuchar_Type *SLutf8_bskip_char (SLuchar_Type *smin, SLuchar_Type *s)
 
 
 /* This function counts the number of wide characters in a UTF-8 encoded
- * string.  Each byte in an invalid sequence is counted as a single character.
- * If the string contains illegal values, the bytes making up the character is
- * counted as 1 character.
+ * string.  Each byte in an invalid sequence is counted as a single
+ * character. If the string contains illegal values, the illegal byte
+ * is counted as 1 character.
  */
 unsigned int SLutf8_strlen (SLuchar_Type *s, int ignore_combining)
 {

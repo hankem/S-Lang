@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.2-1: JD_WITH_LIBRARY bug-fix
 dnl# 0.2.2:  Use ncurses5-config to search for terminfo dirs.
 dnl# 0.2.1:  Add .dll.a to list of extensions to when searching for libs (cygwin)
 dnl# 0.2.0:  Added install target name and more fixes for cygwin
@@ -915,9 +916,10 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
     fi
   fi
 
-  if test "$jd_with_$1_library" = "yes"
+  if test X"$jd_$1_include_dir" != X -a "$jd_$1_library_dir" != X
   then
     AC_MSG_RESULT(yes: $jd_$1_library_dir and $jd_$1_include_dir)
+    jd_with_$1_library="yes"
     dnl#  Avoid using /usr/lib and /usr/include because of problems with
     dnl#  gcc on some solaris systems.
     JD_ARG1[]_LIB=-L$jd_$1_library_dir
