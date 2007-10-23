@@ -40,6 +40,7 @@ Changes since 2.1.2
     incorrectly used (Frank Primini).
 19. src/slstrops.c: Memory corruption was occuring when using a number
     greater than 10^256 in a "%f" format statement.
+20. src/slstrops.c: Small tweak in the way #19 was implemented.
 
 {{{ Previous Versions
 

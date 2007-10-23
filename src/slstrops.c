@@ -1521,7 +1521,14 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	     if (fabs(x) > 1e38)
 	       {
 		  if (0 == _pSLmath_isinf (x))
-		    guess_size += (int) log10 (fabs(x));
+		    {
+		       double expon = log10 (fabs(x));
+		       if (expon > (double) 0xFFFF)
+			 ch = 'E';
+		       else
+			 guess_size += (unsigned int) expon;
+		    }
+		  else ch = 'E';
 	       }
 	     use_long = 0;
 	     break;

@@ -382,9 +382,12 @@ test_char (-0x78, "\x78");
 test_char (-0xAB, "\xAB");
 
 #ifexists Double_Type
-_for $1 (0, 400, 1)
+_for $1 (0, 4000, 10)
 {
    () = sprintf ("%f", 10^$1);
+   () = sprintf ("%f", -10^$1);
+   () = sprintf ("%f", 10^-$1);
+   () = sprintf ("%f", -10^-$1);
 }
 #endif
 	 
