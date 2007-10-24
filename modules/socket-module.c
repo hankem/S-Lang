@@ -414,8 +414,11 @@ static Host_Addr_Info_Type *get_host_addr_info (char *host)
    char **h_addr_list;
    unsigned int i, num;
 
+#ifndef INADDR_NONE
+# define INADDR_NONE ((in_addr_t)(-1))
+#endif
    if ((isdigit (*host))
-       && (-1L != (long)(addr = inet_addr (host))))
+       && (INADDR_NONE != (addr = inet_addr (host))))
      {
 	/* Numerical address */
 	if (NULL == (hinfo = alloc_host_addr_info (1, sizeof(in_addr_t))))
