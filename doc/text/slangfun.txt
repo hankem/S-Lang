@@ -2248,8 +2248,8 @@ set_slang_load_path
        if (0 == stat_is ("dir", s.st_mode))
          return;
 
-       variable d = path_get_delimiter ();
-       set_slang_load_path (strcat (p, d, get_slang_load_path ()));
+       p = sprintf ("%s%c%s", p, path_get_delimiter (), get_slang_load_path ());
+       set_slang_load_path (p);
     }
 
 
@@ -3114,7 +3114,7 @@ feqs
 
  The tolerances are specified as relative and absolute differences via
  the optional third and fourth arguments.  If no optional arguments
- are present, the tolerances default to `reldiff=0.001' and
+ are present, the tolerances default to `reldiff=0.01' and
  `absdiff=1e-6'.  If only the relative difference has been
  specified, the absolute difference (`absdiff') will be taken to
  be 0.0.
