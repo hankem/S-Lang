@@ -1037,7 +1037,7 @@ int _pSLang_get_qualifiers (SLang_Struct_Type **qp)
 #endif
 
 _INLINE_
-int SLang_start_arg_list (void)
+static int start_arg_list (void)
 {
    if (Frame_Pointer_Depth < SLANG_MAX_RECURSIVE_DEPTH)
      {
@@ -1050,6 +1050,11 @@ int SLang_start_arg_list (void)
 
    SLang_verror (SL_STACK_OVERFLOW, "Frame Stack Overflow");
    return -1;
+}
+
+int SLang_start_arg_list (void)
+{
+   return start_arg_list ();
 }
 
 _INLINE_ static int end_arg_list (void)
@@ -1778,7 +1783,7 @@ static int make_unit_object (SLang_Object_Type *a, SLang_Object_Type *u)
  * __args i A __eargs __aget X op __args i A __eargs __aput
  * Here, __eargs implies a call to do_bc_call_direct_frame with either
  * the aput or aget function.  In addition, __args represents a call to 
- * SLang_start_arg_list.  Of course, i represents a set of indices.
+ * start_arg_list.  Of course, i represents a set of indices.
  * 
  * Note: If op is an unary operation (e.g., ++ or --), then X will not
  * be present an will have to be taken to be 1.
@@ -6335,7 +6340,7 @@ static void optimize_block2 (SLBlock_Type *b)
 	       }
 	     break;
 	   case SLANG_BC_CALL_DIRECT_LVAR:
-	     if (b->b.call_function != SLang_start_arg_list)
+	     if (b->b.call_function != start_arg_list)
 	       {
 		  b += 2;	       /* combined code, add 2 */
 		  break;
@@ -6358,7 +6363,7 @@ static void optimize_block2 (SLBlock_Type *b)
 	     break;
 
 	   case SLANG_BC_CALL_DIRECT_LINT:
-	     if (b->b.call_function != SLang_start_arg_list)
+	     if (b->b.call_function != start_arg_list)
 	       {
 		  b += 2;	       /* combined code, add 2 */
 		  break;
@@ -7837,7 +7842,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case ARG_TOKEN:
-	compile_call_direct (SLang_start_arg_list, SLANG_BC_CALL_DIRECT);
+	compile_call_direct (start_arg_list, SLANG_BC_CALL_DIRECT);
 	break;
 
       case EARG_TOKEN:

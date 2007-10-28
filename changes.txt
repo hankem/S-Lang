@@ -43,6 +43,8 @@ Changes since 2.1.2
 20. src/slstrops.c: Small tweak in the way #19 was implemented.
 21. modules/socket-module.c: If INADDR_NONE is defined, use it to test
     the return value of inet_addr.
+22. src/slang.c: SLang_start_arg_list made a wrapper around
+    start_arg_list.
 
 {{{ Previous Versions
 
