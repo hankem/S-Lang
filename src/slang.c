@@ -8612,6 +8612,9 @@ static int add_generic_table (SLang_NameSpace_Type *ns,
 	     t->name = name;
 	  }
 
+	if (-1 == _pSLcheck_identifier_syntax (name))
+	  return -1;
+
 	if (NULL == (name = SLang_create_slstring (name)))
 	  return -1;
 
