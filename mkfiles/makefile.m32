@@ -1,0 +1,27 @@
+# -*-sh-*-
+MAKE = mingw32-make
+MFLAGS = COPY=copy RM=del
+DESTDIR =
+PREFIX = /mingw/local
+CONFDIR = /mingw/local/etc
+#
+SLSH_DEFS = SLSH_CONF_DIR=$(CONFDIR) SLSH_LIB_DIR=$(PREFIX)/share/slsh
+SLANG_DEFS = prefix=$(PREFIX)
+
+all:
+	cd src && $(MAKE) $(MFLAGS) $(SLANG_DEFS)
+	cd slsh && $(MAKE) $(MFLAGS) $(SLSH_DEFS)
+	cd modules && $(MAKE) $(MFLAGS)
+	echo .
+	echo To install it, run $(MAKE) install.
+	echo .
+#
+clean:
+	cd src && $(MAKE) $(MFLAGS) clean
+	cd slsh && $(MAKE) $(MFLAGS) clean
+	cd modules && $(MAKE) $(MFLAGS) clean
+#
+install: all
+	mkfiles\runslsh.bat mkfiles\install.sl --destdir="$(DESTDIR)" --prefix="$(PREFIX)" install
+#
+.PHONY: all install clean

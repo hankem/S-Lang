@@ -44,7 +44,7 @@ static char *Slsh_Version = "0.8.2-0";
 #endif
 
 #ifndef SLSH_PATH_ENV
-# define SLSH_PATH_ENV "SLSH_CONF_DIR"
+# define SLSH_PATH_ENV "SLSH_PATH"
 #endif
 
 #ifndef SLSH_LIB_DIR_ENV

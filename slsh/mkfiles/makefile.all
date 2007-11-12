@@ -222,8 +222,11 @@ SRCDIR = .# Location of sources
 RSPFILE =
 RSP_PREFIX =
 RSP_POSTFIX =
-COMPILE_CMD = $(CC) -c $(CFLAGS) -I$(SLANGINC) -o #
-COMPILE_DEPS =
+DEFS = -DSLSH_CONF_DIR='"$(SLSH_CONF_DIR)"' -DSLSH_PATH='"$(SLSH_LIB_DIR)"'
+COMPILE_CMD = $(CC) -c $(CFLAGS) $(DEFS) -I$(SLANGINC) -o #
+SLSH_CONF_DIR = /etc
+SLSH_LIB_DIR = /usr/share/slsh
+COMPILE_DEPS = 
 RM = rm
 COPY = cp
 #}}}
@@ -391,7 +394,7 @@ $(OBJDIR)$(P)readline.$(O) : $(SRCDIR)$(P)readline.c $(COMPILE_DEPS)
 	$(COMPILE_CMD)$(OBJDIR)$(P)readline.$(O) $(SRCDIR)$(P)readline.c
 
 clean:
-	$(RM) $(OBJDIR)$(P)*.$(O)
+	cd $(OBJDIR) && $(RM) *.$(O) *.exe
 
 !endif   #NOT HELP
 

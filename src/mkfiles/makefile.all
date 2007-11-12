@@ -284,15 +284,21 @@ RANLIB = ranlib
 # This Makefile is for the MINGW32 environment
 CC = $(TOOL_PREFIX)gcc
 !   ifdef DLL
-CFLAGS = -DWIN32 -W -Wall -O2 -fno-strength-reduce -DSLANG_DLL=1
+CFLAGS = -DWIN32 -W -Wall -O2 -DSLANG_DLL=1
 !   else
-CFLAGS = -DWIN32 -W -Wall -O2 -fno-strength-reduce
+CFLAGS = -DWIN32 -W -Wall -O2
 !   endif
 P = /#
 O = o # Object extension
 SRCDIR = .# Location of sources
 OBJDIR = gw32objs# Location of objects
 TGTBASE=$(OBJDIR)/libslang
+prefix=/mingw/local
+module_install_dir = $(prefix)/lib/slang/v2/modules#
+install_doc_dir = $(prefix)/share/doc/slang/v2
+slstd_C_FLAGS = -DSLANG_DOC_DIR='"$(install_doc_dir)"' -DSLANG_INSTALL_PREFIX='"$(prefix)"'
+slimport_C_FLAGS = -DMODULE_INSTALL_DIR='"$(module_install_dir)"'
+
 TARGET = $(TGTBASE).a
 COMPILE_CMD = $(CC) -c $(CFLAGS) -o #
 LIBDEPS =
@@ -596,7 +602,7 @@ $(OBJDIR)$(P)sltoken.$(O) : $(SRCDIR)$(P)sltoken.c $(CONFIG_H)
 	$(COMPILE_CMD)$(OBJDIR)$(P)sltoken.$(O) $(SRCDIR)$(P)sltoken.c
 
 $(OBJDIR)$(P)slstd.$(O) : $(SRCDIR)$(P)slstd.c $(CONFIG_H)
-	$(COMPILE_CMD)$(OBJDIR)$(P)slstd.$(O) $(SRCDIR)$(P)slstd.c
+	$(COMPILE_CMD)$(OBJDIR)$(P)slstd.$(O) $(slstd_C_FLAGS) $(SRCDIR)$(P)slstd.c
 
 $(OBJDIR)$(P)slsmg.$(O) : $(SRCDIR)$(P)slsmg.c $(CONFIG_H)
 	$(COMPILE_CMD)$(OBJDIR)$(P)slsmg.$(O) $(SRCDIR)$(P)slsmg.c
@@ -690,7 +696,7 @@ $(OBJDIR)$(P)slcmplex.$(O) : $(SRCDIR)$(P)slcmplex.c $(CONFIG_H)
 $(OBJDIR)$(P)slarrfun.$(O) : $(SRCDIR)$(P)slarrfun.c $(CONFIG_H)
 	$(COMPILE_CMD)$(OBJDIR)$(P)slarrfun.$(O) $(SRCDIR)$(P)slarrfun.c
 $(OBJDIR)$(P)slimport.$(O) : $(SRCDIR)$(P)slimport.c $(CONFIG_H)
-	$(COMPILE_CMD)$(OBJDIR)$(P)slimport.$(O) $(SRCDIR)$(P)slimport.c
+	$(COMPILE_CMD)$(OBJDIR)$(P)slimport.$(O) $(slimport_C_FLAGS) $(SRCDIR)$(P)slimport.c
 $(OBJDIR)$(P)slpath.$(O) : $(SRCDIR)$(P)slpath.c $(CONFIG_H)
 	$(COMPILE_CMD)$(OBJDIR)$(P)slpath.$(O) $(SRCDIR)$(P)slpath.c
 $(OBJDIR)$(P)slcompat.$(O) : $(SRCDIR)$(P)slcompat.c $(CONFIG_H)
@@ -740,6 +746,6 @@ $(OBJDIR)$(P)slw32tty.$(O) : $(SRCDIR)$(P)slw32tty.c $(CONFIG_H)
 !endif
 
 clean:
-	$(RM) $(OBJDIR)$(P)*.$(O)
-
+	cd $(OBJDIR) && $(RM) *.$(O) *.dll *.a
+#
 !endif   #NOT HELP
