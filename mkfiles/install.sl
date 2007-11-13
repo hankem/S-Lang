@@ -65,6 +65,16 @@ private define install_libslang (root, objdir)
    install_file ("src/$objdir/libslang.dll"$, bindir);
 }
 
+private define install_slang_doc (root)
+{
+   variable dir = "$root/share/doc/slang/v2"$;
+   () = mkdir_p (dir);
+   install_file ("changes.txt", dir);
+   install_file ("COPYING", dir);
+   install_file ("doc/slangdoc.html", dir);
+   install_file ("doc/text/*.txt", dir);
+}
+
 private define install_slsh (prefix, confdir, objdir)
 {
    variable dir = "$prefix/bin"$;
@@ -81,11 +91,11 @@ private define install_slsh (prefix, confdir, objdir)
 
    dir = "$prefix/share/slsh/rline"$;
    () = mkdir_p (dir);
-   install_files ("slsh/lib/rline/*.sl", dir);
+   install_files ("slsh/lib/rline/*", dir);
 
    dir = "$prefix/share/slsh/scripts"$;
    () = mkdir_p (dir);
-   install_files ("slsh/lib/scripts/*", dir);
+   install_files ("slsh/scripts/*", dir);
 
    dir = "$prefix/share/slsh/local-packages"$;
    () = mkdir_p (dir);
@@ -166,6 +176,7 @@ define slsh_main ()
    
    variable objdir = "gw32objs";
    install_libslang (root, objdir);
+   install_slang_doc (root);
    install_slsh (root, confdir, objdir);
    install_modules (root);
 }

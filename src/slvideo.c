@@ -1182,6 +1182,7 @@ int SLtt_init_video (void)
 
 #ifdef WIN32_VIDEO /*{{{*/
 
+# define UNICODE 1
 #include <windows.h>
 
 static HANDLE hStdout = INVALID_HANDLE_VALUE;
@@ -1393,11 +1394,17 @@ write_attributes (SLsmg_Char_Type *src, unsigned int count)
 	if (src->nchars)
 	  {
 	     SLtt_reverse_video (src->color & SLSMG_COLOR_MASK);
-	     p->Char.AsciiChar = src->wchars[0];
+	     if (_pSLtt_UTF8_Mode)
+	       p->Char.UnicodeChar = src->wchars[0];
+	     else
+	       p->Char.AsciiChar = src->wchars[0];
 	  }
 	else
 	  {
-	     p->Char.AsciiChar = 0;
+	     if (_pSLtt_UTF8_Mode)
+	       p->Char.UnicodeChar = 0;
+	     else
+	       p->Char.AsciiChar = 0;
 	  }
 	p->Attributes = Attribute_Byte;
 	p++;
@@ -1447,10 +1454,12 @@ void SLtt_putchar (char ch)
    DWORD bytes;
    WORD attr;
    COORD c;
+   WCHAR wch;
 
+   wch = (unsigned char) ch;
    if (Current_Color) SLtt_normal_video ();
    win32_video_getxy ();
-   switch (ch)
+   switch (wch)
      {
       case 7:			/* ^G - break */
 	SLtt_beep (); break;
@@ -1462,7 +1471,7 @@ void SLtt_putchar (char ch)
 	c.X = Cursor_Col;
 	c.Y = Cursor_Row;
 	attr = Attribute_Byte;
-	WriteConsoleOutputCharacter(hStdout, &ch, 1, c, &bytes);
+	WriteConsoleOutputCharacter(hStdout, &wch, 1, c, &bytes);
 	WriteConsoleOutputAttribute(hStdout, &attr, 1, c, &bytes);
 	goto_rc_abs (Cursor_Row, Cursor_Col + 1);
      }
@@ -1517,6 +1526,7 @@ static int win32_resize (void)
    return 0;
 }
 
+static int Save_Code_Page = 0;
 static int win32_init (void)
 {
    SECURITY_ATTRIBUTES sec;
@@ -1542,6 +1552,12 @@ static int win32_init (void)
 	return -1;
      }
 
+   Save_Code_Page = GetConsoleOutputCP ();
+   if (_pSLtt_UTF8_Mode)
+     {
+	(void) SetConsoleOutputCP (65001);
+	(void) fprintf (stderr, "CodePage = %d\n", GetConsoleOutputCP ());
+     }
    return 0;
 }
 
@@ -1585,6 +1601,7 @@ int SLtt_reset_video (void)
      (void) SetConsoleActiveScreenBuffer(hStdout);
 
    hStdout = INVALID_HANDLE_VALUE;
+   (void) SetConsoleOutputCP (Save_Code_Page);
    return 0;
 }
 

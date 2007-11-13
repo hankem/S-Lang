@@ -5,6 +5,10 @@ Changes since 2.1.3
 2. slsh/slsh.c: If ENV_SLSH_PATH is undefined, set it to SLSH_PATH
 3. */mkfiles/*: Modified the various makefile.all files to facilitate
    mingw32 builds.  Read INSTALL.pc for quick-start.
+4. mkfiles/install.sl: Added a function to install the slang docs
+5. src/slvideo.c: #define UNICODE so that wide-character functions are
+   used instead of byte functions.  Also codepage set to 65001 in
+   unicode mode.
 
 Changes since 2.1.2
 1. autoconf/Makefile.in: If any */Makefile.in is more recent than the

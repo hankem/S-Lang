@@ -205,7 +205,9 @@ static void update_display (void)
    
    SLsmg_gotorc (row, 0);
    SLsmg_reverse_video ();
-   SLsmg_printf ("%s", (File_Name == NULL) ? "<stdin>" : File_Name);
+   SLsmg_printf ("%s | UTF-8 = %d", 
+		 (File_Name == NULL) ? "<stdin>" : File_Name,
+		 SLutf8_is_utf8_mode ());
    SLsmg_erase_eol ();
    SLsmg_refresh ();
    
