@@ -2391,3 +2391,9 @@ int SLtt_utf8_enable (int mode)
 
    return _pSLtt_UTF8_Mode = mode;
 }
+
+int SLtt_is_utf8_mode (void)
+{
+   return _pSLtt_UTF8_Mode;
+}
+
