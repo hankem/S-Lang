@@ -10,6 +10,8 @@ Changes since 2.1.3
    used instead of byte functions.  Also codepage set to 65001 in
    unicode mode.
 6. src/slvideo.c: Added SLtt_is_utf8_mode.
+7. src/sltermin.c:  Added support for new ncurses hex-encoded terminfo
+   directories.
 
 Changes since 2.1.2
 1. autoconf/Makefile.in: If any */Makefile.in is more recent than the

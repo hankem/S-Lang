@@ -314,9 +314,12 @@ SLterminfo_Type *_pSLtt_tigetent (char *term)
 	if (*tidir == 0)
 	  continue;
 
-	if (sizeof (file) > strlen (tidir) + 4 + strlen (term))
+	if (sizeof (file) > strlen (tidir) + 5 + strlen (term))
 	  {
 	     sprintf (file, "%s/%c/%s", tidir, *term, term);
+	     if (NULL != (fp = open_terminfo (file, ti)))
+	       break;
+	     sprintf (file, "%s/%02x/%s", tidir, (unsigned char)*term, term);
 	     if (NULL != (fp = open_terminfo (file, ti)))
 	       break;
 	  }
