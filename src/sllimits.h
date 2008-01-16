@@ -79,6 +79,9 @@ USA.
 # define SL_MAX_FILES			256
 #endif
 
+/* slarrfun.inc: Default value of the innerprod block size */
+#define SLANG_INNERPROD_BLOCK_SIZE	29
+
 #if !defined(__MSDOS_16BIT__)
 # define SLTT_MAX_SCREEN_COLS 512
 # define SLTT_MAX_SCREEN_ROWS 512

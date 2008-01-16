@@ -801,6 +801,7 @@ static int ref_cmp (SLtype type, VOID_STAR a, VOID_STAR b, int *c)
    return 0;
 }
 
+/* NULL is permitted here */
 int SLang_push_function (SLang_Name_Type *nt)
 {
    return _pSLang_push_nt_as_ref (nt);

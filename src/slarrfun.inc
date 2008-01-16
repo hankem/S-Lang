@@ -41,11 +41,68 @@ static void INNERPROD_FUNCTION
    GENERIC_TYPE_A *a;
    GENERIC_TYPE_B *b;
    GENERIC_TYPE_C *c;
+   unsigned int kmin;
+   unsigned int block = Inner_Prod_Block_Size;
+
+   block *= sizeof (double)/sizeof(GENERIC_TYPE_B);
 
    c = (GENERIC_TYPE_C *) ct->data;
    b = (GENERIC_TYPE_B *) bt->data;
    a = (GENERIC_TYPE_A *) at->data;
-   
+#if 1
+   for (kmin = 0; kmin < inner_loops; kmin += block)
+     {
+	unsigned int jmin;
+	unsigned int kmax = kmin + block;
+	if (kmax > inner_loops) kmax = inner_loops;
+
+	for (jmin = 0; jmin < b_loops; jmin += block)
+	  {
+	     unsigned int i;
+	     unsigned int jmax = jmin + block;
+	     if (jmax > b_loops) jmax = b_loops;
+
+	     for (i = 0; i < a_loops; i++)
+	       {
+		  GENERIC_TYPE_A *aa = a + i * a_stride;
+		  GENERIC_TYPE_C *cc = c + i * b_loops;
+		  unsigned int k;
+
+		  for (k = kmin; k < kmax; k++)
+		    {
+		       double x = (double) aa[k];
+
+		       if (x != 0.0)
+			 {
+			    unsigned int j;
+			    GENERIC_TYPE_B *bb = b + b_inc*k;
+
+			    j = jmin;
+			    if (j + 8 < jmax)
+			      {
+				 unsigned int jmax1 = jmax - 8;
+				 while (j < jmax1)
+				   {
+				      cc[j] += x * bb[j]; j++;
+				      cc[j] += x * bb[j]; j++;
+				      cc[j] += x * bb[j]; j++;
+				      cc[j] += x * bb[j]; j++;
+				      cc[j] += x * bb[j]; j++;
+				      cc[j] += x * bb[j]; j++;
+				      cc[j] += x * bb[j]; j++;
+				      cc[j] += x * bb[j]; j++;
+				   }
+			      }
+			    while (j < jmax)
+			      {
+				 cc[j] += x * bb[j]; j++;
+			      }
+			 }
+		    }
+	       }
+	  }
+     }
+#else
    while (a_loops--)
      {
 	GENERIC_TYPE_B *bb;
@@ -69,6 +126,7 @@ static void INNERPROD_FUNCTION
 	c += b_loops;
 	a += a_stride;
      }
+#endif
 }
 #undef INNERPROD_FUNCTION
 

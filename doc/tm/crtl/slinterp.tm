@@ -720,14 +720,16 @@
    The \var{SLang_is_defined} function may be used to determine
    whether or not a variable or function whose name is given by
    \var{em} has been defined.  It returns zero if no such object has
-   been defined.  Othewise it returns a non-zero value whose meaning
-   is given by the following table:
+   been defined.  Otherwise it returns a non-zero value according to
+   the following table:
 #v+
-      1    intrinsic function  (SLANG_INTRINSIC)
-      2    user-defined slang function (SLANG_FUNCTION)
-     -1    intrinsic variable (SLANG_IVARIABLE)
-     -2    user-defined global variable (SLANG_GVARIABLE)
+      1    intrinsic function
+      2    user-defined slang function
+     -1    intrinsic variable
+     -2    user-defined global variable
 #v-
+   Note that variables correspond to negative numbers and functions
+   are represented by positive numbers.
 \seealso{SLadd_intrinsic_function, SLang_run_hooks, SLang_execute_function}
 \done
 

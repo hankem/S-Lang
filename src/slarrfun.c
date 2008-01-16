@@ -28,6 +28,8 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
+static unsigned int Inner_Prod_Block_Size = SLANG_INNERPROD_BLOCK_SIZE;
+
 static int next_transposed_index (SLindex_Type *dims, SLindex_Type *max_dims, unsigned int num_dims)
 {
    int i;
@@ -1401,6 +1403,19 @@ array_all (void)
    (void) SLarray_contract_array (Array_All_Funs);
 }
 
+static int get_innerprod_block_size (void)
+{
+   return (int) Inner_Prod_Block_Size;
+}
+
+static void set_innerprod_block_size (int *sp)
+{
+   int s = *sp;
+   if (s <= 0)
+     s = SLANG_INNERPROD_BLOCK_SIZE;
+
+   Inner_Prod_Block_Size = (unsigned int) s;
+}
 
 static SLang_Intrin_Fun_Type Array_Fun_Table [] =
 {
@@ -1418,6 +1433,10 @@ static SLang_Intrin_Fun_Type Array_Fun_Table [] =
    MAKE_INTRINSIC_0("minabs", array_minabs, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("any", array_any, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("all", array_all, SLANG_VOID_TYPE),
+   
+   MAKE_INTRINSIC_0("__get_innerprod_block_size", get_innerprod_block_size, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_I("__set_innerprod_block_size", set_innerprod_block_size, SLANG_VOID_TYPE),
+
    SLANG_END_INTRIN_FUN_TABLE
 };
 

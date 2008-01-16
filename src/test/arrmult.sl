@@ -79,36 +79,40 @@ test (A,B);
 #endif
 
 % Test intgers
-A = _reshape ([[1, 2, 3], [4, 5, 6]], [2,3]);
-B = _reshape ([[7,8,9],[1,2,4]], [2,3]);
+A = _reshape ([[1:20], [1:20]], [2,20]);
+B = _reshape ([[1:20],[1:20],[1:20],[1:20],[1:20]], [5,20]);
 B = transpose (B);
 
-test (A, B);
+foreach $1 ([1:100:10])
+{
+   __set_innerprod_block_size ($1);
+   test (A, B);
 
-B *= 1f;
-test (A, B);
+   B *= 1f;
+   test (A, B);
 
-B *= 1.0;
-test (A,B);
+   B *= 1.0;
+   test (A,B);
 
-A *= 1f;
-test (A,B);
+   A *= 1f;
+   test (A,B);
 
 #ifexists Complex_Type
-B += 2i;
-test (A,B);
+   B += 2i;
+   test (A,B);
 
-A += 3i;
-test (A,B);
+   A += 3i;
+   test (A,B);
 
-B = Real(B);
-test (A,B);
+   B = Real(B);
+   test (A,B);
 
 % Now try an empty array
 
-if (Complex_Type != _typeof (Complex_Type[0,0,0] # Complex_Type[0]))
-  failed ("[]#[]");
+   if (Complex_Type != _typeof (Complex_Type[0,0,0] # Complex_Type[0]))
+     failed ("[]#[]");
 #endif
+}
 % And finally, do a 3-d array:
 
 A = _reshape ([1:2*3*4], [2,3,4]);

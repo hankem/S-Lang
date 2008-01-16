@@ -116,39 +116,39 @@
 
   Options that set a variable \exmp{v} to a value \exmp{val}:
 #v+
-    cmdopt_add (optobj, "f|foo" &v; default=val);
+    cmdopt_add (optobj, "f|foo", &v; default=val);
     cmdline: pgm -f ...
     cmdline: pgm --foo ...
 #v-
 
   Options that increment an integer variable \exmp{v}:
 #v+
-    cmdopt_add (optobj, "f|foo" &v; inc);
+    cmdopt_add (optobj, "f|foo", &v; inc);
     cmdline: pgm -f -f ...       % In these examples, v 
     cmdline: pgm --foo --foo ... % gets incremented twice
 #v-
 
   Options that bitwise-or an integer variable \exmp{v} with \exmp{FLAG}:
 #v+
-    cmdopt_add (optobj, "f|foo" &v; bor=FLAG);
+    cmdopt_add (optobj, "f|foo", &v; bor=FLAG);
     cmdline: pgm -f ...       % v = v | FLAG
     cmdline: pgm --foo ...    % v = v | FLAG
 #v-
   Options that bitwise-and an integer variable \exmp{v} with \exmp{MASK}:
 #v+
-    cmdopt_add (optobj, "f|foo" &v; band=MASK);
+    cmdopt_add (optobj, "f|foo", &v; band=MASK);
     cmdline: pgm -f ...       % v = v & MASK;
     cmdline: pgm --foo ...    % v = v & MASK;
 #v-
   The above two options may be combined:
 #v+
-    cmdopt_add (optobj, "f|foo" &v; bor=FLAG1, band=~FLAG2);
+    cmdopt_add (optobj, "f|foo", &v; bor=FLAG1, band=~FLAG2);
     cmdline: pgm -f ...       % v &= ~FLAG2; v |= FLAG1;
 #v-
 
   Options that require a value and set \exmp{v} to the value VAL.
 #v+
-    cmdopt_add (optobj, "f|foo" &v; type="int");
+    cmdopt_add (optobj, "f|foo", &v; type="int");
     cmdline: pgm -f VAL ...
     cmdline: pgm -fVAL ...
     cmdline: pgm --foo VAL ...
@@ -157,7 +157,7 @@
 
   Options whose value is optional:
 #v+
-    cmdopt_add (optobj, "f|foo" &v; type="string", optional=DLFT);
+    cmdopt_add (optobj, "f|foo", &v; type="string", optional=DLFT);
     cmdline: pgm -f ...            % set v to DFLT
     cmdline: pgm -fVAL ...         % set v to VAL
     cmdline: pgm --foo ...         % set v to DFLT
