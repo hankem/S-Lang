@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20104
-#define SLANG_VERSION_STRING "pre2.1.4-9"
+#define SLANG_VERSION_STRING "pre2.1.4-10"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1555,7 +1555,7 @@ SL_EXTERN int SLrline_save_line (SLrline_Type *);
 SL_EXTERN int SLrline_add_to_history (SLrline_Type *, char *);
 
 /* Interpreter interface */
-SL_EXTERN int SLrline_init (char *appdef, char *user_initfile, char *sys_initfile);
+SL_EXTERN int SLrline_init (char *appname, char *user_initfile, char *sys_initfile);
 
 /* Compatibility */
 typedef SLrline_Type SLang_RLine_Info_Type;

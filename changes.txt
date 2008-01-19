@@ -18,6 +18,8 @@ Changes since 2.1.3
    to be more cache friendly.  Since the block size is cpu-dependent,
    __get/set_innerprod_block_size functions have been added.  The
    default value is controlled by a variable in src/sllimits.h.
+10. modules/termios-module.c: Added additional termios constants
+    (Laurent Perez).
 
 {{{ Previous Versions
 
