@@ -308,6 +308,14 @@ int SLang_handle_interrupt (void)
    return status;
 }
 
+int _pSLerrno_errno;
+
+int SLerrno_set_errno (int sys_errno)
+{
+   _pSLerrno_errno = sys_errno;
+   return 0;
+}
+
 #if defined(__WIN32__) && defined(SLANG_DLL)
 # include <windows.h>
 

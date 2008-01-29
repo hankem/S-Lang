@@ -1,6 +1,6 @@
   {The [1mS-Lang [22mC Library Reference}
   John E. Davis, jed@jedsoft.org
-  Sep 4, 2007
+  Jan 26, 2008
   ____________________________________________________________
 
 
@@ -2411,13 +2411,16 @@
         The SLang_is_defined function may be used to determine whether
         or not a variable or function whose name is given by em has been
         defined.  It returns zero if no such object has been defined.
-        Othewise it returns a non-zero value whose meaning is given by
-        the following table:
+        Otherwise it returns a non-zero value according to the following
+        table:
 
-                1    intrinsic function  (SLANG_INTRINSIC)
-                2    user-defined slang function (SLANG_FUNCTION)
-               -1    intrinsic variable (SLANG_IVARIABLE)
-               -2    user-defined global variable (SLANG_GVARIABLE)
+                1    intrinsic function
+                2    user-defined slang function
+               -1    intrinsic variable
+               -2    user-defined global variable
+
+     Note that variables correspond to negative numbers and functions
+     are represented by positive numbers.
 
       [1mSee Also[0m
         SLadd_intrinsic_function, SLang_run_hooks,

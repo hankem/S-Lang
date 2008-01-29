@@ -813,6 +813,7 @@ static int system_intrinsic (char *s)
 {
    return SLsystem (s);
 }
+
 static int stack_depth_intrin (void)
 {
    return SLstack_depth ();

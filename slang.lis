@@ -298,6 +298,7 @@
 @src/slarith.inc
 @src/slarith2.inc
 @src/slarray.c
+@src/slagetput.inc
 @src/slarrfun.c
 @src/slarrfun.inc
 @src/slarrmis.c

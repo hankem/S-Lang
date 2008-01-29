@@ -227,7 +227,10 @@ int SLsystem (char *cmd)
    pid = fork();
 
    if (pid == -1)
-     status = -1;
+     {
+	_pSLerrno_errno = errno;
+	status = -1;
+     }
    else if (pid == 0)
      {
 	/* Child */
@@ -257,6 +260,7 @@ int SLsystem (char *cmd)
 	     if (errno == ERESTARTSYS)
 	       continue;
 # endif
+	     _pSLerrno_errno = errno;
 	     status = -1;
 	     break;
 	  }
@@ -291,7 +295,10 @@ int SLsystem (char *cmd)
 # ifdef SIGINT
    sint = SLsignal (SIGINT, SIG_IGN);
 # endif
+
    status = system (cmd);
+   _pSLerrno_errno = errno;
+
 # ifdef SIGINT
    SLsignal (SIGINT, sint);
 # endif

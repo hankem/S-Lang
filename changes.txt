@@ -20,6 +20,10 @@ Changes since 2.1.3
    default value is controlled by a variable in src/sllimits.h.
 10. modules/termios-module.c: Added additional termios constants
     (Laurent Perez).
+11. src/slarray.c: Better optimization when indexing arrays with
+    ranges.
+12. src/slsignal.c: If SLsystem fails, set the interpreter's errno
+    value accordingly.
 
 {{{ Previous Versions
 

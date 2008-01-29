@@ -240,7 +240,10 @@ static FILE *fopen_fun (char *f, char *m)
 }
 static int fclose_fun (FILE *fp)
 {
-   return fclose (fp);
+   int status = fclose (fp);
+   if (status != 0)
+     _pSLerrno_errno = errno;
+   return status;
 }
 
 static void stdio_fopen (char *file, char *mode)
@@ -263,7 +266,13 @@ int _pSLstdio_fdopen (char *file, int fd, char *mode)
 #ifdef HAVE_POPEN
 static int pclose_fun (FILE *fp)
 {
-   return pclose (fp);
+   int status;
+
+   errno = 0;
+   status = pclose (fp);
+   if (status != 0)
+     _pSLerrno_errno = errno;
+   return status;
 }
 
 static FILE *popen_fun (char *file, char *mode)

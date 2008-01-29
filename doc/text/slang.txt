@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.1)
   John E. Davis, jed@jedsoft.org
-  Sep 8, 2007
+  Jan 29, 2008
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -76,15 +76,15 @@
   8.3.2.7. foreach
   8.4. break, return, and continue
   9. Functions
-  9.1. Calling Functions
-  9.2. Declaring Functions
-  9.3. Parameter Passing Mechanism
-  9.4. Returning Values
-  9.5. Multiple Assignment Statement
-  9.6. Referencing Variables
-  9.7. Functions with a Variable Number of Arguments
-  9.8. Qualifiers
-  9.9. Exit-Blocks
+  9.1. Declaring Functions
+  9.2. Parameter Passing Mechanism
+  9.3. Returning Values
+  9.4. Multiple Assignment Statement
+  9.5. Referencing Variables
+  9.6. Functions with a Variable Number of Arguments
+  9.7. Qualifiers
+  9.8. Exit-Blocks
+  9.9. Handling Return Values from a Function
   10. Namespaces
   11. Arrays
   11.1. Creating Arrays
@@ -2347,61 +2347,7 @@
   of statements that work together to perform a computation.  The
   specification of such functions is the main subject of this chapter.
 
-  [1m9.1.  Calling Functions[0m
-
-  The most important rule to remember in calling a function is that [4mif[0m
-  [4mthe[24m [4mfunction[24m [4mreturns[24m [4ma[24m [4mvalue,[24m [4mdo[24m [4msomething[24m [4mwith[24m [4mit[24m.  While this might
-  sound like a trivial statement it is the number one issue that trips-
-  up novice users of the language.
-
-  To elaborate on this point further, consider the [4mfputs[24m function, which
-  writes a string to a file descriptor.  This function can fail when,
-  e.g., a disk is full, or the file is located on a network share and
-  the network goes down, etc.
-
-  [1mS-Lang [22msupports two mechanisms that a function may use to report a
-  failure: raising an exception, returning a status code.  The latter
-  mechanism is used by the [1mS-Lang [22mfputs function. i.e., it returns a
-  value to indicate whether or not is was successful.  Many users
-  familiar with this function either seem to forget this fact, or assume
-  that the function will succeed and not bother handling the return
-  value.  While some languages silently remove such values from the
-  stack, [1mS-Lang [22mregards the stack as a dynamic data structure that
-  programs can utilize.  As a result, the value will be left on the [1mS-[0m
-  [1mLang [22mstack and can cause problems later on.
-
-  There are a number of correct ways of ``doing something'' with the
-  return value from a function.  Of course the recommended procedure is
-  to use the return value as it was meant to be used.  In the case of
-  fputs, the proper thing to do is to check the return value, e.g.,
-
-            if (-1 == fputs ("good luck", fp))
-              {
-                 % Handle the error
-              }
-
-  Other acceptable ways to ``do something'' with the return value
-  include assigning it to a dummy variable,
-
-            dummy = fputs ("good luck", fp);
-
-  or simply ``popping'' it from the stack:
-
-            fputs ("good luck", fp);  pop();
-
-  The latter mechanism can also be written as
-
-            () = fputs ("good luck", fp);
-
-  The last form is a special case of the [4mmultiple[24m [4massignment[24m [4mstatement[24m,
-  which is discussed in more detail below.  Since this form is simpler
-  than assigning the value to a dummy variable or explicitly calling the
-  pop function, it is recommended over the other two mechanisms.
-  Finally, this form has the redeeming feature that it presents a visual
-  reminder that the function is returning a value that is not being
-  used.
-
-  [1m9.2.  Declaring Functions[0m
+  [1m9.1.  Declaring Functions[0m
 
   Like variables, functions must be declared before they can be used.
   The define keyword is used for this purpose.  For example,
@@ -2433,7 +2379,8 @@
   is considered poor programming practice if a function contains many
   statements. This notion stems from the belief that a function should
   have a simple, well-defined purpose.
-  [1m9.3.  Parameter Passing Mechanism[0m
+
+  [1m9.2.  Parameter Passing Mechanism[0m
 
   Parameters to a function are always passed by value and never by
   reference.  To see what this means, consider
@@ -2499,15 +2446,15 @@
   a comma.  A mechanism for handling single parameter function calls is
   described later in this chapter.
 
-  [1m9.4.  Returning Values[0m
+  [1m9.3.  Returning Values[0m
 
-  As stated earlier, the usual way to return values from a function is
-  via the return statement.  This statement has the simple syntax
+  The usual way to return values from a function is via the return
+  statement.  This statement has the simple syntax
 
        return [4mexpression-list[24m ;
 
-  where [4mexpression-list[24m is a comma separated list of expressions.  If
-  the function does not return any values, the expression list will be
+  where [4mexpression-list[24m is a comma separated list of expressions.  If a
+  function does not return any values, the expression list will be
   empty.  A simple example of a function that can return multiple values
   (two in this case) is:
 
@@ -2519,7 +2466,7 @@
                    return sum, diff;
                }
 
-  [1m9.5.  Multiple Assignment Statement[0m
+  [1m9.4.  Multiple Assignment Statement[0m
 
   In the previous section an example of a function returning two values
   was given.  That function can also be written somewhat simpler as:
@@ -2600,7 +2547,7 @@
   assignment to s.  This simply indicates that whatever is on the top of
   the stack when the statement is executed will be assigned to s.
 
-  [1m9.6.  Referencing Variables[0m
+  [1m9.5.  Referencing Variables[0m
 
   One can achieve the effect of passing by reference by using the
   reference (&) and dereference (@) operators. Consider again the add_10
@@ -2647,7 +2594,7 @@
   is called with the specified parameters by dereferencing f with the
   dereference operator.
 
-  [1m9.7.  Functions with a Variable Number of Arguments[0m
+  [1m9.6.  Functions with a Variable Number of Arguments[0m
 
   [1mS-Lang [22mfunctions may be called with a variable number of arguments.  A
   natural example of such functions is the strcat function, which takes
@@ -2693,8 +2640,8 @@
   For the uninitiated, this example looks as if it is destined for dis-
   aster.  The add_10 function appears to accept zero arguments, yet it
   was called with a single argument.  On top of that, the assignment to
-  x looks strange.  The truth is, the code presented in this example
-  makes perfect sense, once you realize what is happening.
+  x might look a bit strange.  The truth is, the code presented in this
+  example makes perfect sense, once you realize what is happening.
 
   First, consider what happens when add_10 is called with the parameter
   12.  Internally, 12 is pushed onto the stack and then the function
@@ -2712,7 +2659,7 @@
               .
            }
 
-  is transformed internally by the parser to
+  is transformed internally by the parser to something akin to
 
            define function_name ()
            {
@@ -2798,7 +2745,7 @@
   will generate a UsageError exception along with a simple message indi-
   cating how to use the function.
 
-  [1m9.8.  Qualifiers[0m
+  [1m9.7.  Qualifiers[0m
 
   One way to pass optional information to a function is to do so using
   the variable arguments mechanism described in the previous section.
@@ -2915,12 +2862,13 @@
   the fill qualifier would get passed to the draw_symbol function to
   specify the ``fill'' value to be used when creating the symbol.
 
-  [1m9.9.  Exit-Blocks[0m
+  [1m9.8.  Exit-Blocks[0m
 
   An [4mexit-block[24m is a set of statements that get executed when a
   functions returns.  They are very useful for cleaning up when a
   function returns via an explicit call to return from deep within a
   function.
+
   An exit-block is created by using the EXIT_BLOCK keyword according to
   the syntax
 
@@ -2967,6 +2915,59 @@
   exit-block would get executed.  This example also illustrates that it
   is possible to explicitly return from an exit-block, but nested exit-
   blocks are illegal.
+
+  [1m9.9.  Handling Return Values from a Function[0m
+
+  The most important rule to remember in calling a function is that [4mif[0m
+  [4mthe[24m [4mfunction[24m [4mreturns[24m [4ma[24m [4mvalue,[24m [4mthe[24m [4mcaller[24m [4mmust[24m [4mdo[24m [4msomething[24m [4mwith[24m [4mit[24m.
+  While this might sound like a trivial statement it is the number one
+  issue that trips-up novice users of the language.
+
+  To elaborate on this point further, consider the [4mfputs[24m function, which
+  writes a string to a file descriptor.  This function can fail when,
+  e.g., a disk is full, or the file is located on a network share and
+  the network goes down, etc.
+
+  [1mS-Lang [22msupports two mechanisms that a function may use to report a
+  failure: raising an exception, returning a status code.  The latter
+  mechanism is used by the [1mS-Lang [22mfputs function. i.e., it returns a
+  value to indicate whether or not is was successful.  Many users
+  familiar with this function either seem to forget this fact, or assume
+  that the function will succeed and not bother handling the return
+  value.  While some languages silently remove such values from the
+  stack, [1mS-Lang [22mregards the stack as a dynamic data structure that
+  programs can utilize.  As a result, the value will be left on the [1mS-[0m
+  [1mLang [22mstack and can cause problems later on.
+
+  There are a number of correct ways of ``doing something'' with the
+  return value from a function.  Of course the recommended procedure is
+  to use the return value as it was meant to be used.  In the case of
+  fputs, the proper thing to do is to check the return value, e.g.,
+
+            if (-1 == fputs ("good luck", fp))
+              {
+                 % Handle the error
+              }
+
+  Other acceptable ways to ``do something'' with the return value
+  include assigning it to a dummy variable,
+
+            dummy = fputs ("good luck", fp);
+
+  or simply ``popping'' it from the stack:
+
+            fputs ("good luck", fp);  pop();
+
+  The latter mechanism can also be written as
+
+            () = fputs ("good luck", fp);
+
+  The last form is a special case of the [4mmultiple[24m [4massignment[24m [4mstatement[24m,
+  which was discussed earlier.  Since this form is simpler than
+  assigning the value to a dummy variable or explicitly calling the pop
+  function, it is recommended over the other two mechanisms.  Finally,
+  this form has the redeeming feature that it presents a visual reminder
+  that the function is returning a value that is not being used.
 
   [1m10.  Namespaces[0m
 

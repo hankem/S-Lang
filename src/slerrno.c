@@ -534,14 +534,6 @@ static Errno_Map_Type Errno_Map [] =
      {NULL, 0, NULL}
 };
 
-int _pSLerrno_errno;
-
-int SLerrno_set_errno (int sys_errno)
-{
-   _pSLerrno_errno = sys_errno;
-   return 0;
-}
-
 char *SLerrno_strerror (int sys_errno)
 {
    Errno_Map_Type *e;

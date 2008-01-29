@@ -2353,64 +2353,6 @@
    The specification of such functions is the main subject of this
    chapter.
 
-\sect{Calling Functions} #%{{{
-
-   The most important rule to remember in calling a function is that
-   \em{if the function returns a value, do something with it}.
-   While this might sound like a trivial statement it is
-   the number one issue that trips-up novice users of the
-   language.
-
-   To elaborate on this point further, consider the \em{fputs}
-   function, which writes a string to a file descriptor.  This
-   function can fail when, e.g., a disk is full, or the file is
-   located on a network share and the network goes down, etc.  
-   
-   \slang supports two mechanisms that a function may use to report a
-   failure: raising an exception, returning a status code.  The latter
-   mechanism is used by the \slang fputs function. i.e., it returns a
-   value to indicate whether or not is was successful.  Many users
-   familiar with this function either seem to forget this fact, or
-   assume that the function will succeed and not bother handling the
-   return value.  While some languages silently remove such values
-   from the stack, \slang regards the stack as a dynamic data
-   structure that programs can utilize.  As a result, the value will
-   be left on the \slang stack and can cause problems later on.
-
-   There are a number of correct ways of ``doing something'' with the
-   return value from a function.  Of course the recommended procedure
-   is to use the return value as it was meant to be used.  In the case
-   of \ifun{fputs}, the proper thing to do is to check the return
-   value, e.g.,
-#v+
-     if (-1 == fputs ("good luck", fp))
-       {
-          % Handle the error
-       }
-#v-
-   Other acceptable ways to ``do something'' with the return value
-   include assigning it to a dummy variable,
-#v+
-     dummy = fputs ("good luck", fp);
-#v-   
-   or simply ``popping'' it from the stack:
-#v+
-     fputs ("good luck", fp);  pop();
-#v-
-   The latter mechanism can also be written as 
-#v+
-     () = fputs ("good luck", fp);
-#v-
-   The last form is a special case of the \em{multiple assignment
-   statement}, which is discussed in more detail below.  Since this
-   form is simpler than assigning the value to a dummy variable or
-   explicitly calling the \ifun{pop} function, it is recommended over
-   the other two mechanisms.  Finally, this form has the
-   redeeming feature that it presents a visual reminder that the
-   function is returning a value that is not being used.   
-
-#%}}}
-
 \sect{Declaring Functions} #%{{{
 
    Like variables, functions must be declared before they can be used. The
@@ -2523,14 +2465,13 @@
 
 \sect{Returning Values} #%{{{
 
-   As stated earlier, the usual way to return values from a function
-   is via the \kw{return} statement.  This statement has the
-   simple syntax
+   The usual way to return values from a function is via the
+   \kw{return} statement.  This statement has the simple syntax
 \begin{tscreen}
       return \em{expression-list} ;
 \end{tscreen}
    where \em{expression-list} is a comma separated list of expressions.
-   If the function does not return any values, the expression list
+   If a function does not return any values, the expression list
    will be empty.  A simple example of a function that can return
    multiple values (two in this case) is:
 #v+
@@ -2729,11 +2670,11 @@
 #v-
   For the uninitiated, this example looks as if it is destined for
   disaster.  The \exmp{add_10} function appears to accept zero
-  arguments, yet it was called with a single argument.  On top of that,
-  the assignment to \exmp{x} looks strange.  The truth is, the code
-  presented in this example makes perfect sense, once you realize what
-  is happening.
-  
+  arguments, yet it was called with a single argument.  On top of
+  that, the assignment to \exmp{x} might look a bit strange.  The
+  truth is, the code presented in this example makes perfect sense,
+  once you realize what is happening.
+
   First, consider what happens when \exmp{add_10} is called with the
   parameter 12.  Internally, 12 is pushed onto the stack
   and then the function called.  Now, consider the function
@@ -2751,7 +2692,7 @@
        .
     }
 #v-
-  is transformed internally by the parser to
+  is transformed internally by the parser to something akin to
 #v+
     define function_name ()
     {
@@ -2839,7 +2780,7 @@
 
 #%}}}
 
-\sect{Qualifiers}
+\sect{Qualifiers} #%{{{
 
   One way to pass optional information to a function is to do so using
   the variable arguments mechanism described in the previous section.
@@ -2961,6 +2902,9 @@
   function to specify the ``fill'' value to be used when creating
   the symbol.
 
+
+#%}}}
+
 \sect{Exit-Blocks} #%{{{
 
    An \em{exit-block} is a set of statements that get executed when a
@@ -3016,6 +2960,63 @@
    illustrates that it is possible to explicitly return from an
    exit-block, but nested exit-blocks are illegal.
 
+
+#%}}}
+
+\sect{Handling Return Values from a Function} #%{{{
+
+   The most important rule to remember in calling a function is that
+   \em{if the function returns a value, the caller must do something
+   with it}. While this might sound like a trivial statement it is the
+   number one issue that trips-up novice users of the language.
+
+   To elaborate on this point further, consider the \em{fputs}
+   function, which writes a string to a file descriptor.  This
+   function can fail when, e.g., a disk is full, or the file is
+   located on a network share and the network goes down, etc.  
+
+   \slang supports two mechanisms that a function may use to report a
+   failure: raising an exception, returning a status code.  The latter
+   mechanism is used by the \slang fputs function. i.e., it returns a
+   value to indicate whether or not is was successful.  Many users
+   familiar with this function either seem to forget this fact, or
+   assume that the function will succeed and not bother handling the
+   return value.  While some languages silently remove such values
+   from the stack, \slang regards the stack as a dynamic data
+   structure that programs can utilize.  As a result, the value will
+   be left on the \slang stack and can cause problems later on.
+
+   There are a number of correct ways of ``doing something'' with the
+   return value from a function.  Of course the recommended procedure
+   is to use the return value as it was meant to be used.  In the case
+   of \ifun{fputs}, the proper thing to do is to check the return
+   value, e.g.,
+#v+
+     if (-1 == fputs ("good luck", fp))
+       {
+          % Handle the error
+       }
+#v-
+   Other acceptable ways to ``do something'' with the return value
+   include assigning it to a dummy variable,
+#v+
+     dummy = fputs ("good luck", fp);
+#v-   
+   or simply ``popping'' it from the stack:
+#v+
+     fputs ("good luck", fp);  pop();
+#v-
+   The latter mechanism can also be written as 
+#v+
+     () = fputs ("good luck", fp);
+#v-
+   The last form is a special case of the \em{multiple assignment
+   statement}, which was discussed earlier.  Since this
+   form is simpler than assigning the value to a dummy variable or
+   explicitly calling the \ifun{pop} function, it is recommended over
+   the other two mechanisms.  Finally, this form has the
+   redeeming feature that it presents a visual reminder that the
+   function is returning a value that is not being used.   
 
 #%}}}
 

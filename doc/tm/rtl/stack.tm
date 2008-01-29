@@ -141,7 +141,7 @@
  This function pushes the elements of a list to the stack.
 \example
 #v+
- private variable list_to_array (list)
+ private define list_to_array (list)
  {
     return [__push_list (list)];
  }

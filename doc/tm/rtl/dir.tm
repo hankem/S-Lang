@@ -1,3 +1,30 @@
+
+\function{access}
+\synopsis{Check to see if a file is accessable}
+\usage{Int_Type access (String_Type pathname, Int_Type mode)}
+\description
+ This functions checks to see if the current process has access to the
+ specified pathname.  The \exmp{mode} parameter determines the type of
+ desired access.  Its value is given by the bitwise-or of one or more
+ of the following constants:
+#v+
+    R_OK   Check for read permission
+    W_OK   Check for write permission
+    X_OK   Check for execute permission
+    F_OK   Check for existence
+#v-
+
+ The function will return 0 if process has the requested access
+ permissions to the file, otherwise it will return -1 and set
+ \ivar{errno} accordingly.
+
+ Access to a file depend not only upon the file itself, but also upon
+ the permissions of each of the directories in the pathname.  The
+ checks are done using the real user and group ids of the process, and
+ not using the effective ids.
+\seealso{stat_file}
+\done
+
 \function{chdir}
 \synopsis{Change the current working directory}
 \usage{Int_Type chdir (String_Type dir)}

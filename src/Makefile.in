@@ -119,6 +119,7 @@ SHELL = /bin/sh
 sltoken_O_DEP = keywhash.c
 slarith_O_DEP = slarith.inc slarith2.inc
 slarrfun_O_DEP = slarrfun.inc
+slarray_O_DEP = slagetput.inc
 slischar_O_DEP = slischar.h
 slwclut_O_DEP = slischar.h
 sllower_O_DEP = sllower.h

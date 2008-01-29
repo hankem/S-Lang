@@ -766,147 +766,57 @@ _pSLarray_aget_transfer_elem (SLang_Array_Type *at, SLindex_Type *indices,
 }
 
 #if SLANG_OPTIMIZE_FOR_SPEED
-static int aget_doubles_from_index_array (double *src_data, SLindex_Type num_elements,
-					  SLindex_Type *indices, SLindex_Type *indices_max,
-					  double *dest_data)
-{
-   while (indices < indices_max)
-     {
-	SLindex_Type i = *indices;
-
-	if (i < 0) 
-	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     return -1;
-	  }
-	*dest_data++ = src_data[i];
-	indices++;
-     }
-   return 0;
-}
-
-static int aget_floats_from_index_array (float *src_data, SLindex_Type num_elements,
-					 SLindex_Type *indices, SLindex_Type *indices_max,
-					 float *dest_data)
-{
-   while (indices < indices_max)
-     {
-	SLindex_Type i = *indices;
-
-	if (i < 0) 
-	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     return -1;
-	  }
-	*dest_data++ = src_data[i];
-	indices++;
-     }
-   return 0;
-}
-
-static int aget_ints_from_index_array (int *src_data, SLindex_Type num_elements,
-				       SLindex_Type *indices, SLindex_Type *indices_max,
-				       int *dest_data)
-{
-   while (indices < indices_max)
-     {
-	SLindex_Type i = *indices;
-
-	if (i < 0) 
-	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     return -1;
-	  }
-	*dest_data++ = src_data[i];
-	indices++;
-     }
-   return 0;
-}
-#endif
-
-
-/* Here the ind_at index-array is an n-d array of indices.  This function
- * creates an n-d array of made up of values of 'at' at the locations
- * specified by the indices.  The result is pushed.
- */
-static int
-aget_from_index_array (SLang_Array_Type *at,
-		       SLang_Array_Type *ind_at)
-{
-   SLang_Array_Type *new_at;
-   SLindex_Type *indices, *indices_max, num_elements;
-   unsigned char *new_data, *src_data;
-   size_t sizeof_type;
-   int is_ptr;
-   
-   if (-1 == coerse_array_to_linear (at))
-     return -1;
-
-   if (-1 == coerse_array_to_linear (ind_at))
-     return -1;
-
-   if (NULL == (new_at = SLang_create_array (at->data_type, 0, NULL, ind_at->dims, ind_at->num_dims)))
-     return -1;
-
-   /* Since the index array is linear, I can address it directly */
-   indices = (SLindex_Type *) ind_at->data;
-   indices_max = indices + ind_at->num_elements;
-
-   src_data = (unsigned char *) at->data;
-   new_data = (unsigned char *) new_at->data;
-   num_elements = (SLindex_Type) at->num_elements;
-   sizeof_type = new_at->sizeof_type;
-   is_ptr = (new_at->flags & SLARR_DATA_VALUE_IS_POINTER);
-
-   switch (at->data_type)
-     {
-#if SLANG_OPTIMIZE_FOR_SPEED
 # if SLANG_HAS_FLOAT
-      case SLANG_DOUBLE_TYPE:
-	if (-1 == aget_doubles_from_index_array ((double *)src_data, num_elements,
-						 indices, indices_max,
-						 (double *)new_data))
-	  goto return_error;
-	break;
-      case SLANG_FLOAT_TYPE:
-	if (-1 == aget_floats_from_index_array ((float *)src_data, num_elements,
-						indices, indices_max,
-						(float *)new_data))
-	  goto return_error;
-	break;
+#  define GENERIC_TYPE double
+#  define AGET_FROM_INDEX_ARRAY_FUN aget_doubles_from_index_array
+#  define APUT_FROM_INDEX_ARRAY_FUN aput_doubles_from_index_array
+#  include "slagetput.inc"
+#  define GENERIC_TYPE float
+#  define AGET_FROM_INDEX_ARRAY_FUN aget_floats_from_index_array
+#  define APUT_FROM_INDEX_ARRAY_FUN aput_floats_from_index_array
+#  include "slagetput.inc"
 # endif
-      case SLANG_INT_TYPE:
-	if (-1 == aget_ints_from_index_array ((int *)src_data, num_elements,
-					      indices, indices_max,
-					      (int *)new_data))
-	  goto return_error;
-	break;
+
+# define GENERIC_TYPE int
+# define AGET_FROM_INDEX_ARRAY_FUN aget_ints_from_index_array
+# define APUT_FROM_INDEX_ARRAY_FUN aput_ints_from_index_array
+# include "slagetput.inc"
+# define GENERIC_TYPE long
+# define AGET_FROM_INDEX_ARRAY_FUN aget_longs_from_index_array
+# define APUT_FROM_INDEX_ARRAY_FUN aput_longs_from_index_array
+# include "slagetput.inc"
+# define GENERIC_TYPE char
+# define AGET_FROM_INDEX_ARRAY_FUN aget_chars_from_index_array
+# define APUT_FROM_INDEX_ARRAY_FUN aput_chars_from_index_array
+# include "slagetput.inc"
+# define GENERIC_TYPE short
+# define AGET_FROM_INDEX_ARRAY_FUN aget_shorts_from_index_array
+# define APUT_FROM_INDEX_ARRAY_FUN aput_shorts_from_index_array
+# include "slagetput.inc"
 #endif
-      default:
-	while (indices < indices_max)
+
+static int aget_generic_from_index_array (SLang_Array_Type *at,
+					  SLang_Array_Type *at_ind, int is_range,
+					  unsigned char *dest_data)
+{
+   SLindex_Type *indices, *indices_max;
+   unsigned char *src_data = (unsigned char *) at->data;
+   SLindex_Type num_elements = (SLindex_Type) at->num_elements;
+   size_t sizeof_type = at->sizeof_type;
+   int is_ptr = at->flags & SLARR_DATA_VALUE_IS_POINTER;
+
+   if (is_range)
+     {
+	SLarray_Range_Array_Type *r = (SLarray_Range_Array_Type *)at_ind->data;
+	SLindex_Type idx = r->first_index, delta = r->delta;
+	SLuindex_Type j, jmax = at_ind->num_elements;
+
+	for (j = 0; j < jmax; j++)
 	  {
 	     size_t offset;
-	     SLindex_Type i = *indices;
+	     SLindex_Type i = idx;
 
-	     if (i < 0) 
+	     if (i < 0)
 	       {
 		  i += num_elements;
 		  if (i < 0)
@@ -915,18 +825,136 @@ aget_from_index_array (SLang_Array_Type *at,
 	     if (i >= num_elements)
 	       {
 		  SLang_set_error (SL_Index_Error);
-		  goto return_error;
+		  return -1;
 	       }
-
 	     offset = sizeof_type * (SLuindex_Type)i;
-	     if (-1 == transfer_n_elements (at, (VOID_STAR) new_data,
+	     if (-1 == transfer_n_elements (at, (VOID_STAR) dest_data,
 					    (VOID_STAR) (src_data + offset),
 					    sizeof_type, 1, is_ptr))
-	       goto return_error;
+	       return -1;
 
-	     new_data += sizeof_type;
-	     indices++;
+	     dest_data += sizeof_type;
+	     idx += delta;
 	  }
+	return 0;
+     }
+
+   /* Since the index array is linear, I can address it directly */
+   indices = (SLindex_Type *) at_ind->data;
+   indices_max = indices + at_ind->num_elements;
+   while (indices < indices_max)
+     {
+	size_t offset;
+	SLindex_Type i = *indices;
+
+	if (i < 0) 
+	  {
+	     i += num_elements;
+	     if (i < 0)
+	       i = num_elements;
+	  }
+	if (i >= num_elements)
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     return -1;
+	  }
+
+	offset = sizeof_type * (SLuindex_Type)i;
+	if (-1 == transfer_n_elements (at, (VOID_STAR) dest_data,
+				       (VOID_STAR) (src_data + offset),
+				       sizeof_type, 1, is_ptr))
+	  return -1;
+	
+	dest_data += sizeof_type;
+	indices++;
+     }
+   return 0;
+}
+
+/* Here the ind_at index-array is an n-d array of indices.  This function
+ * creates an n-d array of made up of values of 'at' at the locations
+ * specified by the indices.  The result is pushed.
+ */
+static int
+aget_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
+{
+   SLang_Array_Type *new_at;
+   SLindex_Type num_elements;
+   unsigned char *new_data, *src_data;
+   size_t sizeof_type;
+   int is_ptr, is_range;
+
+   if (-1 == coerse_array_to_linear (at))
+     return -1;
+
+   is_range = ind_at->flags & SLARR_DATA_VALUE_IS_RANGE;
+
+   if ((is_range == 0)
+       && (-1 == coerse_array_to_linear (ind_at)))
+     return -1;
+
+   is_ptr = (at->flags & SLARR_DATA_VALUE_IS_POINTER);
+   /* Only initialize the elements of the array if it contains pointers.  If
+    * an error occurs when filling the array, the array and its elements will
+    * be freed.  Hence, to avoid freeing garbage, the array should be initialized
+    */
+   if (NULL == (new_at = SLang_create_array1 (at->data_type, 0, NULL, ind_at->dims, ind_at->num_dims, !is_ptr)))
+     return -1;
+
+   src_data = (unsigned char *) at->data;
+   new_data = (unsigned char *) new_at->data;
+   num_elements = (SLindex_Type) at->num_elements;
+   sizeof_type = new_at->sizeof_type;
+
+   if (num_elements < 0)
+     {
+	SLang_verror (SL_Index_Error, "Array is too large to be indexed using an index-array");
+	goto return_error;
+     }
+
+   switch (at->data_type)
+     {
+#if SLANG_OPTIMIZE_FOR_SPEED
+# if SLANG_HAS_FLOAT
+      case SLANG_DOUBLE_TYPE:
+	if (-1 == aget_doubles_from_index_array ((double *)src_data, num_elements,
+						 ind_at, is_range, (double *)new_data))
+	  goto return_error;
+	break;
+      case SLANG_FLOAT_TYPE:
+	if (-1 == aget_floats_from_index_array ((float *)src_data, num_elements,
+						ind_at, is_range, (float *)new_data))
+	  goto return_error;
+	break;
+# endif
+      case SLANG_CHAR_TYPE:
+      case SLANG_UCHAR_TYPE:
+	if (-1 == aget_chars_from_index_array ((char *)src_data, num_elements,
+					       ind_at, is_range, (char *)new_data))
+	  goto return_error;
+	break;
+      case SLANG_SHORT_TYPE:
+      case SLANG_USHORT_TYPE:
+	if (-1 == aget_shorts_from_index_array ((short *)src_data, num_elements,
+					      ind_at, is_range, (short *)new_data))
+	  goto return_error;
+	break;
+      case SLANG_INT_TYPE:
+      case SLANG_UINT_TYPE:
+	if (-1 == aget_ints_from_index_array ((int *)src_data, num_elements,
+					      ind_at, is_range, (int *)new_data))
+	  goto return_error;
+	break;
+      case SLANG_LONG_TYPE:
+      case SLANG_ULONG_TYPE:
+	if (-1 == aget_longs_from_index_array ((long *)src_data, num_elements,
+					      ind_at, is_range, (long *)new_data))
+	  goto return_error;
+	break;
+#endif
+      default:
+	if (-1 == aget_generic_from_index_array (at, ind_at, is_range, new_data))
+	  goto return_error;
      }
 
    return SLang_push_array (new_at, 1);
@@ -1559,15 +1587,62 @@ aput_from_indices (SLang_Array_Type *at,
    return ret;
 }
 
-#if SLANG_OPTIMIZE_FOR_SPEED
-static int aput_doubles_from_index_array (char *data_to_put, SLuindex_Type data_increment,
-					  SLindex_Type *indices, SLindex_Type *indices_max,
-					  double *dest_data, SLindex_Type num_elements)
+   
+static int 
+  aput_generic_from_index_array (char *src_data, 
+				 SLuindex_Type data_increment,
+				 SLang_Array_Type *ind_at, int is_range,
+				 SLang_Array_Type *dest_at)
 {
+   SLindex_Type num_elements = (SLindex_Type) dest_at->num_elements;
+   size_t sizeof_type = dest_at->sizeof_type;
+   int is_ptr = dest_at->flags & SLARR_DATA_VALUE_IS_POINTER;
+   char *dest_data = (char *)dest_at->data;
+   SLindex_Type *indices, *indices_max;
+
+   if (is_range)
+     {
+	SLarray_Range_Array_Type *r = (SLarray_Range_Array_Type *)ind_at->data;
+	SLindex_Type idx = r->first_index, delta = r->delta;
+	SLuindex_Type j, jmax = ind_at->num_elements;
+
+	for (j = 0; j < jmax; j++)
+	  {
+	     size_t offset;
+	     SLindex_Type i = idx;
+
+	     if (i < 0)
+	       {
+		  i += num_elements;
+		  if (i < 0)
+		    i = num_elements;
+	       }
+	     if (i >= num_elements)
+	       {
+		  SLang_set_error (SL_Index_Error);
+		  return -1;
+	       }
+	     offset = sizeof_type * (SLuindex_Type)i;
+	     if (-1 == transfer_n_elements (dest_at, (VOID_STAR) (dest_data + offset),
+					    (VOID_STAR) src_data, sizeof_type,
+					    1, is_ptr))
+	       return -1;
+
+	     src_data += data_increment;
+	     idx += delta;
+	  }
+	return 0;
+     }
+
+   /* Since the index array is linear, I can address it directly */
+   indices = (SLindex_Type *) ind_at->data;
+   indices_max = indices + ind_at->num_elements;
+
    while (indices < indices_max)
      {
+	size_t offset;
 	SLindex_Type i = *indices;
-	     
+	
 	if (i < 0) 
 	  {
 	     i += num_elements;
@@ -1579,73 +1654,29 @@ static int aput_doubles_from_index_array (char *data_to_put, SLuindex_Type data_
 	     SLang_set_error (SL_Index_Error);
 	     return -1;
 	  }
-	dest_data[i] = *(double *)data_to_put;
+	
+	offset = sizeof_type * (SLuindex_Type)i;
+	
+	if (-1 == transfer_n_elements (dest_at, (VOID_STAR) (dest_data + offset),
+				       (VOID_STAR) src_data, sizeof_type, 1,
+				       is_ptr))
+	  return -1;
+	
 	indices++;
-	data_to_put += data_increment;
+	src_data += data_increment;
      }
+
    return 0;
 }
-static int aput_floats_from_index_array (char *data_to_put, SLuindex_Type data_increment,
-					 SLindex_Type *indices, SLindex_Type *indices_max,
-					 float *dest_data, SLindex_Type num_elements)
-{
-   while (indices < indices_max)
-     {
-	SLindex_Type i = *indices;
-	     
-	if (i < 0) 
-	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     return -1;
-	  }
-	dest_data[i] = *(float *)data_to_put;
-	indices++;
-	data_to_put += data_increment;
-     }
-   return 0;
-}
-static int aput_ints_from_index_array (char *data_to_put, SLuindex_Type data_increment,
-				       SLindex_Type *indices, SLindex_Type *indices_max,
-				       int *dest_data, SLindex_Type num_elements)
-{
-   while (indices < indices_max)
-     {
-	SLindex_Type i = *indices;
-	     
-	if (i < 0) 
-	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     return -1;
-	  }
-	dest_data[i] = *(int *)data_to_put;
-	indices++;
-	data_to_put += data_increment;
-     }
-   return 0;
-}
-#endif
 
 static int
 aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 {
-   SLindex_Type *indices, *indices_max;
    size_t sizeof_type;
    char *data_to_put, *dest_data;
    SLuindex_Type data_increment;
    SLindex_Type num_elements;
-   int is_ptr;
+   int is_ptr, is_range;
    SLang_Array_Type *bt;
    SLang_Class_Type *cl;
    int ret;
@@ -1653,7 +1684,10 @@ aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
    if (-1 == coerse_array_to_linear (at))
      return -1;
 
-   if (-1 == coerse_array_to_linear (ind_at))
+   is_range = ind_at->flags & SLARR_DATA_VALUE_IS_RANGE;
+
+   if ((is_range == 0)
+       && (-1 == coerse_array_to_linear (ind_at)))
      return -1;
 
    sizeof_type = at->sizeof_type;
@@ -1667,10 +1701,6 @@ aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 				    &bt, &data_to_put, &data_increment))
      return -1;
 
-   /* Since the index array is linear, I can address it directly */
-   indices = (SLindex_Type *) ind_at->data;
-   indices_max = indices + ind_at->num_elements;
-
    is_ptr = (at->flags & SLARR_DATA_VALUE_IS_POINTER);
    dest_data = (char *) at->data;
    num_elements = (SLindex_Type) at->num_elements;
@@ -1682,54 +1712,53 @@ aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 # if SLANG_HAS_FLOAT
       case SLANG_DOUBLE_TYPE:
 	if (-1 == aput_doubles_from_index_array (data_to_put, data_increment,
-						 indices, indices_max, 
+						 ind_at, is_range,
 						 (double*)dest_data, num_elements))
 	  goto return_error;
 	break;
-
+	
       case SLANG_FLOAT_TYPE:
 	if (-1 == aput_floats_from_index_array (data_to_put, data_increment,
-						indices, indices_max, 
+						ind_at, is_range,
 						(float*)dest_data, num_elements))
 	  goto return_error;
 	break;
 # endif
-      case SLANG_INT_TYPE:
-	if (-1 == aput_ints_from_index_array (data_to_put, data_increment,
-					      indices, indices_max, 
-					      (int*)dest_data, num_elements))
+	
+      case SLANG_CHAR_TYPE:
+      case SLANG_UCHAR_TYPE:
+	if (-1 == aput_chars_from_index_array (data_to_put, data_increment,
+					       ind_at, is_range,
+					       (char*)dest_data, num_elements))
+	  goto return_error;
+	break;
+      case SLANG_SHORT_TYPE:
+      case SLANG_USHORT_TYPE:
+	if (-1 == aput_shorts_from_index_array (data_to_put, data_increment,
+						ind_at, is_range,
+						(short*)dest_data, num_elements))
 	  goto return_error;
 	break;
 
-#endif 
+      case SLANG_INT_TYPE:
+      case SLANG_UINT_TYPE:
+	if (-1 == aput_ints_from_index_array (data_to_put, data_increment,
+					      ind_at, is_range,
+					      (int*)dest_data, num_elements))
+	  goto return_error;
+	break;
+      case SLANG_LONG_TYPE:
+      case SLANG_ULONG_TYPE:
+	if (-1 == aput_longs_from_index_array (data_to_put, data_increment,
+					      ind_at, is_range,
+					      (long*)dest_data, num_elements))
+	  goto return_error;
+	break;
+#endif
       default:
-	while (indices < indices_max)
-	  {
-	     size_t offset;
-	     SLindex_Type i = *indices;
-	     
-	     if (i < 0) 
-	       {
-		  i += num_elements;
-		  if (i < 0)
-		    i = num_elements;
-	       }
-	     if (i >= num_elements)
-	       {
-		  SLang_set_error (SL_Index_Error);
-		  goto return_error;
-	       }
-
-	     offset = sizeof_type * (SLuindex_Type)i;
-	     
-	     if (-1 == transfer_n_elements (at, (VOID_STAR) (dest_data + offset),
-					    (VOID_STAR) data_to_put, sizeof_type, 1,
-					    is_ptr))
-	       goto return_error;
-	     
-	     indices++;
-	     data_to_put += data_increment;
-	  }
+	if (-1 == aput_generic_from_index_array (data_to_put, data_increment, 
+						 ind_at, is_range, at))
+	  goto return_error;
      }
    
    ret = 0;
