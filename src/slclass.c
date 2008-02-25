@@ -1,6 +1,6 @@
 /* User defined objects */
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -45,16 +45,12 @@ static void add_class_to_slot (Class_Table_Type *t, SLang_Class_Type **clp,
 #endif
 }
 
-static Class_Table_Type *find_class_table (SLtype type)
-{
-   return Class_Tables[(type >> 8)&0xFF];
-}
-
 static SLang_Class_Type *lookup_class (SLtype type)
 {
    Class_Table_Type *t;
    
-   t = find_class_table (type);
+   t = Class_Tables[(type >> 8)&0xFF];
+
    if (t == NULL)
      return NULL;
    return t->classes[type & 0xFF];
@@ -554,10 +550,10 @@ int _pSLclass_is_same_obj (SLang_Object_Type *a, SLang_Object_Type *b)
    SLang_Class_Type *cl;
    unsigned int sizeof_type;
 
-   if (a->data_type != b->data_type)
+   if (a->o_data_type != b->o_data_type)
      return 0;
 
-   cl = _pSLclass_get_class (a->data_type);
+   cl = _pSLclass_get_class (a->o_data_type);
    sizeof_type = cl->cl_sizeof_type;
 
    switch (cl->cl_class_type)
@@ -665,8 +661,8 @@ int _pSLclass_obj_eqs (SLang_Object_Type *a, SLang_Object_Type *b)
    int (*eqs)(SLtype, VOID_STAR, SLtype, VOID_STAR);
    int status;
 
-   a_cl = _pSLclass_get_class (a->data_type);
-   b_cl = _pSLclass_get_class (b->data_type);
+   a_cl = _pSLclass_get_class (a->o_data_type);
+   b_cl = _pSLclass_get_class (b->o_data_type);
 
    pa = _pSLclass_get_ptr_to_value (a_cl, a);
    pb = _pSLclass_get_ptr_to_value (b_cl, b);
@@ -682,7 +678,7 @@ int _pSLclass_obj_eqs (SLang_Object_Type *a, SLang_Object_Type *b)
    if (status != 0)
      return status;
 
-   status = (*eqs) (a->data_type, pa, b->data_type, pb);
+   status = (*eqs) (a->o_data_type, pa, b->o_data_type, pb);
    pop_eqs_comparison ();
    return status;
 }
@@ -1317,6 +1313,7 @@ int (*_pSLclass_get_binary_fun (int op,
  VOID_STAR)
 {
    SL_OOBinary_Type *bt;
+   SL_OOBinary_Type *last;
    SLtype a, b, c;
 
    a = a_cl->cl_data_type;
@@ -1328,21 +1325,29 @@ int (*_pSLclass_get_binary_fun (int op,
 	return &null_binary_fun;
      }
    bt = a_cl->cl_binary_ops;
+   last = NULL;
 
    while (bt != NULL)
      {
 	if (bt->data_type == b)
 	  break;
-
+	
+	last = bt;
 	bt = bt->next;
      }
 
+   if ((last != NULL) && (bt != NULL))
+     {
+	last->next = bt->next;
+	bt->next = a_cl->cl_binary_ops;
+	a_cl->cl_binary_ops = bt;
+     }
+	
    /* Did find find any specific function, so look for a more generic match */
    if ((bt != NULL)
        || (NULL != (bt = a_cl->cl_this_binary_void))
        || (NULL != (bt = b_cl->cl_void_binary_this)))
      {
-	
 	if (1 == (*bt->binary_result)(op, a, b, &c))
 	  {
 	     if (c == a) *c_cl = a_cl;
@@ -1426,7 +1431,7 @@ SLclass_typecast (SLtype to_type, int is_implicit, int allow_array)
    if (-1 == SLang_pop (&obj))
      return -1;
 
-   from_type = obj.data_type;
+   from_type = obj.o_data_type;
    if (from_type == to_type)
      return SLang_push (&obj);
 
@@ -1436,7 +1441,7 @@ SLclass_typecast (SLtype to_type, int is_implicit, int allow_array)
    /* Check for alias, e.g., int and long */
    if (cl_from == cl_to)
      {
-	obj.data_type = to_type;
+	obj.o_data_type = to_type;
 	return SLang_push (&obj);
      }
 
@@ -1722,7 +1727,7 @@ void SLang_free_value (SLtype type, VOID_STAR v)
 int SLclass_push_float_obj (SLtype type, float x)
 {
    SLang_Object_Type obj;
-   obj.data_type = type;
+   obj.o_data_type = type;
    obj.v.float_val = x;
    return SLang_push (&obj);
 }
@@ -1731,7 +1736,7 @@ int SLclass_push_float_obj (SLtype type, float x)
 int SLclass_push_long_obj (SLtype type, long x)
 {
    SLang_Object_Type obj;
-   obj.data_type = type;
+   obj.o_data_type = type;
    obj.v.long_val = x;
    return SLang_push (&obj);
 }
@@ -1740,7 +1745,7 @@ int SLclass_push_long_obj (SLtype type, long x)
 int SLclass_push_llong_obj (SLtype type, long long x)
 {
    SLang_Object_Type obj;
-   obj.data_type = type;
+   obj.o_data_type = type;
    obj.v.llong_val = x;
    return SLang_push (&obj);
 }
@@ -1749,7 +1754,7 @@ int SLclass_push_llong_obj (SLtype type, long long x)
 int SLclass_push_short_obj (SLtype type, short x)
 {
    SLang_Object_Type obj;
-   obj.data_type = type;
+   obj.o_data_type = type;
    obj.v.short_val = x;
    return SLang_push (&obj);
 }

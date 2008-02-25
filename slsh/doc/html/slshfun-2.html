@@ -158,7 +158,7 @@ the command line are as follows:</P>
 <P>Options that set a variable <CODE>v</CODE> to a value <CODE>val</CODE>:
 <BLOCKQUOTE><CODE>
 <PRE>
-    cmdopt_add (optobj, "f|foo" &amp;v; default=val);
+    cmdopt_add (optobj, "f|foo", &amp;v; default=val);
     cmdline: pgm -f ...
     cmdline: pgm --foo ...
 </PRE>
@@ -167,7 +167,7 @@ the command line are as follows:</P>
 <P>Options that increment an integer variable <CODE>v</CODE>:
 <BLOCKQUOTE><CODE>
 <PRE>
-    cmdopt_add (optobj, "f|foo" &amp;v; inc);
+    cmdopt_add (optobj, "f|foo", &amp;v; inc);
     cmdline: pgm -f -f ...       % In these examples, v 
     cmdline: pgm --foo --foo ... % gets incremented twice
 </PRE>
@@ -176,7 +176,7 @@ the command line are as follows:</P>
 <P>Options that bitwise-or an integer variable <CODE>v</CODE> with <CODE>FLAG</CODE>:
 <BLOCKQUOTE><CODE>
 <PRE>
-    cmdopt_add (optobj, "f|foo" &amp;v; bor=FLAG);
+    cmdopt_add (optobj, "f|foo", &amp;v; bor=FLAG);
     cmdline: pgm -f ...       % v = v | FLAG
     cmdline: pgm --foo ...    % v = v | FLAG
 </PRE>
@@ -185,7 +185,7 @@ the command line are as follows:</P>
 Options that bitwise-and an integer variable <CODE>v</CODE> with <CODE>MASK</CODE>:
 <BLOCKQUOTE><CODE>
 <PRE>
-    cmdopt_add (optobj, "f|foo" &amp;v; band=MASK);
+    cmdopt_add (optobj, "f|foo", &amp;v; band=MASK);
     cmdline: pgm -f ...       % v = v &amp; MASK;
     cmdline: pgm --foo ...    % v = v &amp; MASK;
 </PRE>
@@ -194,7 +194,7 @@ Options that bitwise-and an integer variable <CODE>v</CODE> with <CODE>MASK</COD
 The above two options may be combined:
 <BLOCKQUOTE><CODE>
 <PRE>
-    cmdopt_add (optobj, "f|foo" &amp;v; bor=FLAG1, band=~FLAG2);
+    cmdopt_add (optobj, "f|foo", &amp;v; bor=FLAG1, band=~FLAG2);
     cmdline: pgm -f ...       % v &amp;= ~FLAG2; v |= FLAG1;
 </PRE>
 </CODE></BLOCKQUOTE>
@@ -202,7 +202,7 @@ The above two options may be combined:
 <P>Options that require a value and set <CODE>v</CODE> to the value VAL.
 <BLOCKQUOTE><CODE>
 <PRE>
-    cmdopt_add (optobj, "f|foo" &amp;v; type="int");
+    cmdopt_add (optobj, "f|foo", &amp;v; type="int");
     cmdline: pgm -f VAL ...
     cmdline: pgm -fVAL ...
     cmdline: pgm --foo VAL ...
@@ -213,7 +213,7 @@ The above two options may be combined:
 <P>Options whose value is optional:
 <BLOCKQUOTE><CODE>
 <PRE>
-    cmdopt_add (optobj, "f|foo" &amp;v; type="string", optional=DLFT);
+    cmdopt_add (optobj, "f|foo", &amp;v; type="string", optional=DLFT);
     cmdline: pgm -f ...            % set v to DFLT
     cmdline: pgm -fVAL ...         % set v to VAL
     cmdline: pgm --foo ...         % set v to DFLT

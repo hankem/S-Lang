@@ -133,8 +133,9 @@ SLANGDIR = ..$(P)src$(P)$(OBJDIR)
 # ---------------------------------------------------------------------------
 # List of modules to compile.  Some/Most require additional libraries to be
 # installed.
-MODULES = slsmg
+MODULES = slsmg rand
 # slsmg: no external dependencies
+# rand: no external dependencies
 # iconv: iconv library
 # png:   png library
 # pcre: Ported to Win32 by GnuWin32 group.
@@ -150,6 +151,8 @@ onig:
 	$(MAKE) TARGET=onig TARGETLIBS=$(ONIGLIBS) TARGETINCS=$(ONIGINCS) build-target
 slsmg:
 	$(MAKE) TARGET=slsmg TARGETLIBS=$(SLSMGLIBS) TARGETINCS=$(SLSMGINCS) build-target
+rand:
+	$(MAKE) TARGET=rand TARGETLIBS=$(RANDLIBS) TARGETINCS=$(RANDINCS) build-target
 pcre:
 	$(MAKE) TARGET=pcre TARGETLIBS=$(PCRELIBS) TARGETINCS=$(PCREINCS) build-target
 png:

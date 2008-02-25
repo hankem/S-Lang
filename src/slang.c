@@ -1,7 +1,7 @@
 /* -*- mode: C; mode: fold; -*- */
 /* slang.c  --- guts of S-Lang interpreter */
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -308,7 +308,7 @@ _INLINE_ static int pop_object (SLang_Object_Type *x)
    if (y == Run_Stack)
      {
 	(void) SLang_set_error (SL_STACK_UNDERFLOW);
-	x->data_type = 0;
+	x->o_data_type = 0;
 	return -1;
      }
    y--;
@@ -323,6 +323,7 @@ int SLang_pop (SLang_Object_Type *x)
    return pop_object (x);
 }
 
+#if 0
 static int pop_2_objs (SLang_Object_Type *a, SLang_Object_Type *b)
 {
    register SLang_Object_Type *y;
@@ -332,8 +333,8 @@ static int pop_2_objs (SLang_Object_Type *a, SLang_Object_Type *b)
    if (Run_Stack + 2 > y)
      {
 	(void) SLang_set_error (SL_STACK_UNDERFLOW);
-	a->data_type = 0;
-	b->data_type = 0;
+	a->o_data_type = 0;
+	b->o_data_type = 0;
 	SLdo_pop_n (y - Run_Stack);
 	return -1;
      }
@@ -342,6 +343,7 @@ static int pop_2_objs (SLang_Object_Type *a, SLang_Object_Type *b)
    Stack_Pointer = y;
    return 0;
 }
+#endif
 
 /* This function pops the top of the stack to x[0], next to x[1], etc...  This is
  * backwards from what might be expected but this corresponds to the order of the local
@@ -359,7 +361,7 @@ static int pop_n_objs_reverse (SLang_Object_Type *x, unsigned int n)
      {
 	(void) SLang_set_error (SL_STACK_UNDERFLOW);
 	for (i = 0; i < n; i++)
-	  x[i].data_type = 0;
+	  x[i].o_data_type = 0;
 	(void) SLdo_pop_n ((unsigned int) (y - Run_Stack));
 	return -1;
      }
@@ -382,7 +384,7 @@ static int peek_at_stack (void)
 	return -1;
      }
 
-   return (int) (Stack_Pointer - 1)->data_type;
+   return (int) (Stack_Pointer - 1)->o_data_type;
 }
 
 int SLang_peek_at_stack (void)
@@ -399,7 +401,7 @@ int _pSLang_peek_at_stack2 (SLtype *_typep)
 	return -1;
      }
 
-   type = (Stack_Pointer - 1)->data_type;
+   type = (Stack_Pointer - 1)->o_data_type;
    if (type == SLANG_ARRAY_TYPE)
      *_typep = (Stack_Pointer - 1)->v.array_val->data_type;
    else
@@ -416,7 +418,7 @@ int SLang_peek_at_stack_n (unsigned int n)
 	(void) SLang_set_error (SL_STACK_UNDERFLOW);
 	return -1;
      }
-   return (int) (Stack_Pointer - (n+1))->data_type;
+   return (int) (Stack_Pointer - (n+1))->o_data_type;
 }
 
 static int pop_ctrl_integer (int *i)
@@ -437,7 +439,7 @@ static int pop_ctrl_integer (int *i)
      }
    y--;
    
-   type = (int) y->data_type;
+   type = (int) y->o_data_type;
    if (type == SLANG_INT_TYPE)
      {
 	Stack_Pointer = y;   
@@ -484,29 +486,32 @@ int SLang_peek_at_stack1 (void)
 
 
 /* _INLINE_ */
+static void free_object (SLang_Object_Type *obj, SLang_Class_Type *cl)
+{
+   if ((obj == NULL)
+       || (cl->cl_class_type == SLANG_CLASS_TYPE_SCALAR))
+     return;
+
+#if SLANG_OPTIMIZE_FOR_SPEED
+   if (obj->o_data_type == SLANG_STRING_TYPE)
+     {
+	_pSLang_free_slstring (obj->v.s_val);
+	return;
+     }
+#endif
+   (*cl->cl_destroy) (obj->o_data_type, (VOID_STAR) &obj->v);
+}
+
+   
 void SLang_free_object (SLang_Object_Type *obj)
 {
    SLtype data_type;
    SLang_Class_Type *cl;
 
    if (obj == NULL) return;
-   data_type = obj->data_type;
-#if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(data_type))
-     return;
-   if (data_type == SLANG_STRING_TYPE)
-     {
-	_pSLang_free_slstring (obj->v.s_val);
-	return;
-     }
-#endif
-
+   data_type = obj->o_data_type;
    GET_CLASS(cl,data_type);
-
-#if !SLANG_OPTIMIZE_FOR_SPEED
-   if (cl->cl_class_type != SLANG_CLASS_TYPE_SCALAR)
-#endif
-     (*cl->cl_destroy) (data_type, (VOID_STAR) &obj->v);
+   free_object (obj, cl);
 }
 
 _INLINE_ static int push_object (SLang_Object_Type *x)
@@ -547,7 +552,7 @@ int SLclass_push_ptr_obj (SLtype type, VOID_STAR pval)
 	return -1;
      }
 
-   y->data_type = type;
+   y->o_data_type = type;
    y->v.ptr_val = pval;
 
    Stack_Pointer = y + 1;
@@ -565,7 +570,7 @@ _INLINE_ static int push_int_object (SLtype type, int x)
 	return -1;
      }
 
-   y->data_type = type;
+   y->o_data_type = type;
    y->v.int_val = x;
 
    Stack_Pointer = y + 1;
@@ -576,6 +581,28 @@ int SLclass_push_int_obj (SLtype type, int x)
 {
    return push_int_object (type, x);
 }
+
+int _pSLang_push_array (SLang_Array_Type *at, int free_array)
+{
+   register SLang_Object_Type *y;
+
+   y = Stack_Pointer;
+
+   if (y >= Stack_Pointer_Max)
+     {
+	(void) SLang_set_error (SL_STACK_OVERFLOW);
+	if (free_array) SLang_free_array (at);
+	return -1;
+     }
+
+   if (free_array == 0) at->num_refs++;
+   y->o_data_type = SLANG_ARRAY_TYPE;
+   y->v.ptr_val = (VOID_STAR)at;
+
+   Stack_Pointer = y + 1;
+   return 0;
+}
+
 
 #if SLANG_HAS_FLOAT
 _INLINE_ static int push_double_object (SLtype type, double x)
@@ -589,7 +616,7 @@ _INLINE_ static int push_double_object (SLtype type, double x)
 	return -1;
      }
 
-   y->data_type = type;
+   y->o_data_type = type;
    y->v.double_val = x;
 
    Stack_Pointer = y + 1;
@@ -613,7 +640,7 @@ _INLINE_ static int push_char_object (SLtype type, char x)
 	return -1;
      }
 
-   y->data_type = type;
+   y->o_data_type = type;
    y->v.char_val = x;
 
    Stack_Pointer = y + 1;
@@ -625,6 +652,7 @@ int SLclass_push_char_obj (SLtype type, char x)
    return push_char_object (type, x);
 }
 
+
 /* This function is "fragile".  It is a helper routine and assumes that y is on the stack */
 static int _typecast_object_to_type (SLang_Object_Type *y, SLang_Object_Type *obj, SLtype type, int allow_arrays)
 {
@@ -633,18 +661,18 @@ static int _typecast_object_to_type (SLang_Object_Type *y, SLang_Object_Type *ob
     * floats to ints implicitly.  
     */
    if (IS_ARITH_TYPE(type)
-       && IS_ARITH_TYPE(y->data_type)
-       && (type >= y->data_type))
+       && IS_ARITH_TYPE(y->o_data_type)
+       && (type >= y->o_data_type))
      {
 	/* This should not fail */
-	(void) _pSLarith_typecast (y->data_type, (VOID_STAR)&y->v, 1, 
+	(void) _pSLarith_typecast (y->o_data_type, (VOID_STAR)&y->v, 1, 
 				   type, (VOID_STAR)&obj->v);
-	obj->data_type = type;
+	obj->o_data_type = type;
 	return 0;
      }
 #endif
    if ((allow_arrays == 0)
-       || (y->data_type != SLANG_ARRAY_TYPE)
+       || (y->o_data_type != SLANG_ARRAY_TYPE)
        || (y->v.array_val->data_type != type))
      if (-1 == SLclass_typecast (type, 1, 0))
        return -1;
@@ -664,7 +692,7 @@ _INLINE_
    if (y == Run_Stack)
      return pop_object (&obj);	       /* let it fail */
    y--;
-   if (y->data_type == SLANG_INT_TYPE)
+   if (y->o_data_type == SLANG_INT_TYPE)
      {
 	*i = y->v.int_val;
 	Stack_Pointer = y;
@@ -695,7 +723,7 @@ int SLang_pop_array_index (SLindex_Type *i)
    if (y == Run_Stack)
      return pop_object (&obj);	       /* let it fail */
    y--;
-   if (y->data_type == SLANG_ARRAY_INDEX_TYPE)
+   if (y->o_data_type == SLANG_ARRAY_INDEX_TYPE)
      {
 	*i = y->v.int_val;
 	Stack_Pointer = y;
@@ -720,7 +748,7 @@ _INLINE_ static int pop_object_of_type (SLtype type, SLang_Object_Type *obj,
    if (y == Run_Stack)
      return pop_object (obj);	       /* let it fail */
    y--;
-   if (y->data_type == type)
+   if (y->o_data_type == type)
      {
 	*obj = *y;
 	Stack_Pointer = y;
@@ -861,7 +889,7 @@ int SLdup_n (int n)
    while (bot < top)
      {
 	SLang_Class_Type *cl;
-	SLtype data_type = bot->data_type;
+	SLtype data_type = bot->o_data_type;
 
 #if SLANG_OPTIMIZE_FOR_SPEED
 	if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(data_type))
@@ -1118,8 +1146,8 @@ static int do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *obj
    VOID_STAR pc;
    int ret;
 
-   b_data_type = objb->data_type;
-   a_data_type = obja->data_type;
+   b_data_type = objb->o_data_type;
+   a_data_type = obja->o_data_type;
 
 #if SLANG_OPTIMIZE_FOR_SPEED
    if (IS_ARITH_TYPE(a_data_type) 
@@ -1131,6 +1159,11 @@ static int do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *obj
 	  return status;
 	/* drop and try it the hard way */
      }
+# if 1
+   if ((a_data_type == SLANG_ARRAY_TYPE) 
+       && (a_data_type == b_data_type))
+     return _pSLarray_bin_op (obja, objb, op);
+# endif
 #endif
 
    GET_CLASS(a_cl,a_data_type);
@@ -1145,18 +1178,22 @@ static int do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *obj
    c_data_type = c_cl->cl_data_type;
 
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(a_data_type))
-     pa = (VOID_STAR) &obja->v;
+   if (SLANG_CLASS_TYPE_VECTOR == a_cl->cl_class_type)
+     pa = (VOID_STAR) obja->v.ptr_val;
    else
+     pa = (VOID_STAR) &obja->v;
+#else
+   pa = _pSLclass_get_ptr_to_value (a_cl, obja);
 #endif
-     pa = _pSLclass_get_ptr_to_value (a_cl, obja);
 
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(b_data_type))
-     pb = (VOID_STAR) &objb->v;
+   if (SLANG_CLASS_TYPE_VECTOR == b_cl->cl_class_type)
+     pb = (VOID_STAR) objb->v.ptr_val;
    else
+     pb = (VOID_STAR) &objb->v;
+#else
+   pb = _pSLclass_get_ptr_to_value (b_cl, objb);
 #endif
-     pb = _pSLclass_get_ptr_to_value (b_cl, objb);
 
    pc = c_cl->cl_transfer_buf;
 
@@ -1175,7 +1212,8 @@ static int do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *obj
    /* apush will create a copy, so make sure we free after the push */
    ret = (*c_cl->cl_apush)(c_data_type, pc);
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(c_data_type))
+   if ((SLANG_CLASS_TYPE_SCALAR != c_cl->cl_class_type)
+       && (SLANG_CLASS_TYPE_VECTOR != c_cl->cl_class_type))
 #endif
      (*c_cl->cl_adestroy)(c_data_type, pc);
 
@@ -1239,12 +1277,12 @@ static int dbl_dbl_binary (int op, SLang_Object_Type *obja, SLang_Object_Type *o
 int _pSLang_do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *objb)
 {
    
-   if (obja->data_type == objb->data_type)
+   if (obja->o_data_type == objb->o_data_type)
      {
-	if (obja->data_type == SLANG_INT_TYPE)
+	if (obja->o_data_type == SLANG_INT_TYPE)
 	  return int_int_binary (op, obja, objb);
 #if SLANG_HAS_FLOAT
-	if (obja->data_type == SLANG_DOUBLE_TYPE)
+	if (obja->o_data_type == SLANG_DOUBLE_TYPE)
 	  return dbl_dbl_binary (op, obja, objb);
 #endif
      }
@@ -1258,23 +1296,118 @@ static int do_binary_ab_inc_ref (int op, SLang_Object_Type *obja, SLang_Object_T
 #if SLANG_USE_TMP_OPTIMIZATION
    int inc = 0;
 #endif
-   if (obja->data_type == objb->data_type)
+   SLtype atype = obja->o_data_type;
+   SLtype btype = objb->o_data_type;
+
+   if (atype == SLANG_INT_TYPE)
      {
-	if (obja->data_type == SLANG_INT_TYPE)
-	  return int_int_binary (op, obja, objb);
+	if (btype == SLANG_INT_TYPE)
+	  {
+	     int a, b;
+
+	     a = obja->v.int_val; b = objb->v.int_val;
+	     switch (op)
+	       {
+		case SLANG_PLUS:
+		  return push_int_object (SLANG_INT_TYPE, a+b);
+		case SLANG_MINUS:
+		  return push_int_object (SLANG_INT_TYPE, a-b);
+		case SLANG_TIMES:
+		  return push_int_object (SLANG_INT_TYPE, a*b);
+		case SLANG_EQ:
+		  return push_char_object (SLANG_CHAR_TYPE, a==b);
+		case SLANG_NE:
+		  return push_char_object (SLANG_CHAR_TYPE, a!=b);
+		case SLANG_GT:
+		  return push_char_object (SLANG_CHAR_TYPE, a>b);
+		case SLANG_GE:
+		  return push_char_object (SLANG_CHAR_TYPE, a>=b);
+		case SLANG_LT:
+		  return push_char_object (SLANG_CHAR_TYPE, a<b);
+		case SLANG_LE:
+		  return push_char_object (SLANG_CHAR_TYPE, a<=b);
+	       }
+	     return do_binary_ab (op, obja, objb);
+	  }
 #if SLANG_HAS_FLOAT
-	if (obja->data_type == SLANG_DOUBLE_TYPE)
-	  return dbl_dbl_binary (op, obja, objb);
-#endif
+	if (btype == SLANG_DOUBLE_TYPE)
+	  {
+	     int a;
+	     double b;
+
+	     a = obja->v.int_val; b = objb->v.double_val;
+	     switch (op)
+	       {
+		case SLANG_PLUS:
+		  return push_double_object (SLANG_DOUBLE_TYPE, a+b);
+		case SLANG_MINUS:
+		  return push_double_object (SLANG_DOUBLE_TYPE, a-b);
+		case SLANG_TIMES:
+		  return push_double_object (SLANG_DOUBLE_TYPE, a*b);
+		case SLANG_EQ:
+		  return push_char_object (SLANG_CHAR_TYPE, a==b);
+		case SLANG_NE:
+		  return push_char_object (SLANG_CHAR_TYPE, a!=b);
+		case SLANG_GT:
+		  return push_char_object (SLANG_CHAR_TYPE, a>b);
+		case SLANG_GE:
+		  return push_char_object (SLANG_CHAR_TYPE, a>=b);
+		case SLANG_LT:
+		  return push_char_object (SLANG_CHAR_TYPE, a<b);
+		case SLANG_LE:
+		  return push_char_object (SLANG_CHAR_TYPE, a<=b);
+	       }
+	     return do_binary_ab (op, obja, objb);
+	  }
+#endif				       /* SLANG_HAS_FLOAT */
      }
+#if SLANG_HAS_FLOAT
+   else if (atype == SLANG_DOUBLE_TYPE)
+     {
+	double a, b;
+
+	if (btype == SLANG_DOUBLE_TYPE)
+	  b = objb->v.double_val;
+	else if (btype == SLANG_INT_TYPE)
+	  b = (double) objb->v.int_val;
+	else
+	  goto the_hard_way;
+	  
+	a = obja->v.double_val;
+	switch (op)
+	  {
+	   case SLANG_PLUS:
+	     return push_double_object (SLANG_DOUBLE_TYPE, a+b);
+	   case SLANG_MINUS:
+	     return push_double_object (SLANG_DOUBLE_TYPE, a-b);
+	   case SLANG_TIMES:
+	     return push_double_object (SLANG_DOUBLE_TYPE, a*b);
+	   case SLANG_EQ:
+	     return push_char_object (SLANG_CHAR_TYPE, a==b);
+	   case SLANG_NE:
+	     return push_char_object (SLANG_CHAR_TYPE, a!=b);
+	   case SLANG_GT:
+	     return push_char_object (SLANG_CHAR_TYPE, a>b);
+	   case SLANG_GE:
+	     return push_char_object (SLANG_CHAR_TYPE, a>=b);
+	   case SLANG_LT:
+	     return push_char_object (SLANG_CHAR_TYPE, a<b);
+		case SLANG_LE:
+	     return push_char_object (SLANG_CHAR_TYPE, a<=b);
+	  }
+	return do_binary_ab (op, obja, objb);
+     }
+#endif				       /* SLANG_HAS_FLOAT */
+   
+the_hard_way:
 
 #if SLANG_USE_TMP_OPTIMIZATION
-   if (obja->data_type == SLANG_ARRAY_TYPE)
+   if (atype == SLANG_ARRAY_TYPE)
      {
 	inc |= 1;
 	obja->v.array_val->num_refs++;
      }
-   if (objb->data_type == SLANG_ARRAY_TYPE)
+   if (btype == SLANG_ARRAY_TYPE)
      {
 	inc |= 2;
 	objb->v.array_val->num_refs++;
@@ -1286,10 +1419,11 @@ static int do_binary_ab_inc_ref (int op, SLang_Object_Type *obja, SLang_Object_T
    if (inc & 1) obja->v.array_val->num_refs--;
    if (inc & 2) objb->v.array_val->num_refs--;
 #endif
-   
+
    return ret;
 }
 
+#if SLANG_OPTIMIZE_FOR_SPEED
 /* Only for SLANG_BCST_ASSIGN */
 /* _INLINE_ */
 static int do_binary_ab_inc_ref_assign (int op, SLang_Object_Type *obja, SLang_Object_Type *objb, SLang_Object_Type *objc)
@@ -1298,30 +1432,175 @@ static int do_binary_ab_inc_ref_assign (int op, SLang_Object_Type *obja, SLang_O
 #if SLANG_USE_TMP_OPTIMIZATION
    int inc = 0;
 #endif
+   SLang_Class_Type *cl;
+   int c_needs_freed;
+   SLtype atype, btype;
 
-   if (obja->data_type == objb->data_type)
+   GET_CLASS(cl, objc->o_data_type);
+   c_needs_freed = (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type);
+
+   atype = obja->o_data_type;
+   btype = objb->o_data_type;
+
+   if (atype == SLANG_INT_TYPE)
      {
-	if (obja->data_type == SLANG_INT_TYPE)
+	if (btype == SLANG_INT_TYPE)
 	  {
-	     ret = int_int_binary (op, obja, objb);
+	     int a, b;
+
+	     if (c_needs_freed)
+	       {
+		  ret = int_int_binary (op, obja, objb);
+		  goto the_return;
+	       }
+	     a = obja->v.int_val; b = objb->v.int_val;
+	     switch (op)
+	       {
+		case SLANG_PLUS:
+		  objc->v.int_val = a + b;  objc->o_data_type = SLANG_INT_TYPE; 
+		  return 0;
+		case SLANG_MINUS:
+		  objc->v.int_val = a - b;  objc->o_data_type = SLANG_INT_TYPE;
+		  return 0;
+		case SLANG_TIMES:
+		  objc->v.int_val = a * b;  objc->o_data_type = SLANG_INT_TYPE;
+		  return 0;
+		case SLANG_EQ:
+		  objc->v.char_val = (a == b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_NE:
+		  objc->v.char_val = (a != b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_GT:
+		  objc->v.char_val = (a > b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_GE:
+		  objc->v.char_val = (a >= b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_LT:
+		  objc->v.char_val = (a < b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_LE:
+		  objc->v.char_val = (a <= b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+	       }
+	     ret = do_binary_ab (op, obja, objb);
 	     goto the_return;
 	  }
 #if SLANG_HAS_FLOAT
-	if (obja->data_type == SLANG_DOUBLE_TYPE)
+	if (btype == SLANG_DOUBLE_TYPE)
 	  {
-	     ret = dbl_dbl_binary (op, obja, objb);
+	     int a;
+	     double b;
+
+	     if (c_needs_freed)
+	       {
+		  ret = do_binary_ab (op, obja, objb);
+		  goto the_return;
+	       }
+
+	     a = obja->v.int_val; b = objb->v.double_val;
+	     switch (op)
+	       {
+		case SLANG_PLUS:
+		  objc->v.double_val = a + b;  objc->o_data_type = SLANG_DOUBLE_TYPE; 
+		  return 0;
+		case SLANG_MINUS:
+		  objc->v.double_val = a - b;  objc->o_data_type = SLANG_DOUBLE_TYPE;
+		  return 0;
+		case SLANG_TIMES:
+		  objc->v.double_val = a * b;  objc->o_data_type = SLANG_DOUBLE_TYPE;
+		  return 0;
+		case SLANG_EQ:
+		  objc->v.char_val = (a == b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_NE:
+		  objc->v.char_val = (a != b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_GT:
+		  objc->v.char_val = (a > b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_GE:
+		  objc->v.char_val = (a >= b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_LT:
+		  objc->v.char_val = (a < b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+		case SLANG_LE:
+		  objc->v.char_val = (a <= b);  objc->o_data_type = SLANG_CHAR_TYPE;
+		  return 0;
+	       }
+	     ret = do_binary_ab (op, obja, objb);
 	     goto the_return;
 	  }
-#endif
+#endif				       /* SLANG_HAS_FLOAT */
      }
+#if SLANG_HAS_FLOAT
+   else if (atype == SLANG_DOUBLE_TYPE)
+     {
+	double a, b;
+
+	if (btype == SLANG_DOUBLE_TYPE)
+	  {
+	     if (c_needs_freed)
+	       {
+		  ret = dbl_dbl_binary (op, obja, objb);
+		  goto the_return;
+	       }
+	     b = objb->v.double_val;
+	  }
+	else if ((btype == SLANG_INT_TYPE)
+		 && (c_needs_freed == 0))
+	  b = (double) objb->v.int_val;
+	else
+	  goto the_hard_way;
+	  
+	a = obja->v.double_val;
+
+	switch (op)
+	  {
+	   case SLANG_PLUS:
+	     objc->v.double_val = a + b;  objc->o_data_type = SLANG_DOUBLE_TYPE; 
+		  return 0;
+	   case SLANG_MINUS:
+	     objc->v.double_val = a - b;  objc->o_data_type = SLANG_DOUBLE_TYPE;
+	     return 0;
+	   case SLANG_TIMES:
+	     objc->v.double_val = a * b;  objc->o_data_type = SLANG_DOUBLE_TYPE;
+	     return 0;
+	   case SLANG_EQ:
+	     objc->v.char_val = (a == b);  objc->o_data_type = SLANG_CHAR_TYPE;
+	     return 0;
+	   case SLANG_NE:
+	     objc->v.char_val = (a != b);  objc->o_data_type = SLANG_CHAR_TYPE;
+	     return 0;
+	   case SLANG_GT:
+	     objc->v.char_val = (a > b);  objc->o_data_type = SLANG_CHAR_TYPE;
+	     return 0;
+	   case SLANG_GE:
+	     objc->v.char_val = (a >= b);  objc->o_data_type = SLANG_CHAR_TYPE;
+	     return 0;
+	   case SLANG_LT:
+	     objc->v.char_val = (a < b);  objc->o_data_type = SLANG_CHAR_TYPE;
+	     return 0;
+	   case SLANG_LE:
+	     objc->v.char_val = (a <= b);  objc->o_data_type = SLANG_CHAR_TYPE;
+	     return 0;
+	  }
+	ret = do_binary_ab (op, obja, objb);
+	goto the_return;
+     }
+#endif				       /* SLANG_HAS_FLOAT */
+
+the_hard_way:
 
 #if SLANG_USE_TMP_OPTIMIZATION
-   if (obja->data_type == SLANG_ARRAY_TYPE)
+   if (atype == SLANG_ARRAY_TYPE)
      {
 	inc |= 1;
 	obja->v.array_val->num_refs++;
      }
-   if (objb->data_type == SLANG_ARRAY_TYPE)
+   if (btype == SLANG_ARRAY_TYPE)
      {
 	inc |= 2;
 	objb->v.array_val->num_refs++;
@@ -1339,43 +1618,66 @@ static int do_binary_ab_inc_ref_assign (int op, SLang_Object_Type *obja, SLang_O
    if (ret != 0)
      return ret;
 
-#if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(objc->data_type))
-#endif
-     SLang_free_object (objc);
+   if (c_needs_freed)
+     free_object (objc, cl);
 
    return pop_object(objc);
 }
+#endif
 
-
-_INLINE_
+/* _INLINE_ */
 static int do_binary (int op)
 {
-   SLang_Object_Type obja, objb;
+   SLang_Object_Type obja, objb, *objap, *objbp;
+#if SLANG_OPTIMIZE_FOR_SPEED
+   SLang_Class_Type *cl;
+#endif
    int ret;
 
-   if (-1 == pop_2_objs (&obja, &objb))
-     return -1;
-
-   if (obja.data_type == objb.data_type)
+   objbp = Stack_Pointer;
+   if (Run_Stack + 2 > objbp)
      {
-	if (obja.data_type == SLANG_INT_TYPE)
-	  return int_int_binary (op, &obja, &objb);
+	(void) SLang_set_error (SL_STACK_UNDERFLOW);
+	SLdo_pop_n (objbp - Run_Stack);
+	return -1;
+     }
+   objbp--;
+   objap = objbp-1;
+
+   Stack_Pointer = objap;
+
+   if (objbp->o_data_type == objap->o_data_type)
+     {
+	if (objbp->o_data_type == SLANG_INT_TYPE)
+	  return int_int_binary (op, objap, objbp);
 #if SLANG_HAS_FLOAT
-	if (obja.data_type == SLANG_DOUBLE_TYPE)
-	  return dbl_dbl_binary (op, &obja, &objb);
+	if (objbp->o_data_type == SLANG_DOUBLE_TYPE)
+	  return dbl_dbl_binary (op, objap, objbp);
 #endif
      }
+   
+   obja = *objap;
+   objb = *objbp;
 
    ret = do_binary_ab (op, &obja, &objb);
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(obja.data_type))
-#endif
+   GET_CLASS(cl, obja.o_data_type);
+   if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
+     free_object (&obja, cl);
+#else
      SLang_free_object (&obja);
-#if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(objb.data_type))
 #endif
+
+#if SLANG_OPTIMIZE_FOR_SPEED
+   if (obja.o_data_type != objb.o_data_type)
+     {
+	GET_CLASS(cl, objb.o_data_type);
+     }
+   if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
+     free_object (&objb, cl);
+#else
      SLang_free_object (&objb);
+#endif
 
    return ret;
 }
@@ -1384,67 +1686,189 @@ _INLINE_
 static int do_binary_b (int op, SLang_Object_Type *bp)
 {
    SLang_Object_Type a;
+#if SLANG_OPTIMIZE_FOR_SPEED
+   SLang_Class_Type *cl;
+#endif
    int ret;
 
    if (pop_object(&a)) return -1;
    
-   if (a.data_type == bp->data_type)
+   if (a.o_data_type == bp->o_data_type)
      {
-	if (a.data_type == SLANG_INT_TYPE)
+	if (a.o_data_type == SLANG_INT_TYPE)
 	  return int_int_binary (op, &a, bp);
 
 #if SLANG_HAS_FLOAT
-	if (a.data_type == SLANG_DOUBLE_TYPE)
+	if (a.o_data_type == SLANG_DOUBLE_TYPE)
 	  return dbl_dbl_binary (op, &a, bp);
 #endif
      }
 
    ret = do_binary_ab (op, &a, bp);
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(a.data_type))
-#endif
+   GET_CLASS(cl, a.o_data_type);
+   if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
+     free_object (&a, cl);
+#else
      SLang_free_object (&a);
+#endif
    return ret;
 }
 
+#if SLANG_OPTIMIZE_FOR_SPEED
 /* _INLINE_ */
-static void do_binary_b_inc_ref (int op, SLang_Object_Type *bp)
+static void do_binary_b_inc_ref (int op, SLang_Object_Type *objbp)
 {
-   SLang_Object_Type a;
+   SLang_Object_Type obja;
+   SLang_Class_Type *cl;
+   SLang_Object_Type *objap;
+   SLtype atype, btype;
 
-   if (pop_object(&a)) return;
-
-   if (a.data_type == bp->data_type)
-     {	
-	if (a.data_type == SLANG_INT_TYPE)
+   btype = objbp->o_data_type;
+   
+   if (btype == SLANG_INT_TYPE)
+     {
+	if (Stack_Pointer == Run_Stack)
 	  {
-	     (void) int_int_binary (op, &a, bp);
+	     (void) SLang_set_error (SL_STACK_UNDERFLOW);
+	     return;
+	  }
+	objap = (Stack_Pointer-1);
+	atype = objap->o_data_type;
+
+	if (atype == SLANG_INT_TYPE)
+	  {
+	     int a, b;
+
+	     a = objap->v.int_val; b = objbp->v.int_val;
+	     switch (op)
+	       {
+		case SLANG_PLUS:
+		  objap->v.int_val = a + b; return;
+		case SLANG_MINUS:
+		  objap->v.int_val = a - b; return;
+		case SLANG_TIMES:
+		  objap->v.int_val = a * b; return;
+		case SLANG_EQ:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a == b); return;
+		case SLANG_NE:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a != b); return;
+		case SLANG_GT:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a > b); return;
+		case SLANG_GE:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a >= b); return;
+		case SLANG_LT:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a < b); return;
+		case SLANG_LE:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a <= b); return;
+	       }
+	     (void) pop_object (&obja);
+	     do_binary_ab (op, &obja, objbp);
 	     return;
 	  }
 #if SLANG_HAS_FLOAT
-	if (a.data_type == SLANG_DOUBLE_TYPE)
+	if (atype == SLANG_DOUBLE_TYPE)
 	  {
-	     (void) dbl_dbl_binary (op, &a, bp);
+	     double a;
+	     int b;
+
+	     a = objap->v.double_val; b = objbp->v.int_val;
+	     switch (op)
+	       {
+		case SLANG_PLUS:
+		  objap->v.double_val = a + b; return;
+		case SLANG_MINUS:
+		  objap->v.double_val = a - b; return;
+		case SLANG_TIMES:
+		  objap->v.double_val = a * b; return;
+		case SLANG_EQ:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a == b); return;
+		case SLANG_NE:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a != b); return;
+		case SLANG_GT:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a > b); return;
+		case SLANG_GE:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a >= b); return;
+		case SLANG_LT:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a < b); return;
+		case SLANG_LE:
+		  objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a <= b); return;
+	       }
+	     (void) pop_object (&obja);
+	     do_binary_ab (op, &obja, objbp);
 	     return;
 	  }
-#endif
+#endif				       /* SLANG_HAS_FLOAT */
      }
+#if SLANG_HAS_FLOAT
+   else if (btype == SLANG_DOUBLE_TYPE)
+     {
+	double a, b;
+
+	if (Stack_Pointer == Run_Stack)
+	  {
+	     (void) SLang_set_error (SL_STACK_UNDERFLOW);
+	     return;
+	  }
+	objap = (Stack_Pointer-1);
+	atype = objap->o_data_type;
+
+	if (atype == SLANG_DOUBLE_TYPE)
+	  a = objap->v.double_val;
+	else if (atype == SLANG_INT_TYPE)
+	  a = (double) objap->v.int_val;
+	else
+	  goto the_hard_way;
+
+	b = objbp->v.double_val;
+	switch (op)
+	  {
+	   case SLANG_PLUS:
+	     objap->o_data_type = SLANG_DOUBLE_TYPE; objap->v.double_val = a + b; return;
+	   case SLANG_MINUS:
+	     objap->o_data_type = SLANG_DOUBLE_TYPE; objap->v.double_val = a - b; return;
+	   case SLANG_TIMES:
+	     objap->o_data_type = SLANG_DOUBLE_TYPE; objap->v.double_val = a * b; return;
+	   case SLANG_EQ:
+	     objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a == b); return;
+	   case SLANG_NE:
+	     objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a != b); return;
+	   case SLANG_GT:
+	     objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a > b); return;
+	   case SLANG_GE:
+	     objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a >= b); return;
+	   case SLANG_LT:
+	     objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a < b); return;
+	   case SLANG_LE:
+	     objap->o_data_type = SLANG_CHAR_TYPE; objap->v.char_val = (a <= b); return;
+	  }
+	(void) pop_object (&obja);
+	do_binary_ab (op, &obja, objbp);
+	return;
+     }
+#endif				       /* SLANG_HAS_FLOAT */
+   
+the_hard_way:
+
+   if (-1 == pop_object (&obja))
+     return;
 
 #if SLANG_USE_TMP_OPTIMIZATION
-   if (bp->data_type == SLANG_ARRAY_TYPE)
+   if (btype == SLANG_ARRAY_TYPE)
      {
-	bp->v.array_val->num_refs++;
-	(void) do_binary_ab (op, &a, bp);
-	bp->v.array_val->num_refs--;
+	objbp->v.array_val->num_refs++;
+	(void) do_binary_ab (op, &obja, objbp);
+	objbp->v.array_val->num_refs--;
      }
    else
 #endif
-     (void) do_binary_ab (op, &a, bp);
-#if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(a.data_type))
-#endif
-     SLang_free_object (&a);
+     (void) do_binary_ab (op, &obja, objbp);
+
+   GET_CLASS(cl, obja.o_data_type);
+   if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
+     free_object (&obja, cl);
 }
+#endif
 
 static int do_unary_op (int op, SLang_Object_Type *obj, int unary_type)
 {
@@ -1455,7 +1879,7 @@ static int do_unary_op (int op, SLang_Object_Type *obj, int unary_type)
    SLtype a_type, b_type;
    int ret;
 
-   a_type = obj->data_type;
+   a_type = obj->o_data_type;
    GET_CLASS (a_cl, a_type);
 
    if (NULL == (f = _pSLclass_get_unary_fun (op, a_cl, &b_cl, unary_type)))
@@ -1464,12 +1888,13 @@ static int do_unary_op (int op, SLang_Object_Type *obj, int unary_type)
    b_type = b_cl->cl_data_type;
 
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(a_type))
-     pa = (VOID_STAR) &obj->v;
+   if (SLANG_CLASS_TYPE_VECTOR == a_cl->cl_class_type)
+     pa = (VOID_STAR) obj->v.ptr_val;
    else
+     pa = (VOID_STAR) &obj->v;
+#else
+   pa = _pSLclass_get_ptr_to_value (a_cl, obj);
 #endif
-     pa = _pSLclass_get_ptr_to_value (a_cl, obj);
-
    pb = b_cl->cl_transfer_buf;
 
    if (1 != (*f) (op, a_type, pa, 1, pb))
@@ -1482,7 +1907,8 @@ static int do_unary_op (int op, SLang_Object_Type *obj, int unary_type)
    ret = (*b_cl->cl_apush)(b_type, pb);
    /* cl_apush creates a copy, so make sure we call cl_adestroy */
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(b_type))
+   if ((SLANG_CLASS_TYPE_SCALAR != b_cl->cl_class_type)
+       && (SLANG_CLASS_TYPE_VECTOR != b_cl->cl_class_type))
 #endif
      (*b_cl->cl_adestroy)(b_type, pb);
 
@@ -1493,20 +1919,29 @@ _INLINE_
 static int do_unary (int op, int unary_type)
 {
    SLang_Object_Type obj;
+#if SLANG_OPTIMIZE_FOR_SPEED
+   SLang_Class_Type *cl;
+#endif
    int ret;
 
    if (-1 == pop_object(&obj)) return -1;
    ret = do_unary_op (op, &obj, unary_type);
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(obj.data_type))
+   GET_CLASS(cl, obj.o_data_type);
+   if (SLANG_CLASS_TYPE_SCALAR != cl->cl_data_type)
+     free_object (&obj, cl);
+#else
+   SLang_free_object (&obj);
 #endif
-     SLang_free_object (&obj);
    return ret;
 }
 
 static int do_assignment_binary (int op, SLang_Object_Type *obja_ptr)
 {
    SLang_Object_Type objb;
+#if SLANG_OPTIMIZE_FOR_SPEED
+   SLang_Class_Type *cl;
+#endif
    int ret;
 
    if (pop_object(&objb))
@@ -1514,9 +1949,12 @@ static int do_assignment_binary (int op, SLang_Object_Type *obja_ptr)
 
    ret = do_binary_ab (op, obja_ptr, &objb);
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(objb.data_type))
+   GET_CLASS(cl, objb.o_data_type);
+   if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
+     free_object (&objb, cl);
+#else
+   SLang_free_object (&objb);
 #endif
-     SLang_free_object (&objb);
    return ret;
 }
 
@@ -1595,7 +2033,7 @@ perform_lvalue_operation (int op_type, SLang_Object_Type *obja_ptr)
       case SLANG_BCST_PLUSPLUS:
       case SLANG_BCST_POST_PLUSPLUS:
 #if SLANG_OPTIMIZE_FOR_SPEED
-	if (obja_ptr->data_type == SLANG_INT_TYPE)
+	if (obja_ptr->o_data_type == SLANG_INT_TYPE)
 	  return push_int_object (SLANG_INT_TYPE, obja_ptr->v.int_val + 1);
 #endif
 	if (-1 == do_unary_op (SLANG_PLUSPLUS, obja_ptr, SLANG_BC_UNARY))
@@ -1605,7 +2043,7 @@ perform_lvalue_operation (int op_type, SLang_Object_Type *obja_ptr)
       case SLANG_BCST_MINUSMINUS:
       case SLANG_BCST_POST_MINUSMINUS:
 #if SLANG_OPTIMIZE_FOR_SPEED
-	if (obja_ptr->data_type == SLANG_INT_TYPE)
+	if (obja_ptr->o_data_type == SLANG_INT_TYPE)
 	  return push_int_object (SLANG_INT_TYPE, obja_ptr->v.int_val - 1);
 #endif
 	if (-1 == do_unary_op (SLANG_MINUSMINUS, obja_ptr, SLANG_BC_UNARY))
@@ -1623,15 +2061,21 @@ _INLINE_
 static int
 set_lvalue_obj (int op_type, SLang_Object_Type *obja_ptr)
 {
+#if SLANG_OPTIMIZE_FOR_SPEED
+   SLang_Class_Type *cl;
+#endif
    if (op_type != SLANG_BCST_ASSIGN)
      {
 	if (-1 == perform_lvalue_operation (op_type, obja_ptr))
 	  return -1;
      }
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(obja_ptr->data_type))
+   GET_CLASS(cl, obja_ptr->o_data_type);
+   if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
+     free_object (obja_ptr, cl);
+#else
+   SLang_free_object (obja_ptr);
 #endif
-     SLang_free_object (obja_ptr);
 
    return pop_object(obja_ptr);
 }
@@ -1737,11 +2181,11 @@ static int make_unit_object (SLang_Object_Type *a, SLang_Object_Type *u)
 {
    SLtype type;
    
-   type = a->data_type;
+   type = a->o_data_type;
    if (type == SLANG_ARRAY_TYPE)
      type = a->v.array_val->data_type;
    
-   u->data_type = type;
+   u->o_data_type = type;
    switch (type)
      {
       case SLANG_UCHAR_TYPE:
@@ -1765,13 +2209,13 @@ static int make_unit_object (SLang_Object_Type *a, SLang_Object_Type *u)
 	break;
 	
       case SLANG_COMPLEX_TYPE:
-	u->data_type = SLANG_DOUBLE_TYPE;
+	u->o_data_type = SLANG_DOUBLE_TYPE;
       case SLANG_DOUBLE_TYPE:
 	u->v.double_val = 1;
 	break;
 #endif
       default:
-	u->data_type = SLANG_INT_TYPE;
+	u->o_data_type = SLANG_INT_TYPE;
 	u->v.int_val = 1;
      }
    return 0;
@@ -1809,6 +2253,10 @@ set_array_lvalue (int op)
    SLang_Object_Type x, y;
    int num_args, is_unary;
    int status;
+#if SLANG_OPTIMIZE_FOR_SPEED
+   int class_type;
+   SLang_Class_Type *cl;
+#endif
 
    if (-1 == map_assignment_op_to_binary (op, &op, &is_unary))
      return -1;
@@ -1854,12 +2302,12 @@ set_array_lvalue (int op)
 	return -1;
      }
    
-   if (x.data_type == y.data_type)
+   if (x.o_data_type == y.o_data_type)
      {
-	if (x.data_type == SLANG_INT_TYPE)
+	if (x.o_data_type == SLANG_INT_TYPE)
 	  status = int_int_binary (op, &y, &x);
 #if SLANG_HAS_FLOAT
-	else if (x.data_type == SLANG_DOUBLE_TYPE)
+	else if (x.o_data_type == SLANG_DOUBLE_TYPE)
 	  status = dbl_dbl_binary (op, &y, &x);
 #endif
 	else status = do_binary_ab (op, &y, &x);
@@ -1874,14 +2322,25 @@ set_array_lvalue (int op)
      }
 
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(y.data_type))
+   GET_CLASS(cl, y.o_data_type);
+   class_type = cl->cl_class_type;
+   if (SLANG_CLASS_TYPE_SCALAR != class_type)
+     free_object (&y, cl);
+#else
+   SLang_free_object (&y);
 #endif
-     SLang_free_object (&y);
-   
+
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(x.data_type))
+   if (cl->cl_data_type != x.o_data_type)
+     {
+	GET_CLASS(cl, x.o_data_type);
+	class_type = cl->cl_class_type;
+     }
+   if (SLANG_CLASS_TYPE_SCALAR != class_type)
+     free_object (&x, cl);
+#else
+   SLang_free_object (&x);
 #endif
-     SLang_free_object (&x);
 
    if (-1 == roll_stack (num_args + 1))
      return -1;
@@ -2062,7 +2521,7 @@ static int nt_ref_is_initialized (VOID_STAR v)
        && (nt->name_type != SLANG_PVARIABLE))
      return 1;
 
-   return ((SLang_Global_Var_Type *)nt)->obj.data_type != SLANG_UNDEFINED_TYPE;
+   return ((SLang_Global_Var_Type *)nt)->obj.o_data_type != SLANG_UNDEFINED_TYPE;
 }
 
 
@@ -2077,7 +2536,7 @@ static int nt_ref_uninitialize (VOID_STAR v)
    
    obj = &((SLang_Global_Var_Type *)nt)->obj;
    SLang_free_object (obj);
-   obj->data_type = SLANG_UNDEFINED_TYPE;
+   obj->o_data_type = SLANG_UNDEFINED_TYPE;
    obj->v.ptr_val = NULL;
    return 0;
 }
@@ -2182,7 +2641,7 @@ static int lv_ref_is_initialized (VOID_STAR v)
    if (objp == NULL)
      return -1;
    
-   return objp->data_type != SLANG_UNDEFINED_TYPE;
+   return objp->o_data_type != SLANG_UNDEFINED_TYPE;
 }
 
 static int lv_ref_uninitialize (VOID_STAR v)
@@ -2192,7 +2651,7 @@ static int lv_ref_uninitialize (VOID_STAR v)
      return -1;
 
    SLang_free_object (obj);
-   obj->data_type = SLANG_UNDEFINED_TYPE;
+   obj->o_data_type = SLANG_UNDEFINED_TYPE;
    obj->v.ptr_val = NULL;
    return 0;
 }
@@ -2317,7 +2776,7 @@ static int inner_interp_nametype (SLang_Name_Type *nt, int linenum)
 /* This function also frees the object */
 static int deref_call_object (SLang_Object_Type *obj, int linenum)
 {
-   if (obj->data_type == SLANG_REF_TYPE)
+   if (obj->o_data_type == SLANG_REF_TYPE)
      {
 	SLang_Ref_Type *ref = (SLang_Ref_Type *)obj->v.ref;
 	if ((ref != NULL) && ref->data_is_nametype 
@@ -2411,7 +2870,7 @@ static VOID_STAR pop_pointer (SLang_Object_Type *obj, SLtype type)
      {
 	if (-1 == SLang_pop_array (&at, 1))
 	  return NULL;
-	obj->data_type = SLANG_ARRAY_TYPE;
+	obj->o_data_type = SLANG_ARRAY_TYPE;
 	return obj->v.ptr_val = (VOID_STAR) at;
      }
 
@@ -2422,7 +2881,7 @@ static VOID_STAR pop_pointer (SLang_Object_Type *obj, SLtype type)
 	 */
 	if (-1 == pop_object(obj))
 	  return NULL;
-	type = obj->data_type;
+	type = obj->o_data_type;
      }
    else if (-1 == pop_object_of_type (type, obj, 0))
      return NULL;
@@ -2660,10 +3119,14 @@ static int execute_intrinsic_fun (SLang_Intrin_Fun_Type *objf)
    while (i < argc)
      {
 #if SLANG_OPTIMIZE_FOR_SPEED
-	SLtype type = objs[i].data_type;
-	if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(type))
+	SLang_Class_Type *cl;
+	SLtype type = objs[i].o_data_type;
+	GET_CLASS(cl, type);
+	if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
+	  free_object (objs+i, cl);
+#else
+	SLang_free_object (objs + i);
 #endif
-	  SLang_free_object (objs + i);
 	i++;
      }
 
@@ -2883,11 +3346,11 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
 #if SLANG_OPTIMIZE_FOR_SPEED		  
 		  if (objp != NULL)
 		    {
-		       if (objp->data_type != SLANG_INT_TYPE)
+		       if (objp->o_data_type != SLANG_INT_TYPE)
 			 {
-			    if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(objp->data_type))
+			    if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(objp->o_data_type))
 			      SLang_free_object (objp);
-			    objp->data_type = SLANG_INT_TYPE;
+			    objp->o_data_type = SLANG_INT_TYPE;
 			 }
 		       objp->v.int_val = i;
 		    }
@@ -3265,7 +3728,7 @@ int _pSLdump_objects (char *prefix, SLang_Object_Type *x, unsigned int n, int di
 
    while (n)
      {
-	GET_CLASS(cl,x->data_type);
+	GET_CLASS(cl,x->o_data_type);
 
 	if (NULL == (s = _pSLstringize_object (x)))
 	  s = "??";
@@ -3413,8 +3876,8 @@ int _pSLang_get_frame_variable (int depth, char *name)
    if (-1 != (i = find_local_variable_index (s.header, name)))
      {
 	SLang_Object_Type *obj = s.local_variable_frame - i;
-	GET_CLASS(cl,obj->data_type);
-	return (*cl->cl_push) (obj->data_type, (VOID_STAR) &obj->v);
+	GET_CLASS(cl,obj->o_data_type);
+	return (*cl->cl_push) (obj->o_data_type, (VOID_STAR) &obj->v);
      }
    
    if (NULL == (nt = find_global_name (name, s.private_ns, s.static_ns, Global_NameSpace, 1)))
@@ -3469,7 +3932,7 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    while (i--)
      {
 	lvf++;
-	lvf->data_type = SLANG_UNDEFINED_TYPE;
+	lvf->o_data_type = SLANG_UNDEFINED_TYPE;
      }
    Local_Variable_Frame = lvf;
 
@@ -3550,9 +4013,13 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    while (lvf > frame)
      {
 #if SLANG_OPTIMIZE_FOR_SPEED
-	if (SLANG_CLASS_TYPE_SCALAR != GET_CLASS_TYPE(lvf->data_type))
+	SLang_Class_Type *cl;
+	GET_CLASS(cl, lvf->o_data_type);
+	if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
+	  free_object (lvf, cl);
+#else
+	SLang_free_object (lvf);
 #endif
-	  SLang_free_object (lvf);
 	lvf--;
      }
    Local_Variable_Frame = lvf;
@@ -3612,7 +4079,7 @@ static void do_function_traceback (Function_Header_Type *header, unsigned int li
 	char *class_name;
 
 	objp = Local_Variable_Frame - i;
-	stype = objp->data_type;
+	stype = objp->o_data_type;
 
 	s = _pSLstringize_object (objp);
 	GET_CLASS(cl,stype);
@@ -3682,7 +4149,7 @@ int _pSLpush_slang_obj (SLang_Object_Type *obj)
 
    if (obj == NULL) return SLang_push_null ();
 
-   subtype = obj->data_type;
+   subtype = obj->o_data_type;
 
 #if SLANG_OPTIMIZE_FOR_SPEED
    if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(subtype))
@@ -3699,18 +4166,19 @@ static int carefully_push_object (SLang_Object_Type *obj)
    SLang_Class_Type *cl;
    SLtype subtype;
 
-   subtype = obj->data_type;
+   subtype = obj->o_data_type;
+
+   GET_CLASS(cl,subtype);
 
 #if SLANG_OPTIMIZE_FOR_SPEED
-   if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(subtype))
+   if (SLANG_CLASS_TYPE_SCALAR == cl->cl_class_type)
      return push_object (obj);
    if (subtype == SLANG_STRING_TYPE)
      return _pSLang_dup_and_push_slstring (obj->v.s_val);
    if (subtype == SLANG_ARRAY_TYPE)
-     return SLang_push_array (obj->v.array_val, 0);
+     return _pSLang_push_array (obj->v.array_val, 0);
 #endif
 
-   GET_CLASS(cl,subtype);
    return (*cl->cl_push) (subtype, (VOID_STAR) &obj->v);
 }
 
@@ -3727,7 +4195,7 @@ static int push_local_variable (int i)
    SLang_Class_Type *cl;
    SLtype subtype;
 
-   subtype = obj->data_type;
+   subtype = obj->o_data_type;
 
 #if SLANG_OPTIMIZE_FOR_SPEED
    if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(subtype))
@@ -3735,12 +4203,44 @@ static int push_local_variable (int i)
    if (subtype == SLANG_STRING_TYPE)
      return _pSLang_dup_and_push_slstring (obj->v.s_val);
    if (subtype == SLANG_ARRAY_TYPE)
-     return SLang_push_array (obj->v.array_val, 0);
+     return _pSLang_push_array (obj->v.array_val, 0);
 #endif
 
    GET_CLASS(cl,subtype);
    return (*cl->cl_push) (subtype, (VOID_STAR) &obj->v);
 }
+
+#if SLANG_OPTIMIZE_FOR_SPEED
+static int push_array_element (int lvaridx, int idx)
+{
+   SLang_Object_Type *obj = Local_Variable_Frame - lvaridx;
+
+   if ((obj->o_data_type == SLANG_ARRAY_TYPE)
+       && (idx >= 0))
+     {
+	SLang_Array_Type *at = obj->v.array_val;
+	
+	if ((at->num_dims == 1) 
+	    && (at->flags == 0)
+	    && (idx < (int) at->num_elements))
+	  {
+	     if (at->data_type == SLANG_INT_TYPE)
+	       return push_int_object (SLANG_INT_TYPE, *((int *)at->data + idx));
+# if SLANG_HAS_FLOAT
+	     else if (at->data_type == SLANG_DOUBLE_TYPE)
+	       return push_double_object (SLANG_DOUBLE_TYPE, *((double *)at->data + idx));
+#endif
+	  }
+     }
+
+   /* Do it the hard way */
+   if ((0 == push_int_object (SLANG_INT_TYPE, idx))
+       && (0 == push_local_variable (lvaridx)))
+     return _pSLarray_aget1 (1);
+   
+   return -1;
+}
+#endif
 
 static int dereference_object (void)
 {
@@ -3752,12 +4252,12 @@ static int dereference_object (void)
    if (-1 == pop_object(&obj))
      return -1;
 
-   type = obj.data_type;
+   type = obj.o_data_type;
 
    GET_CLASS(cl,type);
    ret = (*cl->cl_dereference)(type, (VOID_STAR) &obj.v);
 
-   SLang_free_object (&obj);
+   free_object (&obj, cl);
    return ret;
 }
 
@@ -3785,7 +4285,7 @@ static int case_function (void)
    swobjptr = Switch_Obj_Ptr - 1;
 
    if ((swobjptr < Switch_Objects)
-       || (0 == swobjptr->data_type))
+       || (0 == swobjptr->o_data_type))
      {
 	SLang_verror (SL_SYNTAX_ERROR, "Misplaced 'case' keyword");
 	return -1;
@@ -3829,7 +4329,7 @@ static void tmp_variable_function (SLBlock_Type *addr)
    if (-1 == push_object (obj))
      return;
 
-   obj->data_type = SLANG_UNDEFINED_TYPE;
+   obj->o_data_type = SLANG_UNDEFINED_TYPE;
    obj->v.ptr_val = NULL;
 }
 
@@ -4412,7 +4912,11 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     break;
 	     
 	   case SLANG_BC_BINARY:
+#if SLANG_OPTIMIZE_FOR_SPEED
+	     (void) do_binary (addr->b.i_blk);	     
+#else
 	     (void) do_binary (addr->b.i_blk);
+#endif
 	     break;
 #if SLANG_OPTIMIZE_FOR_SPEED
 	   case SLANG_BC_INTEGER_PLUS:
@@ -4586,7 +5090,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 		    block++;
 		  Switch_Obj_Ptr--;
 		  SLang_free_object (Switch_Obj_Ptr);
-		  Switch_Obj_Ptr->data_type = 0;
+		  Switch_Obj_Ptr->o_data_type = 0;
 		  block = NULL;
 		  break;
 
@@ -4827,12 +5331,12 @@ static int inner_interp (SLBlock_Type *addr_start)
 	       {
 		  SLang_Object_Type *obj1 = Local_Variable_Frame - (addr+1)->b.i_blk;
 		  SLang_Object_Type *obj2 = Local_Variable_Frame - (addr+2)->b.i_blk;
-		  if (obj1->data_type == obj2->data_type)
+		  if (obj1->o_data_type == obj2->o_data_type)
 		    {
-		       if (obj1->data_type == SLANG_INT_TYPE)
+		       if (obj1->o_data_type == SLANG_INT_TYPE)
 			 (void) int_int_binary (addr->b.i_blk, obj1, obj2);
 # if SLANG_HAS_FLOAT
-		       else if (obj1->data_type == SLANG_DOUBLE_TYPE)
+		       else if (obj1->o_data_type == SLANG_DOUBLE_TYPE)
 			 (void) dbl_dbl_binary (addr->b.i_blk, obj1, obj2);
 # endif
 		       else 
@@ -4865,10 +5369,10 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LIVARIABLE_BINARY:
 	       {
 		  SLang_Object_Type o, *obj1;
-		  o.data_type = SLANG_INT_TYPE;
+		  o.o_data_type = SLANG_INT_TYPE;
 		  o.v.int_val = (int) (addr+2)->b.l_blk;
 		  obj1 = Local_Variable_Frame - (addr+1)->b.i_blk;
-		  if (obj1->data_type == SLANG_INT_TYPE)
+		  if (obj1->o_data_type == SLANG_INT_TYPE)
 		    (void) int_int_binary (addr->b.i_blk, obj1, &o);
 		  else 
 		    do_binary_ab_inc_ref (addr->b.i_blk, obj1, &o);
@@ -4879,10 +5383,10 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LDVARIABLE_BINARY:
 	       {
 		  SLang_Object_Type o, *obj1;
-		  o.data_type = SLANG_DOUBLE_TYPE;
+		  o.o_data_type = SLANG_DOUBLE_TYPE;
 		  o.v.double_val = *(addr+2)->b.double_blk;
 		  obj1 = Local_Variable_Frame - (addr+1)->b.i_blk;
-		  if (obj1->data_type == SLANG_DOUBLE_TYPE)
+		  if (obj1->o_data_type == SLANG_DOUBLE_TYPE)
 		    (void) dbl_dbl_binary (addr->b.i_blk, obj1, &o);
 		  else 
 		    do_binary_ab_inc_ref (addr->b.i_blk, obj1, &o);
@@ -4893,10 +5397,10 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_ILVARIABLE_BINARY:
 	       {
 		  SLang_Object_Type o, *obj1;
-		  o.data_type = SLANG_INT_TYPE;
+		  o.o_data_type = SLANG_INT_TYPE;
 		  o.v.int_val = (int) (addr+1)->b.l_blk;
 		  obj1 = Local_Variable_Frame - (addr+2)->b.i_blk;
-		  if (obj1->data_type == SLANG_INT_TYPE)
+		  if (obj1->o_data_type == SLANG_INT_TYPE)
 		    (void) int_int_binary (addr->b.i_blk, &o, obj1);
 		  else
 		    (void) do_binary_ab_inc_ref (addr->b.i_blk, &o, obj1);
@@ -4907,10 +5411,10 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_DLVARIABLE_BINARY:
 	       {
 		  SLang_Object_Type o, *obj1;
-		  o.data_type = SLANG_DOUBLE_TYPE;
+		  o.o_data_type = SLANG_DOUBLE_TYPE;
 		  o.v.double_val = *(addr+1)->b.double_blk;
 		  obj1 = Local_Variable_Frame - (addr+2)->b.i_blk;
-		  if (obj1->data_type == SLANG_DOUBLE_TYPE)
+		  if (obj1->o_data_type == SLANG_DOUBLE_TYPE)
 		    (void) dbl_dbl_binary (addr->b.i_blk, &o, obj1);
 		  else
 		    (void) do_binary_ab_inc_ref (addr->b.i_blk, &o, obj1);
@@ -4934,7 +5438,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LITERAL_INT_BINARY:
 	       {
 		  SLang_Object_Type o;
-		  o.data_type = SLANG_INT_TYPE;
+		  o.o_data_type = SLANG_INT_TYPE;
 		  o.v.int_val = (int) (addr+1)->b.l_blk;
 		  (void) do_binary_b (addr->b.i_blk, &o);
 	       }
@@ -4944,7 +5448,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LITERAL_DBL_BINARY:
 	       {
 		  SLang_Object_Type o;
-		  o.data_type = SLANG_DOUBLE_TYPE;
+		  o.o_data_type = SLANG_DOUBLE_TYPE;
 		  o.v.double_val = *(addr+1)->b.double_blk;
 		  (void) do_binary_b (addr->b.i_blk, &o);
 	       }
@@ -4962,7 +5466,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LASSIGN_LIBINARY:
 	       {
 		  SLang_Object_Type o;
-		  o.data_type = SLANG_INT_TYPE;
+		  o.o_data_type = SLANG_INT_TYPE;
 		  o.v.int_val = (int) (addr+3)->b.l_blk;
 
 		  (void) do_binary_ab_inc_ref_assign ((addr+1)->b.i_blk, 
@@ -4975,7 +5479,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LASSIGN_ILBINARY:
 	       {
 		  SLang_Object_Type o;
-		  o.data_type = SLANG_INT_TYPE;
+		  o.o_data_type = SLANG_INT_TYPE;
 		  o.v.int_val = (int) (addr+2)->b.l_blk;
 
 		  (void) do_binary_ab_inc_ref_assign ((addr+1)->b.i_blk, 
@@ -4989,7 +5493,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LASSIGN_LDBINARY:
 	       {
 		  SLang_Object_Type o;
-		  o.data_type = SLANG_DOUBLE_TYPE;
+		  o.o_data_type = SLANG_DOUBLE_TYPE;
 		  o.v.double_val = *(addr+3)->b.double_blk;
 
 		  (void) do_binary_ab_inc_ref_assign ((addr+1)->b.i_blk,
@@ -5002,7 +5506,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LASSIGN_DLBINARY:
 	       {
 		  SLang_Object_Type o;
-		  o.data_type = SLANG_DOUBLE_TYPE;
+		  o.o_data_type = SLANG_DOUBLE_TYPE;
 		  o.v.double_val = *(addr+2)->b.double_blk;
 
 		  (void) do_binary_ab_inc_ref_assign ((addr+1)->b.i_blk, 
@@ -5052,24 +5556,32 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     break;
 	     
 	   case SLANG_BC_LVARIABLE_AGET1:
-	     addr++;		       /* not used */
-	     if (-1 == push_local_variable (addr->b.i_blk))
-	       break;
-	     addr++;
-	     if (-1 == push_local_variable (addr->b.i_blk))
-	       break;
-	     (void) _pSLarray_aget1 (1);
-	     break;
+	       {
+		  SLang_Object_Type *o;
+
+		  addr++;		       /* not used */
+		  o = (Local_Variable_Frame - addr->b.i_blk);
+		  if (o->o_data_type == SLANG_INT_TYPE)
+		    {
+		       addr++;
+		       (void) push_array_element (addr->b.i_blk, o->v.int_val);
+		       break;
+		    }
+		  if (-1 == push_local_variable (addr->b.i_blk))
+		    break;
+		  addr++;
+		  if (-1 == push_local_variable (addr->b.i_blk))
+		    break;
+		  (void) _pSLarray_aget1 (1);
+		  break;
+	       }
 
 	   case SLANG_BC_LITERAL_AGET1:
 	     addr++;		       /* not used */
-	     if (-1 == push_int_object (addr->bc_sub_type, (int) addr->b.l_blk))
-	       break;
+	     push_array_element ((addr+1)->b.i_blk, (int) addr->b.l_blk);
 	     addr++;
-	     if (-1 == push_local_variable (addr->b.i_blk))
-	       break;
-	     (void) _pSLarray_aget1 (1);
 	     break;
+
 	   case SLANG_BC_LVARIABLE_APUT1:
 	     addr++;		       /* not used */
 	     if (-1 == push_local_variable (addr->b.i_blk))
@@ -5088,6 +5600,25 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     if (-1 == push_local_variable (addr->b.i_blk))
 	       break;
 	     (void) _pSLarray_aput1 (1);
+	     break;
+	   case SLANG_BC_LLVARIABLE_BINARY_PLUS:
+	       {
+		  SLang_Object_Type *obj1 = Local_Variable_Frame - (addr+1)->b.i_blk;
+		  SLang_Object_Type *obj2 = Local_Variable_Frame - (addr+2)->b.i_blk;
+		  if (obj1->o_data_type == obj2->o_data_type)
+		    {
+		       if (obj1->o_data_type == SLANG_INT_TYPE)
+			 (void) push_int_object (SLANG_INT_TYPE, obj1->v.int_val + obj2->v.int_val);
+# if SLANG_HAS_FLOAT
+		       else if (obj1->o_data_type == SLANG_DOUBLE_TYPE)
+			 (void) push_double_object (SLANG_DOUBLE_TYPE, obj1->v.int_val + obj2->v.double_val);
+# endif
+		       else 
+			 (void) do_binary_ab_inc_ref (SLANG_PLUS, obj1, obj2);
+		    }
+		  else do_binary_ab_inc_ref (SLANG_PLUS, obj1, obj2);
+		  addr += 2;
+	       }
 	     break;
 #endif				       /* USE_COMBINED_BYTECODES */
 #if USE_UNUSED_BYCODES_IN_SWITCH
@@ -5122,10 +5653,12 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_RET_LITERAL_INT:
 	   case SLANG_BC_MANY_LVARIABLE:
 	   case SLANG_BC_MANY_LVARIABLE_DIR:
+	   case SLANG_BC_LVARIABLE_AGET1:
+	   case SLANG_BC_LITERAL_AGET1:
 	   case SLANG_BC_LVARIABLE_APUT1:
 	   case SLANG_BC_LITERAL_APUT1:
+	   case SLANG_BC_LLVARIABLE_BINARY_PLUS:
 # endif
-	   case SLANG_BC_UNUSED_0xA2:
 	   case SLANG_BC_UNUSED_0xA3:
 	   case SLANG_BC_UNUSED_0xA4:
 	   case SLANG_BC_UNUSED_0xA5:
@@ -6238,6 +6771,13 @@ static void rearrange_optimized_binary (SLBlock_Type *b, _pSLang_BC_Type t1, _pS
    *b = *(b-1);
    *(b-1) = *(b-2);
    *(b-2) = tmp;
+   return;
+   b = b - 2;
+   if (t1 == SLANG_BC_LLVARIABLE_BINARY)
+     {
+	if (b->b.i_blk == SLANG_PLUS)
+	  b->bc_main_type = SLANG_BC_LLVARIABLE_BINARY_PLUS;
+     }
 }
 
 static void rearrange_optimized_optimized (SLBlock_Type *b, _pSLang_BC_Type t1)
@@ -6254,7 +6794,7 @@ static void rearrange_optimized_optimized (SLBlock_Type *b, _pSLang_BC_Type t1)
    (b)->bc_main_type = SLANG_BC_COMBINED;
    (b-1)->bc_main_type = SLANG_BC_COMBINED;
    (b-2)->bc_main_type = SLANG_BC_COMBINED;
-# endif
+# endif   
 }
 
 static void rearrange_optimized_unary (SLBlock_Type *b, _pSLang_BC_Type t1, _pSLang_BC_Type t2)
@@ -6397,6 +6937,7 @@ static void optimize_block (SLBlock_Type *b)
    SLtype b2_main_type;
 
    bstart = b;
+
    while (1)
      {
 	switch (b->bc_main_type)
@@ -6961,10 +7502,10 @@ void SLang_restart (int localv)
 	Switch_Obj_Ptr = Switch_Objects;
 	while (Switch_Obj_Ptr < Switch_Obj_Max)
 	  {
-	     if (Switch_Obj_Ptr->data_type != 0)
+	     if (Switch_Obj_Ptr->o_data_type != 0)
 	       {
 		  SLang_free_object (Switch_Obj_Ptr);
-		  Switch_Obj_Ptr->data_type = 0;
+		  Switch_Obj_Ptr->o_data_type = 0;
 	       }
 	     Switch_Obj_Ptr++;
 	  }

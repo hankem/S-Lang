@@ -4924,10 +4924,11 @@
   intrinsic functions and variables.  Several modules are distributed
   with the stock version of the \slang library, including a
   \module{pcre} module that allows the interpreter to make use of the
-  \em{Perl Compatible Regular Expression library}, and a \module{png}
+  \em{Perl Compatible Regular Expression library}, a \module{png}
   module that allows the interpreter to easily read and write PNG
-  files.  There are also a number of modules for the interpreter that
-  are not distributed with the library.  See
+  files, and a \module{rand} module for producing random numbers. 
+  There are also a number of modules for the interpreter that are not
+  distributed with the library.  See
   \url{http://www.jedsoft.org/slang/modules/} for links to some of
   those.
   

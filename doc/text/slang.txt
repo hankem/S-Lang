@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.1)
   John E. Davis, jed@jedsoft.org
-  Jan 29, 2008
+  Feb 25, 2008
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -4746,9 +4746,10 @@
   intrinsic functions and variables.  Several modules are distributed
   with the stock version of the [1mS-Lang [22mlibrary, including a pcre module
   that allows the interpreter to make use of the [4mPerl[24m [4mCompatible[24m [4mRegular[0m
-  [4mExpression[24m [4mlibrary[24m, and a png module that allows the interpreter to
-  easily read and write PNG files.  There are also a number of modules
-  for the interpreter that are not distributed with the library.  See
+  [4mExpression[24m [4mlibrary[24m, a png module that allows the interpreter to easily
+  read and write PNG files, and a rand module for producing random
+  numbers.  There are also a number of modules for the interpreter that
+  are not distributed with the library.  See
   http://www.jedsoft.org/slang/modules/ for links to some of those.
 
   [1m17.2.  Using Modules[0m

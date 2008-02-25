@@ -8,6 +8,7 @@ SGML2HTML = sgml2html
 DOCBOOK2MAN = docbook2man
 
 all: slsh.1
+html: slshfun.html
 
 slsh.1: slsh.sgml
 	$(DOCBOOK2MAN) slsh.sgml

@@ -1,6 +1,6 @@
 /* Structure type implementation */
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -97,7 +97,7 @@ static _pSLang_Struct_Type *allocate_struct (unsigned int nfields)
     * do not know whether or not it is better to use SLANG_UNDEFINED_TYPE.
     */
    for (i = 0; i < nfields; i++)
-     f[i].obj.data_type = SLANG_NULL_TYPE;
+     f[i].obj.o_data_type = SLANG_NULL_TYPE;
 
    return s;
 }
@@ -106,7 +106,7 @@ static int push_struct_of_type (SLtype type, _pSLang_Struct_Type *s)
 {
    SLang_Object_Type obj;
 
-   obj.data_type = type;
+   obj.o_data_type = type;
    obj.v.struct_val = s;
    s->num_refs += 1;
 
@@ -134,7 +134,7 @@ int SLang_pop_struct (_pSLang_Struct_Type **sp)
    if (0 != SLang_pop (&obj))
      return -1;
 
-   type = obj.data_type;
+   type = obj.o_data_type;
    if (type != SLANG_STRUCT_TYPE)
      {
 	cl = _pSLclass_get_class (type);
@@ -485,7 +485,7 @@ static _pSLang_Struct_Type *duplicate_struct (_pSLang_Struct_Type *s, SLtype typ
 	SLang_Object_Type *obj;
 
 	obj = &f->obj;
-	if (obj->data_type != SLANG_UNDEFINED_TYPE)
+	if (obj->o_data_type != SLANG_UNDEFINED_TYPE)
 	  {
 	     if ((-1 == _pSLpush_slang_obj (obj))
 		 || (-1 == SLang_pop (&new_f->obj)))
@@ -610,7 +610,7 @@ static int struct_foreach (SLtype type, SLang_Foreach_Context_Type *c)
      {
 	SLang_Class_Type *cl;
 
-	cl = _pSLclass_get_class (f->obj.data_type);
+	cl = _pSLclass_get_class (f->obj.o_data_type);
 	/* Note that I cannot simply look for SLANG_STRUCT_TYPE since the
 	 * user may have typedefed another struct type.  So, look at the
 	 * class methods.
@@ -1745,7 +1745,7 @@ static int is_struct_type (void)
    if (-1 == SLang_pop (&obj))
      return -1;
 
-   type = obj.data_type;
+   type = obj.o_data_type;
    if (type == SLANG_STRUCT_TYPE)
      status = 1;
    else
@@ -1764,7 +1764,7 @@ static int is_struct_type1 (void)
    if (-1 == SLang_pop (&obj))
      return -1;
 
-   type = obj.data_type;
+   type = obj.o_data_type;
    if (type == SLANG_ARRAY_TYPE)
      type = obj.v.array_val->data_type;
    if (type == SLANG_STRUCT_TYPE)

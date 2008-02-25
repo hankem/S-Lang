@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -465,10 +465,13 @@ SLtype _pSLarith_promote_type (SLtype t)
 
 static SLtype promote_to_common_type (SLtype a, SLtype b)
 {
-   a = _pSLarith_promote_type (a);
+   SLtype a1;
+   a1 = _pSLarith_promote_type (a);
+   if (a == b)
+     return a1;
    b = _pSLarith_promote_type (b);
    
-   return (a > b) ? a : b;
+   return (a1 > b) ? a1 : b;
 }
 
 static int arith_bin_op_result (int op, SLtype a_type, SLtype b_type,
@@ -546,11 +549,9 @@ static int arith_bin_op (int op,
 			 SLtype b_type, VOID_STAR bp, unsigned int nb,
 			 VOID_STAR cp)
 {
-   Convert_Fun_Type af, bf;
    Bin_Fun_Type binfun;
-   int a_indx, b_indx, c_indx;
+   int c_indx;
    SLtype c_type;
-   int ret;
 
    if ((a_type == b_type)
        && ((a_type == SLANG_CHAR_TYPE) || (a_type == SLANG_UCHAR_TYPE)))
@@ -566,30 +567,35 @@ static int arith_bin_op (int op,
      }
 
    c_type = promote_to_common_type (a_type, b_type);
-   a_indx = TYPE_TO_TABLE_INDEX(a_type);
-   b_indx = TYPE_TO_TABLE_INDEX(b_type);
    c_indx = TYPE_TO_TABLE_INDEX(c_type);
-
-   af = Binary_Matrix[a_indx][c_indx].convert_function;
-   bf = Binary_Matrix[b_indx][c_indx].convert_function;
    binfun = Bin_Fun_Map[c_indx];
 
-   if ((af != NULL)
-       && (NULL == (ap = (VOID_STAR) (*af) (ap, na))))
-     return -1;
-
-   if ((bf != NULL)
-       && (NULL == (bp = (VOID_STAR) (*bf) (bp, nb))))
+   if ((c_type != a_type) || (c_type != b_type))
      {
+	int ret;
+	int a_indx = TYPE_TO_TABLE_INDEX(a_type);
+	int b_indx = TYPE_TO_TABLE_INDEX(b_type);
+	Convert_Fun_Type af = Binary_Matrix[a_indx][c_indx].convert_function;
+	Convert_Fun_Type bf = Binary_Matrix[b_indx][c_indx].convert_function;
+
+	if ((af != NULL)
+	    && (NULL == (ap = (VOID_STAR) (*af) (ap, na))))
+	  return -1;
+
+	if ((bf != NULL)
+	    && (NULL == (bp = (VOID_STAR) (*bf) (bp, nb))))
+	  {
+	     if (af != NULL) SLfree ((char *) ap);
+	     return -1;
+	  }
+
+	ret = (*binfun) (op, a_type, ap, na, b_type, bp, nb, cp);
 	if (af != NULL) SLfree ((char *) ap);
-	return -1;
+	if (bf != NULL) SLfree ((char *) bp);
+	return ret;
      }
 
-   ret = (*binfun) (op, a_type, ap, na, b_type, bp, nb, cp);
-   if (af != NULL) SLfree ((char *) ap);
-   if (bf != NULL) SLfree ((char *) bp);
-
-   return ret;
+   return (*binfun) (op, a_type, ap, na, b_type, bp, nb, cp);
 }
 
 static int arith_unary_op_result (int op, SLtype a, SLtype *b)
@@ -639,15 +645,15 @@ static int integer_pop (SLtype type, VOID_STAR ptr)
    if (-1 == SLang_pop (&obj))
      return -1;
 
-   if (0 == IS_INTEGER_TYPE(obj.data_type))
+   if (0 == IS_INTEGER_TYPE(obj.o_data_type))
      {
-	_pSLclass_type_mismatch_error (type, obj.data_type);
+	_pSLclass_type_mismatch_error (type, obj.o_data_type);
        	SLang_free_object (&obj);
 	return -1;
      }
 
    i = TYPE_TO_TABLE_INDEX(type);
-   j = TYPE_TO_TABLE_INDEX(obj.data_type);
+   j = TYPE_TO_TABLE_INDEX(obj.o_data_type);
    f = (void (*)(VOID_STAR, VOID_STAR, unsigned int))
      Binary_Matrix[j][i].copy_function;
 
@@ -666,7 +672,7 @@ static int integer_push (SLtype type, VOID_STAR ptr)
    f = (void (*)(VOID_STAR, VOID_STAR, unsigned int))
      Binary_Matrix[i][i].copy_function;
 
-   obj.data_type = type;
+   obj.o_data_type = type;
 
    (*f) ((VOID_STAR)&obj.v, ptr, 1);
 
@@ -799,7 +805,7 @@ int SLang_pop_double (double *x)
    if (0 != SLang_pop (&obj))
      return -1;
 
-   switch (obj.data_type)
+   switch (obj.o_data_type)
      {
       case SLANG_FLOAT_TYPE:
 	*x = (double) obj.v.float_val;
@@ -825,7 +831,7 @@ int SLang_pop_double (double *x)
       case SLANG_ULLONG_TYPE: *x = (double) obj.v.ullong_val; break;
 #endif
       default:
-	_pSLclass_type_mismatch_error (SLANG_DOUBLE_TYPE, obj.data_type);
+	_pSLclass_type_mismatch_error (SLANG_DOUBLE_TYPE, obj.o_data_type);
 	SLang_free_object (&obj);
 	return -1;
      }
@@ -859,7 +865,7 @@ static int double_push (SLtype type, VOID_STAR ptr)
 {
 #if SLANG_OPTIMIZE_FOR_SPEED
    SLang_Object_Type obj;
-   obj.data_type = type;
+   obj.o_data_type = type;
    obj.v.double_val = *(double *)ptr;
    return SLang_push (&obj);
 #else
@@ -1434,8 +1440,8 @@ static void promote_objs (SLang_Object_Type *a, SLang_Object_Type *b,
    int i, j;
    void (*copy)(VOID_STAR, VOID_STAR, unsigned int);
 
-   ia = a->data_type;
-   ib = b->data_type;
+   ia = a->o_data_type;
+   ib = b->o_data_type;
    
    ic = _pSLarith_promote_type (ia);
 
@@ -1450,7 +1456,7 @@ static void promote_objs (SLang_Object_Type *a, SLang_Object_Type *b,
 	j = i;
      }
 
-   c->data_type = d->data_type = id;
+   c->o_data_type = d->o_data_type = id;
 
    i = TYPE_TO_TABLE_INDEX(ia);
    copy = (void (*)(VOID_STAR, VOID_STAR, unsigned int))
@@ -1471,8 +1477,8 @@ int _pSLarith_bin_op (SLang_Object_Type *oa, SLang_Object_Type *ob, int op)
    SLtype a_type, b_type;
    SLang_Object_Type obj_a, obj_b;
 
-   a_type = oa->data_type;
-   b_type = ob->data_type;
+   a_type = oa->o_data_type;
+   b_type = ob->o_data_type;
 
    if (a_type != b_type)
      {
@@ -1491,7 +1497,7 @@ int _pSLarith_bin_op (SLang_Object_Type *oa, SLang_Object_Type *ob, int op)
 	oa = &obj_a;
 	ob = &obj_b;
 	
-	a_type = oa->data_type;
+	a_type = oa->o_data_type;
 	/* b_type = ob->data_type; */
      }
    

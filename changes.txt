@@ -24,6 +24,18 @@ Changes since 2.1.3
     ranges.
 12. src/slsignal.c: If SLsystem fails, set the interpreter's errno
     value accordingly.
+13. modules/rand-module.c: A uniform random number generator module,
+    which also provides generators for some well-known distributions.
+14. src/*.c: Changed field name for SLang_Object_Type.data_type to
+    o_data_type.
+15. src/slang.c: Optimization tweaks to improved performance for small
+    arrays and indexing via scalar indices.
+16. doc/tm/rtl/stack.tm: Typos in the example for __pop_list corrected
+    (Doug Burke).
+17. src/slang.c: Improved optimizations for scalar arithmetic
+    operations.
+18. src/slarray.c: slices such as A[*,[0:-1],*] of multi-dimensional
+    arrays were producing single dimension ones.
 
 {{{ Previous Versions
 

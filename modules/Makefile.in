@@ -1,8 +1,8 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
-  varray-module.so socket-module.so @PCRE_MODULE@ @PNG_MODULE@ \
+  varray-module.so socket-module.so rand-module.so @PCRE_MODULE@ @PNG_MODULE@ \
   @ICONV_MODULE@ @ONIG_MODULE@
-SLFILES = slsmg termios select fcntl varray socket pcre png iconv onig
+SLFILES = slsmg termios select fcntl varray socket pcre png iconv onig rand
 #---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
@@ -80,6 +80,8 @@ config.h: ../src/config.h
 
 slsmg-module.so: slsmg-module.c config.h
 	$(CC_SHARED) $(INCS) slsmg-module.c -o slsmg-module.so $(LIBS)
+rand-module.so: rand-module.c config.h
+	$(CC_SHARED) $(INCS) rand-module.c -o rand-module.so $(LIBS)
 newt-module.so: newt-module.c config.h
 	$(CC_SHARED) $(INCS) newt-module.c -o newt-module.so -lnewt $(LIBS)
 termios-module.so: termios-module.c config.h

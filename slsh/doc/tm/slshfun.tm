@@ -45,10 +45,15 @@
 
 \chapter{Introduction}
 
+#d doc_root_url http://www.jedsoft.org/slang/doc
+#d ifun_doc_url \doc_root_url/html/slangfun.html
+
 This document describes the functions that are part of the \slsh
 library.  These functions are written in \slang and make use of
-lower-level intrinsic functions.  As they make no use of \slsh
-intrinsics, they may be used by any conforming \slang application.
+lower-level intrinsic functions that are described in the
+\href{\ifun_doc_url}{Intrinsic Function Reference Manual}.
+As the \slsh library functions make no use of \slsh intrinsics, they
+may be used by any conforming \slang application.
 
 Before a particular \slsh library function may be used, the file that
 defines the function must first be loaded.  The recommended mechanism

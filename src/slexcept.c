@@ -1,6 +1,6 @@
 /* Exception Handling */
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -418,7 +418,7 @@ static void get_exception_info_intrinsic (void)
      }
    else
      {
-	SLtype data_type = Error_Context->object_thrown.data_type;
+	SLtype data_type = Error_Context->object_thrown.o_data_type;
 	field_types[5] = data_type;
 	field_values[5] = _pSLclass_get_ptr_to_value (_pSLclass_get_class (data_type),
 						      &Error_Context->object_thrown);

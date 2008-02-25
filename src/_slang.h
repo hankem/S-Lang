@@ -3,7 +3,7 @@
 /* header file for S-Lang internal structures that users do not (should not)
    need.  Use slang.h for that purpose. */
 /*
-Copyright (C) 2004-2007 John E. Davis
+Copyright (C) 2004-2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -224,7 +224,7 @@ typedef enum
    SLANG_BC_LITERAL_AGET1	= 0x9F,
    SLANG_BC_LVARIABLE_APUT1	= 0xA0,
    SLANG_BC_LITERAL_APUT1	= 0xA1,
-   SLANG_BC_UNUSED_0xA2		= 0xA2,
+   SLANG_BC_LLVARIABLE_BINARY_PLUS	= 0xA2,
    SLANG_BC_UNUSED_0xA3		= 0xA3,
    SLANG_BC_UNUSED_0xA4		= 0xA4,
    SLANG_BC_UNUSED_0xA5		= 0xA5,
@@ -515,7 +515,7 @@ _pSL_Object_Union_Type;
 
 typedef struct _pSLang_Object_Type
 {
-   SLtype data_type;	       /* SLANG_INT_TYPE, ... */
+   SLtype o_data_type;	       /* SLANG_INT_TYPE, ... */
    _pSL_Object_Union_Type v;
 }
 SLang_Object_Type;
@@ -931,11 +931,13 @@ extern void _pSLang_set_arith_type (SLtype, unsigned char);
 #if SLANG_OPTIMIZE_FOR_SPEED
 extern SLclass_Type _pSLang_get_class_type (SLtype);
 extern void _pSLang_set_class_info (SLtype, SLang_Class_Type *);
+extern int _pSLarray_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
 #endif
 extern int _pSLarith_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
 
 extern int _pSLarray_add_bin_op (SLtype);
 extern int _pSLarray_push_elem_ref (void);
+extern int _pSLang_push_array (SLang_Array_Type *, int);   /* NULL not allowed */
 
 typedef struct
 {

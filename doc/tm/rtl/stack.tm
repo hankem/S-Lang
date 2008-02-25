@@ -93,9 +93,9 @@
   {
      variable list = __pop_list (_NARGS);
      variable i;
-     _for i (0, length(length)-1, 1)
+     _for i (0, length(list)-1, 1)
         {
-           vmessage ("arg[%d]: %S", list[i]);
+           vmessage ("arg[%d]: %S", i, list[i]);
         }
   }
 #v-

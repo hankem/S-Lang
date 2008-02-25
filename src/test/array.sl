@@ -1,5 +1,5 @@
 
-_debug_info = 1; () = evalfile ("inc.sl");
+_debug_info = 1; () = evalfile ("./inc.sl");
 
 testing_feature ("array functions");
 
@@ -76,6 +76,15 @@ if ((A[0,0,0] != 0)
 if (A[0,-1, -1] != 11) failed ("A[0,-1,-1]");
 if (length (A[0,-1, [0:-1]])) failed ("length A[0,-1,[0:-1]]");
 if (length (A[0,-1, [-1:3]]) != 5) failed ("length A[0,-1,[-1:3]]");
+
+if (neqs(array_shape(A[[0:-1],*,*]), [0,3,4])
+    || neqs(array_shape(A[*,[0:-1],*]), [2,0,4])
+    || neqs(array_shape(A[*,*,[0:-1]]), [2,3,0])
+    || neqs(array_shape(A[*,[0:-1],[0:-1]]), [2,0,0])
+    || neqs(array_shape(A[[0:-1],*,[0:-1]]), [0,3,0])
+    || neqs(array_shape(A[[0:-1],[0:-1],*]), [0,0,4])
+    || neqs(array_shape(A[[0:-1],[0:-1],[0:-1]]), [0,0,0]))
+  failed ("indexing mult-dim array with [0:-1]");
 
 try
 {

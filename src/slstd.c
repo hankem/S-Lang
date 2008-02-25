@@ -2,7 +2,7 @@
 /* Standard intrinsic functions for S-Lang.  Included here are string
    and array operations */
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -82,13 +82,13 @@ static int length_cmd (void)
    if (-1 == SLang_pop (&obj))
      return -1;
 
-   cl = _pSLclass_get_class (obj.data_type);
+   cl = _pSLclass_get_class (obj.o_data_type);
    p = _pSLclass_get_ptr_to_value (cl, &obj);
 
    len = 1;
    if (cl->cl_length != NULL)
      {
-	if (0 == (*cl->cl_length)(obj.data_type, p, &length))
+	if (0 == (*cl->cl_length)(obj.o_data_type, p, &length))
 	  len = (int) length;
 	else
 	  len = -1;
@@ -139,7 +139,7 @@ char *_pSLstringize_object (SLang_Object_Type *obj) /*{{{*/
    VOID_STAR p;
    char *s, *s1;
 
-   stype = obj->data_type;
+   stype = obj->o_data_type;
    p = (VOID_STAR) &obj->v.ptr_val;
 
    cl = _pSLclass_get_class (stype);
@@ -222,7 +222,7 @@ static void intrin_type_info1 (void)
    if (-1 == SLang_pop (&obj))
      return;
 
-   type = obj.data_type;
+   type = obj.o_data_type;
    if (type == SLANG_ARRAY_TYPE)
      type = obj.v.array_val->data_type;
 
@@ -238,7 +238,7 @@ static void intrin_type_info (void)
    if (-1 == SLang_pop (&obj))
      return;
 
-   SLang_push_datatype (obj.data_type);
+   SLang_push_datatype (obj.o_data_type);
    SLang_free_object (&obj);
 }
 

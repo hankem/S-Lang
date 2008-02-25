@@ -1,6 +1,6 @@
 /* sscanf function for S-Lang */
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -561,17 +561,17 @@ int _pSLang_sscanf (void)
 	   case 'd':
 	     if (is_short)
 	       {
-		  obj.data_type = SLANG_SHORT_TYPE;
+		  obj.o_data_type = SLANG_SHORT_TYPE;
 		  status = parse_short (&s, smax, &obj.v.short_val, base, map);
 	       }
 	     else if (is_long)
 	       {
-		  obj.data_type = SLANG_LONG_TYPE;
+		  obj.o_data_type = SLANG_LONG_TYPE;
 		  status = parse_long (&s, smax, &obj.v.long_val, base, map);
 	       }
 	     else
 	       {
-		  obj.data_type = SLANG_INT_TYPE;
+		  obj.o_data_type = SLANG_INT_TYPE;
 		  status = parse_int (&s, smax, &obj.v.int_val, base, map);
 	       }
 	     break;
@@ -582,17 +582,17 @@ int _pSLang_sscanf (void)
 	   case 'u':
 	     if (is_short)
 	       {
-		  obj.data_type = SLANG_USHORT_TYPE;
+		  obj.o_data_type = SLANG_USHORT_TYPE;
 		  status = parse_ushort (&s, smax, &obj.v.ushort_val, base, map);
 	       }
 	     else if (is_long)
 	       {
-		  obj.data_type = SLANG_ULONG_TYPE;
+		  obj.o_data_type = SLANG_ULONG_TYPE;
 		  status = parse_ulong (&s, smax, &obj.v.ulong_val, base, map);
 	       }
 	     else
 	       {
-		  obj.data_type = SLANG_INT_TYPE;
+		  obj.o_data_type = SLANG_INT_TYPE;
 		  status = parse_uint (&s, smax, &obj.v.uint_val, base, map);
 	       }
 	     break;
@@ -637,12 +637,12 @@ int _pSLang_sscanf (void)
 #if SLANG_HAS_FLOAT
 	     if (is_long)
 	       {
-		  obj.data_type = SLANG_DOUBLE_TYPE;
+		  obj.o_data_type = SLANG_DOUBLE_TYPE;
 		  status = parse_double (&s, smax, &obj.v.double_val);
 	       }
 	     else
 	       {
-		  obj.data_type = SLANG_FLOAT_TYPE;
+		  obj.o_data_type = SLANG_FLOAT_TYPE;
 		  status = parse_float (&s, smax, &obj.v.float_val);
 	       }
 #else
@@ -653,29 +653,29 @@ int _pSLang_sscanf (void)
 	     break;
 		  
 	   case 's':
-	     obj.data_type = SLANG_STRING_TYPE;
+	     obj.o_data_type = SLANG_STRING_TYPE;
 	     status = parse_string (&s, smax, &obj.v.s_val);
 	     break;
 	     
 	   case 'c':
 	     if (has_width == 0)
 	       {
-		  obj.data_type = SLANG_UCHAR_TYPE;
+		  obj.o_data_type = SLANG_UCHAR_TYPE;
 		  obj.v.uchar_val = *s++;
 		  status = 1;
 		  break;
 	       }
-	     obj.data_type = SLANG_STRING_TYPE;
+	     obj.o_data_type = SLANG_STRING_TYPE;
 	     status = parse_bstring (&s, smax, &obj.v.s_val);
 	     break;
 	     
 	   case '[':
-	     obj.data_type = SLANG_STRING_TYPE;
+	     obj.o_data_type = SLANG_STRING_TYPE;
 	     status = parse_range (&s, smax, &f, &obj.v.s_val);
 	     break;
 	     
 	   case 'n':
-	     obj.data_type = SLANG_UINT_TYPE;
+	     obj.o_data_type = SLANG_UINT_TYPE;
 	     obj.v.uint_val = (unsigned int) (s - input_string);
 	     status = 1;
 	     break;

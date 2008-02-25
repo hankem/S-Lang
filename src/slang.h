@@ -2,7 +2,7 @@
 #define DAVIS_SLANG_H_
 /* -*- mode: C; mode: fold; -*- */
 /*
-Copyright (C) 2004-2007 John E. Davis
+Copyright (C) 2004-2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20104
-#define SLANG_VERSION_STRING "pre2.1.4-12"
+#define SLANG_VERSION_STRING "pre2.1.4-18"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1160,7 +1160,7 @@ SL_EXTERN int SLang_push_malloced_string(char *);
  */
 
 SL_EXTERN int SLang_push_string(char *);
-SL_EXTERN int SLpop_string (char **);
+SL_EXTERN int SLpop_string (char **);  /* malloced -- free with SLfree */
 
 SL_EXTERN int SLang_push_null (void);
 SL_EXTERN int SLang_pop_null (void);

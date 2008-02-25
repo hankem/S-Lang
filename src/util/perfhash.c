@@ -1,4 +1,4 @@
-/* Copyright (c) 1998-2007 John E. Davis
+/* Copyright (c) 1998-2008 John E. Davis
  *
  * You may distribute under the terms of either the GNU General Public
  * License or the Perl Artistic License.

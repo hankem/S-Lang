@@ -126,6 +126,8 @@
 @modules/pcre.sl
 @modules/png-module.c
 @modules/png.sl
+@modules/rand-module.c
+@modules/rand.sl
 @modules/select-module.c
 @modules/select.sl
 @modules/slsmg-module.c
@@ -145,9 +147,11 @@
 @modules/tm/pngfuns.tm
 @modules/tm/sockfuns.tm
 @modules/tm/onigfuns.tm
+@modules/tm/randfuns.tm
 @modules/tm/Makefile
 @modules/help/pcrefuns.hlp
 @modules/help/pngfuns.hlp
+@modules/help/randfuns.hlp
 @modules/help/sockfuns.hlp
 @modules/help/onigfuns.hlp
 

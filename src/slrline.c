@@ -1,6 +1,6 @@
 /* SLang_read_line interface --- uses SLang tty stuff */
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 

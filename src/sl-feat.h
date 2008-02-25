@@ -15,8 +15,8 @@
 /* This is the old space-speed trade off.  To reduce memory usage and code
  * size, set this to zero.
  */
-/* #define SLANG_OPTIMIZE_FOR_SPEED	0 */ 
 #define SLANG_OPTIMIZE_FOR_SPEED	2
+/* #define SLANG_OPTIMIZE_FOR_SPEED	0 */
 
 #define SLANG_USE_INLINE_CODE		1
 

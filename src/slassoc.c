@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -213,7 +213,7 @@ static void delete_assoc_array (SLang_Assoc_Array_Type *a)
 	       {
 		  _pSLfree_hashed_string (e->key, strlen (e->key), e->hash);
 #if SLANG_OPTIMIZE_FOR_SPEED
-		  if ((is_scalar_type == 0) && (e->value.data_type != SLANG_INT_TYPE))
+		  if ((is_scalar_type == 0) && (e->value.o_data_type != SLANG_INT_TYPE))
 #endif
 		    SLang_free_object (&e->value);
 	       }
@@ -276,7 +276,7 @@ static _pSLAssoc_Array_Element_Type *store_object (SLang_Assoc_Array_Type *a, _p
        || (NULL != (e = find_element (a, s, hash))))
      {
 #if SLANG_OPTIMIZE_FOR_SPEED
-	if ((a->is_scalar_type == 0) && (e->value.data_type != SLANG_INT_TYPE))
+	if ((a->is_scalar_type == 0) && (e->value.o_data_type != SLANG_INT_TYPE))
 #endif
 	  SLang_free_object (&e->value);
      }
@@ -396,7 +396,7 @@ static _pSLAssoc_Array_Element_Type *
    if (-1 == SLang_pop (&obj))
      return NULL;
    
-   if ((obj.data_type != a->type)
+   if ((obj.o_data_type != a->type)
 #if USE_NEW_ANYTYPE_CODE
        && (a->type != SLANG_ANY_TYPE)
 #endif
@@ -476,14 +476,14 @@ int _pSLassoc_inc_value (unsigned int num_indices, int inc)
 
    objp = &e->value;
 
-   if (objp->data_type == SLANG_INT_TYPE)
+   if (objp->o_data_type == SLANG_INT_TYPE)
      {
 	ret = 0;
 	objp->v.int_val += inc;
 	goto free_and_return;
      }
 	
-   inc_obj.data_type = SLANG_INT_TYPE;
+   inc_obj.o_data_type = SLANG_INT_TYPE;
    inc_obj.v.int_val = inc;
    
    if ((-1 == _pSLang_do_binary_ab (SLANG_PLUS, objp, &inc_obj))

@@ -1,6 +1,6 @@
 /* Array manipulation routines for S-Lang */
 /*
-Copyright (C) 2004, 2005, 2006, 2007 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -267,7 +267,7 @@ static int do_method_for_all_elements (SLang_Array_Type *at,
    return 0;
 }
 
-void SLang_free_array (SLang_Array_Type *at)
+static void free_array (SLang_Array_Type *at)
 {
    unsigned int flags;
 
@@ -293,6 +293,11 @@ void SLang_free_array (SLang_Array_Type *at)
      SLfree ((char *) at->data);
 
    SLfree ((char *) at);
+}
+
+void SLang_free_array (SLang_Array_Type *at)
+{
+   free_array (at);
 }
 
 SLang_Array_Type *
@@ -465,26 +470,6 @@ static int pop_array_indices (SLindex_Type *dims, unsigned int num_dims)
    return 0;
 }
 
-int SLang_push_array (SLang_Array_Type *at, int free_flag)
-{
-   if (at == NULL)
-     return SLang_push_null ();
-
-   at->num_refs += 1;
-
-   if (0 == SLclass_push_ptr_obj (SLANG_ARRAY_TYPE, (VOID_STAR) at))
-     {
-	if (free_flag)
-	  SLang_free_array (at);
-	return 0;
-     }
-
-   at->num_refs -= 1;
-
-   if (free_flag) SLang_free_array (at);
-   return -1;
-}
-
 /* This function gets called via expressions such as Double_Type[10, 20];
  */
 static int push_create_new_array (unsigned int num_dims)
@@ -570,7 +555,7 @@ free_index_objects (SLang_Object_Type *index_objs, unsigned int num_indices)
    for (i = 0; i < num_indices; i++)
      {
 	obj = index_objs + i;
-	if (obj->data_type != 0)
+	if (obj->o_data_type != 0)
 	  SLang_free_object (obj);
      }
 }
@@ -678,7 +663,7 @@ pop_indices (SLang_Array_Type *at_to_index,
 		  if (NULL == (new_at = inline_implicit_int_array (&first_index, &last_index, &delta)))
 		    goto return_error;
 	     
-		  SLang_free_array (at);
+		  free_array (at);
 		  obj->v.array_val = new_at;
 	       }
 	  }
@@ -994,7 +979,7 @@ convert_nasty_index_objs (SLang_Array_Type *at,
 	SLang_Object_Type *obj = index_objs + i;
 	range_delta_buf [i] = 0;
 
-	if (obj->data_type == SLANG_ARRAY_INDEX_TYPE)
+	if (obj->o_data_type == SLANG_ARRAY_INDEX_TYPE)
 	  {
 	     range_buf [i] = obj->v.index_val;
 	     max_dims [i] = 1;
@@ -1088,7 +1073,7 @@ aget_from_indices (SLang_Array_Type *at,
 	if (NULL == new_at)
 	  return -1;
 	if (num_elements == 0)
-	  return SLang_push_array (new_at, 1);
+	  goto fixup_dims;
 
 	new_data = (char *)new_at->data;
      }
@@ -1134,6 +1119,8 @@ aget_from_indices (SLang_Array_Type *at,
 	else if (0 != _pSLarray_next_index (map_indices, max_dims, num_indices))
 	  break;	
      }
+
+fixup_dims:
 
    if (new_at != NULL)
      {
@@ -1244,7 +1231,7 @@ static int aget_from_array (unsigned int num_indices)
    if (is_index_array == 0)
      {
 #if SLANG_OPTIMIZE_FOR_SPEED
-	if ((num_indices == 1) && (index_objs[0].data_type == SLANG_INT_TYPE)
+	if ((num_indices == 1) && (index_objs[0].o_data_type == SLANG_INT_TYPE)
 	    && (0 == (at->flags & (SLARR_DATA_VALUE_IS_RANGE|SLARR_DATA_VALUE_IS_POINTER)))
 	    && (1 == at->num_dims)
 	    && (at->data != NULL))
@@ -1827,7 +1814,7 @@ int _pSLarray_aput1 (unsigned int num_indices)
    if (is_index_array == 0)
      {
 #if SLANG_OPTIMIZE_FOR_SPEED
-	if ((num_indices == 1) && (index_objs[0].data_type == SLANG_INT_TYPE)
+	if ((num_indices == 1) && (index_objs[0].o_data_type == SLANG_INT_TYPE)
 	    && (0 == (at->flags & (SLARR_DATA_VALUE_IS_RANGE|SLARR_DATA_VALUE_IS_POINTER)))
 	    && (1 == at->num_dims)
 	    && (at->data != NULL))
@@ -2753,7 +2740,7 @@ int _pSLarray_inline_array (void)
 
    while ((count > 0) && (--obj >= objmin))
      {
-	this_type = obj->data_type;
+	this_type = obj->o_data_type;
 
 	if (type == 0)
 	  type = this_type;
@@ -2798,7 +2785,7 @@ int _pSLarray_inline_array (void)
 	if (NULL == (at = SLang_create_array (type, 0, NULL, &icount, 1)))
 	  return -1;
 
-	index_obj.data_type = SLANG_ARRAY_INDEX_TYPE;
+	index_obj.o_data_type = SLANG_ARRAY_INDEX_TYPE;
 	while (count != 0)
 	  {
 	     count--;
@@ -2900,7 +2887,10 @@ static int array_binary_op (int op,
      }
 
    a_cl = _pSLclass_get_class (a_type);
-   b_cl = _pSLclass_get_class (b_type);
+   if (a_type == b_type)
+     b_cl = a_cl;
+   else
+     b_cl = _pSLclass_get_class (b_type);
 
    if (NULL == (binary_fun = _pSLclass_get_binary_fun (op, a_cl, b_cl, &c_cl, 1)))
      return -1;
@@ -2955,6 +2945,20 @@ static int array_binary_op (int op,
    return -1;
 }
 
+#if SLANG_OPTIMIZE_FOR_SPEED
+int _pSLarray_bin_op (SLang_Object_Type *a, SLang_Object_Type *b, int op)
+{
+   SLang_Array_Type *c;
+
+   if (-1 == array_binary_op (op, SLANG_ARRAY_TYPE, (VOID_STAR) &a->v, 1,
+			      SLANG_ARRAY_TYPE, (VOID_STAR) &b->v, 1,
+			      (VOID_STAR) &c))
+     return -1;
+   
+   return _pSLang_push_array (c, 1);
+}
+#endif
+
 static int array_eqs_method (SLtype a_type, VOID_STAR ap, SLtype b_type, VOID_STAR bp)
 {
    SLang_Array_Type *at, *bt, *ct;
@@ -2995,7 +2999,10 @@ static int array_eqs_method (SLtype a_type, VOID_STAR ap, SLtype b_type, VOID_ST
      }
 
    a_cl = _pSLclass_get_class (a_type);
-   b_cl = _pSLclass_get_class (b_type);
+   if (a_type == b_type)
+     b_cl = a_cl;
+   else
+     b_cl = _pSLclass_get_class (b_type);
 
    if ((a_cl == b_cl)
        && ((a_cl->cl_class_type == SLANG_CLASS_TYPE_SCALAR)
@@ -3815,17 +3822,44 @@ static char *array_string (SLtype type, VOID_STAR v)
 
 static void array_destroy (SLtype type, VOID_STAR v)
 {
+   SLang_Array_Type *at = *(SLang_Array_Type **) v;
+
    (void) type;
-   SLang_free_array (*(SLang_Array_Type **) v);
+   if ((at != NULL)
+       && (at->num_refs > 1))
+     {
+	at->num_refs -= 1;
+	return;
+     }
+   free_array (*(SLang_Array_Type **) v);
 }
+
 
 static int array_push (SLtype type, VOID_STAR v)
 {
    SLang_Array_Type *at;
 
    (void) type;
+
    at = *(SLang_Array_Type **) v;
-   return SLang_push_array (at, 0);
+   if (at == NULL)
+     return SLang_push_null ();
+   
+   at->num_refs += 1;
+
+   if (0 == SLclass_push_ptr_obj (SLANG_ARRAY_TYPE, (VOID_STAR) at))
+     return 0;
+
+   at->num_refs -= 1;
+   return -1;
+}
+
+int SLang_push_array (SLang_Array_Type *at, int free_flag)
+{
+   if (at == NULL)
+     return SLang_push_null ();
+   
+   return _pSLang_push_array (at, free_flag);
 }
 
 /* Intrinsic arrays are not stored in a variable. So, the address that
@@ -4394,13 +4428,13 @@ static void elem_ref_destroy (VOID_STAR vdata)
    Array_Elem_Ref_Type *ert = (Array_Elem_Ref_Type *)vdata;
    SLang_Object_Type *o, *omax;
 
-   if (ert->at.data_type != 0)
+   if (ert->at.o_data_type != 0)
      SLang_free_object (&ert->at);
    o = ert->index_objs;
    omax = o + ert->num_indices;
    while (o < omax)
      {
-	if (o->data_type != 0)
+	if (o->o_data_type != 0)
 	  SLang_free_object (o);
 	o++;
      }

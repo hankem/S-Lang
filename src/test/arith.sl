@@ -169,7 +169,7 @@ check_sum_result (1UL, '\x3', 4UL);
 static define check_complex_fun (fun, x)
 {
    variable z = x + 0i;
-   variable diff = abs (@fun(z) - @fun(x));
+   variable diff = abs ((@fun)(z) - (@fun)(x));
    if (diff > 1e-13)
      failed ("%S %S", fun, z);
 }
