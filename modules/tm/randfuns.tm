@@ -261,11 +261,15 @@
  carry generator (also by Marsaglia), and a product generator.  The
  combined generator has a 192 bit state and a period exceeding 10^46.
 
+#d url#1 <$1>
  The resulting random sequences were tested using version 2.24.4 of
  the dieharder random number testing program.  The tests showed that
- this generator performed slightly better than the famous Marsenne
- Twister (\exmp{mt19937_1999}) but had a slightly longer run-time.
- The \exmp{mt19937_1999} generator is separately available via the GSL
+ this generator performed better than the famous Marsenne
+ Twister (\exmp{mt19937}) both in terms of randomness and speed.  More
+ information about the test results may be found at
+ \url{http://www.jedsoft.org/slang/modules/rand.html}.
+
+ The \exmp{mt19937} generator is separately available via the GSL
  module.
 \notes
 \seealso{srand, rand_int, rand_uniform}

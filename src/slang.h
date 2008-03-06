@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20104
-#define SLANG_VERSION_STRING "pre2.1.4-18"
+#define SLANG_VERSION_STRING "pre2.1.4-25"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -328,7 +328,8 @@ SL_EXTERN int SLwchar_isspace (SLwchar_Type);
 SL_EXTERN int SLwchar_isupper (SLwchar_Type);
 SL_EXTERN int SLwchar_isxdigit (SLwchar_Type);
 
-#define SLWCWIDTH_SINGLE_WIDTH	0x0001
+#define SLWCWIDTH_SINGLE_WIDTH	0x0001 /* all double width characters given as single width */
+#define SLWCWIDTH_CJK_LEGACY	0x0002 /* Ambiguous characters given width of 2 */
 SL_EXTERN int SLwchar_set_wcwidth_flags (int flags);
 
 /* The skip_char functions also skip over malformed strings counting each byte
@@ -603,8 +604,10 @@ SL_EXTERN int SLns_load_file (char *, char *);
 SL_EXTERN int SLns_load_string (char *, char *);
 SL_EXTERN int (*SLns_Load_File_Hook) (char *, char *);
 
+#define SLANG_LOAD_FILE_VERBOSE		0x1
+#define SLANG_LOAD_MODULE_VERBOSE	0x2
 SL_EXTERN int SLang_load_file_verbose (int);    
-/* if non-zero, display file loading messages */
+/* Bitmapped value that controls loading messages */
 
 typedef struct SLang_Load_Type
 {

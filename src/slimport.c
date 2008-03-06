@@ -229,6 +229,8 @@ static Handle_Type *dynamic_link_module (char *module)
 
 	if (handle != NULL)
 	  {
+	     if (_pSLang_Load_File_Verbose & SLANG_LOAD_MODULE_VERBOSE)
+	       SLang_vmessage ("Importing %s", file);
 	     if (save_err != NULL)
 	       SLfree (save_err);
 	     break;

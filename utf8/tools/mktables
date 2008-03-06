@@ -547,20 +547,32 @@ static define main ()
 
    variable char_classes = make_char_classes (s);
    variable ch = s.code_point;
-   variable is_combining = ('M' == int(s.general_cat));
+   variable is_combining = ((s.general_cat == "Mn") or (s.general_cat == "Me"));
+   % Note: "Mc" (combining, yet spacing) is omitted here since I do
+   % not know what that means.
 
+   % Apparantly Hangul (Conjoining Jamo) characters 0x1160 - 0x11FF
+   % _behave_ like combining characters, but are not flagged as such in
+   % the database. 
+   is_combining[[0x1160:0x11FF]] = 1;
 #ifnfalse
    variable width = UChar_Type[length(ch)];
    width[*] = 1;
-   width[where(is_combining)] = 0;
    width[where (s.east_asian_prop == "W")] = 2;
    width[where (s.east_asian_prop == "F")] = 2;
-   width[where (s.bidirectional_cat == "NSM")] = 0;
+   width[where (s.east_asian_prop == "A")] = 3;   %  ambiguous
+
    width[where (s.general_cat == "Cf")] = 0;
+   width[0xAD] = 3;		       %  SOFT-HYPHEN -- mark is as ambiguous
+
+   width[where(is_combining)] = 0;
+   %width[where (s.bidirectional_cat == "NSM")] = 0;
    width[where (0 == array_map (Int_Type, &strncmp, s.char_name, 
 				"ZERO WIDTH", 10))]
      = 0;
+
    width[[0x80:0x9F]] = 4;	       %  displayed as <xx> by SLsmg
+
    write_toxxx_table ("slwcwidth.h", s, width, "bit",
 		      "Width", "0x%02X", 8, 1);
 #endif

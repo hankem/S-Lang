@@ -254,11 +254,17 @@ int SLsystem (char *cmd)
 	  {
 # ifdef EINTR
 	     if (errno == EINTR)
-	       continue;
+	       {
+		  (void) SLang_handle_interrupt ();
+		  continue;
+	       }
 # endif
 # ifdef ERESTARTSYS
 	     if (errno == ERESTARTSYS)
-	       continue;
+	       {
+		  (void) SLang_handle_interrupt ();
+		  continue;
+	       }
 # endif
 	     _pSLerrno_errno = errno;
 	     status = -1;

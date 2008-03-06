@@ -36,6 +36,27 @@ Changes since 2.1.3
     operations.
 18. src/slarray.c: slices such as A[*,[0:-1],*] of multi-dimensional
     arrays were producing single dimension ones.
+19. src/sltoken.c: Changed the semantics of the
+    SLang_set_verbose_loading function.  Previously this function
+    accepted a zero or non-zero value to disable or enable loading
+    messages for .sl files.  Now this integer value is a bitmapped
+    one: If bit 0 is set, loading messages will be generated for .sl
+    files.  If bit 1 is set, messages will be generated for
+    dynamically loaded modules.
+20. slsh/slsh.c: Calling slsh with -v will generate loading messages
+    for both modules and slang files.  I also created a new
+    slsh-specific intrinsic called set_verbose_loading and bumped the
+    slsh version number.
+21. modules/cmaps: Added "ds9b" and "ds9sls" colormaps --- these correspond
+    to analogous colormaps in saotng ds9.
+22. utf8/tools/mktables: Characters with general category "Mc" or in
+    the bi-directional category are nolonger flagged as combining characters.
+23. utf8/tools/: Updated unicode database from 3.2 to 5.0 and
+    recreated the internal character set tables.
+24. src/slsmg.c: If an ambiguous-width unicode line drawing character
+    is double width, then use a single-width alternative (Sugiyama).
+25. src/slsignal.c: Call SLang_handle_interrupt when system calls are
+    interrupted.
 
 {{{ Previous Versions
 

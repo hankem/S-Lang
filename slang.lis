@@ -183,6 +183,8 @@
 @modules/cmaps/polar.map
 @modules/cmaps/sealand.map
 @modules/cmaps/wysiwyg.map
+@modules/cmaps/ds9b.map
+@modules/cmaps/ds9sls.map
 
 @slang.lis
 @slsh/INSTALL
@@ -445,7 +447,7 @@
 @utf8/test_isxxx.c
 @utf8/testfiles/UTF-8-demo.txt
 @utf8/testfiles/UTF-8-test.txt
-@utf8/tools/EastAsianWidth-3.2.0.txt
+@utf8/tools/EastAsianWidth-5.0.0.txt
+@utf8/tools/UnicodeData-5.0.0.txt
 @utf8/tools/Makefile
-@utf8/tools/UnicodeData-3.2.0.txt
 *utf8/tools/mktables 0755

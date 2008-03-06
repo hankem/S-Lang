@@ -140,10 +140,17 @@ static int utf8_enable (int mode)
 /* Returns the value of _pSLutf8_mode */
 int SLutf8_enable (int mode)
 {
+   char *cjk;
+
    mode = utf8_enable (mode);
    _pSLutf8_mode = mode;
    _pSLtt_UTF8_Mode = mode;
    _pSLinterp_UTF8_Mode = mode;
+   if (mode && (NULL != (cjk = getenv ("WCWIDTH_CJK_LEGACY"))))
+     {
+	if ((*cjk == 0) || (0==strcmp(cjk,"yes")))
+	  (void) SLwchar_set_wcwidth_flags (SLWCWIDTH_CJK_LEGACY);
+     }
    return mode;
 }
 

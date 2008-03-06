@@ -1,5 +1,5 @@
 TABLES = slupper.h sllower.h slischar.h slcombin.h slwcwidth.h
-UNICODEDATA = UnicodeData-3.2.0.txt EastAsianWidth-3.2.0.txt
+UNICODEDATA = UnicodeData.txt EastAsianWidth.txt
 
 SLANG_SRC_DIR = ../../src
 # This works with GNU make.  It uses a pattern rule (%.h) to deal with the

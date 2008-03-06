@@ -35,7 +35,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.8.2-0";
+static char *Slsh_Version = "0.8.3-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -416,12 +416,18 @@ static int setup_paths (void)
    return SLpath_set_load_path (libpath);
 }
 
+static int set_verbose_loading (int *val)
+{
+   return SLang_load_file_verbose (*val);
+}
+
 /* Create the Table that S-Lang requires */
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
    MAKE_INTRINSIC_0("exit", exit_intrin, VOID_TYPE),
    MAKE_INTRINSIC_1("atexit", at_exit, VOID_TYPE, SLANG_REF_TYPE),
    MAKE_INTRINSIC_0("stat_mode_to_string", stat_mode_to_string, VOID_TYPE),
+   MAKE_INTRINSIC_1("set_verbose_loading", set_verbose_loading, SLANG_INT_TYPE, SLANG_INT_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 
@@ -585,7 +591,7 @@ int main (int argc, char **argv)
 	
 	if (0 == strcmp (argv[1], "-v"))
 	  {
-	     (void) SLang_load_file_verbose (1);
+	     (void) SLang_load_file_verbose (3);
 	     Verbose_Loading = 1;
 	     argc--;
 	     argv++;

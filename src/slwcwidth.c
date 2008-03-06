@@ -27,20 +27,32 @@ USA.
 #define DEFINE_PSLWC_WIDTH_TABLE
 #include "slwcwidth.h"
 
-static int Ignore_Double_Width = 0;
+static int Width_Flags = 0;
 int SLwchar_wcwidth (SLwchar_Type ch)
 {
    int w;
    
    SL_WIDTH_ALOOKUP(w,ch);
-   if ((w > 1) && (Ignore_Double_Width))
-     w = 1;
+
+   if ((w == 1) || (w == 4))
+     return w;
+
+   if (Width_Flags & SLWCWIDTH_SINGLE_WIDTH)
+     return 1;
+   
+   if (w == 3)
+     {
+	if (Width_Flags & SLWCWIDTH_CJK_LEGACY)
+	  w = 2;
+	else
+	  w = 1;
+     }
    return w;
 }
 
 int SLwchar_set_wcwidth_flags (int flags)
 {
-   int oflags = Ignore_Double_Width;
-   Ignore_Double_Width = flags;
+   int oflags = Width_Flags;
+   Width_Flags = flags;
    return oflags;
 }

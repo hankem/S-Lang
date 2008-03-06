@@ -1022,6 +1022,7 @@ extern int _pSLassoc_inc_value (unsigned int, int val);
 extern int _pSLcompile_push_context (SLang_Load_Type *);
 extern int _pSLcompile_pop_context (void);
 extern int _pSLang_Auto_Declare_Globals;
+extern int _pSLang_Load_File_Verbose;
 
 typedef struct _pSLang_Token_Type
 {

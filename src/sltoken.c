@@ -1313,11 +1313,11 @@ static char *read_from_file (SLang_Load_Type *x)
    return fgets (c->buf, MAX_FILE_LINE_LEN, c->fp);
 }
 
-static int Load_File_Verbose = 0;
+int _pSLang_Load_File_Verbose = 0;
 int SLang_load_file_verbose (int v)
 {
-   int v1 = Load_File_Verbose;
-   Load_File_Verbose = v;
+   int v1 = _pSLang_Load_File_Verbose;
+   _pSLang_Load_File_Verbose = v;
    return v1;
 }
 
@@ -1363,7 +1363,7 @@ int SLns_load_file (char *f, char *ns_name)
    if (f != NULL)
      {
 	fp = fopen (name, "r");
-	if (Load_File_Verbose)
+	if (_pSLang_Load_File_Verbose & SLANG_LOAD_FILE_VERBOSE)
 	  SLang_vmessage ("Loading %s", name);
      }
    else

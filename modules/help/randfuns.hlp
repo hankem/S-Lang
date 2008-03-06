@@ -482,9 +482,12 @@ rand_new
 
  The resulting random sequences were tested using version 2.24.4 of
  the dieharder random number testing program.  The tests showed that
- this generator performed slightly better than the famous Marsenne
- Twister (`mt19937_1999') but had a slightly longer run-time.
- The `mt19937_1999' generator is separately available via the GSL
+ this generator performed better than the famous Marsenne
+ Twister (`mt19937') both in terms of randomness and speed.  More
+ information about the test results may be found at
+ <http://www.jedsoft.org/slang/modules/rand.html>.
+
+ The `mt19937' generator is separately available via the GSL
  module.
 
  NOTES

@@ -213,45 +213,46 @@ typedef struct
 {
    unsigned char vt100_char;
    unsigned char ascii;
-   SLwchar_Type unicode;
+   SLwchar_Type unicode;	       /* may have an ambiguous width */
+   SLwchar_Type unicode_narrow;	       /* has a narrow width */
 }
 ACS_Def_Type;
 
 static SLCONST ACS_Def_Type UTF8_ACS_Map[] =
 {
-   {'+', '>', 0x2192 }, /* RIGHTWARDS ARROW */
-   {',', '<', 0x2190 }, /* LEFTWARDS ARROW */
-   {'-', '^', 0x2191 }, /* UPWARDS ARROW */
-   {'.', 'v', 0x2193 }, /* DOWNWARDS ARROW */
-   {'0', '#', 0x25AE }, /* BLACK VERTICAL RECTANGLE */
-   {'`', '+', 0x25C6 }, /* BLACK DIAMOND */
-   {'a', ':', 0x2592 }, /* MEDIUM SHADE */
-   {'f', '\'', 0x00B0 },/* DEGREE SIGN */
-   {'g', '#', 0x00B1 }, /* PLUS-MINUS SIGN */
-   {'h', '#', 0x2592 }, /* MEDIUM SHADE */
-   {'i', '#', 0x2603 }, /* SNOWMAN */
-   {'j', '+', 0x2518 }, /* BOX DRAWINGS LIGHT UP AND LEFT */
-   {'k', '+', 0x2510 }, /* BOX DRAWINGS LIGHT DOWN AND LEFT */
-   {'l', '+', 0x250c }, /* BOX DRAWINGS LIGHT DOWN AND RIGHT */
-   {'m', '+', 0x2514 }, /* BOX DRAWINGS LIGHT UP AND RIGHT */
-   {'n', '+', 0x253C }, /* BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL */
-   {'o', '~', 0x23BA }, /* HORIZONTAL SCAN LINE-1 */
-   {'p', '-', 0x23BB }, /* HORIZONTAL SCAN LINE-3 (ncurses addition) */
-   {'q', '-', 0x2500 }, /* BOX DRAWINGS LIGHT HORIZONTAL */
-   {'r', '-', 0x23BC }, /* HORIZONTAL SCAN LINE-7 (ncurses addition) */
-   {'s', '_', 0x23BD }, /* HORIZONTAL SCAN LINE-9 */
-   {'t', '+', 0x251C }, /* BOX DRAWINGS LIGHT VERTICAL AND RIGHT */
-   {'u', '+', 0x2524 }, /* BOX DRAWINGS LIGHT VERTICAL AND LEFT */
-   {'v', '+', 0x2534 }, /* BOX DRAWINGS LIGHT UP AND HORIZONTAL */
-   {'w', '+', 0x252C }, /* BOX DRAWINGS LIGHT DOWN AND HORIZONTAL */
-   {'x', '|', 0x2502 }, /* BOX DRAWINGS LIGHT VERTICAL */
-   {'y', '<', 0x2264 }, /* LESS-THAN OR EQUAL TO (ncurses addition) */
-   {'z', '>', 0x2265 }, /* GREATER-THAN OR EQUAL TO (ncurses addition) */
-   {'{', '*', 0x03C0 }, /* GREEK SMALL LETTER PI (ncurses addition) */
-   {'|', '!', 0x2260 }, /* NOT EQUAL TO (ncurses addition) */
-   {'}', 'f', 0x00A3 }, /* POUND SIGN (ncurses addition) */
-   {'~', 'o', 0x00B7 }, /* MIDDLE DOT */
-   {0, 0, 0}
+   {'+', '>', 0x2192,  '>'}, /* RIGHTWARDS ARROW [A] */
+   {',', '<', 0x2190, '<'}, /* LEFTWARDS ARROW [A] */
+   {'-', '^', 0x2191, 0x2303}, /* UPWARDS ARROW [A] */
+   {'.', 'v', 0x2193, 0x2304}, /* DOWNWARDS ARROW [A] */
+   {'0', '#', 0x25AE, '#'}, /* BLACK VERTICAL RECTANGLE */
+   {'`', '+', 0x25C6, 0x2666}, /* BLACK DIAMOND [A] */
+   {'a', ':', 0x2592, ':'}, /* MEDIUM SHADE [A] */
+   {'f', '\'', 0x00B0, 0xFF9F},/* DEGREE SIGN [A] */
+   {'g', '#', 0x00B1, '#'}, /* PLUS-MINUS SIGN [A] */
+   {'h', '#', 0x2592, '#'}, /* MEDIUM SHADE [A] */
+   {'i', '#', 0x2603, '#'}, /* SNOWMAN [A] */
+   {'j', '+', 0x2518, '+'}, /* BOX DRAWINGS LIGHT UP AND LEFT */
+   {'k', '+', 0x2510, '+'}, /* BOX DRAWINGS LIGHT DOWN AND LEFT */
+   {'l', '+', 0x250c, '+'}, /* BOX DRAWINGS LIGHT DOWN AND RIGHT */
+   {'m', '+', 0x2514, '+'}, /* BOX DRAWINGS LIGHT UP AND RIGHT */
+   {'n', '+', 0x253C, '+'}, /* BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL */
+   {'o', '~', 0x23BA, '~'}, /* HORIZONTAL SCAN LINE-1 */
+   {'p', '-', 0x23BB, '-'}, /* HORIZONTAL SCAN LINE-3 (ncurses addition) */
+   {'q', '-', 0x2500, '-'}, /* BOX DRAWINGS LIGHT HORIZONTAL */
+   {'r', '-', 0x23BC, '-'}, /* HORIZONTAL SCAN LINE-7 (ncurses addition) */
+   {'s', '_', 0x23BD, '_'}, /* HORIZONTAL SCAN LINE-9 */
+   {'t', '+', 0x251C, '+'}, /* BOX DRAWINGS LIGHT VERTICAL AND RIGHT */
+   {'u', '+', 0x2524, '+'}, /* BOX DRAWINGS LIGHT VERTICAL AND LEFT */
+   {'v', '+', 0x2534, '+'}, /* BOX DRAWINGS LIGHT UP AND HORIZONTAL */
+   {'w', '+', 0x252C, '+'}, /* BOX DRAWINGS LIGHT DOWN AND HORIZONTAL */
+   {'x', '|', 0x2502, '|'}, /* BOX DRAWINGS LIGHT VERTICAL */
+   {'y', '<', 0x2264, '<'}, /* LESS-THAN OR EQUAL TO (ncurses addition) */
+   {'z', '>', 0x2265, '>'}, /* GREATER-THAN OR EQUAL TO (ncurses addition) */
+   {'{', '*', 0x03C0, '*'}, /* GREEK SMALL LETTER PI (ncurses addition) */
+   {'|', '!', 0x2260, '!'}, /* NOT EQUAL TO (ncurses addition) */
+   {'}', 'f', 0x00A3, 'f'}, /* POUND SIGN (ncurses addition) */
+   {'~', 'o', 0x00B7, 0xFF65}, /* MIDDLE DOT */
+   {0, 0, 0, 0}
 };
 
 #define ACS_MODE_NONE	       -1
@@ -288,7 +289,10 @@ static void init_acs (int mode)
 	acs = UTF8_ACS_Map;
 	while (acs->vt100_char != 0)
 	  {
-	     ACS_Map[acs->vt100_char] = acs->unicode;
+	     SLwchar_Type wch = acs->unicode;
+	     if (SLwchar_wcwidth (wch) != 1)
+	       wch = acs->unicode_narrow;
+	     ACS_Map[acs->vt100_char] = wch;
 	     acs++;
 	  }
 	break;
