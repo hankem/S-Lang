@@ -750,6 +750,59 @@ _pSLarray_aget_transfer_elem (SLang_Array_Type *at, SLindex_Type *indices,
    return transfer_n_elements (at, new_data, at_data, sizeof_type, 1, is_ptr);
 }
 
+static int
+aget_transfer_n_elems (SLang_Array_Type *at, SLindex_Type num, SLindex_Type *start_indices,
+		       VOID_STAR new_data, size_t sizeof_type, int is_ptr)
+{
+   VOID_STAR at_data;
+   SLindex_Type i;
+   int last_index = (int)at->num_dims-1;
+   SLindex_Type indices[SLARRAY_MAX_DIMS];
+
+   if (num == 0)
+     return 0;
+
+   for (i = 0; i <= (int) last_index; i++)
+     indices[i] = start_indices[i];
+
+   if ((at->data != NULL) 
+       && (at->index_fun == linear_get_data_addr))
+     {
+	VOID_STAR addr_start, addr_end;
+	if (NULL == (addr_start = linear_get_data_addr (at, indices)))
+	  return -1;
+	indices[last_index] += (num-1);
+	if (NULL == (addr_end = linear_get_data_addr (at, indices)))
+	  return -1;
+	
+	if (is_ptr == 0)
+	  {
+	     memcpy ((char *) new_data, (char *)addr_start, num * sizeof_type);
+	     return 0;
+	  }
+
+	return transfer_n_elements (at, new_data, (char *)addr_start, sizeof_type, num, is_ptr);
+     }
+   
+   for (i = 0; i < num; i++)
+     {
+	/* Since 1 element is being transferred, there is no need to coerce
+	 * the array to linear.
+	 */
+	if (NULL == (at_data = get_data_addr (at, indices)))
+	  return -1;
+
+	if (is_ptr == 0)
+	  memcpy ((char *) new_data, (char *)at_data, sizeof_type);
+	else if (-1 == transfer_n_elements (at, new_data, at_data, sizeof_type, 1, is_ptr))
+	  return -1;
+
+	new_data = (VOID_STAR) ((char *)new_data + sizeof_type);
+	indices[last_index]++;
+     }
+   return 0;
+}
+
 #if SLANG_OPTIMIZE_FOR_SPEED
 # if SLANG_HAS_FLOAT
 #  define GENERIC_TYPE double
@@ -1047,6 +1100,8 @@ aget_from_indices (SLang_Array_Type *at,
    char *new_data;
    SLang_Class_Type *cl;
    int is_dim_array[SLARRAY_MAX_DIMS];
+   unsigned int last_index;
+   SLindex_Type last_index_num;
 
    if (-1 == convert_nasty_index_objs (at, index_objs, num_indices,
 				       index_data, range_buf, range_delta_buf,
@@ -1080,6 +1135,14 @@ aget_from_indices (SLang_Array_Type *at,
    
    at_dims = at->dims;
    memset ((char *) map_indices, 0, sizeof(map_indices));
+
+   last_index = num_indices - 1;
+   /* if last_index_num is non-zero, then that many can be transferred quickly */
+   if ((range_delta_buf[last_index] == 1) && (range_buf[last_index] >= 0))
+     last_index_num = max_dims[last_index];
+   else
+     last_index_num = 0;
+
    while (1)
      {
 	for (i = 0; i < num_indices; i++)
@@ -1104,20 +1167,37 @@ aget_from_indices (SLang_Array_Type *at,
 	     indices[i] = indx;
 	  }
 
-	if (-1 == _pSLarray_aget_transfer_elem (at, indices, (VOID_STAR)new_data, sizeof_type, is_ptr))
+	if (last_index_num)
 	  {
-	     SLang_free_array (new_at);
-	     return -1;
+	     if (-1 == aget_transfer_n_elems (at, last_index_num, indices, (VOID_STAR)new_data, sizeof_type, is_ptr))
+	       {
+		  SLang_free_array (new_at);
+		  return -1;
+	       }
+	     new_data += last_index_num * sizeof_type;
+	     map_indices[last_index] = last_index_num;
+
+	     if (0 != _pSLarray_next_index (map_indices, max_dims, num_indices))
+	       break;	
 	  }
-	new_data += sizeof_type;
-	if (num_indices == 1) 
+	else
 	  {
-	     map_indices[0]++;
-	     if (map_indices[0] == max_dims[0])
-	       break;
+	     if (-1 == _pSLarray_aget_transfer_elem (at, indices, (VOID_STAR)new_data, sizeof_type, is_ptr))
+	       {
+		  SLang_free_array (new_at);
+		  return -1;
+	       }
+	     new_data += sizeof_type;
+
+	     if (num_indices == 1) 
+	       {
+		  map_indices[0]++;
+		  if (map_indices[0] == max_dims[0])
+		    break;
+	       }
+	     else if (0 != _pSLarray_next_index (map_indices, max_dims, num_indices))
+	       break;	
 	  }
-	else if (0 != _pSLarray_next_index (map_indices, max_dims, num_indices))
-	  break;	
      }
 
 fixup_dims:
@@ -1393,7 +1473,71 @@ int _pSLarray_aget (void)
    return _pSLarray_aget1 ((unsigned int)(SLang_Num_Function_Args-1));
 }
 
+/* A[indices...indices+num] = data... */
+static int
+aput_transfer_n_elems (SLang_Array_Type *at, SLindex_Type num, SLindex_Type *start_indices,
+		       char *data_to_put, SLuindex_Type data_increment, size_t sizeof_type, int is_ptr)
+{
+   VOID_STAR addr_start;
+   SLindex_Type i;
+   int last_index = (int)at->num_dims-1;
+   SLindex_Type indices[SLARRAY_MAX_DIMS];
 
+   if (num == 0)
+     return 0;
+
+   for (i = 0; i <= (int) last_index; i++)
+     indices[i] = start_indices[i];
+
+   if ((at->data != NULL) 
+       && (at->index_fun == linear_get_data_addr))
+     {
+	VOID_STAR addr_end;
+	if (NULL == (addr_start = linear_get_data_addr (at, indices)))
+	  return -1;
+	indices[last_index] += (num-1);
+	if (NULL == (addr_end = linear_get_data_addr (at, indices)))
+	  return -1;
+	
+	if (is_ptr == 0)
+	  {
+	     while (addr_start <= addr_end)
+	       {
+		  memcpy ((char *) addr_start, data_to_put, sizeof_type);
+		  data_to_put += data_increment;
+		  addr_start = (VOID_STAR) ((char *)addr_start + sizeof_type);
+	       }
+	     return 0;
+	  }
+
+	while (addr_start <= addr_end)
+	  {
+	     if (-1 == transfer_n_elements (at, addr_start, data_to_put, sizeof_type, 1, is_ptr))
+	       return -1;
+	     data_to_put += data_increment;
+	     addr_start = (VOID_STAR) ((char *)addr_start + sizeof_type);
+	  }
+	return 0;
+     }
+
+   for (i = 0; i < num; i++)
+     {
+	/* Since 1 element is being transferred, there is no need to coerce
+	 * the array to linear.
+	 */
+	if (NULL == (addr_start = get_data_addr (at, indices)))
+	  return -1;
+
+	if (is_ptr == 0)
+	  memcpy ((char *) addr_start, data_to_put, sizeof_type);
+	else if (-1 == transfer_n_elements (at, addr_start, (VOID_STAR)data_to_put, sizeof_type, 1, is_ptr))
+	  return -1;
+	
+	data_to_put += data_increment;
+	indices[last_index]++;
+     }
+   return 0;
+}
 
 _INLINE_ int
 _pSLarray_aput_transfer_elem (SLang_Array_Type *at, SLindex_Type *indices,
@@ -1502,6 +1646,8 @@ aput_from_indices (SLang_Array_Type *at,
    SLuindex_Type data_increment;
    SLang_Class_Type *cl;
    int is_dim_array [SLARRAY_MAX_DIMS];
+   SLindex_Type last_index_num;
+   unsigned int last_index;
 
    if (-1 == convert_nasty_index_objs (at, index_objs, num_indices,
 				       index_data, range_buf, range_delta_buf,
@@ -1522,6 +1668,15 @@ aput_from_indices (SLang_Array_Type *at,
 
    at_dims = at->dims;
    SLMEMSET((char *) map_indices, 0, sizeof(map_indices));
+   
+   last_index = num_indices - 1;
+   /* if last_index_num is non-zero, then that many can be transferred quickly */
+   if ((range_delta_buf[last_index] == 1) && (range_buf[last_index] >= 0))
+     last_index_num = max_dims[last_index];
+   else
+     last_index_num = 0;
+
+   
    if (num_elements) while (1)
      {
 	for (i = 0; i < num_indices; i++)
@@ -1545,18 +1700,34 @@ aput_from_indices (SLang_Array_Type *at,
 	     indices[i] = indx;
 	  }
 
-	if (-1 == _pSLarray_aput_transfer_elem (at, indices, (VOID_STAR)data_to_put, sizeof_type, is_ptr))
-	  goto return_error;
-
-	data_to_put += data_increment;
-	if (num_indices == 1) 
+	if (last_index_num)
 	  {
-	     map_indices[0]++;
-	     if (map_indices[0] == max_dims[0])
+	     if (-1 == aput_transfer_n_elems (at, last_index_num, indices, 
+					      (VOID_STAR)data_to_put, data_increment,
+					      sizeof_type, is_ptr))
+	       goto return_error;
+
+	     data_to_put += last_index_num * data_increment;
+	     map_indices[last_index] = last_index_num;
+
+	     if (0 != _pSLarray_next_index (map_indices, max_dims, num_indices))
+	       break;	
+	  }
+	else
+	  {
+	     if (-1 == _pSLarray_aput_transfer_elem (at, indices, (VOID_STAR)data_to_put, sizeof_type, is_ptr))
+	       goto return_error;
+
+	     data_to_put += data_increment;
+	     if (num_indices == 1) 
+	       {
+		  map_indices[0]++;
+		  if (map_indices[0] == max_dims[0])
+		    break;
+	       }
+	     else if (0 != _pSLarray_next_index (map_indices, max_dims, num_indices))
 	       break;
 	  }
-	else if (0 != _pSLarray_next_index (map_indices, max_dims, num_indices))
-	  break;
      }
 
    ret = 0;
@@ -2812,6 +2983,60 @@ static int array_binary_op_result (int op, SLtype a, SLtype b,
    return 1;
 }
 
+static int try_range_int_binary (SLang_Array_Type *at, int op, int x, int swap, VOID_STAR cp)
+{
+   SLarray_Range_Array_Type *at_r;
+   SLarray_Range_Array_Type rbuf;
+   SLindex_Type first_index, last_index, delta;
+   SLindex_Type num;
+
+   at_r = (SLarray_Range_Array_Type *)at->data;
+   if ((at_r->has_first_index == 0)
+       || (at_r->has_last_index == 0))
+     return 0;
+   
+   switch (op)
+     {
+      case SLANG_MINUS:
+	if (swap)
+	  {
+	     first_index = x - at_r->first_index;
+	     last_index = x - at_r->last_index;
+	     delta = -at_r->delta;
+	     break;
+	  }
+	x = -x;
+	/* drop */
+      case SLANG_PLUS:
+	first_index = at_r->first_index + x;
+	last_index = at_r->last_index + x;
+	delta = at_r->delta;
+	break;
+	
+      case SLANG_TIMES:
+	if (x == 0)
+	  return 0;
+	first_index = at_r->first_index*x;
+	last_index = at_r->last_index*x;
+	delta = at_r->delta*x;
+	break;
+
+      default:
+	return 0;
+     }
+   
+   if (-1 == get_range_array_limits (&first_index, &last_index, &delta, &rbuf, &num))
+     return -1;
+   if ((SLuindex_Type)num != at->num_elements)
+     return 0; /* This can happen if the integer arithmetic wrapped */
+
+   if (NULL == (at = create_range_array (&rbuf, num, SLANG_INT_TYPE, int_range_to_linear)))
+     return -1;
+
+   *(SLang_Array_Type **)cp = at;
+   return 1;
+}
+
 static int array_binary_op (int op,
 			    SLtype a_type, VOID_STAR ap, unsigned int na,
 			    SLtype b_type, VOID_STAR bp, unsigned int nb,
@@ -2835,6 +3060,17 @@ static int array_binary_op (int op,
 	  }
 
 	at = *(SLang_Array_Type **) ap;
+	if ((b_type == SLANG_INT_TYPE)
+	    && (nb == 1)
+	    && (at->flags & SLARR_DATA_VALUE_IS_RANGE)
+	    && (at->data_type == b_type))
+	  {
+	     int status = try_range_int_binary (at, op, *(int *)bp, 0, cp);
+	     if (status) 
+	       return status;
+	     /* drop */
+	  }
+
 	if (-1 == coerse_array_to_linear (at))
 	  return -1;
 	ap = at->data;
@@ -2855,6 +3091,18 @@ static int array_binary_op (int op,
 	  }
 
 	bt = *(SLang_Array_Type **) bp;
+
+	if ((a_type == SLANG_INT_TYPE)
+	    && (na == 1)
+	    && (bt->flags & SLARR_DATA_VALUE_IS_RANGE)
+	    && (bt->data_type == a_type))
+	  {
+	     int status = try_range_int_binary (bt, op, *(int *)ap, 1, cp);
+	     if (status) 
+	       return status;
+	     /* drop */
+	  }
+
 	if (-1 == coerse_array_to_linear (bt))
 	  return -1;
 	bp = bt->data;
@@ -3390,19 +3638,23 @@ static int pop_1d_index_array (SLang_Array_Type **ind_atp)
    return 0;
 }
 
-static int pop_reshape_args (SLang_Array_Type **at, SLang_Array_Type **ind_at)
+static int pop_reshape_args (SLang_Array_Type **atp, SLang_Array_Type **ind_atp)
 {
-   if (-1 == pop_1d_index_array (ind_at))
+   SLang_Array_Type *at, *ind_at;
+
+   *ind_atp = *atp = NULL;
+
+   if (-1 == pop_1d_index_array (&ind_at))
+     return -1;
+   
+   if (-1 == SLang_pop_array (&at, 1))
      {
-	*ind_at = *at = NULL;
+	SLang_free_array (ind_at);
 	return -1;
      }
-   if (-1 == SLang_pop_array (at, 1))
-     {
-	SLang_free_array (*ind_at);
-	*ind_at = *at = NULL;
-	return -1;
-     }
+
+   *atp = at;
+   *ind_atp = ind_at;
    return 0;
 }
 
@@ -4108,6 +4360,12 @@ _pSLarray_typecast (SLtype a_type, VOID_STAR ap, unsigned int na,
    return 0;
 }
 
+static SLang_Array_Type *duplicate_range_array (SLang_Array_Type *at)
+{
+   SLarray_Range_Array_Type *r = (SLarray_Range_Array_Type *)at->data;
+   return create_range_array (r, (SLindex_Type)at->num_elements, at->data_type, r->to_linear_fun);
+}
+
 SLang_Array_Type *SLang_duplicate_array (SLang_Array_Type *at)
 {
    SLang_Array_Type *bt;
@@ -4116,6 +4374,9 @@ SLang_Array_Type *SLang_duplicate_array (SLang_Array_Type *at)
    size_t sizeof_type, size;
    int (*cl_acopy) (SLtype, VOID_STAR, VOID_STAR);
    SLtype type;
+
+   if (at->flags & SLARR_DATA_VALUE_IS_RANGE)
+     return duplicate_range_array (at);
 
    if (-1 == coerse_array_to_linear (at))
      return NULL;
@@ -4258,14 +4519,21 @@ _pSLarray_init_slarray (void)
 
 int SLang_pop_array (SLang_Array_Type **at_ptr, int convert_scalar)
 {
-   if (-1 == pop_array (at_ptr, convert_scalar))
-     return -1;
+   SLang_Array_Type *at;
 
-   if (-1 == coerse_array_to_linear (*at_ptr))
+   if (-1 == pop_array (&at, convert_scalar))
      {
-	SLang_free_array (*at_ptr);
+	*at_ptr = NULL;
 	return -1;
      }
+	
+   if (-1 == coerse_array_to_linear (at))
+     {
+	SLang_free_array (at);
+	*at_ptr = NULL;
+	return -1;
+     }
+   *at_ptr = at;
    return 0;
 }
 

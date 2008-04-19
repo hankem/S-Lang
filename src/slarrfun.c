@@ -50,27 +50,19 @@ static int next_transposed_index (SLindex_Type *dims, SLindex_Type *max_dims, un
    return -1;
 }
 
+/* This is called when at is 2d */
 static SLang_Array_Type *allocate_transposed_array (SLang_Array_Type *at)
 {
-   SLuindex_Type num_elements;
    SLang_Array_Type *bt;
-   VOID_STAR b_data;
-
-   num_elements = at->num_elements;
-   b_data = (VOID_STAR) SLmalloc (at->sizeof_type * num_elements);
-   if (b_data == NULL)
-     return NULL;
-
-   bt = SLang_create_array (at->data_type, 0, b_data, at->dims, 2);
-   if (bt == NULL)
+   int no_init;
+   
+   no_init = (0 == (at->flags & SLARR_DATA_VALUE_IS_POINTER));
+   bt = SLang_create_array1 (at->data_type, 0, NULL, at->dims, 2, no_init);
+   if (bt != NULL)
      {
-	SLfree ((char *)b_data);
-	return NULL;
+	bt->dims[1] = at->dims[0];
+	bt->dims[0] = at->dims[1];
      }
-
-   bt->dims[1] = at->dims[0];
-   bt->dims[0] = at->dims[1];
-
    return bt;
 }
 

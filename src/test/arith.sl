@@ -322,10 +322,17 @@ catch SyntaxError;
 
 static define check_atox (fun, str, val)
 {
-   if (__is_same (val, (@fun)(str)))
-     return;
+   ifnot (__is_same (val, (@fun)(str)))
+     failed ("%S", fun);
    
-   failed ("%S", fun);
+   variable a = String_Type[1024];
+   a[*] = str;
+   variable b = (@fun) (a);
+   if ((typeof (b) != Array_Type) 
+       || (_typeof(b) != typeof (val)))
+     failed ("%S did not return array of type %S", fun, typeof(val));
+   if (any(b != val))
+     failed ("%S did not return the correct array of values", fun);
 }
 
 check_atox (&atoi, "7", 7);
@@ -333,6 +340,9 @@ check_atox (&atol, "7", 7L);
 #ifexists atoll
 check_atox (&atoll, "7", 7LL);
 #endif
+
+#ifexists Double_Type
+check_atox (&atof, "7.0", 7.0);
 
 private define check_nint (x, n)
 {
@@ -472,6 +482,7 @@ if (fgteqs (2.0, 3.0, 0.001, 0.1))
 
 if (flteqs (2.0, 1.0, 0.001, 0.1))
   failed ("fgteqs(2,1)");
+#endif				       %  Double_Type
 
 print ("Ok\n");
 exit (0);

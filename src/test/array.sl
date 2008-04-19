@@ -53,7 +53,6 @@ if ((dims[0] != 1)
     or (dims[1] != 24))
   failed ("transpose ([0:23], found %S)", B);
 
-
 reshape (A, [2,3,4]);
 
 %   0  1  2  3 
@@ -76,7 +75,7 @@ if ((A[0,0,0] != 0)
 if (A[0,-1, -1] != 11) failed ("A[0,-1,-1]");
 if (length (A[0,-1, [0:-1]])) failed ("length A[0,-1,[0:-1]]");
 if (length (A[0,-1, [-1:3]]) != 5) failed ("length A[0,-1,[-1:3]]");
-
+#iffalse
 if (neqs(array_shape(A[[0:-1],*,*]), [0,3,4])
     || neqs(array_shape(A[*,[0:-1],*]), [2,0,4])
     || neqs(array_shape(A[*,*,[0:-1]]), [2,3,0])
@@ -85,7 +84,7 @@ if (neqs(array_shape(A[[0:-1],*,*]), [0,3,4])
     || neqs(array_shape(A[[0:-1],[0:-1],*]), [0,0,4])
     || neqs(array_shape(A[[0:-1],[0:-1],[0:-1]]), [0,0,0]))
   failed ("indexing mult-dim array with [0:-1]");
-
+#endif
 try
 {
    () = A[0,-1,[-7:0]];
@@ -1421,6 +1420,82 @@ define test_array_refs ()
 }
 test_array_refs ();
 
+define test_string_array()
+{
+   variable i, n = 20, m = 10;
+   variable A = String_Type[n];
+   A[[*]] = "foo";
+   ifnot (all (A == "foo"))
+     failed ("A[*]=\"foo\"");
+   A[[0:n-1]] = "bar";
+   ifnot (all (A == "bar"))
+     failed ("A[[0:n-1]]=\"foo\"");
+   
+   A[[0::2]] = "ebar";
+   i = where (A=="ebar");
+   if (length (i) != n/2)
+     failed ("A[[0::2]]=ebar");
+   if (any(i mod 2))
+     failed ("A[[0::2]]=ebar (mod)");
+   
+   variable B = String_Type[n,m];
+   B[[0::2],*] = "foo";
+   ifnot (all(_isnull (B[[1::2],*])))
+     failed ("B[[0::2],*]=foo");
+   B[*,1] = A;
+   ifnot (_eqs(B[*,1], A))
+     failed ("B[*,1]=A");
+   A = transpose(B[*,[:]]);
+   variable C = @A;
+   C[*,*] = transpose(B);
+   ifnot (_eqs(C[3,[1,3,5,6]], A[3,[1,3,5,6]]))
+     failed ("transpose(B[*,[:]])");
+   ifnot (_eqs(C[[1:3],[5:7]], A[[1,2,3],[5,6,7]]))
+     failed ("transpose(B[*,[:]], test2");
+}
+test_string_array ();
+
+define test_range_arith (a, x)
+{
+   ifnot (_eqs (a/1 + x, a+x))
+     failed ("range addition");
+
+   ifnot (_eqs (a/1 - x, a-x))
+     failed ("range subtraction");
+
+   ifnot (_eqs ((a/1) * x, a*x))
+     failed ("range multiplication");
+
+   ifnot (_eqs (x + a/1, x+a))
+     failed ("x range addition");
+
+   ifnot (_eqs (x-a/1, x-a))
+     failed ("x range subtraction");
+
+   ifnot (_eqs (x*(a/1), x*a))
+     failed ("x range multiplication");
+}
+
+test_range_arith ([1:10], 2);
+test_range_arith ([1:10:3], -1);
+test_range_arith ([10:1:-2], 2);
+test_range_arith ([10:1:-2], 1);
+test_range_arith ([10:1:-2], -1);
+test_range_arith ([10:1:-2], -10);
+
+define test_dup (a)
+{
+   variable b = @a;
+   if (__is_same (a, b))
+     failed ("b=@a failed __is_same");
+   ifnot (_eqs (a,b))
+     failed ("b=@a failed _eqs");
+}
+test_dup ([1:10]);
+test_dup ([1:-3]);
+test_dup ([1:4]);
+test_dup ([1,2,3,4]);
+test_dup (["foo", "bar", "baz"]);
 print ("Ok\n");
 
 exit (0);

@@ -57,6 +57,13 @@ Changes since 2.1.3
     is double width, then use a single-width alternative (Sugiyama).
 25. src/slsignal.c: Call SLang_handle_interrupt when system calls are
     interrupted.
+26. src/slarray.c: Speed improvements when transferring elements from
+    one array to another via range indices, e.g., a = b[[1:9]];
+27. src/slarrfun.c: transpose of multi-dim non-scalar arrays was using
+    unitialized memory.
+28. src/slarray.c: Improved speed of binary arithmetic of range arrays.
+29. src/slstd.c: atoi, atof, atol, atoll, and integer now accept an array
+    arguments.
 
 {{{ Previous Versions
 

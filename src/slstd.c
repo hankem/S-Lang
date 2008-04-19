@@ -325,16 +325,6 @@ static void usage (void)
    SLang_free_slstring (msg);
 }
 
-/* Convert string to integer */
-static int intrin_integer (char *s)
-{
-   int i;
-
-   i = SLatoi ((unsigned char *) s);
-
-   return i;
-}
-/*}}}*/
 
 static void guess_type (char *s)
 {
@@ -778,26 +768,227 @@ static void lang_print_stack (void)
    (void) _pSLang_dump_stack ();
 }
 
-static int atoi_intrin (char *s)
+static int pop_array_or_string (SLtype itype, char **sp,
+				SLang_Array_Type **atsp, SLang_Array_Type **atip)
 {
-   return atoi (s);
+   char *s;
+
+   if (SLang_peek_at_stack () == SLANG_ARRAY_TYPE)
+     {
+	SLang_Array_Type *ats, *ati;
+
+	*sp = NULL;
+	if (-1 == SLang_pop_array_of_type (&ats, SLANG_STRING_TYPE))
+	  {
+	     *atsp = NULL;
+	     *atip = NULL;
+	     return -1;
+	  }
+	if (NULL == (ati = SLang_create_array1 (itype, 0, NULL, ats->dims, ats->num_dims, 1)))
+	  {
+	     *atsp = NULL;
+	     *atip = NULL;
+	     SLang_free_array (ats);
+	     return -1;
+	  }
+	*atsp = ats;
+	*atip = ati;
+	return 0;
+     }
+
+   *atsp = NULL;
+   *atip = NULL;
+   if (-1 == SLang_pop_slstring (&s))
+     {
+	*sp = NULL;
+	return -1;
+     }
+   *sp = s;
+   return 0;
 }
-static long atol_intrin (char *s)
+
+#if SLANG_HAS_FLOAT
+static void intrin_atof (void)
 {
-   return atol (s);
+   char *s;
+   SLang_Array_Type *ats;
+   SLang_Array_Type *ati;
+   double *ip;
+   char **strp, **strpmax;
+
+   if (-1 == pop_array_or_string (SLANG_DOUBLE_TYPE, &s, &ats, &ati))
+     return;
+
+   if (s != NULL)
+     {
+	(void) SLang_push_double(_pSLang_atof(s));
+	SLang_free_slstring (s);
+	return;
+     }
+
+   strp = (char **) ats->data;
+   strpmax = strp + ats->num_elements;
+   ip = (double *) ati->data;
+	
+   while (strp < strpmax)
+     {
+	if (*strp == NULL)
+	  *ip++ = _pSLang_NaN;
+	else
+	  *ip++ = _pSLang_atof (*strp);
+	strp++;
+     }
+   SLang_free_array (ats);
+   (void) SLang_push_array (ati, 1);
 }
-#ifdef HAVE_LONG_LONG
-static void atoll_intrin (char *s)
-{
-# ifdef HAVE_ATOLL
-   (void) SLang_push_long_long (atoll(s));
-#else
-# ifdef HAVE_STRTOLL
-   (void) SLang_push_long_long (strtoll(s, NULL, 10));
-# else
-   (void) SLang_push_long_long (strtol(s, NULL, 10));
-# endif
 #endif
+
+/* Convert string to integer */
+static void intrin_integer (void)
+{
+   char *s;
+   SLang_Array_Type *ats;
+   SLang_Array_Type *ati;
+   int *ip;
+   unsigned char **strp, **strpmax;
+
+   if (-1 == pop_array_or_string (SLANG_INT_TYPE, &s, &ats, &ati))
+     return;
+
+   if (s != NULL)
+     {
+	(void) SLang_push_integer (SLatoi ((unsigned char *) s));
+	SLang_free_slstring (s);
+	return;
+     }
+
+   strp = (unsigned char **) ats->data;
+   strpmax = strp + ats->num_elements;
+   ip = (int *) ati->data;
+	
+   while ((strp < strpmax) && (_pSLang_Error == 0))
+     {
+	if (*strp == NULL)
+	  *ip++ = 0;
+	else
+	  *ip++ = SLatoi (*strp);
+	strp++;
+     }
+   SLang_free_array (ats);
+   (void) SLang_push_array (ati, 1);
+}
+/*}}}*/
+
+static void atoi_intrin (void)
+{
+   char *s;
+   SLang_Array_Type *ats;
+   SLang_Array_Type *ati;
+   int *ip;
+   char **strp, **strpmax;
+
+   if (-1 == pop_array_or_string (SLANG_INT_TYPE, &s, &ats, &ati))
+     return;
+
+   if (s != NULL)
+     {
+	(void) SLang_push_integer (atoi (s));
+	SLang_free_slstring (s);
+	return;
+     }
+
+   strp = (char **) ats->data;
+   strpmax = strp + ats->num_elements;
+   ip = (int *) ati->data;
+	
+   while (strp < strpmax)
+     {
+	if (*strp == NULL)
+	  *ip++ = 0;
+	else
+	  *ip++ = atoi (*strp);
+	strp++;
+     }
+   SLang_free_array (ats);
+   (void) SLang_push_array (ati, 1);
+}
+
+static void atol_intrin (void)
+{
+   char *s;
+   SLang_Array_Type *ats;
+   SLang_Array_Type *ati;
+   long *ip;
+   char **strp, **strpmax;
+
+   if (-1 == pop_array_or_string (_pSLANG_LONG_TYPE, &s, &ats, &ati))
+     return;
+
+   if (s != NULL)
+     {
+	(void) SLang_push_long (atol (s));
+	SLang_free_slstring (s);
+	return;
+     }
+
+   strp = (char **) ats->data;
+   strpmax = strp + ats->num_elements;
+   ip = (long *) ati->data;
+	
+   while (strp < strpmax)
+     {
+	if (*strp == NULL)
+	  *ip++ = 0;
+	else
+	  *ip++ = atol (*strp);
+	strp++;
+     }
+   SLang_free_array (ats);
+   (void) SLang_push_array (ati, 1);
+}
+
+#ifdef HAVE_LONG_LONG
+# ifdef HAVE_ATOLL
+#  define ATOLL_FUN(s) atoll(s)
+# else
+#  ifdef HAVE_STRTOLL
+#   define ATOLL_FUN(s) strtoll((s), NULL, 10)
+#  else
+#   define ATOLL_FUN(s) strtol((s), NULL, 10)
+#  endif
+# endif
+static void atoll_intrin (void)
+{
+   char *s;
+   SLang_Array_Type *ats;
+   SLang_Array_Type *ati;
+   long long *ip;
+   char **strp, **strpmax;
+
+   if (-1 == pop_array_or_string (_pSLANG_LLONG_TYPE, &s, &ats, &ati))
+     return;
+
+   if (s != NULL)
+     {
+	(void) SLang_push_long_long (ATOLL_FUN(s));
+	SLang_free_slstring (s);
+	return;
+     }
+
+   strp = (char **) ats->data;
+   strpmax = strp + ats->num_elements;
+   ip = (long long *) ati->data;
+
+   while (strp < strpmax)
+     {
+	if (*strp == NULL)
+	  *ip++ = 0;
+	else
+	  *ip++ = ATOLL_FUN (*strp);
+	strp++;
+     }
+   SLang_free_array (ats);
+   (void) SLang_push_array (ati, 1);
 }
 #endif
 
@@ -920,19 +1111,19 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_I("char",  char_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("eval",  load_string, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("dup",  do_dup, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_S("integer",  intrin_integer, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_0("integer",  intrin_integer, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("system",  system_intrinsic, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("_apropos",  intrin_apropos, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_get_namespaces", intrin_get_namespaces, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("_trace_function",  _pSLang_trace_fun, SLANG_VOID_TYPE),
 #if SLANG_HAS_FLOAT
-   MAKE_INTRINSIC_S("atof", _pSLang_atof, SLANG_DOUBLE_TYPE),
+   MAKE_INTRINSIC_0("atof", intrin_atof, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("double", intrin_double, SLANG_VOID_TYPE),
 #endif
-   MAKE_INTRINSIC_S("atoi", atoi_intrin, SLANG_INT_TYPE),
-   MAKE_INTRINSIC_S("atol", atol_intrin, SLANG_LONG_TYPE),
+   MAKE_INTRINSIC_0("atoi", atoi_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("atol", atol_intrin, SLANG_VOID_TYPE),
 #ifdef HAVE_LONG_LONG
-   MAKE_INTRINSIC_S("atoll", atoll_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("atoll", atoll_intrin, SLANG_VOID_TYPE),
 #endif
    MAKE_INTRINSIC_0("int",  intrin_int, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("typecast", intrin_typecast, SLANG_VOID_TYPE),

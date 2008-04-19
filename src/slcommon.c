@@ -312,6 +312,7 @@ int SLang_handle_interrupt (void)
 
 	h = h->next;
      }
+
    return status;
 }
 
