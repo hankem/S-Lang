@@ -104,7 +104,7 @@ static File_Line_Type *create_line (char *buf)
    line = (File_Line_Type *) malloc (sizeof (File_Line_Type));
    if (line == NULL) return NULL;
    
-   memset ((char *) line, sizeof (File_Line_Type), 0);
+   memset ((char *) line, 0, sizeof (File_Line_Type));
    
    line->data = SLmake_string (buf);   /* use a slang routine */
    if (line->data == NULL)

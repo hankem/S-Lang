@@ -64,6 +64,8 @@ Changes since 2.1.3
 28. src/slarray.c: Improved speed of binary arithmetic of range arrays.
 29. src/slstd.c: atoi, atof, atol, atoll, and integer now accept an array
     arguments.
+30. demo/pager.c: args swapped in call to memset (Dave Jones
+    davej at redhat)
 
 {{{ Previous Versions
 
