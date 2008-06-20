@@ -192,11 +192,51 @@ unsigned long _pSLcompute_string_hash (char *s)
 }
 
 _INLINE_
+static SLstring_Type *find_slstring (char *s, unsigned long hash)
+{
+   SLstring_Type *sls, *prev;
+   unsigned int idx = MAP_HASH_TO_INDEX(hash);
+
+   sls = String_Hash_Table [idx];
+   if ((sls == NULL) || (sls->bytes == s)) return sls;
+
+   sls = sls->next;
+   if ((sls == NULL) || (sls->bytes == s)) return sls;
+
+   sls = sls->next;
+   if ((sls == NULL) || (sls->bytes == s)) return sls;
+
+   prev = sls;
+   sls = sls->next;
+   while (sls != NULL)
+     {
+	if (s == sls->bytes)
+	  {
+	     SLstring_Type *sls0;
+	     prev->next = sls->next;
+	     sls0 = String_Hash_Table[idx];
+	     String_Hash_Table[idx] = sls;
+	     sls->next = sls0;
+	     return sls;
+	  }
+	prev = sls;
+	sls = sls->next;
+     }
+   return sls;
+}
+
+_INLINE_
 /* This routine works with any (long) string */
 static SLstring_Type *find_string (char *s, unsigned int len, unsigned long hash)
 {
    SLstring_Type *sls;
 
+   /* Assume it is an slstring */
+   sls = find_slstring (s, hash);
+   if (sls != NULL)
+     return sls;
+
+   /* Ok, not an slstring.  Try to find a matching one */
    sls = String_Hash_Table [(unsigned int) MAP_HASH_TO_INDEX(hash)];
 
    if (sls == NULL)
@@ -218,22 +258,6 @@ static SLstring_Type *find_string (char *s, unsigned int len, unsigned long hash
      }
    while (sls != NULL);
 
-   return sls;
-}
-
-_INLINE_
-static SLstring_Type *find_slstring (char *s, unsigned long hash)
-{
-   SLstring_Type *sls;
-
-   sls = String_Hash_Table [MAP_HASH_TO_INDEX(hash)];
-   while (sls != NULL)
-     {
-	if (s == sls->bytes)
-	  return sls;
-
-	sls = sls->next;
-     }
    return sls;
 }
 

@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "SLSH" "1" "29 January 2008" "" ""
+.TH "SLSH" "1" "19 June 2008" "" ""
 
 .SH NAME
 slsh \- Interpreter for S-Lang scripts
@@ -209,6 +209,48 @@ apropos function:
 .fi
 For convenience, the help and apropos functions
 do not require the syntactic constraints of the other functions.
+.SH "READLINE HISTORY MECHANISM"
+.PP
+By default, \fBslsh\fR is built to use the S-Lang readline interface,
+which includes a customizable command completion and a history mechanism.
+When \fBslsh\fR (or any S-Lang application that makes use of this
+feature) starts in interactive mode, it will look for a file in the
+user's home directory called \fI\&.slrlinerc\fR and load it if
+present.  This file allows the user to customize the readline
+interface and enable the history to be saved between sessions.  As
+an example, here is a version of the author's
+\fI\&.slrlinerc\fR file:
+
+.nf
+     % Load some basic functions that implement the history mechanism
+     () = evalfile ("rline/slrline.rc");
+     % The name of the history file -- expands to .slsh_hist for slsh
+     RLine_History_File = "$HOME/.${name}_hist";
+
+     % Some addition keybindings.  Some of these functions are defined
+     % in rline/editfuns.sl, loaded by rline/slrline.rc
+     rline_unsetkey ("^K");
+     rline_setkey ("bol",   "^B");
+     rline_setkey ("eol",   "^E");
+     rline_setkey (&rline_kill_eol,  "^L");
+     rline_setkey (&rline_set_mark,  "^K^B");
+     rline_setkey (&rline_copy_region, "^Kk");
+     rline_setkey (&rline_kill_region, "^K^V");
+     rline_setkey (&rline_yank,  "^K^P");
+     rline_setkey ("redraw",   "^R");
+
+     % Add a new function
+     private define double_line ()
+     {
+        variable p = rline_get_point ();
+        variable line = rline_get_line ();
+        rline_eol ();
+        variable pend = rline_get_point ();
+        rline_ins (line);
+        rline_set_point (pend + p);
+     }
+    rline_setkey (&double_line,  "^K^L");
+.fi
 .SH "MISCELLANEOUS SCRIPTS"
 .PP
 Several useful example scripts are located in

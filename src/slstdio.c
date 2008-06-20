@@ -1119,7 +1119,7 @@ cl_foreach_open (SLtype type, unsigned int num)
       default:
 	SLdo_pop_n (num);
 	SLang_verror (SL_NOT_IMPLEMENTED, 
-		      "Usage: foreach (File_Type) using ([line|char])");
+		      "Usage: foreach (File_Type) using ([line|wsline|char])");
 	SLang_free_mmt (mmt);
 	return NULL;
      }

@@ -9,7 +9,6 @@
 #d sfun#1 \literal{$1}
 
 \manpage{slsh}{1}{Interpreter for S-Lang scripts}
-
 \mansynopsis{slsh}{
   \arg{\option{--help}}
   \arg{\option{--version}}
@@ -228,6 +227,50 @@
 #v-
   For convenience, the \literal{help} and \literal{apropos} functions
   do not require the syntactic constraints of the other functions.
+\p-end
+\refsect1-end
+
+\refsect1{READLINE HISTORY MECHANISM}
+\p
+  By default, \slsh is built to use the \slang readline interface,
+  which includes a customizable command completion and a history mechanism.
+  When \slsh (or any \slang application that makes use of this
+  feature) starts in interactive mode, it will look for a file in the
+  user's home directory called \filename{.slrlinerc} and load it if
+  present.  This file allows the user to customize the readline
+  interface and enable the history to be saved between sessions.  As
+  an example, here is a version of the author's
+  \filename{.slrlinerc} file:
+#v+
+     % Load some basic functions that implement the history mechanism
+     () = evalfile ("rline/slrline.rc");
+     % The name of the history file -- expands to .slsh_hist for slsh
+     RLine_History_File = "$HOME/.${name}_hist";
+
+     % Some addition keybindings.  Some of these functions are defined
+     % in rline/editfuns.sl, loaded by rline/slrline.rc
+     rline_unsetkey ("^K");
+     rline_setkey ("bol",   "^B");
+     rline_setkey ("eol",   "^E");
+     rline_setkey (&rline_kill_eol,  "^L");
+     rline_setkey (&rline_set_mark,  "^K^B");
+     rline_setkey (&rline_copy_region, "^Kk");
+     rline_setkey (&rline_kill_region, "^K^V");
+     rline_setkey (&rline_yank,  "^K^P");
+     rline_setkey ("redraw",   "^R");
+
+     % Add a new function
+     private define double_line ()
+     {
+        variable p = rline_get_point ();
+        variable line = rline_get_line ();
+        rline_eol ();
+        variable pend = rline_get_point ();
+        rline_ins (line);
+        rline_set_point (pend + p);
+     }
+    rline_setkey (&double_line,  "^K^L");
+#v-
 \p-end
 \refsect1-end
 

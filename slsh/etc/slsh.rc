@@ -3,7 +3,7 @@
 % This file gets loaded whenever slsh runs.  Its primary purpose is to define
 % some functions that are useful in scripts, and to set up some local paths
 
-static define dir_exists (dir)
+private define dir_exists (dir)
 {
    variable s = stat_file (dir);
    if (s == NULL) return 0;

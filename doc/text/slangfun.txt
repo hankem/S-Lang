@@ -1114,7 +1114,7 @@ Assoc_Type
   elements in the array.
 
   The `foreach' construct may be used with associative arrays via
-  on of the following forms:
+  one of the following forms:
 
       foreach k,v (A) {...}
       foreach k (A) using ("keys") { ... }
@@ -1328,6 +1328,48 @@ Struct_Type
 
  SEE ALSO
   List_Type, Assoc_Type
+
+--------------------------------------------------------------
+
+File_Type
+
+ SYNOPSIS
+  A type representing a C stdio object
+
+ DESCRIPTION
+  An File_Type is the interpreter's representation of a C
+  stdio FILE object and is usually created using the `fopen'
+  function, i.e.,
+
+    fp = fopen ("file.dat", "r");
+
+  Functions that utilize the File_Type include:
+
+    fopen
+    fclose
+    fgets
+    fputs
+    ferror
+    feof
+    fflush
+    fprintf
+    fseek
+    ftell
+    fread
+    fwrite
+    fread_bytes
+
+  The `foreach' construct may be used with File_Type
+  objects via one of the following forms:
+
+   foreach line (fp) {...}
+   foreach byte (A) using ("char") { ... }   % read bytes
+   foreach line (A) using ("line") { ... }   % read lines (default)
+   foreach line (A) using ("wsline") { ... } % whitespace stripped from lines
+
+
+ SEE ALSO
+  List_Type, Array_Type, Struct_Type
 
 --------------------------------------------------------------
 

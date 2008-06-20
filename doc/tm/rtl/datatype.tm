@@ -45,7 +45,7 @@
   elements in the array.
 
   The \var{foreach} construct may be used with associative arrays via
-  on of the following forms:
+  one of the following forms:
 #v+
       foreach k,v (A) {...}
       foreach k (A) using ("keys") { ... }
@@ -240,5 +240,41 @@
     __add_destroy
 #v-
 \seealso{List_Type, Assoc_Type}
+\done
+
+\datatype{File_Type}
+\synopsis{A type representing a C stdio object}
+\description
+  An \dtype{File_Type} is the interpreter's representation of a C
+  stdio FILE object and is usually created using the \ifun{fopen}
+  function, i.e.,
+#v+
+    fp = fopen ("file.dat", "r");
+#v-
+  Functions that utilize the \dtype{File_Type} include:
+#v+
+    fopen
+    fclose
+    fgets
+    fputs
+    ferror
+    feof
+    fflush
+    fprintf
+    fseek
+    ftell
+    fread
+    fwrite
+    fread_bytes
+#v-
+  The \var{foreach} construct may be used with \dtype{File_Type}
+  objects via one of the following forms:
+#v+
+   foreach line (fp) {...}
+   foreach byte (A) using ("char") { ... }   % read bytes
+   foreach line (A) using ("line") { ... }   % read lines (default)
+   foreach line (A) using ("wsline") { ... } % whitespace stripped from lines
+#v-
+\seealso{List_Type, Array_Type, Struct_Type}
 \done
 
