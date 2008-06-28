@@ -88,7 +88,7 @@ struct _pSLFile_FD_Type
 
 
 /* Returns 0 the system call should not be restarted, 1 otherwise */
-static int is_interrupt (int e)
+static int is_interrupt (int e, int check_eagain)
 {
    SLerrno_set_errno (e);
 
@@ -102,7 +102,8 @@ static int is_interrupt (int e)
 #ifdef EAGAIN
    if (e == EAGAIN)
      {
-	if (0 == SLang_handle_interrupt ())
+	if (check_eagain
+	    && (0 == SLang_handle_interrupt ()))
 	  return 1;
      }
 #endif
@@ -157,7 +158,7 @@ static int do_close (SLFile_FD_Type *f)
 	     return status;
 	  }
 
-	if (0 == is_interrupt (errno))
+	if (0 == is_interrupt (errno, 1))
 	  return -1;
      }
 }
@@ -188,7 +189,7 @@ static int do_write (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 	     return 0;
 	  }
 
-	if (is_interrupt (errno))
+	if (is_interrupt (errno, 0))
 	  continue;
 	
 	*nump = 0;
@@ -222,7 +223,7 @@ static int do_read (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 	     return 0;
 	  }
 
-	if (is_interrupt (errno))
+	if (is_interrupt (errno, 0))
 	  continue;
 	
 	*nump = 0;
@@ -426,7 +427,7 @@ SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
 
    while (-1 == (fd = dup (fd0)))
      {
-	if (is_interrupt (errno))
+	if (is_interrupt (errno, 1))
 	  continue;
 	
 	return NULL;
@@ -434,7 +435,7 @@ SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
    
    if (NULL == (f = SLfile_create_fd (f0->name, fd)))
      {
-	while ((-1 == close (fd)) && is_interrupt (errno))
+	while ((-1 == close (fd)) && is_interrupt (errno, 1))
 	  ;
 	return NULL;
      }
@@ -528,7 +529,7 @@ static void posix_open (void)
 
    while (-1 == (f->fd = open (f->name, flags, mode)))
      {
-	if (is_interrupt (errno))
+	if (is_interrupt (errno, 1))
 	  continue;
 
 	SLfile_free_fd (f);
@@ -602,7 +603,7 @@ static _pSLc_off_t_Type posix_lseek (SLFile_FD_Type *f, _pSLc_off_t_Type *ofs, i
 
    while (-1 == (status = lseek (fd, *ofs, *whence)))
      {
-	if (is_interrupt (errno))
+	if (is_interrupt (errno, 1))
 	  continue;
 	return -1;
      }
