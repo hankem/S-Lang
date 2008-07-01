@@ -35,15 +35,15 @@
   if it does not already exist in the namespace.  Otherwise, the feature 
   will be loaded from a file given by the name of the feature, with 
   ".sl" appended.
-  
+
   If after loading the file, if the feature is not present, 
   a warning message will be issued.
 \example
 #v+
     require ("histogram");
     require ("histogram", "foo");
-    require ("histogram,"foo","/home/bob/hist.sl");
-    require ("histogram,,"/home/bob/hist.sl");
+    require ("histogram", "foo", "/home/bob/hist.sl");
+    require ("histogram", ,"/home/bob/hist.sl");
 #v-
 \notes
   "feature" is an abstract quantity that is undefined here.
@@ -52,7 +52,6 @@
   file has already been loaded.  In this case, the feature is the 
   filename itself.  The advantage of using this mechanism over using 
   \ifun{evalfile} is that if the file has already been loaded, \sfun{require}
-  will not re-load it.  For this to work, the file must indicate that it 
-  provides the feature via the \sfun{provide} function.
+  will not re-load it. 
 \seealso{provide, _featurep, evalfile}
 \done

@@ -64,8 +64,8 @@ require
 
     require ("histogram");
     require ("histogram", "foo");
-    require ("histogram,"foo","/home/bob/hist.sl");
-    require ("histogram,,"/home/bob/hist.sl");
+    require ("histogram", "foo", "/home/bob/hist.sl");
+    require ("histogram", ,"/home/bob/hist.sl");
 
 
  NOTES
@@ -75,8 +75,7 @@ require
   file has already been loaded.  In this case, the feature is the
   filename itself.  The advantage of using this mechanism over using
   `evalfile' is that if the file has already been loaded, `require'
-  will not re-load it.  For this to work, the file must indicate that it
-  provides the feature via the `provide' function.
+  will not re-load it.
 
  SEE ALSO
   provide, _featurep, evalfile

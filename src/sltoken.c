@@ -1364,7 +1364,13 @@ int SLns_load_file (char *f, char *ns_name)
      {
 	fp = fopen (name, "r");
 	if (_pSLang_Load_File_Verbose & SLANG_LOAD_FILE_VERBOSE)
-	  SLang_vmessage ("Loading %s", name);
+	  {
+	     if ((ns_name != NULL) 
+		 && (*ns_name != 0) && (0 != strcmp (ns_name, "Global")))
+	       SLang_vmessage ("Loading %s [ns:%s]", name, ns_name);
+	     else
+	       SLang_vmessage ("Loading %s", name);
+	  }
      }
    else
      fp = stdin;

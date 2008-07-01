@@ -30,38 +30,39 @@ define provide ()
 
 define require ()
 {
-   variable f, file;
+   variable feat, file;
    variable ns = current_namespace ();
    switch (_NARGS)
      {
       case 1:
-	f = ();
-	file = f;
+	feat = ();
+	file = feat;
      }
      {
       case 2:
-	(f, ns) = ();
-	file = f;
+	(feat, ns) = ();
+	file = feat;
      }
      {
       case 3:
-	(f, ns, file) = ();
+	(feat, ns, file) = ();
      }
      {
 	usage ("require (feature [,namespace [,file]])");
      }
 
-   if (_featurep (f, ns))
+   if (_featurep (feat, ns))
      return;
 
    if (ns == NULL)
      () = evalfile (file);
    else
      () = evalfile (file, ns);
-#iffalse
-   !if (_featurep (f, ns))
-     vmessage ("***Warning: feature %s not provided by %s", f, file);
-#endif
+
+   if (feat == file)
+     provide (file, ns);
+   else if (_featurep (feat, ns))
+     vmessage ("***Warning: feature %s not provided by %s", feat, file);
 }
 
 $1 = path_concat (path_dirname (__FILE__), "help/require.hlp");

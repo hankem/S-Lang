@@ -73,6 +73,13 @@ Changes since 2.1.3
 33. slsh/etc/slsh.rc: changed dir_exists from static to private
 34. src/slposio.c: The low level read/write functions should not be
     restarted when errno is EAGAIN.
+35. src/sltoken.c: When run in verbose mode, SLns_load_file will
+    display the name of the namespace the file is being loaded into when
+    the namespace is not the Global one.
+36. slsh/lib/require.sl: If the "feature" is a filename, then
+    automatically "provide" that feature.
+37. slsh/lib/tm/require.tm: Fixed the typos for the require function.
+
 
 {{{ Previous Versions
 
