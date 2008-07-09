@@ -79,7 +79,12 @@ Changes since 2.1.3
 36. slsh/lib/require.sl: If the "feature" is a filename, then
     automatically "provide" that feature.
 37. slsh/lib/tm/require.tm: Fixed the typos for the require function.
-
+38. src/slstrops.c: Until `|' is supported in REs, glob_to_regexp
+    cannot be made to produce a single RE that does not match leading
+    dots.  Hence, the glob expression "*X" will match ".X".
+39. slsh/lib/glob.sl: Changed to compensate for modification to
+    glob_to_regexp.  That is, glob("*X") will not match the file ".X",
+    which preserves the bahavior of the glob function.
 
 {{{ Previous Versions
 

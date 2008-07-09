@@ -2044,6 +2044,10 @@ static void glob_to_regexp (char *glob)
    *p++ = '^';
 
    /* If the first character of a file is '.', it must be explicitly matched. */
+   /*
+    * This will not work until | is supported in REs.  Then if the glob
+    * pattern is *X, the RE will be ^([^.].*X | ^X)$
+    *
    if ((*glob == '?') || (*glob == '*'))
      {
 	*p++ = '[';
@@ -2053,7 +2057,7 @@ static void glob_to_regexp (char *glob)
 	if (*glob == '?')
 	  glob++;
      }
-
+    */
    while (0 != (ch = *glob++))
      {
 	if ((ch == '.') || (ch == '$') || (ch == '+') || (ch == '\\'))

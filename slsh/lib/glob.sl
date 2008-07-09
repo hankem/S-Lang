@@ -16,6 +16,12 @@ private define do_the_glob (dir, pat)
      return String_Type[0];
 
    files = [files, ".", ".."];
+
+   if ((pat[0] == '?') || (pat[0] == '*'))
+     {
+	files = files [where(array_map (Int_Type, &strncmp, files, ".", 1))];
+     }
+
    if (length (files) == 0)
      return files;
 
