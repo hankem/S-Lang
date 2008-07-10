@@ -732,7 +732,7 @@ int SLatoi (unsigned char *s)
    return (int) SLatol (s);
 }
 
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 long long SLatoll (unsigned char *s)
 {
    int sign;

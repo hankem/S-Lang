@@ -35,6 +35,10 @@ USA.
 # include <langinfo.h>
 #endif
 
+#if defined(__WIN32__)
+# include <windows.h>
+#endif
+
 #define DEBUG_MALLOC 0
 
 #if DEBUG_MALLOC
@@ -84,6 +88,11 @@ static int utf8_enable (int mode)
 
    if (mode != -1)
      return (mode != 0);
+
+#if defined(__WIN32__)
+   if (GetConsoleOutputCP () == 65001)
+     return 1;
+#endif
 
    (void) setlocale (LC_ALL, "");
 
