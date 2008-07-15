@@ -139,8 +139,9 @@ MODULES = slsmg rand
 # iconv: iconv library
 # png:   png library
 # pcre: Ported to Win32 by GnuWin32 group.
-# onig
+# onig: onig RE library
 # varray-module.c: No external libs but requires porting to windows.
+# select, fcntl, socket, termios: requires POSIX support
 
 all: $(MODULES)
 

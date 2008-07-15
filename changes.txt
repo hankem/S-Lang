@@ -87,6 +87,10 @@ Changes since 2.1.3
     which preserves the bahavior of the glob function.
 40. src/slcommon.c: On win32 systems, if the codepage is 65001, then
     use UTF-8 mode (Thomas Wiegner).
+41. src/slarray.c: Trivial change to avoid a warning in gcc
+    about the possible use of an uninitialized variable.
+42. slsh/slsh.c: Added -q, --quiet command line option to inhibit the
+    printing of the startup messages.
 
 {{{ Previous Versions
 

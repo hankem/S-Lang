@@ -35,7 +35,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.8.3-0";
+static char *Slsh_Version = "0.8.4-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -446,6 +446,7 @@ Usage: slsh [OPTIONS] [-|file [args...]]\n\
    fprintf (stderr, "\
  --no-readline    Do not use readline\n\
  -i               Force interactive input\n\
+ -q, --quiet      Do not print startup messages\n\
  -t               Test mode.  If slsh_main exists, do not call it\n\
  -v               Show verbose loading messages\n\
  -Dname           Define \"name\" as a preprocessor symbol\n\
@@ -498,6 +499,7 @@ int main (int argc, char **argv)
    int use_readline = 1;
    int test_mode = 0;
    char *exec_string = NULL;
+   int quiet = 0;
 
    (void) SLutf8_enable (-1);
 
@@ -541,13 +543,15 @@ int main (int argc, char **argv)
 
    while (argc > 1)
      {
-	if (0 == strcmp (argv[1], "--version"))
+	char *arg = argv[1];
+
+	if (0 == strcmp (arg, "--version"))
 	  version ();
 
-	if (0 == strcmp (argv[1], "--help"))
+	if (0 == strcmp (arg, "--help"))
 	  usage ();
 
-	if (0 == strcmp (argv[1], "-i"))
+	if (0 == strcmp (arg, "-i"))
 	  {
 	     argc--;
 	     argv++;
@@ -555,7 +559,7 @@ int main (int argc, char **argv)
 	     continue;
 	  }
 
-	if ((0 == strcmp (argv[1], "-e"))
+	if ((0 == strcmp (arg, "-e"))
 	    && (argc > 2))
 	  {
 	     argc -= 2;
@@ -564,7 +568,7 @@ int main (int argc, char **argv)
 	     continue;
 	  }
 
-	if (0 == strcmp (argv[1], "-g"))
+	if (0 == strcmp (arg, "-g"))
 	  {
 	     SLang_generate_debug_info (1);
 	     SLang_Traceback = SL_TB_FULL;
@@ -573,7 +577,7 @@ int main (int argc, char **argv)
 	     continue;
 	  }
 
-	if (0 == strcmp (argv[1], "-n"))
+	if (0 == strcmp (arg, "-n"))
 	  {
 	     init_file = NULL;
 	     argc--;
@@ -581,7 +585,15 @@ int main (int argc, char **argv)
 	     continue;
 	  }
 
-	if (0 == strcmp (argv[1], "-t"))
+	if ((0 == strcmp (arg, "-q")) || (0 == strcmp (arg, "--quiet")))
+	  {
+	     quiet = 1;
+	     argc--;
+	     argv++;
+	     continue;
+	  }
+
+	if (0 == strcmp (arg, "-t"))
 	  {
 	     test_mode = 1;
 	     argc--;
@@ -589,7 +601,7 @@ int main (int argc, char **argv)
 	     continue;
 	  }
 	
-	if (0 == strcmp (argv[1], "-v"))
+	if (0 == strcmp (arg, "-v"))
 	  {
 	     (void) SLang_load_file_verbose (3);
 	     Verbose_Loading = 1;
@@ -598,7 +610,7 @@ int main (int argc, char **argv)
 	     continue;
 	  }
 	
-	if (0 == strcmp (argv[1], "--no-readline"))
+	if (0 == strcmp (arg, "--no-readline"))
 	  {
 	     use_readline = 0;
 	     argc--;
@@ -606,7 +618,7 @@ int main (int argc, char **argv)
 	     continue;
 	  }
 
-	if ((0 == strcmp (argv[1], "--init"))
+	if ((0 == strcmp (arg, "--init"))
 	    && (argc > 2))
 	  {
 	     init_file = argv[2];
@@ -616,9 +628,9 @@ int main (int argc, char **argv)
 	     continue;
 	  }
 	
-	if (0 == strncmp (argv[1], "-D", 2))
+	if (0 == strncmp (arg, "-D", 2))
 	  {
-	     char *prep = argv[1] + 2;
+	     char *prep = arg + 2;
 	     if (*prep != 0)
 	       (void) SLdefine_for_ifdef (prep);
 	     argc--;
@@ -695,7 +707,8 @@ int main (int argc, char **argv)
 
    if (is_interactive)
      {
-	output_copyright ();
+	if (quiet == 0)
+	  output_copyright ();
 	if (SLang_Traceback != SL_TB_FULL)
 	  SLang_Traceback = SL_TB_NONE;
 

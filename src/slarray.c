@@ -1127,10 +1127,11 @@ aget_from_indices (SLang_Array_Type *at,
 	new_at = SLang_create_array (at->data_type, 0, NULL, &i_num_elements, 1);
 	if (NULL == new_at)
 	  return -1;
-	if (num_elements == 0)
-	  goto fixup_dims;
 
 	new_data = (char *)new_at->data;
+
+	if (num_elements == 0)
+	  goto fixup_dims;
      }
    
    at_dims = at->dims;
