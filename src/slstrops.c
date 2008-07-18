@@ -2003,6 +2003,53 @@ static void str_delete_chars_cmd (SLuchar_Type *s, SLuchar_Type *d)
    (void) SLang_push_malloced_string ((char *)s);
 }
 
+static unsigned int count_char_occurances (char *str, SLwchar_Type *wchp)
+{
+   SLwchar_Type wch = *wchp;
+   SLuchar_Type wch_utf8[SLUTF8_MAX_MBLEN+1];
+   unsigned int wch_utf8_len;
+   unsigned int n = 0;
+   int is_byte;
+   
+   if (wch < 0x80)
+     is_byte = 1;
+   else
+     {
+	if (_pSLinterp_UTF8_Mode == 0)
+	  {
+	     if (wch >= 256)
+	       {
+		  SLang_verror (SL_InvalidParm_Error, "Character is invalid in non-UTF-8 mode");
+		  return 0;
+	       }
+	     is_byte = 1;
+	  }
+	else 
+	  is_byte = 0;
+     }
+   
+   if (is_byte)
+     {
+	unsigned char byte = (unsigned char) wch;
+	while (*str != 0)
+	  {
+	     if (*str == byte) n++;
+	     str++;
+	  }
+	return n;
+     }
+
+   if (NULL == _pSLinterp_encode_wchar (wch, wch_utf8, &wch_utf8_len))
+     return 0;
+   
+   while (NULL != (str = strstr (str, (char *)wch_utf8)))
+     {
+	n++;
+	str += wch_utf8_len;
+     }
+   
+   return n;
+}
 
 /*
  * Supporting UTF-8 here will be tricky.  The non-UTF-8 version supports 
@@ -2177,6 +2224,8 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_SSS("strtrans", strtrans_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_SS("str_delete_chars", str_delete_chars_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("glob_to_regexp", glob_to_regexp, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_2("count_char_occurances", count_char_occurances, SLANG_UINT_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE),
+
    SLANG_END_INTRIN_FUN_TABLE
 };
 

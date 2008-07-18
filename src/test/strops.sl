@@ -391,6 +391,39 @@ _for $1 (0, 4000, 10)
 }
 #endif
 	 
-	 
+
+define test_count_occur (func, s, ch, ans)
+{
+   variable n = (@func) (s, ch);
+   if (ans != n)
+     {
+	failed ("%S failed on %s: expected %u, got %u", func, s, ans, n);
+     }
+}
+
+test_count_occur (&count_char_occurances, "", 'A', 0);
+test_count_occur (&count_char_occurances, "A", 'A', 1);
+test_count_occur (&count_char_occurances, " A", 'A', 1);
+test_count_occur (&count_char_occurances, "A ", 'A', 1);
+test_count_occur (&count_char_occurances, "A A", 'A', 2);
+test_count_occur (&count_char_occurances, "A  A ", 'A', 2);
+
+test_count_occur (&count_byte_occurances, "", 'A', 0);
+test_count_occur (&count_byte_occurances, "A", 'A', 1);
+test_count_occur (&count_byte_occurances, " A\0", 'A', 1);
+test_count_occur (&count_byte_occurances, "A ", 'A', 1);
+test_count_occur (&count_byte_occurances, "A \0A", 'A', 2);
+test_count_occur (&count_byte_occurances, "A \0 A ", 'A', 2);
+
+if (_slang_utf8_ok)
+{
+   test_count_occur (&count_char_occurances, "", 0xFF, 0);
+   test_count_occur (&count_char_occurances, "\u{00FF}", 0xFF, 1);
+   test_count_occur (&count_char_occurances, " \u{00FF}", 0xFF, 1);
+   test_count_occur (&count_char_occurances, "\u{00FF} ", 0xFF, 1);
+   test_count_occur (&count_char_occurances, "\u{00FF} \u{00FF}", 0xFF, 2);
+   test_count_occur (&count_char_occurances, "\u{00FF}  \u{00FF} ", 0xFF, 2);
+}
+
 print ("Ok\n");
 exit (0);

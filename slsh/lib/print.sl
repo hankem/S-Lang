@@ -7,13 +7,16 @@ if (Pager == NULL)
 private variable Sigpipe_Handler;
 #endif
 
-private define open_pager ()
+private define open_pager (pager)
 {
 #ifexists SIGPIPE
    signal (SIGPIPE, SIG_IGN, &Sigpipe_Handler);
 #endif
-
-   return popen (Pager, "w");
+   variable fp = popen (pager, "w");
+   if (fp == NULL)
+     throw OpenError, "Unable to open the pager ($pager)"$;
+   
+   return fp;
 }
 
 private define close_pager (fp)
@@ -23,7 +26,6 @@ private define close_pager (fp)
 #ifexists SIGPIPE
    signal (SIGPIPE, Sigpipe_Handler);
 #endif
-
 }
 
 private define generic_to_string (x)
@@ -36,42 +38,74 @@ private define generic_to_string (x)
    return string (x);
 }
 
-private define struct_to_string (s)
+private define struct_to_string (s, single_line)
 {
    if (s == NULL)
      return "NULL";
 
    variable names = get_struct_field_names (s);
    variable comma = "";
-   variable str = "";
+   variable str = "{";
+   variable comma_str = ", ";
+   if (single_line == 0)
+     comma_str = ",\n ";
    foreach (names)
      {
 	variable name = ();
 	str = strcat (str, comma, name, "=", generic_to_string(get_struct_field (s, name)));
-	comma = ", ";
+	comma = comma_str;
      }
-   return strcat ("{", str, "}");
+   return strcat (str, "}");
 }
 
-private define print_list (a, ref)
+private define struct_to_single_line_string (s)
 {
-   variable fp = stdout;
+   return struct_to_string (s, 1);
+}
+  
+private define print_list (a, ref, fp, use_pager, pager_pgm)
+{
    variable i;
    variable s = "{";
    variable comma = "";
-   _for i (0, length (a)-1, 1)
-     {
-	s = sprintf ("%s%s%s", s, comma, generic_to_string(a[i]));
-	comma = ", ";
-     }
-   s = strcat (s, "}");
    if (ref != NULL)
      {
+	_for i (0, length (a)-1, 1)
+	  {
+	     s = sprintf ("%s%s%s", s, comma, generic_to_string(a[i]));
+	     comma = ", ";
+	  }
+	s = strcat (s, "}");
 	@ref = s;
 	return;
      }
-   () = fputs (s, stdout);
-   () = fputs ("\n", stdout);
+   
+   if (use_pager == -1)
+     use_pager = length (a) > Pager_Rows;
+   
+   variable pager_open = 0;
+   if (use_pager && (fp == NULL))
+     {
+	fp = open_pager (pager_pgm);
+	pager_open = 1;
+     }
+
+   if (fp == NULL)
+     fp = stdout;
+
+   if (-1 != fprintf (fp, "{\n"))
+     {
+	foreach s (a)
+	  {
+	     if (-1 == fprintf (fp, "%s\n", generic_to_string (s)))
+	       break;
+	  }
+	then
+	  () = fprintf (fp, "}\n");
+     }
+
+   if (pager_open)
+     close_pager (fp);
 }
 
 private define write_2d_array (fp, a, to_str)
@@ -95,19 +129,23 @@ private define write_2d_array (fp, a, to_str)
    return 0;
 }
 
-private define print_array (a, ref)
+private define print_array (a, ref, fp, use_pager, pager_pgm)
 {
    variable dims, ndims, type;
 
    (dims, ndims, type) = array_info (a);
    variable nelems = length (a);
    variable nrows = dims[0];
-   variable use_pager = (nrows > Pager_Rows) || (prod(dims) > Pager_Rows*10);
    variable is_numeric = __is_numeric (a);
-   variable fp = NULL;
+   variable pager_open = 0;
+   if (use_pager == -1)
+     use_pager = (nrows > Pager_Rows) || (prod(dims) > Pager_Rows*10);
 
-   if (use_pager)
-     fp = open_pager ();
+   if (use_pager && (fp == NULL))
+     {
+	fp = open_pager (pager_pgm);
+	pager_open = 1;
+     }
 
    if (fp == NULL)
      fp = stdout;
@@ -117,7 +155,7 @@ private define print_array (a, ref)
 	variable i, j;
 	variable to_str;
 	if (_is_struct_type (a))
-	  to_str = &struct_to_string;
+	  to_str = &struct_to_single_line_string;
 	else if (__is_numeric (a))
 	  to_str = &string;
 	else
@@ -151,7 +189,7 @@ private define print_array (a, ref)
      }
    finally
      {
-	if (fp != stdout)
+	if (pager_open)
 	  close_pager (fp);
 	reshape (a, dims);
      }
@@ -170,41 +208,81 @@ define print_set_pager_lines (n)
 define print ()
 {
    variable ref = NULL;
+   variable fp = NULL;
+
    if (_NARGS == 0)
      {
-	usage ("print (OBJ [,&str]);");
+	usage ("print (OBJ [,&str|File_Type]);"
+	       + "Qualifiers: pager[=pgm], nopager\n");
      }
+   variable pager_pgm = Pager;
+   variable use_pager = -1;	       %  auto
+   if (qualifier_exists("nopager"))
+     use_pager = 0;
+   else if (qualifier_exists ("pager"))
+     {
+	use_pager = 1;
+	pager_pgm = qualifier ("pager");
+	if (pager_pgm == NULL)
+	  pager_pgm = Pager;
+     }
+
    if (_NARGS == 2)
      {
 	ref = ();
+	if (typeof (ref) == File_Type)
+	  {
+	     fp = ref;
+	     ref = NULL;
+	  }
+	use_pager = 0;
      }
+
    variable x = ();
    variable t = typeof (x);
 
+   % Note: print_array may use the pager if fp is NULL.
    if (t == Array_Type)
      {
 	if (ref == NULL)
-	  return print_array (x, &ref);
+	  return print_array (x, &ref, fp, use_pager, pager_pgm);
+     }
+
+   if (t == List_Type)
+     {
+	print_list (x, ref, fp, use_pager, pager_pgm);
+	return;
      }
 
    if (is_struct_type (x))
+     x = struct_to_string (x, 0);
+   else
+     x = generic_to_string (x);
+   
+   if (ref != NULL)
      {
-	x = struct_to_string (x);
-	if (ref != NULL)
-	  @ref = x;
-	else
-	  () = fprintf (stdout, "%s\n", x);
-	return;
-     }
-   if (t == List_Type)
-     {
-	print_list (x, ref);
+	@ref = x;
 	return;
      }
 
-   x = generic_to_string (x);
-   if (ref != NULL)
-     @ref = x;
-   else
-     () = fprintf (stdout, "%s\n", x);
+   if (use_pager == -1)
+     use_pager = (count_byte_occurances (x, '\n') > Pager_Rows);
+
+   if (use_pager)
+     {
+	fp = open_pager (pager_pgm);
+	if (fp == NULL)
+	  use_pager = 0;
+     }
+   
+   if (fp == NULL)
+     fp = stdout;
+   
+   if (-1 != fputs (x, fp))
+     {
+	() = fputs ("\n", fp);
+     }
+
+   if (use_pager)
+     close_pager (fp);
 }
