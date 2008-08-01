@@ -97,6 +97,7 @@ Changes since 2.1.3
 44. src/slstrops.c, src/slbstr.c: Added count_char/byte_occurances
     function to count the number of occurances of a specific character
     or byte in a string.
+45. src/slparse.c: &if was causing a SEGV.
 
 {{{ Previous Versions
 

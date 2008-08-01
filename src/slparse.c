@@ -2292,7 +2292,12 @@ static void append_identifier_token (_pSLang_Token_Type *ctok)
 	return;
      }
 
-   last_token = get_last_token ();
+   if (NULL == (last_token = get_last_token ()))
+     {
+	if (_pSLang_Error == 0)
+	  SLang_verror (SL_INTERNAL_ERROR, "get_last_token returned NULL in append_identifier_token");
+	return;
+     }
    if (-1 == combine_namespace_tokens (last_token, ctok))
      return;
 
@@ -2432,6 +2437,12 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	get_token (ctok);
 	postfix_expression (ctok);
 	last_token = get_last_token ();
+	if (last_token == NULL)
+	  {
+	     if (_pSLang_Error == 0)
+	       SLang_verror (SL_SYNTAX_ERROR, "Misplaced &");
+	     return;
+	  }
 	switch (last_token->type)
 	  {
 	   case IDENT_TOKEN:
