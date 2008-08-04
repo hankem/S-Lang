@@ -910,8 +910,15 @@ static char Double_Format[16] = "%g";
 
 void _pSLset_double_format (char *s)
 {
-   strncpy (Double_Format, s, 15);
-   Double_Format[15] = 0;
+   if (strlen (s) >= sizeof (Double_Format))
+     return;
+
+   strcpy (Double_Format, s);
+}
+
+char *_pSLget_double_format (void)
+{
+   return Double_Format;
 }
 #endif
 

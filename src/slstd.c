@@ -1139,6 +1139,7 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_0("_function_name", intrin_function_name, SLANG_STRING_TYPE),
 #if SLANG_HAS_FLOAT
    MAKE_INTRINSIC_S("set_float_format", _pSLset_double_format, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("get_float_format", _pSLget_double_format, SLANG_STRING_TYPE),
 #endif
    MAKE_INTRINSIC_S("_slang_guess_type", guess_type, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("error", intrin_error, SLANG_VOID_TYPE),

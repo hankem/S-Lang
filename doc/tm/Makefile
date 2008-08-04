@@ -11,9 +11,9 @@ TM2HLP = $(TMEXPAND) -I$(MACRODIR) -Mslhlp
 TXT_FILES = slang.txt cslang.txt cref.txt slangfun.txt
 SGML_FILES = slang.sgml cslang.sgml cref.sgml slangfun.sgml
 HTML_FILES = slang.html cslang.html cref.html slangfun.html
-TEX_FILES = slang.tex cslang.tex #cref.tex slangfun.tex
+TEX_FILES = slang.tex cslang.tex cref.tex #slangfun.tex
 PS_FILES = slang.ps cslang.ps slangfun.ps #cref.ps
-PDF_FILES = slang.pdf cslang.pdf slangfun.pdf
+PDF_FILES = slang.pdf cslang.pdf slangfun.pdf cref.pdf
 
 SGML2LATEX = sgml2latex -p letter -o tex
 SGML2HTML = sgml2html
@@ -60,7 +60,10 @@ cslang.tex : cslang.sgml
 	jed -script ./fixtex.sl cslang.tex
 slangfun.tex: slangfun.sgml
 	$(SGML2LATEX) slangfun.sgml
-	jed -script ./fixtex.sl slangfun.tex	
+	jed -script ./fixtex.sl slangfun.tex
+cref.tex: cref.sgml
+	$(SGML2LATEX) cref.sgml
+	jed -script ./fixtex.sl cref.tex	
 #----- PDF Files -----------------------------------------------------------
 pdf-files: $(PDF_FILES)
 cslang.pdf : cslang.tex
@@ -75,6 +78,10 @@ slangfun.pdf: slangfun.tex
 	$(PDFLATEX) slangfun.tex
 	$(PDFLATEX) slangfun.tex
 	$(PDFLATEX) slangfun.tex
+cref.pdf : cref.tex
+	$(PDFLATEX) cref.tex
+	$(PDFLATEX) cref.tex
+	$(PDFLATEX) cref.tex
 #----- PS Files -----------------------------------------------------------
 cslang.ps : cslang.tex
 	$(LATEX) cslang.tex

@@ -23,7 +23,7 @@
 \linuxdoc
 \begin{\documentstyle}
 
-\title {The \slang C Library Reference}
+\title The \slang C Library Reference
 \author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 

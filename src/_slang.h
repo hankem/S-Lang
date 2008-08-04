@@ -965,6 +965,7 @@ extern int _pSLang_do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_T
 
 extern int _pSLang_call_funptr (SLang_Name_Type *);
 extern void _pSLset_double_format (char *);
+extern char *_pSLget_double_format (void);
 extern SLang_Name_Type *_pSLlocate_global_name (char *);
 extern SLang_Name_Type *_pSLlocate_name (char *);
 
