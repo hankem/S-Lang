@@ -247,7 +247,7 @@ int SLexpand_escaped_string (char *s, char *t, char *tmax, int utf8_encode)
    return 0;
 }
 
-int SLextract_list_element (char *list, unsigned int nth, char delim,
+int SLextract_list_element (SLFUTURE_CONST char *list, unsigned int nth, char delim,
 			    char *elem, unsigned int buflen)
 {
    char *el, *elmax;

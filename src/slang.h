@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20104
-#define SLANG_VERSION_STRING "pre2.1.4-50"
+#define SLANG_VERSION_STRING "pre2.1.4-51"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1234,7 +1234,7 @@ SL_EXTERN int SLang_add_intrinsic_array (SLFUTURE_CONST char *,   /* name */
 				      VOID_STAR,   /* data */
 				      unsigned int, ...);   /* num dims */
 
-SL_EXTERN int SLextract_list_element (char *, unsigned int, char,
+SL_EXTERN int SLextract_list_element (SLFUTURE_CONST char *, unsigned int, char,
 				   char *, unsigned int);
 
 /* If utf8_encode is >1, then byte values > 127 will be utf8-encoded. 
