@@ -79,12 +79,12 @@ static void path_basename_sans_extname (char *path)
    SLfree (path);
 }
 
-static char *Load_Path;
-int SLpath_set_load_path (char *path)
+static SLFUTURE_CONST char *Load_Path;
+int SLpath_set_load_path (SLFUTURE_CONST char *path)
 {
    if (path == NULL)
      {
-	SLang_free_slstring (Load_Path);
+	SLang_free_slstring ((char *) Load_Path);
 	Load_Path = NULL;
 	return 0;
      }
@@ -94,7 +94,7 @@ int SLpath_set_load_path (char *path)
      return -1;
    
    if (Load_Path != NULL)
-     SLang_free_slstring (Load_Path);
+     SLang_free_slstring ((char *) Load_Path);
    
    Load_Path = path;
    return 0;
@@ -106,7 +106,7 @@ char *SLpath_get_load_path (void)
 }
 
 
-static char *get_load_path (void)
+static SLCONST char *get_load_path (void)
 {
    if (Load_Path == NULL)
      return "";
@@ -143,7 +143,7 @@ static char *more_recent (char *a, char *b)
 
    
 /* returns SLmalloced string */
-static char *find_file (char *path, char *file)
+static char *find_file (SLFUTURE_CONST char *path, SLFUTURE_CONST char *file)
 {
    char *dirfile;
    char *extname;
@@ -188,9 +188,9 @@ static char *find_file (char *path, char *file)
    return dirfile;
 }
 
-char *_pSLpath_find_file (char *file, int signal_error)
+char *_pSLpath_find_file (SLFUTURE_CONST char *file, int signal_error)
 {
-   char *path;
+   SLFUTURE_CONST char *path;
    char *dirfile;
 
    if (file == NULL)
@@ -206,11 +206,11 @@ char *_pSLpath_find_file (char *file, int signal_error)
      {
 	file = SLang_create_slstring (dirfile);
 	SLfree (dirfile);
-	return file;
+	return (char *) file;
      }
 
    if (signal_error)
-     SLang_verror (SL_OBJ_NOPEN, "Unable to locate %s on load path", file);
+     _pSLang_verror (SL_OBJ_NOPEN, "Unable to locate %s on load path", file);
    return NULL;
 }
 

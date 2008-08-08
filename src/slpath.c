@@ -78,12 +78,12 @@ USA.
 static char Path_Delimiter = SEARCH_PATH_DELIMITER;
 
 /* If file is /a/b/c/basename, this function returns a pointer to basename */
-char *SLpath_basename (char *file)
+char *SLpath_basename (SLFUTURE_CONST char *file)
 {
    char *b;
 
    if (file == NULL) return NULL;
-   b = file + strlen (file);
+   b = (char *) file + strlen (file);
 
    while (b != file)
      {
@@ -100,7 +100,7 @@ char *SLpath_basename (char *file)
 }
 
 /* Returns a malloced string */
-char *SLpath_pathname_sans_extname (char *file)
+char *SLpath_pathname_sans_extname (SLFUTURE_CONST char *file)
 {
    char *b;
 
@@ -108,7 +108,7 @@ char *SLpath_pathname_sans_extname (char *file)
    if (file == NULL)
      return NULL;
 
-   b = file + strlen (file);
+   b = (char *) file + strlen (file);
 
    while (b != file)
      {
@@ -126,19 +126,19 @@ char *SLpath_pathname_sans_extname (char *file)
 	if (*b == '.')
 	  {
 	     *b = 0;
-	     return file;
+	     return (char *) file;
 	  }
      }
 
-   return file;
+   return (char *) file;
 }
 
 /* If path looks like: A/B/C/D/whatever, it returns A/B/C/D as a malloced 
  * string.
  */
-char *SLpath_dirname (char *file)
+char *SLpath_dirname (SLFUTURE_CONST char *file)
 {
-   char *b;
+   SLCONST char *b;
 
    if (file == NULL) return NULL;
    b = file + strlen (file);
@@ -176,14 +176,14 @@ char *SLpath_dirname (char *file)
  * 
  * The extension includes the '.'.  If no extension is present, "" is returned.
  */
-char *SLpath_extname (char *file)
+char *SLpath_extname (SLFUTURE_CONST char *file)
 {
    char *b;
 
    if (NULL == (file = SLpath_basename (file)))
      return NULL;
 
-   b = file + strlen (file);
+   b = (char *) file + strlen (file);
    while (b != file)
      {
 	b--;
@@ -195,7 +195,7 @@ char *SLpath_extname (char *file)
      return b;
 
    /* Do not return a literal "" */
-   return file + strlen (file);
+   return (char *) file + strlen (file);
 }
 
 #ifdef IBMPC_SYSTEM
@@ -209,7 +209,7 @@ static void convert_slashes (char *f)
 }
 #endif
 
-int SLpath_is_absolute_path (char *name)
+int SLpath_is_absolute_path (SLFUTURE_CONST char *name)
 {
    if (name == NULL)
      return -1;
@@ -326,7 +326,7 @@ static char *vms_fixup_filename (char *file)
 #endif
 
 /* This returns a MALLOCED string */
-char *SLpath_dircat (char *dir, char *name)
+char *SLpath_dircat (SLFUTURE_CONST char *dir, SLFUTURE_CONST char *name)
 {
    unsigned int len, dirlen;
    char *file;
@@ -387,7 +387,7 @@ char *SLpath_dircat (char *dir, char *name)
 #endif
 }
 
-int SLpath_file_exists (char *file)
+int SLpath_file_exists (SLFUTURE_CONST char *file)
 {
    struct stat st;
    int m;
@@ -424,7 +424,7 @@ int SLpath_file_exists (char *file)
 /* By relatively-absolute, I mean paths of the form ./foo,
  * and ../foo/bar.  But not foo/bar.
  */
-static int is_relatively_absolute (char *file)
+static int is_relatively_absolute (SLFUTURE_CONST char *file)
 {
    if (file == NULL)
      return -1;
@@ -440,12 +440,12 @@ static int is_relatively_absolute (char *file)
 #endif
 }
 
-char *SLpath_find_file_in_path (char *path, char *name)
+char *SLpath_find_file_in_path (SLFUTURE_CONST char *path, SLFUTURE_CONST char *name)
 {
    unsigned int max_path_len;
    unsigned int this_path_len;
    char *file, *dir;
-   char *p;
+   SLCONST char *p;
    unsigned int nth;
 
    if ((path == NULL) || (*path == 0)
@@ -486,7 +486,7 @@ char *SLpath_find_file_in_path (char *path, char *name)
      return NULL;
 
    nth = 0;
-   while (-1 != SLextract_list_element (path, nth, Path_Delimiter,
+   while (-1 != SLextract_list_element ((char *) path, nth, Path_Delimiter,
 					dir, max_path_len))
      {
 	nth++;

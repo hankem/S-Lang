@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20104
-#define SLANG_VERSION_STRING "pre2.1.4-47"
+#define SLANG_VERSION_STRING "pre2.1.4-50"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -216,6 +216,12 @@ typedef unsigned char *VOID_STAR;
 #define SLCONST
 #endif
 
+#ifdef ENABLE_SLFUTURE_CONST
+# define SLFUTURE_CONST SLCONST
+#else
+# define SLFUTURE_CONST
+#endif
+
 typedef int (*FVOID_STAR)(void);
 
 #if defined(__MSDOS__) && defined(__BORLANDC__)
@@ -271,8 +277,8 @@ typedef char SLstr_Type;
 /* An SLstr_Type object must be treated as a constant and may only be freed
  * by the SLang_free_slstring function and nothing else.
  */
-SL_EXTERN SLstr_Type *SLang_create_nslstring (char *, unsigned int);
-SL_EXTERN SLstr_Type *SLang_create_slstring (char *);
+SL_EXTERN SLstr_Type *SLang_create_nslstring (SLFUTURE_CONST char *, unsigned int);
+SL_EXTERN SLstr_Type *SLang_create_slstring (SLFUTURE_CONST char *);
 SL_EXTERN void SLang_free_slstring (SLstr_Type *);    /* handles NULL */
 SL_EXTERN int SLang_pop_slstring (SLstr_Type **);   /* free with SLang_free_slstring */
 SL_EXTERN SLstr_Type *SLang_concat_slstrings (SLstr_Type *a, SLstr_Type *b);
@@ -403,7 +409,7 @@ typedef unsigned int SLtype;
 
 typedef struct _pSLang_Name_Type
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    struct _pSLang_Name_Type *next;
    unsigned char name_type;
    /* These values here map directly to byte codes.  See _slang.h.
@@ -434,7 +440,7 @@ SLang_Name_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    struct _pSLang_Name_Type *next;      /* this is for the hash table */
    char name_type;
 
@@ -450,7 +456,7 @@ SLang_Intrin_Fun_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
@@ -461,7 +467,7 @@ SLang_Intrin_Var_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
@@ -471,7 +477,7 @@ SLang_App_Unary_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
@@ -481,7 +487,7 @@ SLang_Math_Unary_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
@@ -492,7 +498,7 @@ SLang_HConstant_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
@@ -503,7 +509,7 @@ SLang_IConstant_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
@@ -515,7 +521,7 @@ SLang_LConstant_Type;
 #ifdef HAVE_LONG_LONG
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
@@ -526,7 +532,7 @@ SLang_LLConstant_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
    double d;
@@ -535,7 +541,7 @@ SLang_DConstant_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *next;
    char name_type;
    float f;
@@ -544,7 +550,7 @@ SLang_FConstant_Type;
 
 typedef struct
 {
-   char *field_name;		       /* gets replaced by slstring at run-time */
+   SLFUTURE_CONST char *field_name;		       /* gets replaced by slstring at run-time */
    unsigned int offset;
    SLtype type;
    unsigned char read_only;
@@ -553,56 +559,56 @@ SLang_IStruct_Field_Type;
 
 typedef SLCONST struct _pSLang_CStruct_Field_Type   /* a g++ bug?? yuk*/
 {
-   char *field_name;
+   SLFUTURE_CONST char *field_name;
    unsigned int offset;
    SLtype type;
    unsigned char read_only;
 }
 SLang_CStruct_Field_Type;
 
-SL_EXTERN int SLadd_intrin_fun_table (SLang_Intrin_Fun_Type *, char *);
-SL_EXTERN int SLadd_intrin_var_table (SLang_Intrin_Var_Type *, char *);
-SL_EXTERN int SLadd_app_unary_table (SLang_App_Unary_Type *, char *);
-SL_EXTERN int SLadd_math_unary_table (SLang_Math_Unary_Type *, char *);
-SL_EXTERN int SLadd_iconstant_table (SLang_IConstant_Type *, char *);
-SL_EXTERN int SLadd_dconstant_table (SLang_DConstant_Type *, char *);
-SL_EXTERN int SLadd_fconstant_table (SLang_FConstant_Type *, char *);
+SL_EXTERN int SLadd_intrin_fun_table (SLang_Intrin_Fun_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLadd_intrin_var_table (SLang_Intrin_Var_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLadd_app_unary_table (SLang_App_Unary_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLadd_math_unary_table (SLang_Math_Unary_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLadd_iconstant_table (SLang_IConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLadd_dconstant_table (SLang_DConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLadd_fconstant_table (SLang_FConstant_Type *, SLFUTURE_CONST char *);
 #ifdef HAVE_LONG_LONG
-SL_EXTERN int SLadd_llconstant_table (SLang_LLConstant_Type *, char *);
+SL_EXTERN int SLadd_llconstant_table (SLang_LLConstant_Type *, SLFUTURE_CONST char *);
 #endif
-SL_EXTERN int SLadd_istruct_table (SLang_IStruct_Field_Type *, VOID_STAR, char *);
+SL_EXTERN int SLadd_istruct_table (SLang_IStruct_Field_Type *, VOID_STAR, SLFUTURE_CONST char *);
 
 
 typedef struct _pSLang_NameSpace_Type SLang_NameSpace_Type;
 
-SL_EXTERN int SLns_add_intrin_fun_table (SLang_NameSpace_Type *, SLang_Intrin_Fun_Type *, char *);
-SL_EXTERN int SLns_add_intrin_var_table (SLang_NameSpace_Type *, SLang_Intrin_Var_Type *, char *);
-SL_EXTERN int SLns_add_app_unary_table (SLang_NameSpace_Type *, SLang_App_Unary_Type *, char *);
-SL_EXTERN int SLns_add_math_unary_table (SLang_NameSpace_Type *, SLang_Math_Unary_Type *, char *);
-SL_EXTERN int SLns_add_hconstant_table (SLang_NameSpace_Type *, SLang_HConstant_Type *, char *);
-SL_EXTERN int SLns_add_iconstant_table (SLang_NameSpace_Type *, SLang_IConstant_Type *, char *);
-SL_EXTERN int SLns_add_lconstant_table (SLang_NameSpace_Type *, SLang_LConstant_Type *, char *);
-SL_EXTERN int SLns_add_fconstant_table (SLang_NameSpace_Type *, SLang_FConstant_Type *, char *);
-SL_EXTERN int SLns_add_dconstant_table (SLang_NameSpace_Type *, SLang_DConstant_Type *, char *);
+SL_EXTERN int SLns_add_intrin_fun_table (SLang_NameSpace_Type *, SLang_Intrin_Fun_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_add_intrin_var_table (SLang_NameSpace_Type *, SLang_Intrin_Var_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_add_app_unary_table (SLang_NameSpace_Type *, SLang_App_Unary_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_add_math_unary_table (SLang_NameSpace_Type *, SLang_Math_Unary_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_add_hconstant_table (SLang_NameSpace_Type *, SLang_HConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_add_iconstant_table (SLang_NameSpace_Type *, SLang_IConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_add_lconstant_table (SLang_NameSpace_Type *, SLang_LConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_add_fconstant_table (SLang_NameSpace_Type *, SLang_FConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_add_dconstant_table (SLang_NameSpace_Type *, SLang_DConstant_Type *, SLFUTURE_CONST char *);
 #ifdef HAVE_LONG_LONG
-SL_EXTERN int SLns_add_llconstant_table (SLang_NameSpace_Type *, SLang_LLConstant_Type *, char *);
+SL_EXTERN int SLns_add_llconstant_table (SLang_NameSpace_Type *, SLang_LLConstant_Type *, SLFUTURE_CONST char *);
 #endif
-SL_EXTERN int SLns_add_istruct_table (SLang_NameSpace_Type *, SLang_IStruct_Field_Type *, VOID_STAR, char *);
+SL_EXTERN int SLns_add_istruct_table (SLang_NameSpace_Type *, SLang_IStruct_Field_Type *, VOID_STAR, SLFUTURE_CONST char *);
 
-SL_EXTERN int SLns_add_hconstant (SLang_NameSpace_Type *, char *, SLtype, short);
-SL_EXTERN int SLns_add_iconstant (SLang_NameSpace_Type *, char *, SLtype, int);
-SL_EXTERN int SLns_add_lconstant (SLang_NameSpace_Type *, char *, SLtype, long);
-SL_EXTERN int SLns_add_fconstant (SLang_NameSpace_Type *, char *, float);
-SL_EXTERN int SLns_add_dconstant (SLang_NameSpace_Type *, char *, double);
+SL_EXTERN int SLns_add_hconstant (SLang_NameSpace_Type *, SLFUTURE_CONST char *, SLtype, short);
+SL_EXTERN int SLns_add_iconstant (SLang_NameSpace_Type *, SLFUTURE_CONST char *, SLtype, int);
+SL_EXTERN int SLns_add_lconstant (SLang_NameSpace_Type *, SLFUTURE_CONST char *, SLtype, long);
+SL_EXTERN int SLns_add_fconstant (SLang_NameSpace_Type *, SLFUTURE_CONST char *, float);
+SL_EXTERN int SLns_add_dconstant (SLang_NameSpace_Type *, SLFUTURE_CONST char *, double);
 #ifdef HAVE_LONG_LONG
-SL_EXTERN int SLns_add_llconstant (SLang_NameSpace_Type *, char *, long long);
+SL_EXTERN int SLns_add_llconstant (SLang_NameSpace_Type *, SLFUTURE_CONST char *, long long);
 #endif
-SL_EXTERN SLang_NameSpace_Type *SLns_create_namespace (char *);
+SL_EXTERN SLang_NameSpace_Type *SLns_create_namespace (SLFUTURE_CONST char *);
 SL_EXTERN void SLns_delete_namespace (SLang_NameSpace_Type *);
 
-SL_EXTERN int SLns_load_file (char *, char *);
-SL_EXTERN int SLns_load_string (char *, char *);
-SL_EXTERN int (*SLns_Load_File_Hook) (char *, char *);
+SL_EXTERN int SLns_load_file (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+SL_EXTERN int SLns_load_string (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+SL_EXTERN int (*SLns_Load_File_Hook) (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
 
 #define SLANG_LOAD_FILE_VERBOSE		0x1
 #define SLANG_LOAD_MODULE_VERBOSE	0x2
@@ -628,25 +634,25 @@ typedef struct SLang_Load_Type
    int parse_level;
    /* 0 if at top level of parsing */
 
-   char *name;
+   SLFUTURE_CONST char *name;
    /* Name of this object, e.g., filename.  This name should be unique because
     * it alone determines the name space for static objects associated with
     * the compilable unit.
     */
 
-   char *namespace_name;
+   SLFUTURE_CONST char *namespace_name;
    unsigned long reserved[3];
    /* For future expansion */
 } SLang_Load_Type;
 
-SL_EXTERN SLang_Load_Type *SLallocate_load_type (char *);
+SL_EXTERN SLang_Load_Type *SLallocate_load_type (SLFUTURE_CONST char *);
 SL_EXTERN void SLdeallocate_load_type (SLang_Load_Type *);
-SL_EXTERN SLang_Load_Type *SLns_allocate_load_type (char *, char *);
+SL_EXTERN SLang_Load_Type *SLns_allocate_load_type (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
   
 /* Returns SLang_Error upon failure */
 SL_EXTERN int SLang_load_object (SLang_Load_Type *);
-SL_EXTERN int (*SLang_Load_File_Hook)(char *);
-SL_EXTERN int (*SLang_Auto_Declare_Var_Hook) (char *);
+SL_EXTERN int (*SLang_Load_File_Hook)(SLFUTURE_CONST char *);
+SL_EXTERN int (*SLang_Auto_Declare_Var_Hook) (SLFUTURE_CONST char *);
 
 SL_EXTERN int SLang_generate_debug_info (int);
 
@@ -700,9 +706,9 @@ SL_EXTERN int SLclass_pop_llong_obj (SLtype, long long *);
 SL_EXTERN int SLclass_push_llong_obj (SLtype, long long);
 #endif
 
-SL_EXTERN SLang_Class_Type *SLclass_allocate_class (char *);
+SL_EXTERN SLang_Class_Type *SLclass_allocate_class (SLFUTURE_CONST char *);
 SL_EXTERN int SLclass_get_class_id (SLang_Class_Type *cl);
-SL_EXTERN int SLclass_create_synonym (char *, SLtype);
+SL_EXTERN int SLclass_create_synonym (SLFUTURE_CONST char *, SLtype);
 SL_EXTERN int SLclass_is_class_defined (SLtype);
 SL_EXTERN int SLclass_dup_object (SLtype type, VOID_STAR from, VOID_STAR to);
 
@@ -723,8 +729,8 @@ SL_EXTERN int SLclass_set_aget_function (SLang_Class_Type *, int (*)(SLtype, uns
 SL_EXTERN int SLclass_set_aput_function (SLang_Class_Type *, int (*)(SLtype, unsigned int));
 SL_EXTERN int SLclass_set_anew_function (SLang_Class_Type *, int (*)(SLtype, unsigned int));
 
-SL_EXTERN int SLclass_set_sget_function (SLang_Class_Type *, int (*)(SLtype, char *));
-SL_EXTERN int SLclass_set_sput_function (SLang_Class_Type *, int (*)(SLtype, char *));
+SL_EXTERN int SLclass_set_sget_function (SLang_Class_Type *, int (*)(SLtype, SLFUTURE_CONST char *));
+SL_EXTERN int SLclass_set_sput_function (SLang_Class_Type *, int (*)(SLtype, SLFUTURE_CONST char *));
 
 SL_EXTERN int SLclass_set_acopy_function (SLang_Class_Type *, int (*)(SLtype, VOID_STAR, VOID_STAR));
 SL_EXTERN int SLclass_set_deref_function (SLang_Class_Type *, int (*)(SLtype, VOID_STAR));
@@ -804,7 +810,7 @@ SLclass_add_typecast (SLtype /* from */, SLtype /* to */,
 		      int	       /* allow implicit typecasts */
 		      );
 
-SL_EXTERN char *SLclass_get_datatype_name (SLtype);
+SL_EXTERN SLFUTURE_CONST char *SLclass_get_datatype_name (SLtype);
 
 SL_EXTERN double SLcomplex_abs (double *);
 SL_EXTERN double *SLcomplex_times (double *, double *, double *);
@@ -916,13 +922,13 @@ SL_EXTERN int SLarray_map_array (SLCONST SLarray_Map_Type *);
 
 /*{{{ Interpreter Function Prototypes */
 
-SL_EXTERN int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr);
-SL_EXTERN void SLang_verror (int, char *, ...) SLATTRIBUTE_PRINTF(2,3);
-SL_EXTERN void SLang_verror_va (int errcode, char *fmt, va_list va);
+SL_EXTERN int SLerr_throw (int err, SLFUTURE_CONST char *msg, SLtype obj_type, VOID_STAR objptr);
+SL_EXTERN void SLang_verror (int, SLFUTURE_CONST char *, ...) SLATTRIBUTE_PRINTF(2,3);
+SL_EXTERN void SLang_verror_va (int errcode, SLFUTURE_CONST char *fmt, va_list va);
 SL_EXTERN int SLang_get_error (void);
 SL_EXTERN int SLang_set_error (int);
-SL_EXTERN char *SLerr_strerror (int errcode);
-SL_EXTERN int SLerr_new_exception (int baseclass, char *name, char *descript);
+SL_EXTERN SLFUTURE_CONST char *SLerr_strerror (int errcode);
+SL_EXTERN int SLerr_new_exception (int baseclass, SLFUTURE_CONST char *name, SLFUTURE_CONST char *descript);
 SL_EXTERN int SLerr_exception_eqs (int, int);
 
 SL_EXTERN int SL_Any_Error;
@@ -1015,19 +1021,19 @@ SL_EXTERN int SL_Import_Error;
   SL_EXTERN char *SLang_User_Prompt;
   /* Prompt to use when reading from stdin */
   SL_EXTERN int SLang_Version;
-  SL_EXTERN char *SLang_Version_String;
-SL_EXTERN char *SLang_Doc_Dir;
+  SL_EXTERN SLFUTURE_CONST char *SLang_Version_String;
+SL_EXTERN SLFUTURE_CONST char *SLang_Doc_Dir;
 
-SL_EXTERN void (*SLang_VMessage_Hook) (char *, va_list);
-SL_EXTERN void SLang_vmessage (char *, ...) SLATTRIBUTE_PRINTF(1,2);
+SL_EXTERN void (*SLang_VMessage_Hook) (SLFUTURE_CONST char *, va_list);
+SL_EXTERN void SLang_vmessage (SLFUTURE_CONST char *, ...) SLATTRIBUTE_PRINTF(1,2);
 
-  SL_EXTERN void (*SLang_Error_Hook)(char *);
+  SL_EXTERN void (*SLang_Error_Hook)(SLFUTURE_CONST char *);
   /* Pointer to application dependent error messaging routine.  By default,
      messages are displayed on stderr. */
 
-  SL_EXTERN void (*SLang_Exit_Error_Hook)(char *, va_list);
-SL_EXTERN void SLang_exit_error (char *, ...) SLATTRIBUTE_((format (printf, 1, 2), noreturn));
-  SL_EXTERN void (*SLang_Dump_Routine)(char *);
+  SL_EXTERN void (*SLang_Exit_Error_Hook)(SLFUTURE_CONST char *, va_list);
+SL_EXTERN void SLang_exit_error (SLFUTURE_CONST char *, ...) SLATTRIBUTE_((format (printf, 1, 2), noreturn));
+  SL_EXTERN void (*SLang_Dump_Routine)(SLFUTURE_CONST char *);
   /* Called if S-Lang traceback is enabled as well as other debugging
      routines (e.g., trace).  By default, these messages go to stderr. */
 
@@ -1039,8 +1045,8 @@ SL_EXTERN void SLang_exit_error (char *, ...) SLATTRIBUTE_((format (printf, 1, 2
   /* function that gets called when '_clear_error' is called. */
 
   /* If non null, these call C functions before and after a slang function. */
-  SL_EXTERN void (*SLang_Enter_Function)(char *);
-SL_EXTERN void (*SLang_Exit_Function)(char *);
+  SL_EXTERN void (*SLang_Enter_Function)(SLFUTURE_CONST char *);
+SL_EXTERN void (*SLang_Exit_Function)(SLFUTURE_CONST char *);
 
 SL_EXTERN int SLang_Num_Function_Args;
 
@@ -1088,7 +1094,7 @@ SL_EXTERN int SLang_init_signal (void);
 /* Dynamic linking facility */
 SL_EXTERN int SLang_init_import (void);
 
-   SL_EXTERN int SLang_load_file (char *);
+   SL_EXTERN int SLang_load_file (SLFUTURE_CONST char *);
    /* Load a file of S-Lang code for interpreting.  If the parameter is
     * NULL, input comes from stdin. */
 
@@ -1099,18 +1105,18 @@ SL_EXTERN int SLang_init_import (void);
     * should be called with a non-zero argument (e.g., if setjmp/longjmp is
     * called). */
 
-   SL_EXTERN int SLang_byte_compile_file(char *, int);
+   SL_EXTERN int SLang_byte_compile_file(SLFUTURE_CONST char *, int);
    /* takes a file of S-Lang code and ``byte-compiles'' it for faster
     * loading.  The new filename is equivalent to the old except that a `c' is
     * appended to the name.  (e.g., init.sl --> init.slc).  The second
     * specified the method; currently, it is not used.
     */
 
-   SL_EXTERN int SLang_autoload(char *, char *);
+   SL_EXTERN int SLang_autoload(SLFUTURE_CONST char *, SLFUTURE_CONST char *);
    /* Automatically load S-Lang function p1 from file p2.  This function
       is also available via S-Lang */
 
-   SL_EXTERN int SLang_load_string(char *);
+   SL_EXTERN int SLang_load_string(SLFUTURE_CONST char *);
    /* Like SLang_load_file except input is from a null terminated string. */
 
 SL_EXTERN int SLstack_depth(void);
@@ -1162,7 +1168,7 @@ SL_EXTERN int SLang_push_malloced_string(char *);
  * error, but the string will be freed.
  */
 
-SL_EXTERN int SLang_push_string(char *);
+SL_EXTERN int SLang_push_string(SLFUTURE_CONST char *);
 SL_EXTERN int SLpop_string (char **);  /* malloced -- free with SLfree */
 
 SL_EXTERN int SLang_push_null (void);
@@ -1200,10 +1206,10 @@ SL_EXTERN int SLang_pop_cstruct (VOID_STAR, SLang_CStruct_Field_Type *);
 SL_EXTERN void SLang_free_cstruct (VOID_STAR, SLang_CStruct_Field_Type *);
 SL_EXTERN int SLang_assign_cstruct_to_ref (SLang_Ref_Type *, VOID_STAR, SLang_CStruct_Field_Type *);
 
-   SL_EXTERN int SLang_is_defined(char *);
+   SL_EXTERN int SLang_is_defined(SLFUTURE_CONST char *);
    /* Return non-zero is p1 is defined otherwise returns 0. */
 
-   SL_EXTERN int SLang_run_hooks(char *, unsigned int, ...);
+   SL_EXTERN int SLang_run_hooks(SLFUTURE_CONST char *, unsigned int, ...);
    /* calls S-Lang function p1 pushing p2 strings in the variable argument
     * list onto the stack first.
     * Returns -1 upon error, 1 if hooks exists and it ran,
@@ -1215,14 +1221,14 @@ SL_EXTERN int SLang_assign_cstruct_to_ref (SLang_Ref_Type *, VOID_STAR, SLang_CS
  * 0.  Otherwise -1 is returned with SLang_Error set appropriately.
  */
 SL_EXTERN int SLexecute_function (SLang_Name_Type *);
-SL_EXTERN int SLang_execute_function(char *);
+SL_EXTERN int SLang_execute_function(SLFUTURE_CONST char *);
 
 
 SL_EXTERN int SLang_end_arg_list (void);
 SL_EXTERN int SLang_start_arg_list (void);
 
 
-SL_EXTERN int SLang_add_intrinsic_array (char *,   /* name */
+SL_EXTERN int SLang_add_intrinsic_array (SLFUTURE_CONST char *,   /* name */
 				      SLtype,   /* type */
 				      int,   /* readonly */
 				      VOID_STAR,   /* data */
@@ -1236,10 +1242,10 @@ SL_EXTERN int SLextract_list_element (char *, unsigned int, char,
  * utf8_encode set to 0.  A value of -1 implies use the value appropriate for
  * the current state of the interpreter.
  */
-SL_EXTERN int SLexpand_escaped_string (char *dest, char *src, char *src_max, 
-				    int utf8_encode);
+SL_EXTERN int SLexpand_escaped_string (char *dest, char *src, char *src_max,
+				       int utf8_encode);
 
-SL_EXTERN SLang_Name_Type *SLang_get_function (char *);
+SL_EXTERN SLang_Name_Type *SLang_get_function (SLFUTURE_CONST char *);
 SL_EXTERN void SLang_release_function (SLang_Name_Type *);
 
 SL_EXTERN int SLreverse_stack (int);
@@ -1258,10 +1264,10 @@ SL_EXTERN int SLang_peek_at_stack1_n (unsigned int n);
 /* Returns type of next object on stack-- -1 upon stack underflow. */
 SL_EXTERN void SLmake_lut (unsigned char *, unsigned char *, unsigned char);
 
-   SL_EXTERN int SLang_guess_type (char *);
+   SL_EXTERN int SLang_guess_type (SLFUTURE_CONST char *);
 
 SL_EXTERN int SLstruct_create_struct (unsigned int,
-				   char **,
+				   SLFUTURE_CONST char **,
 				   SLtype *,
 				   VOID_STAR *);
 
@@ -1272,8 +1278,8 @@ SL_EXTERN int SLstruct_create_struct (unsigned int,
 /* This is an interface to atexit */
 SL_EXTERN int SLang_add_cleanup_function (void (*)(void));
 
-SL_EXTERN char *SLmake_string (char *);
-SL_EXTERN char *SLmake_nstring (char *, unsigned int);
+SL_EXTERN char *SLmake_string (SLFUTURE_CONST char *);
+SL_EXTERN char *SLmake_nstring (SLFUTURE_CONST char *, unsigned int);
 /* Returns a null terminated string made from the first n characters of the
  * string.
  */
@@ -1295,7 +1301,7 @@ SL_EXTERN SLang_BString_Type *SLbstring_create (unsigned char *, unsigned int);
 SL_EXTERN SLang_BString_Type *SLbstring_create_malloced (unsigned char *, unsigned int, int);
 
 /* Create a bstring from an slstring */
-SL_EXTERN SLang_BString_Type *SLbstring_create_slstring (char *);
+SL_EXTERN SLang_BString_Type *SLbstring_create_slstring (SLFUTURE_CONST char *);
 
 SL_EXTERN void SLbstring_free (SLang_BString_Type *);
 SL_EXTERN int SLang_pop_bstring (SLang_BString_Type **);
@@ -1317,7 +1323,7 @@ SL_EXTERN long long SLatoll (unsigned char *s);
 SL_EXTERN unsigned long long SLatoull (unsigned char *s);
 #endif
 SL_EXTERN int SLang_pop_fileptr (SLang_MMT_Type **, FILE **);
-SL_EXTERN char *SLang_get_name_from_fileptr (SLang_MMT_Type *);
+SL_EXTERN SLFUTURE_CONST char *SLang_get_name_from_fileptr (SLang_MMT_Type *);
 
 SL_EXTERN int SLang_get_fileptr (SLang_MMT_Type *, FILE **);
 /* This function may be used to obtain the FILE* object associated with an MMT.
@@ -1327,7 +1333,7 @@ SL_EXTERN int SLang_get_fileptr (SLang_MMT_Type *, FILE **);
  */
 
 typedef struct _pSLFile_FD_Type SLFile_FD_Type;
-SL_EXTERN SLFile_FD_Type *SLfile_create_fd (char *, int);
+SL_EXTERN SLFile_FD_Type *SLfile_create_fd (SLFUTURE_CONST char *, int);
 SL_EXTERN void SLfile_free_fd (SLFile_FD_Type *);
 SL_EXTERN int SLfile_push_fd (SLFile_FD_Type *);
 SL_EXTERN int SLfile_pop_fd (SLFile_FD_Type **);
@@ -1433,7 +1439,7 @@ SL_EXTERN int (*SLtty_VMS_Ctrl_Y_Hook) (void);
 
 typedef struct SLKeymap_Function_Type
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    int (*f)(void);
 }
 SLKeymap_Function_Type;
@@ -1463,7 +1469,7 @@ int SLkm_set_free_method (int, void (*)(int, VOID_STAR));
 
 typedef struct _pSLkeymap_Type
 {
-   char *name;			       /* hashed string */
+   SLFUTURE_CONST char *name;			       /* hashed string */
    SLang_Key_Type *keymap;
    SLKeymap_Function_Type *functions;  /* intrinsic functions */
    struct _pSLkeymap_Type *next;
@@ -1475,20 +1481,20 @@ SL_EXTERN SLkeymap_Type *SLKeyMap_List_Root;   /* linked list of keymaps */
 typedef SLkeymap_Type SLKeyMap_List_Type;
 
 
-SL_EXTERN char *SLang_process_keystring(char *);
+SL_EXTERN char *SLang_process_keystring(SLFUTURE_CONST char *);
 
-SL_EXTERN int SLkm_define_key (char *, FVOID_STAR, SLkeymap_Type *);
+SL_EXTERN int SLkm_define_key (SLFUTURE_CONST char *, FVOID_STAR, SLkeymap_Type *);
 
-SL_EXTERN int SLang_define_key(char *, char *, SLkeymap_Type *);
+SL_EXTERN int SLang_define_key(SLFUTURE_CONST char *, SLFUTURE_CONST char *, SLkeymap_Type *);
 /* Like define_key1 except that p2 is a string that is to be associated with
  * a function in the functions field of p3.
  */
 
-SL_EXTERN int SLkm_define_keysym (char *, unsigned int, SLkeymap_Type *);
-SL_EXTERN int SLkm_define_slkey (char *keysequence, SLang_Name_Type *func, SLkeymap_Type *);
-SL_EXTERN void SLang_undefine_key(char *, SLkeymap_Type *);
+SL_EXTERN int SLkm_define_keysym (SLFUTURE_CONST char *, unsigned int, SLkeymap_Type *);
+SL_EXTERN int SLkm_define_slkey (SLFUTURE_CONST char *keysequence, SLang_Name_Type *func, SLkeymap_Type *);
+SL_EXTERN void SLang_undefine_key(SLFUTURE_CONST char *, SLkeymap_Type *);
 
-SL_EXTERN SLkeymap_Type *SLang_create_keymap(char *, SLkeymap_Type *);
+SL_EXTERN SLkeymap_Type *SLang_create_keymap(SLFUTURE_CONST char *, SLkeymap_Type *);
 /* create and returns a pointer to a new keymap named p1 created by copying
  * keymap p2.  If p2 is NULL, it is up to the calling routine to initialize
  * the keymap.
@@ -1499,9 +1505,9 @@ SL_EXTERN char *SLang_make_keystring(unsigned char *);
 SL_EXTERN SLang_Key_Type *SLang_do_key(SLkeymap_Type *, int (*)(void));
 /* read a key using keymap p1 with getkey function p2 */
 
-SL_EXTERN FVOID_STAR SLang_find_key_function(char *, SLkeymap_Type *);
+SL_EXTERN FVOID_STAR SLang_find_key_function(SLFUTURE_CONST char *, SLkeymap_Type *);
 
-SL_EXTERN SLkeymap_Type *SLang_find_keymap(char *);
+SL_EXTERN SLkeymap_Type *SLang_find_keymap(SLFUTURE_CONST char *);
 
 SL_EXTERN int SLang_Last_Key_Char;
 /* Despite the name of this variable, its value is the last BYTE of a key-sequence */
@@ -1514,7 +1520,7 @@ SL_EXTERN int SLang_Key_TimeOut_Flag;
 
 typedef struct _pSLrline_Type SLrline_Type;
 SL_EXTERN SLrline_Type *SLrline_open (unsigned int width, unsigned int flags);
-SL_EXTERN SLrline_Type *SLrline_open2 (char *, unsigned int width, unsigned int flags);
+SL_EXTERN SLrline_Type *SLrline_open2 (SLFUTURE_CONST char *, unsigned int width, unsigned int flags);
 #define SL_RLINE_NO_ECHO	1
 #define SL_RLINE_USE_ANSI	2
 #define SL_RLINE_BLINK_MATCH	4
@@ -1522,18 +1528,18 @@ SL_EXTERN SLrline_Type *SLrline_open2 (char *, unsigned int width, unsigned int 
 SL_EXTERN void SLrline_close (SLrline_Type *);
 
 /* This returns a malloced string */
-SL_EXTERN char *SLrline_read_line (SLrline_Type *, char *prompt, unsigned int *lenp);
+SL_EXTERN char *SLrline_read_line (SLrline_Type *, SLFUTURE_CONST char *prompt, unsigned int *lenp);
 
 SL_EXTERN int SLrline_bol (SLrline_Type *);
 SL_EXTERN int SLrline_eol (SLrline_Type *);
 SL_EXTERN int SLrline_del (SLrline_Type *, unsigned int len);
-SL_EXTERN int SLrline_ins (SLrline_Type *, char *s, unsigned int len);
+SL_EXTERN int SLrline_ins (SLrline_Type *, SLFUTURE_CONST char *s, unsigned int len);
 SL_EXTERN int SLrline_move (SLrline_Type *, int);
 
 SL_EXTERN int SLrline_set_echo (SLrline_Type *, int);
 SL_EXTERN int SLrline_set_tab (SLrline_Type *, unsigned int tabwidth);
 SL_EXTERN int SLrline_set_point (SLrline_Type *, unsigned int);
-SL_EXTERN int SLrline_set_line (SLrline_Type *, char *);
+SL_EXTERN int SLrline_set_line (SLrline_Type *, SLFUTURE_CONST char *);
 SL_EXTERN int SLrline_set_hscroll (SLrline_Type *, unsigned int);
 SL_EXTERN int SLrline_set_display_width (SLrline_Type *, unsigned int);
 
@@ -1546,8 +1552,8 @@ SL_EXTERN int SLrline_get_display_width (SLrline_Type *, unsigned int *);
 
 SL_EXTERN int SLrline_set_update_hook (SLrline_Type *,
 				    void (*)(SLrline_Type *rli,
-					     char *prompt,
-					     char *buf, unsigned int len,
+					     SLFUTURE_CONST char *prompt,
+					     SLFUTURE_CONST char *buf, unsigned int len,
 					     unsigned int point, VOID_STAR client_data),
 				    VOID_STAR client_data);
 
@@ -1555,10 +1561,10 @@ SL_EXTERN SLkeymap_Type *SLrline_get_keymap (SLrline_Type *);
 
 SL_EXTERN void SLrline_redraw (SLrline_Type *);
 SL_EXTERN int SLrline_save_line (SLrline_Type *);
-SL_EXTERN int SLrline_add_to_history (SLrline_Type *, char *);
+SL_EXTERN int SLrline_add_to_history (SLrline_Type *, SLFUTURE_CONST char *);
 
 /* Interpreter interface */
-SL_EXTERN int SLrline_init (char *appname, char *user_initfile, char *sys_initfile);
+SL_EXTERN int SLrline_init (SLFUTURE_CONST char *appname, SLFUTURE_CONST char *user_initfile, SLFUTURE_CONST char *sys_initfile);
 
 /* Compatibility */
 typedef SLrline_Type SLang_RLine_Info_Type;
@@ -1644,7 +1650,7 @@ SL_EXTERN void SLtt_cls(void);
 SL_EXTERN void SLtt_beep(void);
 SL_EXTERN void SLtt_reverse_index(int);
 SL_EXTERN void SLtt_smart_puts(SLsmg_Char_Type *, SLsmg_Char_Type *, int, int);
-SL_EXTERN void SLtt_write_string (char *);
+SL_EXTERN void SLtt_write_string (SLFUTURE_CONST char *);
 SL_EXTERN void SLtt_putchar(char);
 SL_EXTERN int SLtt_init_video (void);
 SL_EXTERN int SLtt_reset_video (void);
@@ -1655,35 +1661,35 @@ SL_EXTERN int SLtt_set_cursor_visibility (int);
 SL_EXTERN int SLtt_set_mouse_mode (int, int);
 
 #if defined(VMS) || defined(REAL_UNIX_SYSTEM)
-SL_EXTERN int SLtt_initialize (char *);
+SL_EXTERN int SLtt_initialize (SLFUTURE_CONST char *);
 SL_EXTERN void SLtt_enable_cursor_keys(void);
 SL_EXTERN void SLtt_set_term_vtxxx(int *);
 SL_EXTERN void SLtt_wide_width(void);
 SL_EXTERN void SLtt_narrow_width(void);
 SL_EXTERN void SLtt_set_alt_char_set (int);
-SL_EXTERN int SLtt_write_to_status_line (char *, int);
+SL_EXTERN int SLtt_write_to_status_line (SLFUTURE_CONST char *, int);
 SL_EXTERN void SLtt_disable_status_line (void);
 # ifdef REAL_UNIX_SYSTEM
 /* These are termcap/terminfo routines that assume SLtt_initialize has
  * been called.
  */
-SL_EXTERN char *SLtt_tgetstr (char *);
-SL_EXTERN int SLtt_tgetnum (char *);
-SL_EXTERN int SLtt_tgetflag (char *);
+SL_EXTERN char *SLtt_tgetstr (SLFUTURE_CONST char *);
+SL_EXTERN int SLtt_tgetnum (SLFUTURE_CONST char *);
+SL_EXTERN int SLtt_tgetflag (SLFUTURE_CONST char *);
 
 /* The following are terminfo-only routines -- these prototypes will change
  * in V2.x.
  */
-SL_EXTERN char *SLtt_tigetent (char *);
-SL_EXTERN char *SLtt_tigetstr (char *, char **);
-SL_EXTERN int SLtt_tigetnum (char *, char **);
+SL_EXTERN char *SLtt_tigetent (SLFUTURE_CONST char *);
+SL_EXTERN char *SLtt_tigetstr (SLFUTURE_CONST char *, char **);
+SL_EXTERN int SLtt_tigetnum (SLFUTURE_CONST char *, char **);
 # endif
 #endif
 
 SL_EXTERN SLtt_Char_Type SLtt_get_color_object (int);
 SL_EXTERN int SLtt_set_color_object (int, SLtt_Char_Type);
-SL_EXTERN int SLtt_set_color (int, char *, char *, char *);
-SL_EXTERN int SLtt_set_mono (int, char *, SLtt_Char_Type);
+SL_EXTERN int SLtt_set_color (int, SLFUTURE_CONST char *, SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+SL_EXTERN int SLtt_set_mono (int, SLFUTURE_CONST char *, SLtt_Char_Type);
 SL_EXTERN int SLtt_add_color_attribute (int, SLtt_Char_Type);
 SL_EXTERN int SLtt_set_color_fgbg (int, SLtt_Char_Type, SLtt_Char_Type);
 
@@ -1696,19 +1702,19 @@ typedef struct _pSLprep_Type SLprep_Type;
 
 SL_EXTERN SLprep_Type *SLprep_new (void);
 SL_EXTERN void SLprep_delete (SLprep_Type *);
-SL_EXTERN int SLprep_line_ok (char *, SLprep_Type *);
+SL_EXTERN int SLprep_line_ok (SLFUTURE_CONST char *, SLprep_Type *);
 SL_EXTERN int SLprep_set_flags (SLprep_Type *, unsigned int flags);
 #define SLPREP_BLANK_LINES_OK	0x1
 #define SLPREP_COMMENT_LINES_OK	0x2
 
-SL_EXTERN int SLprep_set_comment (SLprep_Type *, char *, char *);
-SL_EXTERN int SLprep_set_prefix (SLprep_Type *, char *);
+SL_EXTERN int SLprep_set_comment (SLprep_Type *, SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+SL_EXTERN int SLprep_set_prefix (SLprep_Type *, SLFUTURE_CONST char *);
 SL_EXTERN int SLprep_set_exists_hook (SLprep_Type *, 
-				   int (*)(SLprep_Type *, char *));
+				   int (*)(SLprep_Type *, SLFUTURE_CONST char *));
 SL_EXTERN int SLprep_set_eval_hook (SLprep_Type *, 
-				 int (*)(SLprep_Type *, char *));
+				 int (*)(SLprep_Type *, SLFUTURE_CONST char *));
 
-SL_EXTERN int SLdefine_for_ifdef (char *);
+SL_EXTERN int SLdefine_for_ifdef (SLFUTURE_CONST char *);
    /* Adds a string to the SLang #ifdef preparsing defines. SLang already
       defines MSDOS, UNIX, and VMS on the appropriate system. */
 
@@ -1730,13 +1736,13 @@ SL_EXTERN void SLsmg_erase_eos (void);
 SL_EXTERN void SLsmg_reverse_video (void);
 SL_EXTERN void SLsmg_set_color (SLsmg_Color_Type);
 SL_EXTERN void SLsmg_normal_video (void);
-SL_EXTERN void SLsmg_printf (char *, ...) SLATTRIBUTE_PRINTF(1,2);
-/* SL_EXTERN void SLsmg_printf (char *, ...) SLATTRIBUTE_PRINTF(1,2); */
-SL_EXTERN void SLsmg_vprintf (char *, va_list);
-SL_EXTERN void SLsmg_write_string (char *);
-SL_EXTERN void SLsmg_write_nstring (char *, unsigned int);
+SL_EXTERN void SLsmg_printf (SLFUTURE_CONST char *, ...) SLATTRIBUTE_PRINTF(1,2);
+/* SL_EXTERN void SLsmg_printf (SLFUTURE_CONST char *, ...) SLATTRIBUTE_PRINTF(1,2); */
+SL_EXTERN void SLsmg_vprintf (SLFUTURE_CONST char *, va_list);
+SL_EXTERN void SLsmg_write_string (SLFUTURE_CONST char *);
+SL_EXTERN void SLsmg_write_nstring (SLFUTURE_CONST char *, unsigned int);
 SL_EXTERN void SLsmg_write_chars (SLuchar_Type *u, SLuchar_Type *umax);
-SL_EXTERN void SLsmg_write_nchars (char *str, unsigned int len);
+SL_EXTERN void SLsmg_write_nchars (SLFUTURE_CONST char *str, unsigned int len);
 SL_EXTERN void SLsmg_write_char (SLwchar_Type ch);
 SL_EXTERN void SLsmg_write_wrapped_string (SLuchar_Type *, int, int, unsigned int, unsigned int, int);
 SL_EXTERN void SLsmg_cls (void);
@@ -1929,7 +1935,7 @@ SL_EXTERN void SLsmg_set_terminal_info (SLsmg_Term_Type *);
 
 /* I do not intend to use keysymps > 0x1000.  Applications can use those. */
 /* Returns 0 upon success or -1 upon error. */
-SL_EXTERN int SLkp_define_keysym (char *, unsigned int);
+SL_EXTERN int SLkp_define_keysym (SLFUTURE_CONST char *, unsigned int);
 
 /* This function must be called AFTER SLtt_get_terminfo and not before. */
 SL_EXTERN int SLkp_init (void);
@@ -1991,12 +1997,12 @@ SL_EXTERN SLSig_Fun_Type *SLsignal (int, SLSig_Fun_Type *);
 SL_EXTERN SLSig_Fun_Type *SLsignal_intr (int, SLSig_Fun_Type *);
 SL_EXTERN int SLsig_block_signals (void);
 SL_EXTERN int SLsig_unblock_signals (void);
-SL_EXTERN int SLsystem (char *);
+SL_EXTERN int SLsystem (SLFUTURE_CONST char *);
 
 /* Make a signal off-limits to the interpreter */
 SL_EXTERN int SLsig_forbid_signal (int);
 
-SL_EXTERN char *SLerrno_strerror (int);
+SL_EXTERN SLFUTURE_CONST char *SLerrno_strerror (int);
 SL_EXTERN int SLerrno_set_errno (int);
 
 /*}}}*/
@@ -2136,13 +2142,13 @@ SL_EXTERN int SLang_get_int_size (SLtype);
 
 #define SLANG_UNARY_OP_MAX	0x2B
 
-SL_EXTERN char *SLang_Error_Message;
+SL_EXTERN SLFUTURE_CONST char *SLang_Error_Message;
 
-SL_EXTERN int SLadd_intrinsic_variable (char *, VOID_STAR, SLtype, int);
-SL_EXTERN int SLadd_intrinsic_function (char *, FVOID_STAR, SLtype, unsigned int,...);
+SL_EXTERN int SLadd_intrinsic_variable (SLFUTURE_CONST char *, VOID_STAR, SLtype, int);
+SL_EXTERN int SLadd_intrinsic_function (SLFUTURE_CONST char *, FVOID_STAR, SLtype, unsigned int,...);
 
-SL_EXTERN int SLns_add_intrinsic_variable (SLang_NameSpace_Type *, char *, VOID_STAR, SLtype, int);
-SL_EXTERN int SLns_add_intrinsic_function (SLang_NameSpace_Type *, char *, FVOID_STAR, SLtype, unsigned int,...);
+SL_EXTERN int SLns_add_intrinsic_variable (SLang_NameSpace_Type *, SLFUTURE_CONST char *, VOID_STAR, SLtype, int);
+SL_EXTERN int SLns_add_intrinsic_function (SLang_NameSpace_Type *, SLFUTURE_CONST char *, FVOID_STAR, SLtype, unsigned int,...);
 
 /* These functions are used to patch intrinsic tables that make use of 
  * dynamically allocated types whose type id is determined at
@@ -2303,19 +2309,19 @@ SL_EXTERN unsigned char _pSLChg_LCase_Lut[256];
 
 /*{{{ Regular Expression Interface */
 typedef struct _pSLRegexp_Type SLRegexp_Type;
-SL_EXTERN SLRegexp_Type *SLregexp_compile (char *pattern, unsigned int flags);
+SL_EXTERN SLRegexp_Type *SLregexp_compile (SLFUTURE_CONST char *pattern, unsigned int flags);
 #define SLREGEXP_CASELESS	0x01
 #define SLREGEXP_UTF8		0x10
 
 SL_EXTERN void SLregexp_free (SLRegexp_Type *);
-SL_EXTERN char *SLregexp_match (SLRegexp_Type *compiled_regexp, char *str, unsigned int len);
+SL_EXTERN char *SLregexp_match (SLRegexp_Type *compiled_regexp, SLFUTURE_CONST char *str, unsigned int len);
 SL_EXTERN int SLregexp_nth_match (SLRegexp_Type *, unsigned int nth, unsigned int *ofsp, unsigned int *lenp);
 
 SL_EXTERN int SLregexp_get_hints (SLRegexp_Type *, unsigned int *flagsp);
 #define SLREGEXP_HINT_BOL		0x01   /* pattern must match bol */
 #define SLREGEXP_HINT_OSEARCH		0x02   /* ordinary search will do */
 
-SL_EXTERN char *SLregexp_quote_string (char *pattern, char *buf, unsigned int buflen);
+SL_EXTERN char *SLregexp_quote_string (SLFUTURE_CONST char *pattern, char *buf, unsigned int buflen);
 
 /*}}}*/
 
@@ -2327,7 +2333,7 @@ typedef struct
    struct _pSLcmd_Cmd_Type *table;
    int argc;
    /* Version 2.0 needs to use a union!! */
-   char **string_args;
+   SLFUTURE_CONST char **string_args;
    int *int_args;
    double *double_args;
    SLtype *arg_type;
@@ -2337,11 +2343,11 @@ typedef struct
 typedef struct _pSLcmd_Cmd_Type
 {
    int (*cmdfun)(int, SLcmd_Cmd_Table_Type *);
-   char *cmd;
+   SLFUTURE_CONST char *cmd;
    char *arg_type;
 } SLcmd_Cmd_Type;
 
-SL_EXTERN int SLcmd_execute_string (char *, SLcmd_Cmd_Table_Type *);
+SL_EXTERN int SLcmd_execute_string (SLFUTURE_CONST char *, SLcmd_Cmd_Table_Type *);
 
 /*}}}*/
 
@@ -2366,30 +2372,30 @@ SL_EXTERN unsigned int SLsearch_match_len (SLsearch_Type *);
 /*{{{ SLang Pathname Interface */
 
 /* These function return pointers to the original space */
-SL_EXTERN char *SLpath_basename (char *);
-SL_EXTERN char *SLpath_extname (char *);
+SL_EXTERN char *SLpath_basename (SLFUTURE_CONST char *);
+SL_EXTERN char *SLpath_extname (SLFUTURE_CONST char *);
 
-SL_EXTERN int SLpath_is_absolute_path (char *);
+SL_EXTERN int SLpath_is_absolute_path (SLFUTURE_CONST char *);
 
 /* Get and set the character delimiter for search paths */
 SL_EXTERN int SLpath_get_delimiter (void);
 SL_EXTERN int SLpath_set_delimiter (int);
 
 /* search path for loading .sl files */
-SL_EXTERN int SLpath_set_load_path (char *);   
+SL_EXTERN int SLpath_set_load_path (SLFUTURE_CONST char *);   
 /* search path for loading .sl files --- returns slstring */
 SL_EXTERN char *SLpath_get_load_path (void);   
 
 /* These return malloced strings--- NOT slstrings */
-SL_EXTERN char *SLpath_dircat (char *, char *);
-SL_EXTERN char *SLpath_find_file_in_path (char *, char *);
-SL_EXTERN char *SLpath_dirname (char *);
-SL_EXTERN int SLpath_file_exists (char *);
-SL_EXTERN char *SLpath_pathname_sans_extname (char *);
+SL_EXTERN char *SLpath_dircat (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+SL_EXTERN char *SLpath_find_file_in_path (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+SL_EXTERN char *SLpath_dirname (SLFUTURE_CONST char *);
+SL_EXTERN int SLpath_file_exists (SLFUTURE_CONST char *);
+SL_EXTERN char *SLpath_pathname_sans_extname (SLFUTURE_CONST char *);
 
 /*}}}*/
 
-SL_EXTERN int SLang_set_module_load_path (char *);
+SL_EXTERN int SLang_set_module_load_path (SLFUTURE_CONST char *);
 
 #ifdef __cplusplus
 # define SLANG_MODULE(name) \
@@ -2404,8 +2410,8 @@ SL_EXTERN int SLang_set_module_load_path (char *);
    SL_EXPORT int SLmodule_##name##_api_version = SLANG_VERSION
 #endif
 
-SL_EXTERN int SLvsnprintf (char *, unsigned int, char *, va_list);
-SL_EXTERN int SLsnprintf (char *, unsigned int, char *, ...);
+SL_EXTERN int SLvsnprintf (char *, unsigned int, SLFUTURE_CONST char *, va_list);
+SL_EXTERN int SLsnprintf (char *, unsigned int, SLFUTURE_CONST char *, ...) SLATTRIBUTE_PRINTF(3,4);
 
 #if 0
 {

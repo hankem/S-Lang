@@ -165,10 +165,10 @@ static SLCONST int RGB_to_BGR[] =
 };
 
 
-static char *Color_Fg_Str = "\033[3%dm";
-static char *Color_Bg_Str = "\033[4%dm";
-static char *Default_Color_Fg_Str = "\033[39m";
-static char *Default_Color_Bg_Str = "\033[49m";
+static SLCONST char *Color_Fg_Str = "\033[3%dm";
+static SLCONST char *Color_Bg_Str = "\033[4%dm";
+static SLCONST char *Default_Color_Fg_Str = "\033[39m";
+static SLCONST char *Default_Color_Bg_Str = "\033[49m";
 
 static int Max_Terminfo_Colors = 8;	       /* termcap Co */
 
@@ -177,42 +177,42 @@ char *SLtt_Graphics_Char_Pairs;	       /* ac termcap string -- def is vt100 */
 /* 1 if terminal lacks the ability to go into insert mode or into delete
    mode. Currently controlled by S-Lang but later perhaps termcap. */
 
-static char *UnderLine_Vid_Str;
-static char *Blink_Vid_Str;
-static char *Bold_Vid_Str;
-static char *Ins_Mode_Str; /* = "\033[4h"; */   /* ins mode (im) */
-static char *Eins_Mode_Str; /* = "\033[4l"; */  /* end ins mode (ei) */
-static char *Scroll_R_Str; /* = "\033[%d;%dr"; */ /* scroll region */
-static char *Cls_Str; /* = "\033[2J\033[H"; */  /* cl termcap STR  for ansi terminals */
-static char *Rev_Vid_Str; /* = "\033[7m"; */    /* mr,so termcap string */
-static char *Norm_Vid_Str; /* = "\033[m"; */   /* me,se termcap string */
-static char *Del_Eol_Str; /* = "\033[K"; */	       /* ce */
-static char *Del_Bol_Str; /* = "\033[1K"; */	       /* cb */
-static char *Del_Char_Str; /* = "\033[P"; */   /* dc */
-static char *Del_N_Lines_Str; /* = "\033[%dM"; */  /* DL */
-static char *Add_N_Lines_Str; /* = "\033[%dL"; */  /* AL */
-static char *Rev_Scroll_Str;
-static char *Curs_Up_Str;
-static char *Curs_F_Str;    /* RI termcap string */
-static char *Cursor_Visible_Str;    /* ve termcap string */
-static char *Cursor_Invisible_Str;    /* vi termcap string */
+static SLCONST char *UnderLine_Vid_Str;
+static SLCONST char *Blink_Vid_Str;
+static SLCONST char *Bold_Vid_Str;
+static SLCONST char *Ins_Mode_Str; /* = "\033[4h"; */   /* ins mode (im) */
+static SLCONST char *Eins_Mode_Str; /* = "\033[4l"; */  /* end ins mode (ei) */
+static SLCONST char *Scroll_R_Str; /* = "\033[%d;%dr"; */ /* scroll region */
+static SLCONST char *Cls_Str; /* = "\033[2J\033[H"; */  /* cl termcap STR  for ansi terminals */
+static SLCONST char *Rev_Vid_Str; /* = "\033[7m"; */    /* mr,so termcap string */
+static SLCONST char *Norm_Vid_Str; /* = "\033[m"; */   /* me,se termcap string */
+static SLCONST char *Del_Eol_Str; /* = "\033[K"; */	       /* ce */
+static SLCONST char *Del_Bol_Str; /* = "\033[1K"; */	       /* cb */
+static SLCONST char *Del_Char_Str; /* = "\033[P"; */   /* dc */
+static SLCONST char *Del_N_Lines_Str; /* = "\033[%dM"; */  /* DL */
+static SLCONST char *Add_N_Lines_Str; /* = "\033[%dL"; */  /* AL */
+static SLCONST char *Rev_Scroll_Str;
+static SLCONST char *Curs_Up_Str;
+static SLCONST char *Curs_F_Str;    /* RI termcap string */
+static SLCONST char *Cursor_Visible_Str;    /* ve termcap string */
+static SLCONST char *Cursor_Invisible_Str;    /* vi termcap string */
 #if 0
-static char *Start_Mouse_Rpt_Str;  /* Start mouse reporting mode */
-static char *End_Mouse_Rpt_Str;  /* End mouse reporting mode */
+static SLCONST char *Start_Mouse_Rpt_Str;  /* Start mouse reporting mode */
+static SLCONST char *End_Mouse_Rpt_Str;  /* End mouse reporting mode */
 #endif
-static char *Start_Alt_Chars_Str;  /* as */
-static char *End_Alt_Chars_Str;   /* ae */
-static char *Enable_Alt_Char_Set;  /* eA */
+static SLCONST char *Start_Alt_Chars_Str;  /* as */
+static SLCONST char *End_Alt_Chars_Str;   /* ae */
+static SLCONST char *Enable_Alt_Char_Set;  /* eA */
 
-static char *Term_Init_Str;
-static char *Keypad_Init_Str;
-static char *Term_Reset_Str;
-static char *Keypad_Reset_Str;
+static SLCONST char *Term_Init_Str;
+static SLCONST char *Keypad_Init_Str;
+static SLCONST char *Term_Reset_Str;
+static SLCONST char *Keypad_Reset_Str;
 
 /* status line functions */
-static char *Disable_Status_line_Str;  /* ds */
-static char *Return_From_Status_Line_Str;   /* fs */
-static char *Goto_Status_Line_Str;     /* ts */
+static SLCONST char *Disable_Status_line_Str;  /* ds */
+static SLCONST char *Return_From_Status_Line_Str;   /* fs */
+static SLCONST char *Goto_Status_Line_Str;     /* ts */
 static int Num_Status_Line_Columns;    /* ws */
 /* static int Status_Line_Esc_Ok;	 */       /* es */
 
@@ -220,7 +220,7 @@ static int Num_Status_Line_Columns;    /* ws */
 
 /* cm string has %i%d since termcap numbers columns from 0 */
 /* char *CURS_POS_STR = "\033[%d;%df";  ansi-- hor and vert pos */
-static char *Curs_Pos_Str; /* = "\033[%i%d;%dH";*/   /* cm termcap string */
+static SLCONST char *Curs_Pos_Str; /* = "\033[%i%d;%dH";*/   /* cm termcap string */
 
 /* scrolling region */
 static int Scroll_r1 = 0, Scroll_r2 = 23;
@@ -294,7 +294,7 @@ int SLtt_flush_output (void)
 }
 
 int SLtt_Baud_Rate;
-static void tt_write(char *str, unsigned int n)
+static void tt_write(SLCONST char *str, unsigned int n)
 {
    static unsigned long last_time;
    static int total;
@@ -336,12 +336,12 @@ static void tt_write(char *str, unsigned int n)
      }
 }
 
-static void tt_write_string (char *str)
+static void tt_write_string (SLCONST char *str)
 {
    if (str != NULL) tt_write(str, strlen(str));
 }
 
-void SLtt_write_string (char *str)
+void SLtt_write_string (SLFUTURE_CONST char *str)
 {
    tt_write_string (str);
    Cursor_Set = 0;
@@ -368,9 +368,9 @@ void SLtt_putchar (char ch)
    else tt_write (&ch, 1);
 }
 
-static unsigned int tt_sprintf(char *buf, unsigned int buflen, char *fmt, int x, int y)
+static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt, int x, int y)
 {
-   char *fmt_max;
+   SLCONST char *fmt_max;
    unsigned char *b, *bmax, ch;
    int offset;
    int z, z1, parse_level;
@@ -669,7 +669,7 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, char *fmt, int x,
    return (unsigned int) (b - (unsigned char *) buf);
 }
 
-static void tt_printf(char *fmt, int x, int y)
+static void tt_printf(SLCONST char *fmt, int x, int y)
 {
    char buf[1024];
    unsigned int n;
@@ -722,7 +722,7 @@ void SLtt_goto_rc(int r, int c)
 	if ((n == -1) && (Cursor_Set > 0) && (Cursor_c == c)
 	    && (Curs_Up_Str != NULL))
 	  {
-	     s = Curs_Up_Str;
+	     s = (char *)Curs_Up_Str;
 	  }
 	else if ((n >= 0) && (n <= 4))
 	  {
@@ -891,7 +891,7 @@ void SLtt_reverse_index (int n)
 }
 
 int SLtt_Ignore_Beep = 1;
-static char *Visible_Bell_Str;
+static SLCONST char *Visible_Bell_Str;
 
 void SLtt_beep (void)
 {
@@ -913,7 +913,7 @@ void SLtt_beep (void)
    SLtt_flush_output ();
 }
 
-static void write_string_with_care (char *);
+static void write_string_with_care (SLCONST char *);
 
 static void del_eol (void)
 {
@@ -962,7 +962,7 @@ void SLtt_del_eol (void)
 
 typedef SLCONST struct
 {
-   char *name;
+   SLCONST char *name;
    SLtt_Char_Type color;
 }
 Color_Def_Type;
@@ -1058,7 +1058,7 @@ static SLtt_Char_Type get_brush_fgbg (SLsmg_Color_Type color)
    return get_brush_info(color)->fgbg;
 }
 
-int SLtt_set_mono (int obj, char *what, SLtt_Char_Type mask)
+int SLtt_set_mono (int obj, SLFUTURE_CONST char *what, SLtt_Char_Type mask)
 {
    Brush_Info_Type *b;
 
@@ -1070,7 +1070,7 @@ int SLtt_set_mono (int obj, char *what, SLtt_Char_Type mask)
    return 0;
 }
 
-static char *check_color_for_digit_form (char *color)
+static SLCONST char *check_color_for_digit_form (SLCONST char *color)
 {
    unsigned int i, ich;
    unsigned char *s = (unsigned char *) color;
@@ -1091,9 +1091,10 @@ static char *check_color_for_digit_form (char *color)
    return color;
 }
 
-static int get_default_colors (char **fgp, char **bgp)
+static int get_default_colors (SLCONST char **fgp, SLCONST char **bgp)
 {
-   static char fg_buf[16], bg_buf[16], *bg, *fg;
+   static char fg_buf[16], bg_buf[16];
+   static SLCONST char *bg, *fg;
    static int already_parsed;
    char *p, *pmax;
 
@@ -1231,7 +1232,7 @@ static SLtt_Char_Type fb_to_fgbg (SLtt_Char_Type f, SLtt_Char_Type b)
 /* This looks for colors with name form 'colorN'.  If color is of this
  * form, N is passed back via parameter list.
  */
-static int parse_color_digit_name (char *color, SLtt_Char_Type *f)
+static int parse_color_digit_name (SLCONST char *color, SLtt_Char_Type *f)
 {
    unsigned int i;
    unsigned char ch;
@@ -1266,10 +1267,10 @@ static int parse_color_digit_name (char *color, SLtt_Char_Type *f)
    return 0;
 }
 
-static int make_color_fgbg (char *fg, char *bg, SLtt_Char_Type *fgbg)
+static int make_color_fgbg (SLCONST char *fg, SLCONST char *bg, SLtt_Char_Type *fgbg)
 {
    SLtt_Char_Type f = 0xFFFFFFFFU, b = 0xFFFFFFFFU;
-   char *dfg, *dbg;
+   SLCONST char *dfg, *dbg;
    unsigned int i;
 
    if ((fg != NULL) && (*fg == 0)) fg = NULL;
@@ -1311,7 +1312,7 @@ static int make_color_fgbg (char *fg, char *bg, SLtt_Char_Type *fgbg)
    return 0;
 }
 
-int SLtt_set_color (int obj, char *what, char *fg, char *bg)
+static int tt_set_color (int obj, SLCONST char *what, SLCONST char *fg, SLCONST char *bg)
 {
    SLtt_Char_Type fgbg;
 
@@ -1322,6 +1323,12 @@ int SLtt_set_color (int obj, char *what, char *fg, char *bg)
 
    return SLtt_set_color_object (obj, fgbg);
 }
+
+int SLtt_set_color (int obj, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg, SLFUTURE_CONST char *bg)
+{
+   return tt_set_color (obj, what, fg, bg);
+}
+
 
 int SLtt_set_color_fgbg (int obj, SLtt_Char_Type f, SLtt_Char_Type b)
 {
@@ -1485,7 +1492,7 @@ static int bce_colors_eq (SLsmg_Color_Type ca, SLsmg_Color_Type cb, int just_bg)
 /* The whole point of this routine is to prevent writing to the last column
  * and last row on terminals with automatic margins.
  */
-static void write_string_with_care (char *str)
+static void write_string_with_care (SLCONST char *str)
 {
    unsigned int len;
 
@@ -2115,7 +2122,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 
 static void get_color_info (void)
 {
-   char *fg, *bg;
+   SLCONST char *fg, *bg;
 
    /* Allow easy mechanism to override inadequate termcap/terminfo files. */
    if (SLtt_Use_Ansi_Colors == 0)
@@ -2136,8 +2143,8 @@ static void get_color_info (void)
    if (Color_0_Modified)
      return;
 
-   SLtt_set_color (0, NULL, fg, bg);
-   SLtt_set_color (1, NULL, bg, fg);
+   tt_set_color (0, NULL, fg, bg);
+   tt_set_color (1, NULL, bg, fg);
 }
 
 /* termcap stuff */
@@ -2161,7 +2168,7 @@ extern int tgetflag(char *);
 static SLterminfo_Type *Terminfo;
 #endif
 
-#define TGETFLAG(x) (SLtt_tgetflag(x) > 0)
+#define TGETFLAG(x) (tt_tgetflag(x) > 0)
 
 static char *fixup_tgetstr (char *what)
 {
@@ -2198,7 +2205,7 @@ static char *fixup_tgetstr (char *what)
    return what;
 }
 
-char *SLtt_tgetstr (char *cap)
+static char *tt_tgetstr (SLCONST char *cap)
 {
    char *s;
 #ifdef USE_TERMCAP
@@ -2245,7 +2252,12 @@ The integrity of this program has been violated.\n");
    return s;
 }
 
-int SLtt_tgetnum (char *s)
+char *SLtt_tgetstr (SLFUTURE_CONST char *cap)
+{
+   return tt_tgetstr (cap);
+}
+
+static int tt_tgetnum (SLCONST char *s)
 {
    if (Termcap_Initalized == 0)
      return -1;
@@ -2256,7 +2268,12 @@ int SLtt_tgetnum (char *s)
 #endif
 }
 
-int SLtt_tgetflag (char *s)
+int SLtt_tgetnum (SLFUTURE_CONST char *s)
+{
+   return tt_tgetnum (s);
+}
+
+static int tt_tgetflag (SLCONST char *s)
 {
    if (Termcap_Initalized == 0)
      return -1;
@@ -2265,6 +2282,11 @@ int SLtt_tgetflag (char *s)
 #else
    return _pSLtt_tigetflag (Terminfo, s);
 #endif
+}
+
+int SLtt_tgetflag (SLFUTURE_CONST char *s)
+{
+   return tt_tgetflag (s);
 }
 
 #if 0
@@ -2327,9 +2349,10 @@ Your terminal lacks the ability to clear the screen or position the cursor.\n");
 /* Returns 0 if all goes well, -1 if terminal capabilities cannot be deduced,
  * or -2 if terminal cannot position the cursor.
  */
-int SLtt_initialize (char *term)
+int SLtt_initialize (SLFUTURE_CONST char *term)
 {
-   char *t, ch;
+   SLCONST char *t;
+   char ch;
    int is_xterm;
    int almost_vtxxx;
 
@@ -2398,33 +2421,33 @@ int SLtt_initialize (char *term)
 
    Termcap_Initalized = 1;
 
-   Cls_Str = SLtt_tgetstr ("cl");
-   Curs_Pos_Str = SLtt_tgetstr ("cm");
+   Cls_Str = tt_tgetstr ("cl");
+   Curs_Pos_Str = tt_tgetstr ("cm");
 
-   if ((NULL == (Ins_Mode_Str = SLtt_tgetstr("im")))
-       || ( NULL == (Eins_Mode_Str = SLtt_tgetstr("ei")))
-       || ( NULL == (Del_Char_Str = SLtt_tgetstr("dc"))))
+   if ((NULL == (Ins_Mode_Str = tt_tgetstr("im")))
+       || ( NULL == (Eins_Mode_Str = tt_tgetstr("ei")))
+       || ( NULL == (Del_Char_Str = tt_tgetstr("dc"))))
      SLtt_Term_Cannot_Insert = 1;
 
-   Visible_Bell_Str = SLtt_tgetstr ("vb");
-   Curs_Up_Str = SLtt_tgetstr ("up");
-   Rev_Scroll_Str = SLtt_tgetstr("sr");
-   Del_N_Lines_Str = SLtt_tgetstr("DL");
-   Add_N_Lines_Str = SLtt_tgetstr("AL");
+   Visible_Bell_Str = tt_tgetstr ("vb");
+   Curs_Up_Str = tt_tgetstr ("up");
+   Rev_Scroll_Str = tt_tgetstr("sr");
+   Del_N_Lines_Str = tt_tgetstr("DL");
+   Add_N_Lines_Str = tt_tgetstr("AL");
 
    /* Actually these are used to initialize terminals that use cursor
     * addressing.  Hard to believe.
     */
-   Term_Init_Str = SLtt_tgetstr ("ti");
-   Term_Reset_Str = SLtt_tgetstr ("te");
+   Term_Init_Str = tt_tgetstr ("ti");
+   Term_Reset_Str = tt_tgetstr ("te");
 
    /* If I do this for vtxxx terminals, arrow keys start sending ESC O A,
     * which I do not want.  This is mainly for HP terminals.
     */
    if ((almost_vtxxx == 0) || SLtt_Force_Keypad_Init)
      {
-	Keypad_Init_Str = SLtt_tgetstr ("ks");
-	Keypad_Reset_Str = SLtt_tgetstr ("ke");
+	Keypad_Init_Str = tt_tgetstr ("ks");
+	Keypad_Reset_Str = tt_tgetstr ("ke");
      }
 
    /* Make up for defective termcap/terminfo databases */
@@ -2437,7 +2460,7 @@ int SLtt_initialize (char *term)
 	if (Add_N_Lines_Str == NULL) Add_N_Lines_Str = "\033[%dL";
      }
 
-   Scroll_R_Str = SLtt_tgetstr("cs");
+   Scroll_R_Str = tt_tgetstr("cs");
 
    SLtt_get_screen_size ();
 
@@ -2455,31 +2478,31 @@ int SLtt_initialize (char *term)
 	else SLtt_Term_Cannot_Scroll = 1;
      }
 
-   Del_Eol_Str = SLtt_tgetstr("ce");
-   Del_Bol_Str = SLtt_tgetstr("cb");
+   Del_Eol_Str = tt_tgetstr("ce");
+   Del_Bol_Str = tt_tgetstr("cb");
    if (is_xterm && (Del_Bol_Str == NULL))
      Del_Bol_Str = "\033[1K";
    if (is_xterm && (Del_Eol_Str == NULL))
      Del_Eol_Str = "\033[K";
 
-   Rev_Vid_Str = SLtt_tgetstr("mr");
-   if (Rev_Vid_Str == NULL) Rev_Vid_Str = SLtt_tgetstr("so");
+   Rev_Vid_Str = tt_tgetstr("mr");
+   if (Rev_Vid_Str == NULL) Rev_Vid_Str = tt_tgetstr("so");
 
-   Bold_Vid_Str = SLtt_tgetstr("md");
+   Bold_Vid_Str = tt_tgetstr("md");
 
    /* Although xterm cannot blink, it does display the blinking characters
     * as bold ones.  Some Rxvt will display the background as high intensity.
     */
-   if ((NULL == (Blink_Vid_Str = SLtt_tgetstr("mb")))
+   if ((NULL == (Blink_Vid_Str = tt_tgetstr("mb")))
        && is_xterm)
      Blink_Vid_Str = "\033[5m";
 
-   UnderLine_Vid_Str = SLtt_tgetstr("us");
+   UnderLine_Vid_Str = tt_tgetstr("us");
 
-   Start_Alt_Chars_Str = SLtt_tgetstr ("as");   /* smacs */
-   End_Alt_Chars_Str = SLtt_tgetstr ("ae");   /* rmacs */
-   Enable_Alt_Char_Set = SLtt_tgetstr ("eA");   /* enacs */
-   SLtt_Graphics_Char_Pairs = SLtt_tgetstr ("ac");
+   Start_Alt_Chars_Str = tt_tgetstr ("as");   /* smacs */
+   End_Alt_Chars_Str = tt_tgetstr ("ae");   /* rmacs */
+   Enable_Alt_Char_Set = tt_tgetstr ("eA");   /* enacs */
+   SLtt_Graphics_Char_Pairs = tt_tgetstr ("ac");
 
    if (NULL == SLtt_Graphics_Char_Pairs)
      {
@@ -2522,23 +2545,23 @@ int SLtt_initialize (char *term)
    if ((SLtt_Has_Status_Line == -1)
        && (0 != (SLtt_Has_Status_Line = TGETFLAG ("hs"))))
      {
-	Disable_Status_line_Str = SLtt_tgetstr ("ds");
-	Return_From_Status_Line_Str = SLtt_tgetstr ("fs");
-	Goto_Status_Line_Str = SLtt_tgetstr ("ts");
+	Disable_Status_line_Str = tt_tgetstr ("ds");
+	Return_From_Status_Line_Str = tt_tgetstr ("fs");
+	Goto_Status_Line_Str = tt_tgetstr ("ts");
 	/* Status_Line_Esc_Ok = TGETFLAG("es"); */
-	Num_Status_Line_Columns = SLtt_tgetnum ("ws");
+	Num_Status_Line_Columns = tt_tgetnum ("ws");
 	if (Num_Status_Line_Columns < 0) Num_Status_Line_Columns = 0;
      }
 
-   if (NULL == (Norm_Vid_Str = SLtt_tgetstr("me")))
+   if (NULL == (Norm_Vid_Str = tt_tgetstr("me")))
      {
-	Norm_Vid_Str = SLtt_tgetstr("se");
+	Norm_Vid_Str = tt_tgetstr("se");
      }
 
-   Cursor_Invisible_Str = SLtt_tgetstr("vi");
-   Cursor_Visible_Str = SLtt_tgetstr("ve");
+   Cursor_Invisible_Str = tt_tgetstr("vi");
+   Cursor_Visible_Str = tt_tgetstr("ve");
 
-   Curs_F_Str = SLtt_tgetstr("RI");
+   Curs_F_Str = tt_tgetstr("RI");
 
 # if 0
    if (NULL != Curs_F_Str)
@@ -2558,31 +2581,31 @@ int SLtt_initialize (char *term)
 
    if (Worthless_Highlight == 0)
      {				       /* Magic cookie glitch */
-	Worthless_Highlight = (SLtt_tgetnum ("sg") > 0);
+	Worthless_Highlight = (tt_tgetnum ("sg") > 0);
      }
 
    if (Worthless_Highlight)
      SLtt_Has_Alt_Charset = 0;
 
-   Reset_Color_String = SLtt_tgetstr ("op");
+   Reset_Color_String = tt_tgetstr ("op");
    
    /* Apparantly the difference between "AF" and "Sf" is that AF uses RGB, 
     * but Sf uses BGR.
     */
-   Color_Fg_Str = SLtt_tgetstr ("AF"); /* ANSI setaf */
+   Color_Fg_Str = tt_tgetstr ("AF"); /* ANSI setaf */
    if (Color_Fg_Str == NULL)
      {
-	Color_Fg_Str = SLtt_tgetstr ("Sf");   /* setf */
+	Color_Fg_Str = tt_tgetstr ("Sf");   /* setf */
 	Is_Fg_BGR = (Color_Fg_Str != NULL);
      }
-   Color_Bg_Str = SLtt_tgetstr ("AB"); /* ANSI setbf */
+   Color_Bg_Str = tt_tgetstr ("AB"); /* ANSI setbf */
    if (Color_Bg_Str == NULL)
      {
-	Color_Bg_Str = SLtt_tgetstr ("Sb");   /* setb */
+	Color_Bg_Str = tt_tgetstr ("Sb");   /* setb */
 	Is_Bg_BGR = (Color_Bg_Str != NULL);
      }
 
-   if ((Max_Terminfo_Colors = SLtt_tgetnum ("Co")) < 0)
+   if ((Max_Terminfo_Colors = tt_tgetnum ("Co")) < 0)
      Max_Terminfo_Colors = 8;
 
    if ((Color_Bg_Str != NULL) && (Color_Fg_Str != NULL))
@@ -2787,7 +2810,7 @@ void SLtt_disable_status_line (void)
      }
 }
 
-int SLtt_write_to_status_line (char *s, int col)
+int SLtt_write_to_status_line (SLFUTURE_CONST char *s, int col)
 {
    if ((SLtt_Has_Status_Line <= 0)
        || (Goto_Status_Line_Str == NULL)

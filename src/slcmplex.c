@@ -391,7 +391,7 @@ double *SLcomplex_tanh (double *tanhz, double *z)
 #if 0
 static double *not_implemented (char *fun, double *p)
 {
-   SLang_verror (SL_NOT_IMPLEMENTED, "%s for complex numbers has not been implemented",
+   _pSLang_verror (SL_NOT_IMPLEMENTED, "%s for complex numbers has not been implemented",
 		 fun);
    *p = -1.0;
    return p;

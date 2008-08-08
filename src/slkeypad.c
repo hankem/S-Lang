@@ -155,7 +155,7 @@ int SLkp_getkey (void)
    return key->f.keysym;
 }
 
-int SLkp_define_keysym (char *keystr, unsigned int keysym)
+int SLkp_define_keysym (SLFUTURE_CONST char *keystr, unsigned int keysym)
 {
    if (SLkm_define_keysym (keystr, keysym, Keymap_List) < 0)
      return -1;

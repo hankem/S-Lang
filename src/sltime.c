@@ -214,7 +214,7 @@ static int validate_tm (struct tm *tms)
        || (tms->tm_wday < 0) || (tms->tm_wday > 6)
        || (tms->tm_yday < 0) || (tms->tm_yday > 365))
      {
-	SLang_verror (SL_INVALID_PARM, "Time structure contains invalid values");
+	_pSLang_verror (SL_INVALID_PARM, "Time structure contains invalid values");
 	return -1;
      }
    /* The man page specifies no range for is_dst.  Map it to -1,0,1 for safety */

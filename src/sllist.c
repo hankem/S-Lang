@@ -155,7 +155,7 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, int nth, Chun
    
    if ((nth < 0) || (nth >= length))
      {
-	SLang_verror (SL_Index_Error, "List Index out of range");
+	_pSLang_verror (SL_Index_Error, "List Index out of range");
 	return NULL;
      }
    if (nth < length/2)
@@ -209,7 +209,7 @@ static int pop_list_and_index (unsigned int num_indices,
 
    if (num_indices != 1)
      {
-	SLang_verror (SL_InvalidParm_Error, "List_Type objects are limited to a single index");
+	_pSLang_verror (SL_InvalidParm_Error, "List_Type objects are limited to a single index");
 	SLang_free_mmt (mmt);
 	return -1;
      }
@@ -300,7 +300,7 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, int indx_a, int ind
    
    if ((indx_b >= length) || (indx_a < 0))
      {
-	SLang_verror (SL_Index_Error, "Indices are out of range for list object");
+	_pSLang_verror (SL_Index_Error, "Indices are out of range for list object");
 	return NULL;
      }
 
@@ -761,7 +761,7 @@ static void pop_as_list (int *nitems)
 {
    if (*nitems < 0)
      {
-	SLang_verror (SL_INVALID_PARM, "Expecting a non-negative integer");
+	_pSLang_verror (SL_INVALID_PARM, "Expecting a non-negative integer");
 	return;
      }
    (void) pop_as_list_internal (*nitems);
@@ -909,7 +909,7 @@ cl_foreach_open (SLtype type, unsigned int num)
    
    if (num != 0)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED,
+	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "%s does not support 'foreach using' form",
 		      SLclass_get_datatype_name (type));
 	return NULL;

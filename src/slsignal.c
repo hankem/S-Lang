@@ -167,14 +167,14 @@ int SLsig_unblock_signals (void)
 }
 
 #ifdef MSWINDOWS
-int SLsystem (char *cmd)
+int SLsystem (SLFUTURE_CONST char *cmd)
 {
-   SLang_verror (SL_NOT_IMPLEMENTED, "system not implemented");
+   _pSLang_verror (SL_NOT_IMPLEMENTED, "system not implemented");
    return -1;
 }
 
 #else
-int SLsystem (char *cmd)
+int SLsystem (SLFUTURE_CONST char *cmd)
 {
 #ifdef SLANG_POSIX_SIGNALS
    pid_t pid;
@@ -342,7 +342,7 @@ static int msw_system (char *cmd)
 			       &startup_info,
 			       &process_info))
      {
-	SLang_verror (0, "%s: CreateProcess failed.", cmd);
+	_pSLang_verror (0, "%s: CreateProcess failed.", cmd);
 	return -1;
      }
 

@@ -35,7 +35,7 @@ typedef struct
 }
 _pSLang_IStruct_Type;
 
-static SLang_IStruct_Field_Type *istruct_pop_field (char *name, int no_readonly, VOID_STAR *addr)
+static SLang_IStruct_Field_Type *istruct_pop_field (SLCONST char *name, int no_readonly, VOID_STAR *addr)
 {
    _pSLang_IStruct_Type *s;
    SLang_IStruct_Field_Type *f;
@@ -47,7 +47,7 @@ static SLang_IStruct_Field_Type *istruct_pop_field (char *name, int no_readonly,
 
    if (NULL == (struct_addr = *(char **)s->addr))
      {
-	SLang_verror (SL_INTRINSIC_ERROR,
+	_pSLang_verror (SL_INTRINSIC_ERROR,
 		      "%s is NULL.  Unable to access field", s->name);
 	return NULL;
      }
@@ -64,7 +64,7 @@ static SLang_IStruct_Field_Type *istruct_pop_field (char *name, int no_readonly,
 
 	if (no_readonly && f->read_only)
 	  {
-	     SLang_verror (SL_READONLY_ERROR,
+	     _pSLang_verror (SL_READONLY_ERROR,
 			   "%s.%s is read-only", s->name, name);
 	     return NULL;
 	  }
@@ -73,12 +73,12 @@ static SLang_IStruct_Field_Type *istruct_pop_field (char *name, int no_readonly,
 	return f;
      }
 
-   SLang_verror (SL_TYPE_MISMATCH,
+   _pSLang_verror (SL_TYPE_MISMATCH,
 		 "%s has no field called %s", s->name, name);
    return NULL;
 }
 
-static int istruct_sget (SLtype type, char *name)
+static int istruct_sget (SLtype type, SLFUTURE_CONST char *name)
 {
    SLang_IStruct_Field_Type *f;
    VOID_STAR addr;
@@ -93,7 +93,7 @@ static int istruct_sget (SLtype type, char *name)
    return (cl->cl_push_intrinsic)(f->type, addr);
 }
 
-static int istruct_sput (SLtype type, char *name)
+static int istruct_sput (SLtype type, SLFUTURE_CONST char *name)
 {
    SLang_IStruct_Field_Type *f;
    VOID_STAR addr;
@@ -167,7 +167,7 @@ static int init_intrin_struct (void)
    return 0;
 }
 
-int SLns_add_istruct_table (SLang_NameSpace_Type *ns, SLang_IStruct_Field_Type *fields, VOID_STAR addr, char *name)
+int SLns_add_istruct_table (SLang_NameSpace_Type *ns, SLang_IStruct_Field_Type *fields, VOID_STAR addr, SLFUTURE_CONST char *name)
 {
    _pSLang_IStruct_Type *s;
    SLang_IStruct_Field_Type *f;
@@ -177,7 +177,7 @@ int SLns_add_istruct_table (SLang_NameSpace_Type *ns, SLang_IStruct_Field_Type *
 
    if (addr == NULL)
      {
-	SLang_verror (SL_INVALID_PARM,
+	_pSLang_verror (SL_INVALID_PARM,
 		      "SLadd_istruct_table: address must be non-NULL");
 	return -1;
      }
@@ -232,7 +232,7 @@ int SLns_add_istruct_table (SLang_NameSpace_Type *ns, SLang_IStruct_Field_Type *
    return 0;
 }
 
-int SLadd_istruct_table (SLang_IStruct_Field_Type *fields, VOID_STAR addr, char *name)
+int SLadd_istruct_table (SLang_IStruct_Field_Type *fields, VOID_STAR addr, SLFUTURE_CONST char *name)
 {
    return SLns_add_istruct_table (NULL, fields, addr, name);
 }

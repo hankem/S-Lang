@@ -75,7 +75,7 @@ int _pSLpush_alloced_slstring (char *s, unsigned int len)
    return _pSLang_push_slstring (s);
 }
 
-int SLang_push_string (char *t) /*{{{*/
+int SLang_push_string (SLFUTURE_CONST char *t) /*{{{*/
 {
    if (t == NULL)
      return SLang_push_null ();
@@ -83,17 +83,17 @@ int SLang_push_string (char *t) /*{{{*/
    if (NULL == (t = SLang_create_slstring (t)))
      return -1;
 
-   return _pSLang_push_slstring (t);
+   return _pSLang_push_slstring ((char *) t);
 }
 
 /*}}}*/
 
-int _pSLang_dup_and_push_slstring (char *s)
+int _pSLang_dup_and_push_slstring (SLCONST char *s)
 {
    if (NULL == (s = _pSLstring_dup_slstring (s)))
      return SLang_push_null ();
 
-   return _pSLang_push_slstring (s);
+   return _pSLang_push_slstring ((char *) s);
 }
 
 
@@ -193,7 +193,7 @@ string_string_bin_op (int op,
        {
 	  if ((*a == NULL) || (*b == NULL))
 	    {
-	       SLang_verror (SL_VARIABLE_UNINITIALIZED, "String element[%u] not initialized for binary operation", n);
+	       _pSLang_verror (SL_VARIABLE_UNINITIALIZED, "String element[%u] not initialized for binary operation", n);
 	       return -1;
 	    }
 	  a += da; b += db;
@@ -390,7 +390,7 @@ string_foreach_open (SLtype type, unsigned int num)
 	  using_chars = 0;
 	else
 	  {
-	     SLang_verror (SL_InvalidParm_Error, "Expected foreach (String_Type) using (chars|bytes)");
+	     _pSLang_verror (SL_InvalidParm_Error, "Expected foreach (String_Type) using (chars|bytes)");
 	     SLang_free_slstring (u);
 	     SLang_free_slstring (s);
 	     return NULL;
@@ -402,7 +402,7 @@ string_foreach_open (SLtype type, unsigned int num)
 	using_chars = 0;
 	break;
       default:
-	SLang_verror (SL_NumArgs_Error,
+	_pSLang_verror (SL_NumArgs_Error,
 		      "'foreach (String_Type) using' requires single control value (chars|bytes)");
 	return NULL;
      }
@@ -821,7 +821,7 @@ SLang_Name_Type *SLang_pop_function (void)
 	
 	if (NULL == (f = SLang_get_function (name)))
 	  {
-	     SLang_verror (SL_UNDEFINED_NAME, "Function %s does not exist", name);
+	     _pSLang_verror (SL_UNDEFINED_NAME, "Function %s does not exist", name);
 	     SLang_free_slstring (name);
 	     return NULL;
 	  }

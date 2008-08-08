@@ -65,7 +65,7 @@ static void register_at_exit_fun (void)
    SLang_add_cleanup_function (SLmalloc_dump_statistics);
 }
 
-static void fixup (unsigned char *p, unsigned long n, char *what)
+static void fixup (unsigned char *p, unsigned long n, SLCONST char *what)
 {
    register_at_exit_fun ();
 
@@ -90,7 +90,7 @@ static void fixup (unsigned char *p, unsigned long n, char *what)
 #endif
 }
 
-static int check_memory (unsigned char *p, char *what)
+static int check_memory (unsigned char *p, SLCONST char *what)
 {
    unsigned long n;
 
@@ -103,7 +103,7 @@ static int check_memory (unsigned char *p, char *what)
 
    if (n == 0xFFFFFFFFUL)
      {
-	SLang_verror (SL_INVALID_DATA_ERROR, "%s: %p: Already FREE! Abort NOW.", what, p - Chunk);
+	_pSLang_verror (SL_INVALID_DATA_ERROR, "%s: %p: Already FREE! Abort NOW.", what, p - Chunk);
 	return -1;
      }
 
@@ -112,7 +112,7 @@ static int check_memory (unsigned char *p, char *what)
        || (*(p + (int) (n + 2)) != 81)
        || (*(p + (int) (n + 3)) != 86))
      {
-	SLang_verror (SL_INVALID_DATA_ERROR, "\007%s: %p: Memory corrupt! Abort NOW.", what, p);
+	_pSLang_verror (SL_INVALID_DATA_ERROR, "\007%s: %p: Memory corrupt! Abort NOW.", what, p);
 	return -1;
      }
 
@@ -121,7 +121,7 @@ static int check_memory (unsigned char *p, char *what)
    Total_Allocated -= (long) n;
    if (Total_Allocated < 0)
      {
-	SLang_verror (SL_INVALID_DATA_ERROR, "\007%s: %p\nFreed %ld, Allocated is: %ld!\n",
+	_pSLang_verror (SL_INVALID_DATA_ERROR, "\007%s: %p\nFreed %ld, Allocated is: %ld!\n",
 		 what, p, (long) n, Total_Allocated);
      }
 #ifdef SLDEBUG_DOUT

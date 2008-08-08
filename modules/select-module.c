@@ -113,7 +113,7 @@ static int push_select_struct (int num,
 			       SLang_Array_Type *at_except,
 			       fd_set *readfs, fd_set *writefds, fd_set *exceptfds)
 {
-   char *field_names [4];
+   SLFUTURE_CONST char *field_names [4];
    SLtype field_types[4];
    VOID_STAR field_values [4];
    SLang_Array_Type *iread, *iwrite, *iexcept;

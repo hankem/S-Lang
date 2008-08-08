@@ -112,7 +112,7 @@ static int get_int_type_for_size (unsigned int size, SLtype *s, SLtype *u)
 #endif
    if (s != NULL) *s = 0;
    if (u != NULL) *u = 0;
-   SLang_verror (SL_NOT_IMPLEMENTED,
+   _pSLang_verror (SL_NOT_IMPLEMENTED,
 		 "This OS does not support a %u byte int", size);
    return -1;
 }
@@ -131,7 +131,7 @@ static int get_float_type_for_size (unsigned int size, SLtype *s)
 	return 0;
      }
 
-   SLang_verror (SL_NOT_IMPLEMENTED,
+   _pSLang_verror (SL_NOT_IMPLEMENTED,
 		 "This OS does not support a %u byte float", size);
    return -1;
 }
@@ -192,7 +192,7 @@ static int parse_a_format (char **format, Format_Type *ft)
 	     /* Check overflow */
 	     if (repeat != repeat10 / 10)
 	       {
-		  SLang_verror (SL_ARITH_OVERFLOW_ERROR,
+		  _pSLang_verror (SL_ARITH_OVERFLOW_ERROR,
 				"Repeat count too large in [un]pack format");
 		  return -1;
 	       }
@@ -210,7 +210,7 @@ static int parse_a_format (char **format, Format_Type *ft)
    switch (ft->format_type)
      {
       default:
-	SLang_verror (SL_NOT_IMPLEMENTED,
+	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "[un]pack format character '%c' not supported", ft->format_type);
 	return -1;
 
@@ -497,7 +497,7 @@ pack_according_to_format (char *format, unsigned int nitems)
 
 		  if (nitems == 0)
 		    {
-		       SLang_verror (SL_INVALID_PARM,
+		       _pSLang_verror (SL_INVALID_PARM,
 				     "Not enough items for pack format");
 		       goto return_error;
 		    }
@@ -570,7 +570,7 @@ void _pSLpack (void)
    nitems = SLang_Num_Function_Args;
    if (nitems <= 0)
      {
-	SLang_verror (SL_SYNTAX_ERROR,
+	_pSLang_verror (SL_SYNTAX_ERROR,
 		      "pack: not enough arguments");
 	return;
      }
@@ -624,7 +624,7 @@ void _pSLunpack (char *format, SLang_BString_Type *bs)
 
    if (len < num_bytes)
      {
-	SLang_verror (SL_INVALID_PARM,
+	_pSLang_verror (SL_INVALID_PARM,
 		      "unpack format %s is too large for input string",
 		      format);
 	return;

@@ -813,12 +813,12 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 }
 
 
-void SLsmg_write_nchars (char *str, unsigned int len)
+void SLsmg_write_nchars (SLFUTURE_CONST char *str, unsigned int len)
 {
    SLsmg_write_chars ((unsigned char *) str, (unsigned char *)str + len);
 }
 
-void SLsmg_write_string (char *str)
+void SLsmg_write_string (SLFUTURE_CONST char *str)
 {
    SLsmg_write_chars ((unsigned char *)str, 
 		      (unsigned char *)str + strlen (str));
@@ -942,7 +942,7 @@ void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
      }
 }
 
-void SLsmg_write_nstring (char *str, unsigned int n)
+void SLsmg_write_nstring (SLFUTURE_CONST char *str, unsigned int n)
 {
    /* Avoid a problem if a user accidently passes a negative value */
    if ((int) n < 0)
@@ -1629,7 +1629,7 @@ void SLsmg_reset_smg (void)
    UNBLOCK_SIGNALS;
 }
 
-void SLsmg_vprintf (char *fmt, va_list ap)
+void SLsmg_vprintf (SLFUTURE_CONST char *fmt, va_list ap)
 {
    char buf[1024];
 
@@ -1639,10 +1639,10 @@ void SLsmg_vprintf (char *fmt, va_list ap)
    SLsmg_write_string (buf);
 }
 
-void SLsmg_printf (char *fmt, ...)
+void SLsmg_printf (SLFUTURE_CONST char *fmt, ...)
 {
    va_list ap;
-   char *f;
+   SLFUTURE_CONST char *f;
 
    if (Smg_Inited == 0) return;
 

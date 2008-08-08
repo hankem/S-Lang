@@ -601,7 +601,7 @@ static SLuchar_Type *xform_utf8 (SLuchar_Type *u, SLuchar_Type *umax,
              if (p1 == NULL)
                {
                   SLfree ((char *)buf);
-                  SLang_verror (SL_INTERNAL_ERROR, "SLutf8_encode returned NULL");
+                  _pSLang_verror (SL_INTERNAL_ERROR, "SLutf8_encode returned NULL");
                   return NULL;
                }
              len += p1 - p;
@@ -715,7 +715,7 @@ SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
 
    if ((dpos != pos) || (a == umax))
      {
-	SLang_verror (SL_INDEX_ERROR, "Specified character position is invalid for string");
+	_pSLang_verror (SL_INDEX_ERROR, "Specified character position is invalid for string");
 	return NULL;
      }
 
@@ -724,7 +724,7 @@ SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
    b = SLutf8_encode (wch, buf, SLUTF8_MAX_MBLEN);
    if (b == NULL)
      {
-	SLang_verror (SL_UNICODE_ERROR, "Unable to encode wchar 0x%lX", (unsigned long)wch);
+	_pSLang_verror (SL_UNICODE_ERROR, "Unable to encode wchar 0x%lX", (unsigned long)wch);
 	return NULL;
      }
    
@@ -780,7 +780,7 @@ SLuchar_Type *_pSLinterp_decode_wchar (SLuchar_Type *u,
      }
 
    if (NULL == (u = SLutf8_decode (u, umax, chp, NULL)))
-     SLang_verror (SL_INVALID_UTF8, "Invalid UTF-8 encoded string");
+     _pSLang_verror (SL_INVALID_UTF8, "Invalid UTF-8 encoded string");
    
    return u;
 }
@@ -802,7 +802,7 @@ SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch, SLuchar_Type *u, unsign
 
    if (NULL == (u1 = SLutf8_encode_null_terminate (wch, u)))
      {
-	SLang_verror (SL_UNICODE_ERROR, "Unable to encode character 0x%lX", (unsigned long)wch);
+	_pSLang_verror (SL_UNICODE_ERROR, "Unable to encode character 0x%lX", (unsigned long)wch);
 	return NULL;
      }
 

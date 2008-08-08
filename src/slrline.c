@@ -52,7 +52,7 @@ struct _pSLrline_Type
    int curs_pos;			       /* current column */
    int start_column;		       /* column offset of display */
    unsigned int hscroll;		       /* amount to use for horiz scroll */
-   char *prompt;
+   SLFUTURE_CONST char *prompt;
 
    FVOID_STAR last_fun;		       /* last function executed by rl */
 
@@ -83,7 +83,7 @@ struct _pSLrline_Type
    void (*tt_goto_column)(int);
    void (*tt_insert)(char);
    void (*update_hook)(SLrline_Type *rli,
-		       char *prompt, char *buf, unsigned int len, unsigned int point,
+		       SLFUTURE_CONST char *prompt, SLFUTURE_CONST char *buf, unsigned int len, unsigned int point,
 		       VOID_STAR client_data);
    VOID_STAR update_client_data;
    /* This function is only called when blinking matches */
@@ -122,7 +122,7 @@ static void free_history (RL_History_Type *h)
      }
 }
 
-static RL_History_Type *allocate_history (char *str, int point)
+static RL_History_Type *allocate_history (SLFUTURE_CONST char *str, int point)
 {
    RL_History_Type *h;
 
@@ -245,7 +245,7 @@ int SLrline_move (SLrline_Type *rli, int n)
    return 0;
 }
 	
-int SLrline_ins (SLrline_Type *This_RLI, char *s, unsigned int n)
+int SLrline_ins (SLrline_Type *This_RLI, SLFUTURE_CONST char *s, unsigned int n)
 {
    unsigned char *pmin;
 
@@ -1029,7 +1029,7 @@ static void blink_match (SLrline_Type *rli)
 
 static SLrline_Type *Active_Rline_Info = NULL;
 
-char *SLrline_read_line (SLrline_Type *rli, char *prompt, unsigned int *lenp)
+char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigned int *lenp)
 {
    unsigned char *p, *pmax;
    SLang_Key_Type *key;
@@ -1059,7 +1059,7 @@ char *SLrline_read_line (SLrline_Type *rli, char *prompt, unsigned int *lenp)
 	if (NULL == (prompt = SLmake_string (prompt)))
 	  return NULL;
 	
-	SLfree (rli->prompt);
+	SLfree ((char *)rli->prompt);
 	rli->prompt = prompt;
      }
 
@@ -1308,7 +1308,7 @@ void SLrline_close (SLrline_Type *rli)
    free_history_item (rli->saved_line);
    SLang_free_function (rli->list_completions_callback);
    SLang_free_function (rli->completion_callback);
-   SLfree (rli->prompt);
+   SLfree ((char *)rli->prompt);
    SLfree ((char *)rli->buf);
    SLfree ((char *)rli);
 }
@@ -1473,7 +1473,7 @@ SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
    return rli;
 }
 
-SLrline_Type *SLrline_open2 (char *name, unsigned int width, unsigned int flags)
+SLrline_Type *SLrline_open2 (SLFUTURE_CONST char *name, unsigned int width, unsigned int flags)
 {
    SLrline_Type *rli;
    SLrline_Type *arli;
@@ -1499,7 +1499,7 @@ SLrline_Type *SLrline_open2 (char *name, unsigned int width, unsigned int flags)
    return rli;
 }
 
-int SLrline_add_to_history (SLrline_Type *rli, char *hist)
+int SLrline_add_to_history (SLrline_Type *rli, SLFUTURE_CONST char *hist)
 {
    RL_History_Type *h;
 
@@ -1538,7 +1538,7 @@ SLkeymap_Type *SLrline_get_keymap (SLrline_Type *rli)
 }
 
 int SLrline_set_update_hook (SLrline_Type *rli, 
-			     void (*fun)(SLrline_Type *, char *, char *, unsigned int, unsigned int, VOID_STAR),
+			     void (*fun)(SLrline_Type *, SLFUTURE_CONST char *, SLFUTURE_CONST char *, unsigned int, unsigned int, VOID_STAR),
 			     VOID_STAR client_data)
 {
    if (rli == NULL)
@@ -1612,7 +1612,7 @@ int SLrline_set_hscroll (SLrline_Type *rli, unsigned int p)
    return 0;
 }
 
-int SLrline_set_line (SLrline_Type *rli, char *buf)
+int SLrline_set_line (SLrline_Type *rli, SLFUTURE_CONST char *buf)
 {
    unsigned int len;
 
@@ -1707,7 +1707,7 @@ static SLkeymap_Type *get_keymap (void)
    if (kmap != NULL)
      return kmap;
 
-   SLang_verror (SL_APPLICATION_ERROR, "No keymap available for rline interface");
+   _pSLang_verror (SL_APPLICATION_ERROR, "No keymap available for rline interface");
    return NULL;
 }
 
@@ -1788,7 +1788,7 @@ static void rline_call_intrinsic (char *fun)
    
    if (NULL == (f = (int (*)(SLrline_Type *)) (SLang_find_key_function(fun, Active_Rline_Info->keymap))))
      {
-	SLang_verror (SL_UndefinedName_Error, "rline internal function %s does not exist", fun);
+	_pSLang_verror (SL_UndefinedName_Error, "rline internal function %s does not exist", fun);
 	return;
      }
 
@@ -1985,7 +1985,7 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    SLANG_END_INTRIN_FUN_TABLE
 };
 
-int SLrline_init (char *appname, char *user_initfile, char *sys_initfile)
+int SLrline_init (SLFUTURE_CONST char *appname, SLFUTURE_CONST char *user_initfile, SLFUTURE_CONST char *sys_initfile)
 {
 #ifdef __WIN32__
    char *home_dir = getenv ("USERPROFILE");

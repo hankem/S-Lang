@@ -579,7 +579,7 @@ static void str_uncomment_string_cmd (char *str, char *b, char *e) /*{{{*/
        || (_pSLinterp_UTF8_Mode 
 	   && SLutf8_strlen ((SLuchar_Type*)b,ignore_combining) != SLutf8_strlen ((SLuchar_Type*)e,ignore_combining)))
      {
-	SLang_verror (SL_INVALID_PARM, "Comment delimiter length mismatch.");
+	_pSLang_verror (SL_INVALID_PARM, "Comment delimiter length mismatch.");
 	return;
      }
 
@@ -1449,7 +1449,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	     guess_size = 1;
 	     do_free = 0;
 	     use_string = 1;
-	     str = "%";
+	     str = (char *) "%";
 	     break;
 
 	   case 'c':
@@ -1544,7 +1544,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	     break;
 
 	   default:
-	     SLang_verror (SL_INVALID_PARM, "Invalid printf format");
+	     _pSLang_verror (SL_INVALID_PARM, "Invalid printf format");
 	     return(out);
 	  }
 	*f++ = ch; *f = 0;
@@ -1822,13 +1822,13 @@ static int string_match_nth_cmd (int *nptr) /*{{{*/
 
    if (Regexp == NULL)
      {
-	SLang_verror (SL_RunTime_Error, "A successful call to string_match was not made");
+	_pSLang_verror (SL_RunTime_Error, "A successful call to string_match was not made");
 	return -1;
      }
 
    if (-1 == SLregexp_nth_match (Regexp, (unsigned int) *nptr, &ofs, &len))
      {
-	SLang_verror (0, "SLregexp_nth_match failed");
+	_pSLang_verror (0, "SLregexp_nth_match failed");
 	return -1;
      }
 
@@ -2019,7 +2019,7 @@ static unsigned int count_char_occurances (char *str, SLwchar_Type *wchp)
 	  {
 	     if (wch >= 256)
 	       {
-		  SLang_verror (SL_InvalidParm_Error, "Character is invalid in non-UTF-8 mode");
+		  _pSLang_verror (SL_InvalidParm_Error, "Character is invalid in non-UTF-8 mode");
 		  return 0;
 	       }
 	     is_byte = 1;

@@ -53,7 +53,7 @@ USA.
 
 
 int SLang_Version = SLANG_VERSION;
-char *SLang_Version_String = SLANG_VERSION_STRING;
+SLFUTURE_CONST char *SLang_Version_String = SLANG_VERSION_STRING;
 
 int _pSLinterp_UTF8_Mode = 0;
 int _pSLtt_UTF8_Mode = 0;
@@ -239,7 +239,7 @@ int _pSLsecure_issetugid (void)
 }
 
 /* Like getenv, except if running as setuid or setgid, returns NULL */
-char *_pSLsecure_getenv (char *s)
+char *_pSLsecure_getenv (SLCONST char *s)
 {
    if (_pSLsecure_issetugid ())
      return NULL;

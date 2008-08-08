@@ -45,7 +45,7 @@ static void write_table (unsigned int min_hash, unsigned int max_hash)
    fprintf (stdout, "\n\
 typedef SLCONST struct\n\
 {\n\
-   char *name;\n\
+   SLCONST char *name;\n\
    unsigned int type;\n\
 }\n\
 %s;\n\
@@ -79,7 +79,7 @@ typedef SLCONST struct\n\
 static %s *%s (char *str, unsigned int len)\n\
 {\n\
    unsigned int hash;\n\
-   char *name;\n\
+   SLCONST char *name;\n\
    %s *kw;\n\
 \n\
    if ((len < MIN_KEYWORD_LEN)\n\

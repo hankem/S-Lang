@@ -617,7 +617,7 @@ unsigned int _pSLsys_getkey (void)
 #ifdef EIO
 	if (errno == EIO)
 	  {
-	     SLang_verror (SL_Read_Error, "_pSLsys_getkey: EIO error");
+	     _pSLang_verror (SL_Read_Error, "_pSLsys_getkey: EIO error");
 	  }
 #endif
 	return SLANG_GETKEY_ERROR;

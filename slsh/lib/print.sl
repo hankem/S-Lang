@@ -212,7 +212,7 @@ define print ()
 
    if (_NARGS == 0)
      {
-	usage ("print (OBJ [,&str|File_Type]);"
+	usage ("print (OBJ [,&str|File_Type]);\n"
 	       + "Qualifiers: pager[=pgm], nopager\n");
      }
    variable pager_pgm = Pager;

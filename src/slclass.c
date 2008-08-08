@@ -63,7 +63,7 @@ static SLang_Class_Type **alloc_class_slot (SLtype type, Class_Table_Type **tp)
 
    if ((type&0xFFFF) != type)
      {
-	SLang_verror (SL_APPLICATION_ERROR, "Class-Id larger than 0xFFFF is not supported");
+	_pSLang_verror (SL_APPLICATION_ERROR, "Class-Id larger than 0xFFFF is not supported");
 	return NULL;
      }
 
@@ -118,14 +118,14 @@ static SLang_Class_Type **find_empty_class_slot (SLtype *typep, Class_Table_Type
 	       }
 	  }
 	
-	SLang_verror (SL_INTERNAL_ERROR, "Class table nclasses variable is out of sync");
+	_pSLang_verror (SL_INTERNAL_ERROR, "Class table nclasses variable is out of sync");
 	return NULL;
      }
    
    return NULL;
 }
 	
-static SLang_Class_Type *lookup_class_by_name (char *name)
+static SLang_Class_Type *lookup_class_by_name (SLCONST char *name)
 {
    unsigned int i;
 
@@ -180,7 +180,7 @@ int _pSLclass_copy_class (SLtype to, SLtype from)
    
    if (*clp != NULL)
      {
-	SLang_verror (SL_APPLICATION_ERROR, "Class %d already exists", to);
+	_pSLang_verror (SL_APPLICATION_ERROR, "Class %d already exists", to);
 	SLang_exit_error ("Application error: Fatal error");
      }
    add_class_to_slot (t, clp, cl);
@@ -213,7 +213,7 @@ VOID_STAR _pSLclass_get_ptr_to_value (SLang_Class_Type *cl,
    return p;
 }
 
-char *SLclass_get_datatype_name (SLtype stype)
+SLFUTURE_CONST char *SLclass_get_datatype_name (SLtype stype)
 {
    SLang_Class_Type *cl;
 
@@ -221,11 +221,11 @@ char *SLclass_get_datatype_name (SLtype stype)
    return cl->cl_name;
 }
 
-static int method_undefined_error (SLtype type, char *method, char *name)
+static int method_undefined_error (SLtype type, SLCONST char *method, SLCONST char *name)
 {
    if (name == NULL) name = SLclass_get_datatype_name (type);
 
-   SLang_verror (SL_TYPE_MISMATCH, "%s method not defined for %s",
+   _pSLang_verror (SL_TYPE_MISMATCH, "%s method not defined for %s",
 		 method, name);
    return -1;
 }
@@ -408,11 +408,11 @@ static char *default_string (SLtype stype, VOID_STAR v)
 	break;
 
       case SLANG_NULL_TYPE:
-	s = "NULL";
+	s = (char *) "NULL";
 	break;
 
       case SLANG_DATATYPE_TYPE:
-	s = SLclass_get_datatype_name ((SLtype) *(int *)v);
+	s = (char *) SLclass_get_datatype_name ((SLtype) *(int *)v);
 	break;
 
 #if SLANG_HAS_COMPLEX
@@ -425,7 +425,7 @@ static char *default_string (SLtype stype, VOID_STAR v)
 	break;
 #endif
       default:
-	s = SLclass_get_datatype_name (stype);
+	s = (char *) SLclass_get_datatype_name (stype);
      }
 
    return SLmake_string (s);
@@ -690,13 +690,13 @@ int SLclass_get_class_id (SLang_Class_Type *cl)
    return (int) cl->cl_data_type;
 }
 
-SLang_Class_Type *SLclass_allocate_class (char *name)
+SLang_Class_Type *SLclass_allocate_class (SLFUTURE_CONST char *name)
 {
    SLang_Class_Type *cl;
 
    if (NULL != (cl = lookup_class_by_name (name)))
      {
-	SLang_verror (SL_DUPLICATE_DEFINITION, "Type name %s already exists", name);
+	_pSLang_verror (SL_DUPLICATE_DEFINITION, "Type name %s already exists", name);
 	return NULL;
      }
 
@@ -792,12 +792,12 @@ int _pSLclass_init (void)
    return 0;
 }
 
-static int register_new_datatype (char *name, SLtype type)
+static int register_new_datatype (SLFUTURE_CONST char *name, SLtype type)
 {
    return SLns_add_iconstant (NULL, name, SLANG_DATATYPE_TYPE, type);
 }
 
-int SLclass_create_synonym (char *name, SLtype type)
+int SLclass_create_synonym (SLFUTURE_CONST char *name, SLtype type)
 {
    if (NULL == _pSLclass_get_class (type))
      return -1;
@@ -821,7 +821,7 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
    
    if (clp == NULL)
      {
-	SLang_verror (SL_APPLICATION_ERROR, "Class type %d already in use", (int) type);
+	_pSLang_verror (SL_APPLICATION_ERROR, "Class type %d already in use", (int) type);
 	return -1;
      }
 
@@ -845,7 +845,7 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
 	if ((type_size == 0)
 	    || (type_size > sizeof (_pSL_Object_Union_Type)))
 	  {
-	     SLang_verror (SL_INVALID_PARM,
+	     _pSLang_verror (SL_INVALID_PARM,
 			   "Type size for %s not appropriate for SCALAR type",
 			   name);
 	     return -1;
@@ -880,13 +880,13 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
 	break;
 
       default:
-	SLang_verror (SL_INVALID_PARM, "%s: unknown class type (%d)", name, class_type);
+	_pSLang_verror (SL_INVALID_PARM, "%s: unknown class type (%d)", name, class_type);
 	return -1;
      }
 
    if (type_size == 0)
      {
-	SLang_verror (SL_INVALID_PARM, "type size must be non-zero for %s", name);
+	_pSLang_verror (SL_INVALID_PARM, "type size must be non-zero for %s", name);
 	return -1;
      }
    
@@ -971,7 +971,7 @@ int SLclass_add_binary_op (SLtype a, SLtype b,
    if ((f == NULL) || (r == NULL)
        || ((a == SLANG_VOID_TYPE) && (b == SLANG_VOID_TYPE)))
      {
-	SLang_verror (SL_INVALID_PARM, "SLclass_add_binary_op");
+	_pSLang_verror (SL_INVALID_PARM, "SLclass_add_binary_op");
 	return -1;
      }
 
@@ -1025,7 +1025,7 @@ int SLclass_add_unary_op (SLtype type,
    cl = _pSLclass_get_class (type);
    if ((f == NULL) || (r == NULL))
      {
-	SLang_verror (SL_INVALID_PARM, "SLclass_add_unary_op");
+	_pSLang_verror (SL_INVALID_PARM, "SLclass_add_unary_op");
 	return -1;
      }
 
@@ -1047,7 +1047,7 @@ int _pSLclass_add_arith_unary_op (SLtype type,
    cl = _pSLclass_get_class (type);
    if ((f == NULL) || (r == NULL))
      {
-	SLang_verror (SL_INVALID_PARM, "SLclass_add_arith_unary_op");
+	_pSLang_verror (SL_INVALID_PARM, "SLclass_add_arith_unary_op");
 	return -1;
      }
 
@@ -1069,7 +1069,7 @@ int SLclass_add_app_unary_op (SLtype type,
    cl = _pSLclass_get_class (type);
    if ((f == NULL) || (r == NULL))
      {
-	SLang_verror (SL_INVALID_PARM, "SLclass_add_app_unary_op");
+	_pSLang_verror (SL_INVALID_PARM, "SLclass_add_app_unary_op");
 	return -1;
      }
 
@@ -1159,14 +1159,14 @@ int SLclass_set_destroy_function (SLang_Class_Type *cl, void (*f)(SLtype, VOID_S
    return 0;
 }
 
-int SLclass_set_sget_function (SLang_Class_Type *cl, int (*f)(SLtype, char *))
+int SLclass_set_sget_function (SLang_Class_Type *cl, int (*f)(SLtype, SLFUTURE_CONST char *))
 {
    if (cl == NULL) return -1;
    cl->cl_sget = f;
    return 0;
 }
 
-int SLclass_set_sput_function (SLang_Class_Type *cl, int (*f)(SLtype, char *))
+int SLclass_set_sput_function (SLang_Class_Type *cl, int (*f)(SLtype, SLFUTURE_CONST char *))
 {
    if (cl == NULL) return -1;
    cl->cl_sput = f;
@@ -1217,7 +1217,7 @@ int SLclass_set_foreach_functions (SLang_Class_Type *cl,
 /* Misc */
 void _pSLclass_type_mismatch_error (SLtype a, SLtype b)
 {
-   SLang_verror (SL_TYPE_MISMATCH, "Expecting %s, found %s",
+   _pSLang_verror (SL_TYPE_MISMATCH, "Expecting %s, found %s",
 		 SLclass_get_datatype_name (a),
 		 SLclass_get_datatype_name (b));
 }
@@ -1257,20 +1257,20 @@ static int null_binary_fun (int op,
    return 1;
 }
 
-static char *Unary_Ops[SLANG_UNARY_OP_MAX-SLANG_UNARY_OP_MIN+2] =
+static SLCONST char *Unary_Ops[SLANG_UNARY_OP_MAX-SLANG_UNARY_OP_MIN+2] =
 {
    "++", "--", "-", "not", "~", "abs", "sign", "sqr", "mul2", "_ispos", "_isneg", "_isnonneg", NULL
 };
 
-static char *Binary_Ops [SLANG_BINARY_OP_MAX - SLANG_BINARY_OP_MIN + 2] =
+static SLCONST char *Binary_Ops [SLANG_BINARY_OP_MAX - SLANG_BINARY_OP_MIN + 2] =
 {
    "+", "-", "*", "/", "==", "!=", ">", ">=", "<", "<=", "^",
      "or", "and", "&", "|", "xor", "shl", "shr", "mod", NULL
 };
 
-static int get_binary_unary_opcode (char *name, char **tbl, int min_val)
+static int get_binary_unary_opcode (SLCONST char *name, SLCONST char **tbl, int min_val)
 {
-   char **u;
+   SLCONST char **u;
 
    u = tbl;
    while (*u != NULL)
@@ -1281,22 +1281,22 @@ static int get_binary_unary_opcode (char *name, char **tbl, int min_val)
 	u++;
      }
 
-   SLang_verror (SL_NOT_IMPLEMENTED,
+   _pSLang_verror (SL_NOT_IMPLEMENTED,
 		 "Binary/Unary function %s is unsupported", name);
    return -1;
 }
 
-int _pSLclass_get_unary_opcode (char *name)
+int _pSLclass_get_unary_opcode (SLCONST char *name)
 {
    return get_binary_unary_opcode (name, Unary_Ops, SLANG_UNARY_OP_MIN);
 }
 
-int _pSLclass_get_binary_opcode (char *name)
+int _pSLclass_get_binary_opcode (SLCONST char *name)
 {
    return get_binary_unary_opcode (name, Binary_Ops, SLANG_BINARY_OP_MIN);
 }
 
-static char *get_binary_op_string (int op)
+static SLCONST char *get_binary_op_string (int op)
 {
    if ((op < SLANG_BINARY_OP_MIN) 
        || (op > SLANG_BINARY_OP_MAX))
@@ -1359,7 +1359,7 @@ int (*_pSLclass_get_binary_fun (int op,
      }
 
    if (do_error)
-     SLang_verror (SL_TYPE_MISMATCH, "%s %s %s is not possible",
+     _pSLang_verror (SL_TYPE_MISMATCH, "%s %s %s is not possible",
 		   a_cl->cl_name, get_binary_op_string (op), b_cl->cl_name);
 
    *c_cl = NULL;
@@ -1410,7 +1410,7 @@ int (*_pSLclass_get_unary_fun (int op,
 	return f;
      }
 
-   SLang_verror (SL_TYPE_MISMATCH, "undefined unary operation/function on %s",
+   _pSLang_verror (SL_TYPE_MISMATCH, "undefined unary operation/function on %s",
 		 a_cl->cl_name);
 
    *b_cl = NULL;
@@ -1500,7 +1500,7 @@ SLclass_typecast (SLtype to_type, int is_implicit, int allow_array)
 
    return_error:
 
-   SLang_verror (SL_TYPE_MISMATCH, "Unable to typecast %s to %s",
+   _pSLang_verror (SL_TYPE_MISMATCH, "Unable to typecast %s to %s",
 		 cl_from->cl_name,
 		 SLclass_get_datatype_name (to_type));
    SLang_free_object (&obj);
@@ -1538,7 +1538,7 @@ int (*_pSLclass_get_typecast (SLtype from, SLtype to, int is_implicit))
        && (cl_from->cl_void_typecast != NULL))
      return cl_from->cl_void_typecast;
 
-   SLang_verror (SL_TYPE_MISMATCH, "Unable to typecast %s to %s",
+   _pSLang_verror (SL_TYPE_MISMATCH, "Unable to typecast %s to %s",
 		 cl_from->cl_name,
 		 SLclass_get_datatype_name (to));
 
@@ -1585,12 +1585,12 @@ SLang_MMT_Type *SLang_pop_mmt (SLtype type) /*{{{*/
    cl = lookup_class (type);
    if (cl == NULL)
      {
-	SLang_verror (SL_Application_Error, "SLtype %d is not registered", type);
+	_pSLang_verror (SL_Application_Error, "SLtype %d is not registered", type);
 	return NULL;
      }
    if (cl->cl_class_type != SLANG_CLASS_TYPE_MMT)
      {
-	SLang_verror (SL_Application_Error, "SLtype %d is not an MMT", type);
+	_pSLang_verror (SL_Application_Error, "SLtype %d is not an MMT", type);
 	return NULL;
      }
 

@@ -33,11 +33,11 @@ USA.
 /* Must be a power of 2 */
 #define MIN_TABLE_SIZE 512
 
-static char *Deleted_Key = "*deleted*";
+static SLFUTURE_CONST char *Deleted_Key = "*deleted*";
 
 typedef struct _pSLAssoc_Array_Element_Type
 {
-   char *key;		       /* slstring */
+   SLFUTURE_CONST char *key;		       /* slstring */
    unsigned long hash;
    SLang_Object_Type value;
 }
@@ -60,7 +60,7 @@ typedef struct
 }
 SLang_Assoc_Array_Type;
 
-static int HASH_AGAIN (char *str, unsigned long hash, unsigned int table_len)
+static int HASH_AGAIN (SLCONST char *str, unsigned long hash, unsigned int table_len)
 {
    int h;
    (void) table_len; (void) str;
@@ -106,7 +106,7 @@ find_element (SLang_Assoc_Array_Type *a, char *str, unsigned long hash)
 
 static _pSLAssoc_Array_Element_Type *
 find_empty_element (_pSLAssoc_Array_Element_Type *elements, unsigned int table_len,
-		    char *str, unsigned long hash)
+		    SLCONST char *str, unsigned long hash)
 {
    int i, c;
    _pSLAssoc_Array_Element_Type *e;
@@ -170,7 +170,7 @@ static int resize_table (SLang_Assoc_Array_Type *a)
 	old_emax = old_e + a->table_len;
 	while (old_e < old_emax)
 	  {
-	     char *key = old_e->key;
+	     SLCONST char *key = old_e->key;
 
 	     if ((key == NULL) || (key == Deleted_Key))
 	       {
@@ -211,7 +211,7 @@ static void delete_assoc_array (SLang_Assoc_Array_Type *a)
 	  {
 	     if ((e->key != NULL) && (e->key != Deleted_Key))
 	       {
-		  _pSLfree_hashed_string (e->key, strlen (e->key), e->hash);
+		  _pSLfree_hashed_string ((char *)e->key, strlen (e->key), e->hash);
 #if SLANG_OPTIMIZE_FOR_SPEED
 		  if ((is_scalar_type == 0) && (e->value.o_data_type != SLANG_INT_TYPE))
 #endif
@@ -324,7 +324,7 @@ static int pop_index (unsigned int num_indices,
    if ((num_indices != 1)
        || (-1 == SLang_pop_slstring (str)))
      {
-	SLang_verror (SL_NOT_IMPLEMENTED,
+	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "Assoc_Type arrays require a single string index");
 	SLang_free_mmt (*mmt);
 	*mmt = NULL;
@@ -364,7 +364,7 @@ int _pSLassoc_aget (SLtype type, unsigned int num_indices)
 	else
 	  {
 	     ret = -1;
-	     SLang_verror (SL_INTRINSIC_ERROR,
+	     _pSLang_verror (SL_INTRINSIC_ERROR,
 			   "No such element in Assoc Array: %s", str);
 	     goto free_and_return;
 	  }
@@ -465,7 +465,7 @@ int _pSLassoc_inc_value (unsigned int num_indices, int inc)
 	  }
 	else
 	  {
-	     SLang_verror (SL_INTRINSIC_ERROR,
+	     _pSLang_verror (SL_INTRINSIC_ERROR,
 			   "No such element in Assoc Array: %s", str);
 	     goto free_and_return;
 	  }
@@ -523,7 +523,7 @@ static int assoc_anew (SLtype type, unsigned int num_dims)
 	/* drop */
       default:
 	SLdo_pop_n (num_dims);
-	SLang_verror (SL_SYNTAX_ERROR, "Usage: Assoc_Type [DataType_Type]");
+	_pSLang_verror (SL_SYNTAX_ERROR, "Usage: Assoc_Type [DataType_Type]");
 	return -1;
      }
 
@@ -674,7 +674,7 @@ static void assoc_delete_key (SLang_Assoc_Array_Type *a, char *key)
    if (e == NULL)
      return;
    
-   _pSLang_free_slstring (e->key);
+   _pSLang_free_slstring ((char *) e->key);
    SLang_free_object (&e->value);
    e->key = Deleted_Key;
    a->num_deleted++;
@@ -747,7 +747,7 @@ cl_foreach_open (SLtype type, unsigned int num)
 	  flags |= CTX_WRITE_VALUES;
 	else
 	  {
-	     SLang_verror (SL_NOT_IMPLEMENTED,
+	     _pSLang_verror (SL_NOT_IMPLEMENTED,
 			   "using '%s' not supported by SLassoc_Type",
 			   s);
 	     _pSLang_free_slstring (s);

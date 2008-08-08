@@ -132,8 +132,8 @@ USA.
 #include "_slang.h"
 /*}}}*/
 
-int (*SLprep_exists_hook) (char *, char);	/* in "slang.h" */
-int (*_pSLprep_eval_hook) (char *);		/* in "_slang.h" */
+int (*SLprep_exists_hook) (SLFUTURE_CONST char *, char);	/* in "slang.h" */
+int (*_pSLprep_eval_hook) (SLFUTURE_CONST char *);		/* in "_slang.h" */
 
 
 struct _pSLprep_Type
@@ -141,28 +141,28 @@ struct _pSLprep_Type
    int this_level;
    int exec_level;
    int prev_exec_level;
-   char *prefix;
+   SLCONST char *prefix;
    unsigned int prefix_len;
-   char *comment_start;
-   char *comment_stop;
+   SLCONST char *comment_start;
+   SLCONST char *comment_stop;
    unsigned int comment_start_len;
    unsigned int flags;
 #define SLPREP_USER_FLAGS_MASK	0x00FF
 #define SLPREP_STOP_READING	0x0100
 #define SLPREP_EMBEDDED_TEXT	0x0200
    
-   int (*exists_hook) (SLprep_Type *, char *);
-   int (*eval_hook) (SLprep_Type *, char *);
+   int (*exists_hook) (SLprep_Type *, SLFUTURE_CONST char *);
+   int (*eval_hook) (SLprep_Type *, SLFUTURE_CONST char *);
 };
 
-int SLprep_set_eval_hook (SLprep_Type *pt, int (*f)(SLprep_Type *, char *))
+int SLprep_set_eval_hook (SLprep_Type *pt, int (*f)(SLprep_Type *, SLFUTURE_CONST char *))
 {
    if (pt == NULL)
      return -1;
    pt->eval_hook = f;
    return 0;
 }
-int SLprep_set_exists_hook (SLprep_Type *pt, int (*f)(SLprep_Type *, char *))
+int SLprep_set_exists_hook (SLprep_Type *pt, int (*f)(SLprep_Type *, SLFUTURE_CONST char *))
 {
    if (pt == NULL)
      return -1;
@@ -176,14 +176,14 @@ void SLprep_delete (SLprep_Type *pt)
      return;
    
    /* NULLs ok */
-   SLang_free_slstring (pt->comment_start);
-   SLang_free_slstring (pt->comment_stop);
-   SLang_free_slstring (pt->prefix);
+   SLang_free_slstring ((char *)pt->comment_start);
+   SLang_free_slstring ((char *)pt->comment_stop);
+   SLang_free_slstring ((char *)pt->prefix);
    
    SLfree ((char *) pt);
 }
 
-int SLprep_set_comment (SLprep_Type *pt, char *start, char *stop)
+int SLprep_set_comment (SLprep_Type *pt, SLFUTURE_CONST char *start, SLFUTURE_CONST char *stop)
 {
    if ((pt == NULL) || (start == NULL))
      return -1;
@@ -196,23 +196,23 @@ int SLprep_set_comment (SLprep_Type *pt, char *start, char *stop)
 
    if (NULL == (stop = SLang_create_slstring (stop)))
      {
-	SLang_free_slstring (start);
+	SLang_free_slstring ((char *) start);
 	return -1;
      }
 
    if (pt->comment_start != NULL)
-     SLang_free_slstring (pt->comment_start);
+     SLang_free_slstring ((char *) pt->comment_start);
    pt->comment_start = start;
    pt->comment_start_len = strlen (start);
 
    if (pt->comment_stop != NULL)
-     SLang_free_slstring (pt->comment_stop); 
+     SLang_free_slstring ((char *) pt->comment_stop);
    pt->comment_stop = stop;
    
    return 0;
 }
 
-int SLprep_set_prefix (SLprep_Type *pt, char *prefix)
+int SLprep_set_prefix (SLprep_Type *pt, SLFUTURE_CONST char *prefix)
 {
    if ((pt == NULL) || (prefix == NULL))
      return -1;
@@ -221,7 +221,7 @@ int SLprep_set_prefix (SLprep_Type *pt, char *prefix)
      return -1;
    
    if (pt->prefix != NULL)
-     SLang_free_slstring (pt->prefix);
+     SLang_free_slstring ((char *) pt->prefix);
    pt->prefix = prefix;
    pt->prefix_len = strlen (prefix);
    return 0;
@@ -324,15 +324,15 @@ static int SLwildcard (char *pattern, char *string)
 #endif
 
 /* The extra one is for NULL termination */
-char *_pSLdefines [MAX_DEFINES + 1];
+SLFUTURE_CONST char *_pSLdefines [MAX_DEFINES + 1];
 
-int SLdefine_for_ifdef (char *s)	/*{{{*/
+int SLdefine_for_ifdef (SLFUTURE_CONST char *s)	/*{{{*/
 {
    unsigned int i;
 
    for (i = 0; i < MAX_DEFINES; i++)
      {
-	char *s1 = _pSLdefines [i];
+	SLCONST char *s1 = _pSLdefines [i];
 
 	if (s1 == s)
 	  return 0;		       /* already defined (hashed string) */
@@ -352,9 +352,9 @@ int SLdefine_for_ifdef (char *s)	/*{{{*/
 /*}}}*/
 
 /*{{{ static functions */
-static int is_any_defined (SLprep_Type *pt, char *buf)	/*{{{*/
+static int is_any_defined (SLprep_Type *pt, SLCONST char *buf)	/*{{{*/
 {
-   char *sys;
+   SLCONST char *sys;
    unsigned int i;
    char comment;
    
@@ -403,7 +403,7 @@ static int is_any_defined (SLprep_Type *pt, char *buf)	/*{{{*/
 }
 /*}}}*/
 
-static unsigned char *tokenize (unsigned char *buf, char *token, unsigned int len)
+static SLCONST unsigned char *tokenize (SLCONST unsigned char *buf, char *token, unsigned int len)
 {
    register char *token_end;
 
@@ -421,7 +421,7 @@ static unsigned char *tokenize (unsigned char *buf, char *token, unsigned int le
    return buf;
 }
 
-static int is_env_defined (SLprep_Type *pt, char *buf)	/*{{{*/
+static int is_env_defined (SLprep_Type *pt, SLCONST char *buf)	/*{{{*/
 {
    char *env, token [128];
    char comment = pt->comment_start[0];
@@ -456,7 +456,7 @@ static int is_env_defined (SLprep_Type *pt, char *buf)	/*{{{*/
 /*}}}*/
 /*}}}*/
 
-int SLprep_line_ok (char *buf, SLprep_Type *pt)	/*{{{*/
+int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
 {
    int level, prev_exec_level, exec_level;
    unsigned int flags;

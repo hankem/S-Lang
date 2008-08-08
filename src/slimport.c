@@ -48,7 +48,7 @@ USA.
 # define SO_SUFFIX "so"
 #endif
 
-static char *Module_Path;
+static SLFUTURE_CONST char *Module_Path;
 #ifndef MODULE_PATH_ENV_NAME
 # define MODULE_PATH_ENV_NAME "SLANG_MODULE_PATH"
 #endif
@@ -70,7 +70,7 @@ typedef struct _Handle_Type
    struct _Handle_Type *next;
    char *module_name;
    VOID_STAR handle;
-   int (*ns_init_fun) (char *);
+   int (*ns_init_fun) (SLCONST char *);
    void (*deinit_fun) (void);
    Namespace_List_Type *ns_list;
 }
@@ -113,7 +113,7 @@ static void delete_handles (void)
      }
 }
 
-static Handle_Type *allocate_handle_type (char *module_name, VOID_STAR handle)
+static Handle_Type *allocate_handle_type (SLFUTURE_CONST char *module_name, VOID_STAR handle)
 {
    Handle_Type *h;
 
@@ -129,7 +129,7 @@ static Handle_Type *allocate_handle_type (char *module_name, VOID_STAR handle)
    return h;
 }
 
-static Handle_Type *find_handle (char *module_name)
+static Handle_Type *find_handle (SLCONST char *module_name)
 {
    Handle_Type *l;
 
@@ -148,12 +148,12 @@ static int check_api_version (char *file, int api_version)
    if (api_version/10000 == SLANG_VERSION/10000)
      return 0;
    
-   SLang_verror (SL_Import_Error, "Module %s is incompatible with this version of S-Lang",
+   _pSLang_verror (SL_Import_Error, "Module %s is incompatible with this version of S-Lang",
 		 file);
    return -1;
 }
 
-static FVOID_STAR do_dlsym (VOID_STAR handle, char *file, int check_error, char *fmt, char *module)
+static FVOID_STAR do_dlsym (VOID_STAR handle, SLFUTURE_CONST char *file, int check_error, SLFUTURE_CONST char *fmt, char *module)
 {
    char symbol[MAX_MODULE_NAME_SIZE + 32];
    FVOID_STAR s;
@@ -164,23 +164,23 @@ static FVOID_STAR do_dlsym (VOID_STAR handle, char *file, int check_error, char 
    
    if (check_error)
      {
-	char *err;
+	SLCONST char *err;
 
 	if (NULL == (err = (char *) dlerror ()))
 	  err = "UNKNOWN";
 
-	SLang_verror (SL_Import_Error,
+	_pSLang_verror (SL_Import_Error,
 		      "Unable to get symbol %s from %s: %s",
 		      symbol, file, err);
      }
    return NULL;
 }
 
-static Handle_Type *dynamic_link_module (char *module)
+static Handle_Type *dynamic_link_module (SLFUTURE_CONST char *module)
 {
    Handle_Type *h;
    VOID_STAR handle;
-   char *err;
+   SLFUTURE_CONST char *err;
    char filebuf[1024];
    char *save_file;
    char *save_err;
@@ -193,7 +193,7 @@ static Handle_Type *dynamic_link_module (char *module)
 
    if (strlen (module) >= MAX_MODULE_NAME_SIZE)
      {
-	SLang_verror (SL_LimitExceeded_Error, "module name too long");
+	_pSLang_verror (SL_LimitExceeded_Error, "module name too long");
 	return NULL;
      }
    SLsnprintf (module_so, sizeof(module_so), "%s-module.%s", module, SO_SUFFIX);
@@ -255,7 +255,7 @@ static Handle_Type *dynamic_link_module (char *module)
 	    && (NULL == (err = (char *) dlerror ())))
 	  err = "UNKNOWN";
 
-	SLang_verror (SL_Import_Error,
+	_pSLang_verror (SL_Import_Error,
 		      "Error linking to %s: %s", save_file, err);
 	
 	if (save_err != NULL)
@@ -286,7 +286,7 @@ static Handle_Type *dynamic_link_module (char *module)
 	return NULL;
      }
 
-   if (NULL == (h->ns_init_fun = (int (*)(char *)) do_dlsym (handle, file, 1, "init_%s_module_ns", module_name)))
+   if (NULL == (h->ns_init_fun = (int (*)(SLCONST char *)) do_dlsym (handle, file, 1, "init_%s_module_ns", module_name)))
      {
 	SLfree (pathfile);
 	free_handle_type (h);
@@ -302,7 +302,7 @@ static Handle_Type *dynamic_link_module (char *module)
    return h;
 }
 
-static int import_module (char *module, char *ns)
+static int import_module (SLFUTURE_CONST char *module, SLFUTURE_CONST char *ns)
 {
    Handle_Type *h;
    Namespace_List_Type *ns_list;
@@ -369,7 +369,7 @@ static void set_import_module_path (char *path)
    (void) SLang_set_module_load_path (path);
 }
 
-static char *get_import_module_path (void)
+static SLCONST char *get_import_module_path (void)
 {
    char *path;
    if (Module_Path != NULL)
@@ -389,12 +389,12 @@ static SLang_Intrin_Fun_Type Module_Intrins [] =
 
 #endif				       /* SLANG_HAS_DYNAMIC_LINKING */
 
-int SLang_set_module_load_path (char *path)
+int SLang_set_module_load_path (SLFUTURE_CONST char *path)
 {
 #if SLANG_HAS_DYNAMIC_LINKING
    if (NULL == (path = SLang_create_slstring (path)))
      return -1;
-   SLang_free_slstring (Module_Path);
+   SLang_free_slstring ((char *) Module_Path);
    Module_Path = path;
    return 0;
 #else

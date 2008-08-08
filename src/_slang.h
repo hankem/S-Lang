@@ -531,7 +531,7 @@ extern int _pSLang_pop_object_of_type (SLtype, SLang_Object_Type *, int);
 
 typedef struct
 {
-   char *name;			       /* slstring */
+   SLFUTURE_CONST char *name;			       /* slstring */
    SLang_Object_Type obj;
 }
 _pSLstruct_Field_Type;
@@ -551,8 +551,8 @@ extern int _pSLstruct_define_struct (void);
 extern int _pSLstruct_define_struct2 (void);
 extern int _pSLstruct_define_typedef (void);
 
-extern SLang_Object_Type *_pSLstruct_get_field_value (SLang_Struct_Type *, char *);
-extern int _pSLstruct_push_field_ref (char *);
+extern SLang_Object_Type *_pSLstruct_get_field_value (SLang_Struct_Type *, SLCONST char *);
+extern int _pSLstruct_push_field_ref (SLFUTURE_CONST char *);
 
 int _pSLang_get_qualifiers (SLang_Struct_Type **);
 
@@ -627,8 +627,8 @@ extern int _pSLstring_list_push (_pSLString_List_Type *, int);
 extern SLang_Array_Type *_pSLstrings_to_array (char **strs, unsigned int n);
 
 /* This function assumes that s is an slstring. */
-extern char *_pSLstring_dup_slstring (char *);
-extern int _pSLang_dup_and_push_slstring (char *);
+extern SLCONST char *_pSLstring_dup_slstring (SLCONST char *);
+extern int _pSLang_dup_and_push_slstring (SLCONST char *);
 
 
 extern int _pSLang_init_import (void);
@@ -636,7 +636,7 @@ extern int _pSLinit_exceptions (void);
 
 /* This function checks to see if the referenced object is initialized */
 extern int _pSLang_is_ref_initialized (SLang_Ref_Type *);
-extern int _pSLcheck_identifier_syntax (char *);
+extern int _pSLcheck_identifier_syntax (SLCONST char *);
 extern int _pSLang_uninitialize_ref (SLang_Ref_Type *);
 
 extern int _pSLpush_slang_obj (SLang_Object_Type *);
@@ -644,7 +644,7 @@ extern int _pSLpush_slang_obj (SLang_Object_Type *);
 extern char *_pSLexpand_escaped_char(char *, SLwchar_Type *, int *);
 extern void _pSLexpand_escaped_string (char *, char *, char *);
 
-extern int _pSLpush_dollar_string (char *);
+extern int _pSLpush_dollar_string (SLFUTURE_CONST char *);
 
 /* returns a pointer to an SLstring string-- use SLang_free_slstring */
 extern char *_pSLstringize_object (SLang_Object_Type *);
@@ -658,34 +658,34 @@ extern int _pSLang_peek_at_stack2 (SLtype *);
 struct _pSLang_NameSpace_Type
 {
    struct _pSLang_NameSpace_Type *next;
-   char *name;			       /* this is the load_type name */
-   char *namespace_name;	       /* this name is assigned by implements */
-   char *private_name;
+   SLFUTURE_CONST char *name;			       /* this is the load_type name */
+   SLFUTURE_CONST char *namespace_name;	       /* this name is assigned by implements */
+   SLFUTURE_CONST char *private_name;
    unsigned int table_size;
    SLang_Name_Type **table;
 };
-extern SLang_NameSpace_Type *_pSLns_new_namespace (char *, unsigned int);
-extern SLang_NameSpace_Type *_pSLns_allocate_namespace (char *, unsigned int);
+extern SLang_NameSpace_Type *_pSLns_new_namespace (SLFUTURE_CONST char *, unsigned int);
+extern SLang_NameSpace_Type *_pSLns_allocate_namespace (SLFUTURE_CONST char *, unsigned int);
 extern void _pSLns_deallocate_namespace (SLang_NameSpace_Type *);
-extern SLang_NameSpace_Type *_pSLns_find_namespace (char *);
-extern int _pSLns_set_namespace_name (SLang_NameSpace_Type *, char *);
-extern SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *, char *, unsigned int);
+extern SLang_NameSpace_Type *_pSLns_find_namespace (SLCONST char *);
+extern int _pSLns_set_namespace_name (SLang_NameSpace_Type *, SLFUTURE_CONST char *);
+extern SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *, SLFUTURE_CONST char *, unsigned int);
 extern void _pSLang_use_namespace_intrinsic (char *name);
-extern char *_pSLang_cur_namespace_intrinsic (void);
-extern SLang_Array_Type *_pSLang_apropos (char *, char *, unsigned int);
-extern void _pSLang_implements_intrinsic (char *);
+extern SLFUTURE_CONST char *_pSLang_cur_namespace_intrinsic (void);
+extern SLang_Array_Type *_pSLang_apropos (SLFUTURE_CONST char *, SLFUTURE_CONST char *, unsigned int);
+extern void _pSLang_implements_intrinsic (SLFUTURE_CONST char *);
 extern SLang_Array_Type *_pSLns_list_namespaces (void);
-extern SLang_Name_Type *_pSLns_locate_hashed_name (SLang_NameSpace_Type *, char *, unsigned long);
+extern SLang_Name_Type *_pSLns_locate_hashed_name (SLang_NameSpace_Type *, SLCONST char *, unsigned long);
 extern int _pSLns_add_hashed_name (SLang_NameSpace_Type *, SLang_Name_Type *, unsigned long);
 extern SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt);
-extern SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *, char *);
-extern SLang_NameSpace_Type *_pSLns_get_private_namespace (char *name, char *nsname);
-extern SLang_NameSpace_Type *_pSLns_create_namespace2 (char *name, char *nsname);
+extern SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *, SLCONST char *);
+extern SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, SLFUTURE_CONST char *nsname);
+extern SLang_NameSpace_Type *_pSLns_create_namespace2 (SLFUTURE_CONST char *name, SLFUTURE_CONST char *nsname);
 
 extern int _pSLang_Trace;
-extern char *_pSLang_current_function_name (void);
+extern char SLCONST *_pSLang_current_function_name (void);
 
-extern int _pSLang_trace_fun(char *);
+extern int _pSLang_trace_fun(SLFUTURE_CONST char *);
 
 /* This is a bitmapped variable */
 /* extern int _pSLang_Compile_Line_Num_Info; */
@@ -693,25 +693,25 @@ extern int _pSLang_trace_fun(char *);
 extern int _pSLang_Compile_BOSEOS;
 extern int _pSLang_Compile_BOFEOF;
 extern int _pSLang_init_boseos (void);
-extern int _pSLcall_bos_handler (char *, int);
+extern int _pSLcall_bos_handler (SLFUTURE_CONST char *, int);
 extern int _pSLcall_eos_handler (void);
-extern int _pSLcall_bof_handler (char *, char *);
+extern int _pSLcall_bof_handler (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
 extern int _pSLcall_eof_handler (void);
-extern int _pSLcall_debug_hook (char *file, int linenum);
+extern int _pSLcall_debug_hook (SLFUTURE_CONST char *file, int linenum);
 /* extern int _pSLcall_debug_hook (char *file, int linenum, char *funct); */
 #endif
 
-extern char *_pSLstring_dup_hashed_string (char *, unsigned long);
-extern unsigned long _pSLcompute_string_hash (char *);
-extern char *_pSLstring_make_hashed_string (char *, unsigned int, unsigned long *);
+extern char *_pSLstring_dup_hashed_string (SLCONST char *, unsigned long);
+extern unsigned long _pSLcompute_string_hash (SLCONST char *);
+extern char *_pSLstring_make_hashed_string (SLCONST char *, unsigned int, unsigned long *);
 extern void _pSLfree_hashed_string (char *, unsigned int, unsigned long);
-unsigned long _pSLstring_hash (unsigned char *, unsigned char *);
+unsigned long _pSLstring_hash (SLCONST unsigned char *, SLCONST unsigned char *);
 extern int _pSLinit_slcomplex (void);
 
 extern int _pSLang_init_slstrops (void);
 extern int _pSLstrops_do_sprintf_n (int);
 extern int _pSLang_sscanf (void);
-extern double _pSLang_atof (char *);
+extern double _pSLang_atof (SLFUTURE_CONST char *);
 extern int _pSLang_init_bstring (void);
 extern int _pSLang_init_sltime (void);
 extern void _pSLpack (void);
@@ -729,7 +729,7 @@ extern int _pSLarith_typecast (SLtype, VOID_STAR, unsigned int,
 			      SLtype, VOID_STAR);
 
 extern int SLang_push(SLang_Object_Type *);
-extern int SLadd_global_variable (char *);
+extern int SLadd_global_variable (SLCONST char *);
 
 extern int _pSLdo_pop (void);
 extern unsigned int _pSLsys_getkey (void);
@@ -742,11 +742,11 @@ extern unsigned int _pSLpc_convert_scancode (unsigned int, unsigned int, int);
 #endif
 
 typedef struct _pSLterminfo_Type SLterminfo_Type;
-extern SLterminfo_Type *_pSLtt_tigetent (char *);
+extern SLterminfo_Type *_pSLtt_tigetent (SLCONST char *);
 extern void _pSLtt_tifreeent (SLterminfo_Type *);
-extern char *_pSLtt_tigetstr (SLterminfo_Type *, char *);
-extern int _pSLtt_tigetnum (SLterminfo_Type *, char *);
-extern int _pSLtt_tigetflag (SLterminfo_Type *, char *);
+extern char *_pSLtt_tigetstr (SLterminfo_Type *, SLCONST char *);
+extern int _pSLtt_tigetnum (SLterminfo_Type *, SLCONST char *);
+extern int _pSLtt_tigetflag (SLterminfo_Type *, SLCONST char *);
 
 #if SLTT_HAS_NON_BCE_SUPPORT
 extern int _pSLtt_get_bce_color_offset (void);
@@ -871,8 +871,8 @@ struct _pSLang_Class_Type
    int (*cl_foreach) (SLtype, SLang_Foreach_Context_Type *);
 
    /* Structure access: get and put (assign to) fields */
-   int (*cl_sput) (SLtype, char *);
-   int (*cl_sget) (SLtype, char *);
+   int (*cl_sput) (SLtype, SLFUTURE_CONST char *);
+   int (*cl_sget) (SLtype, SLFUTURE_CONST char *);
 
    /* File I/O */
    int (*cl_fread) (SLtype, FILE *, VOID_STAR, unsigned int, unsigned int *);
@@ -917,8 +917,8 @@ extern int _pSLclass_add_arith_unary_op (SLtype type,
 					int (*r)(int, SLtype, SLtype *));
 #endif
 
-extern int _pSLclass_get_unary_opcode (char *name);
-extern int _pSLclass_get_binary_opcode (char *name);
+extern int _pSLclass_get_unary_opcode (SLCONST char *name);
+extern int _pSLclass_get_binary_opcode (SLCONST char *name);
 extern int _pSLclass_is_same_obj (SLang_Object_Type *a, SLang_Object_Type *b);
 extern int _pSLclass_obj_eqs (SLang_Object_Type *a, SLang_Object_Type *b);
 
@@ -941,35 +941,35 @@ extern int _pSLang_push_array (SLang_Array_Type *, int);   /* NULL not allowed *
 
 typedef struct
 {
-   char *name;
+   SLCONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
    int unary_op;
 }
 SLang_Arith_Unary_Type;
-extern int _pSLadd_arith_unary_table (SLang_Arith_Unary_Type *tbl, char *);
+extern int _pSLadd_arith_unary_table (SLang_Arith_Unary_Type *tbl, SLFUTURE_CONST char *);
 
 typedef struct
 {
-   char *name;
+   SLCONST char *name;
    SLang_Name_Type *next;
    char name_type;
 
    int binary_op;
 }
 SLang_Arith_Binary_Type;
-extern int _pSLadd_arith_binary_table (SLang_Arith_Binary_Type *tbl, char *);
+extern int _pSLadd_arith_binary_table (SLang_Arith_Binary_Type *tbl, SLFUTURE_CONST char *);
 
 extern int _pSLang_do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *objb);
 
 extern int _pSLang_call_funptr (SLang_Name_Type *);
-extern void _pSLset_double_format (char *);
-extern char *_pSLget_double_format (void);
-extern SLang_Name_Type *_pSLlocate_global_name (char *);
-extern SLang_Name_Type *_pSLlocate_name (char *);
+extern void _pSLset_double_format (SLCONST char *);
+extern SLCONST char *_pSLget_double_format (void);
+extern SLang_Name_Type *_pSLlocate_global_name (SLCONST char *);
+extern SLang_Name_Type *_pSLlocate_name (SLCONST char *);
 
-extern char *_pSLdefines[];
+extern SLFUTURE_CONST char *_pSLdefines[];
 
 #define SL_ERRNO_NOT_IMPLEMENTED	0x7FFF
 extern int _pSLerrno_errno;
@@ -1042,7 +1042,7 @@ typedef struct _pSLang_Token_Type
 	 * We can avoid the issues associated with this by just storing 
 	 * floating point values as strings.
 	 */
-	char *s_val;		       /* Used for IDENT_TOKEN, DOUBLE_TOKEN, etc...  */
+	SLFUTURE_CONST char *s_val;		       /* Used for IDENT_TOKEN, DOUBLE_TOKEN, etc...  */
 	
 	SLang_BString_Type *b_val;
      } v;
@@ -1061,10 +1061,10 @@ extern void _pSLcompile (_pSLang_Token_Type *);
 extern void (*_pSLcompile_ptr)(_pSLang_Token_Type *);
 
 /* slmisc.c */
-extern char *_pSLskip_whitespace (char *s);
+extern char *_pSLskip_whitespace (SLCONST char *s);
 
 /* slospath.c */
-extern char *_pSLpath_find_file (char *, int);   /* slstring returned */
+extern char *_pSLpath_find_file (SLFUTURE_CONST char *, int);   /* slstring returned */
 
 /* Read but do not set this variable. */
 extern volatile int _pSLang_Error;
@@ -1369,15 +1369,15 @@ typedef struct
 _pSLEval_Context;
 
 extern int _pSLget_token (_pSLang_Token_Type *);
-extern void _pSLparse_error (int, char *, _pSLang_Token_Type *, int);
+extern void _pSLparse_error (int, SLCONST char *, _pSLang_Token_Type *, int);
 extern void _pSLparse_start (SLang_Load_Type *);
 extern int _pSLget_rpn_token (_pSLang_Token_Type *);
 extern void _pSLcompile_byte_compiled (void);
 
-extern int (*_pSLprep_eval_hook) (char *);
+extern int (*_pSLprep_eval_hook) (SLFUTURE_CONST char *);
 
 extern int _pSLsecure_issetugid (void);
-extern char *_pSLsecure_getenv (char *);
+extern char *_pSLsecure_getenv (SLCONST char *);
 
 /* Error Handling */
 extern int _pSLang_init_exceptions (void);
@@ -1385,9 +1385,11 @@ extern int _pSLerr_init (void);
 extern void _pSLerr_deinit (void);
 extern int _pSLerr_suspend_messages (void);
 extern int _pSLerr_resume_messages (void);
-extern int _pSLerr_traceback_msg (char *, ...) SLATTRIBUTE_PRINTF(1,2);
-extern void _pSLerr_dump_msg (char *, ...) SLATTRIBUTE_PRINTF(1,2);
+extern int _pSLerr_traceback_msg (SLFUTURE_CONST char *, ...) SLATTRIBUTE_PRINTF(1,2);
+extern void _pSLerr_dump_msg (SLFUTURE_CONST char *, ...) SLATTRIBUTE_PRINTF(1,2);
 extern void _pSLerr_clear_error (int);
+extern void _pSLang_verror (int, SLCONST char *, ...) SLATTRIBUTE_PRINTF(2,3);
+extern int _pSLsnprintf (char *, unsigned int, SLFUTURE_CONST char *, ...) SLATTRIBUTE_PRINTF(3,4);
 
 typedef struct _pSLerr_Error_Queue_Type _pSLerr_Error_Queue_Type;
 extern _pSLerr_Error_Queue_Type *_pSLerr_new_error_queue (int);
@@ -1396,7 +1398,7 @@ extern void _pSLerr_delete_error_queue (_pSLerr_Error_Queue_Type *);
 
 extern void _pSLerr_print_message_queue (void);
 
-extern int _pSLerr_set_line_info (char *, int, char *);
+extern int _pSLerr_set_line_info (SLFUTURE_CONST char *, int, SLFUTURE_CONST char *);
 extern int _pSLang_pop_error_context (int);
 extern int _pSLang_push_error_context (void);
 extern void (*_pSLinterpreter_Error_Hook)(int);
@@ -1407,17 +1409,17 @@ extern void _pSLerr_free_queued_messages (void);
 
 extern char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *);
 extern int _pSLerr_throw (void);
-extern int (*_pSLerr_New_Exception_Hook)(char *name, char *desc, int error_code);
+extern int (*_pSLerr_New_Exception_Hook)(SLFUTURE_CONST char *name, SLFUTURE_CONST char *desc, int error_code);
 
 #if SLANG_HAS_DEBUGGER_SUPPORT
 typedef struct
 {
    char **locals;
    unsigned int nlocals;
-   char *file;
+   SLCONST char *file;
    unsigned int line;
-   char *function;
-   char *ns;
+   SLCONST char *function;
+   SLCONST char *ns;
 }
 _pSLang_Frame_Info_Type;
 

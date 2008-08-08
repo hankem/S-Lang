@@ -100,6 +100,18 @@ Changes since 2.1.3
 45. src/slparse.c: &if was causing a SEGV.
 46. src/slstd.c: Added get_float_format intrinsic.
 47. doc/tm/Makefile: Added rules to make cref.pdf
+48. slsh/lib/print.sl: Updated the usage message for the print function.
+49. src/slang.h: Added __attribute_(format(printf)) to SLsnprintf
+    prototype.
+50. src/*.c:  Function prototypes were changed from, e.g.,
+       char *SLang_create_slstring (char *);
+    to
+       char *SLang_create_slstring (SLFUTURE_CONST char *);
+    where SLFUTURE_CONST is defined to have no value.  As a result,
+    these changes has no effect at present but will in a future
+    version (slang-3) where SLFUTURE_CONST will be defined to be
+    `const'.  The use of `const' now would constitute a major API change,
+    which is not permitted until a new major version is released.
 
 {{{ Previous Versions
 

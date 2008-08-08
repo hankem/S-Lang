@@ -300,7 +300,7 @@ static void posix_read (SLFile_FD_Type *f, SLang_Ref_Type *ref, unsigned int *nb
    (void) SLang_push_integer (-1);
 }
 
-SLFile_FD_Type *SLfile_create_fd (char *name, int fd)
+SLFile_FD_Type *SLfile_create_fd (SLFUTURE_CONST char *name, int fd)
 {
    SLFile_FD_Type *f;
 
@@ -369,7 +369,7 @@ int SLfile_set_clientdata (SLFile_FD_Type *f, void (*func)(VOID_STAR), VOID_STAR
      return -1;
    if (id == -1)
      {
-	SLang_verror (SL_Application_Error, "SLfile_set_client_data: invalid id");
+	_pSLang_verror (SL_Application_Error, "SLfile_set_client_data: invalid id");
 	return -1;
      }
 
@@ -554,7 +554,7 @@ static void posix_fileno (void)
    SLang_MMT_Type *mmt;
    int fd;
    SLFile_FD_Type *f;
-   char *name;
+   SLFUTURE_CONST char *name;
 
    if (-1 == SLang_pop_fileptr (&mmt, &fp))
      {

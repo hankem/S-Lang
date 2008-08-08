@@ -313,7 +313,7 @@ SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *pmin,
 
 typedef struct
 {
-   char *name;
+   SLCONST char *name;
    char escaped_form;
 }
 Posix_Char_Class_Type;
@@ -368,7 +368,7 @@ static int is_posix_charclass (SLuchar_Type **up, SLuchar_Type *umax, SLwchar_Ty
 	  }
 	p++;
      }
-   SLang_verror (SL_NotImplemented_Error, "Character class in range specification is unknown or unsupported");
+   _pSLang_verror (SL_NotImplemented_Error, "Character class in range specification is unknown or unsupported");
    return -1;
 }
 
@@ -522,7 +522,7 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	     break;
 	     
 	   default:
-	     SLang_verror (SL_INVALID_PARM, "Invalid character class '%c'.", char_class);
+	     _pSLang_verror (SL_INVALID_PARM, "Invalid character class '%c'.", char_class);
 	     return NULL;
 	  }
 	return u;
@@ -541,7 +541,7 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	lex->lexical_type = LEXICAL_CHAR_TYPE;
 	lex->e.wch = '-';
 	return u;
-	/* SLang_verror (SL_INVALID_PARM, "Unfinished range specification"); */
+	/* _pSLang_verror (SL_INVALID_PARM, "Unfinished range specification"); */
 	/* return NULL; */
      }
 
@@ -550,13 +550,13 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
    
    if (char_class)
      {
-	SLang_verror (SL_INVALID_PARM, "Character class not allowed in a range");
+	_pSLang_verror (SL_INVALID_PARM, "Character class not allowed in a range");
 	return NULL;
      }
 
    if (r1 == 0)
      {
-	SLang_verror (SL_INVALID_PARM, "Unfinished range specification");
+	_pSLang_verror (SL_INVALID_PARM, "Unfinished range specification");
 	return NULL;
      }
    
@@ -877,7 +877,7 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 	   case LEXICAL_RANGE_TYPE:
 	     if (invert)
 	       {
-		  SLang_verror (SL_INVALID_PARM, "Inversion from a range to a range not permitted");
+		  _pSLang_verror (SL_INVALID_PARM, "Inversion from a range to a range not permitted");
 		  return -1;
 	       }
 
@@ -885,7 +885,7 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 
 	     if ((chmax - chmin) != (wch1 - wch))
 	       {
-		  SLang_verror (SL_INVALID_PARM, "Character mapping of unequal ranges is forbidden");
+		  _pSLang_verror (SL_INVALID_PARM, "Character mapping of unequal ranges is forbidden");
 		  return -1;
 	       }
 	     if (from_range_dir != to_range_dir)
@@ -935,7 +935,7 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 	     break;
 		  
 	   default:
-	     SLang_verror (SL_INVALID_PARM, "Invalid character class in character map");
+	     _pSLang_verror (SL_INVALID_PARM, "Invalid character class in character map");
 	     return -1;
 	  }
 	switch (lex_to->lexical_type)
@@ -1026,7 +1026,7 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
 #if 0
    if (*from == 0)
      {
-	SLang_verror (SL_INVALID_PARM, "Illegal empty string in character map specification");
+	_pSLang_verror (SL_INVALID_PARM, "Illegal empty string in character map specification");
 	return NULL;
      }
 #endif
@@ -1072,7 +1072,7 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
 	  {
 	     if (invert)
 	       {
-		  SLang_verror (SL_INVALID_PARM, "Character map inversion must specify a many-to-one mapping");
+		  _pSLang_verror (SL_INVALID_PARM, "Character map inversion must specify a many-to-one mapping");
 		  goto return_error;
 	       }
 	     to = next_to;
@@ -1088,7 +1088,7 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
 
 	if (-1 == check_char_mapping (map, list, first_time))
 	  {
-	     SLang_verror (SL_INVALID_PARM, "Specified character mapping is invalid");
+	     _pSLang_verror (SL_INVALID_PARM, "Specified character mapping is invalid");
 	     goto return_error;
 	  }
 	first_time = 0;

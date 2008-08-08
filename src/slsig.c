@@ -47,7 +47,7 @@ USA.
 typedef struct
 {
    int sig;
-   char *name;
+   SLFUTURE_CONST char *name;
    SLang_Name_Type *handler;
    void (*c_handler)(int);
    int pending;			       /* if set, the signal needs to be delivered */
@@ -341,7 +341,7 @@ static int pop_signal (Signal_Type **sp)
 	s++;
      }
    
-   SLang_verror (SL_INVALID_PARM, "Signal %d invalid or unknown", sig);
+   _pSLang_verror (SL_INVALID_PARM, "Signal %d invalid or unknown", sig);
    return -1;
 }
 
@@ -349,7 +349,7 @@ static int set_old_handler (Signal_Type *s, SLang_Ref_Type *ref, void (*old_hand
 {
    if (old_handler == (void (*)(int))SIG_ERR)
      {
-	SLang_verror (0, "signal system call failed");
+	_pSLang_verror (0, "signal system call failed");
 	return -1;
      }
 
@@ -427,7 +427,7 @@ static void signal_intrinsic (void)
 	else
 	  {
 	     SLang_free_ref (old_ref);
-	     SLang_verror (SL_INVALID_PARM, "Signal handler '%d' is invalid", h);
+	     _pSLang_verror (SL_INVALID_PARM, "Signal handler '%d' is invalid", h);
 	     return;
 	  }
 
@@ -638,7 +638,7 @@ static void sigprocmask_intrinsic (void)
    
    if ((how != SIG_BLOCK) && (how != SIG_UNBLOCK) && (how != SIG_SETMASK))
      {
-	SLang_verror (SL_InvalidParm_Error, "sigprocmask: invalid operation");
+	_pSLang_verror (SL_InvalidParm_Error, "sigprocmask: invalid operation");
 	SLang_free_ref (ref);
 	return;
      }

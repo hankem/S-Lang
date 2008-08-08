@@ -66,12 +66,12 @@ static SLang_Array_Type *allocate_transposed_array (SLang_Array_Type *at)
    return bt;
 }
 
-static int check_for_empty_array (char *fun, unsigned int num)
+static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 {
    if (num)
      return 0;
    
-   SLang_verror (SL_INVALID_PARM, "%s: array is empty", fun);
+   _pSLang_verror (SL_INVALID_PARM, "%s: array is empty", fun);
    return -1;
 }
 
@@ -384,7 +384,7 @@ static int get_inner_product_parms (SLang_Array_Type *a, int *dp,
    num_dims = (int)a->num_dims;
    if (num_dims == 0) 
      {
-	SLang_verror (SL_INVALID_PARM, "Inner-product operation requires an array of at least 1 dimension.");
+	_pSLang_verror (SL_INVALID_PARM, "Inner-product operation requires an array of at least 1 dimension.");
 	return -1;
      }
 
@@ -485,7 +485,7 @@ static void do_inner_product (void)
    if ((-1 == get_inner_product_parms (a, &ai, &a_loops, &a_stride))
        || (-1 == get_inner_product_parms (b, &bi, &b_loops, &b_inc)))
      {
-	SLang_verror (SL_TYPE_MISMATCH, "Array dimensions are not compatible for inner-product");
+	_pSLang_verror (SL_TYPE_MISMATCH, "Array dimensions are not compatible for inner-product");
 	goto free_and_return;
      }
        
@@ -505,14 +505,14 @@ static void do_inner_product (void)
 
    if ((ai_dims = a->dims[ai]) != b->dims[bi])
      {
-	SLang_verror (SL_TYPE_MISMATCH, "Array dimensions are not compatible for inner-product");
+	_pSLang_verror (SL_TYPE_MISMATCH, "Array dimensions are not compatible for inner-product");
 	goto free_and_return;
      }
 
    num_dims = a_num_dims + b_num_dims - 2;
    if (num_dims > SLARRAY_MAX_DIMS)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED,
+	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "Inner-product result exceeds maximum allowed dimensions");
 	goto free_and_return;
      }
@@ -676,7 +676,7 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
 	  }
 	if (c->f == NULL)
 	  {
-	     SLang_verror (SL_TYPE_MISMATCH, "%s is not supported by this function", SLclass_get_datatype_name (from_type));
+	     _pSLang_verror (SL_TYPE_MISMATCH, "%s is not supported by this function", SLclass_get_datatype_name (from_type));
 	     return -1;
 	  }
 	
@@ -703,7 +703,7 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
 
 	if ((k < 0) || (k >= (int)old_num_dims))
 	  {
-	     SLang_verror (SL_INVALID_PARM, "Dimension %d is invalid for a %d-d array",
+	     _pSLang_verror (SL_INVALID_PARM, "Dimension %d is invalid for a %d-d array",
 			   k, old_num_dims);
 	     SLang_free_array (at);
 	     return -1;
@@ -1205,7 +1205,7 @@ static void array_swap (void)
 	return;
      }
 
-   SLang_verror (SL_NOT_IMPLEMENTED, "dim not implemented");
+   _pSLang_verror (SL_NOT_IMPLEMENTED, "dim not implemented");
 #if 0
    /* Otherwise we have perform this swap:
     * 
@@ -1303,7 +1303,7 @@ static void array_reverse (void)
 	/* has_dim = 1; */
 	if (-1 == SLang_pop_integer (&dim))
 	  return;
-	SLang_verror (SL_NotImplemented_Error, "dim argument not yet implemented");
+	_pSLang_verror (SL_NotImplemented_Error, "dim argument not yet implemented");
 	return;
      }
 

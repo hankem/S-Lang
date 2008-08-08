@@ -170,7 +170,7 @@ static unsigned int file_process_flags (char *mode)
 	     return flags;
 
 	   default:
-	     SLang_verror (SL_INVALID_PARM, "File flag %c is not supported", ch);
+	     _pSLang_verror (SL_INVALID_PARM, "File flag %c is not supported", ch);
 	     return 0;
 	  }
      }
@@ -318,7 +318,7 @@ static FILE *check_fp (SL_File_Table_Type *t, unsigned flags)
    return NULL;
 }
 
-char *SLang_get_name_from_fileptr (SLang_MMT_Type *mmt)
+SLFUTURE_CONST char *SLang_get_name_from_fileptr (SLang_MMT_Type *mmt)
 {
    SL_File_Table_Type *ft;
 
@@ -763,7 +763,7 @@ static void stdio_fread (SLang_Ref_Type *ref, int *data_typep, unsigned int *num
 
    if (cl->cl_fread == NULL)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED,
+	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "fread does not support %s objects",
 		      cl->cl_name);
 	goto the_return;
@@ -852,7 +852,7 @@ static void stdio_fwrite (SL_File_Table_Type *t)
 
    if (cl->cl_fwrite == NULL)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED,
+	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "fwrite does not support %s objects", cl->cl_name);
 	goto the_return;
      }
@@ -1106,7 +1106,7 @@ cl_foreach_open (SLtype type, unsigned int num)
 	  type = CTX_USE_LINE_WS;
 	else
 	  {
-	     SLang_verror (SL_NOT_IMPLEMENTED,
+	     _pSLang_verror (SL_NOT_IMPLEMENTED,
 			   "using '%s' not supported by File_Type",
 			   s);
 	     _pSLang_free_slstring (s);
@@ -1118,7 +1118,7 @@ cl_foreach_open (SLtype type, unsigned int num)
 
       default:
 	SLdo_pop_n (num);
-	SLang_verror (SL_NOT_IMPLEMENTED, 
+	_pSLang_verror (SL_NOT_IMPLEMENTED, 
 		      "Usage: foreach (File_Type) using ([line|wsline|char])");
 	SLang_free_mmt (mmt);
 	return NULL;
@@ -1188,7 +1188,7 @@ int SLang_init_stdio (void)
    unsigned int i;
    SL_File_Table_Type *s;
    SLang_Class_Type *cl;
-   char *names[3];
+   SLFUTURE_CONST char *names[3];
 
    if (Stdio_Initialized)
      return 0;

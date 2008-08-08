@@ -89,16 +89,16 @@ static unsigned char *This_Str;
 typedef struct
 {
    SLRegexp_Type *reg;
-   unsigned char *str;
+   SLCONST unsigned char *str;
    unsigned int len;
    char closed_paren_matches[10];
    int open_paren_number;
 }
 Re_Context_Type;
 
-static unsigned char *do_nth_match (Re_Context_Type *ctx, int n, unsigned char *str, unsigned char *estr)
+static SLCONST unsigned char *do_nth_match (Re_Context_Type *ctx, int n, SLCONST unsigned char *str, SLCONST unsigned char *estr)
 {
-   unsigned char *bpos;
+   SLCONST unsigned char *bpos;
 
    if (ctx->closed_paren_matches[n] == 0)
      return NULL;
@@ -115,13 +115,13 @@ static unsigned char *do_nth_match (Re_Context_Type *ctx, int n, unsigned char *
 }
 
 /* returns pointer to the end of regexp or NULL */
-static unsigned char *regexp_looking_at (Re_Context_Type *ctx, 
-					 unsigned char *str, unsigned char *estr, 
-					 unsigned char *regexp, 
-					 int cs)
+static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx, 
+						 SLCONST unsigned char *str, SLCONST unsigned char *estr,
+						 unsigned char *regexp, 
+						 int cs)
 {
    register unsigned char p, p1;
-   unsigned char *save_str, *tmpstr;
+   SLCONST unsigned char *save_str, *tmpstr;
    int n, n0, n1;
    int save_num_open;
    char save_closed_matches[10];
@@ -423,7 +423,8 @@ static unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 }
 
 static void
-fixup_beg_end_matches (Re_Context_Type *ctx, SLRegexp_Type *r, unsigned char *str, unsigned char *epos)
+fixup_beg_end_matches (Re_Context_Type *ctx, SLRegexp_Type *r,
+		       SLCONST unsigned char *str, SLCONST unsigned char *epos)
 {
    int i;
 
@@ -450,7 +451,7 @@ fixup_beg_end_matches (Re_Context_Type *ctx, SLRegexp_Type *r, unsigned char *st
 }
 
 static void init_re_context (Re_Context_Type *ctx, SLRegexp_Type *reg, 
-			     unsigned char *str, unsigned int len)
+			     SLCONST unsigned char *str, unsigned int len)
 {
    memset ((char *) ctx, 0, sizeof (Re_Context_Type));
    ctx->reg = reg;
@@ -458,12 +459,14 @@ static void init_re_context (Re_Context_Type *ctx, SLRegexp_Type *reg,
    ctx->len = len;
 }
 
-static unsigned char *regexp_match(unsigned char *str,
-				  unsigned int len, SLRegexp_Type *reg)
+static SLCONST unsigned char *regexp_match(SLCONST unsigned char *str,
+					   unsigned int len, SLRegexp_Type *reg)
 {
-   register unsigned char c = 0, *estr = str + len;
+   unsigned char c = 0;
+   SLCONST unsigned char *estr = str + len;
    int cs = reg->case_sensitive, lit = 0;
-   unsigned char *buf = reg->buf, *epos = NULL;
+   unsigned char *buf = reg->buf;
+   SLCONST unsigned char *epos = NULL;
    Re_Context_Type ctx_buf;
 
    if (reg->min_length > len) return NULL;
@@ -525,9 +528,9 @@ static unsigned char *regexp_match(unsigned char *str,
    return NULL;
 }
 
-char *SLregexp_match (SLRegexp_Type *reg, char *str, unsigned int len)
+char *SLregexp_match (SLRegexp_Type *reg, SLFUTURE_CONST char *str, unsigned int len)
 {
-   return (char *) regexp_match ((unsigned char *)str, len, reg);
+   return (char *) regexp_match ((SLCONST unsigned char *)str, len, reg);
 }
 
 static unsigned char *convert_digit(unsigned char *pat, int *nn)
@@ -625,7 +628,7 @@ static int regexp_compile (SLRegexp_Type *reg)
      {
 	if (buf >= ebuf - 3)
 	  {
-	     SLang_verror (SL_BUILTIN_LIMIT_EXCEEDED, "Pattern too large to be compiled.");
+	     _pSLang_verror (SL_BUILTIN_LIMIT_EXCEEDED, "Pattern too large to be compiled.");
 	     ERROR;
 	  }
 
@@ -912,7 +915,7 @@ void SLregexp_free (SLRegexp_Type *reg)
    SLfree ((char *) reg);
 }
 
-SLRegexp_Type *SLregexp_compile (char *pattern, unsigned int flags)
+SLRegexp_Type *SLregexp_compile (SLFUTURE_CONST char *pattern, unsigned int flags)
 {
    SLRegexp_Type *reg;
 
@@ -938,7 +941,7 @@ SLRegexp_Type *SLregexp_compile (char *pattern, unsigned int flags)
    return reg;
 }
 
-char *SLregexp_quote_string (char *re, char *buf, unsigned int buflen)
+char *SLregexp_quote_string (SLFUTURE_CONST char *re, char *buf, unsigned int buflen)
 {
    char ch;
    char *b, *bmax;

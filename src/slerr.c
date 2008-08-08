@@ -27,10 +27,10 @@ USA.
 
 void (*_pSLinterpreter_Error_Hook) (int);
 
-void (*SLang_VMessage_Hook) (char *, va_list);
-void (*SLang_Error_Hook)(char *);
-void (*SLang_Exit_Error_Hook)(char *, va_list);
-void (*SLang_Dump_Routine)(char *);
+void (*SLang_VMessage_Hook) (SLFUTURE_CONST char *, va_list);
+void (*SLang_Error_Hook)(SLFUTURE_CONST char *);
+void (*SLang_Exit_Error_Hook)(SLFUTURE_CONST char *, va_list);
+void (*SLang_Dump_Routine)(SLFUTURE_CONST char *);
 
 volatile int _pSLang_Error = 0;
 volatile int SLKeyBoard_Quit = 0;
@@ -39,8 +39,8 @@ typedef struct _Exception_Type Exception_Type;
 struct _Exception_Type
 {
    int error_code;
-   char *name;
-   char *description;
+   SLFUTURE_CONST char *name;
+   SLFUTURE_CONST char *description;
    Exception_Type *subclasses;
    Exception_Type *next;
    Exception_Type *parent;
@@ -101,8 +101,8 @@ int   SL_UndefinedName_Error = 38;
 typedef struct
 {
    int *errcode_ptr;
-   char *name;
-   char *description;
+   SLFUTURE_CONST char *name;
+   SLFUTURE_CONST char *description;
    int *base_class_ptr;
 }
 BuiltIn_Exception_Table_Type;
@@ -213,10 +213,10 @@ static void free_this_exception (Exception_Type *e)
      return;
    
    if (e->name != NULL)
-     SLang_free_slstring (e->name);
+     SLang_free_slstring ((char *) e->name);
 
    if (e->description != NULL)
-     SLang_free_slstring (e->description);
+     SLang_free_slstring ((char *) e->description);
 
    SLfree ((char *)e);
 }
@@ -227,7 +227,7 @@ static int Next_Exception_Code;
  * is to provide a mechanism to avoid linking in the interpreter for apps
  * that just want the other facilities.
  */
-int (*_pSLerr_New_Exception_Hook)(char *name, char *desc, int error_code);
+int (*_pSLerr_New_Exception_Hook)(SLFUTURE_CONST char *name, SLFUTURE_CONST char *desc, int error_code);
 
 int _pSLerr_init_interp_exceptions (void)
 {
@@ -252,7 +252,7 @@ int _pSLerr_init_interp_exceptions (void)
    return 0;
 }
 
-int SLerr_new_exception (int baseclass, char *name, char *descript)
+int SLerr_new_exception (int baseclass, SLFUTURE_CONST char *name, SLFUTURE_CONST char *descript)
 {
    Exception_Type *base;
    Exception_Type *e;
@@ -263,7 +263,7 @@ int SLerr_new_exception (int baseclass, char *name, char *descript)
    base = find_exception (Exception_Root, baseclass);
    if (base == NULL)
      {
-	SLang_verror (SL_InvalidParm_Error,
+	_pSLang_verror (SL_InvalidParm_Error,
 		      "Base class for new exception not found");
 	return -1;
      }
@@ -349,7 +349,7 @@ static void deinit_exceptions (void)
    Next_Exception_Code = 0;
 }
 
-char *SLerr_strerror (int err_code)
+SLFUTURE_CONST char *SLerr_strerror (int err_code)
 {
    Exception_Type *e;
 
@@ -384,7 +384,7 @@ typedef struct _Error_Message_Type
 }
 Error_Message_Type;
 
-static char *Static_Error_Message = NULL;
+static SLFUTURE_CONST char *Static_Error_Message = NULL;
 
 struct _pSLerr_Error_Queue_Type
 {
@@ -476,7 +476,7 @@ static int queue_message (_pSLerr_Error_Queue_Type *q, char *msg, int msg_type)
    return 0;
 }
 
-static void print_error (int msg_type, char *err)
+static void print_error (int msg_type, SLFUTURE_CONST char *err)
 {
    unsigned int len;
 
@@ -637,7 +637,7 @@ static void set_error (int error)
      (*_pSLinterpreter_Error_Hook) (_pSLang_Error);
 }
 
-void SLang_verror_va (int err_code, char *fmt, va_list ap)
+static void verror_va (int err_code, SLCONST char *fmt, va_list ap)
 {
    char err [4096];
 
@@ -656,7 +656,7 @@ void SLang_verror_va (int err_code, char *fmt, va_list ap)
    if (fmt == NULL)
      return;
 
-   (void) SLvsnprintf (err, sizeof (err), fmt, ap);
+   (void) SLvsnprintf (err, sizeof (err), (SLFUTURE_CONST char *)fmt, ap);
 
    if (Suspend_Error_Messages)
      (void) queue_message (Active_Error_Queue, err, _SLERR_MSG_ERROR);
@@ -664,16 +664,31 @@ void SLang_verror_va (int err_code, char *fmt, va_list ap)
      print_error (_SLERR_MSG_ERROR, err);
 }
 
-void SLang_verror (int err_code, char *fmt, ...)
+void SLang_verror_va (int err_code, SLFUTURE_CONST char *fmt, va_list ap)
+{
+   verror_va (err_code, fmt, ap);
+}
+
+void SLang_verror (int err_code, SLFUTURE_CONST char *fmt, ...)
 {
    va_list ap;
 
    va_start(ap, fmt);
-   SLang_verror_va (err_code, fmt, ap);
+   verror_va (err_code, fmt, ap);
    va_end(ap);
 }
 
-int _pSLerr_traceback_msg (char *fmt, ...)
+void _pSLang_verror (int err_code, SLCONST char *fmt, ...)
+{
+   va_list ap;
+
+   va_start(ap, fmt);
+   verror_va (err_code, fmt, ap);
+   va_end(ap);
+}
+
+
+int _pSLerr_traceback_msg (SLFUTURE_CONST char *fmt, ...)
 {
    va_list ap;
    char msg [4096];
@@ -685,7 +700,7 @@ int _pSLerr_traceback_msg (char *fmt, ...)
    return queue_message (Active_Error_Queue, msg, _SLERR_MSG_TRACEBACK);
 }
 
-void SLang_exit_error (char *fmt, ...)
+void SLang_exit_error (SLFUTURE_CONST char *fmt, ...)
 {
    va_list ap;
 
@@ -737,7 +752,7 @@ int SLang_set_error (int error)
 	  }
      }
    
-   SLang_verror (_pSLang_Error, "%s", SLerr_strerror (_pSLang_Error));
+   _pSLang_verror (_pSLang_Error, "%s", SLerr_strerror (_pSLang_Error));
    return 0;
 }
 
@@ -746,7 +761,7 @@ int SLang_get_error (void)
    return _pSLang_Error;
 }
 
-void SLang_vmessage (char *fmt, ...)
+void SLang_vmessage (SLFUTURE_CONST char *fmt, ...)
 {
    va_list ap;
 
@@ -768,7 +783,7 @@ void SLang_vmessage (char *fmt, ...)
 }
 
 /* This routine does not queue messages.  It is used for tracing, etc. */
-void _pSLerr_dump_msg (char *fmt, ...)
+void _pSLerr_dump_msg (SLFUTURE_CONST char *fmt, ...)
 {
    char buf[1024];
    va_list ap;

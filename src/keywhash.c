@@ -44,7 +44,7 @@ static unsigned char keyword_hash (char *s, unsigned int len)
 
 typedef SLCONST struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    unsigned int type;
 }
 Keyword_Table_Type;
@@ -188,7 +188,7 @@ static Keyword_Table_Type Keyword_Table [/* 132 */] =
 static Keyword_Table_Type *is_keyword (char *str, unsigned int len)
 {
    unsigned int hash;
-   char *name;
+   SLCONST char *name;
    Keyword_Table_Type *kw;
 
    if ((len < MIN_KEYWORD_LEN)

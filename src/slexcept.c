@@ -32,9 +32,9 @@ USA.
 
 static SLang_Object_Type *Object_Thrownp = NULL;
 static SLang_Object_Type Object_Thrown;
-static char *File_With_Error = NULL;
-static char *Function_With_Error = NULL;
-static char *Last_Function_With_Error = NULL;   /* either slstring or "<top-level>" */
+static SLCONST char *File_With_Error = NULL;
+static SLCONST char *Function_With_Error = NULL;
+static SLCONST char *Last_Function_With_Error = NULL;   /* either slstring or "<top-level>" */
 static _pSLerr_Error_Queue_Type *Error_Message_Queue;
 
 static int Linenum_With_Error = -1;
@@ -55,8 +55,8 @@ typedef struct Error_Context_Type
    int err_cleared;
    int rethrow;
    int linenum;
-   char *file;
-   char *function;
+   SLCONST char *file;
+   SLCONST char *function;
    _pSLerr_Error_Queue_Type *err_queue;
    int object_was_thrown;
    SLang_Object_Type object_thrown;
@@ -161,7 +161,7 @@ int _pSLang_pop_error_context (int use_current_queue)
    if (_pSLang_Error == SL_UserBreak_Error)
      SLKeyBoard_Quit = 1;
    
-   SLang_free_slstring (e->file);
+   SLang_free_slstring ((char *) e->file);
    SLfree ((char *) e);
    return 0;
 }
@@ -176,7 +176,7 @@ int _pSLerr_get_last_error (void)
    return e->err;
 }
 
-static void do_file_line_funct_error (char *file, int linenum, char *function)
+static void do_file_line_funct_error (SLCONST char *file, int linenum, SLCONST char *function)
 {
    if ((file == NULL) || (_pSLang_Error == 0))
      return;
@@ -188,7 +188,7 @@ static void do_file_line_funct_error (char *file, int linenum, char *function)
      _pSLerr_traceback_msg ("%s:%d:%s:%s\n", file, linenum, function, SLerr_strerror (_pSLang_Error));
 }
 
-int _pSLerr_set_line_info (char *file, int linenum, char *fun)
+int _pSLerr_set_line_info (SLFUTURE_CONST char *file, int linenum, SLFUTURE_CONST char *fun)
 {
    if (linenum == 0)
      linenum = -1;
@@ -217,7 +217,7 @@ int _pSLerr_set_line_info (char *file, int linenum, char *fun)
      }
    if (NULL == (fun = SLang_create_slstring (fun)))
      {
-	SLang_free_slstring (file);    /* NULL ok */
+	SLang_free_slstring ((char *) file);    /* NULL ok */
 	return -1;
      }
 
@@ -231,7 +231,7 @@ int _pSLerr_set_line_info (char *file, int linenum, char *fun)
    return 0;
 }
 
-static int _pSLerr_get_last_error_line_info (char **filep, int *linep, char **funp)
+static int _pSLerr_get_last_error_line_info (SLCONST char **filep, int *linep, SLCONST char **funp)
 {
    Error_Context_Type *e = Error_Context;
    if (e == NULL)
@@ -271,8 +271,8 @@ void _pSLerr_clear_error (int set_clear_err_flag)
 	Error_Context->err_cleared = 1;
      }
 
-   SLang_free_slstring (File_With_Error); File_With_Error = NULL;
-   SLang_free_slstring (Function_With_Error); Function_With_Error = NULL;
+   SLang_free_slstring ((char *) File_With_Error); File_With_Error = NULL;
+   SLang_free_slstring ((char *) Function_With_Error); Function_With_Error = NULL;
    Linenum_With_Error = -1;
    Last_Function_With_Error = NULL;
    if (SLang_User_Clear_Error != NULL) (*SLang_User_Clear_Error)();
@@ -327,13 +327,13 @@ int _pSLerr_throw (void)
 	return rethrow_error ();
 
       default:
-	SLang_verror (SL_NumArgs_Error, "expecting: throw error [, optional-message [, optional-arg]]");
+	_pSLang_verror (SL_NumArgs_Error, "expecting: throw error [, optional-message [, optional-arg]]");
 	return -1;
      }
    
    if (msg != NULL)
      {
-	SLang_verror (e, "%s", msg);
+	_pSLang_verror (e, "%s", msg);
 	SLang_free_slstring (msg);
      }
    else
@@ -342,7 +342,7 @@ int _pSLerr_throw (void)
    return 0;
 }
 
-int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr)
+int SLerr_throw (int err, SLFUTURE_CONST char *msg, SLtype obj_type, VOID_STAR objptr)
 {
    free_thrown_object ();
 
@@ -356,7 +356,7 @@ int SLerr_throw (int err, char *msg, SLtype obj_type, VOID_STAR objptr)
      }
 
    if (msg != NULL)
-     SLang_verror (err, "%s", msg);
+     _pSLang_verror (err, "%s", msg);
    else
      SLang_set_error (err);
 
@@ -371,17 +371,17 @@ static void new_exception (char *name, int *baseclass, char *description)
 static void get_exception_info_intrinsic (void)
 {
 #define NUM_EXCEPT_FIELDS 7
-   static char *field_names[NUM_EXCEPT_FIELDS] =
+   static SLFUTURE_CONST char *field_names[NUM_EXCEPT_FIELDS] =
      {
 	"error", "descr", "file", "line", "function", "object", "message"
      };
    SLtype field_types[NUM_EXCEPT_FIELDS];
    VOID_STAR field_values[NUM_EXCEPT_FIELDS];
    int err;
-   char *desc;
-   char *file;
-   char *function;
-   char *msg;
+   SLCONST char *desc;
+   SLCONST char *file;
+   SLCONST char *function;
+   SLCONST char *msg;
    int linenum;
 
    err = _pSLerr_get_last_error ();
@@ -431,7 +431,7 @@ static void get_exception_info_intrinsic (void)
 
    (void) SLstruct_create_struct (NUM_EXCEPT_FIELDS, field_names, field_types, field_values);
    if (msg != desc) 
-     SLang_free_slstring (msg);
+     SLang_free_slstring ((char *) msg);
    /* (void) SLang_push_integer (_pSLerr_get_last_error ()); */
 }
 
@@ -440,7 +440,7 @@ int _pSLerr_pop_exception (int *e)
    return SLang_pop_integer (e);
 }
 
-static int new_exception_hook (char *name, char *desc, int err_code)
+static int new_exception_hook (SLFUTURE_CONST char *name, SLFUTURE_CONST char *desc, int err_code)
 {
    SLang_IConstant_Type *ic;
 
@@ -450,7 +450,7 @@ static int new_exception_hook (char *name, char *desc, int err_code)
 	if ((ic->name_type != SLANG_ICONSTANT)
 	    || (ic->value != err_code))
 	  {
-	     SLang_verror (SL_RunTime_Error, "Exception %s already exists and may not be redefined", name);
+	     _pSLang_verror (SL_RunTime_Error, "Exception %s already exists and may not be redefined", name);
 	     return -1;
 	  }
 	return 0;

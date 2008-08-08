@@ -908,7 +908,7 @@ static int float_pop (SLtype unused, VOID_STAR ptr)
 #if SLANG_HAS_FLOAT
 static char Double_Format[16] = "%g";
 
-void _pSLset_double_format (char *s)
+void _pSLset_double_format (SLCONST char *s)
 {
    if (strlen (s) >= sizeof (Double_Format))
      return;
@@ -916,7 +916,7 @@ void _pSLset_double_format (char *s)
    strcpy (Double_Format, s);
 }
 
-char *_pSLget_double_format (void)
+SLCONST char *_pSLget_double_format (void)
 {
    return Double_Format;
 }
@@ -932,7 +932,7 @@ static char *arith_string (SLtype type, VOID_STAR v)
    switch (type)
      {
       default:
-	s = SLclass_get_datatype_name (type);
+	s = (char *) SLclass_get_datatype_name (type);
 	break;
 
       case SLANG_CHAR_TYPE:
@@ -1023,7 +1023,7 @@ static int push_llong_literal (SLtype type, VOID_STAR ptr)
 #endif
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLtype data_type;
    unsigned int sizeof_type;
    int (*unary_fun)(int, SLtype, VOID_STAR, unsigned int, VOID_STAR);
@@ -1073,7 +1073,7 @@ static Integer_Info_Type Integer_Types [NUM_INTEGER_TYPES] =
 
 static int create_synonyms (void)
 {
-   static char *names[8] =
+   static SLFUTURE_CONST char *names[8] =
      {
 	"Int16_Type", "UInt16_Type", "Int32_Type", "UInt32_Type",
 	"Int64_Type", "UInt64_Type",

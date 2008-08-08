@@ -838,7 +838,7 @@ static int pop_2_arrays_or_scalar (Array_Or_Scalar_Type *a, Array_Or_Scalar_Type
      {
 	if (a->num != b->num)
 	  {
-	     SLang_verror (SL_TypeMismatch_Error, "Array sizes do not match");
+	     _pSLang_verror (SL_TypeMismatch_Error, "Array sizes do not match");
 	     free_array_or_scalar (a);
 	     free_array_or_scalar (b);
 	     return -1;

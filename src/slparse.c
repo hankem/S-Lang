@@ -40,7 +40,7 @@ static void free_token (_pSLang_Token_Type *t)
 	     if (t->type == BSTRING_TOKEN)
 	       SLbstring_free (t->v.b_val);
 	     else
-	       _pSLfree_hashed_string (t->v.s_val, strlen (t->v.s_val), t->hash);
+	       _pSLfree_hashed_string ((char *) t->v.s_val, strlen (t->v.s_val), t->hash);
 	     t->v.s_val = NULL;
 	  }
      }
@@ -148,7 +148,7 @@ static void free_token_list (Token_List_Type *t)
 #if USE_PARANOID_MAGIC
    if (t->magic != 0xABCDEF12)
      {
-	SLang_verror (SL_INTERNAL_ERROR, "Token Magic number error.");
+	_pSLang_verror (SL_INTERNAL_ERROR, "Token Magic number error.");
 	return;
      }
 #endif
@@ -210,7 +210,7 @@ static int check_token_list_space (Token_List_Type *t, unsigned int delta_size)
 #if USE_PARANOID_MAGIC
    if (t->magic != 0xABCDEF12)
      {
-	SLang_verror (SL_INTERNAL_ERROR, "Token Magic number error.");
+	_pSLang_verror (SL_INTERNAL_ERROR, "Token Magic number error.");
 	return -1;
      }
 #endif
@@ -1095,7 +1095,7 @@ static void handle_for_statement (_pSLang_Token_Type *ctok)
    compile_token_of_type (_FOR_TOKEN);
 }
 
-static int init_identifier_token (_pSLang_Token_Type *t, char *name, int alloc)
+static int init_identifier_token (_pSLang_Token_Type *t, SLFUTURE_CONST char *name, int alloc)
 {
    unsigned int len;
    
@@ -1566,7 +1566,7 @@ static void free_token_linked_list (_pSLang_Token_Type *tok)
 	free_token (tok);
 	if (tok->num_refs != 0)
 	  {
-	     SLang_verror (SL_INTERNAL_ERROR, "Cannot free token in linked list");
+	     _pSLang_verror (SL_INTERNAL_ERROR, "Cannot free token in linked list");
 	  }
 	else
 	  SLfree ((char *) tok);
@@ -2238,7 +2238,8 @@ static void unary_expression (_pSLang_Token_Type *ctok)
 
 static int combine_namespace_tokens (_pSLang_Token_Type *a, _pSLang_Token_Type *b)
 {
-   char *sa, *sb, *sc;
+   SLFUTURE_CONST char *sa, *sb;
+   char *sc;
    unsigned int lena, lenb;
    unsigned long hash;
 
@@ -2270,7 +2271,7 @@ static int combine_namespace_tokens (_pSLang_Token_Type *a, _pSLang_Token_Type *
    /* I can free this string because no other token should be referencing it.
     * (num_refs == 1).
     */
-   _pSLfree_hashed_string (sa, lena, a->hash);
+   _pSLfree_hashed_string ((char *) sa, lena, a->hash);
    a->v.s_val = sb;
    a->hash = hash;
 
@@ -2295,7 +2296,7 @@ static void append_identifier_token (_pSLang_Token_Type *ctok)
    if (NULL == (last_token = get_last_token ()))
      {
 	if (_pSLang_Error == 0)
-	  SLang_verror (SL_INTERNAL_ERROR, "get_last_token returned NULL in append_identifier_token");
+	  _pSLang_verror (SL_INTERNAL_ERROR, "get_last_token returned NULL in append_identifier_token");
 	return;
      }
    if (-1 == combine_namespace_tokens (last_token, ctok))
@@ -2440,7 +2441,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	if (last_token == NULL)
 	  {
 	     if (_pSLang_Error == 0)
-	       SLang_verror (SL_SYNTAX_ERROR, "Misplaced &");
+	       _pSLang_verror (SL_SYNTAX_ERROR, "Misplaced &");
 	     return;
 	  }
 	switch (last_token->type)

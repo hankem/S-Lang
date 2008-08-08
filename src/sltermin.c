@@ -100,10 +100,10 @@ struct _pSLterminfo_Type
 
 };
 
-static char *tcap_getstr (char *, SLterminfo_Type *);
-static int tcap_getnum (char *, SLterminfo_Type *);
-static int tcap_getflag (char *, SLterminfo_Type *);
-static int tcap_getent (char *, SLterminfo_Type *);
+static char *tcap_getstr (SLCONST char *, SLterminfo_Type *);
+static int tcap_getnum (SLCONST char *, SLterminfo_Type *);
+static int tcap_getflag (SLCONST char *, SLterminfo_Type *);
+static int tcap_getent (SLCONST char *, SLterminfo_Type *);
 
 static FILE *open_terminfo (char *file, SLterminfo_Type *h)
 {
@@ -230,7 +230,7 @@ static char *read_string_table (FILE *fp, SLterminfo_Type *t)
  * are implemented by multiple links to the same compiled file.
  */
 
-static char *Terminfo_Dirs [] =
+static SLCONST char *Terminfo_Dirs [] =
 {
    "", /* $HOME/.terminfo */
    "", /* $TERMINFO */
@@ -259,9 +259,9 @@ void _pSLtt_tifreeent (SLterminfo_Type *t)
    SLfree ((char *)t);
 }
 
-SLterminfo_Type *_pSLtt_tigetent (char *term)
+SLterminfo_Type *_pSLtt_tigetent (SLCONST char *term)
 {
-   char **tidirs, *tidir;
+   SLCONST char **tidirs, *tidir;
    FILE *fp = NULL;
    char file[1024];
    static char home_ti [1024];
@@ -783,7 +783,7 @@ static Tgetstr_Map_Type Tgetstr_Map [] =
    {"", -1		UNTIC_COMMENT(NULL)}
 };
 
-static int compute_cap_offset (char *cap, SLterminfo_Type *t, Tgetstr_Map_Type *map, unsigned int max_ofs)
+static int compute_cap_offset (SLCONST char *cap, SLterminfo_Type *t, Tgetstr_Map_Type *map, unsigned int max_ofs)
 {
    char cha, chb;
 
@@ -802,7 +802,7 @@ static int compute_cap_offset (char *cap, SLterminfo_Type *t, Tgetstr_Map_Type *
    return -1;
 }
 
-char *_pSLtt_tigetstr (SLterminfo_Type *t, char *cap)
+char *_pSLtt_tigetstr (SLterminfo_Type *t, SLCONST char *cap)
 {
    int offset;
 
@@ -862,7 +862,7 @@ static Tgetstr_Map_Type Tgetnum_Map[] =
    {"", -1		UNTIC_COMMENT(NULL)}
 };
 
-int _pSLtt_tigetnum (SLterminfo_Type *t, char *cap)
+int _pSLtt_tigetnum (SLterminfo_Type *t, SLCONST char *cap)
 {
    int offset;
 
@@ -925,7 +925,7 @@ static Tgetstr_Map_Type Tgetflag_Map[] =
    {"", -1		UNTIC_COMMENT(NULL)}
 };
 
-int _pSLtt_tigetflag (SLterminfo_Type *t, char *cap)
+int _pSLtt_tigetflag (SLterminfo_Type *t, SLCONST char *cap)
 {
    int offset;
 
@@ -943,7 +943,7 @@ int _pSLtt_tigetflag (SLterminfo_Type *t, char *cap)
  * variable.  This variable must contain the termcap entry and NOT the file.
  */
 
-static int tcap_getflag (char *cap, SLterminfo_Type *t)
+static int tcap_getflag (SLCONST char *cap, SLterminfo_Type *t)
 {
    char a, b;
    char *f = (char *) t->boolean_flags;
@@ -984,14 +984,14 @@ static char *tcap_get_cap (unsigned char *cap, unsigned char *caps, unsigned int
    return NULL;
 }
 
-static int tcap_getnum (char *cap, SLterminfo_Type *t)
+static int tcap_getnum (SLCONST char *cap, SLterminfo_Type *t)
 {
    cap = tcap_get_cap ((unsigned char *) cap, t->numbers, t->num_numbers);
    if (cap == NULL) return -1;
    return atoi (cap);
 }
 
-static char *tcap_getstr (char *cap, SLterminfo_Type *t)
+static char *tcap_getstr (SLCONST char *cap, SLterminfo_Type *t)
 {
    return tcap_get_cap ((unsigned char *) cap, (unsigned char *) t->string_table, t->string_table_size);
 }
@@ -1005,7 +1005,7 @@ static int tcap_extract_field (unsigned char *t0)
 }
 
 int SLtt_Try_Termcap = 1;
-static int tcap_getent (char *term, SLterminfo_Type *ti)
+static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
 {
    unsigned char *termcap, ch;
    unsigned char *buf, *b;
@@ -1181,19 +1181,19 @@ static int tcap_getent (char *term, SLterminfo_Type *ti)
 /* These routines are provided only for backward binary compatability.
  * They will vanish in V2.x
  */
-char *SLtt_tigetent (char *s)
+char *SLtt_tigetent (SLFUTURE_CONST char *s)
 {
    return (char *) _pSLtt_tigetent (s);
 }
 
-extern char *SLtt_tigetstr (char *s, char **p)
+char *SLtt_tigetstr (SLFUTURE_CONST char *s, char **p)
 {
    if (p == NULL)
      return NULL;
    return _pSLtt_tigetstr ((SLterminfo_Type *) *p, s);
 }
 
-extern int SLtt_tigetnum (char *s, char **p)
+extern int SLtt_tigetnum (SLFUTURE_CONST char *s, char **p)
 {
    if (p == NULL)
      return -1;

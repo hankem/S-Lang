@@ -53,7 +53,7 @@ static void set_bof_eof_handlers (SLang_Name_Type *bof, SLang_Name_Type *eof)
 
 static int Handler_Active = 0;
 
-int _pSLcall_bos_handler (char *file, int line)
+int _pSLcall_bos_handler (SLFUTURE_CONST char *file, int line)
 {
    int status = 0;
    int err;
@@ -113,7 +113,7 @@ int _pSLcall_eos_handler (void)
    return status;
 }
 
-int _pSLcall_bof_handler (char *fun, char *file)
+int _pSLcall_bof_handler (SLFUTURE_CONST char *fun, SLFUTURE_CONST char *file)
 {
    int status = 0, err;
 
@@ -228,7 +228,7 @@ static void set_debug_hook (SLang_Name_Type *deb)
 
 
 /* int _pSLcall_debug_hook (char *file, int line, char *funct) */
-int _pSLcall_debug_hook (char *file, int line)
+int _pSLcall_debug_hook (SLFUTURE_CONST char *file, int line)
 {
    int status = 0, err;
 
@@ -289,7 +289,7 @@ static void set_frame_variable (void)
 static void get_frame_info (int *depth)
 {
 #define NUM_INFO_FIELDS 5
-   static char *field_names[NUM_INFO_FIELDS] =
+   static SLFUTURE_CONST char *field_names[NUM_INFO_FIELDS] =
      {
 	"file", "line", "function", "locals", "namespace"
      };

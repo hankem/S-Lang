@@ -66,7 +66,7 @@ static int pop_array (SLang_Array_Type **at_ptr, int convert_scalar)
 	if (convert_scalar == 0)
 	  {
 	     SLdo_pop ();
-	     SLang_verror (SL_TYPE_MISMATCH, "Context requires an array.  Scalar not converted");
+	     _pSLang_verror (SL_TYPE_MISMATCH, "Context requires an array.  Scalar not converted");
 	     return -1;
 	  }
 	break;
@@ -142,7 +142,7 @@ static VOID_STAR get_data_addr (SLang_Array_Type *at, SLindex_Type *dims)
    data = at->data;
    if (data == NULL)
      {
-	SLang_verror (SL_UNKNOWN_ERROR, "Array has no data");
+	_pSLang_verror (SL_UNKNOWN_ERROR, "Array has no data");
 	return NULL;
      }
 
@@ -150,7 +150,7 @@ static VOID_STAR get_data_addr (SLang_Array_Type *at, SLindex_Type *dims)
 
    if (data == NULL)
      {
-	SLang_verror (SL_UNKNOWN_ERROR, "Unable to access array element");
+	_pSLang_verror (SL_UNKNOWN_ERROR, "Unable to access array element");
 	return NULL;
      }
 
@@ -312,7 +312,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
 
    if (num_dims > SLARRAY_MAX_DIMS)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED, "%u dimensional arrays are not supported", num_dims);
+	_pSLang_verror (SL_NOT_IMPLEMENTED, "%u dimensional arrays are not supported", num_dims);
 	return NULL;
      }
 
@@ -320,7 +320,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
      {
 	if (dims[i] < 0)
 	  {
-	     SLang_verror (SL_INVALID_PARM, "Size of array dim %u is less than 0", i);
+	     _pSLang_verror (SL_INVALID_PARM, "Size of array dim %u is less than 0", i);
 	     return NULL;
 	  }
      }
@@ -370,7 +370,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
    size = (size_t) (num_elements * sizeof_type);
    if (size/sizeof_type != num_elements)
      {
-	SLang_verror (SL_INVALID_PARM, "Unable to create array of the desired size");
+	_pSLang_verror (SL_INVALID_PARM, "Unable to create array of the desired size");
 	SLang_free_array (at);
 	return NULL;
      }
@@ -406,7 +406,7 @@ SLang_create_array (SLtype type, int read_only, VOID_STAR data,
    return SLang_create_array1 (type, read_only, data, dims, num_dims, 0);
 }
 
-int SLang_add_intrinsic_array (char *name,
+int SLang_add_intrinsic_array (SLFUTURE_CONST char *name,
 			       SLtype type,
 			       int read_only,
 			       VOID_STAR data,
@@ -421,7 +421,7 @@ int SLang_add_intrinsic_array (char *name,
        || (name == NULL)
        || (data == NULL))
      {
-	SLang_verror (SL_INVALID_PARM, "Unable to create intrinsic array");
+	_pSLang_verror (SL_INVALID_PARM, "Unable to create intrinsic array");
 	return -1;
      }
 
@@ -453,7 +453,7 @@ static int pop_array_indices (SLindex_Type *dims, unsigned int num_dims)
 
    if (num_dims > SLARRAY_MAX_DIMS)
      {
-	SLang_verror (SL_INVALID_PARM, "Array size not supported");
+	_pSLang_verror (SL_INVALID_PARM, "Array size not supported");
 	return -1;
      }
 
@@ -507,7 +507,7 @@ static int push_element_at_addr (SLang_Array_Type *at,
 	if (allow_null)
 	  return SLang_push_null ();
 
-	SLang_verror (SL_VARIABLE_UNINITIALIZED,
+	_pSLang_verror (SL_VARIABLE_UNINITIALIZED,
 		      "%s array has uninitialized element", cl->cl_name);
 	return -1;
      }
@@ -530,7 +530,7 @@ static int coerse_array_to_linear (SLang_Array_Type *at)
    range = (SLarray_Range_Array_Type *) at->data;
    if ((range->has_last_index == 0) || (range->has_first_index == 0))
      {
-	SLang_verror (SL_INVALID_PARM, "Invalid context for a range array of indeterminate size");
+	_pSLang_verror (SL_INVALID_PARM, "Invalid context for a range array of indeterminate size");
 	return -1;
      }
 
@@ -575,7 +575,7 @@ pop_indices (SLang_Array_Type *at_to_index,
      {
 	if (num_indices != 1)	       /* when 1, it is an index array */
 	  {
-	     SLang_verror (SL_INVALID_PARM, "wrong number of indices for array");
+	     _pSLang_verror (SL_INVALID_PARM, "wrong number of indices for array");
 	     return -1;
 	  }
      }
@@ -682,7 +682,7 @@ pop_indices (SLang_Array_Type *at_to_index,
 
 static void do_index_error (SLindex_Type i, SLindex_Type indx, SLindex_Type dim)
 {
-   SLang_verror (SL_Index_Error, "Array index %u (value=%ld) out of allowed range 0<=index<%ld",
+   _pSLang_verror (SL_Index_Error, "Array index %u (value=%ld) out of allowed range 0<=index<%ld",
 		 i, (long)indx, (long)dim);
 }
 
@@ -946,7 +946,7 @@ aget_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 
    if (num_elements < 0)
      {
-	SLang_verror (SL_Index_Error, "Array is too large to be indexed using an index-array");
+	_pSLang_verror (SL_Index_Error, "Array is too large to be indexed using an index-array");
 	goto return_error;
      }
 
@@ -1021,7 +1021,7 @@ convert_nasty_index_objs (SLang_Array_Type *at,
 
    if (num_indices != at->num_dims)
      {
-	SLang_verror (SL_INVALID_PARM, "Array requires %u indices", at->num_dims);
+	_pSLang_verror (SL_INVALID_PARM, "Array requires %u indices", at->num_dims);
 	return -1;
      }
 
@@ -1296,7 +1296,7 @@ static int aget_from_array (unsigned int num_indices)
 
    if (num_indices > SLARRAY_MAX_DIMS)
      {
-	SLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", SLARRAY_MAX_DIMS);
+	_pSLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", SLARRAY_MAX_DIMS);
 	return -1;
      }
 
@@ -1608,7 +1608,7 @@ aput_get_data_to_put (SLang_Class_Type *cl, unsigned int num_elements, int allow
 #endif
 	    )
 	  {
-	     SLang_verror (SL_Index_Error, "Array size is inappropriate for use with index-array");
+	     _pSLang_verror (SL_Index_Error, "Array size is inappropriate for use with index-array");
 	     SLang_free_array (at);
 	     return -1;
 	  }
@@ -1971,7 +1971,7 @@ int _pSLarray_aput1 (unsigned int num_indices)
 
    if (at->flags & SLARR_DATA_VALUE_IS_READ_ONLY)
      {
-	SLang_verror (SL_READONLY_ERROR, "%s Array is read-only",
+	_pSLang_verror (SL_READONLY_ERROR, "%s Array is read-only",
 		      SLclass_get_datatype_name (at->data_type));
 	SLang_free_array (at);
 	return -1;
@@ -2108,7 +2108,7 @@ static int builtin_sort_cmp_fun (SLindex_Type *a, SLindex_Type *b)
 	if ((Sort_Array->flags & SLARR_DATA_VALUE_IS_POINTER)
 	    && ((*(VOID_STAR *) a_data == NULL) || (*(VOID_STAR *) a_data == NULL)))
 	  {
-	     SLang_verror (SL_VARIABLE_UNINITIALIZED,
+	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED,
 			   "%s array has uninitialized element", cl->cl_name);
 	  }
 	else if (0 == (*cl->cl_cmp)(Sort_Array->data_type, a_data, b_data, &cmp))
@@ -2136,7 +2136,7 @@ static void sort_array_internal (SLang_Array_Type *at_str,
 
    if (Sort_Array != NULL)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED, "array_sort is not recursive");
+	_pSLang_verror (SL_NOT_IMPLEMENTED, "array_sort is not recursive");
 	return;
      }
 
@@ -2144,7 +2144,7 @@ static void sort_array_internal (SLang_Array_Type *at_str,
 
    if (at_str->num_dims != 1)
      {
-	SLang_verror (SL_INVALID_PARM, "sort is restricted to 1 dim arrays");
+	_pSLang_verror (SL_INVALID_PARM, "sort is restricted to 1 dim arrays");
 	return;
      }
 
@@ -2206,7 +2206,7 @@ static void sort_array (void)
 
 	if (at->cl->cl_cmp == NULL)
 	  {
-	     SLang_verror (SL_NOT_IMPLEMENTED, 
+	     _pSLang_verror (SL_NOT_IMPLEMENTED, 
 			   "%s does not have a predefined sorting method",
 			   at->cl->cl_name);
 	     SLang_free_array (at);
@@ -2255,7 +2255,7 @@ static void init_char_array (void)
 
    if (at->data_type != SLANG_CHAR_TYPE)
      {
-	SLang_verror (SL_TYPE_MISMATCH, "Operation requires a character array");
+	_pSLang_verror (SL_TYPE_MISMATCH, "Operation requires a character array");
 	goto free_and_return;
      }
 
@@ -2263,7 +2263,7 @@ static void init_char_array (void)
    ndim = at->num_elements;
    if (n > ndim)
      {
-	SLang_verror (SL_INVALID_PARM, "String too big to initialize array");
+	_pSLang_verror (SL_INVALID_PARM, "String too big to initialize array");
 	goto free_and_return;
      }
 
@@ -2337,7 +2337,7 @@ static int get_range_array_limits (SLindex_Type *first_indexp, SLindex_Type *las
 
    if (delta == 0)
      {
-	SLang_verror (SL_INVALID_PARM, "range-array increment must be non-zero");
+	_pSLang_verror (SL_INVALID_PARM, "range-array increment must be non-zero");
 	return -1;
      }
 
@@ -2432,7 +2432,7 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 
    if ((xminptr == NULL) || (xmaxptr == NULL))
      {
-	SLang_verror (SL_INVALID_PARM, "range-array has unknown size");
+	_pSLang_verror (SL_INVALID_PARM, "range-array has unknown size");
 	return NULL;
      }
    xmin = *xminptr;
@@ -2464,7 +2464,7 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 
 	if (dx == 0.0)
 	  {
-	     SLang_verror (SL_INVALID_PARM, "range-array increment must be non-zero");
+	     _pSLang_verror (SL_INVALID_PARM, "range-array increment must be non-zero");
 	     return NULL;
 	  }
 
@@ -2552,7 +2552,7 @@ static int inline_implicit_array (int ntype)
      has_vals [2] = 0;
    else if (count != 3)
      {
-	SLang_verror (SL_NUM_ARGS_ERROR, "wrong number of arguments to __implicit_inline_array");
+	_pSLang_verror (SL_NUM_ARGS_ERROR, "wrong number of arguments to __implicit_inline_array");
 	return -1;
      }
 
@@ -2594,7 +2594,7 @@ static int inline_implicit_array (int ntype)
 	   case SLANG_NULL_TYPE:
 	     if (ntype)
 	       {
-		  SLang_verror (SL_Syntax_Error, "Arrays of the form [a:b:#c] must be fully specified");
+		  _pSLang_verror (SL_Syntax_Error, "Arrays of the form [a:b:#c] must be fully specified");
 		  return -1;
 	       }
 	     has_vals[i] = 0;
@@ -2937,7 +2937,7 @@ int _pSLarray_inline_array (void)
 
    if (count == 0)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED, "Empty inline-arrays not supported");
+	_pSLang_verror (SL_NOT_IMPLEMENTED, "Empty inline-arrays not supported");
 	return -1;
      }
 
@@ -3056,7 +3056,7 @@ static int array_binary_op (int op,
      {
 	if (na != 1)
 	  {
-	     SLang_verror (SL_NOT_IMPLEMENTED, "Binary operation on multiple arrays not implemented");
+	     _pSLang_verror (SL_NOT_IMPLEMENTED, "Binary operation on multiple arrays not implemented");
 	     return -1;
 	  }
 
@@ -3087,7 +3087,7 @@ static int array_binary_op (int op,
      {
 	if (nb != 1)
 	  {
-	     SLang_verror (SL_NOT_IMPLEMENTED, "Binary operation on multiple arrays not implemented");
+	     _pSLang_verror (SL_NOT_IMPLEMENTED, "Binary operation on multiple arrays not implemented");
 	     return -1;
 	  }
 
@@ -3121,7 +3121,7 @@ static int array_binary_op (int op,
 
 	if (num_dims != bt->num_dims)
 	  {
-	     SLang_verror (SL_TYPE_MISMATCH, "Arrays must have same dim for binary operation");
+	     _pSLang_verror (SL_TYPE_MISMATCH, "Arrays must have same dim for binary operation");
 	     return -1;
 	  }
 
@@ -3129,7 +3129,7 @@ static int array_binary_op (int op,
 	  {
 	     if (at->dims[i] != bt->dims[i])
 	       {
-		  SLang_verror (SL_TYPE_MISMATCH, "Arrays must be the same for binary operation");
+		  _pSLang_verror (SL_TYPE_MISMATCH, "Arrays must be the same for binary operation");
 		  return -1;
 	       }
 	  }
@@ -3596,7 +3596,7 @@ static int do_array_reshape (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 	SLindex_Type d = dims[i];
 	if (d < 0)
 	  {
-	     SLang_verror (SL_INVALID_PARM, "reshape: dimension is less then 0");
+	     _pSLang_verror (SL_INVALID_PARM, "reshape: dimension is less then 0");
 	     return -1;
 	  }
 
@@ -3606,7 +3606,7 @@ static int do_array_reshape (SLang_Array_Type *at, SLang_Array_Type *ind_at)
    if ((num_elements != at->num_elements)
        || (num_dims > SLARRAY_MAX_DIMS))
      {
-	SLang_verror (SL_INVALID_PARM, "Unable to reshape array to specified size");
+	_pSLang_verror (SL_INVALID_PARM, "Unable to reshape array to specified size");
 	return -1;
      }
 
@@ -3632,7 +3632,7 @@ static int pop_1d_index_array (SLang_Array_Type **ind_atp)
      return -1;
    if (ind_at->num_dims != 1)
      {
-	SLang_verror (SL_TYPE_MISMATCH, "Expecting 1-d array of indices");
+	_pSLang_verror (SL_TYPE_MISMATCH, "Expecting 1-d array of indices");
 	return -1;
      }
    *ind_atp = ind_at;
@@ -3730,7 +3730,7 @@ static void array_map (void)
 
    if (SLang_Num_Function_Args < 3)
      {
-	SLang_verror (SL_INVALID_PARM,
+	_pSLang_verror (SL_INVALID_PARM,
 		      "Usage: array_map (Return-Type, &func, args...)");
 	SLdo_pop_n (SLang_Num_Function_Args);
 	return;
@@ -3795,7 +3795,7 @@ static void array_map (void)
 	if ((num_elements != 0) 
 	    && (ati->num_elements == 0))
 	  {
-	     SLang_verror (SL_TypeMismatch_Error, "array_map: function argument %d of %d is an empty array", 
+	     _pSLang_verror (SL_TypeMismatch_Error, "array_map: function argument %d of %d is an empty array", 
 			   i+1, num_args);
 	     goto return_error;
 	  }
@@ -3914,7 +3914,7 @@ static int pop_int_indices (SLindex_Type *dims, unsigned int ndims)
 
    if (ndims > SLARRAY_MAX_DIMS)
      {
-	SLang_verror (SL_INVALID_PARM, "Too many dimensions specified");
+	_pSLang_verror (SL_INVALID_PARM, "Too many dimensions specified");
 	return -1;
      }
    for (i = (int)ndims-1; i >= 0; i--)
@@ -4169,7 +4169,7 @@ do_array_math_op (int op, int unary_type,
 
    if (na != 1)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED, "Operation restricted to 1 array");
+	_pSLang_verror (SL_NOT_IMPLEMENTED, "Operation restricted to 1 array");
 	return NULL;
      }
 
@@ -4287,7 +4287,7 @@ _pSLarray_typecast (SLtype a_type, VOID_STAR ap, unsigned int na,
 
    if (na != 1)
      {
-	SLang_verror (SL_NOT_IMPLEMENTED, "typecast of multiple arrays not implemented");
+	_pSLang_verror (SL_NOT_IMPLEMENTED, "typecast of multiple arrays not implemented");
 	return -1;
      }
 
@@ -4555,7 +4555,7 @@ int _pSLarray_matrix_multiply (void)
 	(*_pSLang_Matrix_Multiply)();
 	return 0;
      }
-   SLang_verror (SL_NOT_IMPLEMENTED, "Matrix multiplication not available");
+   _pSLang_verror (SL_NOT_IMPLEMENTED, "Matrix multiplication not available");
    return -1;
 }
 
@@ -4573,7 +4573,7 @@ _pSLarray_cl_foreach_open (SLtype type, unsigned int num)
    if (num != 0)
      {
 	SLdo_pop_n (num + 1);
-	SLang_verror (SL_NOT_IMPLEMENTED,
+	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "%s does not support 'foreach using' form",
 		      SLclass_get_datatype_name (type));
 	return NULL;
@@ -4720,7 +4720,7 @@ int _pSLarray_push_elem_ref (void)
 
    if (num_indices > SLARRAY_MAX_DIMS)
      {
-	SLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", SLARRAY_MAX_DIMS);
+	_pSLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", SLARRAY_MAX_DIMS);
 	return -1;
      }
 

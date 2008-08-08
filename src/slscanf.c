@@ -46,7 +46,7 @@ static void init_map (unsigned char map[256], int base)
    map['c'] = 12;   map['d'] = 13;   map['e'] = 14;   map['f'] = 15;
 }
 
-static char *get_sign (char *s, char *smax, int *sign)
+static SLFUTURE_CONST char *get_sign (SLFUTURE_CONST char *s, SLFUTURE_CONST char *smax, int *sign)
 {
    *sign = 1;
    if (s + 1 < smax)
@@ -62,10 +62,10 @@ static char *get_sign (char *s, char *smax, int *sign)
 }
 
 
-static int parse_long (char **sp, char *smax, long *np,
+static int parse_long (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, long *np,
 		       long base, unsigned char map[256])
 {
-   char *s, *s0;
+   SLFUTURE_CONST char *s, *s0;
    long n;
    int sign;
 
@@ -94,7 +94,7 @@ static int parse_long (char **sp, char *smax, long *np,
 }
 
 
-static int parse_int (char **sp, char *smax, int *np,
+static int parse_int (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, int *np,
 		      long base, unsigned char map[256])
 {
    long n;
@@ -105,7 +105,7 @@ static int parse_int (char **sp, char *smax, int *np,
    return status;
 }
 
-static int parse_short (char **sp, char *smax, short *np,
+static int parse_short (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, short *np,
 			long base, unsigned char map[256])
 {
    long n;
@@ -116,19 +116,19 @@ static int parse_short (char **sp, char *smax, short *np,
    return status;
 }
 
-static int parse_ulong (char **sp, char *smax, unsigned long *np,
+static int parse_ulong (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, unsigned long *np,
 			long base, unsigned char map[256])
 {
    return parse_long (sp, smax, (long *) np, base, map);
 }
 
-static int parse_uint (char **sp, char *smax, unsigned int *np,
+static int parse_uint (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, unsigned int *np,
 		       long base, unsigned char map[256])
 {
    return parse_int (sp, smax, (int *) np, base, map);
 }
 
-static int parse_ushort (char **sp, char *smax, unsigned short *np,
+static int parse_ushort (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, unsigned short *np,
 			 long base, unsigned char map[256])
 {
    return parse_short (sp, smax, (short *) np, base, map);
@@ -141,15 +141,15 @@ static int parse_ushort (char **sp, char *smax, unsigned short *np,
  * not support and some that do get it wrong.  So, I will handle the parsing
  * of the string and let atof or strtod handle the arithmetic.
  */
-static int parse_double (char **sp, char *smax, double *d)
+static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, double *d)
 {
-   char *s, *s0;
+   SLFUTURE_CONST char *s, *s0;
    int sign;
    int expon;
    unsigned char map[256];
    char buf[128];
    int has_leading_zeros;
-   char *start_pos, *sign_pos;
+   SLFUTURE_CONST char *start_pos, *sign_pos;
    char *b, *bmax;
    char ch;
 
@@ -306,7 +306,7 @@ static int parse_double (char **sp, char *smax, double *d)
    return 1;
 }
 
-static int parse_float (char **sp, char *smax, float *d)
+static int parse_float (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, float *d)
 {
    double x;
    if (1 == parse_double (sp, smax, &x))
@@ -318,9 +318,9 @@ static int parse_float (char **sp, char *smax, float *d)
 }
 #endif				       /* SLANG_HAS_FLOAT */
 
-static int parse_string (char **sp, char *smax, char **str)
+static int parse_string (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, char **str)
 {
-   char *s, *s0;
+   SLFUTURE_CONST char *s, *s0;
    
    s0 = s = *sp;
    while (s < smax)
@@ -336,9 +336,9 @@ static int parse_string (char **sp, char *smax, char **str)
    return 1;
 }
 
-static int parse_bstring (char **sp, char *smax, char **str)
+static int parse_bstring (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, char **str)
 {
-   char *s;
+   SLFUTURE_CONST char *s;
    
    s = *sp;
    if (NULL == (*str = SLang_create_nslstring (s, (unsigned int) (smax - s))))
@@ -348,11 +348,11 @@ static int parse_bstring (char **sp, char *smax, char **str)
    return 1;
 }
 
-static int parse_range (char **sp, char *smax, char **fp, char **str)
+static int parse_range (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, SLFUTURE_CONST char **fp, char **str)
 {
-   char *s, *s0;
+   SLFUTURE_CONST char *s, *s0;
    char *range;
-   char *f;
+   SLFUTURE_CONST char *f;
    unsigned char map[256];
    unsigned char reverse;
 
@@ -380,7 +380,7 @@ static int parse_range (char **sp, char *smax, char **fp, char **str)
 
 	if (ch == 0)
 	  {
-	     SLang_verror (SL_INVALID_PARM, "Unexpected end of range in format");
+	     _pSLang_verror (SL_INVALID_PARM, "Unexpected end of range in format");
 	     return -1;
 	  }
 	if (ch == ']')
@@ -413,12 +413,12 @@ int _pSLang_sscanf (void)
    unsigned int num_refs;
    char *format;
    char *input_string, *input_string_max;
-   char *f, *s;
+   SLFUTURE_CONST char *f, *s;
    unsigned char map8[256], map10[256], map16[256];
 
    if (SLang_Num_Function_Args < 2)
      {
-	SLang_verror (SL_INVALID_PARM, "Int_Type sscanf (str, format, ...)");
+	_pSLang_verror (SL_INVALID_PARM, "Int_Type sscanf (str, format, ...)");
 	return -1;
      }
    
@@ -450,7 +450,7 @@ int _pSLang_sscanf (void)
      {
 	SLang_Object_Type obj;
 	SLang_Ref_Type *ref;
-	char *smax;
+	SLFUTURE_CONST char *smax;
 	unsigned char *map;
 	int base;
 	int no_assign;
@@ -469,7 +469,7 @@ int _pSLang_sscanf (void)
 #if 1
 	     break;
 #else
-	     SLang_verror (SL_INVALID_PARM, "sscanf: format not big enough for output list");
+	     _pSLang_verror (SL_INVALID_PARM, "sscanf: format not big enough for output list");
 	     goto return_error;
 #endif
 	  }
@@ -554,7 +554,7 @@ int _pSLang_sscanf (void)
 	switch (chf)
 	  {
 	   case 0:
-	     SLang_verror (SL_INVALID_PARM, "sscanf: Unexpected end of format");
+	     _pSLang_verror (SL_INVALID_PARM, "sscanf: Unexpected end of format");
 	     goto return_error;
 	   case 'D':
 	     is_long = 1;
@@ -646,7 +646,7 @@ int _pSLang_sscanf (void)
 		  status = parse_float (&s, smax, &obj.v.float_val);
 	       }
 #else
-	     SLang_verror (SL_NOT_IMPLEMENTED,
+	     _pSLang_verror (SL_NOT_IMPLEMENTED,
 			   "This version of the S-Lang does not support floating point");
 	     status = -1;
 #endif
@@ -682,7 +682,7 @@ int _pSLang_sscanf (void)
 	     
 	   default:
 	     status = -1;
-	     SLang_verror (SL_NOT_IMPLEMENTED, "format specifier '%c' is not supported", chf);
+	     _pSLang_verror (SL_NOT_IMPLEMENTED, "format specifier '%c' is not supported", chf);
 	     break;
 	  }
 	
@@ -746,7 +746,7 @@ int _pSLang_sscanf (void)
 extern double atof ();
 #endif
 
-double _pSLang_atof (char *s)
+double _pSLang_atof (SLFUTURE_CONST char *s)
 {
    double x;
 

@@ -91,7 +91,7 @@ static Key_Methods_Type *alloc_key_methods (int type)
 
    if (Num_Key_Methods >= SLKEYMAP_MAX_TYPES)
      {
-	SLang_verror (SL_LimitExceeded_Error, "Maximum number of keymap types exceeded");
+	_pSLang_verror (SL_LimitExceeded_Error, "Maximum number of keymap types exceeded");
 	return NULL;
      }
    k = Key_Methods_Table + Num_Key_Methods;
@@ -140,7 +140,7 @@ static SLang_Key_Type *malloc_key(unsigned char *str)
    return(neew);
 }
 
-static SLkeymap_Type *add_keymap (char *name, SLang_Key_Type *map)
+static SLkeymap_Type *add_keymap (SLFUTURE_CONST char *name, SLang_Key_Type *map)
 {
    SLkeymap_Type *km;
 
@@ -158,7 +158,7 @@ static SLkeymap_Type *add_keymap (char *name, SLang_Key_Type *map)
    return km;
 }
 
-FVOID_STAR SLang_find_key_function(char *name, SLkeymap_Type *keymap)
+FVOID_STAR SLang_find_key_function (SLFUTURE_CONST char *name, SLkeymap_Type *keymap)
 {
    SLKeymap_Function_Type *fp = keymap -> functions;
    char ch = *name;
@@ -178,7 +178,7 @@ FVOID_STAR SLang_find_key_function(char *name, SLkeymap_Type *keymap)
 /* Expand termcap string specified by s.  s as passed will have the format:
  *   "XY)..."  where XY represents a termcap keyname.
  */
-static char *process_termcap_string (char *s, char *str, int *ip, int imax)
+static SLFUTURE_CONST char *process_termcap_string (SLFUTURE_CONST char *s, char *str, int *ip, int imax)
 {
    char c[3], *val;
    int i;
@@ -187,7 +187,7 @@ static char *process_termcap_string (char *s, char *str, int *ip, int imax)
        || (0 == (c[1] = s[1]))
        || (s[2] != ')'))
      {
-	SLang_verror (SL_SYNTAX_ERROR, "setkey: ^(%s is badly formed", s);
+	_pSLang_verror (SL_SYNTAX_ERROR, "setkey: ^(%s is badly formed", s);
 	return NULL;
      }
    s += 3;
@@ -211,7 +211,7 @@ static char *process_termcap_string (char *s, char *str, int *ip, int imax)
 /* convert things like "^A" to 1 etc... The 0th char is the strlen INCLUDING
  * the length character itself.
  */
-char *SLang_process_keystring(char *s)
+char *SLang_process_keystring(SLFUTURE_CONST char *s)
 {
    /* FIXME: v2.0, make this thread safe */
    static char str[32];
@@ -253,7 +253,7 @@ char *SLang_process_keystring(char *s)
 
    if (i > SLANG_MAX_KEYMAP_KEY_SEQ)
      {
-	SLang_verror (SL_INVALID_PARM, "Key sequence is too long");
+	_pSLang_verror (SL_INVALID_PARM, "Key sequence is too long");
 	return NULL;
      }
 
@@ -290,7 +290,7 @@ static int key_string_compare (unsigned char *a, unsigned char *b, unsigned int 
 #define KEY_DEFINITION_ERROR_MSG "Inconsistent key-definition"
 
 /* This function also performs an insertion in an ordered way. */
-static int find_the_key (char *s, SLkeymap_Type *kml, SLang_Key_Type **keyp)
+static int find_the_key (SLFUTURE_CONST char *s, SLkeymap_Type *kml, SLang_Key_Type **keyp)
 {
    unsigned char ch;
    unsigned int str_len;
@@ -312,7 +312,7 @@ static int find_the_key (char *s, SLkeymap_Type *kml, SLang_Key_Type **keyp)
      {
 	if (key->next != NULL)
 	  {
-	     SLang_verror (SL_INVALID_PARM, KEY_DEFINITION_ERROR_MSG);
+	     _pSLang_verror (SL_INVALID_PARM, KEY_DEFINITION_ERROR_MSG);
 	     return -2;
 	  }
 
@@ -348,7 +348,7 @@ static int find_the_key (char *s, SLkeymap_Type *kml, SLang_Key_Type **keyp)
 	       {
 		  if (key_len != str_len)
 		    {
-		       SLang_verror (SL_INVALID_PARM, KEY_DEFINITION_ERROR_MSG);
+		       _pSLang_verror (SL_INVALID_PARM, KEY_DEFINITION_ERROR_MSG);
 		       return -2;
 		    }
 		  
@@ -371,7 +371,7 @@ static int find_the_key (char *s, SLkeymap_Type *kml, SLang_Key_Type **keyp)
 }
 
 /* returns -2 if inconsistent, -1 if malloc error, 0 upon success */
-int SLkm_define_key (char *s, FVOID_STAR f, SLkeymap_Type *kml)
+int SLkm_define_key (SLFUTURE_CONST char *s, FVOID_STAR f, SLkeymap_Type *kml)
 {
    SLang_Key_Type *key;
    unsigned int type = SLKEY_F_INTRINSIC;
@@ -386,7 +386,7 @@ int SLkm_define_key (char *s, FVOID_STAR f, SLkeymap_Type *kml)
    return 0;
 }
 
-int SLang_define_key (char *s, char *funct, SLkeymap_Type *kml)
+int SLang_define_key (SLFUTURE_CONST char *s, SLFUTURE_CONST char *funct, SLkeymap_Type *kml)
 {
    SLang_Key_Type *key;
    FVOID_STAR f;
@@ -413,7 +413,7 @@ int SLang_define_key (char *s, char *funct, SLkeymap_Type *kml)
    return 0;
 }
 
-int SLkm_define_keysym (char *s, unsigned int keysym, SLkeymap_Type *kml)
+int SLkm_define_keysym (SLFUTURE_CONST char *s, unsigned int keysym, SLkeymap_Type *kml)
 {
    SLang_Key_Type *key;
    int ret;
@@ -428,7 +428,7 @@ int SLkm_define_keysym (char *s, unsigned int keysym, SLkeymap_Type *kml)
    return 0;
 }
 
-int SLkm_define_slkey (char *s, SLang_Name_Type *nt, SLkeymap_Type *kml)
+int SLkm_define_slkey (SLFUTURE_CONST char *s, SLang_Name_Type *nt, SLkeymap_Type *kml)
 {
    SLang_Key_Type *key;
    int ret;
@@ -561,7 +561,7 @@ SLang_Key_Type *SLang_do_key(SLkeymap_Type *kml, int (*getkey)(void))
    return NULL;
 }
 
-void SLang_undefine_key(char *s, SLkeymap_Type *kml)
+void SLang_undefine_key(SLFUTURE_CONST char *s, SLkeymap_Type *kml)
 {
    int n, i;
    SLang_Key_Type *key, *next, *last, *key_root, *keymap;
@@ -608,7 +608,7 @@ char *SLang_make_keystring(unsigned char *s)
 
    if (n > SLANG_MAX_KEYMAP_KEY_SEQ)
      {
-	SLang_verror (SL_BUILTIN_LIMIT_EXCEEDED, "Key sequence is too long");
+	_pSLang_verror (SL_BUILTIN_LIMIT_EXCEEDED, "Key sequence is too long");
 	return NULL;
      }
 
@@ -671,7 +671,7 @@ static SLang_Key_Type *copy_keymap(SLkeymap_Type *kml)
    return(new_root);
 }
 
-SLkeymap_Type *SLang_create_keymap(char *name, SLkeymap_Type *map)
+SLkeymap_Type *SLang_create_keymap(SLFUTURE_CONST char *name, SLkeymap_Type *map)
 {
    SLang_Key_Type *neew;
    SLkeymap_Type *new_map;
@@ -684,7 +684,7 @@ SLkeymap_Type *SLang_create_keymap(char *name, SLkeymap_Type *map)
    return new_map;
 }
 
-SLkeymap_Type *SLang_find_keymap(char *name)
+SLkeymap_Type *SLang_find_keymap(SLFUTURE_CONST char *name)
 {
    SLkeymap_Type *kmap;
 

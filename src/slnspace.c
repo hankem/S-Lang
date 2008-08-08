@@ -30,7 +30,7 @@ USA.
 
 static SLang_NameSpace_Type *Namespace_Tables;
 
-SLang_NameSpace_Type *_pSLns_find_namespace (char *name)
+SLang_NameSpace_Type *_pSLns_find_namespace (SLCONST char *name)
 {
    SLang_NameSpace_Type *table_list;
 
@@ -58,7 +58,7 @@ void _pSLns_deallocate_namespace (SLang_NameSpace_Type *ns)
    if (ns == NULL)
      return;
    
-   SLang_free_slstring (ns->name);
+   SLang_free_slstring ((char *) ns->name);
 
    table = ns->table;
    table_size = ns->table_size;
@@ -69,7 +69,7 @@ void _pSLns_deallocate_namespace (SLang_NameSpace_Type *ns)
 	while (t != NULL)
 	  {
 	     SLang_Name_Type *t1 = t->next;
-	     SLang_free_slstring (t->name);
+	     SLang_free_slstring ((char *) t->name);
 	     SLfree ((char *) t);
 	     /* Later: free additional objects here */
 	     t = t1;
@@ -80,7 +80,7 @@ void _pSLns_deallocate_namespace (SLang_NameSpace_Type *ns)
 }
 
 /* This function does not insert the namespace into the list */
-SLang_NameSpace_Type *_pSLns_allocate_namespace (char *name, unsigned int size)
+SLang_NameSpace_Type *_pSLns_allocate_namespace (SLFUTURE_CONST char *name, unsigned int size)
 {
    SLang_Name_Type **nt;
    SLang_NameSpace_Type *ns;
@@ -91,13 +91,13 @@ SLang_NameSpace_Type *_pSLns_allocate_namespace (char *name, unsigned int size)
    if (NULL == (ns = (SLang_NameSpace_Type *)
 		SLcalloc (sizeof (SLang_NameSpace_Type), 1)))
      {
-	SLang_free_slstring (name);
+	SLang_free_slstring ((char *) name);
 	return NULL;
      }
 
    if (NULL == (nt = (SLang_Name_Type **) SLcalloc (sizeof (SLang_Name_Type *), size)))
      {
-	SLang_free_slstring (name);
+	SLang_free_slstring ((char *) name);
 	SLfree ((char *)ns);
 	return NULL;
      }
@@ -110,7 +110,7 @@ SLang_NameSpace_Type *_pSLns_allocate_namespace (char *name, unsigned int size)
 }
 
 /* allocate a namespace and add it to the internal list */
-SLang_NameSpace_Type *_pSLns_new_namespace (char *name, unsigned int size)
+SLang_NameSpace_Type *_pSLns_new_namespace (SLFUTURE_CONST char *name, unsigned int size)
 {
    SLang_NameSpace_Type *table_list;
    static int num;
@@ -132,7 +132,7 @@ SLang_NameSpace_Type *_pSLns_new_namespace (char *name, unsigned int size)
    return table_list;
 }
 
-SLang_NameSpace_Type *_pSLns_get_private_namespace (char *name, char *namespace_name)
+SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, SLFUTURE_CONST char *namespace_name)
 {
    SLang_NameSpace_Type *ns;
 
@@ -177,7 +177,7 @@ SLang_NameSpace_Type *_pSLns_get_private_namespace (char *name, char *namespace_
    return ns;
 }
 
-int _pSLns_set_namespace_name (SLang_NameSpace_Type *t, char *name)
+int _pSLns_set_namespace_name (SLang_NameSpace_Type *t, SLFUTURE_CONST char *name)
 {
    SLang_NameSpace_Type *t1;
    
@@ -190,14 +190,14 @@ int _pSLns_set_namespace_name (SLang_NameSpace_Type *t, char *name)
    
    if ((t != t1) || (*name == 0))
      {
-	SLang_verror (SL_Namespace_Error, "Namespace \"%s\" already exists",
+	_pSLang_verror (SL_Namespace_Error, "Namespace \"%s\" already exists",
 		      name);
 	return -1;
      }
 
    if (t->namespace_name != NULL)
      {
-	SLang_verror (SL_Namespace_Error, "An attempt was made to redefine namespace from \"%s\" to \"%s\"\n",
+	_pSLang_verror (SL_Namespace_Error, "An attempt was made to redefine namespace from \"%s\" to \"%s\"\n",
 		      t->namespace_name, name);
 	return -1;
      }
@@ -205,13 +205,13 @@ int _pSLns_set_namespace_name (SLang_NameSpace_Type *t, char *name)
    if (NULL == (name = SLang_create_slstring (name)))
      return -1;
 
-   SLang_free_slstring (t->namespace_name);   /* NULL ok */
+   SLang_free_slstring ((char *) t->namespace_name);   /* NULL ok */
    t->namespace_name = name;
    
    return 0;
 }
 
-SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, char *pat, unsigned int what)
+SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, SLFUTURE_CONST char *pat, unsigned int what)
 {
    SLang_Array_Type *at;
    unsigned int table_size;
@@ -229,7 +229,7 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, char *pat, unsig
 
    if (NULL == (reg = SLregexp_compile (pat, 0)))
      {
-	SLang_verror (SL_Parse_Error, "Invalid regular expression: %s", pat);
+	_pSLang_verror (SL_Parse_Error, "Invalid regular expression: %s", pat);
 	return NULL;
      }
 
@@ -247,7 +247,7 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, char *pat, unsig
 	     while (t != NULL)
 	       {
 		  unsigned int flags;
-		  char *name = t->name;
+		  SLFUTURE_CONST char *name = t->name;
 
 		  switch (t->name_type)
 		    {
@@ -311,7 +311,7 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, char *pat, unsig
    return NULL;
 }
 
-SLang_NameSpace_Type *_pSLns_create_namespace2 (char *name, char *namespace_name)
+SLang_NameSpace_Type *_pSLns_create_namespace2 (SLFUTURE_CONST char *name, SLFUTURE_CONST char *namespace_name)
 {
    SLang_NameSpace_Type *ns;
 
@@ -334,7 +334,7 @@ SLang_NameSpace_Type *_pSLns_create_namespace2 (char *name, char *namespace_name
    return ns;
 }
 
-SLang_NameSpace_Type *SLns_create_namespace (char *namespace_name)
+SLang_NameSpace_Type *SLns_create_namespace (SLFUTURE_CONST char *namespace_name)
 {
    return _pSLns_create_namespace2 (NULL, namespace_name);
 }
@@ -391,7 +391,7 @@ SLang_Array_Type *_pSLns_list_namespaces (void)
      {
 	if (table_list->namespace_name != NULL)
 	  {
-	     char *name = table_list->namespace_name;
+	     SLCONST char *name = table_list->namespace_name;
 	     if (-1 == SLang_set_array_element (at, &i, (VOID_STAR)&name))
 	       {
 		  SLang_free_array (at);
@@ -405,7 +405,7 @@ SLang_Array_Type *_pSLns_list_namespaces (void)
 }
 
 SLang_Name_Type *
-  _pSLns_locate_hashed_name (SLang_NameSpace_Type *ns, char *name, unsigned long hash)
+  _pSLns_locate_hashed_name (SLang_NameSpace_Type *ns, SLCONST char *name, unsigned long hash)
 {
    SLang_Name_Type *t;
    char ch;
@@ -439,7 +439,7 @@ int _pSLns_add_hashed_name (SLang_NameSpace_Type *ns, SLang_Name_Type *nt, unsig
 SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt)
 {
    SLang_NameSpace_Type *ns;
-   char *name;
+   SLCONST char *name;
    unsigned long hash;
 
    if (nt == NULL)
@@ -466,7 +466,7 @@ SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt)
    return NULL;
 }
 
-SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *ns, char *name)
+SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *ns, SLCONST char *name)
 {
    return _pSLns_locate_hashed_name (ns, name, _pSLcompute_string_hash (name));
 }

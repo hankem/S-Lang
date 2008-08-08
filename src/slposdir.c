@@ -319,7 +319,7 @@ static char stat_is_cmd (char *what, int *mode_ptr)
    else if (!strcmp (what, "lnk")) ret = S_ISLNK(st_mode);
    else
      {
-	SLang_verror (SL_INVALID_PARM, "stat_is: Unrecognized type: %s", what);
+	_pSLang_verror (SL_INVALID_PARM, "stat_is: Unrecognized type: %s", what);
 	return -1;
      }
 
@@ -1024,7 +1024,7 @@ static void listdir_cmd_wrap (void)
 	  }
 	break;
       default:
-	SLang_verror (SL_INVALID_PARM, "usage: listdir (string, [opt-string]");
+	_pSLang_verror (SL_INVALID_PARM, "usage: listdir (string, [opt-string]");
 	return;
      }
 

@@ -36,9 +36,9 @@ USA.
 extern double atof ();
 #endif
 
-static SLcmd_Cmd_Type *SLcmd_find_command (char *s, SLcmd_Cmd_Type *cmd)
+static SLcmd_Cmd_Type *SLcmd_find_command (SLFUTURE_CONST char *s, SLcmd_Cmd_Type *cmd)
 {
-   char *cmdstr;
+   SLCONST char *cmdstr;
    char chs = *s++, ch;
 
    while ((cmd->cmdfun != NULL)
@@ -51,9 +51,10 @@ static SLcmd_Cmd_Type *SLcmd_find_command (char *s, SLcmd_Cmd_Type *cmd)
    return NULL;
 }
 
-static int extract_token (char **strptr, char *buf)
+static int extract_token (SLFUTURE_CONST char **strptr, char *buf)
 {
-   char *s, *b;
+   SLFUTURE_CONST char *s;
+   char *b;
    char ch, quote;
 
    *buf = 0;
@@ -125,7 +126,7 @@ static int allocate_arg_space (SLcmd_Cmd_Table_Type *table, int argc, unsigned i
 
    if (NULL == (p = SLrealloc ((char *)table->string_args, space * sizeof (char *))))
      return -1;
-   table->string_args = (char **)p;
+   table->string_args = (SLFUTURE_CONST char **)p;
    table->string_args [argc] = NULL;
 
    if (NULL == (p = SLrealloc ((char *)table->int_args, space * sizeof (int))))
@@ -144,9 +145,9 @@ static int allocate_arg_space (SLcmd_Cmd_Table_Type *table, int argc, unsigned i
    return 0;
 }
 
-int SLcmd_execute_string (char *str, SLcmd_Cmd_Table_Type *table)
+int SLcmd_execute_string (SLFUTURE_CONST char *str, SLcmd_Cmd_Table_Type *table)
 {
-   char *s, *arg_type, *last_str, *cmd_name;
+   SLFUTURE_CONST char *s, *arg_type, *last_str, *cmd_name;
    SLcmd_Cmd_Type *cmd;
    char *buf;
    int token_present;
@@ -176,7 +177,7 @@ int SLcmd_execute_string (char *str, SLcmd_Cmd_Table_Type *table)
    if (((len = strlen (buf)) >= 32)
        || (NULL == (cmd = SLcmd_find_command (buf, table->table))))
      {
-	SLang_verror (SL_UNDEFINED_NAME,"%s: invalid command", buf);
+	_pSLang_verror (SL_UNDEFINED_NAME,"%s: invalid command", buf);
 	SLfree (buf);
 	return -1;
      }
@@ -254,7 +255,7 @@ int SLcmd_execute_string (char *str, SLcmd_Cmd_Table_Type *table)
 	   case 'V':
 	     if (token_present == 0)
 	       {
-		  SLang_verror (SL_INVALID_PARM, "%s: Expecting argument", cmd_name);
+		  _pSLang_verror (SL_INVALID_PARM, "%s: Expecting argument", cmd_name);
 		  goto error;
 	       }
 
@@ -274,7 +275,7 @@ int SLcmd_execute_string (char *str, SLcmd_Cmd_Table_Type *table)
 	   case 'S':
 	     if (token_present == 0)
 	       {
-		  SLang_verror (SL_TYPE_MISMATCH, "%s: Expecting string argument", cmd_name);
+		  _pSLang_verror (SL_TYPE_MISMATCH, "%s: Expecting string argument", cmd_name);
 		  goto error;
 	       }
 
@@ -290,7 +291,7 @@ int SLcmd_execute_string (char *str, SLcmd_Cmd_Table_Type *table)
 	   case 'I':
 	     if ((token_present == 0) || (SLANG_INT_TYPE != guess_type))
 	       {
-		  SLang_verror (SL_TYPE_MISMATCH, "%s: Expecting integer argument", cmd_name);
+		  _pSLang_verror (SL_TYPE_MISMATCH, "%s: Expecting integer argument", cmd_name);
 		  goto error;
 	       }
 
@@ -305,7 +306,7 @@ int SLcmd_execute_string (char *str, SLcmd_Cmd_Table_Type *table)
 	   case 'F':
 	     if ((token_present == 0) || (SLANG_STRING_TYPE == guess_type))
 	       {
-		  SLang_verror (SL_TYPE_MISMATCH, "%s: Expecting double argument", cmd_name);
+		  _pSLang_verror (SL_TYPE_MISMATCH, "%s: Expecting double argument", cmd_name);
 		  goto error;
 	       }
 	     table->arg_type[argc] = SLANG_DOUBLE_TYPE;
@@ -318,7 +319,7 @@ int SLcmd_execute_string (char *str, SLcmd_Cmd_Table_Type *table)
 	   case 'G':
 	     if (token_present == 0)
 	       {
-		  SLang_verror (SL_TYPE_MISMATCH, "%s: Expecting argument", cmd_name);
+		  _pSLang_verror (SL_TYPE_MISMATCH, "%s: Expecting argument", cmd_name);
 		  goto error;
 	       }
 
@@ -354,7 +355,7 @@ int SLcmd_execute_string (char *str, SLcmd_Cmd_Table_Type *table)
      {
 	if (NULL != table->string_args[i])
 	  {
-	     SLfree (table->string_args[i]);
+	     SLfree ((char *) table->string_args[i]);
 	     table->string_args[i] = NULL;
 	  }
      }

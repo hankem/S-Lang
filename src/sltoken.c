@@ -48,9 +48,9 @@ static SLprep_Type *This_SLpp;
 
 static SLang_Load_Type *LLT;
 
-static char *map_token_to_string (_pSLang_Token_Type *tok)
+static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
 {
-   char *s;
+   SLCONST char *s;
    static char numbuf [32];
    unsigned char type;
    s = NULL;
@@ -68,27 +68,27 @@ static char *map_token_to_string (_pSLang_Token_Type *tok)
       case SHORT_TOKEN:
       case INT_TOKEN:
       case LONG_TOKEN:
+	sprintf (numbuf, "%ld", tok->v.long_val);
 	s = numbuf;
-	sprintf (s, "%ld", tok->v.long_val);
 	break;
 
       case UCHAR_TOKEN:
       case USHORT_TOKEN:
       case UINT_TOKEN:
       case ULONG_TOKEN:
+	sprintf (numbuf, "%lu", (unsigned long)tok->v.long_val);
 	s = numbuf;
-	sprintf (s, "%lu", (unsigned long)tok->v.long_val);
 	break;
 
 #if HAVE_LONG_LONG
       case LLONG_TOKEN:
+	sprintf (numbuf, "%lld", tok->v.llong_val);
 	s = numbuf;
-	sprintf (s, "%lld", tok->v.llong_val);
 	break;
 	
       case ULLONG_TOKEN:
+	sprintf (numbuf, "%llu", tok->v.ullong_val);
 	s = numbuf;
-	sprintf (s, "%llu", tok->v.ullong_val);
 	break;
 #endif
 	
@@ -142,17 +142,17 @@ static char *map_token_to_string (_pSLang_Token_Type *tok)
 
    if (s == NULL)
      {
+	sprintf (numbuf, "(0x%02X)", type);
 	s = numbuf;
-	sprintf (s, "(0x%02X)", type);
      }
 
    return s;
 }
 
-void _pSLparse_error (int errcode, char *str, _pSLang_Token_Type *tok, int flag)
+void _pSLparse_error (int errcode, SLCONST char *str, _pSLang_Token_Type *tok, int flag)
 {
    int line = LLT->line_num;
-   char *file = (char *) LLT->name;
+   SLFUTURE_CONST char *file = (char *) LLT->name;
 
    if (str == NULL)
      str = "Parse Error";
@@ -164,7 +164,7 @@ void _pSLparse_error (int errcode, char *str, _pSLang_Token_Type *tok, int flag)
    if (file == NULL) file = "??";
 
    if (flag || (_pSLang_Error == 0))
-     SLang_verror (errcode, "%s:%d: %s: found '%s'",
+     _pSLang_verror (errcode, "%s:%d: %s: found '%s'",
 		   file, line, str, map_token_to_string (tok));
 
    (void) _pSLerr_set_line_info (file, line, NULL);
@@ -380,7 +380,7 @@ static SLCONST unsigned char Char_Type_Table[256][2] =
  { ALPHA_CHAR, 0 },	/* þ */	    { ALPHA_CHAR, 0 },	/* ÿ */
 };
 
-int _pSLcheck_identifier_syntax (char *name)
+int _pSLcheck_identifier_syntax (SLCONST char *name)
 {
    unsigned char *p;
    
@@ -401,7 +401,7 @@ int _pSLcheck_identifier_syntax (char *name)
 	  }
      }
    
-   SLang_verror (SL_SYNTAX_ERROR, 
+   _pSLang_verror (SL_SYNTAX_ERROR, 
 		 "Identifier or structure field name '%s' contains an illegal character", name);
    return -1;
 }
@@ -719,7 +719,7 @@ static int expand_escaped_string (register char *s,
 #if 0	
 	if (isunicode && (utf8_encode == 0))
 	  {
-	     SLang_verror (SL_NOT_IMPLEMENTED, "Unicode is not supported by this application");
+	     _pSLang_verror (SL_NOT_IMPLEMENTED, "Unicode is not supported by this application");
 	     is_binary = -1;
 	     break;
 	  }
@@ -730,7 +730,7 @@ static int expand_escaped_string (register char *s,
 	s1 = (char *) SLutf8_encode (wch, (SLuchar_Type *)s, 6);
 	if (s1 == NULL)
 	  {
-	     SLang_verror (SL_INVALID_UTF8, "Unable to UTF-8 encode 0x%lX\n", (unsigned long)wch);
+	     _pSLang_verror (SL_INVALID_UTF8, "Unable to UTF-8 encode 0x%lX\n", (unsigned long)wch);
 	     is_binary = -1;
 	     break;
 	  }
@@ -1010,7 +1010,7 @@ int _pSLget_token (_pSLang_Token_Type *tok)
      }
 }
 
-static int prep_exists_function (SLprep_Type *pt, char *line)
+static int prep_exists_function (SLprep_Type *pt, SLFUTURE_CONST char *line)
 {
    char buf[MAX_FILE_LINE_LEN], *b, *bmax;
    unsigned char ch;
@@ -1045,30 +1045,31 @@ static int prep_exists_function (SLprep_Type *pt, char *line)
    return 0;
 }
 
-static int prep_eval_expr (SLprep_Type *pt, char *expr)
+static int prep_eval_expr (SLprep_Type *pt, SLFUTURE_CONST char *expr)
 {
    int ret;
-   char *end;
+   SLCONST char *end;
    void (*compile)(_pSLang_Token_Type *);
+   char *expr1;
 
    (void) pt;
    end = strchr (expr, '\n');
    if (end == NULL)
      end = expr + strlen (expr);
-   expr = SLmake_nstring (expr, (unsigned int) (end - expr));
-   if (expr == NULL)
+   expr1 = SLmake_nstring (expr, (unsigned int) (end - expr));
+   if (expr1 == NULL)
      return -1;
 
    compile = _pSLcompile_ptr;
    _pSLcompile_ptr = _pSLcompile;
-   if ((0 != SLang_load_string (expr))
+   if ((0 != SLang_load_string (expr1))
        || (-1 == SLang_pop_integer (&ret)))
      ret = -1;
    else
      ret = (ret != 0);
    _pSLcompile_ptr = compile;
 
-   SLfree (expr);
+   SLfree (expr1);
    return ret;
 }
 
@@ -1174,7 +1175,7 @@ int SLang_load_object (SLang_Load_Type *x)
    return 0;
 }
 
-SLang_Load_Type *SLns_allocate_load_type (char *name, char *namespace_name)
+SLang_Load_Type *SLns_allocate_load_type (SLFUTURE_CONST char *name, SLFUTURE_CONST char *namespace_name)
 {
    SLang_Load_Type *x;
 
@@ -1194,7 +1195,7 @@ SLang_Load_Type *SLns_allocate_load_type (char *name, char *namespace_name)
      {
 	if (NULL == (x->namespace_name = SLang_create_slstring (namespace_name)))
 	  {
-	     SLang_free_slstring (x->name);
+	     SLang_free_slstring ((char *) x->name);
 	     SLfree ((char *) x);
 	     return NULL;
 	  }
@@ -1203,7 +1204,7 @@ SLang_Load_Type *SLns_allocate_load_type (char *name, char *namespace_name)
    return x;
 }
 
-SLang_Load_Type *SLallocate_load_type (char *name)
+SLang_Load_Type *SLallocate_load_type (SLFUTURE_CONST char *name)
 {
    return SLns_allocate_load_type (name, NULL);
 }
@@ -1212,23 +1213,24 @@ void SLdeallocate_load_type (SLang_Load_Type *x)
 {
    if (x != NULL)
      {
-	SLang_free_slstring (x->name);
-	SLang_free_slstring (x->namespace_name);
+	SLang_free_slstring ((char *) x->name);
+	SLang_free_slstring ((char *) x->namespace_name);
 	SLfree ((char *) x);
      }
 }
 
 typedef struct
 {
-   char *string;
-   char *ptr;
+   SLCONST char *string;
+   SLCONST char *ptr;
 }
 String_Client_Data_Type;
 
 static char *read_from_string (SLang_Load_Type *x)
 {
    String_Client_Data_Type *data;
-   char *s, *s1, ch;
+   SLCONST char *s, *s1;
+   char ch;
 
    data = (String_Client_Data_Type *)x->client_data;
    s1 = s = data->ptr;
@@ -1244,15 +1246,15 @@ static char *read_from_string (SLang_Load_Type *x)
      }
 
    data->ptr = s;
-   return s1;
+   return (char *) s1;
 }
 
-int SLang_load_string (char *string)
+int SLang_load_string (SLFUTURE_CONST char *string)
 {
    return SLns_load_string (string, NULL);
 }
 
-int SLns_load_string (char *string, char *ns_name)
+int SLns_load_string (SLFUTURE_CONST char *string, SLFUTURE_CONST char *ns_name)
 {
    SLang_Load_Type *x;
    String_Client_Data_Type data;
@@ -1271,7 +1273,7 @@ int SLns_load_string (char *string, char *ns_name)
     */
    if (NULL == (x = SLns_allocate_load_type ("***string***", ns_name)))
      {
-	SLang_free_slstring (string);
+	SLang_free_slstring ((char *) string);
 	return -1;
      }
 
@@ -1283,7 +1285,7 @@ int SLns_load_string (char *string, char *ns_name)
        && (SLang_Traceback & SL_TB_FULL))
      _pSLerr_traceback_msg ("Traceback: called from eval: %s\n", string);
 
-   SLang_free_slstring (string);
+   SLang_free_slstring ((char *)string);
    SLdeallocate_load_type (x);
    return ret;
 }
@@ -1324,14 +1326,14 @@ int SLang_load_file_verbose (int v)
 /* Note that file could be freed from Slang during run of this routine
  * so get it and store it !! (e.g., autoloading)
  */
-int (*SLang_Load_File_Hook) (char *);
-int (*SLns_Load_File_Hook) (char *, char *);
-int SLang_load_file (char *f)
+int (*SLang_Load_File_Hook) (SLFUTURE_CONST char *);
+int (*SLns_Load_File_Hook) (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+int SLang_load_file (SLFUTURE_CONST char *f)
 {
    return SLns_load_file (f, NULL);
 }
 
-int SLns_load_file (char *f, char *ns_name)
+int SLns_load_file (SLFUTURE_CONST char *f, SLFUTURE_CONST char *ns_name)
 {
    File_Client_Data_Type client_data;
    SLang_Load_Type *x;
@@ -1376,7 +1378,7 @@ int SLns_load_file (char *f, char *ns_name)
      fp = stdin;
 
    if (fp == NULL)
-     SLang_verror (SL_OBJ_NOPEN, "Unable to open %s", name);
+     _pSLang_verror (SL_OBJ_NOPEN, "Unable to open %s", name);
    else if (NULL != (buf = SLmalloc (MAX_FILE_LINE_LEN + 1)))
      {
 	client_data.fp = fp;
@@ -1409,7 +1411,7 @@ static char *check_byte_compiled_token (char *buf)
        || ((len_hi = (unsigned char)*Input_Line_Pointer++) < 32)
        || ((len = (len_lo - 32) | ((len_hi - 32) << 7)) >= MAX_TOKEN_LEN))
      {
-	SLang_verror (SL_INVALID_DATA_ERROR, "Byte compiled file appears corrupt");
+	_pSLang_verror (SL_INVALID_DATA_ERROR, "Byte compiled file appears corrupt");
 	return NULL;
      }
 
@@ -1616,7 +1618,7 @@ static int escape_string (unsigned char *s, unsigned char *smax,
 static FILE *Byte_Compile_Fp;
 static unsigned int Byte_Compile_Line_Len;
 
-static int bytecomp_write_data (char *buf, unsigned int len)
+static int bytecomp_write_data (SLCONST char *buf, unsigned int len)
 {
    if ((Byte_Compile_Line_Len + len + 1) >= MAX_FILE_LINE_LEN)
      {
@@ -1773,20 +1775,20 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
    (void) bytecomp_write_data ((char *)buf, len);
 }
 
-int SLang_byte_compile_file (char *name, int method)
+int SLang_byte_compile_file (SLFUTURE_CONST char *name, int method)
 {
    char file [1024];
 
    (void) method;
    if (strlen (name) + 2 >= sizeof (file))
      {
-	SLang_verror (SL_INVALID_PARM, "Filename too long");
+	_pSLang_verror (SL_INVALID_PARM, "Filename too long");
 	return -1;
      }
    sprintf (file, "%sc", name);
    if (NULL == (Byte_Compile_Fp = fopen (file, "w")))
      {
-	SLang_verror(SL_OBJ_NOPEN, "%s: unable to open", file);
+	_pSLang_verror(SL_OBJ_NOPEN, "%s: unable to open", file);
 	return -1;
      }
 
@@ -1805,7 +1807,7 @@ int SLang_byte_compile_file (char *name, int method)
 
    if (_pSLang_Error)
      {
-	SLang_verror (0, "Error processing %s", name);
+	_pSLang_verror (0, "Error processing %s", name);
 	return -1;
      }
    return 0;

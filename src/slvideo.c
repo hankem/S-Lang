@@ -169,7 +169,7 @@ static int Video_Status_Port;
   if (SLtt_Msdos_Cheap_Video)\
     { while ((inp (CGA_STATUS) & 0x08)); while (!(inp (CGA_STATUS) & 0x08)); }
 
-void SLtt_write_string (char *str)
+void SLtt_write_string (SLFUTURE_CONST char *str)
 {
    /* FIXME: Priority=medium
     * This should not go to stdout. */
@@ -679,7 +679,7 @@ static void restore_screen (void)
 }
 #endif				       /* HAS_SAVE_SCREEN */
 
-void SLtt_write_string (char *str)
+void SLtt_write_string (SLFUTURE_CONST char *str)
 {
    while (Cursor_Col < SLtt_Screen_Cols)
      {
@@ -918,7 +918,7 @@ static VIOMODEINFO vioModeInfo;
 #define MAXCOLS 256
 static unsigned char Line_Buffer [MAXCOLS*2];
 
-void SLtt_write_string (char *str)
+void SLtt_write_string (SLFUTURE_CONST char *str)
 {
    /* FIXME: Priority=medium
     * This should not go to stdout. */
@@ -1190,7 +1190,7 @@ static HANDLE hStdout = INVALID_HANDLE_VALUE;
 #define MAXCOLS 256
 static CHAR_INFO Line_Buffer [MAXCOLS];
 
-void SLtt_write_string (char *str)
+void SLtt_write_string (SLFUTURE_CONST char *str)
 {
    DWORD bytes;
    int n, c;
@@ -1629,7 +1629,7 @@ int SLtt_reset_video (void)
 #define MAXCOLS 256
 static unsigned char Line_Buffer [MAXCOLS*2];
 
-void SLtt_write_string (char *str)
+void SLtt_write_string (SLFUTURE_CONST char *str)
 {
    /* FIXME: Priority=medium
     * This should not go to stdout. */
@@ -1922,7 +1922,7 @@ void ScreenUpdate (unsigned char *src)
    memcpy ((unsigned char *) ScreenPrimary, src, 2 * ScreenSize);
 }
 
-void SLtt_write_string (char *str)
+void SLtt_write_string (SLFUTURE_CONST char *str)
 {
    /* FIXME: Priority=medium
     * This should not go to stdout. */
@@ -2307,7 +2307,7 @@ int SLtt_reset_video (void)
  * WHAT is the name corresponding to the object OBJ, but is not used in
  * this routine.
 \*----------------------------------------------------------------------*/
-int SLtt_set_color (int obj, char *what, char *fg, char *bg)
+int SLtt_set_color (int obj, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg, SLFUTURE_CONST char *bg)
 {
    int i, b = 0, f = 7;
 
@@ -2365,7 +2365,7 @@ static void fixup_colors (void)
 /* FIXME!!! Add mono support.
  * The following functions have not been fully implemented.
  */
-int SLtt_set_mono (int obj_unused, char *unused, SLtt_Char_Type c_unused)
+int SLtt_set_mono (int obj_unused, SLFUTURE_CONST char *unused, SLtt_Char_Type c_unused)
 {
    (void) obj_unused;
    (void) unused;

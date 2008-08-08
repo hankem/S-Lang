@@ -111,12 +111,12 @@ SLbstring_create_malloced (unsigned char *ptr, unsigned int len, int free_on_err
    return b;
 }
 
-SLang_BString_Type *SLbstring_create_slstring (char *s)
+SLang_BString_Type *SLbstring_create_slstring (SLFUTURE_CONST char *s)
 {
    if (s == NULL)
      return NULL;
 
-   return create_bstring_of_type (s, strlen (s), IS_SLSTRING);
+   return create_bstring_of_type ((char *) s, strlen (s), IS_SLSTRING);
 }
 
 SLang_BString_Type *SLbstring_dup (SLang_BString_Type *b)
@@ -292,7 +292,7 @@ bstring_bstring_bin_op (int op,
      {
 	if ((*a == NULL) || (*b == NULL))
 	  {
-	     SLang_verror (SL_VARIABLE_UNINITIALIZED,
+	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED,
 			   "Binary string element[%u] not initialized for binary operation", n);
 	     return -1;
 	  }

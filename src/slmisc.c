@@ -28,12 +28,12 @@ USA.
 #include "_slang.h"
 
 
-char *SLmake_string(char *str)
+char *SLmake_string (SLFUTURE_CONST char *str)
 {
    return SLmake_nstring(str, strlen (str));
 }
 
-char *SLmake_nstring (char *str, unsigned int n)
+char *SLmake_nstring (SLFUTURE_CONST char *str, unsigned int n)
 {
    char *ptr;
 
@@ -72,12 +72,12 @@ void SLmake_lut (unsigned char *lut, unsigned char *range, unsigned char reverse
 }
 
 
-char *_pSLskip_whitespace (char *s)
+char *_pSLskip_whitespace (SLCONST char *s)
 {
    while (isspace (*s))
      s++;
    
-   return s;
+   return (char *) s;
 }
 
 /*
@@ -140,7 +140,7 @@ char *_pSLexpand_escaped_char(char *p, SLwchar_Type *ch, int *isunicodep)
 	       i++;
 	     if (p[i] != '}')
 	       {
-		  SLang_verror (SL_SYNTAX_ERROR, "Escaped character missing closing }.");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "Escaped character missing closing }.");
 		  return NULL;
 	       }
 	     /* The meaning of \x{...} is mode dependent.  If in UTF-8 mode, then
@@ -180,7 +180,7 @@ char *_pSLexpand_escaped_char(char *p, SLwchar_Type *ch, int *isunicodep)
      {
 	if (*p != '}')
 	  {
-	     SLang_verror (SL_SYNTAX_ERROR, "Malformed escaped character.");
+	     _pSLang_verror (SL_SYNTAX_ERROR, "Malformed escaped character.");
 	     return NULL;
 	  }
 	p++;
@@ -237,7 +237,7 @@ int SLexpand_escaped_string (char *s, char *t, char *tmax, int utf8_encode)
 	s1 = (char *)SLutf8_encode (wch, (SLuchar_Type *)s, 6);
 	if (s1 == NULL)
 	  {
-	     SLang_verror (SL_INVALID_UTF8, "Unable to UTF-8 encode 0x%lX\n", (unsigned long)wch);
+	     _pSLang_verror (SL_INVALID_UTF8, "Unable to UTF-8 encode 0x%lX\n", (unsigned long)wch);
 	     *s = 0;
 	     return -1;
 	  }
@@ -274,7 +274,7 @@ int SLextract_list_element (char *list, unsigned int nth, char delim,
    return 0;
 }
 
-int SLvsnprintf (char *buf, unsigned int buflen, char *fmt, va_list ap)
+int SLvsnprintf (char *buf, unsigned int buflen, SLFUTURE_CONST char *fmt, va_list ap)
 {
 #ifdef HAVE_VSNPRINTF
    int status;
@@ -300,7 +300,19 @@ The integrity of this program has been violated.\n");
 #endif
 }
 
-int SLsnprintf (char *buf, unsigned int buflen, char *fmt, ...)
+int SLsnprintf (char *buf, unsigned int buflen, SLFUTURE_CONST char *fmt, ...)
+{
+   int status;
+   va_list ap;
+
+   va_start (ap, fmt);
+   status = SLvsnprintf (buf, buflen, fmt, ap);
+   va_end (ap);
+
+   return status;
+}
+
+int _pSLsnprintf (char *buf, unsigned int buflen, SLFUTURE_CONST char *fmt, ...)
 {
    int status;
    va_list ap;
@@ -368,9 +380,9 @@ int SLang_add_cleanup_function (void (*f)(void))
 }
 
 
-int SLang_guess_type (char *t)
+int SLang_guess_type (SLFUTURE_CONST char *t)
 {
-   char *p;
+   SLCONST char *p;
    register char ch;
    int modifier;
 #define MODIFIER_H	0x01
@@ -557,7 +569,7 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 	   case '9':
 	     if (base == 8) 
 	       {
-		  SLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in an octal number");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in an octal number");
 		  return -1;
 	       }
 	     /* drop */
@@ -580,7 +592,7 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 	   case 'f':
 	     if (base != 16) 
 	       {
-		  SLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in an octal or decimal number");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in an octal or decimal number");
 		  return -1;
 	       }
 	     ch1 = (ch1 - 'a') + 10;
@@ -639,7 +651,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 	   case '9':
 	     if (base == 8) 
 	       {
-		  SLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in an octal number");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in an octal number");
 		  return -1;
 	       }
 	     /* drop */
@@ -662,7 +674,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 	   case 'f':
 	     if (base != 16) 
 	       {
-		  SLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in an octal or decimal number");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in an octal or decimal number");
 		  return -1;
 	       }
 	     ch1 = (ch1 - 'a') + 10;
@@ -680,7 +692,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
  * and some do not.  The following implementations provide a consistent
  * behavior.
  */
-static unsigned char *get_sign (unsigned char *s, int *signp)
+static unsigned char *get_sign (SLCONST unsigned char *s, int *signp)
 {
    s = (unsigned char *) _pSLskip_whitespace ((char *)s);
 
@@ -694,7 +706,7 @@ static unsigned char *get_sign (unsigned char *s, int *signp)
 	*signp = 1;
 	if (*s == '+') s++;
      }
-   return s;
+   return (unsigned char *) s;
 }
 
 unsigned long SLatoul (unsigned char *s)

@@ -155,7 +155,7 @@ char *_pSLstringize_object (SLang_Object_Type *obj) /*{{{*/
 }
 /*}}}*/
 
-int SLang_run_hooks(char *hook, unsigned int num_args, ...)
+int SLang_run_hooks (SLFUTURE_CONST char *hook, unsigned int num_args, ...)
 {
    unsigned int i;
    va_list ap;
@@ -278,10 +278,10 @@ static void intrin_int (void) /*{{{*/
 
 /*}}}*/
 
-static char *
+static SLCONST char *
 intrin_function_name (void)
 {
-   char *name;
+   SLCONST char *name;
    if (NULL == (name = _pSLang_current_function_name ()))
      return "";
    return name;
@@ -294,7 +294,7 @@ static void intrin_message (char *s)
 
 static void intrin_error (char *s)
 {
-   SLang_verror (SL_RunTime_Error, "%s", s);
+   _pSLang_verror (SL_RunTime_Error, "%s", s);
 }
 
 static void intrin_pop_n (int *n)
@@ -321,7 +321,7 @@ static void usage (void)
    if (-1 == SLang_pop_slstring (&msg))
      return;
 
-   SLang_verror (SL_USAGE_ERROR, "Usage: %s", msg);
+   _pSLang_verror (SL_USAGE_ERROR, "Usage: %s", msg);
    SLang_free_slstring (msg);
 }
 
@@ -332,7 +332,7 @@ static void guess_type (char *s)
 }
 
 
-static int load_string_or_file (int (*f) (char *, char *))
+static int load_string_or_file (int (*f) (SLFUTURE_CONST char *, SLFUTURE_CONST char *))
 {
    char *file;
    char *ns = NULL;
@@ -588,7 +588,7 @@ static void intrin_apropos (void)
 static int intrin_get_defines (void)
 {
    int n = 0;
-   char **s = _pSLdefines;
+   SLFUTURE_CONST char **s = _pSLdefines;
 
    while (*s != NULL)
      {
@@ -621,7 +621,7 @@ static void uname_cmd (void)
 {
 #ifdef HAVE_UNAME
    struct utsname u;
-   char *field_names [6];
+   SLFUTURE_CONST char *field_names [6];
    SLtype field_types[6];
    VOID_STAR field_values [6];
    char *ptrs[6];
@@ -1165,13 +1165,13 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
 /*}}}*/
 
 #ifdef SLANG_DOC_DIR
-char *SLang_Doc_Dir = SLANG_DOC_DIR;
+SLFUTURE_CONST char *SLang_Doc_Dir = SLANG_DOC_DIR;
 #else
-char *SLang_Doc_Dir = "";
+SLFUTURE_CONST *SLang_Doc_Dir = "";
 #endif
 
 #ifdef SLANG_INSTALL_PREFIX
-static char *Install_Prefix = SLANG_INSTALL_PREFIX;
+static SLCONST char *Install_Prefix = SLANG_INSTALL_PREFIX;
 #else
 static char *Install_Prefix = "";
 #endif
@@ -1196,8 +1196,8 @@ int SLang_init_slang (void) /*{{{*/
 {
    char name[3];
    unsigned int i;
-   char **s;
-   static char *sys_defines [] =
+   SLFUTURE_CONST char **s;
+   static SLFUTURE_CONST char *sys_defines [] =
      {
 #if defined(__os2__)
 	"OS2",

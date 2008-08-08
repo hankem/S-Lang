@@ -30,9 +30,9 @@ USA.
 
 typedef SLCONST struct
 {
-   char *msg;
+   SLFUTURE_CONST char *msg;
    int sys_errno;
-   char *symbolic_name;
+   SLFUTURE_CONST char *symbolic_name;
 }
 Errno_Map_Type;
 
@@ -534,7 +534,7 @@ static Errno_Map_Type Errno_Map [] =
      {NULL, 0, NULL}
 };
 
-char *SLerrno_strerror (int sys_errno)
+SLFUTURE_CONST char *SLerrno_strerror (int sys_errno)
 {
    Errno_Map_Type *e;
 
@@ -553,7 +553,7 @@ char *SLerrno_strerror (int sys_errno)
    return "Unknown error";
 }
 
-static char *intrin_errno_string (void)
+static SLCONST char *intrin_errno_string (void)
 {
    int e;
    if (SLang_Num_Function_Args == 0)
