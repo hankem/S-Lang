@@ -362,7 +362,7 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #define GENERIC_TYPE double
 #define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
 #define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) (float)fmod((a),(b))
+#define MOD_FUNCTION(a,b) fmod((a),(b))
 #define TRAP_DIV_ZERO	0
 #define GENERIC_UNARY_FUNCTION double_unary_op
 #define GENERIC_ARITH_UNARY_FUNCTION double_arith_unary_op

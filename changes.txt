@@ -114,6 +114,10 @@ Changes since 2.1.3
     which is not permitted until a new major version is released.
 51. src/slmisc.c: SLFUTURE_CONST added to SLextract_list_element
     prototype.
+52. src/slang.h: Added SLFUTURE_CONST to arg_type field of
+    SLcmd_Cmd_Type object.
+53. src/slarith.c: The return value of fmod was being truncated to
+    single precision.
 
 {{{ Previous Versions
 

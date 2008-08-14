@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20104
-#define SLANG_VERSION_STRING "pre2.1.4-51"
+#define SLANG_VERSION_STRING "pre2.1.4-53"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -2344,7 +2344,7 @@ typedef struct _pSLcmd_Cmd_Type
 {
    int (*cmdfun)(int, SLcmd_Cmd_Table_Type *);
    SLFUTURE_CONST char *cmd;
-   char *arg_type;
+   SLFUTURE_CONST char *arg_type;
 } SLcmd_Cmd_Type;
 
 SL_EXTERN int SLcmd_execute_string (SLFUTURE_CONST char *, SLcmd_Cmd_Table_Type *);
