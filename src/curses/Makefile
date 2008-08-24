@@ -1,5 +1,6 @@
 COMPILE = $(CC) $(CFLAGS) -g -DSLANG -I..
 LFLAGS = -L../$(ARCH)objs -lslang
+M_LIB = -lm
 
 CURSES_H = ../curses.h
 
@@ -29,23 +30,23 @@ rain: $(CURSES_H) rain.c
 firework: $(CURSES_H) firework.c
 	$(COMPILE) $@.c -o $@ $(LFLAGS)
 tclock: $(CURSES_H) tclock.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 worm: worm.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 knight: knight.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 xmas: xmas.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 newdemo: newdemo.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 testcurs: testcurs.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 lrtest: lrtest.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 t: t.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 key: key.c
-	$(COMPILE) $@.c -o $@ $(LFLAGS) -lm
+	$(COMPILE) $@.c -o $@ $(LFLAGS) $(M_LIB)
 
 clean:
 	/bin/rm $(EXECS)

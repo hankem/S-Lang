@@ -29,7 +29,7 @@ CONFIG_H = config.h
 ALL_CFLAGS = $(CFLAGS) -Dunix -I$(SLANG_INCLUDE)
 
 COMPILE_CMD = $(CC) -c $(ALL_CFLAGS)
-EXECLIBS = -L$(SLANG_LIB) -lslang -lm $(TCAPLIB)
+EXECLIBS = -L$(SLANG_LIB) -lslang @M_LIB@ $(TCAPLIB)
 EXECDEPS = $(SLANG_LIB)/libslang.a
 DOT_O_DEPS = demolib.c
 

@@ -1283,7 +1283,6 @@ static SLKeymap_Function_Type SLReadLine_Functions[] =
    AKEY("trim", rl_trim),
    AKEY("quoted_insert", rl_quote_insert),
    AKEY("complete", rl_complete),
-   AKEY("self_insert", rl_self_insert),
    AKEY(NULL, NULL),
 };
 

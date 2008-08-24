@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide, V2.0.4
   John E. Davis, jed@jedsoft.org
-  Sep 4, 2007
+  Aug 22, 2008
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -2082,7 +2082,7 @@
   application or, in particular, the library to determine which color
   will be used by the terminal for the default background.  Such
   information would be useful in initializing the foreground and
-  background colors associated with the default color object (0).  FOr
+  background colors associated with the default color object (0).  For
   this reason, it is up to the application to provide some means for the
   user to indicate what these colors are for the particular terminal
   setup. To facilitate this, the SLtt_get_terminfo function checks for
@@ -2090,7 +2090,7 @@
   exists, its value will be used to initialize the colors associated
   with the default color object.  Specifically, the value is assumed to
   consist of a foreground color name and a background color name
-  separated by a semicolon.  For example, if the value of COLORTERM is
+  separated by a semicolon.  For example, if the value of COLORFGBG is
   lightgray;blue, the default color object will be initialized to
   represent a lightgray foreground upon a blue background.
 

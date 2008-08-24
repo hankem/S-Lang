@@ -1,3 +1,18 @@
+
+\function{count_char_occurances}
+\synopsis{Count the number of occurances of a character in a string}
+\usage{UInt_Type count_char_occurances (str, ch)}
+\description
+  This function returns the number of times the specified character
+  \exmp{ch} occurs in the string \exmp{str}.
+\notes
+  If UTF-8 mode is in effect, then the character may correspond to
+  more than one byte.  In such a case, the function returns the number
+  of such byte-sequences in the string.  To count actual bytes, use
+  the \ifun{count_byte_occurances} function.
+\seealso{count_byte_occurances}
+\done
+
 \function{create_delimited_string}
 \synopsis{Concatenate strings using a delimiter}
 \usage{String_Type create_delimited_string (delim, s_1, s_2, ..., s_n, n)}

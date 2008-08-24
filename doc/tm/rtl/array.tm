@@ -327,7 +327,18 @@
 #v-
 \notes
   This function ignores NaNs in the input array.
-\seealso{min, sum, reshape}
+\seealso{min, maxabs, sum, reshape}
+\done
+
+\function{maxabs}
+\synopsis{Get the maximum absolute value of an array}
+\usage{result = maxabs (Array_Type a [,Int_Type dim])}
+\description
+  The \ifun{maxabs} function behaves like the \ifun{max} function
+  except that it returns the maximum absolute value of the array. That
+  is, \exmp{maxabs(x)} is equivalent to \exmp{max(abs(x)}. See the
+  documentation for the \ifun{max} function for more information.
+\seealso{min, max, minabs}
 \done
 
 \function{min}
@@ -358,6 +369,17 @@
 \notes
   This function ignores NaNs in the input array.
 \seealso{max, sum, reshape}
+\done
+
+\function{minabs}
+\synopsis{Get the minimum absolute value of an array}
+\usage{result = minabs (Array_Type a [,Int_Type dim])}
+\description
+  The \ifun{minabs} function behaves like the \ifun{min} function
+  except that it returns the minimum absolute value of the array. That
+  is, \exmp{minabs(x)} is equivalent to \exmp{min(abs(x)}. See the
+  documentation for the \ifun{min} function for more information.
+\seealso{min, max, maxabs}
 \done
 
 \function{_reshape}

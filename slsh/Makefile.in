@@ -14,7 +14,7 @@ SLANG_INST_LIB	= -L$(INST_LIB_DIR)
 SLANG_SRCINC	= -I@SRCDIR@
 SLANG_SRCLIB	= -L@ELFDIR@
 #---------------------------------------------------------------------------
-OTHER_LIBS	= @TERMCAP@ @DYNAMIC_LINK_LIB@ @LIBS@ -lm
+OTHER_LIBS	= @TERMCAP@ @DYNAMIC_LINK_LIB@ @LIBS@ @M_LIB@
 RPATH		= @RPATH@
 #----------------------------------------------------------------------------
 INSTALL		= @INSTALL@

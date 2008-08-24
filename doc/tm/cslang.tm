@@ -2098,7 +2098,7 @@
   application or, in particular, the library to determine which color
   will be used by the terminal for the default background.  Such
   information would be useful in initializing the foreground and
-  background colors associated with the default color object (0).  FOr
+  background colors associated with the default color object (0).  For
   this reason, it is up to the application to provide some means for
   the user to indicate what these colors are for the particular
   terminal setup. To facilitate this, the \verb{SLtt_get_terminfo}
@@ -2107,7 +2107,7 @@
   used to initialize the colors associated with the default color
   object.  Specifically, the value is assumed to consist of a
   foreground color name and a background color name separated by a
-  semicolon.  For example, if the value of \verb{COLORTERM} is
+  semicolon.  For example, if the value of \verb{COLORFGBG} is
   \verb{lightgray;blue}, the default color object will be initialized
   to represent a \verb{lightgray} foreground upon a \verb{blue}
   background.

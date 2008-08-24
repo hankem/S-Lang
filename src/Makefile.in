@@ -36,7 +36,7 @@ MODULE_PATH_ENV_NAME = "SLANG_MODULE_PATH"
 #---------------------------------------------------------------------------
 # Misc Libraries
 MISC_TERMINFO_DIRS = @MISC_TERMINFO_DIRS@
-OTHERLIBS = @TERMCAP@ @LIBS@ -lm
+OTHERLIBS = @TERMCAP@ @LIBS@ @M_LIB@
 #---------------------------------------------------------------------------
 # Directory where library is going to go when installed
 #---------------------------------------------------------------------------

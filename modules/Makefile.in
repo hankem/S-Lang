@@ -69,8 +69,8 @@ DEST_HELPDIR	= $(DESTDIR)$(HELP_DIR)
 #---------------------------------------------------------------------------
 RPATH = @RPATH@
 
-LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) $(DL_LIB) -lm
-#LIBS = $(RPATH) $(DL_LIB) -lm
+LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) $(DL_LIB) @M_LIB@
+#LIBS = $(RPATH) $(DL_LIB) @M_LIB@
 INCS = $(SLANG_INC)
 
 all: $(MODULES)

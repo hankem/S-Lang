@@ -3,13 +3,13 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "SLSH" "1" "19 June 2008" "" ""
+.TH "SLSH" "1" "23 August 2008" "" ""
 
 .SH NAME
 slsh \- Interpreter for S-Lang scripts
 .SH SYNOPSIS
 
-\fBslsh\fR [ \fB--help\fR ] [ \fB--version\fR ] [ \fB-g\fR ] [ \fB-n\fR ] [ \fB--init \fIfile\fB\fR ] [ \fB--no-readline\fR ] [ \fB-e \fIstring\fB\fR ] [ \fB-i\fR ] [ \fB-t\fR ] [ \fB-v\fR ] [ \fB-|\fIscript-file args...\fB\fR ]
+\fBslsh\fR [ \fB--help\fR ] [ \fB--version\fR ] [ \fB-g\fR ] [ \fB-n\fR ] [ \fB--init \fIfile\fB\fR ] [ \fB--no-readline\fR ] [ \fB-e \fIstring\fB\fR ] [ \fB-i\fR ] [ \fB-q, --quiet\fR ] [ \fB-t\fR ] [ \fB-v\fR ] [ \fB-|\fIscript-file args...\fB\fR ]
 
 .SH "DESCRIPTION"
 .PP
@@ -43,6 +43,10 @@ Execute ``string'' as S-Lang code.
 Force interactive mode.  Normally \fBslsh\fR will go into
 interactive mode if both stdin and stdout are attached to a
 terminal.
+.TP
+\fB-q, --quiet\fR
+Startup quietly by not printing the version and copyright
+information.
 .TP
 \fB-t\fR
 Normally, \fBslsh\fR will call slsh_main if it is defined.  This

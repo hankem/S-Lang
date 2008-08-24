@@ -18,6 +18,7 @@
   \arg{\option{--no-readline}}
   \arg{\option{-e}{string}}
   \arg{\option{-i}}
+  \arg{\option{-q, --quiet}}
   \arg{\option{-t}}
   \arg{\option{-v}}
   \arg{\option{-|\replaceable{script-file args...}}}
@@ -62,6 +63,10 @@
         Force interactive mode.  Normally \slsh will go into
         interactive mode if both stdin and stdout are attached to a
         terminal.
+      }
+      \man_options_entry{\option{-q, --quiet}}{
+        Startup quietly by not printing the version and copyright
+        information.
       }
       \man_options_entry{\option{-t}}{
         Normally, \slsh will call \sfun{slsh_main} if it is defined.  This

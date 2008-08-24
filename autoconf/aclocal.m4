@@ -1,4 +1,8 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.4-0: Added optional 3rd argument to JD_WITH_LIBRARY for a default path
+dnl# 0.2.3-2: X was missing in a "test" statement (Joerg Sommer)
+dnl# 0.2.3-1: AC_AIX needs to be called before running the compiler (Miroslav Lichvar)
+dnl# 0.2.3: rewrote JD_CHECK_FOR_LIBRARY to loop over include/lib pairs
 dnl# 0.2.2-1: JD_WITH_LIBRARY bug-fix
 dnl# 0.2.2:  Use ncurses5-config to search for terminfo dirs.
 dnl# 0.2.1:  Add .dll.a to list of extensions to when searching for libs (cygwin)
@@ -500,11 +504,11 @@ dnl#}}}
 
 AC_DEFUN(JD_ANSI_CC, dnl#{{{
 [
+AC_AIX
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_ISC_POSIX
-AC_AIX
 
 dnl #This stuff came from Yorick config script
 dnl
@@ -573,6 +577,7 @@ INSTALL_ELFLIB_TARGET="install-elf-and-links"
 ELFLIB_BUILD_NAME="\$(ELFLIB_MAJOR_MINOR_MICRO)"
 INSTALL_MODULE="\$(INSTALL_DATA)"
 SLANG_DLL_CFLAGS=""
+M_LIB="-lm"
 
 case "$host_os" in
   *linux*|*gnu*|k*bsd*-gnu )
@@ -686,6 +691,15 @@ case "$host_os" in
     ELFLIB_MAJOR_MINOR_MICRO="lib\$(THIS_LIB)\$(ELF_MAJOR_VERSION)_\$(ELF_MINOR_VERSION)_\$(ELF_MICRO_VERSION).dll"
     ELFLIB_BUILD_NAME="\$(ELFLIB_MAJOR)"
     ;;
+  *haiku* )
+    M_LIB=""
+    DYNAMIC_LINK_FLAGS="-Wl,-export-dynamic"
+    ELF_CC="\$(CC)"
+    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR)"
+    ELF_DEP_LIBS="\$(DL_LIB)"
+    CC_SHARED="\$(CC) \$(CFLAGS) -shared -fPIC"
+    ;;
   * )
     echo "Note: ELF compiler for host_os=$host_os may be wrong"
     ELF_CC="\$(CC)"
@@ -712,6 +726,7 @@ AC_SUBST(INSTALL_MODULE)
 AC_SUBST(INSTALL_ELFLIB_TARGET)
 AC_SUBST(ELFLIB_BUILD_NAME)
 AC_SUBST(SLANG_DLL_CFLAGS)
+AC_SUBST(M_LIB)
 ])
 
 dnl#}}}
@@ -824,6 +839,7 @@ dnl#  jd_with_$1_library=yes/no,
 dnl#  jd_$1_inc_file
 dnl#  jd_$1_include_dir
 dnl#  jd_$1_library_dir
+dnl# If $3 is present, then also look in $3/include+$3/lib
 AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
 [
   AC_REQUIRE([JD_EXPAND_PREFIX])dnl
@@ -839,49 +855,27 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
     then
        jd_$1_inc_file=$1.h
     fi
+
     if test X"$jd_$1_include_dir" = X
     then
-       lib_include_dirs="\
-            $jd_prefix_incdir \
-            /usr/local/$1/include \
-            /usr/local/include/$1 \
-  	  /usr/local/include \
-  	  /usr/include/$1 \
-  	  /usr/$1/include \
-  	  /usr/include \
-  	  /opt/include/$1 \
-  	  /opt/$1/include \
-  	  /opt/include"
+      inc_and_lib_dirs="\
+         $jd_prefix_incdir,$jd_prefix_libdir \
+	 /usr/local/$1/include,/usr/local/$1/lib \
+	 /usr/local/include/$1,/usr/local/lib \
+	 /usr/local/include,/usr/local/lib \
+	 /usr/include/$1,/usr/lib \
+	 /usr/$1/include,/usr/$1/lib \
+	 /usr/include,/usr/lib \
+	 /opt/include/$1,/opt/lib \
+	 /opt/$1/include,/opt/$1/lib \
+	 /opt/include,/opt/lib"
+	 
+      if test X$3 != X
+      then
+        inc_and_lib_dirs="$3/include,$3/lib $inc_and_lib_dirs"
+      fi
   
-       for X in $lib_include_dirs
-       do
-          if test -r "$X/$jd_$1_inc_file"
-	  then
-  	  jd_$1_include_dir="$X"
-            break
-          fi
-       done
-       if test X"$jd_$1_include_dir" = X
-       then
-         jd_with_$1_library="no"
-       fi
-    fi
-   
-    if test X"$jd_$1_library_dir" = X
-    then
-       lib_library_dirs="\
-            $jd_prefix_libdir \
-            /usr/local/lib \
-            /usr/local/lib/$1 \
-            /usr/local/$1/lib \
-  	  /usr/lib \
-  	  /usr/lib/$1 \
-  	  /usr/$1/lib \
-  	  /opt/lib \
-  	  /opt/lib/$1 \
-  	  /opt/$1/lib"
-
-       case "$host_os" in
+      case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
 	   ;;
@@ -890,33 +884,41 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
 	   ;;
 	 * )
 	   exts="so a"
-       esac
+      esac
    
-       found=0
-       for X in $lib_library_dirs
-       do
-         for E in $exts
-	 do
-           if test -r "$X/lib$1.$E"
-	   then
-  	     jd_$1_library_dir="$X"
-	     found=1
-	     break
-           fi
-         done
-	 if test $found -eq 1
-	 then
-	   break
-	 fi
-       done
-       if test X"$jd_$1_library_dir" = X
-       then
-         jd_with_$1_library="no"
-       fi
+      xincfile="$jd_$1_inc_file"
+      xlibfile="lib$1"
+      jd_with_$1_library="no"
+
+      for include_and_lib in $inc_and_lib_dirs
+      do
+        # Yuk.  Is there a better way to set these variables??
+        xincdir=`echo $include_and_lib | tr ',' ' ' | awk '{print [$]1}'`
+	xlibdir=`echo $include_and_lib | tr ',' ' ' | awk '{print [$]2}'`
+	found=0
+	if test -r $xincdir/$xincfile
+	then 
+	  for E in $exts
+	  do
+	    if test -r "$xlibdir/$xlibfile.$E"
+	    then
+	      jd_$1_include_dir="$xincdir"
+	      jd_$1_library_dir="$xlibdir"
+	      jd_with_$1_library="yes"
+	      found=1
+	      break
+	    fi
+	  done
+	fi
+	if test $found -eq 1
+	then
+	  break
+	fi	
+      done
     fi
   fi
 
-  if test X"$jd_$1_include_dir" != X -a "$jd_$1_library_dir" != X
+  if test X"$jd_$1_include_dir" != X -a X"$jd_$1_library_dir" != X
   then
     AC_MSG_RESULT(yes: $jd_$1_library_dir and $jd_$1_include_dir)
     jd_with_$1_library="yes"
@@ -948,7 +950,7 @@ dnl#}}}
 
 AC_DEFUN(JD_WITH_LIBRARY, dnl#{{{
 [
-  JD_CHECK_FOR_LIBRARY($1, $2)
+  JD_CHECK_FOR_LIBRARY($1, $2, $3)
   if test "$jd_with_$1_library" = "no"
   then
     AC_MSG_ERROR(unable to find the $1 library and header file $jd_$1_inc_file)
