@@ -43,7 +43,7 @@ USA.
 # endif
 #endif
 
-#ifdef __BEOS__
+#if defined(__BEOS__) && !defined(__HAIKU__)
 /* Prototype for select */
 # include <net/socket.h>
 #endif
@@ -54,7 +54,7 @@ USA.
 # include <sys/ioctl.h>
 #endif
 
-#ifdef __QNX__
+#if defined(__QNX__) || defined(__HAIKU__)
 # include <sys/select.h>
 #endif
 

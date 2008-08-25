@@ -32,7 +32,7 @@ USA.
 # include <sys/types.h>
 #endif
 
-#ifdef __BEOS__
+#if defined(__BEOS__) && !defined(__HAIKU__)
 /* Prototype for select */
 # include <net/socket.h>
 #endif

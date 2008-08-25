@@ -123,6 +123,8 @@ Changes since 2.1.3
 55. configure,*/Makefile.in: Haiku systems do not require -lm.  -lm
     was replaced */Makefile.in by @M_LIB@ which is not set from the
     configure script. (Scott McCreary)
+56. src/slutty.c,src/slidsply.c: More Haiku-specific patches from
+    Scott McCreary.
 
 {{{ Previous Versions
 
