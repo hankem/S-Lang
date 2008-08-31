@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.5-0: M_LIB output variable created for haiku support (Scott McCreary)
 dnl# 0.2.4-0: Added optional 3rd argument to JD_WITH_LIBRARY for a default path
 dnl# 0.2.3-2: X was missing in a "test" statement (Joerg Sommer)
 dnl# 0.2.3-1: AC_AIX needs to be called before running the compiler (Miroslav Lichvar)

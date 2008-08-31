@@ -125,6 +125,9 @@ Changes since 2.1.3
     configure script. (Scott McCreary)
 56. src/slutty.c,src/slidsply.c: More Haiku-specific patches from
     Scott McCreary.
+57. mkfiles/makefile.m32: Made changes to work with recent versions of
+    mingw32 and added a silly hack to work-around CMD.EXE
+    interpretation of '=' as whitespace on the command line.
 
 {{{ Previous Versions
 

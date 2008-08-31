@@ -1,4 +1,4 @@
-private variable Script_Version_String = "0.1.0";
+private variable Script_Version_String = "0.1.1";
 
 require ("cmdopt");
 require ("glob");
@@ -164,6 +164,11 @@ define slsh_main ()
 
    if ((i + 1 != __argc) || (__argv[i] != "install"))
      exit_usage ();
+
+   % See the comment in makefile.m32 for the motivation behind the
+   % sillyness involving X-.
+   if (0==strncmp (destdir, "X-", 2))
+     destdir = substr (destdir, 3, -1);
 
    () = fprintf (stdout, "Using destdir=%s, prefix=%s\n", destdir, prefix);
 

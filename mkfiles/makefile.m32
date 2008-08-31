@@ -1,6 +1,9 @@
 # -*-sh-*-
 MAKE = mingw32-make
-MFLAGS = COPY=copy RM=del
+# Note: copy.exe does not exist on windows since it is a cmd.exe built-in
+MFLAGS = COPY="cmd /c copy" RM=del
+
+# DESTDIR is used for building a package for use on another machine.
 DESTDIR =
 PREFIX = /mingw/local
 CONFDIR = /mingw/local/etc
@@ -12,16 +15,20 @@ all:
 	cd src && $(MAKE) $(MFLAGS) $(SLANG_DEFS)
 	cd slsh && $(MAKE) $(MFLAGS) $(SLSH_DEFS)
 	cd modules && $(MAKE) $(MFLAGS)
-	echo .
-	echo To install it, run $(MAKE) install.
-	echo .
+	@echo .
+	@echo To install it, run $(MAKE) install.
+	@echo .
 #
 clean:
 	cd src && $(MAKE) $(MFLAGS) clean
 	cd slsh && $(MAKE) $(MFLAGS) clean
 	cd modules && $(MAKE) $(MFLAGS) clean
 #
+# Note the use of X- below.  Windows regards '=' as a commandline whitespace 
+# and needs to be quoted.  However I have not been able to figure out how to
+# do that in th econtext of the mingw32-make command parser.  As a major hack
+# I added the X- prefix and modified mkfiles/install.sl to remove the X-.
 install: all
-	mkfiles\runslsh.bat mkfiles\install.sl --destdir="$(DESTDIR)" --prefix="$(PREFIX)" install
+	mkfiles/runslsh.bat -i mkfiles/install.sl --destdir="X-$(DESTDIR)" --prefix="$(PREFIX)" install
 #
 .PHONY: all install clean

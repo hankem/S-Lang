@@ -31,5 +31,9 @@ note, if you make an changes the installation paths in the makefile
 after completing step 2, then you will need to rebuild it.  That is,
 run `mingw32-make clean', then go to step 2.
 
+Finally you will need to make sure that the $PREFIX/bin directory is
+in your PATH.  Assuming that this has been done, you should be able
+to run `slsh' at the CMD prompt.
+
 More information on the makefile generation process is available
 in src/mkfiles/README.
