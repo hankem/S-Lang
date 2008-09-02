@@ -444,7 +444,26 @@ max
   This function ignores NaNs in the input array.
 
  SEE ALSO
-  min, sum, reshape
+  min, maxabs, sum, reshape
+
+--------------------------------------------------------------
+
+maxabs
+
+ SYNOPSIS
+  Get the maximum absolute value of an array
+
+ USAGE
+  result = maxabs (Array_Type a [,Int_Type dim])
+
+ DESCRIPTION
+  The `maxabs' function behaves like the `max' function
+  except that it returns the maximum absolute value of the array. That
+  is, `maxabs(x)' is equivalent to `max(abs(x)'. See the
+  documentation for the `max' function for more information.
+
+ SEE ALSO
+  min, max, minabs
 
 --------------------------------------------------------------
 
@@ -485,6 +504,25 @@ min
 
  SEE ALSO
   max, sum, reshape
+
+--------------------------------------------------------------
+
+minabs
+
+ SYNOPSIS
+  Get the minimum absolute value of an array
+
+ USAGE
+  result = minabs (Array_Type a [,Int_Type dim])
+
+ DESCRIPTION
+  The `minabs' function behaves like the `min' function
+  except that it returns the minimum absolute value of the array. That
+  is, `minabs(x)' is equivalent to `min(abs(x)'. See the
+  documentation for the `min' function for more information.
+
+ SEE ALSO
+  min, max, maxabs
 
 --------------------------------------------------------------
 
@@ -901,6 +939,27 @@ bstrlen
 
  SEE ALSO
   strlen, length
+
+--------------------------------------------------------------
+
+count_byte_occurances
+
+ SYNOPSIS
+  Count the number of occurances of a byte in a binary string
+
+ USAGE
+  UInt_Type count_char_occurances (bstring, byte)
+
+ DESCRIPTION
+  This function returns the number of times the specified byte
+  occurs in the binary string `bstr'.
+
+ NOTES
+  This function uses byte-semanics.  If character semantics are
+  desired, use the `count_char_occurances' function.
+
+ SEE ALSO
+  count_char_occurances
 
 --------------------------------------------------------------
 
@@ -5417,6 +5476,452 @@ qualifier_exists
 
 --------------------------------------------------------------
 
+rline_bolp
+
+ SYNOPSIS
+  Test of the editing point is at the beginning of the line
+
+ USAGE
+  Int_Type rline_bolp()
+
+ DESCRIPTION
+  The `rline_bolp' function returns a non-zero value if the
+  current editing position is at the beginning of the line.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_eolp, rline_get_point, rline_get_line
+
+--------------------------------------------------------------
+
+rline_eolp
+
+ SYNOPSIS
+  Test of the editing point is at the end of the line
+
+ USAGE
+  Int_Type rline_eolp()
+
+ DESCRIPTION
+  The `rline_bolp' function returns a non-zero value if the
+  current editing position is at the end of the line.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_bolp, rline_get_point, rline_get_line
+
+--------------------------------------------------------------
+
+rline_call
+
+ SYNOPSIS
+  Invoke an internal readline function
+
+ USAGE
+  rline_call (String_Type func)
+
+ DESCRIPTION
+ Not all of the readline functions are available directly from the
+ S-Lang interpreter.  For example, the "deleol" function, which
+ deletes through the end of the line may be executed using
+
+    rline_call("deleol");
+
+  See the documentation for the `rline_setkey' function for a
+  list of internal functions that may be invoked by `rline_call'.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_setkey, rline_del, rline_ins
+
+--------------------------------------------------------------
+
+rline_del
+
+ SYNOPSIS
+  Delete a specified number of characters at the current position
+
+ USAGE
+  rline_del(Int_Type n)
+
+ DESCRIPTION
+ This function delete a specified number of characters at the current
+ editing position.  If the number `n' is less than zero, then the
+ previous `n' characters will be deleted.  Otherwise, the next
+ `n' characters will be deleted.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_ins, rline_setkey
+
+--------------------------------------------------------------
+
+rline_get_edit_width
+
+ SYNOPSIS
+  Get the width of the readline edit window
+
+ USAGE
+  Int_Type rline_get_edit_width ()
+
+ DESCRIPTION
+  This function returns the width of the edit window.  For `slsh', this
+  number corresponds to the width of the terminal window.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_ins
+
+--------------------------------------------------------------
+
+rline_get_history
+
+ SYNOPSIS
+  Retrieve the readline history
+
+ USAGE
+  Array_Type rline_get_history ()
+
+ DESCRIPTION
+  This function returns the readline edit history as an array of
+  strings.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_set_line
+
+--------------------------------------------------------------
+
+rline_get_line
+
+ SYNOPSIS
+  Get a copy of the line being edited
+
+ USAGE
+  String_Type rline_get_line ()
+
+ DESCRIPTION
+  This function returns the current edit line.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_set_line, rline_get_history
+
+--------------------------------------------------------------
+
+rline_get_point
+
+ SYNOPSIS
+  Get the current editing position
+
+ USAGE
+  Int_Type rline_get_point ()
+
+ DESCRIPTION
+ The `rline_get_point' function returns the byte-offset of the
+ current editing position.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_set_point
+
+--------------------------------------------------------------
+
+rline_getkey
+
+ SYNOPSIS
+  Obtain the next byte in the readline input stream
+
+ USAGE
+  Int_Type rline_getkey ()
+  This function returns the next byte in the readline input stream.
+  If no byte is available, the function will wait until one is.
+
+ DESCRIPTION
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_input_pending, rline_setkey
+
+--------------------------------------------------------------
+
+rline_input_pending
+
+ SYNOPSIS
+  Test to see if readline input is available for reading
+
+ USAGE
+  Int_Type rline_input_pending (Int_Type tsecs)
+
+ DESCRIPTION
+  This function returns a non-zero value if readline input is
+  available to be read.  If none is immediately available, it will
+  wait for up to `tsecs' tenths of a second for input before
+  returning.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_getkey
+
+--------------------------------------------------------------
+
+rline_ins
+
+ SYNOPSIS
+  Insert a string at the current editing point
+
+ USAGE
+  rline_ins (String_Type text)
+
+ DESCRIPTION
+  This function inserts the specified string into the line being edited.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_set_line, rline_del
+
+--------------------------------------------------------------
+
+rline_set_history
+
+ SYNOPSIS
+  Replace the current history list with a new one
+
+ USAGE
+  rline_set_history (Array_Type lines)
+
+ DESCRIPTION
+  The `rline_set_history' function replaces the current history
+  by the specified array of strings.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_get_history
+
+--------------------------------------------------------------
+
+rline_set_line
+
+ SYNOPSIS
+  Replace the current line with a new one
+
+ USAGE
+  rline_set_line (String_Type line)
+
+ DESCRIPTION
+  The `rline_set_line' function replaces the line being edited by
+  the specified one.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_get_line
+
+--------------------------------------------------------------
+
+rline_set_point
+
+ SYNOPSIS
+  Move the current editing position to another
+
+ USAGE
+  rline_set_point (Int_Type ofs)
+
+ DESCRIPTION
+ The `rline_set_point' function sets the editing point to the
+ specified byte-offset from the beginning of the line.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_get_point
+
+--------------------------------------------------------------
+
+rline_setkey
+
+ SYNOPSIS
+  Bind a key in the readline keymap to a function
+
+ USAGE
+  rline_setkey (func, keyseq)
+
+ DESCRIPTION
+  The `rline_setkey' function binds the function `func' to
+  the specified key sequence `keyseq'.  The value of `func'
+  may be either a reference to a S-Lang function, or a string giving
+  the name of an internal readline function.
+
+  Functions that are internal to the readline interface include:
+
+   bdel             Delete the previous character
+   bol              Move to the beginning of the line
+   complete         The command line completion function
+   del              Delete the character at the current position
+   delbol           Delete to the beginning of the line
+   deleol           Delete through the end of the line
+   down             Goto the next line in the history
+   enter            Return to the caller of the readline function
+   eol              Move to the end of the line
+   kbd_quit         Abort editing of the current line
+   left             Move left one character
+   quoted_insert    Insert the next byte into the line
+   redraw           Redraw the line
+   right            Move right one character
+   self_insert      Insert the byte that invoked the function
+   trim             Remove whitespace about the current position
+   up               Goto the previous line in the history
+
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_unsetkey
+
+--------------------------------------------------------------
+
+rline_unsetkey
+
+ SYNOPSIS
+  Unset a key binding from the readline keymap
+
+ USAGE
+  rline_unsetkey (String_Type keyseq)
+
+ DESCRIPTION
+  The `rline_unsetkey' function unbinds the specified key sequence
+  from the readline keymap.
+
+ EXAMPLE
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_setkey
+
+--------------------------------------------------------------
+
+rline_set_list_completions_callback
+
+ SYNOPSIS
+  Set a callback function to display the list of completions
+
+ USAGE
+  rline_set_list_completions_callback (Ref_Type func)
+
+ DESCRIPTION
+  This function sets the S-Lang function that is to be used to display the
+  list of possible completions for current word at the readline prompt.
+  The callback function must be defined to accept a single parameter
+  representing an array of completion strings.
+
+ EXAMPLE
+  This callback function writes the completions using the message
+  functions:
+
+     private define display_completions (strings)
+     {
+        variable str;
+        vmessage ("There are %d completions:\n", length(strings));
+        foreach str (strings) vmessage ("%s\n", str);
+     }
+     rline_set_list_completions_callback (&display_completions);
+
+
+ NOTES
+
+ SEE ALSO
+  rline_set_completion_callback
+
+--------------------------------------------------------------
+
+rline_set_completion_callback
+
+ SYNOPSIS
+  Set the function to be used for completion at the readline prompt
+
+ USAGE
+  rline_set_completion_callback (Ref_Type func)
+
+ DESCRIPTION
+  This function sets the callback function to be used for completion at the
+  readline prompt.  The callback function must be defined to accept
+  two values, the first being a string containing the text of the line
+  being edited, and an integer giving the position of the byte-offset
+  into the string where completion was requested.
+
+  The callback function must return two values: an array giving the
+  list of possible completion strings, and an integer giving the byte
+  offset into the string of the start of the text to be completed.
+
+ EXAMPLE
+  See completion-callback function defined in the `slsh' library file
+  `rline/complete.sl'.
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_set_list_completions_callback
+
+--------------------------------------------------------------
+
 alarm
 
  SYNOPSIS
@@ -6530,6 +7035,29 @@ printf
 
  SEE ALSO
   fputs, printf, fwrite, message
+
+--------------------------------------------------------------
+
+count_char_occurances
+
+ SYNOPSIS
+  Count the number of occurances of a character in a string
+
+ USAGE
+  UInt_Type count_char_occurances (str, ch)
+
+ DESCRIPTION
+  This function returns the number of times the specified character
+  `ch' occurs in the string `str'.
+
+ NOTES
+  If UTF-8 mode is in effect, then the character may correspond to
+  more than one byte.  In such a case, the function returns the number
+  of such byte-sequences in the string.  To count actual bytes, use
+  the `count_byte_occurances' function.
+
+ SEE ALSO
+  count_byte_occurances
 
 --------------------------------------------------------------
 

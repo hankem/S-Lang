@@ -120,6 +120,9 @@ conforming \slang applications.  Those functions are described in
 \chapter{Stack Functions}
 #i rtl/stack.tm
 
+\chapter{Functions that deal with the S-Lang readline interface}
+#i rtl/rline.tm
+
 \chapter{Miscellaneous Functions}
 #i rtl/misc.tm
 

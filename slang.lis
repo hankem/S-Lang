@@ -10,6 +10,11 @@
 @mkfiles/build.sh 0755
 @mkfiles/makefile.dos
 @mkfiles/makefile.sh
+@mkfiles/install.sl
+@mkfiles/m32init.bat
+@mkfiles/README
+@mkfiles/runslsh.bat
+@mkfiles/makefile.m32
 
 @autoconf/Makefile
 @autoconf/Makefile.in
@@ -90,6 +95,7 @@
 @doc/tm/rtl/posio.tm
 @doc/tm/rtl/posix.tm
 @doc/tm/rtl/qualif.tm
+@doc/tm/rtl/rline.tm
 @doc/tm/rtl/signal.tm
 @doc/tm/rtl/stack.tm
 @doc/tm/rtl/stdio.tm
