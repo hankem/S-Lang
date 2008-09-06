@@ -137,6 +137,7 @@ Changes since 2.1.3
 61. slsh/lib/tm/print.tm: Documented the slsh print function.
 62. slsh/lib/print.sl: Rewrote and simplified the code that prints to
     the various output "devices" by using a device-object.
+63. autoconf/Makefile.in: Added src/Makefile.in as a dependency.
 
 {{{ Previous Versions
 

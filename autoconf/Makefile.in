@@ -8,19 +8,23 @@ SHELL = /bin/sh
 
 all: elf
 Makefile: configure autoconf/Makefile.in
-	@echo "Makefile is more recent than the configure script".
+	@echo "Makefile is older than the configure script".
 	@echo "Please re-run the configure script."
 	@exit 1
 slsh/Makefile: configure slsh/Makefile.in
-	@echo "slsh/Makefile is more recent than its dependencies".
+	@echo "slsh/Makefile is older than its dependencies".
 	@echo "Please re-run the configure script."
 	@exit 1
 modules/Makefile: configure modules/Makefile.in
-	@echo "modules/Makefile is more recent than its dependencies".
+	@echo "modules/Makefile is older than its dependencies".
+	@echo "Please re-run the configure script."
+	@exit 1
+src/Makfile: configure src/Makfile.in src/config.hin
+	@echo "src/Makefile is older than its dependencies".
 	@echo "Please re-run the configure script."
 	@exit 1
 #
-makefiles: Makefile slsh/Makefile modules/Makefile
+makefiles: Makefile slsh/Makefile modules/Makefile src/Makefile
 help:
 	@echo "make install : install a shared version of the library"
 	@echo "make install-static : install a static version"
