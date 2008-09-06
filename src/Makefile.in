@@ -116,6 +116,7 @@ ELFOBJS = @PROGRAM_ELFOBJECTS@
 
 SHELL = /bin/sh
 
+DOT_O_DEPS = sllimits.h _slang.h
 sltoken_O_DEP = keywhash.c
 slarith_O_DEP = slarith.inc slarith2.inc
 slarrfun_O_DEP = slarrfun.inc

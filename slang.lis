@@ -235,6 +235,7 @@
 @slsh/lib/help/cmdopt.hlp
 @slsh/lib/help/readascii.hlp
 @slsh/lib/help/profile.hlp
+@slsh/lib/help/print.hlp
 
 @slsh/lib/tm/Makefile
 @slsh/lib/tm/arrayfuns.tm
@@ -244,10 +245,12 @@
 @slsh/lib/tm/cmdopt.tm
 @slsh/lib/tm/readascii.tm
 @slsh/lib/tm/profile.tm
+@slsh/lib/tm/print.tm
 
 @slsh/lib/test/test_cmdopt.sl
 @slsh/lib/test/test_structfuns.sl
 @slsh/lib/test/test_readascii.sl
+@slsh/lib/test/test_print.sl
 
 @slsh/doc/tm/slsh.tm
 @slsh/doc/tm/Makefile

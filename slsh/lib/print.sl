@@ -3,21 +3,45 @@ private variable Pager = getenv ("PAGER");
 if (Pager == NULL)
   Pager = "more";
 
+% Print Methods
+private variable Print_Device_Type = struct
+{
+   fp,
+   printf,
+   puts,
+   close,
+   clientdata
+};
+
+% Print to file-pointer method
+private define fp_printf_method ()
+{
+   variable args = __pop_args (_NARGS-1);
+   variable p = ();
+   return fprintf (p.fp, __push_args (args));
+}
+private define fp_puts_method (p, str)
+{
+   return fputs (str, p.fp);
+}
+private define fp_close_method (p)
+{
+   return fclose (p.fp);
+}
+private define new_fp_print (fp)
+{
+   variable p = @Print_Device_Type;
+   p.fp = fp;
+   p.puts = &fp_puts_method;
+   p.printf = &fp_printf_method;
+   return p;
+}
+
+% Print to a pager
+
 #ifexists SIGPIPE
 private variable Sigpipe_Handler;
 #endif
-
-private define open_pager (pager)
-{
-#ifexists SIGPIPE
-   signal (SIGPIPE, SIG_IGN, &Sigpipe_Handler);
-#endif
-   variable fp = popen (pager, "w");
-   if (fp == NULL)
-     throw OpenError, "Unable to open the pager ($pager)"$;
-   
-   return fp;
-}
 
 private define close_pager (fp)
 {
@@ -27,6 +51,78 @@ private define close_pager (fp)
    signal (SIGPIPE, Sigpipe_Handler);
 #endif
 }
+private define pager_close_method (p)
+{
+   close_pager (p.fp);
+   return 0;
+}
+
+private define new_pager_print (cmd)
+{
+#ifexists SIGPIPE
+   signal (SIGPIPE, SIG_IGN, &Sigpipe_Handler);
+#endif
+   variable fp = popen (cmd, "w");
+   
+   try
+     {
+	if (fp == NULL)
+	  throw OpenError, "Unable to open the pager ($cmd)"$;
+
+	variable p = new_fp_print (fp);
+	p.close = &pager_close_method;
+	return p;
+     }
+   catch AnyError:
+     {
+	close_pager (fp);
+	throw;
+     }
+}
+
+% Print to a filename
+private define new_file_print (filename)
+{
+   variable fp = fopen (filename, "w");
+   if (fp == NULL)
+     throw OpenError, "Unable to open $filename for writing."$;
+   
+   variable p = new_fp_print (fp);
+   p.close = &fp_close_method;
+   p.clientdata = filename;
+   return p;
+}
+
+% Print to a reference
+private define ref_printf_method ()
+{
+   variable args = __pop_args (_NARGS-1);
+   variable p = ();
+   p.fp = strcat (p.fp, sprintf (__push_args(args)));
+   return 1;
+}
+private define ref_puts_method (p, str)
+{
+   p.fp = strcat (p.fp, str);
+   return 1;
+}
+private define ref_close_method (p)
+{
+   @p.clientdata = p.fp;
+   return 0;
+}
+private define new_ref_print (ref)
+{
+   variable p = @Print_Device_Type;
+   p.fp = "";
+   p.printf = &ref_printf_method;
+   p.puts = &ref_puts_method;
+   p.close = &ref_close_method;
+   p.clientdata = ref;
+   return p;
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 private define generic_to_string (x)
 {
@@ -62,53 +158,23 @@ private define struct_to_single_line_string (s)
 {
    return struct_to_string (s, 1);
 }
-  
-private define print_list (a, ref, fp, use_pager, pager_pgm)
+
+private define print_list (a, device)
 {
-   variable i;
-   variable s = "{";
-   variable comma = "";
-   if (ref != NULL)
+   if (-1 != device.puts ("{\n"))
      {
-	_for i (0, length (a)-1, 1)
-	  {
-	     s = sprintf ("%s%s%s", s, comma, generic_to_string(a[i]));
-	     comma = ", ";
-	  }
-	s = strcat (s, "}");
-	@ref = s;
-	return;
-     }
-   
-   if (use_pager == -1)
-     use_pager = length (a) > Pager_Rows;
-   
-   variable pager_open = 0;
-   if (use_pager && (fp == NULL))
-     {
-	fp = open_pager (pager_pgm);
-	pager_open = 1;
-     }
-
-   if (fp == NULL)
-     fp = stdout;
-
-   if (-1 != fprintf (fp, "{\n"))
-     {
+	variable s;
 	foreach s (a)
 	  {
-	     if (-1 == fprintf (fp, "%s\n", generic_to_string (s)))
+	     if (-1 == device.printf ("%s\n", generic_to_string (s)))
 	       break;
 	  }
 	then
-	  () = fprintf (fp, "}\n");
+	  () = device.puts ("}\n");
      }
-
-   if (pager_open)
-     close_pager (fp);
 }
 
-private define write_2d_array (fp, a, to_str)
+private define write_2d_array (device, a, to_str)
 {
    variable dims = array_shape (a);
    variable nrows = dims[0];
@@ -120,35 +186,21 @@ private define write_2d_array (fp, a, to_str)
 	_for (0, ncols-1, 1)
 	  {
 	     variable j = ();
-	     if (-1 == fprintf (fp, "%s ", (@to_str)(a[i,j])))
+	     if (-1 == device.printf ("%s ", (@to_str)(a[i,j])))
 	       return -1;
 	  }
-	if (-1 == fputs ("\n", fp))
+	if (-1 == device.puts ("\n"))
 	  return -1;
      }
    return 0;
 }
 
-private define print_array (a, ref, fp, use_pager, pager_pgm)
+private define print_array (a, device)
 {
-   variable dims, ndims, type;
+   variable dims, ndims;
 
-   (dims, ndims, type) = array_info (a);
-   variable nelems = length (a);
+   (dims, ndims, ) = array_info (a);
    variable nrows = dims[0];
-   variable is_numeric = __is_numeric (a);
-   variable pager_open = 0;
-   if (use_pager == -1)
-     use_pager = (nrows > Pager_Rows) || (prod(dims) > Pager_Rows*10);
-
-   if (use_pager && (fp == NULL))
-     {
-	fp = open_pager (pager_pgm);
-	pager_open = 1;
-     }
-
-   if (fp == NULL)
-     fp = stdout;
 
    try
      {
@@ -165,7 +217,7 @@ private define print_array (a, ref, fp, use_pager, pager_pgm)
 	  {
 	     _for i (0, nrows-1, 1)
 	       {
-		  if (-1 == fprintf (fp, "%s\n", (@to_str)(a[i])))
+		  if (-1 == device.printf ("%s\n", (@to_str)(a[i])))
 		    return;
 	       }
 	     return;
@@ -173,7 +225,7 @@ private define print_array (a, ref, fp, use_pager, pager_pgm)
 
 	if (ndims == 2)
 	  {
-	     () = write_2d_array (fp, a, to_str);
+	     () = write_2d_array (device, a, to_str);
 	     return;
 	  }
 
@@ -182,16 +234,126 @@ private define print_array (a, ref, fp, use_pager, pager_pgm)
 	reshape (a, new_dims);
 	_for i (0, nrows-1, 1)
 	  {
-	     if ((-1 == write_2d_array (fp, a[i,*,*], to_str))
-		 || (-1 == fputs ("\n", fp)))
+	     if ((-1 == write_2d_array (device, a[i,*,*], to_str))
+		 || (-1 == device.puts ("\n")))
 	       return;
 	  }
      }
    finally
      {
-	if (pager_open)
-	  close_pager (fp);
 	reshape (a, dims);
+     }
+}
+
+define print ()
+{
+   variable usage_string 
+     =  ("print (OBJ [,&str|File_Type|Filename]);\n"
+	 + "Qualifiers: pager[=pgm], nopager\n");
+
+   if (_NARGS == 0)
+     usage (usage_string);
+
+   variable pager_pgm = Pager;
+   variable use_pager = -1;	       %  auto
+
+   if (qualifier_exists("nopager"))
+     use_pager = 0;
+   else if (qualifier_exists ("pager"))
+     {
+	use_pager = 1;
+	pager_pgm = qualifier ("pager");
+	if (pager_pgm == NULL)
+	  pager_pgm = Pager;
+     }
+
+   variable device = NULL;
+   if (_NARGS == 2)
+     {
+	device = ();
+	switch (typeof (device))
+	  {
+	   case File_Type:
+	     device = new_fp_print (device);
+	  }
+	  {
+	   case String_Type:
+	     device = new_file_print (device);
+	  }
+	  {
+	   case Ref_Type:
+	     device = new_ref_print (device);
+	  }
+	  {
+	     usage (usage_string);
+	  }
+	use_pager = 0;
+     }
+
+   variable x = ();
+   variable t = typeof (x);
+   variable str_x = NULL;
+
+   if (use_pager == -1)
+     {
+	switch (t)
+	  {
+	   case Array_Type:
+	     variable dims = array_shape (x);
+	     use_pager = ((dims[0] > Pager_Rows)
+			  || (prod(dims) > 10*Pager_Rows));
+	  }
+	  {
+	   case List_Type:
+	     use_pager = length (x) > Pager_Rows;
+	  }
+	  {
+	   case String_Type:
+	     use_pager = count_byte_occurances (x, '\n') > Pager_Rows;
+	  }
+	  {
+	     if (is_struct_type (x))
+	       str_x = struct_to_string (x, 0);
+	     else
+	       str_x = generic_to_string (x);
+
+	     use_pager = (count_byte_occurances (str_x, '\n') > Pager_Rows);
+	  }
+     }
+
+   if (use_pager)
+     device = new_pager_print (pager_pgm);
+   
+   if (device == NULL)
+     device = new_fp_print (stdout);
+
+   try
+     {
+	if (t == Array_Type)
+	  return print_array (x, device);
+
+	if (t == List_Type)
+	  return print_list (x, device);
+
+	if ((t == String_Type) && use_pager)
+	  return device.puts (x);
+
+	if (str_x != NULL)
+	  x = str_x;
+	else if (is_struct_type (x))
+	  x = struct_to_string (x, 0);
+	else
+	  x = generic_to_string (x);
+   
+	if (-1 != device.puts (x))
+	  {
+	     () = device.puts ("\n");
+	  }
+     }
+   finally
+     {
+	if (device.close != NULL)
+	  () = device.close ();
      }
 }
 
@@ -205,84 +367,3 @@ define print_set_pager_lines (n)
    Pager_Rows = n;
 }
 
-define print ()
-{
-   variable ref = NULL;
-   variable fp = NULL;
-
-   if (_NARGS == 0)
-     {
-	usage ("print (OBJ [,&str|File_Type]);\n"
-	       + "Qualifiers: pager[=pgm], nopager\n");
-     }
-   variable pager_pgm = Pager;
-   variable use_pager = -1;	       %  auto
-   if (qualifier_exists("nopager"))
-     use_pager = 0;
-   else if (qualifier_exists ("pager"))
-     {
-	use_pager = 1;
-	pager_pgm = qualifier ("pager");
-	if (pager_pgm == NULL)
-	  pager_pgm = Pager;
-     }
-
-   if (_NARGS == 2)
-     {
-	ref = ();
-	if (typeof (ref) == File_Type)
-	  {
-	     fp = ref;
-	     ref = NULL;
-	  }
-	use_pager = 0;
-     }
-
-   variable x = ();
-   variable t = typeof (x);
-
-   % Note: print_array may use the pager if fp is NULL.
-   if (t == Array_Type)
-     {
-	if (ref == NULL)
-	  return print_array (x, &ref, fp, use_pager, pager_pgm);
-     }
-
-   if (t == List_Type)
-     {
-	print_list (x, ref, fp, use_pager, pager_pgm);
-	return;
-     }
-
-   if (is_struct_type (x))
-     x = struct_to_string (x, 0);
-   else
-     x = generic_to_string (x);
-   
-   if (ref != NULL)
-     {
-	@ref = x;
-	return;
-     }
-
-   if (use_pager == -1)
-     use_pager = (count_byte_occurances (x, '\n') > Pager_Rows);
-
-   if (use_pager)
-     {
-	fp = open_pager (pager_pgm);
-	if (fp == NULL)
-	  use_pager = 0;
-     }
-   
-   if (fp == NULL)
-     fp = stdout;
-   
-   if (-1 != fputs (x, fp))
-     {
-	() = fputs ("\n", fp);
-     }
-
-   if (use_pager)
-     close_pager (fp);
-}

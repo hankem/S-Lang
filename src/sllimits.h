@@ -23,8 +23,8 @@ USA.
 #define USE_NEW_HASH_CODE	1
 
 /* slstring.c: Size of the hash table used for strings (prime numbers) */
-#define SLSTRING_HASH_TABLE_SIZE	32327 /* 25013 */ /* was: 10007 */
-
+#define SLSTRING_HASH_TABLE_SIZE	32327 /* was 25013, 10007 */
+/* Other large primes: 70001, 100003, 140009,... */
 /* slang.c: maximum size of run time stack */
 #ifdef __MSDOS_16BIT__
 # define SLANG_MAX_STACK_LEN		500
