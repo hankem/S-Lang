@@ -456,7 +456,7 @@
 @utf8/test_isxxx.c
 @utf8/testfiles/UTF-8-demo.txt
 @utf8/testfiles/UTF-8-test.txt
-@utf8/tools/EastAsianWidth-5.0.0.txt
-@utf8/tools/UnicodeData-5.0.0.txt
+@utf8/tools/EastAsianWidth.txt
+@utf8/tools/UnicodeData.txt
 @utf8/tools/Makefile
 *utf8/tools/mktables 0755

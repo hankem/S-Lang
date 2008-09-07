@@ -6769,13 +6769,15 @@ static void rearrange_optimized_binary (SLBlock_Type *b, _pSLang_BC_Type t1, _pS
    *b = *(b-1);
    *(b-1) = *(b-2);
    *(b-2) = tmp;
-   return;
+
+   /* 
    b = b - 2;
    if (t1 == SLANG_BC_LLVARIABLE_BINARY)
      {
 	if (b->b.i_blk == SLANG_PLUS)
 	  b->bc_main_type = SLANG_BC_LLVARIABLE_BINARY_PLUS;
      }
+    */
 }
 
 static void rearrange_optimized_optimized (SLBlock_Type *b, _pSLang_BC_Type t1)
