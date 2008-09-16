@@ -716,6 +716,9 @@ ONIG_MODULE
 PNG_LIB
 PNG_INC
 PNG_MODULE
+Z_LIB
+Z_INC
+ZLIB_MODULE
 ICONV_LIB
 ICONV_INC
 ICONV_MODULE
@@ -1335,6 +1338,9 @@ Optional Packages:
   --with-png=DIR      Use DIR/lib and DIR/include for png
   --with-pnglib=DIR   png library in DIR
   --with-pnginc=DIR   png include files in DIR
+  --with-z=DIR      Use DIR/lib and DIR/include for z
+  --with-zlib=DIR   z library in DIR
+  --with-zinc=DIR   z include files in DIR
   --with-iconv=DIR      Use DIR/lib and DIR/include for iconv
   --with-iconvlib=DIR   iconv library in DIR
   --with-iconvinc=DIR   iconv include files in DIR
@@ -12455,6 +12461,255 @@ else
 fi
 
 
+
+
+
+
+ jd_z_include_dir=""
+ jd_z_library_dir=""
+ if test X"$jd_with_z_library" = X
+ then
+   jd_with_z_library=""
+ fi
+
+
+# Check whether --with-z was given.
+if test "${with_z+set}" = set; then
+  withval=$with_z; jd_with_z_arg=$withval
+else
+  jd_with_z_arg=unspecified
+fi
+
+
+ case "x$jd_with_z_arg" in
+   xno)
+     jd_with_z_library="no"
+    ;;
+   x)
+        jd_with_z_library="yes"
+    ;;
+   xunspecified)
+    ;;
+   xyes)
+    jd_with_z_library="yes"
+    ;;
+   *)
+    jd_with_z_library="yes"
+    jd_z_include_dir="$jd_with_z_arg"/include
+    jd_z_library_dir="$jd_with_z_arg"/lib
+    ;;
+ esac
+
+
+# Check whether --with-zlib was given.
+if test "${with_zlib+set}" = set; then
+  withval=$with_zlib; jd_with_zlib_arg=$withval
+else
+  jd_with_zlib_arg=unspecified
+fi
+
+ case "x$jd_with_zlib_arg" in
+   xunspecified)
+    ;;
+   xno)
+    ;;
+   x)
+    { { echo "$as_me:$LINENO: error: --with-zlib requres a value" >&5
+echo "$as_me: error: --with-zlib requres a value" >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+   *)
+    jd_with_z_library="yes"
+    jd_z_library_dir="$jd_with_zlib_arg"
+    ;;
+ esac
+
+
+# Check whether --with-zinc was given.
+if test "${with_zinc+set}" = set; then
+  withval=$with_zinc; jd_with_zinc_arg=$withval
+else
+  jd_with_zinc_arg=unspecified
+fi
+
+ case "x$jd_with_zinc_arg" in
+   x)
+     { { echo "$as_me:$LINENO: error: --with-zinc requres a value" >&5
+echo "$as_me: error: --with-zinc requres a value" >&2;}
+   { (exit 1); exit 1; }; }
+     ;;
+   xunspecified)
+     ;;
+   xno)
+     ;;
+   *)
+    jd_with_z_library="yes"
+    jd_z_include_dir="$jd_with_zinc_arg"
+   ;;
+ esac
+
+  { echo "$as_me:$LINENO: checking for the z library and header files zlib.h" >&5
+echo $ECHO_N "checking for the z library and header files zlib.h... $ECHO_C" >&6; }
+  if test X"$jd_with_z_library" != Xno
+  then
+    jd_z_inc_file=zlib.h
+
+    if test "X$jd_z_inc_file" = "X"
+    then
+       jd_z_inc_file=z.h
+    fi
+
+    if test X"$jd_z_include_dir" = X
+    then
+      inc_and_lib_dirs="\
+         $jd_prefix_incdir,$jd_prefix_libdir \
+	 /usr/local/z/include,/usr/local/z/lib \
+	 /usr/local/include/z,/usr/local/lib \
+	 /usr/local/include,/usr/local/lib \
+	 /usr/include/z,/usr/lib \
+	 /usr/z/include,/usr/z/lib \
+	 /usr/include,/usr/lib \
+	 /opt/include/z,/opt/lib \
+	 /opt/z/include,/opt/z/lib \
+	 /opt/include,/opt/lib"
+
+      if test X != X
+      then
+        inc_and_lib_dirs="/include,/lib $inc_and_lib_dirs"
+      fi
+
+      case "$host_os" in
+         *darwin* )
+	   exts="dylib so a"
+	   ;;
+	 *cygwin* )
+	   exts="dll.a so a"
+	   ;;
+	 * )
+	   exts="so a"
+      esac
+
+      xincfile="$jd_z_inc_file"
+      xlibfile="libz"
+      jd_with_z_library="no"
+
+      for include_and_lib in $inc_and_lib_dirs
+      do
+        # Yuk.  Is there a better way to set these variables??
+        xincdir=`echo $include_and_lib | tr ',' ' ' | awk '{print $1}'`
+	xlibdir=`echo $include_and_lib | tr ',' ' ' | awk '{print $2}'`
+	found=0
+	if test -r $xincdir/$xincfile
+	then
+	  for E in $exts
+	  do
+	    if test -r "$xlibdir/$xlibfile.$E"
+	    then
+	      jd_z_include_dir="$xincdir"
+	      jd_z_library_dir="$xlibdir"
+	      jd_with_z_library="yes"
+	      found=1
+	      break
+	    fi
+	  done
+	fi
+	if test $found -eq 1
+	then
+	  break
+	fi
+      done
+    fi
+  fi
+
+  if test X"$jd_z_include_dir" != X -a X"$jd_z_library_dir" != X
+  then
+    { echo "$as_me:$LINENO: result: yes: $jd_z_library_dir and $jd_z_include_dir" >&5
+echo "${ECHO_T}yes: $jd_z_library_dir and $jd_z_include_dir" >&6; }
+    jd_with_z_library="yes"
+            Z_LIB=-L$jd_z_library_dir
+    if test "X$jd_z_library_dir" = "X/usr/lib"
+    then
+      Z_LIB=""
+    else
+
+if test "X$jd_z_library_dir" != "X"
+then
+  if test "X$RPATH" = "X"
+  then
+
+case "$host_os" in
+  *linux*|*solaris* )
+    if test "X$GCC" = Xyes
+    then
+      if test "X$ac_R_nospace" = "Xno"
+      then
+        RPATH="-Wl,-R,"
+      else
+        RPATH="-Wl,-R"
+      fi
+    else
+      if test "X$ac_R_nospace" = "Xno"
+      then
+        RPATH="-R "
+      else
+	RPATH="-R"
+      fi
+    fi
+  ;;
+  *osf*|*openbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-rpath,"
+    else
+      RPATH="-rpath "
+    fi
+  ;;
+  *netbsd*)
+    if test "X$GCC" = Xyes
+    then
+      RPATH="-Wl,-R"
+    fi
+  ;;
+esac
+
+    if test "X$RPATH" != "X"
+    then
+      RPATH="$RPATH$jd_z_library_dir"
+    fi
+  else
+    RPATH="$RPATH:$jd_z_library_dir"
+  fi
+fi
+
+    fi
+
+    Z_INC=-I$jd_z_include_dir
+    if test "X$jd_z_include_dir" = "X/usr/include"
+    then
+      Z_INC=""
+    fi
+  else
+    { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+    jd_with_z_library="no"
+    Z_INC=""
+    Z_LIB=""
+  fi
+
+
+
+if test $jd_with_z_library = yes
+then
+  ZLIB_MODULE="zlib-module.so"
+  cat >>confdefs.h <<\_ACEOF
+#define HAVE_ZLIB_H 1
+_ACEOF
+
+else
+  ZLIB_MODULE=""
+fi
+
+
 #serial AM2
 
 
@@ -13777,6 +14032,9 @@ ONIG_MODULE!$ONIG_MODULE$ac_delim
 PNG_LIB!$PNG_LIB$ac_delim
 PNG_INC!$PNG_INC$ac_delim
 PNG_MODULE!$PNG_MODULE$ac_delim
+Z_LIB!$Z_LIB$ac_delim
+Z_INC!$Z_INC$ac_delim
+ZLIB_MODULE!$ZLIB_MODULE$ac_delim
 ICONV_LIB!$ICONV_LIB$ac_delim
 ICONV_INC!$ICONV_INC$ac_delim
 ICONV_MODULE!$ICONV_MODULE$ac_delim
@@ -13795,7 +14053,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 20; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 23; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

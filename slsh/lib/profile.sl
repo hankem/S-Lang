@@ -741,7 +741,7 @@ define profile_report (file)
 	profile_report_lines (fp, s);
      }
 
-   if (fp != file)
+   ifnot (_eqs (fp,file))
      () = fclose (fp);
 }
 	

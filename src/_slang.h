@@ -712,7 +712,12 @@ extern int _pSLang_init_slstrops (void);
 extern int _pSLstrops_do_sprintf_n (int);
 extern int _pSLang_sscanf (void);
 extern double _pSLang_atof (SLFUTURE_CONST char *);
+
 extern int _pSLang_init_bstring (void);
+extern SLang_Foreach_Context_Type *_pSLbstring_foreach_open (SLtype type, unsigned int num);
+extern void _pSLbstring_foreach_close (SLtype type, SLang_Foreach_Context_Type *c);
+extern int _pSLbstring_foreach (SLtype type, SLang_Foreach_Context_Type *c);
+
 extern int _pSLang_init_sltime (void);
 extern void _pSLpack (void);
 extern void _pSLunpack (char *, SLang_BString_Type *);

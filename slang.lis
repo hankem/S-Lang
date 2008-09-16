@@ -148,6 +148,12 @@
 @modules/socket.sl
 @modules/iconv-module.c
 @modules/iconv.sl
+@modules/zlib-module.c
+@modules/zlib.sl
+
+@modules/test/test_zlib.sl
+@modules/test/test_onig.sl
+@modules/test/test_rand.sl
 
 @modules/tm/pcrefuns.tm
 @modules/tm/pngfuns.tm

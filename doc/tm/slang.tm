@@ -936,11 +936,22 @@
        \t        --  tab character (ASCII 9)
        \n        --  newline character (ASCII 10)
        \e        --  escape character (ASCII 27)
-       \xhhh     --  byte expressed in HEXADECIMAL notation
+       \xhh      --  byte expressed in HEXADECIMAL notation
        \ooo      --  byte expressed in OCTAL notation
        \dnnn     --  byte expressed in DECIMAL
-       \x{uuuu}  --  the Unicode character U+uuuu
+       \u{h..h}  --  the Unicode character U+h..h
+       \x{h..h}  --  the Unicode character U+h..h  [modal]
 #v-
+    In the above table, \tt{h} represents one of the HEXADECIMAL
+    characters from the set \em{[0-9A-Fa-f]}.  It is important to
+    understand the distinction between the \exmp{\\x\{h..h\}} and
+    \exmp{\\u\{h..h\}} forms.  When using in a string, the \exmp{\\u}
+    form always expands to the corresponding UTF-8 sequence regardless
+    of the UTF-8 mode.  In contrast, when in non-UTF-8 mode, the
+    \exmp{\\x} form expands to a byte when given two hex characters,
+    or to the corresponding UTF-8 sequence when used with three or
+    more hex characters.
+
     For example, to include the double quote character as part of the
     string, it must be preceded by a backslash character, e.g.,
 #v+

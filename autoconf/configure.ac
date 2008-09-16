@@ -175,6 +175,16 @@ else
 fi
 AC_SUBST(PNG_MODULE)
 
+JD_CHECK_FOR_LIBRARY(z,zlib.h)
+if test $jd_with_z_library = yes
+then 
+  ZLIB_MODULE="zlib-module.so"
+  AC_DEFINE(HAVE_ZLIB_H)
+else
+  ZLIB_MODULE=""
+fi
+AC_SUBST(ZLIB_MODULE)
+
 m4_include([./iconv.m4])
 
 ICONV_MODULE=""

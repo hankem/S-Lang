@@ -1,4 +1,10 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.1.4
+1. modules/termios-module.c: Added the VMIN constant (Laurent Perez).
+2. src/slbstr.c: Added foreach method to BString_Type objects.
+3. module/zlib-module.c: New module that wraps libz
+   (compression/decompression library).
+
 Changes since 2.1.3
 1. src/slang.c: The identifier syntax was not being checked for
    symbols added to the global namespace.

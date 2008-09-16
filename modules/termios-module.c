@@ -648,7 +648,10 @@ static SLang_IConstant_Type Termios_Consts [] =
 #ifdef VKILL
    MAKE_ICONSTANT("VKILL", VKILL),
 #endif
-#ifdef VQUIT
+#ifdef VMIN
+   MAKE_ICONSTANT("VMIN", VMIN),
+#endif
+ #ifdef VQUIT
    MAKE_ICONSTANT("VQUIT", VQUIT),
 #endif
 #ifdef VSTART

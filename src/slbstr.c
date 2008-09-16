@@ -619,6 +619,128 @@ static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
    SLANG_END_INTRIN_FUN_TABLE
 };
 
+
+struct _pSLang_Foreach_Context_Type
+{
+   SLang_BString_Type *bstr;
+   unsigned char *s, *smax;	       /* pointers into string */
+   int using_chars;
+};
+
+SLang_Foreach_Context_Type *
+_pSLbstring_foreach_open (SLtype type, unsigned int num)
+{
+   char *u;
+   SLang_Foreach_Context_Type *c;
+   int using_chars = 0;
+   SLang_BString_Type *bstr;
+   unsigned int len;
+
+   (void) type;
+
+   if (-1 == SLang_pop_bstring (&bstr))
+     return NULL;
+
+   switch (num)
+     {
+      case 1:
+	if (-1 == SLang_pop_slstring (&u))
+	  {
+	     SLbstring_free (bstr);
+	     return NULL;
+	  }
+	if (0 == strcmp (u, "chars"))
+	  using_chars = 1;
+	else if (0 == strcmp (u, "bytes"))
+	  using_chars = 0;
+	else
+	  {
+	     _pSLang_verror (SL_InvalidParm_Error, "Expected foreach ([B]String_Type) using (chars|bytes)");
+	     SLang_free_slstring (u);
+	     SLbstring_free (bstr);
+	     return NULL;
+	  }
+	SLang_free_slstring (u);
+   	break;
+
+      case 0:
+	using_chars = 0;
+	break;
+      default:
+	_pSLang_verror (SL_NumArgs_Error,
+		      "'foreach ([B]String_Type) using' requires single control value (chars|bytes)");
+	return NULL;
+     }
+   
+   /* In UTF-8 mode, chars and bytes are synonymous */
+   if (_pSLinterp_UTF8_Mode == 0)
+     using_chars = 0;
+
+   c = (SLang_Foreach_Context_Type *)SLmalloc (sizeof (SLang_Foreach_Context_Type));
+   if (c == NULL)
+     {
+	SLbstring_free (bstr);
+	return NULL;
+     }
+
+   memset ((char *) c, 0, sizeof (SLang_Foreach_Context_Type));
+   
+   c->bstr = bstr;
+   c->s = SLbstring_get_pointer (bstr, &len);
+   c->smax = c->s + len;
+   c->using_chars = using_chars;
+   return c;
+}
+
+void _pSLbstring_foreach_close (SLtype type, SLang_Foreach_Context_Type *c)
+{
+   (void) type;
+   if (c == NULL) return;
+   SLbstring_free (c->bstr);
+   SLfree ((char *) c);
+}
+
+int _pSLbstring_foreach (SLtype type, SLang_Foreach_Context_Type *c)
+{
+   unsigned char ch;
+   SLwchar_Type wch;
+   unsigned char *s, *s1, *smax;
+   
+   (void) type;
+
+   s = c->s;
+   smax = c->smax;
+   if (s == smax)
+     return 0;
+
+   if (c->using_chars == 0)
+     {
+	ch = (unsigned char) *s++;
+	c->s = s;
+
+	if (-1 == SLclass_push_char_obj (SLANG_UCHAR_TYPE, ch))
+	  return -1;
+
+	return 1;
+     }
+   s1 = SLutf8_decode (s, smax, &wch, NULL);
+   if (s1 == NULL)
+     {
+	int iwch = (int) *s;
+	c->s = s + 1;
+	/* Invalid encoded char-- return it as a negative int */
+	if (-1 == SLang_push_int (-iwch))
+	  return -1;
+	
+	return 1;
+     }
+   c->s = s1;
+   if (-1 == SLang_push_wchar (wch))
+     return -1;
+   
+   return 1;
+}
+
 int _pSLang_init_bstring (void)
 {
    SLang_Class_Type *cl;
@@ -639,6 +761,10 @@ int _pSLang_init_bstring (void)
        || (-1 == SLclass_add_binary_op (SLANG_BSTRING_TYPE, SLANG_STRING_TYPE, bstring_string_bin_op, bstring_bstring_bin_op_result))
        || (-1 == SLclass_add_binary_op (SLANG_BSTRING_TYPE, SLANG_BSTRING_TYPE, bstring_bstring_bin_op, bstring_bstring_bin_op_result)))
      return -1;
+
+   cl->cl_foreach_open = _pSLbstring_foreach_open;
+   cl->cl_foreach_close = _pSLbstring_foreach_close;
+   cl->cl_foreach = _pSLbstring_foreach;
 
    if (-1 == SLadd_intrin_fun_table (BString_Table, NULL))
      return -1;

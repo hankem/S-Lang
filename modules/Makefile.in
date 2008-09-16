@@ -1,8 +1,9 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
   varray-module.so socket-module.so rand-module.so @PCRE_MODULE@ @PNG_MODULE@ \
-  @ICONV_MODULE@ @ONIG_MODULE@
-SLFILES = slsmg termios select fcntl varray socket pcre png iconv onig rand
+  @ICONV_MODULE@ @ONIG_MODULE@ @ZLIB_MODULE@
+SLFILES = slsmg termios select fcntl varray socket pcre png iconv \
+  onig rand zlib
 #---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
@@ -43,6 +44,11 @@ ICONV_LIB	= @ICONV_LIB@
 #---------------------------------------------------------------------------
 ONIG_INC	= @ONIG_INC@
 ONIG_LIB	= @ONIG_LIB@ -lonig
+#---------------------------------------------------------------------------
+# If building the ZLIB module, you may need to set these
+#---------------------------------------------------------------------------
+ZLIB_INC	= @Z_INC@
+ZLIB_LIB	= @Z_LIB@ -lz
 #---------------------------------------------------------------------------
 # If building the SOCKET module, you may need to set these
 #---------------------------------------------------------------------------
@@ -102,6 +108,8 @@ socket-module.so: socket-module.c config.h
 	$(CC_SHARED) $(INCS) socket-module.c -o socket-module.so $(SOCKET_LIBS) $(LIBS)
 iconv-module.so: iconv-module.c config.h
 	$(CC_SHARED) $(INCS) $(ICONV_INC) iconv-module.c -o iconv-module.so $(ICONV_LIB) $(LIBS)
+zlib-module.so: zlib-module.c config.h
+	$(CC_SHARED) $(INCS) $(ZLIB_INC) zlib-module.c -o zlib-module.so $(ZLIB_LIB) $(LIBS)
 
 # Note that Windows/Cygwin modules need execute permissions
 install: all
