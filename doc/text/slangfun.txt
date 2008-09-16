@@ -909,7 +909,7 @@ bstring_to_array
 
  DESCRIPTION
    The `bstring_to_array' function returns an array of unsigned
-   characters whose elements correspond to the characters in the
+   characters whose elements correspond to the bytes in the
    binary string.
 
  SEE ALSO
@@ -948,7 +948,7 @@ count_byte_occurances
   Count the number of occurances of a byte in a binary string
 
  USAGE
-  UInt_Type count_char_occurances (bstring, byte)
+  UInt_Type count_byte_occurances (bstring, byte)
 
  DESCRIPTION
   This function returns the number of times the specified byte
@@ -979,8 +979,8 @@ pack
   The format string consists of one or more data-type specification
   characters defined by the following table:
 
-     c     char
-     C     unsigned char
+     c     signed byte
+     C     unsigned byte
      h     short
      H     unsigned short
      i     int
@@ -7359,6 +7359,7 @@ sprintf
      e    as a float using exponential form, e.g., 2.345e08
      g    format as e or g, depending upon its value
      c    as a character
+     b    as a byte
      %    a literal percent character
      d    as a signed decimal integer
      u    as an unsigned decimal integer
@@ -7394,7 +7395,7 @@ sprintf
   `S' conversion of floating point numbers.
 
  SEE ALSO
-  string, sscanf, message
+  string, sscanf, message, pack
 
 --------------------------------------------------------------
 
@@ -9173,7 +9174,7 @@ char
   A better name should have been chosen for this function.
 
  SEE ALSO
-  integer, string, typedef, sprintf
+  integer, string, typedef, sprintf, pack
 
 --------------------------------------------------------------
 

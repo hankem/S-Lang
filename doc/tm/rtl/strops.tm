@@ -243,6 +243,7 @@
      e    as a float using exponential form, e.g., 2.345e08
      g    format as e or g, depending upon its value
      c    as a character
+     b    as a byte
      %    a literal percent character
      d    as a signed decimal integer
      u    as an unsigned decimal integer
@@ -274,7 +275,7 @@
 \notes
   The \ifun{set_float_format} function controls the format for the
   \exmp{S} conversion of floating point numbers.
-\seealso{string, sscanf, message}
+\seealso{string, sscanf, message, pack}
 \done
 
 \function{sscanf}

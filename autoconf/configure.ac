@@ -145,13 +145,17 @@ JD_GCC_WARNINGS
 
 JD_SET_OBJ_SRC_DIR(src)
 
+missingmodules=""
+extramodules=""
 JD_CHECK_FOR_LIBRARY(pcre)
 if test $jd_with_pcre_library = yes
 then 
   PCRE_MODULE="pcre-module.so"
   AC_DEFINE(HAVE_PCRE_H)
+  extramodules="$extramodules pcre"
 else
   PCRE_MODULE=""
+  missingmodules="$missingmodules pcre"
 fi
 AC_SUBST(PCRE_MODULE)
 
@@ -160,8 +164,10 @@ if test $jd_with_onig_library = yes
 then 
   ONIG_MODULE="onig-module.so"
   AC_DEFINE(HAVE_ONIGURUMA_H)
+  extramodules="$extramodules oniguruma"
 else
   ONIG_MODULE=""
+  missingmodules="$missingmodules onigurama"
 fi
 AC_SUBST(ONIG_MODULE)
 
@@ -170,8 +176,10 @@ if test $jd_with_png_library = yes
 then 
   PNG_MODULE="png-module.so"
   AC_DEFINE(HAVE_PNG_H)
+  extramodules="$extramodules png"
 else
   PNG_MODULE=""
+  missingmodules="$missingmodules png"  
 fi
 AC_SUBST(PNG_MODULE)
 
@@ -180,8 +188,10 @@ if test $jd_with_z_library = yes
 then 
   ZLIB_MODULE="zlib-module.so"
   AC_DEFINE(HAVE_ZLIB_H)
+  extramodules="$extramodules z"
 else
   ZLIB_MODULE=""
+  missingmodules="$missingmodules z"
 fi
 AC_SUBST(ZLIB_MODULE)
 
@@ -194,16 +204,20 @@ then
   ICONV_MODULE="iconv-module.so"
   AC_DEFINE(HAVE_ICONV_H)
   ICONV_LIB="$ICONV_LIB -liconv"
+  extramodules="$extramodules iconv"
 else
   SLANG_AM_ICONV
   if test "$am_cv_func_iconv" = yes
   then
     ICONV_MODULE="iconv-module.so"
+    extramodules="$extramodules iconv"
     if test "X$am_cv_lib_iconv" = Xyes
     then 
        ICONV_LIB=$LIBICONV
        ICONV_INC=""
     fi
+  else
+    missingmodules="$missingmodules iconv"
   fi
 fi
 AC_SUBST(ICONV_MODULE)
@@ -280,6 +294,19 @@ echo "    Installation Lib Dir:" "$libdir"
 echo "Installation Include Dir:" "$includedir"
 echo ""
 echo "See also src/sl-feat.h for various features."
+
+echo ""
+echo "The following modules that depend upon external libraries will be built:"
+echo "  $extramodules"
+echo ""
+if test "X$missingmodules" != "X"
+then
+  echo ""
+  echo "While not required, it is recommended that you install the following"
+  echo "libraries and reconfigure so that the corresponding modules can be built:"
+  echo "  $missingmodules"
+  echo ""
+fi
 echo "Type 'make' to build a shared version of the library."
 echo "Type 'make help' for more options"
 echo ""

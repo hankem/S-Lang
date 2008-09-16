@@ -90,6 +90,10 @@ ONIGLIBS = /LIBPATH:$(ONIGDIR)$(P)lib
 PNGDIR=..$(P)..$(P)png
 PNGINCS = /I$(PNGDIR)$(P)include
 PNGLIBS = /LIBPATH:$(PNGDIR)$(P)lib
+#
+ZLIBDIR=..$(P)..$(P)zlib
+ZLIBINCS = /I$(ZLIBDIR)$(P)include
+ZLIBLIBS = /LIBPATH:$(ZLIBDIR)$(P)lib
 
 # This needs changing for Windows NT on non-Intel processors
 CPU = _X86_
@@ -123,6 +127,10 @@ ICONVINCS = $(INCFLAGS)
 ICONVLIBS = $(LIBFLAGS) -liconv
 PNGINCS = $(INCFLAGS)
 PNGLIBS = $(LIBFLAGS) -lpng
+ZLIBINCS = $(INCFLAGS)
+ZLIBLIBS = $(LIBFLAGS) -lz
+ONIGINCS = $(INCFLAGS)
+ONIGLIBS = $(LIBFLAGS) -lonig
 #}}}
 ! endif
 SLANGINC = ..$(P)src
@@ -141,6 +149,7 @@ MODULES = slsmg rand
 # pcre: Ported to Win32 by GnuWin32 group.
 # onig: onig RE library
 # varray-module.c: No external libs but requires porting to windows.
+# zlib: z compression/decompression library
 # select, fcntl, socket, termios: requires POSIX support
 
 all: $(MODULES)
@@ -158,6 +167,8 @@ pcre:
 	$(MAKE) TARGET=pcre TARGETLIBS=$(PCRELIBS) TARGETINCS=$(PCREINCS) build-target
 png:
 	$(MAKE) TARGET=png TARGETLIBS=$(PNGLIBS) TARGETINCS=$(PNGINCS) build-target
+zlib:
+	$(MAKE) TARGET=zlib TARGETLIBS=$(ZLIBLIBS) TARGETINCS=$(ZLIBINCS) build-target
 varray:
 	$(MAKE) TARGET=varray TARGETLIBS=$(VARRAYLIBS) TARGETINCS=$(VARRAYINCS) build-target
 #

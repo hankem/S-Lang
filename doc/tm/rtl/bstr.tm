@@ -12,7 +12,7 @@
 \usage{UChar_Type[] bstring_to_array (BString_Type b)}
 \description
    The \ifun{bstring_to_array} function returns an array of unsigned
-   characters whose elements correspond to the characters in the
+   characters whose elements correspond to the bytes in the
    binary string.
 \seealso{array_to_bstring, init_char_array}
 \done
@@ -35,7 +35,7 @@
 
 \function{count_byte_occurances}
 \synopsis{Count the number of occurances of a byte in a binary string}
-\usage{UInt_Type count_char_occurances (bstring, byte)}
+\usage{UInt_Type count_byte_occurances (bstring, byte)}
 \description
   This function returns the number of times the specified byte
   occurs in the binary string \exmp{bstr}.
@@ -56,8 +56,8 @@
   The format string consists of one or more data-type specification
   characters defined by the following table:
 #v+
-     c     char
-     C     unsigned char
+     c     signed byte
+     C     unsigned byte
      h     short
      H     unsigned short
      i     int

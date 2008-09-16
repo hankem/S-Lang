@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.1)
   John E. Davis, jed@jedsoft.org
-  Feb 25, 2008
+  Sep 16, 2008
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -1052,10 +1052,19 @@
               \t        --  tab character (ASCII 9)
               \n        --  newline character (ASCII 10)
               \e        --  escape character (ASCII 27)
-              \xhhh     --  byte expressed in HEXADECIMAL notation
+              \xhh      --  byte expressed in HEXADECIMAL notation
               \ooo      --  byte expressed in OCTAL notation
               \dnnn     --  byte expressed in DECIMAL
-              \x{uuuu}  --  the Unicode character U+uuuu
+              \u{h..h}  --  the Unicode character U+h..h
+              \x{h..h}  --  the Unicode character U+h..h  [modal]
+
+  In the above table, h represents one of the HEXADECIMAL characters
+  from the set [4m[0-9A-Fa-f][24m.  It is important to understand the distinc-
+  tion between the \x{h..h} and \u{h..h} forms.  When using in a string,
+  the \u form always expands to the corresponding UTF-8 sequence regard-
+  less of the UTF-8 mode.  In contrast, when in non-UTF-8 mode, the \x
+  form expands to a byte when given two hex characters, or to the corre-
+  sponding UTF-8 sequence when used with three or more hex characters.
 
   For example, to include the double quote character as part of the
   string, it must be preceded by a backslash character, e.g.,
@@ -1136,6 +1145,7 @@
   the name exists in the environment, then the value of the
   corresponding environment variable will be used.  Otherwise, the
   variable will expand to the empty string.
+
   Consider the following example:
 
             private variable bar = "two";
@@ -1173,19 +1183,18 @@
   use stems from the fact that since it can be compared for equality
   with any other data type, it is ideal to represent the value of an
   object which does not yet have a value, or has an illegal value.
-
   As a trivial example of its use, consider
 
-        define add_numbers (a, b)
-        {
-           if (a == NULL) a = 0;
-           if (b == NULL) b = 0;
-           return a + b;
-        }
-        variable c = add_numbers (1, 2);
-        variable d = add_numbers (1, NULL);
-        variable e = add_numbers (1,);
-        variable f = add_numbers (,);
+             define add_numbers (a, b)
+             {
+                if (a == NULL) a = 0;
+                if (b == NULL) b = 0;
+                return a + b;
+             }
+             variable c = add_numbers (1, 2);
+             variable d = add_numbers (1, NULL);
+             variable e = add_numbers (1,);
+             variable f = add_numbers (,);
 
   It should be clear that after these statements have been executed, c
   will have a value of 3.  It should also be clear that d will have a
@@ -1229,6 +1238,7 @@
   [1mS-Lang [22mdefines a type called DataType_Type.  Objects of this type have
   values that are type names.  For example, an integer is an object of
   type Integer_Type.  The literals of DataType_Type include:
+
             Char_Type            (signed character)
             UChar_Type           (unsigned character)
             Short_Type           (short integer)

@@ -9,9 +9,7 @@ private define silly_deflate (str)
    foreach (str)
      {
 	variable ch = ();
-	ch = char (-1*ch);
-	if (ch == "") ch = "\0";
-	x = x + _zlib_deflate (z.zobj, ch, 0);
+	x = x + _zlib_deflate (z.zobj, pack("C", ch), 0);
      }
    x = x + z.flush ();
    return x;
@@ -24,9 +22,7 @@ private define silly_inflate (zstr)
    foreach (zstr)
      {
 	variable ch = ();
-	ch = char (-1*ch);
-	if (ch == "") ch = "\0";
-	x = x + _zlib_inflate (z.zobj, ch, 0);
+	x = x + _zlib_inflate (z.zobj, pack("C", ch), 0);
      }
    x = x + z.flush ();
    return x;

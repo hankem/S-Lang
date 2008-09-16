@@ -4,6 +4,10 @@ Changes since 2.1.4
 2. src/slbstr.c: Added foreach method to BString_Type objects.
 3. module/zlib-module.c: New module that wraps libz
    (compression/decompression library).
+4. doc/tm/rtl/: Some documentation updates
+5. configure: Added messages about what extra modules will and will
+   not be built.
+6. modules/mkfiles/makefile.all: Added zlib module to the makefile.
 
 Changes since 2.1.3
 1. src/slang.c: The identifier syntax was not being checked for

@@ -11690,6 +11690,8 @@ OBJDIR=$SRCDIR/"$ARCH"objs
 ELFDIR=$SRCDIR/elf"$ARCH"objs
 
 
+missingmodules=""
+extramodules=""
 
   if test "X$jd_prefix" = "X"
   then
@@ -11958,8 +11960,10 @@ then
 #define HAVE_PCRE_H 1
 _ACEOF
 
+  extramodules="$extramodules pcre"
 else
   PCRE_MODULE=""
+  missingmodules="$missingmodules pcre"
 fi
 
 
@@ -12207,8 +12211,10 @@ then
 #define HAVE_ONIGURUMA_H 1
 _ACEOF
 
+  extramodules="$extramodules oniguruma"
 else
   ONIG_MODULE=""
+  missingmodules="$missingmodules onigurama"
 fi
 
 
@@ -12456,8 +12462,10 @@ then
 #define HAVE_PNG_H 1
 _ACEOF
 
+  extramodules="$extramodules png"
 else
   PNG_MODULE=""
+  missingmodules="$missingmodules png"
 fi
 
 
@@ -12705,8 +12713,10 @@ then
 #define HAVE_ZLIB_H 1
 _ACEOF
 
+  extramodules="$extramodules z"
 else
   ZLIB_MODULE=""
+  missingmodules="$missingmodules z"
 fi
 
 
@@ -12962,6 +12972,7 @@ then
 _ACEOF
 
   ICONV_LIB="$ICONV_LIB -liconv"
+  extramodules="$extramodules iconv"
 else
 
 
@@ -13166,11 +13177,14 @@ _ACEOF
   if test "$am_cv_func_iconv" = yes
   then
     ICONV_MODULE="iconv-module.so"
+    extramodules="$extramodules iconv"
     if test "X$am_cv_lib_iconv" = Xyes
     then
        ICONV_LIB=$LIBICONV
        ICONV_INC=""
     fi
+  else
+    missingmodules="$missingmodules iconv"
   fi
 fi
 
@@ -14527,6 +14541,19 @@ echo "    Installation Lib Dir:" "$libdir"
 echo "Installation Include Dir:" "$includedir"
 echo ""
 echo "See also src/sl-feat.h for various features."
+
+echo ""
+echo "The following modules that depend upon external libraries will be built:"
+echo "  $extramodules"
+echo ""
+if test "X$missingmodules" != "X"
+then
+  echo ""
+  echo "While not required, it is recommended that you install the following"
+  echo "libraries and reconfigure so that the corresponding modules can be built:"
+  echo "  $missingmodules"
+  echo ""
+fi
 echo "Type 'make' to build a shared version of the library."
 echo "Type 'make help' for more options"
 echo ""
