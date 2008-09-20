@@ -409,6 +409,7 @@
 @src/test/arrmult.sl
 @src/test/assoc.sl
 @src/test/autoload.sl
+@src/test/break.sl
 @src/test/bstring.sl
 @src/test/bugs.sl
 @src/test/compare.sl

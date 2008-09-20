@@ -1402,6 +1402,14 @@ int SLns_load_file (SLFUTURE_CONST char *f, SLFUTURE_CONST char *ns_name)
    return 0;
 }
 
+/* In the byte-compiled file, a token is represented by N+3 bytes, where
+ *   byte[0] = TOKEN_TYPE;
+ *   byte[1] = len_lo
+ *   byte[2] = len_hi
+ *   bytes[3:N+3] = value
+ * and N = (len_lo - 32) | (len_hi-32) << 7.
+ * The maximumn value of N for this encoding is 28639.
+ */
 static char *check_byte_compiled_token (char *buf)
 {
    unsigned int len_lo, len_hi, len;
@@ -1448,6 +1456,8 @@ void _pSLcompile_byte_compiled (void)
 	     Input_Line_Pointer = Input_Line;
 	     goto top_of_switch;
 
+	   case CONT_N_TOKEN:
+	   case BREAK_N_TOKEN:
 	   case LINE_NUM_TOKEN:
 	   case CHAR_TOKEN:
 	   case UCHAR_TOKEN:
@@ -1757,6 +1767,11 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
       case _STRUCT_PLUSPLUS_TOKEN:
       case _STRUCT_FIELD_REF_TOKEN:
 	strcpy (b3, tok->v.s_val);
+	break;
+	
+      case BREAK_N_TOKEN:
+      case CONT_N_TOKEN:
+	sprintf (b3, "%ld", tok->v.long_val);
 	break;
 
       default:

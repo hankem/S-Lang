@@ -314,6 +314,8 @@ USA.
 # define HAVE_STRTOLL	1
 #endif
 
+#undef HAVE_FORK
+#undef HAVE_WAITPID
 
 /* Files used by the slang-readline interface.  The interface first tries
  * to read SLRLINE_USER_INIT_FILE from $HOME, and if that does not exist, it

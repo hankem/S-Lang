@@ -220,6 +220,10 @@ static SLang_Name_Type *
 static int Lang_Break_Condition = 0;
 /* true if any one below is true.  This keeps us from testing 3 variables.
  * I know this can be perfomed with a bitmapped variable, but...
+ *
+ * Note that Lang_Break is positive when handling the break statements, 
+ * and is negative when handling continue-N forms.  The reason this variable
+ * is involved is that continue-N is equivalent to break, break,...,continue.
  */
 static int Lang_Break = 0;
 static int Lang_Return = 0;
@@ -3139,6 +3143,9 @@ static SLang_Object_Type Switch_Objects[SLANG_MAX_NESTED_SWITCH];
 static SLang_Object_Type *Switch_Obj_Ptr = Switch_Objects;
 static SLang_Object_Type *Switch_Obj_Max = Switch_Objects + SLANG_MAX_NESTED_SWITCH;
 
+/* Returns 0 if the loops were completed, 1 if they were terminated via break,
+ * or -1 if an error occured.
+ */
 static int
 lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
 {
@@ -3408,11 +3415,22 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
       default:  _pSLang_verror(SL_INTERNAL_ERROR, "Unknown loop type");
 	return -1;
      }
-   Lang_Break_Condition = Lang_Return;
    if (Lang_Break == 0)
-     return 0;
+     {
+	Lang_Break_Condition = Lang_Return;
+	return 0;
+     }
 
-   Lang_Break = /* Lang_Continue = */ 0;
+   if (Lang_Break < 0)
+     {
+	Lang_Break++;
+	Lang_Break_Condition = 1;
+     }
+   else
+     {
+	Lang_Break--;
+	Lang_Break_Condition = (Lang_Return || Lang_Break);
+     }
    return 1;
 
    wrong_num_blocks_error:
@@ -5186,11 +5204,19 @@ static int inner_interp (SLBlock_Type *addr_start)
 # if !SLANG_OPTIMIZE_FOR_SPEED
 	   case SLANG_BC_IF_BLOCK:
 # endif
-	   case SLANG_BC_UNUSED_0x68:
-	   case SLANG_BC_UNUSED_0x69:
 	     _pSLang_verror (SL_INTERNAL_ERROR, "Byte-Code 0x%X is not valid", addr->bc_main_type);
 	     break;
 #endif
+	   case SLANG_BC_BREAK_N:
+	     Lang_Break_Condition = Lang_Break = addr->b.i_blk;
+	     goto return_1;
+	     break;
+
+	   case SLANG_BC_CONTINUE_N:
+	     Lang_Break = -(addr->b.i_blk - 1);
+	     Lang_Break_Condition = 1;
+	     goto return_1;
+
 	   case SLANG_BC_X_ERROR:
 	     if (err_block != NULL)
 	       {
@@ -8056,7 +8082,7 @@ static void compile_ref (SLFUTURE_CONST char *name, unsigned long hash)
 
 static void compile_break (_pSLang_BC_Type break_type,
 			   int requires_block, int requires_fun,
-			   SLCONST char *str)
+			   SLCONST char *str, int opt_val)
 {
    if ((requires_fun
 	&& (Lang_Defining_Function == 0))
@@ -8069,6 +8095,7 @@ static void compile_break (_pSLang_BC_Type break_type,
 
    Compile_ByteCode_Ptr->bc_main_type = break_type;
    Compile_ByteCode_Ptr->bc_sub_type = 0;
+   Compile_ByteCode_Ptr->b.i_blk = opt_val;
 
    lang_try_now ();
 }
@@ -8699,19 +8726,25 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 #endif
       case BREAK_TOKEN:
-	compile_break (SLANG_BC_BREAK, 1, 0, "break");
+	compile_break (SLANG_BC_BREAK, 1, 0, "break", 1);
+	break;
+	
+      case BREAK_N_TOKEN:
+	compile_break (SLANG_BC_BREAK_N, 1, 0, "break", abs(t->v.long_val));
 	break;
 
       case RETURN_TOKEN:
-	compile_break (SLANG_BC_RETURN, 0, 1, "return");
+	compile_break (SLANG_BC_RETURN, 0, 1, "return", 1);
 	break;
 
       case CONT_TOKEN:
-	compile_break (SLANG_BC_CONTINUE, 1, 0, "continue");
+	compile_break (SLANG_BC_CONTINUE, 1, 0, "continue", 1);
 	break;
-
+      case CONT_N_TOKEN:
+	compile_break (SLANG_BC_CONTINUE_N, 1, 0, "continue", abs(t->v.long_val));
+	break;
       case EXCH_TOKEN:
-	compile_break (SLANG_BC_EXCH, 0, 0, "");   /* FIXME: Priority=low */
+	compile_break (SLANG_BC_EXCH, 0, 0, "", 0);   /* FIXME: Priority=low */
 	break;
 
       case STATIC_TOKEN:

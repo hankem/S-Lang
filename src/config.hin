@@ -193,6 +193,9 @@
 #undef HAVE_ICONV
 #undef ICONV_CONST
 
+#undef HAVE_FORK
+#undef HAVE_WAITPID
+
 #if defined(HAVE_SIGADDSET) && defined(HAVE_SIGEMPTYSET)
 # if defined(HAVE_SIGACTION) && defined(HAVE_SIGPROCMASK)
 #  define SLANG_POSIX_SIGNALS

@@ -103,6 +103,7 @@ finite \
 isinf \
 round \
 siglongjmp \
+fork waitpid \
 )
 
 dnl# Systems that have nl_langinfo may not have CODESET.  Test for both here
@@ -167,7 +168,7 @@ then
   extramodules="$extramodules oniguruma"
 else
   ONIG_MODULE=""
-  missingmodules="$missingmodules onigurama"
+  missingmodules="$missingmodules oniguruma"
 fi
 AC_SUBST(ONIG_MODULE)
 

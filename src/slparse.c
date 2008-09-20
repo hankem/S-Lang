@@ -884,13 +884,27 @@ static void statement (_pSLang_Token_Type *ctok)
 
       case BREAK_TOKEN:
       case CONT_TOKEN:
+	type = ctok->type;
 #if SLANG_HAS_BOSEOS
 	eos = compile_bos (ctok, 3);
+#endif
+	if (SEMICOLON_TOKEN != get_token (ctok))
+	  {
+	     if ((ctok->type != INT_TOKEN)
+		 || (ctok->v.long_val <= 0))
+	       {
+		  _pSLparse_error (SL_SYNTAX_ERROR, "Expecting a positive non-zero integer or a semi-colon.", ctok, 0);
+		  break;
+	       }
+	     ctok->type = (type == BREAK_TOKEN) ? BREAK_N_TOKEN : CONT_N_TOKEN;
+	     compile_token (ctok);
+	     get_token (ctok);
+	     handle_semicolon (ctok);
+	  }
+	else compile_token_of_type (type);
+#if SLANG_HAS_BOSEOS
 	if (eos) compile_eos ();
 #endif
-	compile_token_of_type (ctok->type);
-	get_token (ctok);
-	handle_semicolon (ctok);
 	break;
 
       case RETURN_TOKEN:

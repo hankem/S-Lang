@@ -159,8 +159,8 @@ typedef enum
    SLANG_BC_BREAK		= 0x65,
    SLANG_BC_CONTINUE		= 0x66,
    SLANG_BC_IF_BLOCK		= 0x67,   /* optimized code */
-   SLANG_BC_UNUSED_0x68		= 0x68,
-   SLANG_BC_UNUSED_0x69		= 0x69,
+   SLANG_BC_CONTINUE_N		= 0x68,
+   SLANG_BC_BREAK_N		= 0x69,
    SLANG_BC_X_ERROR		= 0x6A,
    SLANG_BC_X_USER0		= 0x6B,
    SLANG_BC_X_USER1		= 0x6C,
@@ -1264,6 +1264,8 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define THROW_TOKEN	0x89
 #define FINALLY_TOKEN	0x8a
 
+#define BREAK_N_TOKEN	0x8b
+#define CONT_N_TOKEN	0x8c
 #define THEN_TOKEN	0x8d
 
 #define STRUCT_WITH_ASSIGN_TOKEN	0x8e
