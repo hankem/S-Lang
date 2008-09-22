@@ -6632,6 +6632,7 @@ static void lang_try_now(void)
    inner_interp (This_Compile_Block);
    (void) lang_free_branch (This_Compile_Block);
    Compile_ByteCode_Ptr = This_Compile_Block;
+   Lang_Break = Lang_Break_Condition = Lang_Return = 0;
 }
 
    

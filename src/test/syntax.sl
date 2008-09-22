@@ -283,5 +283,47 @@ catch ApplicationError;
 () = test_pop_mmt (stdin);
 #endif
 
+define test_ternary ()
+{
+   variable arg, ans;
+   foreach arg (['A', 'B', 'C', 'D', 'Z'])
+     {
+	ans = 
+	  arg == 'A' ? "A" :
+	  arg == 'B' ? "B" :
+	  arg == 'C' ? "C" :
+	  arg == 'D' ? "D" :
+	  "Z";
+   
+	if (ans[0] != arg)
+	  failed ("ternary expression");
+     }
+   foreach arg (['A', 'B', 'C', 'D', 'Z'])
+     {
+	ans = 
+	  arg == 'A' - 1 + 1 ? "A" :
+	  arg == 'B' - 1 + 1 ? "B" :
+	  arg == 'C' - 1 + 1 ? "C" :
+	  arg == 'D' - 1 + 1 ? "D" :
+	  "Z";
+   
+	if (ans[0] != arg)
+	  failed ("ternary expression involving binary ops");
+     }
+   foreach arg (['A', 'B', 'C', 'D', 'Z'])
+     {
+	ans = 
+	  arg == char('A')[0] - 1 + 1 ? "A" :
+	  arg == char('B')[0] - 1 + 1 ? "B" :
+	  arg == char('C')[0] - 1 + 1 ? "C" :
+	  arg == char('D')[0] - 1 + 1 ? "D" :
+	  "Z";
+	if (ans[0] != arg)
+	  failed ("ternary expression involving array index");
+     }
+}
+
+test_ternary ();
+
 exit (0);
 

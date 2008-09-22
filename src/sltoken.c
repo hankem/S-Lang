@@ -122,6 +122,7 @@ static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
       case COMMA_TOKEN: s = ","; break;
       case SEMICOLON_TOKEN: s = ";"; break;
       case COLON_TOKEN: s = ":"; break;
+      case QUESTION_TOKEN: s = "?"; break;
 
       case ARRAY_TOKEN: s = "["; break;
       case DOT_TOKEN: s = "."; break;
@@ -280,7 +281,7 @@ static SLCONST unsigned char Char_Type_Table[256][2] =
  { DIGIT_CHAR, 0 },	/* 8 */	    { DIGIT_CHAR, 0 },	/* 9 */
  { SEP_CHAR, COLON_TOKEN },	/* : */	    { SEP_CHAR, SEMICOLON_TOKEN },	/* ; */
  { OP_CHAR, OFS_LT },	/* < */	    { OP_CHAR, OFS_EQS },	/* = */
- { OP_CHAR, OFS_GT },	/* > */	    { BAD_CHAR, 0 },	/* ? */
+ { OP_CHAR, OFS_GT },	/* > */	    { SEP_CHAR, QUESTION_TOKEN},	/* ? */
  { OP_CHAR, OFS_AT},	/* @ */	    { ALPHA_CHAR, 0 },	/* A */
  { ALPHA_CHAR, 0 },	/* B */	    { ALPHA_CHAR, 0 },	/* C */
  { ALPHA_CHAR, 0 },	/* D */	    { ALPHA_CHAR, 0 },	/* E */

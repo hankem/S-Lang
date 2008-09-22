@@ -11,6 +11,10 @@ Changes since 2.1.4
 7. autoconf/configure.ac: Fixed the spelling oniguruma (Peter J. Ross)
 8. src/slang.c,slparse.c,sltoken.c: Added 'break n' and 'continue n'
    statements.
+9. src/slang.c: break-n and continue-n were not being properly handled
+   when used outside a function.
+10. src/slparse.c, sltoken.c: Added the C-like ternary-expression
+    "condition ? foo : bar".
 
 Changes since 2.1.3
 1. src/slang.c: The identifier syntax was not being checked for

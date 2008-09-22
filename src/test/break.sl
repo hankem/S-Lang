@@ -4,6 +4,13 @@ testing_feature ("break and continue N");
 
 define test_break_n ()
 {
+   % Eventually these statements will be flagged as syntax errors.
+   % For now, use them to make sure that they do not affect the main test
+   % below.
+   loop (2) continue 4;
+   loop (3) break 2;
+   loop (3); then break 2;
+
    variable n1 = 3, n2 = 5, n3 = 7;
    variable n1_loops = 0;
    variable n2_loops = 0;
@@ -26,7 +33,7 @@ define test_break_n ()
      failed ("break 2");
 }
 
-define test_cont_n (alt)
+define test_cont_n ()
 {
    variable n1 = 3, n2 = 5, n3 = 7;
    variable n1_loops = 0;
@@ -39,6 +46,7 @@ define test_cont_n (alt)
      {
 	loop (n2)
 	  {
+	     test_break_n ();
 	     loop (n3)
 	       {
 		  try
@@ -48,7 +56,6 @@ define test_cont_n (alt)
 		  finally
 		    {
 		       n3_finally_loops++;
-		       return;
 		    }
 		  n3_loops++;
 	       }
@@ -74,8 +81,21 @@ define test_cont_n (alt)
 }
 
 test_break_n ();
-test_cont_n  (0);
-test_cont_n  (1);
+test_cont_n  ();
+
+loop (2)
+{
+   loop (2)
+     continue 4;
+}
+
+$1 = 0;
+loop (2)
+{
+   $1++;
+}
+if ($1 != 2)
+  failed ("Use of continue N outside a function: val=%d", $1);
 
 print ("Ok\n");
 

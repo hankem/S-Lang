@@ -1153,6 +1153,7 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define SEMICOLON_TOKEN	0x32
 #define COLON_TOKEN	0x33
 #define NAMESPACE_TOKEN	0x34
+#define QUESTION_TOKEN	0x35
 
 /* Operators */
 /* The order here must match the order in the Binop_Level table in slparse.c */

@@ -2154,6 +2154,24 @@ static void simple_expression (_pSLang_Token_Type *ctok)
      return;
 
    handle_binary_sequence (ctok, 0xFF);
+   
+   if (ctok->type == QUESTION_TOKEN)
+     {
+	append_token_of_type (OBRACE_TOKEN);
+	get_token (ctok);
+	simple_expression (ctok);
+	if (ctok->type != COLON_TOKEN)
+	  {
+	     _pSLparse_error (SL_SYNTAX_ERROR, "Expecting a colon in the ternary expression", ctok, 0);
+	     return;
+	  }
+	append_token_of_type (CBRACE_TOKEN);
+	get_token (ctok);
+	append_token_of_type (OBRACE_TOKEN);
+	simple_expression (ctok);
+	append_token_of_type (CBRACE_TOKEN);
+	append_token_of_type (ELSE_TOKEN);
+     }
 }
 
 /* unary-expression:
