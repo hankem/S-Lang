@@ -1101,7 +1101,7 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
 	       {
 		  SLwchar_Type wch;
 
-		  t = (unsigned char *) _pSLexpand_escaped_char ((char *) t, &wch, NULL);
+		  t = (unsigned char *) _pSLexpand_escaped_char ((char *) t, (char *) tmax, &wch, NULL);
 		  if (t == NULL)
 		    {
 		       SLfree ((char *)buf);

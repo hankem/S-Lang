@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.5-1: Updated using autoupdate
 dnl# 0.2.5-0: M_LIB output variable created for haiku support (Scott McCreary)
 dnl# 0.2.4-0: Added optional 3rd argument to JD_WITH_LIBRARY for a default path
 dnl# 0.2.3-2: X was missing in a "test" statement (Joerg Sommer)
@@ -527,9 +528,9 @@ dnl
 dnl #Be sure we've found compiler that understands prototypes
 dnl
 AC_MSG_CHECKING(C compiler that understands ANSI prototypes)
-AC_TRY_COMPILE([ ],[
- extern int silly (int);], [
- AC_MSG_RESULT($CC looks ok.  Good.)], [
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ ]], [[
+ extern int silly (int);]])],[
+ AC_MSG_RESULT($CC looks ok.  Good.)],[
  AC_MSG_RESULT($CC is not a good enough compiler)
  AC_MSG_ERROR(Set env variable CC to your ANSI compiler and rerun configure.)
  ])dnl

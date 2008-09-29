@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.1)
   John E. Davis, jed@jedsoft.org
-  Sep 16, 2008
+  Sep 29, 2008
   ____________________________________________________________
 
                             [1mTable of Contents[0m
@@ -1030,16 +1030,41 @@
 
   with the '$' suffix will be subject to variable name expansion.
 
-  Although there is no imposed limit on the length of a string, string
-  literals must be less than 256 characters in length.  It is possible
-  to construct strings longer than this by string concatenation, e.g.,
+  Although there is no imposed limit on the length of a string, single-
+  line string literals must be less than 256 characters in length.  It
+  is possible to construct strings longer than this by string
+  concatenation, e.g.,
 
              "This is the first part of a long string"
               + " and this is the second part"
 
+  [1mS-Lang [22mversion 2.2 introduced support for multi-line string literals.
+  There are basic variants supported.  The first makes use of the
+  backslash at the end of a line to indicate that the string is
+  continued onto the next line:
+
+             "This is a \
+             multi-line string. \
+             Note the presence of the \
+             backslash character at the end \
+             of each of the lines."
+
+  The second form of multiline string is delimited by the backquote
+  character (`) and does not require backslashes:
+
+              `This form does not
+              require backslash characters.
+              In fact, here the backslash
+              character \ has no special
+              meaning (unless given the ``Q' suffix`
+
+  Note that if a backquote is to appear in such a string, then it must
+  be doubled, as illustrated in the above example.
+
   Any character except a newline (ASCII 10) or the null character (ASCII
-  0) may appear explicitly in a string literal.  However, these charac-
-  ters may embedded implicitly using the mechanism described below.
+  0) may appear explicitly in a string literal.  However, these
+  characters may embedded implicitly using the mechanism described
+  below.
 
   The backslash character is a special character and is used to include
   other special characters (such as a newline character) in the string.
@@ -1069,12 +1094,18 @@
   For example, to include the double quote character as part of the
   string, it must be preceded by a backslash character, e.g.,
 
-              "This is a \"quote\""
+              "This is a \"quote\"."
 
   Similarly, the next example illustrates how a newline character may be
   included:
 
-              "This is the first line\nand this is the second"
+              "This is the first line\nand this is the second."
+
+  Alternatively, slang-2.2 or newer permits
+
+              `This is a "quote".`
+              `This is the first line
+              and this is the second.`
 
   [1m4.1.4.1.  Suffixes[0m
 
@@ -1083,9 +1114,10 @@
   following characters:
 
      [1mR  [22mBackslash substitution will not be performed on the string.
+        This is the default when using back-quoted strings.
 
-     [1mQ  [22mBackslash substitution will be performed on the string.  A
-        string without a suffix is equivalent to one with the Q suffix.
+     [1mQ  [22mBackslash substitution will be performed on the string.  This is
+        the default when using strings using the double-quote character.
 
      [1mB  [22mIf this suffix is present, the string will be interpreted as a
         binary string (BString_Type).
@@ -1099,16 +1131,20 @@
   [1m4.1.4.1.1.  The Q and R suffixes[0m
 
   These suffixes turn on and off backslash expansion.  Unless the R
-  suffix is present, all string literals will have backslash
-  substitution performed.  Sometimes it is desirable not have such
-  expansion.  For example, pathnames on an MSDOS or Windows system use
-  the backslash character as a path separator.  The R prefix turns off
-  backslash expansion, and as a result the following statements are
+  suffix is present, all double-quoted string literals will have
+  backslash substitution performed.  By default, backslash expansion is
+  turned off for backquoted strings.
+
+  Sometimes it is desirable to turn off backslash expansion for double-
+  quoted strings.  For example, pathnames on an MSDOS or Windows system
+  use the backslash character as a path separator. The R prefix turns
+  off backslash expansion, and as a result the following statements are
   equivalent:
 
-             file = "C:\\windows\\apps\\slrn.rc";
-             file = "C:\\windows\\apps\\slrn.rc"Q;
-             file = "C:\windows\apps\slrn.rc"R;
+        file = "C:\\windows\\apps\\slrn.rc";
+        file = "C:\\windows\\apps\\slrn.rc"Q;
+        file = "C:\windows\apps\slrn.rc"R;
+        file = `C:\windows\apps\slrn.rc`;        % slang-2.2 and above
 
   The only exception is that a backslash character is not permitted as
   the last character of a string with the R suffix.  That is,
@@ -1148,13 +1184,13 @@
 
   Consider the following example:
 
-            private variable bar = "two";
-            putenv ("MYHOME=/home/baz");
-            define funct (foo)
-            {
-              variable bar = 1;
-              message ("file: $MYHOME/foo: garage=$MYGARAGE,bar=$bar"$);
-            }
+       private variable bar = "two";
+       putenv ("MYHOME=/home/baz");
+       define funct (foo)
+       {
+         variable bar = 1;
+         message ("file: $MYHOME/foo: garage=$MYGARAGE,bar=$bar"$);
+       }
 
   When executed, this will produce the message:
 
@@ -1183,18 +1219,19 @@
   use stems from the fact that since it can be compared for equality
   with any other data type, it is ideal to represent the value of an
   object which does not yet have a value, or has an illegal value.
+
   As a trivial example of its use, consider
 
-             define add_numbers (a, b)
-             {
-                if (a == NULL) a = 0;
-                if (b == NULL) b = 0;
-                return a + b;
-             }
-             variable c = add_numbers (1, 2);
-             variable d = add_numbers (1, NULL);
-             variable e = add_numbers (1,);
-             variable f = add_numbers (,);
+        define add_numbers (a, b)
+        {
+           if (a == NULL) a = 0;
+           if (b == NULL) b = 0;
+           return a + b;
+        }
+        variable c = add_numbers (1, 2);
+        variable d = add_numbers (1, NULL);
+        variable e = add_numbers (1,);
+        variable f = add_numbers (,);
 
   It should be clear that after these statements have been executed, c
   will have a value of 3.  It should also be clear that d will have a
@@ -1238,7 +1275,6 @@
   [1mS-Lang [22mdefines a type called DataType_Type.  Objects of this type have
   values that are type names.  For example, an integer is an object of
   type Integer_Type.  The literals of DataType_Type include:
-
             Char_Type            (signed character)
             UChar_Type           (unsigned character)
             Short_Type           (short integer)

@@ -641,7 +641,7 @@ extern int _pSLang_uninitialize_ref (SLang_Ref_Type *);
 
 extern int _pSLpush_slang_obj (SLang_Object_Type *);
 
-extern char *_pSLexpand_escaped_char(char *, SLwchar_Type *, int *);
+extern char *_pSLexpand_escaped_char(char *, char *, SLwchar_Type *, int *);
 extern void _pSLexpand_escaped_string (char *, char *, char *);
 
 extern int _pSLpush_dollar_string (SLFUTURE_CONST char *);
@@ -1030,6 +1030,31 @@ extern int _pSLcompile_pop_context (void);
 extern int _pSLang_Auto_Declare_Globals;
 extern int _pSLang_Load_File_Verbose;
 
+typedef struct _pSLtoken_String_List_Type
+{
+   struct _pSLtoken_String_List_Type *next;
+   unsigned int len;
+   char buf[1];			       /* rest of bytes follow */
+}
+_pSLtoken_String_List_Type;
+
+typedef unsigned char _pSLtok_Type;
+typedef struct 
+{
+   _pSLtok_Type type;			       /* [b]string_token */
+   unsigned int num;
+   
+   _pSLtoken_String_List_Type *list;
+   union 
+     {
+	SLFUTURE_CONST char *s_val;		       /* (SLstring) concatenated strings */
+	SLang_BString_Type *b_val;     /* concatenated bstrings */
+     } v;
+   unsigned long hash;		       /* for v.s_val */
+   unsigned int len;		       /* length of v.?_val */
+}
+_pSLang_Multiline_String_Type;
+
 typedef struct _pSLang_Token_Type
 {
    union
@@ -1050,17 +1075,22 @@ typedef struct _pSLang_Token_Type
 	SLFUTURE_CONST char *s_val;		       /* Used for IDENT_TOKEN, DOUBLE_TOKEN, etc...  */
 	
 	SLang_BString_Type *b_val;
+	_pSLang_Multiline_String_Type *multistring_val;
      } v;
-   int free_sval_flag;
+   void (*free_val_func)(struct _pSLang_Token_Type *);
    unsigned int num_refs;
-   unsigned long hash;
+   unsigned long hash;		       /* hash for slstring, and length for _BSTRING */
 #if SLANG_HAS_DEBUG_CODE
    int line_number;
 #endif
    struct _pSLang_Token_Type *next;     /* used for token lists */
-   SLtype type;
+   _pSLtok_Type type;
 }
 _pSLang_Token_Type;
+
+/* return token type or EOF_TOKEN upon error */
+extern _pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *, _pSLtok_Type, 
+						   SLFUTURE_CONST char *, unsigned int);
 
 extern void _pSLcompile (_pSLang_Token_Type *);
 extern void (*_pSLcompile_ptr)(_pSLang_Token_Type *);
@@ -1132,8 +1162,8 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define IS_LVALUE_TOKEN (((t) <= DOT_TOKEN) && ((t) >= IDENT_TOKEN))
 #define DOT_METHOD_CALL_TOKEN		0x23
 
-#define ESC_STRING_TOKEN	0x24
-#define ESC_BSTRING_TOKEN	0x25
+#define ESC_STRING_TOKEN	0x24   /* only appears in slc file */
+#define ESC_BSTRING_TOKEN	0x25   /* only appears in slc file */
 
 /* Flags for struct fields */
 #define STATIC_TOKEN	0x26
@@ -1343,7 +1373,8 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define _INLINE_LIST_TOKEN		0xE4
 #define _INLINE_IMPLICIT_ARRAYN_TOKEN	0xE5   /* [a:b:#n] */
 
-#define ESC_STRING_DOLLAR_TOKEN		0xF0
+#define ESC_STRING_DOLLAR_TOKEN		0xF0   /* appears only in .slc files */
+#define MULTI_STRING_TOKEN		0xF1
 
 #define BOS_TOKEN			0xFA
 #define EOS_TOKEN			0xFB

@@ -35,12 +35,10 @@ static void free_token (_pSLang_Token_Type *t)
 
    if (nrefs == 1)
      {
-	if (t->free_sval_flag)
+	if (t->free_val_func != NULL)
 	  {
-	     if (t->type == BSTRING_TOKEN)
-	       SLbstring_free (t->v.b_val);
-	     else
-	       _pSLfree_hashed_string ((char *) t->v.s_val, strlen (t->v.s_val), t->hash);
+	     (*t->free_val_func)(t);
+	     t->free_val_func = NULL;
 	     t->v.s_val = NULL;
 	  }
      }
@@ -259,10 +257,12 @@ static int append_copy_of_string_token (_pSLang_Token_Type *t)
    t1 = Token_List->stack + Token_List->len;
    *t1 = *t;
    
-   if (NULL == (t1->v.s_val = SLang_create_slstring (t->v.s_val)))
+   if (t->v.s_val == NULL)
      return -1;
-   
-   t1->free_sval_flag = 1;
+
+   if (EOF_TOKEN == _pSLtoken_init_slstring_token (t1, t->type, t->v.s_val, strlen (t->v.s_val)))
+     return -1;
+
    t1->num_refs = 1;
 
    Token_List->len += 1;
@@ -1109,26 +1109,13 @@ static void handle_for_statement (_pSLang_Token_Type *ctok)
    compile_token_of_type (_FOR_TOKEN);
 }
 
-static int init_identifier_token (_pSLang_Token_Type *t, SLFUTURE_CONST char *name, int alloc)
+static int init_identifier_token (_pSLang_Token_Type *t, SLFUTURE_CONST char *name)
 {
-   unsigned int len;
-   
-   len = strlen (name);
-
    init_token (t);
-   if (alloc)
-     {
-	if (NULL == (t->v.s_val = _pSLstring_make_hashed_string (name, len, &t->hash)))
-	  return -1;
+
+   if (EOF_TOKEN == _pSLtoken_init_slstring_token (t, IDENT_TOKEN, name, strlen(name)))
+     return -1;
    
-	t->free_sval_flag = 1;
-	return 0;
-     }
-   
-   t->type = IDENT_TOKEN;
-   t->v.s_val = name;
-   t->hash = _pSLstring_hash ((unsigned char *)name, (unsigned char *)name + len);
-   t->free_sval_flag = 0;
    return 0;
 }
 
@@ -1174,7 +1161,7 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
    if (ctok->type == OPAREN_TOKEN)
      {
 	_pSLang_Token_Type e;
-	if (-1 == init_identifier_token (&e, "__get_exception_info", 0))
+	if (-1 == init_identifier_token (&e, "__get_exception_info"))
 	  return;
 	
 	append_token (&e);
@@ -1667,7 +1654,7 @@ static _pSLang_Token_Type *
    
    if (n == 0)
      {
-	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting an identifier", ctok, 0);
+	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting a qualifier", ctok, 0);
 	return NULL;
      }
 
@@ -2096,6 +2083,7 @@ static void handle_binary_sequence (_pSLang_Token_Type *ctok, unsigned char max_
 /* % Note: simple-expression groups operators OP1 at same level.  The
  * % actual implementation will not do this.
  * simple-expression:
+ *       simple-expression ? simple-expression : simple-expression
  *	 unary-expression
  *	 binary-expression BINARY-OP unary-expression
  *       andelse xxelse-expression-list
@@ -2442,6 +2430,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
       case LLONG_TOKEN:
       case ULLONG_TOKEN:
 #endif
+      case MULTI_STRING_TOKEN:
 	append_token (ctok);
 	get_token (ctok);
 	break;

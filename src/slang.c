@@ -8521,6 +8521,18 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	compile_bstring (t->v.b_val);
 	break;
 
+      case MULTI_STRING_TOKEN:
+	  {
+	     _pSLang_Multiline_String_Type *m = t->v.multistring_val;
+	     if (m->type == STRING_TOKEN)
+	       compile_string (m->v.s_val, m->hash);
+	     else if (m->type == STRING_DOLLAR_TOKEN)
+	       compile_string_dollar (m->v.s_val, m->hash);
+	     else if (m->type == BSTRING_TOKEN)
+	       compile_bstring (m->v.b_val);
+	  }
+	break;
+
       case _NULL_TOKEN:
 	compile_identifier ("NULL", t);
 	break;

@@ -238,7 +238,7 @@ int SLcmd_execute_string (SLFUTURE_CONST char *str, SLcmd_Cmd_Table_Type *table)
 		  ch = *b;
 		  if (ch == '\\')
 		    {
-		       if (NULL == _pSLexpand_escaped_char (b, &ch, NULL))
+		       if (NULL == _pSLexpand_escaped_char (b, b+len, &ch, NULL))
 			 goto error;
 		    }
 		  sprintf (buf, "%lu", (unsigned long)ch);

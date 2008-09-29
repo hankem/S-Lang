@@ -913,13 +913,37 @@
     with the '$' suffix will be subject to variable name expansion.
 
     Although there is no imposed limit on the length of a string,
-    string literals must be less than 256 characters in length.  It is
-    possible to construct strings longer than this by string
-    concatenation, e.g.,
+    single-line string literals must be less than 256 characters in
+    length.  It is possible to construct strings longer than this by
+    string concatenation, e.g.,
 #v+
       "This is the first part of a long string"
        + " and this is the second part"
 #v-
+
+    \slang version 2.2 introduced support for multi-line string
+    literals.  There are basic variants supported.  The first makes
+    use of the backslash at the end of a line to indicate that the
+    string is continued onto the next line:
+#v+
+      "This is a \
+      multi-line string. \
+      Note the presence of the \
+      backslash character at the end \
+      of each of the lines."
+#v-
+    The second form of multiline string is delimited by the backquote
+    character (`) and does not require backslashes:
+#v+
+       `This form does not
+       require backslash characters.
+       In fact, here the backslash
+       character \ has no special 
+       meaning (unless given the ``Q' suffix`
+#v-
+    Note that if a backquote is to appear in such a string, then it
+    must be doubled, as illustrated in the above example.
+
     Any character except a newline (ASCII 10) or the null character
     (ASCII 0) may appear explicitly in a string literal.  However,
     these characters may embedded implicitly using the mechanism
@@ -955,13 +979,20 @@
     For example, to include the double quote character as part of the
     string, it must be preceded by a backslash character, e.g.,
 #v+
-       "This is a \"quote\""
+       "This is a \"quote\"."
 #v-
     Similarly, the next example illustrates how a newline character
     may be included:
 #v+
-       "This is the first line\nand this is the second"
+       "This is the first line\nand this is the second."
 #v-
+    Alternatively, slang-2.2 or newer permits
+#v+
+       `This is a "quote".`
+       `This is the first line
+       and this is the second.`
+#v-
+
 \sect2{Suffixes}
     A string literal may be contain a suffix that specifies how the
     string is to be interpreted.  The suffix may consist of one or
@@ -969,9 +1000,11 @@
 \begin{descrip}
      \tag{R}
        Backslash substitution will not be performed on the string.
+       This is the default when using back-quoted strings.
      \tag{Q}
-       Backslash substitution will be performed on the string.
-       A string without a suffix is equivalent to one with the Q suffix.
+       Backslash substitution will be performed on the string.  This
+       is the default when using strings using the double-quote
+       character.
      \tag{B}
        If this suffix is present, the string will be interpreted as a
        binary string (BString_Type).
@@ -986,16 +1019,20 @@
 
 \sect3{The Q and R suffixes}
    These suffixes turn on and off backslash expansion.  Unless the
-   \exmp{R} suffix is present, all string literals will have backslash
-   substitution performed.  Sometimes it is desirable not have such
-   expansion.  For example, pathnames on an MSDOS or Windows system
-   use the backslash character as a path separator.  The \exmp{R} prefix
-   turns off backslash expansion, and as a result the following
-   statements are equivalent:
+   \exmp{R} suffix is present, all double-quoted string literals will
+   have backslash substitution performed.  By default, backslash
+   expansion is turned off for backquoted strings.
+   
+   Sometimes it is desirable to turn off backslash expansion for
+   double-quoted strings.  For example, pathnames on an MSDOS or
+   Windows system use the backslash character as a path separator. The
+   \exmp{R} prefix turns off backslash expansion, and as a result the
+   following statements are equivalent:
 #v+
       file = "C:\\windows\\apps\\slrn.rc";
       file = "C:\\windows\\apps\\slrn.rc"Q;
       file = "C:\windows\apps\slrn.rc"R;
+      file = `C:\windows\apps\slrn.rc`;        % slang-2.2 and above
 #v-
    The only exception is that a backslash character is not permitted
    as the last character of a string with the \exmp{R} suffix.  That is,

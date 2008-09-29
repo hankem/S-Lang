@@ -83,7 +83,7 @@ char *_pSLskip_whitespace (SLCONST char *s)
 /*
  * This function assumes that the initial \ char has been removed.
  */
-char *_pSLexpand_escaped_char(char *p, SLwchar_Type *ch, int *isunicodep)
+char *_pSLexpand_escaped_char(char *p, char *pmax, SLwchar_Type *ch, int *isunicodep)
 {
    int i = 0;
    SLwchar_Type max = 0;
@@ -91,6 +91,9 @@ char *_pSLexpand_escaped_char(char *p, SLwchar_Type *ch, int *isunicodep)
    SLwchar_Type ch1;
    int isunicode;
    int needs_brace;
+
+   if (p >= pmax)
+     goto malformed_error;
 
    ch1 = *p++;
    isunicode = 0;
@@ -131,13 +134,24 @@ char *_pSLexpand_escaped_char(char *p, SLwchar_Type *ch, int *isunicodep)
 	max = '9';
 	i = 2;
 	num = 0;
-	
+
+	if (p == pmax)
+	  goto malformed_error;
+
 	if (*p == '{')
 	  {
 	     p++;
 	     i = 0;
-	     while (p[i] && (p[i] != '}'))
-	       i++;
+	     while (1)
+	       {
+		  if (p + i >= pmax)
+		    goto malformed_error;
+
+		  if ((p[i]==0) || (p[i] == '}'))
+		    break;
+
+		  i++;
+	       }
 	     if (p[i] != '}')
 	       {
 		  _pSLang_verror (SL_SYNTAX_ERROR, "Escaped character missing closing }.");
@@ -156,7 +170,7 @@ char *_pSLexpand_escaped_char(char *p, SLwchar_Type *ch, int *isunicodep)
 	break;
      }
 
-   while (i)
+   while (i && (p < pmax))
      {
 	ch1 = *p;
 
@@ -178,11 +192,8 @@ char *_pSLexpand_escaped_char(char *p, SLwchar_Type *ch, int *isunicodep)
 
    if (needs_brace)
      {
-	if (*p != '}')
-	  {
-	     _pSLang_verror (SL_SYNTAX_ERROR, "Malformed escaped character.");
-	     return NULL;
-	  }
+	if ((p >= pmax) || (*p != '}'))
+	  goto malformed_error;
 	p++;
      }
 
@@ -191,6 +202,10 @@ char *_pSLexpand_escaped_char(char *p, SLwchar_Type *ch, int *isunicodep)
 
    *ch = num;
    return p;
+   
+malformed_error:
+   _pSLang_verror (SL_SYNTAX_ERROR, "Malformed escaped character.");
+   return NULL;
 }
 
 /* s and t could represent the same space.  Note: the space for s is
@@ -214,7 +229,7 @@ int SLexpand_escaped_string (char *s, char *t, char *tmax, int utf8_encode)
 	     continue;
 	  }
 	
-	if (NULL == (t = _pSLexpand_escaped_char (t, &wch, &isunicode)))
+	if (NULL == (t = _pSLexpand_escaped_char (t, tmax, &wch, &isunicode)))
 	  {
 	     *s = 0;
 	     return -1;
