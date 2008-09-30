@@ -425,6 +425,7 @@
 @src/test/list.sl
 @src/test/loops.sl
 @src/test/method.sl
+@src/test/multline.sl
 @src/test/naninf.sl
 @src/test/ns1.inc
 @src/test/ns2.inc

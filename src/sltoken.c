@@ -1144,6 +1144,8 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
    if (root == NULL)
      return tok->type = EOF_TOKEN;
 
+   LLT->parse_level += 1;
+
    num_lines = 1;
    do
      {
@@ -1215,6 +1217,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
    tok->v.multistring_val = m;
    tok->free_val_func = free_multistring_token_val;
 
+   LLT->parse_level -= 1;
    return tok->type = MULTI_STRING_TOKEN;
 
 return_error:
@@ -1222,6 +1225,7 @@ return_error:
    if (root != NULL) 
      free_string_list (root);
 
+   LLT->parse_level -= 1;
    return tok->type = EOF_TOKEN;
 }
 
