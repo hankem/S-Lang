@@ -29,6 +29,9 @@ Changes since 2.1.4
     of lines.
 12. src/sltoken.c: When reading subsequent lines of a multiline
     string, increment the readline parse_level.
+13. src/sltoken.c: When performing backslash expansion, if a solitary
+    backslash occurs at the end of a line, or is preceeded by a
+    newline at the end of a line, then ignore it.
 
 {{{ Previous Versions
 

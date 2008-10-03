@@ -1,6 +1,51 @@
-S-Lang 2 NEWS is now contained in the appendices of doc/text/slang.txt
-(interpreter news) and doc/txt/cslang.txt (C API news).
+NEWS for version 2.2                                               -*-text-*-
 
+Interpreter Enhancements
+========================
+
+   1.  The ternary expression was added:  
+   
+           expression = condition ? val1 : val2
+
+       If condition is non-zero, then expression = val1, 
+        otherwise expression = val2
+
+   2.  The break and condition statements support an optional integer
+       that indicates how many loop levels the statement affects, e.g.,
+       the break statement in
+
+           while (1)
+	     {
+	         loop (10)
+		    {
+		        break 2;
+		    }
+	     }
+	
+       will cause both loops to be terminated.
+       
+   3.  Multiline strings have been added:
+   
+           "This is a \
+	    multiline \
+	    string"
+	    
+           `This is
+	    another multiline
+	    string that 
+	    does not require 
+	    a \ for continuation`
+	    
+
+Modules
+=======
+ 
+   1.  zlib: A module that wraps the popular z compression library.
+
+	   
+       
+
+=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x
 NEWS for version 2.1
 
 Building the library
@@ -148,3 +193,5 @@ New modules
    
       iconv:  Performs character-set conversion using the iconv library.
       onig:   A regular expression module using oniguruma RE library.
+      rand:   A random number module
+

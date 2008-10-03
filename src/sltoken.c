@@ -768,7 +768,11 @@ static int expand_escaped_string (register char *s,
 	     *s++ = ch;
 	     continue;
 	  }
-	  
+
+	if ((t == tmax)		       /* \ at EOL */
+	    || (((t + 1) == tmax) && (*t == '\n')))    /* \ \n at EOL */
+	  break;
+
 	if (NULL == (t = _pSLexpand_escaped_char (t, tmax, &wch, &isunicode)))
 	  {
 	     is_binary = -1;
