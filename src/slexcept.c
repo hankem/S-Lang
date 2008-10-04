@@ -78,9 +78,13 @@ int _pSLang_push_error_context (void)
    c->err_cleared = 0;
    c->rethrow = 0;
    c->file = File_With_Error;
+   c->function = Function_With_Error;  /* steal pointers */
    c->linenum = Linenum_With_Error;
-   c->function = Function_With_Error;
    c->err_queue = Error_Message_Queue;
+
+   File_With_Error = NULL;
+   Function_With_Error = NULL;
+   Linenum_With_Error = -1;
 
    if (NULL == (Error_Message_Queue = _pSLerr_new_error_queue (1)))
      {
@@ -88,9 +92,6 @@ int _pSLang_push_error_context (void)
 	SLfree ((char *) c);
 	return -1;
      }
-
-   File_With_Error = NULL;
-   Linenum_With_Error = -1;
 
    Error_Context = c;
    SLKeyBoard_Quit = 0;
@@ -151,17 +152,21 @@ int _pSLang_pop_error_context (int use_current_queue)
      {
 	if (e->err_cleared == 0)
 	  {
+	     SLang_free_slstring ((char *)File_With_Error);
+	     SLang_free_slstring ((char *)Function_With_Error);
 	     File_With_Error = e->file; e->file = NULL;
-	     Linenum_With_Error = e->linenum;
 	     Function_With_Error = e->function; e->function = NULL;
+	     Linenum_With_Error = e->linenum;
 	     (void) SLang_set_error (e->err);
 	  }
      }
 
    if (_pSLang_Error == SL_UserBreak_Error)
      SLKeyBoard_Quit = 1;
-   
+
    SLang_free_slstring ((char *) e->file);
+   SLang_free_slstring ((char *) e->function);
+
    SLfree ((char *) e);
    return 0;
 }
@@ -220,6 +225,9 @@ int _pSLerr_set_line_info (SLFUTURE_CONST char *file, int linenum, SLFUTURE_CONS
 	SLang_free_slstring ((char *) file);    /* NULL ok */
 	return -1;
      }
+
+   SLang_free_slstring ((char *)File_With_Error);
+   SLang_free_slstring ((char *)Function_With_Error);
 
    File_With_Error = file;
    Function_With_Error = fun;

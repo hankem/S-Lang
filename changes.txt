@@ -32,6 +32,8 @@ Changes since 2.1.4
 13. src/sltoken.c: When performing backslash expansion, if a solitary
     backslash occurs at the end of a line, or is preceeded by a
     newline at the end of a line, then ignore it.
+14. src/slexcept.c: The use of an ERROR_BLOCK was causing the pointer
+    holding the name of the function with the error to be freed twice.
 
 {{{ Previous Versions
 
