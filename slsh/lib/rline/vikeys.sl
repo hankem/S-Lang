@@ -231,6 +231,7 @@ private define set_command_key (ch, f)
 set_command_key ('\x08', &vi_backspace);
 set_command_key ('\x7F', &vi_backspace);
 set_command_key ('\r', &vi_enter);
+set_command_key ('\n', &vi_enter);
 set_command_key ('.', &vi_repeat_last_command);
 set_command_key ('a', &vi_append_mode);
 set_command_key ('i', &vi_insert_mode);
