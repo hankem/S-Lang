@@ -35,6 +35,8 @@ Changes since 2.1.4
 14. src/slexcept.c: The use of an ERROR_BLOCK was causing the pointer
     holding the name of the function with the error to be freed twice.
 15. slsh/lib/rline/*keys.sl: Bind "\n" to the readline "enter" function.
+16. src/sltoken.c: Improved and simplified the way operators are
+    mapped to tokens.
 
 {{{ Previous Versions
 

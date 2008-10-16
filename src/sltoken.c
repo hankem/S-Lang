@@ -103,11 +103,88 @@ static _pSLtok_Type init_bstring_token (_pSLang_Token_Type *tok,
    return tok->type = BSTRING_TOKEN;
 }
 
+/* In this table, if a single character can represent an operator, e.g.,
+ * '&' (BAND_TOKEN), then it must be placed before multiple-character
+ * operators that begin with the same character, e.g., "&=".  See
+ * get_op_token to see how this is exploited.
+ */
+#define NUM_OPERATOR_TABLE_ROWS 31
+typedef struct
+{
+   char opstring[4];
+   _pSLtok_Type type;
+}
+Operator_Table_Entry_Type;
+static SLCONST Operator_Table_Entry_Type Operators[NUM_OPERATOR_TABLE_ROWS] =
+{
+#define OFS_EXCL	0
+   {"!=",	NE_TOKEN},
+#define OFS_POUND	1
+   {"#",	POUND_TOKEN},
+#define OFS_BAND	2
+   {"&",	BAND_TOKEN},
+   {"&&",	SC_AND_TOKEN},
+   {"&=",	BANDEQS_TOKEN},
+#define OFS_STAR	5
+   {"*",	TIMES_TOKEN},
+   {"*=",	TIMESEQS_TOKEN},
+#define OFS_PLUS	7
+   {"+",	ADD_TOKEN},
+   {"++",	PLUSPLUS_TOKEN},
+   {"+=",	PLUSEQS_TOKEN},
+#define OFS_MINUS	10
+   {"-",	SUB_TOKEN},
+   {"--",	MINUSMINUS_TOKEN},
+   {"-=",	MINUSEQS_TOKEN},
+   {"->",	NAMESPACE_TOKEN},
+#define OFS_DIV		14
+   {"/",	DIV_TOKEN},
+   {"/=",	DIVEQS_TOKEN},
+#define OFS_LT		16
+   {"<",	LT_TOKEN},
+   {"<<",	SHL_TOKEN},
+   {"<=",	LE_TOKEN},
+#define OFS_EQS		19
+   {"=",	ASSIGN_TOKEN},
+   {"==",	EQ_TOKEN},
+#define OFS_GT		21
+   {">",	GT_TOKEN},
+   {">=",	GE_TOKEN},
+   {">>",	SHR_TOKEN},
+#define OFS_AT		24
+   {"@",	DEREF_TOKEN},
+#define OFS_POW		25
+   {"^",	POW_TOKEN},
+#define OFS_BOR		26
+   {"|",	BOR_TOKEN},
+   {"||",	SC_OR_TOKEN},
+   {"|=",	BOREQS_TOKEN},
+#define OFS_BNOT	29
+   {"~",	BNOT_TOKEN},
+   {"",	EOF_TOKEN}
+};
+
+static SLCONST char *lookup_op_token_string (_pSLtok_Type type)
+{
+   SLCONST Operator_Table_Entry_Type *op, *opmax;
+
+   op = Operators;
+   opmax = op + NUM_OPERATOR_TABLE_ROWS;
+
+   while (op < opmax)
+     {
+	if (op->type == type)
+	  return op->opstring;
+	op++;
+     }
+   return NULL;
+}
+
 static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
 {
    SLCONST char *s;
    static char numbuf [32];
-   unsigned char type;
+   _pSLtok_Type type;
    s = NULL;
 
    if (tok != NULL) type = tok->type;
@@ -157,27 +234,12 @@ static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
       case CPAREN_TOKEN: s = ")"; break;
       case OBRACE_TOKEN: s = "{"; break;
       case CBRACE_TOKEN: s = "}"; break;
-      case POW_TOKEN: s = "^"; break;
-      case ADD_TOKEN: s = "+"; break;
-      case SUB_TOKEN: s = "-"; break;
-      case TIMES_TOKEN: s = "*"; break;
-      case DIV_TOKEN: s = "/"; break;
-      case LT_TOKEN: s = "<"; break;
-      case LE_TOKEN: s = "<="; break;
-      case GT_TOKEN: s = ">"; break;
-      case GE_TOKEN: s = ">="; break;
-      case EQ_TOKEN: s = "=="; break;
-      case NE_TOKEN: s = "!="; break;
       case AND_TOKEN: s = "and"; break;
       case OR_TOKEN: s = "or"; break;
       case MOD_TOKEN: s = "mod"; break;
-      case BAND_TOKEN: s = "&"; break;
       case SHL_TOKEN: s = "shl"; break;
       case SHR_TOKEN: s = "shr"; break;
       case BXOR_TOKEN: s = "xor"; break;
-      case BOR_TOKEN: s = "|"; break;
-      case POUND_TOKEN: s = "#"; break;
-      case DEREF_TOKEN: s = "@"; break;
       case COMMA_TOKEN: s = ","; break;
       case SEMICOLON_TOKEN: s = ";"; break;
       case COLON_TOKEN: s = ":"; break;
@@ -210,10 +272,12 @@ static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
 	/* drop */
 #endif
       default:
-	  if (((tok->free_val_func == free_slstring_token_val)
-	       || (tok->free_val_func == free_static_sval_token))
-	      && (tok->num_refs != 0))
-	    s = tok->v.s_val;
+	  if (NULL != (s = lookup_op_token_string (type)))
+	    break;
+	if (((tok->free_val_func == free_slstring_token_val)
+	     || (tok->free_val_func == free_static_sval_token))
+	    && (tok->num_refs != 0))
+	  s = tok->v.s_val;
 	break;
      }
 
@@ -267,63 +331,6 @@ void _pSLparse_error (int errcode, SLCONST char *str, _pSLang_Token_Type *tok, i
 
 #define CHAR_CLASS(c)	(Char_Type_Table[(c)][0])
 #define CHAR_DATA(c)	(Char_Type_Table[(c)][1])
-
-/* In this table, if a single character can represent an operator, e.g.,
- * '&' (BAND_TOKEN), then it must be placed before multiple-character
- * operators that begin with the same character, e.g., "&=".  See
- * get_op_token to see how this is exploited.
- *
- * The third character null terminates the operator string.  This is for
- * the token structure.
- */
-static SLCONST char Operators [31][4] =
-{
-#define OFS_EXCL	0
-     {'!',	'=',	0, NE_TOKEN},
-#define OFS_POUND	1
-     {'#',	0,	0, POUND_TOKEN},
-#define OFS_BAND	2
-     {'&',	0,	0, BAND_TOKEN},
-     {'&',	'&',	0, SC_AND_TOKEN},
-     {'&',	'=',	0, BANDEQS_TOKEN},
-#define OFS_STAR	5
-     {'*',	0,	0, TIMES_TOKEN},
-     {'*',	'=',	0, TIMESEQS_TOKEN},
-#define OFS_PLUS	7
-     {'+',	0,	0, ADD_TOKEN},
-     {'+',	'+',	0, PLUSPLUS_TOKEN},
-     {'+',	'=',	0, PLUSEQS_TOKEN},
-#define OFS_MINUS	10
-     {'-',	0,	0, SUB_TOKEN},
-     {'-',	'-',	0, MINUSMINUS_TOKEN},
-     {'-',	'=',	0, MINUSEQS_TOKEN},
-     {'-',	'>',	0, NAMESPACE_TOKEN},
-#define OFS_DIV		14
-     {'/',	0,	0, DIV_TOKEN},
-     {'/',	'=',	0, DIVEQS_TOKEN},
-#define OFS_LT		16
-     {'<',	0,	0, LT_TOKEN},
-     {'<',	'<',	0, SHL_TOKEN},
-     {'<',	'=',	0, LE_TOKEN},
-#define OFS_EQS		19
-     {'=',	0,	0, ASSIGN_TOKEN},
-     {'=',	'=',	0, EQ_TOKEN},
-#define OFS_GT		21
-     {'>',	0,	0, GT_TOKEN},
-     {'>',	'=',	0, GE_TOKEN},
-     {'>',	'>',	0, SHR_TOKEN},
-#define OFS_AT		24
-     {'@',	0,	0, DEREF_TOKEN},
-#define OFS_POW		25
-     {'^',	0,	0, POW_TOKEN},
-#define OFS_BOR		26
-     {'|',	0,	0, BOR_TOKEN},
-     {'|',	'|',	0, SC_OR_TOKEN},
-     {'|',	'=',	0, BOREQS_TOKEN},
-#define OFS_BNOT	29
-     {'~',	0,	0, BNOT_TOKEN},
-     {	0,	0,	0, EOF_TOKEN}
-};
 
 static SLCONST unsigned char Char_Type_Table[256][2] =
 {
@@ -673,18 +680,20 @@ static int get_op_token (_pSLang_Token_Type *tok, char ch)
 {
    unsigned int offset;
    char second_char;
-   unsigned char type;
+   _pSLtok_Type type;
    SLCONST char *name;
+   SLCONST Operator_Table_Entry_Type *op;
 
    /* operators are: + - / * ++ -- += -= = == != > < >= <= | etc..
     * These lex to the longest valid operator token.
     */
 
    offset = CHAR_DATA((unsigned char) ch);
-   if (0 == Operators [offset][1])
+   op = Operators + offset;
+   if (0 == op->opstring[1])
      {
-	name = Operators [offset];
-	type = name [3];
+	name = op->opstring;
+	type = op->type;
      }
    else
      {
@@ -695,15 +704,15 @@ static int get_op_token (_pSLang_Token_Type *tok, char ch)
    second_char = prep_get_char ();
    do
      {
-	if (second_char == Operators[offset][1])
+	if (second_char == op->opstring[1])
 	  {
-	     name = Operators [offset];
-	     type = name [3];
+	     name = op->opstring;
+	     type = op->type;
 	     break;
 	  }
-	offset++;
+	op++;
      }
-   while (ch == Operators[offset][0]);
+   while (ch == op->opstring[0]);
 
    tok->type = type;
 
