@@ -37,6 +37,8 @@ Changes since 2.1.4
 15. slsh/lib/rline/*keys.sl: Bind "\n" to the readline "enter" function.
 16. src/sltoken.c: Improved and simplified the way operators are
     mapped to tokens.
+17. slsh/lib/sldbcore.sl: sldb was printing all the elements of a
+    container object when using the "p" command.
 
 {{{ Previous Versions
 

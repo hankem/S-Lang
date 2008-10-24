@@ -249,7 +249,8 @@ private define quit_cmd (cmd, args, file, line)
 
 private define simple_print (v)
 {
-   print (v, &v);
+   if (length (v) <= 1)
+     print (v, &v);
    output ("%S\n", v);
 }
 
