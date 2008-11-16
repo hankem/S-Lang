@@ -239,7 +239,7 @@
   be summed over.  For example, the cumulative sum of
   \exmp{[1,2,3,4]}, is the array \exmp{[1,1+2,1+2+3,1+2+3+4]}, i.e.,
   \exmp{[1,3,6,10]}.
-\seealso{sum}
+\seealso{sum, sumsq}
 \done
 
 \function{init_char_array}
@@ -454,7 +454,26 @@
 #v+
     sum(a)/length(a)
 #v-
-\seealso{cumsum, transpose, reshape}
+\seealso{cumsum, sumsq, transpose, reshape}
+\done
+
+\function{sum}
+\synopsis{Sum over the squares of the elements of an array}
+\usage{result = sumsq (Array_Type a [, Int_Type dim])}
+\description
+  The \ifun{sumsq} function sums over the squares of the elements of a
+  numeric array and returns its result.  If a second argument is
+  given, then it specifies the dimension of the array to be summed
+  over.  In this case, an array of dimension one less than that of the
+  input array will be returned.
+
+  If the input array is an integer type, then the resulting value will
+  be a \dtype{Double_Type}.  If the input array is a \dtype{Float_Type},
+  then the result will be a \dtype{Float_Type}.
+  
+  For complex arrays, the sum will be over the squares of the moduli of
+  the complex elements.
+\seealso{cumsum, sumsq, transpose, reshape}
 \done
 
 \function{transpose}

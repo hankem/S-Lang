@@ -346,8 +346,35 @@ static int SUM_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_
 }
 #endif				       /* SLANG_HAS_FLOAT */
 #undef SUM_FUNCTION
-#undef SUM_RESULT_TYPE
 #endif
+
+#ifdef SUMSQ_FUNCTION
+#if SLANG_HAS_FLOAT
+static int SUMSQ_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+{
+   GENERIC_TYPE *x, *xmax;
+   double sum, sumerr;
+   
+   sum = 0.0;
+   sumerr = 0.0;
+
+   x = (GENERIC_TYPE *) xp;
+   xmax = x + num;
+   while (x < xmax)
+     {
+	double v = (*x) * (*x);
+	double new_sum = sum + v;
+	sumerr += v - (new_sum-sum);
+	sum = new_sum;
+	x += inc;
+     }
+   *(SUM_RESULT_TYPE *)yp = (SUM_RESULT_TYPE) (sum + sumerr);
+   return 0;
+}
+#endif				       /* SLANG_HAS_FLOAT */
+#undef SUMSQ_FUNCTION
+#endif
+#undef SUM_RESULT_TYPE
 
 #ifdef MIN_FUNCTION
 static int 

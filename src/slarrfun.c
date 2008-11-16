@@ -88,6 +88,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define INNERPROD_A_COMPLEX innerprod_float_complex
 #endif
 #define SUM_FUNCTION sum_floats
+#define SUMSQ_FUNCTION sumsq_floats
 #define SUM_RESULT_TYPE float
 #define PROD_FUNCTION prod_floats
 #define PROD_RESULT_TYPE float
@@ -115,6 +116,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define INNERPROD_A_COMPLEX innerprod_double_complex
 #endif
 #define SUM_FUNCTION sum_doubles
+#define SUMSQ_FUNCTION sumsq_doubles
 #define SUM_RESULT_TYPE double
 #define CUMSUM_FUNCTION cumsum_doubles
 #define CUMSUM_RESULT_TYPE double
@@ -154,6 +156,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define GENERIC_TYPE int
 #define TRANSPOSE_2D_ARRAY transpose_ints
 #define SUM_FUNCTION sum_ints
+#define SUMSQ_FUNCTION sumsq_ints
 #define SUM_RESULT_TYPE double
 #define CUMSUM_FUNCTION cumsum_ints
 #define CUMSUM_RESULT_TYPE double
@@ -171,6 +174,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 /* -------------- UNSIGNED INT --------------------- */
 #define GENERIC_TYPE unsigned int
 #define SUM_FUNCTION sum_uints
+#define SUMSQ_FUNCTION sumsq_uints
 #define SUM_RESULT_TYPE double
 #define MIN_FUNCTION min_uints
 #define MAX_FUNCTION max_uints
@@ -183,6 +187,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define GENERIC_TYPE long
 # define TRANSPOSE_2D_ARRAY transpose_longs
 # define SUM_FUNCTION sum_longs
+# define SUMSQ_FUNCTION sumsq_longs
 # define SUM_RESULT_TYPE double
 # define PROD_FUNCTION prod_longs
 # define PROD_RESULT_TYPE double
@@ -197,6 +202,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 /* -------------- UNSIGNED LONG --------------------- */
 # define GENERIC_TYPE unsigned long
 # define SUM_FUNCTION sum_ulongs
+# define SUMSQ_FUNCTION sumsq_ulongs
 # define SUM_RESULT_TYPE double
 # define MIN_FUNCTION min_ulongs
 # define MAX_FUNCTION max_ulongs
@@ -206,7 +212,9 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #else
 # define transpose_longs transpose_ints
 # define sum_longs sum_ints
+# define sumsq_longs sumsq_ints
 # define sum_ulongs sum_uints
+# define sumsq_ulongs sumsq_uints
 # define min_longs min_ints
 # define minabs_longs minabs_ints
 # define min_ulongs min_uints
@@ -224,6 +232,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define GENERIC_TYPE short
 # define TRANSPOSE_2D_ARRAY transpose_shorts
 # define SUM_FUNCTION sum_shorts
+# define SUMSQ_FUNCTION sumsq_shorts
 # define SUM_RESULT_TYPE double
 # define MIN_FUNCTION min_shorts
 # define MINABS_FUNCTION minabs_shorts
@@ -236,6 +245,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 /* -------------- UNSIGNED SHORT --------------------- */
 # define GENERIC_TYPE unsigned short
 # define SUM_FUNCTION sum_ushorts
+# define SUMSQ_FUNCTION sumsq_ushorts
 # define SUM_RESULT_TYPE double
 # define MIN_FUNCTION min_ushorts
 # define MAX_FUNCTION max_ushorts
@@ -245,7 +255,9 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #else
 # define transpose_shorts transpose_ints
 # define sum_shorts sum_ints
+# define sumsq_shorts sumsq_ints
 # define sum_ushorts sum_uints
+# define sumsq_ushorts sumsq_uints
 # define min_shorts min_ints
 # define minabs_shorts minabs_ints
 # define min_ushorts min_uints
@@ -262,6 +274,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define GENERIC_TYPE char
 #define TRANSPOSE_2D_ARRAY transpose_chars
 #define SUM_FUNCTION sum_chars
+#define SUMSQ_FUNCTION sumsq_chars
 #define SUM_RESULT_TYPE double
 #define MIN_FUNCTION min_chars
 #define MINABS_FUNCTION minabs_chars
@@ -274,6 +287,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 /* -------------- UNSIGNED CHAR --------------------- */
 #define GENERIC_TYPE unsigned char
 #define SUM_FUNCTION sum_uchars
+#define SUMSQ_FUNCTION sumsq_uchars
 #define SUM_RESULT_TYPE double
 #define MIN_FUNCTION min_uchars
 #define MAX_FUNCTION max_uchars
@@ -853,17 +867,27 @@ int SLarray_contract_array (SLCONST SLarray_Contract_Type *c)
 static int sum_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID_STAR sp)
 {
    double *z, *zmax;
-   double sr, si;
+   double sr, si, sr_err, si_err;
    double *s;
 
    z = (double *)zp;
    zmax = z + 2*num;
    inc *= 2;
-   sr = si = 0.0;
+   sr = si = sr_err = si_err = 0.0;
    while (z < zmax)
      {
-	sr += z[0];
-	si += z[1];
+	double v, new_s;
+	
+	v = z[0];
+	new_s = sr + v;
+	sr_err += v - (new_s-sr);
+	sr = new_s;
+
+	v = z[1];
+	new_s = si + v;
+	si_err += v - (new_s-si);
+	si = new_s;
+
 	z += inc;
      }
    s = (double *)sp;
@@ -872,12 +896,33 @@ static int sum_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID_S
    return 0;
 }
 
+static int sumsq_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID_STAR sp)
+{
+   double *z, *zmax;
+   double s, serr;
+
+   z = (double *)zp;
+   zmax = z + 2*num;
+   inc *= 2;
+   s = 0.0; serr = 0.0;
+   while (z < zmax)
+     {
+	double v = z[0]*z[0] + z[1]*z[1];
+	double new_s = s + v;
+	serr += v - (new_s-s);
+	s = new_s;
+	z += inc;
+     }
+   *(double *)sp = s+serr;
+   return 0;
+}
+
 static int cumsum_complex (SLtype xtype, VOID_STAR xp, unsigned int inc, 
 			   unsigned int num,
 			   SLtype ytype, VOID_STAR yp, VOID_STAR clientdata)
 {
    double *z, *zmax;
-   double cr, ci;
+   double cr, ci, cr_err, ci_err;
    double *s;
 
    (void) xtype; (void) ytype; (void) clientdata;
@@ -885,13 +930,22 @@ static int cumsum_complex (SLtype xtype, VOID_STAR xp, unsigned int inc,
    zmax = z + 2*num;
    s = (double *)yp;
    inc *= 2;
-   cr = ci = 0.0;
+   cr = ci = cr_err = ci_err = 0.0;
    while (z < zmax)
      {
-	cr += z[0];
-	ci += z[1];
-	s[0] = cr;
-	s[1] = ci;
+	double v, c1;
+	v = z[0];
+	c1 = cr + v;
+	cr_err += v - (c1 - cr);
+	cr = c1;
+	s[0] = cr + cr_err;
+
+	v = z[1];
+	c1 = ci + v;
+	ci_err += v - (c1 - ci);
+	ci = c1;
+	s[1] = ci + ci_err;
+
 	z += inc;
 	s += inc;
      }
@@ -946,6 +1000,29 @@ static SLCONST SLarray_Contract_Type Sum_Functions [] =
 static void array_sum (void)
 {
    (void) SLarray_contract_array (Sum_Functions);
+}
+
+static SLCONST SLarray_Contract_Type Sumsq_Functions [] =
+{
+     {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_doubles},
+     {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) sumsq_floats},
+     {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_ints},
+     {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_chars},
+     {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_uchars},
+     {SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_shorts},
+     {SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_ushorts},
+     {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_uints},
+     {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_longs},
+     {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_ulongs},
+#if SLANG_HAS_COMPLEX
+     {SLANG_COMPLEX_TYPE, SLANG_COMPLEX_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) sumsq_complex},
+#endif
+     {0, 0, 0, NULL}
+};
+
+static void array_sumsq (void)
+{
+   (void) SLarray_contract_array (Sumsq_Functions);
 }
 
 static SLCONST SLarray_Contract_Type Prod_Functions [] =
@@ -1415,6 +1492,7 @@ static SLang_Intrin_Fun_Type Array_Fun_Table [] =
 #if SLANG_HAS_FLOAT
    MAKE_INTRINSIC_0("prod", array_prod, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("sum", array_sum, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("sumsq", array_sumsq, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("cumsum", array_cumsum, SLANG_VOID_TYPE),
 #endif
    MAKE_INTRINSIC_0("array_swap", array_swap, SLANG_VOID_TYPE),

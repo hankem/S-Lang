@@ -39,6 +39,8 @@ Changes since 2.1.4
     mapped to tokens.
 17. slsh/lib/sldbcore.sl: sldb was printing all the elements of a
     container object when using the "p" command.
+18. src/slarrfun.c: Added a "sumsq" function, which sums over the
+    squares of the elements of an array.
 
 {{{ Previous Versions
 

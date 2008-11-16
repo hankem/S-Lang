@@ -1496,7 +1496,38 @@ test_dup ([1:-3]);
 test_dup ([1:4]);
 test_dup ([1,2,3,4]);
 test_dup (["foo", "bar", "baz"]);
-print ("Ok\n");
 
+
+private define test_sumsq (a)
+{
+   variable s, t;
+   
+   s = sumsq (a);
+   if (_typeof (a) == Complex_Type)
+     t = sumsq (Real(a)) + sumsq(Imag(a));
+   else
+     t = sum (a*a);
+
+   if (s != t)
+     {
+	failed ("sumsq: %S != %S, diff=%S", s, t, s-t);
+     }
+}
+test_sumsq ([1:10]);
+test_sumsq (typecast ([1:10], Char_Type));
+test_sumsq (typecast ([1:10], UChar_Type));
+test_sumsq (typecast ([1:10], Long_Type));
+test_sumsq (typecast ([1:10], ULong_Type));
+test_sumsq (typecast ([1:10], Short_Type));
+test_sumsq (typecast ([1:10], UShort_Type));
+#ifexists Double_Type
+test_sumsq (typecast ([1:10], Float_Type));
+test_sumsq (typecast ([1:10], Double_Type));
+#endif
+#ifexists Complex_Type
+test_sumsq ([1:10] + [2:11]*1i);
+#endif
+
+print ("Ok\n");
 exit (0);
 
