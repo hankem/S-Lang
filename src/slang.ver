@@ -681,3 +681,8 @@ SLANG2.1.1 {
         global:
 		SLang_pop_array_index;
 } SLANG2.1.0;
+
+SLANG2.2.0 {
+        global:
+		SLsystem_intr;
+} SLANG2.1.1;

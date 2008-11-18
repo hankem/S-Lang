@@ -1000,9 +1000,15 @@ static int is_defined_intrin (char *s)
 {
    return SLang_is_defined (s);
 }
+
 static int system_intrinsic (char *s)
 {
    return SLsystem (s);
+}
+
+static int system_intr_intrinsic (char *s)
+{
+   return SLsystem_intr (s);
 }
 
 static int stack_depth_intrin (void)
@@ -1113,6 +1119,7 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_0("dup",  do_dup, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("integer",  intrin_integer, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("system",  system_intrinsic, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_S("system_intr",  system_intr_intrinsic, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("_apropos",  intrin_apropos, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_get_namespaces", intrin_get_namespaces, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("_trace_function",  _pSLang_trace_fun, SLANG_VOID_TYPE),

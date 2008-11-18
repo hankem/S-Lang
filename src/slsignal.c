@@ -172,9 +172,13 @@ int SLsystem (SLFUTURE_CONST char *cmd)
    _pSLang_verror (SL_NOT_IMPLEMENTED, "system not implemented");
    return -1;
 }
+int SLsystem_intr (SLFUTURE_CONST char *cmd)
+{
+   return SLsystem (cmd);
+}
 
 #else
-int SLsystem (SLFUTURE_CONST char *cmd)
+static int system_internal (SLFUTURE_CONST char *cmd, int do_sigint)
 {
 #ifdef SLANG_POSIX_SIGNALS
    pid_t pid;
@@ -197,14 +201,16 @@ int SLsystem (SLFUTURE_CONST char *cmd)
    ignore.sa_flags = 0;
 
 # ifdef SIGINT
-   if (-1 == sigaction (SIGINT, &ignore, &save_intr))
+   if (do_sigint
+       && (-1 == sigaction (SIGINT, &ignore, &save_intr)))
      return -1;
 # endif
 
 # ifdef SIGQUIT
    if (-1 == sigaction (SIGQUIT, &ignore, &save_quit))
      {
-	(void) sigaction (SIGINT, &save_intr, NULL);
+	if (do_sigint)
+	  (void) sigaction (SIGINT, &save_intr, NULL);
 	return -1;
      }
 # endif
@@ -215,7 +221,8 @@ int SLsystem (SLFUTURE_CONST char *cmd)
    if (-1 == sigprocmask (SIG_BLOCK, &child_mask, &save_mask))
      {
 #  ifdef SIGINT
-	(void) sigaction (SIGINT, &save_intr, NULL);
+	if (do_sigint)
+	  (void) sigaction (SIGINT, &save_intr, NULL);
 #  endif
 #  ifdef SIGQUIT
 	(void) sigaction (SIGQUIT, &save_quit, NULL);
@@ -235,7 +242,8 @@ int SLsystem (SLFUTURE_CONST char *cmd)
      {
 	/* Child */
 # ifdef SIGINT
-	(void) sigaction (SIGINT, &save_intr, NULL);
+	if (do_sigint)
+	  (void) sigaction (SIGINT, &save_intr, NULL);
 # endif
 # ifdef SIGQUIT
 	(void) sigaction (SIGQUIT, &save_quit, NULL);
@@ -272,7 +280,8 @@ int SLsystem (SLFUTURE_CONST char *cmd)
 	  }
      }
 # ifdef SIGINT
-   if (-1 == sigaction (SIGINT, &save_intr, NULL))
+   if (do_sigint
+       && (-1 == sigaction (SIGINT, &save_intr, NULL)))
      status = -1;
 # endif
 # ifdef SIGQUIT
@@ -299,14 +308,16 @@ int SLsystem (SLFUTURE_CONST char *cmd)
    squit = SLsignal (SIGQUIT, SIG_IGN);
 # endif
 # ifdef SIGINT
-   sint = SLsignal (SIGINT, SIG_IGN);
+   if (do_sigint)
+     sint = SLsignal (SIGINT, SIG_IGN);
 # endif
 
    status = system (cmd);
    _pSLerrno_errno = errno;
 
 # ifdef SIGINT
-   SLsignal (SIGINT, sint);
+   if (do_sigint)
+     SLsignal (SIGINT, sint);
 # endif
 # ifdef SIGQUIT
    SLsignal (SIGQUIT, squit);
@@ -314,7 +325,19 @@ int SLsystem (SLFUTURE_CONST char *cmd)
    return status;
 #endif				       /* POSIX_SIGNALS */
 }
+
+int SLsystem (SLFUTURE_CONST char *cmd)
+{
+   return system_internal (cmd, 1);
+}
+
+int SLsystem_intr (SLFUTURE_CONST char *cmd)
+{
+   return system_internal (cmd, 0);
+}
+
 #endif
+
 
 #if 0
 #include <windows.h>

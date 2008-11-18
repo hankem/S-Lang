@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20200
-#define SLANG_VERSION_STRING "pre2.2.0-18"
+#define SLANG_VERSION_STRING "pre2.2.0-19"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1998,6 +1998,7 @@ SL_EXTERN SLSig_Fun_Type *SLsignal_intr (int, SLSig_Fun_Type *);
 SL_EXTERN int SLsig_block_signals (void);
 SL_EXTERN int SLsig_unblock_signals (void);
 SL_EXTERN int SLsystem (SLFUTURE_CONST char *);
+SL_EXTERN int SLsystem_intr (SLFUTURE_CONST char *);
 
 /* Make a signal off-limits to the interpreter */
 SL_EXTERN int SLsig_forbid_signal (int);
