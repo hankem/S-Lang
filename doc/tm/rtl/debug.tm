@@ -232,3 +232,46 @@
 \seealso{_slangtrace, _traceback}
 \done
 
+\function{_get_frame_info}
+\synopsis{Get information about a stack frame}
+\usage{Struct_Type _get_frame_info (Integer_Type depth)}
+\description
+  \ifun{_get_frame_info} returns a structure with information about
+  the function call stack from of depth \svar{depth}. The structure
+  contains the following fields:
+#v+
+    file: The file that contains the code of the stack frame.
+    line: The line number the file the stack frame is in.
+    function: the name of the function containing the code of the stack
+      frame; it might be NULL if the code isn't inside a function.
+    locals: Array of String_Type containing the names of variables local
+      to the stack frame; it might be NULL if the stack frame doesn't
+      belong to a function.
+    namespace: The namespace the code of this stack frame is in.
+#v-
+\seealso{_get_frame_variable, _use_frame_namespace}
+\done
+
+\function{_get_frame_variable}
+\synopsis{Get the value of a variable local to a stack frame}
+\usage{Any_Type _get_frame_variable (Integer_Type depth, String_Type name)}
+\description
+  This function returns value of the variable \exmp{name} in the stack
+  frame at depth \exmp{depth}.  This might not only be a local variable but
+  also variables from outer scopes, e.g., a variable private to the
+  namespace.
+
+  If no variable with this name is found an \exc{UndefinedNameError}
+  will be thrown.  An \exc{VariableUninitializedError} will be
+  generated if the variable has no value.
+\seealso{_get_frame_info, _use_frame_namespace}
+\done
+
+\function{_use_frame_namespace}
+\synopsis{Selects the namespace of a stack frame}
+\usage{_use_frame_namespace (Integer_Type depth)}
+\description
+  This function sets the current namespace to the one belonging to the
+  call stack frame at depth \svar{depth}.
+\seealso{_get_frame_info, _get_frame_variable}
+\done

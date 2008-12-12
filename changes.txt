@@ -44,6 +44,8 @@ Changes since 2.1.4
 19. src/slsignal.c: Added SLsystem_intr, which unlike SLsystem does
     not ignore SIGINT by the calling process.  This function is
     available to the interpreter via system_intr.
+20. doc/tm/rtl/debug.tm: Documentation for the call stack frames added
+    (Jörg Sommer).
 
 {{{ Previous Versions
 
