@@ -1398,6 +1398,12 @@ static void array_reverse (void)
      return;
 
    len = (int) at->num_elements;
+   if (len == 0)
+     {				       /* nothing to reverse */
+	SLang_free_array (at);
+	return;
+     }
+
    if (-1 == check_range_indices (len, &from, &to))
      {
 	SLang_free_array (at);

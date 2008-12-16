@@ -46,6 +46,8 @@ Changes since 2.1.4
     available to the interpreter via system_intr.
 20. doc/tm/rtl/debug.tm: Documentation for the call stack frames added
     (Jörg Sommer).
+21. src/slarrfun.c: array_reverse was producing an index-error when
+    passed an empty array.
 
 {{{ Previous Versions
 
