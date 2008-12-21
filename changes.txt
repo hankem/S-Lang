@@ -48,6 +48,8 @@ Changes since 2.1.4
     (Jörg Sommer).
 21. src/slarrfun.c: array_reverse was producing an index-error when
     passed an empty array.
+22. src/slcurses.c: SLcurses_initscr calls SLutf8_enable (Michal
+    Ratajsky).
 
 {{{ Previous Versions
 

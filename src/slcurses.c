@@ -347,6 +347,9 @@ SLcurses_Window_Type *SLcurses_initscr (void)
 #endif
      SLcurses_Num_Colors = 8;
 
+   /* Enable UTF-8 support if used on the terminal */
+   (void) SLutf8_enable (-1);
+
    if ((-1 == SLkp_init ())
        || (-1 == SLcurses_cbreak ())
        || (NULL == (SLcurses_Stdscr = SLcurses_newwin (0, 0, 0, 0)))
