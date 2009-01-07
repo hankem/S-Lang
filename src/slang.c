@@ -8794,6 +8794,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case STATIC_TOKEN:
+	interp_pending_blocks ();
 	if (Lang_Defining_Function == 0)
 	  Compile_Mode_Function = compile_static_variable_mode;
 	else
@@ -8801,6 +8802,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case PRIVATE_TOKEN:
+	interp_pending_blocks ();
 	if (Lang_Defining_Function == 0)
 	  Compile_Mode_Function = compile_private_variable_mode;
 	else
@@ -8808,6 +8810,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case PUBLIC_TOKEN:
+	interp_pending_blocks ();
 	if (Lang_Defining_Function == 0)
 	  Compile_Mode_Function = compile_public_variable_mode;
 	else
@@ -8815,6 +8818,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case OBRACKET_TOKEN:
+	interp_pending_blocks ();
 	if (Lang_Defining_Function == 0)
 	  Compile_Mode_Function = Default_Variable_Mode;
 	else
@@ -8822,6 +8826,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case OPAREN_TOKEN:
+	interp_pending_blocks ();
 	lang_begin_function ();
 	break;
 
@@ -8832,6 +8837,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case DEFINE_PRIVATE_TOKEN:
+	interp_pending_blocks ();
 	if (Lang_Defining_Function)
 	  define_private_function (t->v.s_val, t->hash);
 	else (void) SLang_set_error (SL_SYNTAX_ERROR);

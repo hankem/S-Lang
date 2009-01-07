@@ -53,6 +53,8 @@ Changes since 2.1.4
 23. src/slang.c, slparse.c: "then" clauses were not being executed for
     top-level looping statements (statements occuring outside function
     definitions).
+24. src/slang.c: Change #23 was causing byte-compiled (.slc) files
+    from previous versions of jed to be misinterpreted.
 
 {{{ Previous Versions
 
