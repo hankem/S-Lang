@@ -604,15 +604,15 @@ static void define_function (_pSLang_Token_Type *ctok, unsigned char type)
 /* This is called from "statement", which is expected to return no
  * new token.
  */
-static void check_for_loop_then_else (_pSLang_Token_Type *ctok)
+static int check_for_loop_then_else (_pSLang_Token_Type *ctok)
 {
    int b = 0;
-   
+
    get_token (ctok);
 
    while (1)
      {
-	unsigned char type = ctok->type;
+	_pSLtok_Type type = ctok->type;
 #ifdef LOOP_ELSE_TOKEN
 	if ((type == ELSE_TOKEN) && ((b & 1) == 0))
 	  {
@@ -629,13 +629,18 @@ static void check_for_loop_then_else (_pSLang_Token_Type *ctok)
 	     get_token (ctok);
 	     block (ctok);
 	     compile_token_of_type (LOOP_THEN_TOKEN);
-	     get_token (ctok);
 	     b |= 2;
+#ifdef LOOP_ELSE_TOKEN
+	     get_token (ctok);
 	     continue;
+#else
+	     return b;
+#endif
 	  }
 	break;
      }
    unget_token (ctok);
+   return b;
 }
 
 /* statement:
@@ -725,7 +730,8 @@ static void statement (_pSLang_Token_Type *ctok)
       case _FOR_TOKEN:
 	get_token (ctok);
 	handle_for_statement (ctok);
-	check_for_loop_then_else (ctok);
+	if (0 == check_for_loop_then_else (ctok))
+	  compile_token_of_type (NOP_TOKEN);
 	break;
 
       case LOOP_TOKEN:
@@ -739,13 +745,15 @@ static void statement (_pSLang_Token_Type *ctok)
 #endif
 	block (ctok);
 	compile_token_of_type (LOOP_TOKEN);
-	check_for_loop_then_else (ctok);
+	if (0 == check_for_loop_then_else (ctok))
+	  compile_token_of_type (NOP_TOKEN);
 	break;
 
       case FOREACH_TOKEN:
 	get_token (ctok);
 	handle_foreach_statement (ctok);
-	check_for_loop_then_else (ctok);
+	if (0 == check_for_loop_then_else (ctok))
+	  compile_token_of_type (NOP_TOKEN);
 	break;
 
       case WHILE_TOKEN:
@@ -761,7 +769,8 @@ static void statement (_pSLang_Token_Type *ctok)
 	compile_token_of_type (CBRACE_TOKEN);
 	block (ctok);
 	compile_token_of_type (WHILE_TOKEN);
-	check_for_loop_then_else (ctok);
+	if (0 == check_for_loop_then_else (ctok))
+	  compile_token_of_type (NOP_TOKEN);
 	break;
 
       case DO_TOKEN:
@@ -787,7 +796,8 @@ static void statement (_pSLang_Token_Type *ctok)
 	compile_token_of_type (CBRACE_TOKEN);
 	compile_token_of_type (DOWHILE_TOKEN);
 	handle_semicolon (ctok);
-	check_for_loop_then_else (ctok);
+	if (0 == check_for_loop_then_else (ctok))
+	  compile_token_of_type (NOP_TOKEN);
 	break;
 
       case FOR_TOKEN:
@@ -862,7 +872,8 @@ static void statement (_pSLang_Token_Type *ctok)
 	get_token (ctok);
 	block (ctok);
 	compile_token_of_type (FOR_TOKEN);
-	check_for_loop_then_else (ctok);
+	if (0 == check_for_loop_then_else (ctok))
+	  compile_token_of_type (NOP_TOKEN);
 	break;
 
       case FOREVER_TOKEN:
@@ -879,7 +890,10 @@ static void statement (_pSLang_Token_Type *ctok)
 	block (ctok);
 	compile_token_of_type (type);
 	if (type == FOREVER_TOKEN)
-	  check_for_loop_then_else (ctok);
+	  {
+	     if (0 == check_for_loop_then_else (ctok))
+	       compile_token_of_type (NOP_TOKEN);
+	  }
 	break;
 
       case BREAK_TOKEN:
@@ -1468,9 +1482,13 @@ void _pSLparse_start (SLang_Load_Type *llt)
    llt->parse_level = 0;
    statement_list (&ctok);
 
-   if ((_pSLang_Error == 0)
-       && (ctok.type != EOF_TOKEN))
-     _pSLparse_error (SL_SYNTAX_ERROR, "Parse ended prematurely", &ctok, 0);
+   if (_pSLang_Error == 0)
+     {
+	if (ctok.type != EOF_TOKEN)
+	  _pSLparse_error (SL_SYNTAX_ERROR, "Parse ended prematurely", &ctok, 0);
+	else
+	  compile_token_of_type (EOF_TOKEN);
+     }
    
 
    if (_pSLang_Error)

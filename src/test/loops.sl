@@ -190,6 +190,21 @@ private define test_loop_then ()
 
 test_loop_then ();
 
+$1 = 0;
+loop (3)
+{
+   $1 = 2;
+}
+then $1 = 1;
+
+if ($1 != 1)
+  failed ("then clause at top-level");
+
+$1 = 0;
+eval ("loop (1) $1 = 1;");
+if ($1 != 1)
+  failed ("looping statement at the end of a file");
+
 print ("Ok\n");
 
 exit (0);

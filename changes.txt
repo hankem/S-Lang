@@ -50,6 +50,9 @@ Changes since 2.1.4
     passed an empty array.
 22. src/slcurses.c: SLcurses_initscr calls SLutf8_enable (Michal
     Ratajsky).
+23. src/slang.c, slparse.c: "then" clauses were not being executed for
+    top-level looping statements (statements occuring outside function
+    definitions).
 
 {{{ Previous Versions
 

@@ -6635,7 +6635,23 @@ static void lang_try_now(void)
    Lang_Break = Lang_Break_Condition = Lang_Return = 0;
 }
 
-   
+
+static void interp_pending_blocks (void)
+{
+   if ((This_Compile_Block_Type != COMPILE_BLOCK_TYPE_TOP_LEVEL)
+       || (Compile_ByteCode_Ptr == This_Compile_Block))
+     return;
+
+   Compile_ByteCode_Ptr->linenum = (unsigned short) This_Compile_Linenum;
+   Compile_ByteCode_Ptr->bc_main_type = SLANG_BC_LAST_BLOCK;
+
+   inner_interp (This_Compile_Block);
+   (void) lang_free_branch (This_Compile_Block);
+   Compile_ByteCode_Ptr = This_Compile_Block;
+   Lang_Break = Lang_Break_Condition = Lang_Return = 0;   
+}
+
+
 /* returns positive number if name is a function or negative number if it
  is a variable.  If it is intrinsic, it returns magnitude of 1, else 2 */
 int SLang_is_defined(SLFUTURE_CONST char *name)
@@ -7571,7 +7587,7 @@ static void set_line_number_info (long val)
 }
 #endif
 
-static void compile_directive (unsigned char sub_type)
+static void compile_directive (unsigned char sub_type, int delay_inner_interp)
 {
    /* This function is called only from compile_directive_mode which is
     * only possible when a block is available.
@@ -7580,7 +7596,13 @@ static void compile_directive (unsigned char sub_type)
    /* use BLOCK */
    Compile_ByteCode_Ptr--;
    Compile_ByteCode_Ptr->bc_sub_type = sub_type;
-
+   
+   if (delay_inner_interp)
+     {
+	Compile_ByteCode_Ptr->linenum = (unsigned short) This_Compile_Linenum;
+	Compile_ByteCode_Ptr++;
+	return;
+     }
    lang_try_now ();
 }
 
@@ -8201,16 +8223,18 @@ static int check_error_block (void)
 static void compile_directive_mode (_pSLang_Token_Type *t)
 {
    int bc_sub_type;
+   int delay;
 
    if (-1 == lang_check_space ())
      return;
 
    bc_sub_type = -1;
-
+   delay = 0;
    switch (t->type)
      {
       case FOREVER_TOKEN:
 	bc_sub_type = SLANG_BCST_FOREVER;
+	delay = 1;
 	break;
 
       case IFNOT_TOKEN:
@@ -8280,14 +8304,17 @@ static void compile_directive_mode (_pSLang_Token_Type *t)
 
       case LOOP_TOKEN:
 	bc_sub_type = SLANG_BCST_LOOP;
+	delay = 1;
 	break;
 
       case DOWHILE_TOKEN:
 	bc_sub_type = SLANG_BCST_DOWHILE;
+	delay = 1;
 	break;
 
       case WHILE_TOKEN:
 	bc_sub_type = SLANG_BCST_WHILE;
+	delay = 1;
 	break;
 
       case ORELSE_TOKEN:
@@ -8296,13 +8323,16 @@ static void compile_directive_mode (_pSLang_Token_Type *t)
 
       case _FOR_TOKEN:
 	bc_sub_type = SLANG_BCST_FOR;
+	delay = 1;
 	break;
 
       case FOR_TOKEN:
 	bc_sub_type = SLANG_BCST_CFOR;
+	delay = 1;
 	break;
 
       case FOREACH_TOKEN:
+	delay = 1;
 	bc_sub_type = SLANG_BCST_FOREACH;
 	break;
 
@@ -8337,7 +8367,7 @@ static void compile_directive_mode (_pSLang_Token_Type *t)
    Compile_Mode_Function = compile_basic_token_mode;
 
    if (bc_sub_type != -1)
-     compile_directive (bc_sub_type);
+     compile_directive (bc_sub_type, delay);
 }
 
 static unsigned int Assign_Mode_Type;
@@ -8360,9 +8390,12 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 
    switch (t->type)
      {
-      case PUSH_TOKEN:
-      case NOP_TOKEN:
       case EOF_TOKEN:
+      case NOP_TOKEN:
+	interp_pending_blocks ();
+	break;
+
+      case PUSH_TOKEN:
       case READONLY_TOKEN:
       case DO_TOKEN:
       case VARIABLE_TOKEN:
