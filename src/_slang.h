@@ -891,6 +891,7 @@ struct _pSLang_Class_Type
    int (*cl_eqs)(SLtype, VOID_STAR, SLtype, VOID_STAR);
    SL_OOBinary_Type *cl_void_binary_this;
    SL_OOBinary_Type *cl_this_binary_void;
+
    int is_container;
 };
 
@@ -1474,6 +1475,25 @@ extern int _pSLmath_isnan (double x);
 extern int _pSLmath_isinf (double x);
 extern double _pSLang_NaN;
 extern double _pSLang_Inf;
+
+# ifdef HAVE_LOG1P
+#  define LOG1P_FUNC log1p
+# else
+extern double _pSLmath_log1p (double);
+#  define LOG1P_FUNC _pSLmath_log1p
+# endif
+
+# ifdef HAVE_EXPM1
+#  define EXPM1_FUNC expm1
+# else
+extern double _pSLmath_expm1 (double);
+#  define EXPM1_FUNC _pSLmath_expm1
+# endif
+
+# if SLANG_HAS_COMPLEX
+extern double *_pSLcomplex_expm1 (double *f, double *z);
+extern double *_pSLcomplex_log1p (double *f, double *z);
+# endif
 #endif
 
 #if SLANG_HAS_SIGNALS

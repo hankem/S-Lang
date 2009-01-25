@@ -170,6 +170,7 @@ double SLcomplex_abs (double *z)
    return SLmath_hypot (z[0], z[1]);
 }
 
+
 /* It appears that FORTRAN assumes that the branch cut for the log function
  * is along the -x axis.  So, use this for atan2:
  */
@@ -227,6 +228,19 @@ double *SLcomplex_cos (double *cosz, double *z)
    return cosz;
 }
 
+double *_pSLcomplex_expm1 (double *f, double *z)
+{
+   /* exp(z)-1 = (e^x-1) + (cos(y)-1)*e^x + ie^x*sin(y) */
+   double ex;
+   double x = z[0], y = z[1];
+   double siny2 = sin(0.5*y);
+
+   ex = exp(x);
+   f[0] = EXPM1_FUNC(x) - ex*(2.0*siny2*siny2);   /* cos(y)-1 = 2*sin^2(y/2) */
+   f[1] = ex*sin(y);
+   return f;
+}
+
 double *SLcomplex_exp (double *expz, double *z)
 {
    double r, i;
@@ -246,6 +260,27 @@ double *SLcomplex_log (double *logz, double *z)
    logz[0] = log(r);
    logz[1] = theta;
    return logz;
+}
+
+double *_pSLcomplex_log1p (double *f, double *z)
+{
+   /* f(z) = log(1+z)
+    *      = log(1+x+iy)
+    *      = log(sqrt((1+x)^2 + y^2)) + i*theta
+    *      = 0.5*log((1+x)^2 + y^2) + i*theta
+    *      = 0.5*log(1 + 2*x + x^2 + y^2) + i*theta
+    *      = 0.5*log(1 + r^2 + 2*x) + i*theta
+    */
+   double r, theta;
+
+   polar_form (&r, &theta, z);
+   if (r < 1)
+     f[0] = 0.5*LOG1P_FUNC(r*r + 2.0*z[0]);
+   else
+     f[0] = log(SLmath_hypot(1.0+z[0], z[1]));
+
+   f[1] = theta;
+   return f;
 }
 
 double *SLcomplex_log10 (double *log10z, double *z)

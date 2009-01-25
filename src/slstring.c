@@ -581,6 +581,7 @@ void _pSLunallocate_slstring (char *s, unsigned int len)
    free_sls (sls);
 }
 
+/* frees s upon error */
 char *_pSLcreate_via_alloced_slstring (char *s, unsigned int len)
 {   
    unsigned long hash;
@@ -631,18 +632,20 @@ char *_pSLcreate_via_alloced_slstring (char *s, unsigned int len)
 /* Note, a and b may be ordinary strings.  The result is an slstring */
 char *SLang_concat_slstrings (char *a, char *b)
 {
-   unsigned int lena, len;
+   unsigned int lena, lenb, len;
    char *c;
 
-   lena = strlen (a);
-   len = lena + strlen (b);
+   lena = _pSLstring_bytelen (a);
+   lenb = _pSLstring_bytelen (b);
+   len = lena + lenb;
 
    c = _pSLallocate_slstring (len);
    if (c == NULL)
      return NULL;
 
-   strcpy (c, a);
-   strcpy (c + lena, b);
+   memcpy (c, a, lena);
+   memcpy (c + lena, b, lenb);
+   c[len] = 0;
 
    return _pSLcreate_via_alloced_slstring (c, len);
 }

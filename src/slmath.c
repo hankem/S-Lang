@@ -184,31 +184,112 @@ static double my_round (double x)
 }
 #endif
 
+#ifndef HAVE_LOG1P
+double _pSLmath_log1p (double x)
+{
+   /*
+    * log(1+x) ~= x for small x
+    * Suppose the error in 1+x is e.  That is, 1+x produces 1+x+e.
+    * Then log(1+x) will produce log(1+x+e).  The error is
+    *   df = log(1+x+e)-log(1+x)
+    *      = log (1 + e/(1+x))
+    *      ~= e/(1+x)
+    * Here e = (1+x) - (1+x)
+    *        = ((1+x)-1) - x
+    * So compute:
+    *   log1p(x) = log(1+x) - (((1+x)-1)-x)/(1+x)
+    */
+   volatile double xp1 = 1.0 + x;
+   volatile double xx = xp1-1.0;
+   return log(xp1) - (xx-x)/xp1;
+}
+#endif
+
+#ifndef HAVE_EXPM1
+double _pSLmath_expm1 (double x)
+{
+   /* f = exp(x)-1
+    *    = (exp(x)-1) + x - x
+    *    = (exp(x)-(1+x)) + x
+    * 
+    * While the above works, it is not as accurate as the algroithm below,
+    * which is due to Kahan (yes, that Kahan).
+    */
+   volatile double u = exp(x);
+   if (u == 1.0)
+     return x;
+   if (u - 1.0 == -1.0)
+     return -1.0;
+   return (u-1.0)*x/log(u);
+}
+#endif
+
 #ifdef HAVE_ASINH
 # define ASINH_FUN	asinh
 #else
 # define ASINH_FUN	my_asinh
 static double my_asinh (double x)
 {
-   return log (x + sqrt (x*x + 1));
+   /* f(x) = log(x + sqrt(x^2+1))
+    * Note: f(x)+f(-x) 
+    *          = log(x+sqrt(x^2+1))+log(-x+sqrt(x^2+1))
+    *          = log(x^2+1 - x^2)
+    *          = 0
+    * Thus, f(-x)=-f(x) as required.
+    * 
+    * So consider x>=0.
+    * For large x
+    *   = log(2x + sqrt(x^2+1)-x)
+    *   = log(2x + ((x^2+1)-x^2)/(x+sqrt(x^2+1)))
+    *   = log(2x + 1/(x+sqrt(x^2+1)))
+    *   = log(2x + 1/x/(1+sqrt(1+1/x^2)))
+    * For small x
+    *   = log(1 + x + sqrt(1+x^2)-1)
+    *   = log(1 + x + (1+x^2-1)/(sqrt(1+x^2)+1))
+    *   = log(1 + x + x^2/(1+sqrt(1+x^2)))
+    */
+   double s = 1.0;
+   double x2 = x*x;
+
+   if (x < 0.0)
+     {
+	s = -1.0;
+	x = -x;
+     }
+
+   if (x > 1.0)
+     return s*log (2.0*x + 1.0/x/(1.0+sqrt(1.0+1.0/x2)));
+   
+   return LOG1P_FUNC(x+x2/(1.0+sqrt(1.0+x2)));
 }
 #endif
+
 #ifdef HAVE_ACOSH
 # define ACOSH_FUN	acosh
 #else
 # define ACOSH_FUN	my_acosh
 static double my_acosh (double x)
 {
-   return log (x + sqrt(x*x - 1));     /* x >= 1 */
+   /* log (x + sqrt(x^2 - 1);     x >= 1
+    *  = log(2*x + sqrt(x^2-1)-x)
+    *  = log(2*x + (x^2-1-x^2)/(x+sqrt(x^2-1)))
+    *  = log(2*x - 1/x/(1+sqrt(1-1/x^2)))
+    */
+   return log(2.0*x - 1.0/x/(1.0+sqrt(1.0-1/x/x)));
 }
 #endif
 #ifdef HAVE_ATANH
 # define ATANH_FUN	atanh
 #else
 # define ATANH_FUN	my_atanh
+
 static double my_atanh (double x)
 {
-   return 0.5 * log ((1.0 + x)/(1.0 - x)); /* 0 <= x^2 < 1 */
+   /* 0.5 * log ((1.0 + x)/(1.0 - x));  (0 <= x^2 < 1)
+    * = 0.5*log((1-x+2x)/(1-x)) 
+    * = 0.5*log(1 + 2x/(1-x))
+    */
+   return 0.5 * LOG1P_FUNC(2.0*x/(1-x));
 }
 #endif
 
@@ -310,6 +391,14 @@ static int double_math_op (int op,
 	
       case SLMATH_ROUND:
 	for (i = 0; i < na; i++) b[i] = ROUND_FUN(a[i]);
+	break;
+	
+      case SLMATH_EXPM1:
+	for (i = 0; i < na; i++) b[i] = EXPM1_FUNC(a[i]);
+	break;
+
+      case SLMATH_LOG1P:
+	for (i = 0; i < na; i++) b[i] = LOG1P_FUNC(a[i]);
 	break;
      }
    
@@ -415,6 +504,14 @@ static int float_math_op (int op,
 	break;
       case SLMATH_ROUND:
 	for (i = 0; i < na; i++) b[i] = ROUND_FUN(a[i]);
+	break;
+
+      case SLMATH_EXPM1:
+	for (i = 0; i < na; i++) b[i] = EXPM1_FUNC(a[i]);
+	break;
+
+      case SLMATH_LOG1P:
+	for (i = 0; i < na; i++) b[i] = LOG1P_FUNC(a[i]);
 	break;
      }
 
@@ -605,6 +702,22 @@ static int generic_math_op (int op,
 	for (i = 0; i < na; i++) 
 	  {
 	     b[i] = ROUND_FUN (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
+	break;
+
+      case SLMATH_EXPM1:
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = EXPM1_FUNC (to_double ((VOID_STAR) a));
+	     a += da;
+	  }
+	break;
+
+      case SLMATH_LOG1P:
+	for (i = 0; i < na; i++) 
+	  {
+	     b[i] = LOG1P_FUNC (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
@@ -1424,6 +1537,8 @@ static SLang_Math_Unary_Type SLmath_Table [] =
    MAKE_MATH_UNARY("floor", SLMATH_FLOOR),
    MAKE_MATH_UNARY("ceil", SLMATH_CEIL),
    MAKE_MATH_UNARY("round", SLMATH_ROUND),
+   MAKE_MATH_UNARY("expm1", SLMATH_EXPM1),
+   MAKE_MATH_UNARY("log1p", SLMATH_LOG1P),
    
 #if SLANG_HAS_COMPLEX
    MAKE_MATH_UNARY("Real", SLMATH_REAL),

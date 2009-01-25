@@ -69,7 +69,7 @@ static int check_zerror (int e)
 	break;
 
       case Z_DATA_ERROR:
-	SLang_verror (ZLib_Error, "Z library stream error");
+	SLang_verror (ZLib_Error, "Z library data error");
 	break;
 
       case Z_MEM_ERROR:

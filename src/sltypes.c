@@ -67,6 +67,7 @@ int _pSLang_push_slstring (char *s)
    return -1;
 }
 
+/* Frees s upon error */
 int _pSLpush_alloced_slstring (char *s, unsigned int len)
 {
    if (NULL == (s = _pSLcreate_via_alloced_slstring (s, len)))

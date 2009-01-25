@@ -205,6 +205,16 @@ define test_range_array_bug ()
      }
 }
 test_range_array_bug ();
-     
+
+define test_overzealous_tmp_opt_bug ()
+{
+   variable a = Array_Type[1];
+   a[0] = [1];
+   () = a + 1;
+   if (a[0][0] != 1)
+     vmessage ("\tOver-zealous __tmp optimization array bug present");
+}
+test_overzealous_tmp_opt_bug ();
+
 exit (0);
 

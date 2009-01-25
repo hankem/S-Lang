@@ -1163,11 +1163,24 @@ static int do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *obj
 	  return status;
 	/* drop and try it the hard way */
      }
-# if 1
-   if ((a_data_type == SLANG_ARRAY_TYPE) 
-       && (a_data_type == b_data_type))
-     return _pSLarray_bin_op (obja, objb, op);
-# endif
+
+   if (a_data_type == b_data_type)
+     {
+	if (a_data_type == SLANG_ARRAY_TYPE)
+	  return _pSLarray_bin_op (obja, objb, op);
+
+	if ((a_data_type == SLANG_STRING_TYPE)
+	    && (op == SLANG_PLUS))
+	  {
+	     char *stra = obja->v.s_val, *strb = objb->v.s_val, *strc;
+	     
+	     strc = SLang_concat_slstrings (stra, strb);
+	     if (strc == NULL)
+	       return -1;
+
+	     return _pSLang_push_slstring (strc);   /* frees strc */
+	  }
+     }
 #endif
 
    GET_CLASS(a_cl,a_data_type);
@@ -1904,7 +1917,7 @@ static int do_unary_op (int op, SLang_Object_Type *obj, int unary_type)
    if (1 != (*f) (op, a_type, pa, 1, pb))
      {
 	_pSLang_verror (SL_NOT_IMPLEMENTED,
-		      "Unary operation for %s failed", a_cl->cl_name);
+		      "Unary operation/function for %s failed", a_cl->cl_name);
 	return -1;
      }
 

@@ -55,6 +55,16 @@ Changes since 2.1.4
     definitions).
 24. src/slang.c: Change #23 was causing byte-compiled (.slc) files
     from previous versions of jed to be misinterpreted.
+25. modules/zlib-module.c: The error message associated with
+    ZLIB_DATA_ERROR was incorrect (Paul Boekholt).
+26. src/slarray.c: Fixed a bug involving due to an overzealous __tmp
+    optimization involving binary operations between arrays of arrays.
+    Fortunately the bug manifests itself in a useless context.
+27. src/slstring.c: Improved performance of SLang_concat_slstrings
+    function. (Paul Boekholt)
+29. src/slang.c: When adding two strings together, make a direct call
+    to SLang_concat_slstrings avoiding some function call overhead.
+30. src/slmath.c: Added expm1 and log1p functions.
 
 {{{ Previous Versions
 

@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20200
-#define SLANG_VERSION_STRING "pre2.2.0-24"
+#define SLANG_VERSION_STRING "pre2.2.0-30"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -774,6 +774,8 @@ SL_EXTERN int SLclass_typecast (SLtype, int, int);
 #define SLMATH_FLOOR	23
 #define SLMATH_CEIL	24
 #define SLMATH_ROUND	25
+#define SLMATH_EXPM1	26
+#define SLMATH_LOG1P	27
 
 SL_EXTERN int SLclass_add_unary_op (SLtype,
 				 int (*) (int,

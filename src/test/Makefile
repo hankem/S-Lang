@@ -9,8 +9,8 @@ TEST_SCRIPTS_NO_SLC = autoload nspace2 prep
 TEST_SCRIPTS = $(TEST_SCRIPTS_SLC) $(TEST_SCRIPTS_NO_SLC)
 
 TEST_PGM = sltest
-#RUN_TEST_PGM = valgrind --tool=memcheck --leak-check=yes --log-file=log --num-callers=20 ./$(TEST_PGM)
-RUN_TEST_PGM = ./$(TEST_PGM)
+RUN_TEST_PGM = valgrind --tool=memcheck --leak-check=yes --log-file=log --num-callers=20 ./$(TEST_PGM)
+#RUN_TEST_PGM = ./$(TEST_PGM)
 SLANGINC = ..
 SLANGLIB = ../$(ARCH)objs
 OTHERLIBS = -lm

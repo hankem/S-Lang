@@ -3144,10 +3144,11 @@ static int array_binary_op (int op,
    if (NULL == (binary_fun = _pSLclass_get_binary_fun (op, a_cl, b_cl, &c_cl, 1)))
      return -1;
 
+   ct = NULL;
+
    no_init = ((c_cl->cl_class_type == SLANG_CLASS_TYPE_SCALAR)
 	      || (c_cl->cl_class_type == SLANG_CLASS_TYPE_VECTOR));
 
-   ct = NULL;
 #if SLANG_USE_TMP_OPTIMIZATION
    /* If we are dealing with scalar (or vector) objects, and if the object
     * appears to be owned by the stack, then use it instead of creating a 
@@ -3182,14 +3183,24 @@ static int array_binary_op (int op,
 	  return -1;
      }
 
-
+#if SLANG_USE_TMP_OPTIMIZATION
+   if (a_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)ap)->num_refs++;
+   if (b_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)bp)->num_refs++;
+#endif
    if ((na == 0) || (nb == 0)	       /* allow empty arrays */
        || (1 == (*binary_fun) (op, a_type, ap, na, b_type, bp, nb, ct->data)))
      {
 	*(SLang_Array_Type **) cp = ct;
+#if SLANG_USE_TMP_OPTIMIZATION
+	if (a_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)ap)->num_refs--;
+	if (b_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)bp)->num_refs--;
+#endif
 	return 1;
      }
-
+#if SLANG_USE_TMP_OPTIMIZATION
+   if (a_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)ap)->num_refs--;
+   if (b_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)bp)->num_refs--;
+#endif
    SLang_free_array (ct);
    return -1;
 }
