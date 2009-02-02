@@ -3160,14 +3160,16 @@ static int array_binary_op (int op,
      {
 	if ((at != NULL) 
 	    && (at->num_refs == 1)
-	    && (at->data_type == c_cl->cl_data_type))
+	    && (at->data_type == c_cl->cl_data_type)
+	    && (0 == (at->flags & SLARR_DATA_VALUE_IS_READ_ONLY)))
 	  {
 	     ct = at;
 	     ct->num_refs = 2;
 	  }
 	else if ((bt != NULL) 
-	    && (bt->num_refs == 1)
-	    && (bt->data_type == c_cl->cl_data_type))
+		 && (bt->num_refs == 1)
+		 && (bt->data_type == c_cl->cl_data_type)
+		 && (0 == (bt->flags & SLARR_DATA_VALUE_IS_READ_ONLY)))
 	  {
 	     ct = bt;
 	     ct->num_refs = 2;
@@ -3188,7 +3190,7 @@ static int array_binary_op (int op,
 	*(SLang_Array_Type **) cp = ct;
 	return 1;
      }
-	
+
    if (a_cl->cl_inc_ref != NULL)(*a_cl->cl_inc_ref)(a_type, ap, 1);
    if (b_cl->cl_inc_ref != NULL)(*b_cl->cl_inc_ref)(b_type, bp, 1);
    ret = (*binary_fun) (op, a_type, ap, na, b_type, bp, nb, ct->data);
@@ -4204,7 +4206,8 @@ do_array_math_op (int op, int unary_type,
     */
    if (no_init
        && (at->num_refs == 1)
-       && (at->data_type == b_cl->cl_data_type))
+       && (at->data_type == b_cl->cl_data_type)
+       && (0 == (at->flags & SLARR_DATA_VALUE_IS_READ_ONLY)))
      {
 	bt = at;
 	bt->num_refs = 2;

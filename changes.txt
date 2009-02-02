@@ -78,6 +78,9 @@ Changes since 2.1.4
     optimization to binary-strings.
 35. src/slstrops.c: Changed strcpy to memcpy where permissible (Paul
     Boekholt).
+36. src/slarray.c: __tmp optimization of binary optimization was not
+    obeying the READONLY flag.
+37. src/slang.c: __tmp optimization for struct.field OP= value.
 
 {{{ Previous Versions
 

@@ -2125,6 +2125,10 @@ set_struct_lvalue (SLBlock_Type *bc_blk)
 	 */
 	SLang_Object_Type obj_A;
 	SLang_Object_Type obj;
+#if SLANG_USE_TMP_OPTIMIZATION
+	SLang_Class_Type *cl_obj;
+#endif
+	int ret;
 
 	if (-1 == pop_object(&obj_A))
 	  return -1;
@@ -2137,7 +2141,19 @@ set_struct_lvalue (SLBlock_Type *bc_blk)
 	     return -1;
 	  }
 	/* Now the value of A.x is in obj. */
-	if (-1 == perform_lvalue_operation (op, &obj))
+#if SLANG_USE_TMP_OPTIMIZATION
+	/*
+	 * It has at least 2 references: A.x and obj.  Decrement its reference
+	 * to allow for the possibility of __tmp optimization.
+	 */
+	GET_CLASS(cl_obj,obj.o_data_type);
+	INC_REF(cl_obj, obj.o_data_type, &obj.v, -1);
+#endif
+	ret = perform_lvalue_operation (op, &obj);
+#if SLANG_USE_TMP_OPTIMIZATION
+	INC_REF(cl_obj, obj.o_data_type, &obj.v, 1);
+#endif
+	if (ret == -1)
 	  {
 	     SLang_free_object (&obj);
 	     SLang_free_object (&obj_A);

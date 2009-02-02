@@ -68,10 +68,15 @@ if (0 == _eqs (S,T))
 T.c = S;
 S.c = T;
 if (0 == _eqs (S,T))
-  failed ("_eqs(S,T) circular 1");
+  failed ("_eqs(S,T) circular 2");
 T.c = 1;
 S.c = 0;
 
+T.a = [1:10]*1;
+T.a *= 2;
+ifnot (_eqs(T.a, 2*[1:10]))
+  failed ("T.a *= 2 for an array");
+	  
 typedef struct 
 {
    TT_x, TT_y
