@@ -1306,13 +1306,14 @@ int _pSLang_do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *ob
    return do_binary_ab (op, obja, objb);
 }
 
+#define INC_REF(cl,type,addr,dr) \
+   if (cl->cl_inc_ref != NULL) (*cl->cl_inc_ref)(type,addr,dr)
+
 /* _INLINE_ */
 static int do_binary_ab_inc_ref (int op, SLang_Object_Type *obja, SLang_Object_Type *objb)
 {
    int ret;
-#if SLANG_USE_TMP_OPTIMIZATION
-   int inc = 0;
-#endif
+   SLang_Class_Type *cl_a, *cl_b;
    SLtype atype = obja->o_data_type;
    SLtype btype = objb->o_data_type;
 
@@ -1418,24 +1419,13 @@ static int do_binary_ab_inc_ref (int op, SLang_Object_Type *obja, SLang_Object_T
    
 the_hard_way:
 
-#if SLANG_USE_TMP_OPTIMIZATION
-   if (atype == SLANG_ARRAY_TYPE)
-     {
-	inc |= 1;
-	obja->v.array_val->num_refs++;
-     }
-   if (btype == SLANG_ARRAY_TYPE)
-     {
-	inc |= 2;
-	objb->v.array_val->num_refs++;
-     }
-#endif
+   GET_CLASS(cl_a, atype);
+   GET_CLASS(cl_b, btype);
+   INC_REF(cl_a, atype, &obja->v, 1);
+   INC_REF(cl_b, btype, &objb->v, 1);
    ret = do_binary_ab (op, obja, objb);
-
-#if SLANG_USE_TMP_OPTIMIZATION
-   if (inc & 1) obja->v.array_val->num_refs--;
-   if (inc & 2) objb->v.array_val->num_refs--;
-#endif
+   INC_REF(cl_a, atype, &obja->v, -1);
+   INC_REF(cl_b, btype, &objb->v, -1);
 
    return ret;
 }
@@ -1446,10 +1436,7 @@ the_hard_way:
 static int do_binary_ab_inc_ref_assign (int op, SLang_Object_Type *obja, SLang_Object_Type *objb, SLang_Object_Type *objc)
 {
    int ret;
-#if SLANG_USE_TMP_OPTIMIZATION
-   int inc = 0;
-#endif
-   SLang_Class_Type *cl;
+   SLang_Class_Type *cl, *cl_a, *cl_b;
    int c_needs_freed;
    SLtype atype, btype;
 
@@ -1611,24 +1598,13 @@ static int do_binary_ab_inc_ref_assign (int op, SLang_Object_Type *obja, SLang_O
 
 the_hard_way:
 
-#if SLANG_USE_TMP_OPTIMIZATION
-   if (atype == SLANG_ARRAY_TYPE)
-     {
-	inc |= 1;
-	obja->v.array_val->num_refs++;
-     }
-   if (btype == SLANG_ARRAY_TYPE)
-     {
-	inc |= 2;
-	objb->v.array_val->num_refs++;
-     }
-#endif
+   GET_CLASS(cl_a, atype);
+   GET_CLASS(cl_b, btype);
+   INC_REF(cl_a, atype, &obja->v, 1);
+   INC_REF(cl_b, btype, &objb->v, 1);
    ret = do_binary_ab (op, obja, objb);
-
-#if SLANG_USE_TMP_OPTIMIZATION
-   if (inc & 1) obja->v.array_val->num_refs--;
-   if (inc & 2) objb->v.array_val->num_refs--;
-#endif
+   INC_REF(cl_b, btype, &objb->v, -1);
+   INC_REF(cl_a, atype, &obja->v, -1);
 
    the_return:
 
@@ -1737,7 +1713,7 @@ static int do_binary_b (int op, SLang_Object_Type *bp)
 static void do_binary_b_inc_ref (int op, SLang_Object_Type *objbp)
 {
    SLang_Object_Type obja;
-   SLang_Class_Type *cl;
+   SLang_Class_Type *cl_a, *cl_b;
    SLang_Object_Type *objap;
    SLtype atype, btype;
 
@@ -1870,20 +1846,15 @@ the_hard_way:
    if (-1 == pop_object (&obja))
      return;
 
-#if SLANG_USE_TMP_OPTIMIZATION
-   if (btype == SLANG_ARRAY_TYPE)
-     {
-	objbp->v.array_val->num_refs++;
-	(void) do_binary_ab (op, &obja, objbp);
-	objbp->v.array_val->num_refs--;
-     }
-   else
-#endif
-     (void) do_binary_ab (op, &obja, objbp);
+   GET_CLASS(cl_a, obja.o_data_type);
+   GET_CLASS(cl_b, btype);
 
-   GET_CLASS(cl, obja.o_data_type);
-   if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
-     free_object (&obja, cl);
+   INC_REF(cl_b, btype, &objbp->v, 1);
+   (void) do_binary_ab (op, &obja, objbp);
+   INC_REF(cl_b, btype, &objbp->v, -1);
+
+   if (SLANG_CLASS_TYPE_SCALAR != cl_a->cl_class_type)
+     free_object (&obja, cl_a);
 }
 #endif
 
@@ -1957,16 +1928,41 @@ static int do_assignment_binary (int op, SLang_Object_Type *obja_ptr)
 {
    SLang_Object_Type objb;
 #if SLANG_OPTIMIZE_FOR_SPEED
+   SLtype btype;
    SLang_Class_Type *cl;
 #endif
    int ret;
 
    if (pop_object(&objb))
      return -1;
+#if SLANG_OPTIMIZE_FOR_SPEED
+   btype = objb.o_data_type;
+#endif
+
+#if 0 && SLANG_OPTIMIZE_FOR_SPEED
+   if (op == SLANG_PLUS)
+     {
+	if (obja_ptr->o_data_type == SLANG_BSTRING_TYPE)
+	  {
+	     if (btype == SLANG_BSTRING_TYPE)
+	       {
+		  ret = _pSLbstring_concat_bstr (obja_ptr, (SLang_BString_Type*)objb.v.ptr_val);
+		  SLbstring_free ((SLang_BString_Type *) objb.v.ptr_val);
+		  return ret;
+	       }
+	     if (btype == SLANG_STRING_TYPE)
+	       {
+		  ret = _pSLbstring_concat_str (obja_ptr, objb.v.s_val);
+		  _pSLang_free_slstring (objb.v.s_val);
+		  return ret;
+	       }
+	  }
+     }
+#endif
 
    ret = do_binary_ab (op, obja_ptr, &objb);
 #if SLANG_OPTIMIZE_FOR_SPEED
-   GET_CLASS(cl, objb.o_data_type);
+   GET_CLASS(cl, btype);
    if (SLANG_CLASS_TYPE_SCALAR != cl->cl_class_type)
      free_object (&objb, cl);
 #else
@@ -1979,7 +1975,7 @@ static int do_assignment_binary (int op, SLang_Object_Type *obja_ptr)
  * defined in slang.h
  */
 static int
-map_assignment_op_to_binary (SLtype op_type, int *op, int *is_unary)
+map_assignment_op_to_binary (int op_type, int *op, int *is_unary)
 {
    *is_unary = 0;
    switch (op_type)

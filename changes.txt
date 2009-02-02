@@ -65,6 +65,19 @@ Changes since 2.1.4
 29. src/slang.c: When adding two strings together, make a direct call
     to SLang_concat_slstrings avoiding some function call overhead.
 30. src/slmath.c: Added expm1 and log1p functions.
+31. src/slmath.c: If hypot is passed a single array X, then it will
+    compute sqrt(sumsq(X)), which is useful for computing the norm of
+    a vector represented by X.
+32. src/slarith.c: Changed the default floating point format to %S,
+    which means that the floating point number will be formatted in a
+    slang specific way to preserve the precision of the number such
+    that x == atof (string(x)).
+33. src/slarray.c: Passing an object to size_t to SLmalloc was
+    resulting in a SEGV on 64 bit systems.
+34. src/slbstring.c,slang.c: Small modifications to generalize the __tmp
+    optimization to binary-strings.
+35. src/slstrops.c: Changed strcpy to memcpy where permissible (Paul
+    Boekholt).
 
 {{{ Previous Versions
 

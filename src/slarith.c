@@ -907,19 +907,60 @@ static int float_pop (SLtype unused, VOID_STAR ptr)
 
 #if SLANG_HAS_FLOAT
 static char Double_Format[16] = "%g";
-
+static char *Double_Format_Ptr = NULL;
 void _pSLset_double_format (SLCONST char *s)
 {
+   if (*s != '%')
+     return;
+   if ((s[1] == 'S') || (s[1] == 's'))
+     {
+	Double_Format_Ptr = NULL;
+	return;
+     }
+
    if (strlen (s) >= sizeof (Double_Format))
      return;
 
    strcpy (Double_Format, s);
+   Double_Format_Ptr = Double_Format;
 }
 
 SLCONST char *_pSLget_double_format (void)
 {
-   return Double_Format;
+   if (Double_Format_Ptr == NULL)
+     return "%S";
+   
+   return Double_Format_Ptr;
 }
+
+static void default_format_double (double x, char *buf, unsigned int buflen)
+{
+   if (EOF == SLsnprintf (buf, buflen, "%.16g", x))
+     {
+	sprintf (buf, "%e", x);
+	return;
+     }
+   if (atof (buf) == x)
+     return;
+
+   if (EOF == SLsnprintf (buf, buflen, "%.17g", x))
+     sprintf (buf, "%e", x);
+}
+
+static void default_format_float (float x, char *buf, unsigned int buflen)
+{
+   if (EOF == SLsnprintf (buf, buflen, "%.8g", x))
+     {
+	sprintf (buf, "%e", x);
+	return;
+     }
+   if ((float) atof (buf) == x)
+     return;
+
+   if (EOF == SLsnprintf (buf, buflen, "%.9g", x))
+     sprintf (buf, "%e", x);
+}
+
 #endif
 
 static char *arith_string (SLtype type, VOID_STAR v)
@@ -969,11 +1010,15 @@ static char *arith_string (SLtype type, VOID_STAR v)
 #endif
 #if SLANG_HAS_FLOAT
       case SLANG_FLOAT_TYPE:
-	if (EOF == SLsnprintf (buf, sizeof (buf), Double_Format, *(float *) v))
+	if (Double_Format_Ptr == NULL)
+	  default_format_float (*(float *)v, buf, sizeof(buf));
+	else if (EOF == SLsnprintf (buf, sizeof (buf), Double_Format, *(float *) v))
 	  sprintf (s, "%e", *(float *) v);
 	break;
       case SLANG_DOUBLE_TYPE:
-	if (EOF == SLsnprintf (buf, sizeof (buf), Double_Format, *(double *) v))
+	if (Double_Format_Ptr == NULL)
+	  default_format_double (*(double *)v, buf, sizeof(buf));
+	else if (EOF == SLsnprintf (buf, sizeof (buf), Double_Format, *(double *) v))
 	  sprintf (s, "%e", *(double *) v);
 	break;
 #endif

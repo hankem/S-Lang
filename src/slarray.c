@@ -308,7 +308,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
    SLang_Array_Type *at;
    SLuindex_Type i, num_elements;
    size_t sizeof_type;
-   size_t size;
+   unsigned int size;
 
    if (num_dims > SLARRAY_MAX_DIMS)
      {
@@ -367,7 +367,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
 	return at;
      }
 
-   size = (size_t) (num_elements * sizeof_type);
+   size = (unsigned int) (num_elements * sizeof_type);
    if (size/sizeof_type != num_elements)
      {
 	_pSLang_verror (SL_INVALID_PARM, "Unable to create array of the desired size");
@@ -3050,7 +3050,7 @@ static int array_binary_op (int op,
 		      SLtype, VOID_STAR, unsigned int,
 		      VOID_STAR);
    SLang_Class_Type *a_cl, *b_cl, *c_cl;
-   int no_init;
+   int no_init, ret;
 
    if (a_type == SLANG_ARRAY_TYPE)
      {
@@ -3183,24 +3183,24 @@ static int array_binary_op (int op,
 	  return -1;
      }
 
-#if SLANG_USE_TMP_OPTIMIZATION
-   if (a_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)ap)->num_refs++;
-   if (b_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)bp)->num_refs++;
-#endif
-   if ((na == 0) || (nb == 0)	       /* allow empty arrays */
-       || (1 == (*binary_fun) (op, a_type, ap, na, b_type, bp, nb, ct->data)))
+   if ((na == 0) || (nb == 0))	       /* allow empty arrays */
      {
 	*(SLang_Array_Type **) cp = ct;
-#if SLANG_USE_TMP_OPTIMIZATION
-	if (a_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)ap)->num_refs--;
-	if (b_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)bp)->num_refs--;
-#endif
 	return 1;
      }
-#if SLANG_USE_TMP_OPTIMIZATION
-   if (a_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)ap)->num_refs--;
-   if (b_type == SLANG_ARRAY_TYPE) (*(SLang_Array_Type**)bp)->num_refs--;
-#endif
+	
+   if (a_cl->cl_inc_ref != NULL)(*a_cl->cl_inc_ref)(a_type, ap, 1);
+   if (b_cl->cl_inc_ref != NULL)(*b_cl->cl_inc_ref)(b_type, bp, 1);
+   ret = (*binary_fun) (op, a_type, ap, na, b_type, bp, nb, ct->data);
+   if (a_cl->cl_inc_ref != NULL)(*a_cl->cl_inc_ref)(a_type, ap, -1);
+   if (b_cl->cl_inc_ref != NULL)(*b_cl->cl_inc_ref)(b_type, bp, -1);
+
+   if (ret == 1)
+     {
+	*(SLang_Array_Type **) cp = ct;
+	return 1;
+     }
+
    SLang_free_array (ct);
    return -1;
 }
@@ -4494,6 +4494,12 @@ static int array_length (SLtype type, VOID_STAR v, unsigned int *len)
    return 0;
 }
 
+static void array_inc_ref (SLtype type, VOID_STAR v, int dr)
+{
+   (void) type;
+   (*(SLang_Array_Type **) v)->num_refs += dr;
+}
+
 int
 _pSLarray_init_slarray (void)
 {
@@ -4513,6 +4519,7 @@ _pSLarray_init_slarray (void)
    cl->cl_datatype_deref = array_datatype_deref;
    cl->cl_length = array_length;
    cl->is_container = 1;
+   cl->cl_inc_ref = array_inc_ref;
 
    (void) SLclass_set_eqs_function (cl, array_eqs_method);
 

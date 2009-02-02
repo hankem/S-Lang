@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
+Copyright (C) 2004-2009 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -28,10 +28,13 @@ struct _pSLang_BString_Type
 {
    unsigned int num_refs;
    unsigned int len;
+#define BSTRING_EXTRA_BYTES(len)	(32+(len)/10)
+   unsigned int malloced_len;
    int ptr_type;
-#define IS_SLSTRING		1
-#define IS_MALLOCED		2
-#define IS_NOT_TO_BE_FREED	3
+#define IS_BSTRING		0      /* uses bytes field */
+#define IS_SLSTRING		1      /* uses ptr */
+#define IS_MALLOCED		2      /* uses ptr */
+#define IS_NOT_TO_BE_FREED	3      /* uses ptr */
    union
      {
 	unsigned char bytes[1];
@@ -40,27 +43,41 @@ struct _pSLang_BString_Type
    v;
 };
 
-#define BS_GET_POINTER(b) ((b)->ptr_type ? (b)->v.ptr : (b)->v.bytes)
+#define BS_GET_POINTER(b) \
+   (((b)->ptr_type != IS_BSTRING) ? (b)->v.ptr : (b)->v.bytes)
 
 static SLang_BString_Type *create_bstring_of_type (char *bytes, unsigned int len, int type)
 {
    SLang_BString_Type *b;
    unsigned int size;
+   unsigned int malloced_len = len;
 
    size = sizeof(SLang_BString_Type);
-   if (type == 0)
-     size += len;
+   if (type == IS_BSTRING)
+     {
+	unsigned int dlen = BSTRING_EXTRA_BYTES(len);
+	malloced_len = len + dlen;
+	if ((malloced_len < len)
+	    || (size + malloced_len < size))
+	  {
+	     SLang_verror (SL_Malloc_Error, "Unable to create a binary string of the desired size");
+	     return NULL;
+	  }
+	size += malloced_len;
+     }
 
    if (NULL == (b = (SLang_BString_Type *)SLmalloc (size)))
      return NULL;
 
    b->len = len;
+   b->malloced_len = malloced_len;
    b->num_refs = 1;
    b->ptr_type = type;
 
    switch (type)
      {
-      case 0:
+      default:
+      case IS_BSTRING:
 	if (bytes != NULL) memcpy ((char *) b->v.bytes, bytes, len);
 	/* Now \0 terminate it because we want to also use it as a C string
 	 * whenever possible.  Note that sizeof(SLang_BString_Type) includes
@@ -91,7 +108,7 @@ static SLang_BString_Type *create_bstring_of_type (char *bytes, unsigned int len
 SLang_BString_Type *
 SLbstring_create (unsigned char *bytes, unsigned int len)
 {
-   return create_bstring_of_type ((char *)bytes, len, 0);
+   return create_bstring_of_type ((char *)bytes, len, IS_BSTRING);
 }
 
 /* Note that ptr must be len + 1 bytes long for \0 termination */
@@ -151,7 +168,7 @@ void SLbstring_free (SLang_BString_Type *b)
 
    switch (b->ptr_type)
      {
-      case 0:
+      case IS_BSTRING:
       case IS_NOT_TO_BE_FREED:
       default:
 	break;
@@ -243,6 +260,20 @@ concat_bstrings (SLang_BString_Type *a, SLang_BString_Type *b)
 
    len = a->len + b->len;
 
+#if SLANG_USE_TMP_OPTIMIZATION
+   if ((a->num_refs == 1)	       /* owned by stack */
+       && (a->ptr_type == IS_BSTRING)
+       && (len <= a->malloced_len))
+     {
+	bytes = (char *)a->v.bytes;
+	memcpy (bytes + a->len, (char *)BS_GET_POINTER(b), b->len);
+	bytes[len] = 0;		       /* ok to \0 terminate --- see above */
+	a->len = len;
+	a->num_refs++;
+	return a;
+     }
+#endif
+
    if (NULL == (c = SLbstring_create (NULL, len)))
      return NULL;
 
@@ -250,6 +281,7 @@ concat_bstrings (SLang_BString_Type *a, SLang_BString_Type *b)
 
    memcpy (bytes, (char *)BS_GET_POINTER(a), a->len);
    memcpy (bytes + a->len, (char *)BS_GET_POINTER(b), b->len);
+   bytes[len] = 0;
 
    return c;
 }
@@ -741,6 +773,12 @@ int _pSLbstring_foreach (SLtype type, SLang_Foreach_Context_Type *c)
    return 1;
 }
 
+static void bstring_inc_ref (SLtype type, VOID_STAR ptr, int dr)
+{
+   (void) type;
+   (*(SLang_BString_Type **) ptr)->num_refs += dr;
+}
+
 int _pSLang_init_bstring (void)
 {
    SLang_Class_Type *cl;
@@ -750,6 +788,7 @@ int _pSLang_init_bstring (void)
    (void) SLclass_set_destroy_function (cl, bstring_destroy);
    (void) SLclass_set_push_function (cl, bstring_push);
    (void) SLclass_set_string_function (cl, bstring_string);
+   cl->cl_inc_ref = bstring_inc_ref;
 
    if (-1 == SLclass_register_class (cl, SLANG_BSTRING_TYPE, sizeof (char *),
 				     SLANG_CLASS_TYPE_PTR))
@@ -765,7 +804,7 @@ int _pSLang_init_bstring (void)
    cl->cl_foreach_open = _pSLbstring_foreach_open;
    cl->cl_foreach_close = _pSLbstring_foreach_close;
    cl->cl_foreach = _pSLbstring_foreach;
-
+   
    if (-1 == SLadd_intrin_fun_table (BString_Table, NULL))
      return -1;
 

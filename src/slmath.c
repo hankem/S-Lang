@@ -1131,7 +1131,76 @@ static int do_binary_function (double (*f)(double, double))
 
 static void hypot_fun (void)
 {
-   (void) do_binary_function (SLmath_hypot);
+   Array_Or_Scalar_Type ast;
+   unsigned int num;
+
+   if (SLang_Num_Function_Args == 2)
+     {
+	(void) do_binary_function (SLmath_hypot);
+	return;
+     }
+   if (-1 == pop_array_or_scalar (&ast))
+     return;
+
+   if (0 == (num = ast.num))
+     {
+	SLang_verror (SL_InvalidParm_Error, "An empty array was passed to hypot");
+	free_array_or_scalar (&ast);
+	return;
+     }
+
+   if (ast.is_float)
+     {
+	float *f = ast.fptr;
+	double sum, esum, max;
+	unsigned int i;
+
+	max = fabs((double)*f);
+	
+	for (i = 1; i < num; i++)
+	  {
+	     double max1 = fabs((double)f[i]);
+	     if (max1 > max) max  = max1;
+	  }
+	sum = 0.0; esum = 0.0;
+	if (max > 0.0) for (i = 0; i < num; i++)
+	  {
+	     double term = f[i]/max;
+	     double new_sum;
+	     
+	     term = term*term;
+	     new_sum = sum + term;
+	     esum += term - (new_sum-sum);
+	     sum = new_sum;
+	  }
+	(void) SLang_push_float ((float) max*sqrt(sum+esum));
+     }
+   else
+     {
+	unsigned int i;
+	double *d = ast.dptr;
+	double sum, esum, max;
+	max = fabs(*d);
+	
+	for (i = 1; i < num; i++)
+	  {
+	     double max1 = fabs(d[i]);
+	     if (max1 > max) max  = max1;
+	  }
+	sum = 0.0; esum = 0.0;
+	if (max > 0.0) for (i = 0; i < num; i++)
+	  {
+	     double term = d[i]/max;
+	     double new_sum;
+	     
+	     term = term*term;
+	     new_sum = sum + term;
+	     esum += term - (new_sum-sum);
+	     sum = new_sum;
+	  }
+	(void) SLang_push_double (max*sqrt(sum+esum));
+     }
+   free_array_or_scalar (&ast);
 }
 
 static void atan2_fun (void)

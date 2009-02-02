@@ -889,6 +889,8 @@ struct _pSLang_Class_Type
    
    int (*cl_cmp)(SLtype, VOID_STAR, VOID_STAR, int *);   
    int (*cl_eqs)(SLtype, VOID_STAR, SLtype, VOID_STAR);
+   
+   void (*cl_inc_ref)(SLtype, VOID_STAR, int);
    SL_OOBinary_Type *cl_void_binary_this;
    SL_OOBinary_Type *cl_this_binary_void;
 

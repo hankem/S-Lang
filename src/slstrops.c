@@ -194,9 +194,11 @@ static void strcat_cmd (void) /*{{{*/
    c1 = c;
    for (i = 0; i < nargs; i++)
      {
-	strcpy (c1, ptrs[i]);
-	c1 += _pSLstring_bytelen (ptrs[i]);   /* c1 does not take advantage of the slstring cache */
+	unsigned int len2 = _pSLstring_bytelen (ptrs[i]);
+	memcpy (c1, ptrs[i], len2);
+	c1 += len2; /* c1 does not take advantage of the slstring cache */
      }
+   *c1 = 0;
 
    free_and_return:
    for (i = 0; i < nargs; i++)
@@ -403,14 +405,14 @@ static int str_replace_cmd_1 (char *orig, char *match, char *rep, unsigned int m
 
 	next_s = strstr (s, match);    /* cannot be NULL */
 	len = (unsigned int) (next_s - s);
-	strncpy (t, s, len);
+	memcpy (t, s, len);
 	t += len;
-	strcpy (t, rep);
+	memcpy (t, rep, rep_len);
 	t += rep_len;
 	
 	s = next_s + match_len;
      }
-   strcpy (t, s);
+   strcpy (t, s);		       /* will \0 terminate t */
    *new_strp = new_str;
 
    return (int) num_replaces;
@@ -1872,12 +1874,15 @@ static char *create_delimited_string (char **list, unsigned int n,
 	
    while (num > 1)
      {
+	unsigned int len2;
+
 	while (list[i] == NULL)
 	  i++;
-	
-	strcpy (s, list[i]);
-	s += strlen (list[i]);
-	strcpy (s, delim);
+
+	len2 = strlen (list[i]);
+	memcpy (s, list[i], len2);
+	s += len2;
+	strcpy (s, delim);	       /* \0 terminates s */
 	s += dlen;
 	i++;
 	num--;

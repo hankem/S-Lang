@@ -457,7 +457,7 @@
 \seealso{cumsum, sumsq, transpose, reshape}
 \done
 
-\function{sum}
+\function{sumsq}
 \synopsis{Sum over the squares of the elements of an array}
 \usage{result = sumsq (Array_Type a [, Int_Type dim])}
 \description
@@ -473,7 +473,7 @@
   
   For complex arrays, the sum will be over the squares of the moduli of
   the complex elements.
-\seealso{cumsum, sumsq, transpose, reshape}
+\seealso{cumsum, sumsq, hypot, transpose, reshape}
 \done
 
 \function{transpose}
