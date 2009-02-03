@@ -85,6 +85,7 @@ Changes since 2.1.4
     will always print the decimal point or exponent.
 39. src/slmisc.c, sltoken.c: Added parser checks for overflows of
     literal integer constants.
+40. src/slarith.c: Change #38 resulted in decimal points in inf and nan.
 
 {{{ Previous Versions
 

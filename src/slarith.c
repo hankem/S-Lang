@@ -44,6 +44,8 @@ USA.
 # endif
 #endif
 
+#include <ctype.h>
+
 #include "slang.h"
 #include "_slang.h"
 
@@ -941,12 +943,17 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
    while (1)
      {
 	ch = *buf;
+	if (isdigit (ch))
+	  {
+	     buf++;
+	     continue;
+	  }
 	if (ch == 0)
-	  break;
-	if ((ch == 'e') || (ch == '.'))
-	  return;
-	buf++;
+	  break;		       /* all digits */
+
+	return;			       /* something els */
      }
+
    if (buf + 3 >= bufmax)
      {
 	sprintf (buf, "%e", x);
