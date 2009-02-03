@@ -22,11 +22,21 @@ USA.
 #define _GNU_SOURCE
 #include "slinclud.h"
 
+#include <limits.h>
 #include <ctype.h>
 
 #include "slang.h"
 #include "_slang.h"
 
+#ifndef ULONG_MAX
+# define ULONG_MAX ((unsigned long)-1L)
+#endif
+
+#ifdef HAVE_LONG_LONG
+# ifndef ULLONG_MAX
+#  define ULLONG_MAX ((unsigned long long)-1LL)
+# endif
+#endif
 
 char *SLmake_string (SLFUTURE_CONST char *str)
 {
@@ -533,6 +543,8 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
    unsigned long value;
    int base;
    unsigned int num_processed;
+   unsigned long max_value_before_overflow;
+   unsigned long max_ch1_before_overflow;
 
    num_processed = 0;
    if (*s != '0')
@@ -559,6 +571,8 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 	  }
      }
 
+   max_value_before_overflow = ULONG_MAX/base;
+   max_ch1_before_overflow = ULONG_MAX - (base*max_value_before_overflow);
    value = 0;
    while ((ch = *s++) != 0)
      {
@@ -613,8 +627,18 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 	     ch1 = (ch1 - 'a') + 10;
 	     break;
 	  }
-	value = value * base + ch1;
 	num_processed++;
+
+	if ((value < max_value_before_overflow)
+	    || ((value == max_value_before_overflow)
+		&& ((unsigned long)ch1 <= max_ch1_before_overflow)))
+	  {
+	     value = value * base + (unsigned long)ch1;
+	     continue;
+	  }
+
+	_pSLang_verror (SL_SYNTAX_ERROR, "Integer overflow detected: too many digits");
+	return -1;
      }
    *ul = value;
    return 0;
@@ -625,6 +649,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 {
    unsigned char ch;
    unsigned long long value;
+   unsigned long long max_value_before_overflow, max_ch1_before_overflow;
    int base;
 
    if (*s != '0')
@@ -647,10 +672,15 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 	else base = 8;
      }
 
+   
    value = 0;
+   max_value_before_overflow = ULLONG_MAX/base;
+   max_ch1_before_overflow = ULLONG_MAX - base*max_value_before_overflow;
+
    while ((ch = *s++) != 0)
      {
 	char ch1 = ch | 0x20;
+
 	switch (ch1)
 	  {
 	   default:
@@ -695,7 +725,16 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 	     ch1 = (ch1 - 'a') + 10;
 	     break;
 	  }
-	value = value * base + ch1;
+
+	if ((value < max_value_before_overflow)
+	    || ((value == max_value_before_overflow)
+		&& ((unsigned long long)ch1 <= max_ch1_before_overflow)))
+	  {
+	     value = value * base + (unsigned long long)ch1;
+	     continue;
+	  }
+	_pSLang_verror (SL_SYNTAX_ERROR, "Integer overflow detected: too many digits");
+	return -1;
      }
    *ul = value;
    return 0;

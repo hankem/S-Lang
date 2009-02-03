@@ -549,10 +549,88 @@ static int get_ident_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned 
    return _pSLtoken_init_slstring_token (tok, IDENT_TOKEN, (char *) s, len);
 }
 
+/* In these two routines, if check_overflow==1, then do not check for sign errors.
+ * If it is 2, then check for bother overflow and the sign.
+ */
+static int str_to_signed_constant (unsigned char *s, SLtype stype, _pSLtok_Type ttype, 
+				   _pSLang_Token_Type *tok, int check_overflow)
+{
+   long lval = SLatol (s);
+   long ival;
+
+   tok->v.long_val = lval;
+   if (check_overflow == 0)
+     return tok->type = ttype;
+
+   switch (stype)
+     {
+      case SLANG_CHAR_TYPE:
+	ival = (long)(char) lval;
+	break;
+      case SLANG_SHORT_TYPE:
+	ival = (long)(short) lval;
+	break;
+      case SLANG_INT_TYPE:
+	ival = (long)(int) lval;
+	break;
+      default:
+	ival = lval;
+     }
+   
+   if (ival == lval)
+     {
+	if ((check_overflow == 1)
+	    || ((lval >= 0) && (*s != '-'))
+	    || ((lval < 0) && (*s == '-')))
+	  return tok->type = ttype;
+     }
+
+   SLang_verror (SL_SYNTAX_ERROR, "Literal integer constant is too large for %s", SLclass_get_datatype_name(stype));
+   return tok->type = EOF_TOKEN;
+}
+
+static int str_to_unsigned_constant (unsigned char *s, SLtype stype, _pSLtok_Type ttype,
+				     _pSLang_Token_Type *tok, int check_overflow)
+{
+   unsigned long lval = SLatoul (s);
+   unsigned long ival;
+
+   tok->v.long_val = (long) lval;
+   if (check_overflow == 0)
+     return tok->type = ttype;
+
+   switch (stype)
+     {
+      case SLANG_CHAR_TYPE:
+	ival = (unsigned long)(unsigned char) lval;
+	break;
+      case SLANG_SHORT_TYPE:
+	ival = (unsigned long)(unsigned short) lval;
+	break;
+      case SLANG_INT_TYPE:
+	ival = (unsigned long)(unsigned int) lval;
+	break;
+      default:
+	ival = lval;
+     }
+   
+   if (ival == lval)
+     {
+	if ((check_overflow == 1) 
+	    || (*s != '-'))
+	  return tok->type = ttype;
+     }
+
+   SLang_verror (SL_SYNTAX_ERROR, "Literal unsigned integer constant is too large for %s", SLclass_get_datatype_name(stype));
+   return tok->type = EOF_TOKEN;
+}
+
 static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned int len)
 {
    unsigned char ch;
    unsigned char type;
+   int check_overflow;
+   int is_hex = 0;
 
    /* Look for pattern  [0-9.xX]*([eE][-+]?[digits])?[ijfhul]? */
    while (1)
@@ -575,6 +653,7 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 		  type = CHAR_CLASS (ch);
 	       }
 	     while ((type == DIGIT_CHAR) || (type == ALPHA_CHAR));
+	     is_hex=1;
 	     break;
 	  }
 	if (len == (MAX_TOKEN_LEN - 1))
@@ -606,6 +685,9 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 	     ch = prep_get_char ();
 	  }
      }
+   
+   check_overflow = 2;
+   if (is_hex) check_overflow = 1;
 
    while (ALPHA_CHAR == type)
      {
@@ -638,29 +720,29 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 	return _pSLtoken_init_slstring_token (tok, COMPLEX_TOKEN, (char *)s, len);
 #endif
       case SLANG_CHAR_TYPE:
-	tok->v.long_val = (char)SLatol (s);
-	return tok->type = CHAR_TOKEN;
+	return str_to_signed_constant (s, SLANG_CHAR_TYPE, CHAR_TOKEN, tok, check_overflow);
+
       case SLANG_UCHAR_TYPE:
-	tok->v.long_val = (unsigned char)SLatol (s);
-	return tok->type = UCHAR_TOKEN;
+	return str_to_unsigned_constant (s, SLANG_UCHAR_TYPE, UCHAR_TOKEN, tok, check_overflow);
+
       case SLANG_SHORT_TYPE:
-	tok->v.long_val = (short)SLatol (s);
-	return tok->type = SHORT_TOKEN;
+	return str_to_signed_constant (s, SLANG_SHORT_TYPE, SHORT_TOKEN, tok, check_overflow);
+
       case SLANG_USHORT_TYPE:
-	tok->v.long_val = (unsigned short)SLatoul (s);
-	return tok->type = USHORT_TOKEN;
+	return str_to_unsigned_constant (s, SLANG_USHORT_TYPE, USHORT_TOKEN, tok, check_overflow);
+
       case SLANG_INT_TYPE:
-	tok->v.long_val = (int)SLatol (s);
-	return tok->type = INT_TOKEN;
+	return str_to_signed_constant (s, SLANG_INT_TYPE, INT_TOKEN, tok, check_overflow);
+
       case SLANG_UINT_TYPE:
-	tok->v.long_val = (unsigned int)SLatoul (s);
-	return tok->type = UINT_TOKEN;
+	return str_to_unsigned_constant (s, SLANG_UINT_TYPE, UINT_TOKEN, tok, check_overflow);
+
       case SLANG_LONG_TYPE:
-	tok->v.long_val = SLatol (s);
-	return tok->type = LONG_TOKEN;
+	return str_to_signed_constant (s, SLANG_LONG_TYPE, LONG_TOKEN, tok, check_overflow);
+
       case SLANG_ULONG_TYPE:
-	tok->v.long_val = SLatoul (s);
-	return tok->type = ULONG_TOKEN;
+	return str_to_unsigned_constant (s, SLANG_ULONG_TYPE, ULONG_TOKEN, tok, check_overflow);
+
 #ifdef HAVE_LONG_LONG
       case SLANG_LLONG_TYPE:
 	tok->v.llong_val = SLatoll (s);

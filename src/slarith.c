@@ -933,6 +933,30 @@ SLCONST char *_pSLget_double_format (void)
    return Double_Format_Ptr;
 }
 
+static void check_decimal (char *buf, unsigned int buflen, double x)
+{
+   char *bufmax = buf + buflen;
+   char ch;
+
+   while (1)
+     {
+	ch = *buf;
+	if (ch == 0)
+	  break;
+	if ((ch == 'e') || (ch == '.'))
+	  return;
+	buf++;
+     }
+   if (buf + 3 >= bufmax)
+     {
+	sprintf (buf, "%e", x);
+	return;
+     }
+   *buf++ = '.';
+   *buf++ = '0';
+   *buf = 0;
+}
+	
 static void default_format_double (double x, char *buf, unsigned int buflen)
 {
    if (EOF == SLsnprintf (buf, buflen, "%.16g", x))
@@ -940,11 +964,17 @@ static void default_format_double (double x, char *buf, unsigned int buflen)
 	sprintf (buf, "%e", x);
 	return;
      }
-   if (atof (buf) == x)
-     return;
 
-   if (EOF == SLsnprintf (buf, buflen, "%.17g", x))
-     sprintf (buf, "%e", x);
+   if (atof (buf) != x)
+     {
+	if (EOF == SLsnprintf (buf, buflen, "%.17g", x))
+	  {
+	     sprintf (buf, "%e", x);
+	     return;
+	  }
+     }
+   
+   check_decimal (buf, buflen, x);
 }
 
 static void default_format_float (float x, char *buf, unsigned int buflen)
@@ -954,13 +984,16 @@ static void default_format_float (float x, char *buf, unsigned int buflen)
 	sprintf (buf, "%e", x);
 	return;
      }
-   if ((float) atof (buf) == x)
-     return;
-
-   if (EOF == SLsnprintf (buf, buflen, "%.9g", x))
-     sprintf (buf, "%e", x);
+   if ((float) atof (buf) != x)
+     {
+	if (EOF == SLsnprintf (buf, buflen, "%.9g", x))
+	  {
+	     sprintf (buf, "%e", x);
+	     return;
+	  }
+     }
+   check_decimal (buf, buflen, x);
 }
-
 #endif
 
 static char *arith_string (SLtype type, VOID_STAR v)

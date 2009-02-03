@@ -81,6 +81,10 @@ Changes since 2.1.4
 36. src/slarray.c: __tmp optimization of binary optimization was not
     obeying the READONLY flag.
 37. src/slang.c: __tmp optimization for struct.field OP= value.
+38. src/slarith.c: For floating point types, the %S format specified
+    will always print the decimal point or exponent.
+39. src/slmisc.c, sltoken.c: Added parser checks for overflows of
+    literal integer constants.
 
 {{{ Previous Versions
 
