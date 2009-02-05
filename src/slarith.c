@@ -910,21 +910,69 @@ static int float_pop (SLtype unused, VOID_STAR ptr)
 #if SLANG_HAS_FLOAT
 static char Double_Format[16] = "%g";
 static char *Double_Format_Ptr = NULL;
-void _pSLset_double_format (SLCONST char *s)
+static unsigned int Double_Format_Expon_Threshold = 6;
+
+void _pSLset_double_format (SLCONST char *fmt)
 {
-   if (*s != '%')
+   /* The only forms accepted by this function are:
+    * "%[+ ][width][.precision][efgS]"
+    */
+   SLCONST char *s = fmt;
+   int precision = 6;
+
+   if (*s++ != '%')
      return;
-   if ((s[1] == 'S') || (s[1] == 's'))
+   
+   /* 0 or more flags */
+   while ((*s == '#') || (*s == '0') || (*s == '-') 
+	  || (*s == ' ') || (*s == '+'))
+     s++;
+
+   /* field width */
+   while (isdigit (*s)) s++;
+   
+   /* precision */
+   if (*s == '.')
      {
+	s++;
+	precision = 0;
+	while (isdigit (*s))
+	  {
+	     precision = precision * 10 + (*s - '0');
+	     s++;
+	  }
+	if (precision < 0)
+	  precision = 6;
+     }
+
+   if ((*s == 'e') || (*s == 'E')
+       || (*s == 'f') || (*s == 'F')
+       || (*s == 'g') || (*s == 'G'))
+     {
+	s++;
+	if (*s != 0)
+	  return;		       /* more junk-- unacceptable */
+
+	if (strlen (fmt) >= sizeof (Double_Format))
+	  return;
+
+	strcpy (Double_Format, fmt);
+	Double_Format_Ptr = Double_Format;
+	return;
+     }
+   
+   if ((*s == 'S') || (*s == 's'))
+     {
+	s++;
+	if (*s != 0)
+	  return;
+
 	Double_Format_Ptr = NULL;
+	Double_Format_Expon_Threshold = precision;
 	return;
      }
 
-   if (strlen (s) >= sizeof (Double_Format))
-     return;
-
-   strcpy (Double_Format, s);
-   Double_Format_Ptr = Double_Format;
+   /* error */
 }
 
 SLCONST char *_pSLget_double_format (void)
@@ -937,31 +985,82 @@ SLCONST char *_pSLget_double_format (void)
 
 static void check_decimal (char *buf, unsigned int buflen, double x)
 {
-   char *bufmax = buf + buflen;
+   char *b, *bstart = buf, *bufmax = buf + buflen;
    char ch;
+   unsigned int count = 0, expon;
+   int has_point = 0;
+   unsigned int expon_threshold = Double_Format_Expon_Threshold;
 
+   if (*bstart == '-')
+     bstart++;
+
+   b = bstart;
    while (1)
      {
-	ch = *buf;
+	ch = *b;
 	if (isdigit (ch))
 	  {
-	     buf++;
+	     count++;
+	     b++;
 	     continue;
 	  }
 	if (ch == 0)
 	  break;		       /* all digits */
 
-	return;			       /* something els */
+	if (ch != '.')
+	  return;			       /* something else */
+
+	/* We are at a decimal point.  If expon > 1, then buf does not contain 
+	 * an exponential formatted quantity.
+	 */
+	if (count <= expon_threshold)
+	  return;
+	/* We have something like: 1234567.123, which we want to
+	 * write as 1.234567123e+6
+	 */
+	b += strlen(b);
+	has_point = 1;
+	break;			       /* handle below */
      }
 
-   if (buf + 3 >= bufmax)
+   /* We get here only when *b==0. */
+   
+   if ((has_point == 0) && (count <= 6))
      {
-	sprintf (buf, "%e", x);
+	if (b + 3 >= bufmax)
+	  {
+	     sprintf (buf, "%e", x);
+	     return;
+	  }
+	*b++ = '.';
+	*b++ = '0';
+	*b = 0;
 	return;
      }
-   *buf++ = '.';
-   *buf++ = '0';
-   *buf = 0;
+
+   expon = count-1;
+   
+   /* Now add on the exponent.  First move the decimal point but drop trailing 0s */
+   while ((count > 1) && (*(b-1) == '0'))
+     {
+	b--;
+	count--;
+     }
+
+   if (count > 1)
+     {	
+	while (count > 1)
+	  {
+	     bstart[count] = bstart[count-1];
+	     count--;
+	  }
+	bstart[count] = '.';
+	if (has_point == 0)
+	  b++;
+     }
+
+   if (EOF == SLsnprintf (b, bufmax-b, "e+%02d", expon))
+     sprintf (buf, "%e", x);
 }
 	
 static void default_format_double (double x, char *buf, unsigned int buflen)
@@ -980,7 +1079,6 @@ static void default_format_double (double x, char *buf, unsigned int buflen)
 	     return;
 	  }
      }
-   
    check_decimal (buf, buflen, x);
 }
 

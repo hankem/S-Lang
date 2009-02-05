@@ -171,6 +171,26 @@ test_scanf ("ab12345cdefghijk", "ab%3[^4-5]%s", "123", "45cdefghijk", 2);
 test_scanf ("\t\n", "%s %s", "", "", 0);
 test_scanf ("", "%s", "", "", 0);
 
+define test_default_format ()
+{
+   loop (1000)
+     {
+	variable x = (2.0 * (random ()-0.5)) 
+	  * 10^(40*(random()-0.5));
+	if (x != eval(string(x)))
+	  {
+	     () = fprintf (stderr, "double %%S format failed for %.17g ==> %S\n", x, x);
+	  }
+	x = typecast (x, Float_Type);
+
+	if (x != eval(string(x)+"f"))
+	  {
+	     () = fprintf (stderr, "float %%S format failed for %.17g ==> %S\n", x, x);
+	  }
+     }
+}
+test_default_format ();
+
 print ("Ok\n");
 
 exit (0);
