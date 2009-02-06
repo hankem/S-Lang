@@ -63,6 +63,8 @@ static _pSLang_Token_Type Next_Token;
 static int Last_Line_Number = -1;
 #endif
 
+static int In_Looping_Context = 0;
+
 static int unget_token (_pSLang_Token_Type *ctok)
 {
    if (_pSLang_Error)
@@ -497,6 +499,7 @@ static int append_bos (_pSLang_Token_Type *t, int level)
 #endif
 
 static void statement (_pSLang_Token_Type *);
+static void loop_statement (_pSLang_Token_Type *);
 static void compound_statement (_pSLang_Token_Type *);
 static void expression_with_parenthesis (_pSLang_Token_Type *);
 static void handle_semicolon (_pSLang_Token_Type *);
@@ -516,6 +519,7 @@ static void postfix_expression (_pSLang_Token_Type *);
 static int check_for_lvalue (unsigned char, _pSLang_Token_Type *);
 /* static void primary_expression (_pSLang_Token_Type *); */
 static void block (_pSLang_Token_Type *);
+static void loop_block (_pSLang_Token_Type *);
 static void inline_array_expression (_pSLang_Token_Type *);
 static void inline_list_expression (_pSLang_Token_Type *);
 static void array_index_expression (_pSLang_Token_Type *);
@@ -559,7 +563,7 @@ static int get_identifier_token (_pSLang_Token_Type *tok)
 static void define_function (_pSLang_Token_Type *ctok, unsigned char type)
 {
    _pSLang_Token_Type fname;
-   
+
    switch (type)
      {
       case STATIC_TOKEN:
@@ -587,7 +591,12 @@ static void define_function (_pSLang_Token_Type *ctok, unsigned char type)
    compile_token_of_type(FARG_TOKEN);
 
    if (ctok->type == OBRACE_TOKEN)
-     compound_statement(ctok);
+     {
+	int loop_context = In_Looping_Context;
+	In_Looping_Context = 0;
+	compound_statement(ctok);
+	In_Looping_Context = loop_context;
+     }
 
    else if (ctok->type != SEMICOLON_TOKEN)
      {
@@ -743,7 +752,7 @@ static void statement (_pSLang_Token_Type *ctok)
 #if SLANG_HAS_BOSEOS
 	if (eos) compile_eos ();
 #endif
-	block (ctok);
+	loop_block (ctok);
 	compile_token_of_type (LOOP_TOKEN);
 	if (0 == check_for_loop_then_else (ctok))
 	  compile_token_of_type (NOP_TOKEN);
@@ -767,7 +776,7 @@ static void statement (_pSLang_Token_Type *ctok)
 	if (eos) compile_eos ();
 #endif
 	compile_token_of_type (CBRACE_TOKEN);
-	block (ctok);
+	loop_block (ctok);
 	compile_token_of_type (WHILE_TOKEN);
 	if (0 == check_for_loop_then_else (ctok))
 	  compile_token_of_type (NOP_TOKEN);
@@ -775,7 +784,7 @@ static void statement (_pSLang_Token_Type *ctok)
 
       case DO_TOKEN:
 	get_token (ctok);
-	block (ctok);
+	loop_block (ctok);
 
 	if (WHILE_TOKEN != get_token (ctok))
 	  {
@@ -801,7 +810,6 @@ static void statement (_pSLang_Token_Type *ctok)
 	break;
 
       case FOR_TOKEN:
-
 	/* Look for (exp_opt ; exp_opt ; exp_opt ) */
 
 	if (OPAREN_TOKEN != get_token (ctok))
@@ -870,14 +878,20 @@ static void statement (_pSLang_Token_Type *ctok)
 	compile_token_list ();
 
 	get_token (ctok);
-	block (ctok);
+	loop_block (ctok);
 	compile_token_of_type (FOR_TOKEN);
 	if (0 == check_for_loop_then_else (ctok))
 	  compile_token_of_type (NOP_TOKEN);
 	break;
 
       case FOREVER_TOKEN:
-	/* drop */
+	get_token (ctok);
+	loop_block (ctok);
+	compile_token_of_type (FOREVER_TOKEN);
+	if (0 == check_for_loop_then_else (ctok))
+	  compile_token_of_type (NOP_TOKEN);
+	break;
+
       case ERRBLK_TOKEN:
       case EXITBLK_TOKEN:
       case USRBLK0_TOKEN:
@@ -889,15 +903,16 @@ static void statement (_pSLang_Token_Type *ctok)
 	get_token (ctok);
 	block (ctok);
 	compile_token_of_type (type);
-	if (type == FOREVER_TOKEN)
-	  {
-	     if (0 == check_for_loop_then_else (ctok))
-	       compile_token_of_type (NOP_TOKEN);
-	  }
 	break;
 
       case BREAK_TOKEN:
       case CONT_TOKEN:
+	if (In_Looping_Context == 0)
+	  {
+	     _pSLparse_error (SL_SYNTAX_ERROR, "`break' or `continue' requires a looping context", ctok, 0);
+	     break;
+	  }
+
 	type = ctok->type;
 #if SLANG_HAS_BOSEOS
 	eos = compile_bos (ctok, 3);
@@ -1080,11 +1095,25 @@ static void statement (_pSLang_Token_Type *ctok)
    LLT->parse_level -= 1;
 }
 
+static void loop_statement (_pSLang_Token_Type *ctok)
+{
+   In_Looping_Context++;
+   statement (ctok);
+   In_Looping_Context--;
+}
+
 /* This function does not return a new token.  Calling routine must do that */
 static void block (_pSLang_Token_Type *ctok)
 {
    compile_token_of_type (OBRACE_TOKEN);
    statement (ctok);
+   compile_token_of_type (CBRACE_TOKEN);
+}
+
+static void loop_block (_pSLang_Token_Type *ctok)
+{
+   compile_token_of_type (OBRACE_TOKEN);
+   loop_statement (ctok);
    compile_token_of_type (CBRACE_TOKEN);
 }
 
@@ -1117,7 +1146,7 @@ static void handle_for_statement (_pSLang_Token_Type *ctok)
 	compile_token (ident_token);
 	free_token (ident_token);
      }
-   statement (ctok);
+   loop_statement (ctok);
    compile_token_of_type (CBRACE_TOKEN);
 
    compile_token_of_type (_FOR_TOKEN);
@@ -1379,7 +1408,9 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 	compile_token (v);
 	v = v->next;
      }
-   statement (ctok);
+
+   loop_statement (ctok);
+
    compile_token_of_type (CBRACE_TOKEN);
    compile_token_of_type (FOREACH_TOKEN);
    
@@ -1463,6 +1494,7 @@ void _pSLparse_start (SLang_Load_Type *llt)
    unsigned int save_use_next_token;
    _pSLang_Token_Type save_next_token;
    Token_List_Type *save_list;
+   int save_looping_context = In_Looping_Context;
 #if SLANG_HAS_DEBUG_CODE
    int save_last_line_number = Last_Line_Number;
 
@@ -1476,6 +1508,7 @@ void _pSLparse_start (SLang_Load_Type *llt)
 
    init_token (&Next_Token);
    Use_Next_Token = 0;
+   In_Looping_Context = 0;
    init_token (&ctok);
    get_token (&ctok);
 
@@ -1509,6 +1542,8 @@ void _pSLparse_start (SLang_Load_Type *llt)
      free_token (&Next_Token);
    Use_Next_Token = save_use_next_token;
    Next_Token = save_next_token;
+   In_Looping_Context = save_looping_context;
+
 #if SLANG_HAS_DEBUG_CODE
    Last_Line_Number = save_last_line_number;
 #endif

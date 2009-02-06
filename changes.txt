@@ -88,6 +88,8 @@ Changes since 2.1.4
 40. src/slarith.c: Change #38 resulted in decimal points in inf and nan.
 41. src/slarithlc: By default, a floating point number x, where
     |x|>=1e6 is printed in exponential form.
+42. src/slparse.c: Added looping context checks for break and continue
+    statements.
 
 {{{ Previous Versions
 
