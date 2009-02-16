@@ -90,6 +90,9 @@ Changes since 2.1.4
     |x|>=1e6 is printed in exponential form.
 42. src/slparse.c: Added looping context checks for break and continue
     statements.
+43. src/slang.c: Small tweak to inner_interp to improve
+    branch-prediction (Paul Boekholt)
+44. src/slang.c: Optimized additional byte-code combinations.
 
 {{{ Previous Versions
 

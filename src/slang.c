@@ -3683,7 +3683,9 @@ static int do_compare (SLBlock_Type *ops1)
    int ret = -1;
 
    /* skip to opN */
-   while (ops->bc_main_type == SLANG_BC_BINARY)
+   while ((ops->bc_main_type == SLANG_BC_BINARY)
+	  || (ops->bc_main_type == SLANG_BC_BINARY_LASTBLOCK)
+	  || (ops->bc_main_type == SLANG_BC_BINARY_SET_LOCLVAL))
      ops++;
    
    bp = &b;
@@ -4662,16 +4664,19 @@ static void add_to_statistics (SLBlock_Type *b)
 {
    unsigned short x, y;
    
-   x = b->bc_main_type;
-   if (x == 0)
+   while (1)
      {
-	Bytecodes[0] += 1;
-	return;
-     }
-   b++;
-   y = b->bc_main_type;
+	x = b->bc_main_type;
+	if (x == 0)
+	  {
+	     Bytecodes[0] += 1;
+	     return;
+	  }
+	b++;
+	y = b->bc_main_type;
 
-   Bytecodes[(x << 8) | y] += 1;
+	Bytecodes[(x << 8) | y] += 1;
+     }
 }
 
 #endif
@@ -4710,8 +4715,13 @@ static int inner_interp (SLBlock_Type *addr_start)
 #if GATHER_STATISTICS
    add_to_statistics (addr);
 #endif
+   /* Moving addr++ to top of switch instead of bottom was suggested by
+    * Paul Boekholt to improve branch-prediction.
+    */
+   addr--;			       
    while (1)
      {
+	addr++;
 	switch (addr->bc_main_type)
 	  {
 	   case SLANG_BC_LAST_BLOCK:
@@ -4956,12 +4966,9 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     break;
 	     
 	   case SLANG_BC_BINARY:
-#if SLANG_OPTIMIZE_FOR_SPEED
 	     (void) do_binary (addr->b.i_blk);	     
-#else
-	     (void) do_binary (addr->b.i_blk);
-#endif
 	     break;
+
 #if SLANG_OPTIMIZE_FOR_SPEED
 	   case SLANG_BC_INTEGER_PLUS:
 	     if (0 == push_int_object (addr->bc_sub_type, (int) addr->b.l_blk))
@@ -5633,7 +5640,12 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     push_array_element ((addr+1)->b.i_blk, (int) addr->b.l_blk);
 	     addr++;
 	     break;
-
+# if SLANG_OPTIMIZE_FOR_SPEED
+	   case SLANG_BC_LVAR_LVAR_APUT1:
+	     if (-1 == push_local_variable (addr->b.i_blk))
+	       break;
+	     addr++;		       /* drop */
+# endif
 	   case SLANG_BC_LVARIABLE_APUT1:
 	     addr++;		       /* not used */
 	     if (-1 == push_local_variable (addr->b.i_blk))
@@ -5670,6 +5682,94 @@ static int inner_interp (SLBlock_Type *addr_start)
 		    }
 		  else do_binary_ab_inc_ref (SLANG_PLUS, obj1, obj2);
 		  addr += 2;
+	       }
+	     break;
+	     
+	   case SLANG_BC_SET_LOCLV_LIT_INT:
+	     set_lvalue_obj (addr->bc_sub_type, Local_Variable_Frame - addr->b.i_blk);
+	     addr++;
+	     push_int_object (addr->bc_sub_type, (int) addr->b.l_blk);
+	     break;
+
+	   case SLANG_BC_SET_LOCLV_LIT_AGET1:
+	     set_lvalue_obj (addr->bc_sub_type, Local_Variable_Frame - addr->b.i_blk);
+	     addr += 3;
+	     push_array_element (addr->b.i_blk, (int) (addr-1)->b.l_blk);
+	     break;
+
+	   case SLANG_BC_SET_LOCLV_LVAR:
+	     set_lvalue_obj (addr->bc_sub_type, Local_Variable_Frame - addr->b.i_blk);
+	     addr++;
+	     PUSH_LOCAL_VARIABLE (addr->b.i_blk)
+	     break;
+
+	   case SLANG_BC_SET_LOCLV_LASTBLOCK:
+	     if (0 == set_lvalue_obj (addr->bc_sub_type, Local_Variable_Frame - addr->b.i_blk))
+	       goto return_1;
+	     break;
+
+	   case SLANG_BC_LVAR_EARG_LVAR:
+	     PUSH_LOCAL_VARIABLE (addr->b.i_blk);
+	     addr++;
+	     PUSH_LOCAL_VARIABLE(addr->b.i_blk);
+	     (void) end_arg_list ();
+	     break;
+
+	   case SLANG_BC_LVAR_FIELD:
+	     PUSH_LOCAL_VARIABLE (addr->b.i_blk);
+	     addr++;
+	     (void) push_struct_field (addr->b.s_blk);
+	     break;
+	     
+	   case SLANG_BC_BINARY_LASTBLOCK:
+	     if (-1 == do_binary (addr->b.i_blk))
+	       break;
+	     goto return_1;
+#if 0
+	   case SLANG_BC_INTRINSIC_SET_LVAL:
+	     execute_intrinsic_fun (addr->b.nt_ifun_blk);
+	     if (IS_SLANG_ERROR)
+	       {
+		  do_traceback(addr->b.nt_ifun_blk->name);
+		  break;
+	       }
+	     addr++;
+	     (void) set_lvalue_obj (addr->bc_sub_type, Local_Variable_Frame - addr->b.i_blk);
+	     break;
+#endif	     
+	   case SLANG_BC_EARG_LVARIABLE_INTRINSIC:
+	     PUSH_LOCAL_VARIABLE(addr->b.i_blk);
+	     if (0 == end_arg_list ())
+	       {
+		  addr++;
+		  execute_intrinsic_fun (addr->b.nt_ifun_blk);
+		  if (IS_SLANG_ERROR)
+		    do_traceback(addr->b.nt_ifun_blk->name);
+	       }
+	     break;
+	     
+	   case SLANG_BC_LVAR_LITERAL_INT:
+	     PUSH_LOCAL_VARIABLE (addr->b.i_blk);
+	     addr++;
+	     push_int_object (addr->bc_sub_type, (int) addr->b.l_blk);
+	     break;
+
+	   case SLANG_BC_BINARY_SET_LOCLVAL:
+	     if (-1 == do_binary (addr->b.i_blk))
+	       break;
+	     addr++;
+	     (void) set_lvalue_obj (addr->bc_sub_type, Local_Variable_Frame - addr->b.i_blk);
+	     break;
+
+	   case SLANG_BC_LVAR_AGET_SET_LOCLVAL:
+	       {
+		  SLang_Object_Type *obj = Local_Variable_Frame - addr->b.i_blk;
+		  if ((0 == carefully_push_object (obj))
+		      && (0 == do_bc_call_direct_frame (_pSLarray_aget)))
+		    {
+		       addr++;
+		       (void) set_lvalue_obj (addr->bc_sub_type, Local_Variable_Frame - addr->b.i_blk);
+		    }
 	       }
 	     break;
 #endif				       /* USE_COMBINED_BYTECODES */
@@ -5710,19 +5810,18 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_LVARIABLE_APUT1:
 	   case SLANG_BC_LITERAL_APUT1:
 	   case SLANG_BC_LLVARIABLE_BINARY_PLUS:
+	   case SLANG_BC_SET_LOCLV_LIT_INT:
+	   case SLANG_BC_SET_LOCLV_LVAR:
+	   case SLANG_BC_SET_LOCLV_LASTBLOCK:
+	   case SLANG_BC_LVAR_EARG_LVAR:
+	   case SLANG_BC_LVAR_FIELD:
+	   case SLANG_BC_BINARY_LASTBLOCK:
+	   case SLANG_BC_EARG_LVARIABLE_INTRINSIC:
+	   case SLANG_BC_LVAR_LITERAL_INT:
+	   case SLANG_BC_BINARY_SET_LOCLVAL:
+	   case SLANG_BC_LVAR_AGET_SET_LOCLVAL:
+	   case SLANG_BC_LVAR_LVAR_APUT1:
 # endif
-	   case SLANG_BC_UNUSED_0xA3:
-	   case SLANG_BC_UNUSED_0xA4:
-	   case SLANG_BC_UNUSED_0xA5:
-	   case SLANG_BC_UNUSED_0xA6:
-	   case SLANG_BC_UNUSED_0xA7:
-	   case SLANG_BC_UNUSED_0xA8:
-	   case SLANG_BC_UNUSED_0xA9:
-	   case SLANG_BC_UNUSED_0xAA:
-	   case SLANG_BC_UNUSED_0xAB:
-	   case SLANG_BC_UNUSED_0xAC:
-	   case SLANG_BC_UNUSED_0xAD:
-	   case SLANG_BC_UNUSED_0xAE:
 	   case SLANG_BC_UNUSED_0xAF:
 	   case SLANG_BC_LVARIABLE_COMBINED:
 	   case SLANG_BC_GVARIABLE_COMBINED:
@@ -5825,7 +5924,6 @@ static int inner_interp (SLBlock_Type *addr_start)
 #endif
 	     if (Lang_Break_Condition) goto handle_break_condition;
 	  }
-	addr++;
      }
 
    handle_break_condition:
@@ -6914,6 +7012,129 @@ static void gather_statistics (SLBlock_Type *b)
 
 #endif
 
+static void optimize_block3 (SLBlock_Type *b)
+{
+   while (1)
+     {
+	switch (b->bc_main_type)
+	  {
+	   case SLANG_BC_LAST_BLOCK:
+	     return;
+
+	   default:
+	     b++;
+	     break;
+
+	   case SLANG_BC_SET_LOCAL_LVALUE:
+	     b++;
+	     if (b->bc_main_type == SLANG_BC_LITERAL_INT)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_SET_LOCLV_LIT_INT;
+		  b->bc_main_type = SLANG_BC_LITERAL_COMBINED;
+		  b++;
+		  break;
+	       }
+	     if (b->bc_main_type == SLANG_BC_LITERAL_AGET1)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_SET_LOCLV_LIT_AGET1;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  break;
+	       }
+	     if (b->bc_main_type == SLANG_BC_LVARIABLE)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_SET_LOCLV_LVAR;
+		  b->bc_main_type = SLANG_BC_LVARIABLE_COMBINED;
+		  b++;
+		  break;
+	       }
+	     if (b->bc_main_type == SLANG_BC_LAST_BLOCK)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_SET_LOCLV_LASTBLOCK;
+		  return;
+	       }
+	     break;
+
+	   case SLANG_BC_LVARIABLE:
+	     b++;
+	     if (b->bc_main_type == SLANG_BC_EARG_LVARIABLE)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_LVAR_EARG_LVAR;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  break;
+	       }
+	     if (b->bc_main_type == SLANG_BC_FIELD)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_LVAR_FIELD;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  break;
+	       }
+	     if (b->bc_main_type == SLANG_BC_LITERAL_INT)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_LVAR_LITERAL_INT;
+		  b->bc_main_type = SLANG_BC_LITERAL_COMBINED;
+		  b++;
+		  break;
+	       }
+	     if (b->bc_main_type == SLANG_BC_LVARIABLE_APUT1)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_LVAR_LVAR_APUT1;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  break;
+	       }
+	     break;
+
+	   case SLANG_BC_BINARY:
+	     b++;
+	     if (b->bc_main_type == SLANG_BC_LAST_BLOCK)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_BINARY_LASTBLOCK;
+		  return;
+	       }
+	     if (b->bc_main_type == SLANG_BC_SET_LOCAL_LVALUE)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_BINARY_SET_LOCLVAL;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+	       }
+	     break;
+
+	   case SLANG_BC_EARG_LVARIABLE:
+	     b++;
+	     if (b->bc_main_type == SLANG_BC_INTRINSIC)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_EARG_LVARIABLE_INTRINSIC;
+		  b->bc_main_type = SLANG_BC_COMBINED;
+		  b++;
+		  break;
+	       }
+	     break;
+
+	   case SLANG_BC_LVARIABLE_AGET:
+	     b++;
+	     if (b->bc_main_type == SLANG_BC_SET_LOCAL_LVALUE)
+	       {
+		  (b-1)->bc_main_type = SLANG_BC_LVAR_AGET_SET_LOCLVAL;
+		  b->bc_main_type= SLANG_BC_COMBINED;
+		  b++;
+		  break;
+	       }
+	     break;
+	  }
+     }
+}
+
 static void optimize_block2 (SLBlock_Type *b)
 {
    while (1)
@@ -6957,6 +7178,7 @@ static void optimize_block2 (SLBlock_Type *b)
 	     if (((b-1)->bc_main_type == SLANG_BC_LVARIABLE_COMBINED)
 		 && (b->bc_main_type == SLANG_BC_LVARIABLE_AGET))
 	       {
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  (b-2)->bc_main_type = SLANG_BC_LVARIABLE_AGET1;
 		  b++;
 		  break;
@@ -6964,6 +7186,7 @@ static void optimize_block2 (SLBlock_Type *b)
 	     if (((b-1)->bc_main_type == SLANG_BC_LVARIABLE_COMBINED)
 		 && (b->bc_main_type == SLANG_BC_LVARIABLE_APUT))
 	       {
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  (b-2)->bc_main_type = SLANG_BC_LVARIABLE_APUT1;
 		  b++;
 		  break;
@@ -6980,6 +7203,7 @@ static void optimize_block2 (SLBlock_Type *b)
 	     if (((b-1)->bc_main_type == SLANG_BC_LITERAL_COMBINED)
 		 && (b->bc_main_type == SLANG_BC_LVARIABLE_AGET))
 	       {
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  (b-2)->bc_main_type = SLANG_BC_LITERAL_AGET1;
 		  b++;
 		  break;
@@ -6987,6 +7211,7 @@ static void optimize_block2 (SLBlock_Type *b)
 	     if (((b-1)->bc_main_type == SLANG_BC_LITERAL_COMBINED)
 		 && (b->bc_main_type == SLANG_BC_LVARIABLE_APUT))
 	       {
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  (b-2)->bc_main_type = SLANG_BC_LITERAL_APUT1;
 		  b++;
 		  break;
@@ -6999,7 +7224,7 @@ static void optimize_block2 (SLBlock_Type *b)
 /* Note: Make sure lang_free_branch is suitably modified to account for 
  * changes here.
  */
-static void optimize_block (SLBlock_Type *b)
+static void optimize_block1 (SLBlock_Type *b)
 {
    SLBlock_Type *bstart, *b1, *b2;
    SLtype b2_main_type;
@@ -7011,10 +7236,6 @@ static void optimize_block (SLBlock_Type *b)
 	switch (b->bc_main_type)
 	  {
 	   case 0:
-	     optimize_block2 (bstart);
-#if COMPILE_COMBINE_STATS
-	     gather_statistics (bstart);
-#endif
 	     return;
 	     
 	   default:
@@ -7146,7 +7367,9 @@ static void optimize_block (SLBlock_Type *b)
 
 		case 0:
 		  return;
+
 		case SLANG_BC_INTRINSIC:
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  if ((b+1)->bc_main_type == 0)
 		    {
 		       (b-1)->bc_main_type = SLANG_BC_CALL_DIRECT_RETINTR;
@@ -7157,15 +7380,18 @@ static void optimize_block (SLBlock_Type *b)
 		  break;
 		case SLANG_BC_LITERAL_STR:
 		  (b-1)->bc_main_type = SLANG_BC_CALL_DIRECT_LSTR;
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  b++;
 		  break;
 		case SLANG_BC_FUNCTION:
 		case SLANG_BC_PFUNCTION:
 		  (b-1)->bc_main_type = SLANG_BC_CALL_DIRECT_SLFUN;
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  b++;
 		  break;
 		case SLANG_BC_EARG_LVARIABLE:
 		  (b-1)->bc_main_type = SLANG_BC_CALL_DIRECT_EARG_LVAR;
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  b++;
 		  break;
 		case SLANG_BC_LITERAL_INT:
@@ -7187,11 +7413,13 @@ static void optimize_block (SLBlock_Type *b)
 	       {
 		case SLANG_BC_CALL_DIRECT:
 		  (b-1)->bc_main_type = SLANG_BC_INTRINSIC_CALL_DIRECT;
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  b++;
 		  break;
 #if 0
 		case SLANG_BC_BLOCK:
 		  (b-1)->bc_main_type = SLANG_BC_INTRINSIC_BLOCK;
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  b++;
 		  break;
 #endif
@@ -7219,6 +7447,7 @@ static void optimize_block (SLBlock_Type *b)
 	     if (b->bc_main_type == SLANG_BC_RETURN)
 	       {
 		  (b-1)->bc_main_type = SLANG_BC_RET_LITERAL_INT;
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  b++;
 	       }
 	     break;
@@ -7228,11 +7457,19 @@ static void optimize_block (SLBlock_Type *b)
 	     if (b->bc_main_type == SLANG_BC_RETURN)
 	       {
 		  (b-1)->bc_main_type = SLANG_BC_RET_LVARIABLE;
+		  b->bc_main_type = SLANG_BC_COMBINED;
 		  b++;
 	       }
 	     break;
 	  }
      }
+}
+
+static void optimize_block (SLBlock_Type *b)
+{
+   optimize_block1 (b);
+   optimize_block2 (b);
+   optimize_block3 (b);
 }
 
 #endif
