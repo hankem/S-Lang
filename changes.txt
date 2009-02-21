@@ -93,6 +93,10 @@ Changes since 2.1.4
 43. src/slang.c: Small tweak to inner_interp to improve
     branch-prediction (Paul Boekholt)
 44. src/slang.c: Optimized additional byte-code combinations.
+45. src/sldisply.c: On TERMCAP based systems, the "ac" capability was
+    being returned as the address of a local variable (Szalai Andras).
+46. src/slrline.c: The SLrline_redraw function was not properly
+    setting the last_nonblank_column variable.
 
 {{{ Previous Versions
 

@@ -2233,10 +2233,9 @@ The integrity of this program has been violated.\n");
     * this more general.
     */
    /* FIXME: Priority=low; */
-   if (0 == strcmp (cap, "ac"))
-     return s;
+   if (0 != strcmp (cap, "ac"))
+     s = fixup_tgetstr (s);
 
-   s = fixup_tgetstr (s);
 #ifdef USE_TERMCAP
    if ((s >= area_buf) && (s < area_buf + sizeof(area_buf)))
      {

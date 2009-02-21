@@ -63,7 +63,7 @@ struct _pSLrline_Type
    unsigned char upd_buf2[SLRL_DISPLAY_BUFFER_SIZE];
    unsigned char *old_upd, *new_upd;   /* pointers to previous two buffers */
    int new_upd_len, old_upd_len;       /* length of output buffers */
-   unsigned int last_nonblank_column;  /* column of last none blank char */
+   unsigned int last_nonblank_column;  /* column of last non-blank char */
 
    SLKeyMap_List_Type *keymap;
    int eof_char;
@@ -944,7 +944,9 @@ void SLrline_redraw (SLrline_Type *rli)
 	pmax = p + rli->edit_width;
 	while (p < pmax) *p++ = ' ';
 	rli->new_upd_len = rli->edit_width;
+	rli->last_nonblank_column = rli->edit_width-1;
 	really_update (rli, 0);
+	rli->last_nonblank_column = 0;
      }
    RLupdate (rli);
 }
