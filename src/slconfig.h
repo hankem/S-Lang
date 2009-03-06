@@ -243,8 +243,10 @@ USA.
 #ifdef _MSC_VER
 # define HAVE_VSNPRINTF 1
 # define HAVE_SNPRINTF 1
-/* Grrr, Visual Studio has vnsprintf, but with an '_'. */
-# define vsnprintf _vsnprintf
+# if _MSC_VER < 1400
+/* Grrr, older versions of Visual Studio have vnsprintf, but with an '_'. */
+#  define vsnprintf _vsnprintf
+# endif
 #endif
 
 #if defined(__unix__) || defined(__DECC) || defined(__BORLAND_V5__)

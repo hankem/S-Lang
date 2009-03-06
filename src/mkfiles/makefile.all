@@ -235,6 +235,7 @@ COMPILE_CMD = $(CC) /c @$(OBJDIR)\comp.rsp /Fo # /Fo specifies object file name
 LIBDEPS = $(RSPFILE) $(OBJDIR)\comp.rsp
 # This needs changing for Windows NT on non-Intel processors
 CPU = _X86_
+RM = del
 TOUCH = touch
 COPY = copy
 #}}}

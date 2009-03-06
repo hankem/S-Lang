@@ -1174,7 +1174,7 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
 #ifdef SLANG_DOC_DIR
 SLFUTURE_CONST char *SLang_Doc_Dir = SLANG_DOC_DIR;
 #else
-SLFUTURE_CONST *SLang_Doc_Dir = "";
+SLFUTURE_CONST char *SLang_Doc_Dir = "";
 #endif
 
 #ifdef SLANG_INSTALL_PREFIX

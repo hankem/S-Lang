@@ -97,6 +97,10 @@ Changes since 2.1.4
     being returned as the address of a local variable (Szalai Andras).
 46. src/slrline.c: The SLrline_redraw function was not properly
     setting the last_nonblank_column variable.
+47. src/slstd.c: SLang_Doc_Dir was implicitly defined to be an int
+    when SLANG_DOC_DIR is defined.  (Jon Parise)
+48. src/mkfiles/makefile.all, src/slconfig.h: Visual Studio tweaks
+    (Jon Parise).
 
 {{{ Previous Versions
 
