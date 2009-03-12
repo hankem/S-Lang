@@ -816,6 +816,42 @@ static void socket_intrin (int *domain, int *type, int *protocol)
    return;
 }
 
+#ifdef HAVE_SOCKETPAIR
+static void socketpair_intrin (int *domain, int *type, int *protocol)
+{
+   Socket_Type *s;
+   int fds[2];
+   
+   if (NULL == lookup_domain_methods (*domain))
+     return;
+
+   if (-1 == socketpair (*domain, *type, *protocol, fds))
+     {
+	throw_errno_error ("socketpair", errno);
+	return;
+     }
+
+   if (NULL == (s = create_socket (fds[0], *domain, *type, *protocol)))
+     {
+	close_socket (fds[0]);
+	close_socket (fds[1]);
+	return;
+     }
+   if (-1 == push_socket (s))	       /* frees upon error */
+     {
+	close_socket (fds[1]);
+	return;
+     }
+   if (NULL == (s = create_socket (fds[1], *domain, *type, *protocol)))
+     {
+	close_socket (fds[1]);
+	return;
+     }
+   (void) push_socket (s);	       /* frees it upon error */
+   return;
+}
+#endif
+
 static void connect_intrin (void)
 {
    Socket_Type *s;
@@ -1267,6 +1303,9 @@ static void getsockopt_intrin (void)
 static SLang_Intrin_Fun_Type Module_Intrinsics [] =
 {
    MAKE_INTRINSIC_3("socket", socket_intrin, V, I, I, I),
+#ifdef HAVE_SOCKETPAIR
+   MAKE_INTRINSIC_3("socketpair", socketpair_intrin, V, I, I, I),
+#endif
    MAKE_INTRINSIC_0("connect", connect_intrin, V),
    MAKE_INTRINSIC_0("bind", bind_intrin, V),
    MAKE_INTRINSIC_2("listen", listen_intrin, V, F, I),

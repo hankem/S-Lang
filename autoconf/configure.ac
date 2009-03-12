@@ -49,7 +49,6 @@ nan.h \
 fenv.h \
 sys/mman.h \
 sys/socket.h \
-sys/socket.h \
 netinet/in.h \
 arpa/inet.h \
 sys/un.h \
@@ -104,6 +103,7 @@ isinf \
 round \
 siglongjmp \
 fork waitpid \
+socket socketpair \
 )
 
 dnl# Systems that have nl_langinfo may not have CODESET.  Test for both here

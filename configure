@@ -6166,7 +6166,6 @@ done
 
 
 
-
 for ac_header in \
 stdlib.h \
 unistd.h \
@@ -6187,7 +6186,6 @@ ieeefp.h \
 nan.h \
 fenv.h \
 sys/mman.h \
-sys/socket.h \
 sys/socket.h \
 netinet/in.h \
 arpa/inet.h \
@@ -6887,6 +6885,8 @@ fi
 
 
 
+
+
 for ac_func in \
 memset \
 memcpy \
@@ -6920,6 +6920,7 @@ isinf \
 round \
 siglongjmp \
 fork waitpid \
+socket socketpair \
 
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`

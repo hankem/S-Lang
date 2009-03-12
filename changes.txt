@@ -101,6 +101,7 @@ Changes since 2.1.4
     when SLANG_DOC_DIR is defined.  (Jon Parise)
 48. src/mkfiles/makefile.all, src/slconfig.h: Visual Studio tweaks
     (Jon Parise).
+49. modules/module.c: Added sockerpair to the module.
 
 {{{ Previous Versions
 
