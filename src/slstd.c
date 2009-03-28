@@ -605,6 +605,7 @@ static int intrin_get_defines (void)
 
 static void intrin_get_reference (char *name)
 {
+   if (*name == '&') name++;
    _pSLang_push_nt_as_ref (_pSLlocate_name (name));
 }
 

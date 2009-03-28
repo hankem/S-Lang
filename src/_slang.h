@@ -658,8 +658,8 @@ extern int _pSLang_peek_at_stack2 (SLtype *);
 struct _pSLang_NameSpace_Type
 {
    struct _pSLang_NameSpace_Type *next;
-   SLFUTURE_CONST char *name;			       /* this is the load_type name */
-   SLFUTURE_CONST char *namespace_name;	       /* this name is assigned by implements */
+   SLFUTURE_CONST char *name;	       /* this is the load_type name */
+   SLFUTURE_CONST char *namespace_name;/* this name is assigned by implements */
    SLFUTURE_CONST char *private_name;
    unsigned int table_size;
    SLang_Name_Type **table;

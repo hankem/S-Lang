@@ -126,6 +126,8 @@
 @modules/README
 @modules/fcntl-module.c
 @modules/fcntl.sl
+@modules/fork.sl
+@modules/fork-module.c
 @modules/onig-module.c
 @modules/onig.sl
 @modules/pcre-module.c
@@ -160,12 +162,14 @@
 @modules/tm/sockfuns.tm
 @modules/tm/onigfuns.tm
 @modules/tm/randfuns.tm
+@modules/tm/forkfuns.tm
 @modules/tm/Makefile
 @modules/help/pcrefuns.hlp
 @modules/help/pngfuns.hlp
 @modules/help/randfuns.hlp
 @modules/help/sockfuns.hlp
 @modules/help/onigfuns.hlp
+@modules/help/forkfuns.hlp
 
 @modules/examples/newt_ex.sl
 @modules/examples/slsmg_ex.sl

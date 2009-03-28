@@ -1,9 +1,9 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
-  varray-module.so socket-module.so rand-module.so @PCRE_MODULE@ @PNG_MODULE@ \
+  varray-module.so socket-module.so rand-module.so fork-module.so @PCRE_MODULE@ @PNG_MODULE@ \
   @ICONV_MODULE@ @ONIG_MODULE@ @ZLIB_MODULE@
 SLFILES = slsmg termios select fcntl varray socket pcre png iconv \
-  onig rand zlib
+  onig rand zlib fork
 #---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
@@ -110,6 +110,8 @@ iconv-module.so: iconv-module.c config.h
 	$(CC_SHARED) $(INCS) $(ICONV_INC) iconv-module.c -o iconv-module.so $(ICONV_LIB) $(LIBS)
 zlib-module.so: zlib-module.c config.h
 	$(CC_SHARED) $(INCS) $(ZLIB_INC) zlib-module.c -o zlib-module.so $(ZLIB_LIB) $(LIBS)
+fork-module.so: fork-module.c config.h
+	$(CC_SHARED) $(INCS) fork-module.c -o fork-module.so $(LIBS)
 
 # Note that Windows/Cygwin modules need execute permissions
 install: all

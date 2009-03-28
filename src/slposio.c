@@ -443,6 +443,36 @@ SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
    return f;
 }
 
+/* Not yet a public function */
+static SLFile_FD_Type *SLfile_dup2_fd (SLFile_FD_Type *f0, int newfd)
+{
+   SLFile_FD_Type *f;
+   int fd0, fd;
+
+   if (f0 == NULL)
+     return NULL;
+
+   if (-1 == get_fd (f0, &fd0))
+     return NULL;
+
+   while (-1 == (fd = dup2 (fd0, newfd)))
+     {
+	if (is_interrupt (errno, 1))
+	  continue;
+	
+	return NULL;
+     }
+   
+   if (NULL == (f = SLfile_create_fd (f0->name, fd)))
+     {
+	while ((-1 == close (fd)) && is_interrupt (errno, 1))
+	  ;
+	return NULL;
+     }
+   
+   return f;
+}
+
 int SLfile_get_fd (SLFile_FD_Type *f, int *fd)
 {
    if (f == NULL)
@@ -651,6 +681,15 @@ static void posix_dup (SLFile_FD_Type *f)
    
    SLfile_free_fd (f);
 }
+
+static void posix_dup2 (SLFile_FD_Type *f, int *new_fd)
+{
+   if ((NULL == (f = SLfile_dup2_fd (f, *new_fd)))
+       || (-1 == SLfile_push_fd (f)))
+     SLang_push_null ();
+
+   SLfile_free_fd (f);
+}
 	
 #define I SLANG_INT_TYPE
 #define V SLANG_VOID_TYPE
@@ -670,6 +709,7 @@ static SLang_Intrin_Fun_Type Fd_Name_Table [] =
    MAKE_INTRINSIC_2("fdopen", posix_fdopen, V, F, S),
    MAKE_INTRINSIC_2("write", posix_write, V, F, B),
    MAKE_INTRINSIC_1("dup_fd", posix_dup, V, F),
+   MAKE_INTRINSIC_1("dup2_fd", posix_dup2, V, F),
    MAKE_INTRINSIC_1("close", posix_close, I, F),
    SLANG_END_INTRIN_FUN_TABLE
 };

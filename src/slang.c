@@ -2509,20 +2509,36 @@ static int set_nametype_variable (SLang_Name_Type *nt)
 /* References to Nametype objects */
 static char *nt_ref_string (VOID_STAR vdata)
 {
+   SLang_NameSpace_Type *ns;
    SLang_Name_Type *nt = *(SLang_Name_Type **)vdata;
    SLCONST char *name;
+   unsigned int len;
    char *s;
 
+   ns = _pSLns_find_object_namespace (nt);
+   if (ns == NULL)
+     return NULL;
+   
    name = nt->name;
-   if ((name != NULL)
-       && (NULL != (s = SLmalloc (strlen(name) + 2))))
+   len = strlen (name);
+
+   if ((ns->namespace_name != NULL)
+       && (0 != strcmp (ns->namespace_name, "Global")))
      {
-	*s = '&';
-	strcpy (s + 1, name);
+	unsigned int dlen = strlen (ns->namespace_name);
+	s = SLmalloc (len + dlen + 4);
+	if (s == NULL)
+	  return NULL;
+	(void) sprintf (s, "&%s->%s", ns->namespace_name, name);
 	return s;
      }
-	
-   return NULL;
+
+   if (NULL == (s = SLmalloc (len + 2)))
+     return NULL;
+
+   *s = '&';
+   strcpy (s + 1, name);
+   return s;
 }
 
 static void nt_ref_destroy (VOID_STAR vdata)

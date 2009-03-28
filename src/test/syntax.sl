@@ -85,6 +85,9 @@ XXX_auto_declared = 1;
 if (&XXX_auto_declared != __get_reference ("XXX_auto_declared"))
   failed ("__get_reference");
 
+if (&XXX_auto_declared != __get_reference (string(&XXX_auto_declared)))
+  failed ("__get_reference via string form");
+
 if (0 == __is_initialized (&XXX_auto_declared))
   failed ("__is_initialized");
 () = __tmp (XXX_auto_declared);

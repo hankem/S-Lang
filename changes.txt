@@ -102,6 +102,11 @@ Changes since 2.1.4
 48. src/mkfiles/makefile.all, src/slconfig.h: Visual Studio tweaks
     (Jon Parise).
 49. modules/module.c: Added sockerpair to the module.
+50. src/slang.c: The string representation of a Ref_Type will show the
+    namespace prefix, e.g, "&ns->foo".  Also the __get_reference
+    function was modified to ignore a leading '&'.
+51. src/slposio.c: Added dup2_fd intrinsic (a wrapper around dup2).
+52. modules/fork-module.c: New module (fork, waitpid, exec*, ...)
 
 {{{ Previous Versions
 

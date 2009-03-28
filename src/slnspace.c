@@ -132,20 +132,31 @@ SLang_NameSpace_Type *_pSLns_new_namespace (SLFUTURE_CONST char *name, unsigned 
    return table_list;
 }
 
+/* Find the private namespace associated with the object (file, etc) given by 
+ * `name', and whose private namespace is given by `namespace_name'.  If 
+ * `namespace_name' is NULL, then it is anonymous.
+ */
 SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, SLFUTURE_CONST char *namespace_name)
 {
    SLang_NameSpace_Type *ns;
 
+   if ((namespace_name != NULL)
+       && (*namespace_name == 0))
+     namespace_name = NULL;
+     
    ns = Namespace_Tables;
    while (ns != NULL)
      {
-	if ((ns->namespace_name != NULL)
+	if ((ns->namespace_name != NULL)   /* a static namespace */
 	    || (0 != strcmp (ns->name, name)))
 	  {
 	     ns = ns->next;
 	     continue;
 	  }
 
+	/* at this point, the namespace is anonymous and is associated with
+	 * the correct file (given by name).
+	 */
 	if (ns->private_name == NULL)
 	  {
 	     if (namespace_name == NULL)
