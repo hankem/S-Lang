@@ -107,6 +107,8 @@ Changes since 2.1.4
     function was modified to ignore a leading '&'.
 51. src/slposio.c: Added dup2_fd intrinsic (a wrapper around dup2).
 52. modules/fork-module.c: New module (fork, waitpid, exec*, ...)
+53. src/slagetput.inc:  a[i]=b was sometimes resulting in a buffer
+    overflow when i had elements outside the range of a.
 
 {{{ Previous Versions
 
