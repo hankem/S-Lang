@@ -117,6 +117,7 @@ static int push_select_struct (int num,
    SLtype field_types[4];
    VOID_STAR field_values [4];
    SLang_Array_Type *iread, *iwrite, *iexcept;
+   int status;
 
    iread = iwrite = iexcept = NULL;
 
@@ -144,7 +145,11 @@ static int push_select_struct (int num,
    field_values[3] = &iexcept;
 
    /* Note: This function call pushes the struct and frees it upon error. */
-   return SLstruct_create_struct (4, field_names, field_types, field_values);
+   status = SLstruct_create_struct (4, field_names, field_types, field_values);
+   SLang_free_array (iexcept);
+   SLang_free_array (iwrite);
+   SLang_free_array (iread);
+   return status;
 }
 
 			       

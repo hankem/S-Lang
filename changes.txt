@@ -109,6 +109,7 @@ Changes since 2.1.4
 52. modules/fork-module.c: New module (fork, waitpid, exec*, ...)
 53. src/slagetput.inc:  a[i]=b was sometimes resulting in a buffer
     overflow when i had elements outside the range of a.
+54. modules/select-module.c: A small memory leak was corrected.
 
 {{{ Previous Versions
 
