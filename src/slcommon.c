@@ -24,6 +24,7 @@ USA.
 #define _GNU_SOURCE
 #include "slinclud.h"
 
+#include <errno.h>
 #include "slang.h"
 #include "_slang.h"
 
@@ -312,6 +313,8 @@ int SLang_handle_interrupt (void)
 {
    Interrupt_Hook_Type *h;
    int status = 0;
+   int e = errno;
+   int se = _pSLerrno_errno;
 
    h = Interrupt_Hooks;
    while (h != NULL)
@@ -321,7 +324,8 @@ int SLang_handle_interrupt (void)
 
 	h = h->next;
      }
-
+   errno = e;
+   _pSLerrno_errno = se;
    return status;
 }
 

@@ -28,6 +28,8 @@
   The \ifun{fileno} function returns the \dtype{FD_Type} descriptor
   associated with the stdio \dtype{File_Type} file pointer.  Upon failure,
   \NULL is returned.
+\notes
+  Closing the resulting file descriptor will have no effect.
 \seealso{fopen, open, fclose, close, dup_fd}
 \done
 

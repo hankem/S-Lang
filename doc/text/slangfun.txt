@@ -630,7 +630,7 @@ sum
 
 --------------------------------------------------------------
 
-sum
+sumsq
 
  SYNOPSIS
   Sum over the squares of the elements of an array
@@ -653,7 +653,7 @@ sum
   the complex elements.
 
  SEE ALSO
-  cumsum, sumsq, transpose, reshape
+  cumsum, sumsq, hypot, transpose, reshape
 
 --------------------------------------------------------------
 
@@ -3444,16 +3444,21 @@ hypot
   Compute sqrt(x^2+y^2)
 
  USAGE
-  r = hypot (x, y)
+  r = hypot (x [,y])
 
  DESCRIPTION
-  The `hypot' function computes the quantity `sqrt(x^2+y^2)'
-  except that it employs an algorithm that tries to avoid arithmetic
-  overflow when `x' or `y' are large.  If either argument is
-  an array, an array of the corresponding values will be returned.
+  If given two arguments, `hypot' function computes the quantity
+  `sqrt(x^2+y^2)' except that it employs an algorithm that tries
+  to avoid arithmetic overflow when `x' or `y' are large.
+  If either argument is an array, an array of the corresponding values
+  will be returned.
+
+  If given a single array argument `x', the `hypot' function will
+  compute `sqrt(sumsq(x))', where `sumsq(x)' computes the sum
+  of the squares of the elements of `x'.
 
  SEE ALSO
-  atan2, cos, atan, acosh, cosh
+  atan2, cos, atan, acosh, cosh, sum, sumsq
 
 --------------------------------------------------------------
 
@@ -4935,6 +4940,9 @@ fileno
   The `fileno' function returns the FD_Type descriptor
   associated with the stdio File_Type file pointer.  Upon failure,
   NULL is returned.
+
+ NOTES
+  Closing the resulting file descriptor will have no effect.
 
  SEE ALSO
   fopen, open, fclose, close, dup_fd
@@ -6569,12 +6577,41 @@ fdopen
    returns NULL upon failure and sets `errno'.
 
  NOTES
-   The `fclose' function does not close the File_Type object
-   returned from this function.  The underlying file object must be
-   closed by the `close' function.
+   Since the stdio File_Type object created by this function
+   is derived from the FD_Type descriptor, the FD_Type
+   is regarded as more fundamental than the File_Type object.
+   This means that the descriptor must be in scope while the
+   File_Type object is used.  In particular, if the descriptor
+   goes out of scope, the descriptor will get closed causing I/O to the
+   File_Type object to fail, e.g.,
+
+     fd = open ("/path/to/file", O_RDONLY);
+     fp = fdopen (fd);
+     fd = 0;     % This will cause the FD_Type descriptor to go out of
+                 % scope.  Any I/O on fp will now fail.
+
+
+   Calling the `fclose' function on the File_Type object
+   will cause the underlying descriptor to close.
+
+   Any stdio File_Type object created by the `fdopen'
+   function will remain associated with the FD_Type descriptor,
+   unless the object is explicitly removed via `fclose'.  This
+   means that code such as
+
+      fd = open (...);
+      loop (50)
+        {
+           fp = fdopen (fd, ...);
+              .
+              .
+        }
+
+   will result in 50 File_Type objects attached to `fd'
+   after the loop has terminated.
 
  SEE ALSO
-  fileno, fopen, open, close, fclose
+  fileno, fopen, open, close, fclose, dup_fd
 
 --------------------------------------------------------------
 
@@ -6932,8 +6969,13 @@ fread
   The `fread_bytes' function may be used to read a specified number of
   bytes in the form of a binary string (`BString_Type').
 
+  If an attempt is made to read at the end of a file, the function
+  will return -1.  To distinguish this condition from a system error,
+  the `feof' function should be used.  This distinction is
+  particularly important when reading from a socket or pipe.
+
  SEE ALSO
-  fread_bytes, fwrite, fgets, fopen, pack, unpack
+  fread_bytes, fwrite, fgets, feof, ferror, fopen, pack, unpack
 
 --------------------------------------------------------------
 

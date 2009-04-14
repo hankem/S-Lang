@@ -37,10 +37,39 @@
    consistent with the mode of the descriptor \exmp{fd}.  The function
    returns \NULL upon failure and sets \ivar{errno}.
 \notes
-   The \ifun{fclose} function does not close the \dtype{File_Type} object
-   returned from this function.  The underlying file object must be
-   closed by the \ifun{close} function.
-\seealso{fileno, fopen, open, close, fclose}
+   Since the stdio \dtype{File_Type} object created by this function
+   is derived from the \dtype{FD_Type} descriptor, the \dtype{FD_Type}
+   is regarded as more fundamental than the \dtype{File_Type} object.
+   This means that the descriptor must be in scope while the
+   \dtype{File_Type} object is used.  In particular, if the descriptor
+   goes out of scope, the descriptor will get closed causing I/O to the
+   \dtype{File_Type} object to fail, e.g.,
+#v+
+     fd = open ("/path/to/file", O_RDONLY);
+     fp = fdopen (fd);
+     fd = 0;     % This will cause the FD_Type descriptor to go out of
+                 % scope.  Any I/O on fp will now fail.
+#v-
+   
+   Calling the \ifun{fclose} function on the \dtype{File_Type} object
+   will cause the underlying descriptor to close.
+   
+   Any stdio \dtype{File_Type} object created by the \ifun{fdopen}
+   function will remain associated with the \dtype{FD_Type} descriptor,
+   unless the object is explicitly removed via \ifun{fclose}.  This
+   means that code such as
+#v+
+      fd = open (...);
+      loop (50)
+        { 
+           fp = fdopen (fd, ...);
+              .
+              .
+        }
+#v-
+   will result in 50 \dtype{File_Type} objects attached to \exmp{fd}
+   after the loop has terminated.
+\seealso{fileno, fopen, open, close, fclose, dup_fd}
 \done
 
 \function{feof}
@@ -283,7 +312,7 @@
   returns the number of objects read from the file and places the
   objects in variable specified by \exmp{b}.  Upon error or
   end-of-file, it returns -1 and sets \ivar{errno} accordingly.
-  
+
   If more than one object is read from the file, those objects will be
   placed in an array of the appropriate size.
 \example
@@ -309,7 +338,12 @@
   
   The \ifun{fread_bytes} function may be used to read a specified number of
   bytes in the form of a binary string (\exmp{BString_Type}).
-\seealso{fread_bytes, fwrite, fgets, fopen, pack, unpack}
+  
+  If an attempt is made to read at the end of a file, the function
+  will return -1.  To distinguish this condition from a system error,
+  the \ifun{feof} function should be used.  This distinction is
+  particularly important when reading from a socket or pipe.
+\seealso{fread_bytes, fwrite, fgets, feof, ferror, fopen, pack, unpack}
 \done
 
 \function{fread_bytes}

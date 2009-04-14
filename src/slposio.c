@@ -62,13 +62,20 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
+typedef struct _Stdio_MMT_List_Type
+{
+   SLang_MMT_Type *stdio_mmt;
+   struct _Stdio_MMT_List_Type *next;
+}
+Stdio_MMT_List_Type;
+
 struct _pSLFile_FD_Type
 {
    char *name;
    unsigned int num_refs;	       /* reference counting */
    int fd;			       /* used if get_fd method is NULL */
 
-   SLang_MMT_Type *stdio_mmt;	       /* fdopen'd stdio object */
+   Stdio_MMT_List_Type *stdio_mmt_list;/* fdopen'd stdio objects */
 
    int is_closed;		       /* non-zero if closed */
 
@@ -84,9 +91,102 @@ struct _pSLFile_FD_Type
    int (*read)(VOID_STAR, char *, unsigned int);
    int (*write)(VOID_STAR, char *, unsigned int);
    SLFile_FD_Type *(*dup)(VOID_STAR);
+
+   SLFile_FD_Type *next;	       /* next in the list */
 };
 
+static SLFile_FD_Type *FD_Type_List = NULL;
 
+static void chain_fd_type (SLFile_FD_Type *f)
+{
+   f->next = FD_Type_List;
+   FD_Type_List = f;
+}
+
+static void unchain_fdtype (SLFile_FD_Type *f)
+{
+   SLFile_FD_Type *prev;
+   SLFile_FD_Type *curr;
+
+   curr = FD_Type_List;
+   if (curr == f)
+     {
+	FD_Type_List = f->next;
+	return;
+     }
+
+   while (curr != NULL)
+     {
+	prev = curr;
+	curr = curr->next;
+	if (curr == f)
+	  {
+	     prev->next = f->next;
+	     return;
+	  }
+     }
+}
+
+/* This function gets called when the fclose intrinsic is called on an fdopen
+ * derived object.
+ */
+void _pSLfclose_fdopen_fp (SLang_MMT_Type *mmt)
+{
+   SLFile_FD_Type *f;
+   
+   f = FD_Type_List;
+   while (f != NULL)
+     {
+	Stdio_MMT_List_Type *prev, *curr;
+
+	prev = NULL;
+	curr = f->stdio_mmt_list;
+	while (curr != NULL)
+	  {
+	     if (curr->stdio_mmt != mmt)
+	       {
+		  prev = curr;
+		  curr = curr->next;
+		  continue;
+	       }
+	     
+	     if (prev == NULL)
+	       f->stdio_mmt_list = curr->next;
+	     else
+	       prev->next = curr->next;
+	     
+	     SLang_free_mmt (mmt);
+	     SLfree ((char *) curr);
+	     return;
+	  }
+	f = f->next;
+     }
+}
+
+static void free_stdio_mmts (SLFile_FD_Type *f)
+{
+   Stdio_MMT_List_Type *curr = f->stdio_mmt_list;
+   
+   while (curr != NULL)
+     {
+	Stdio_MMT_List_Type *next = curr->next;
+	SLang_free_mmt (curr->stdio_mmt);
+	SLfree ((char *) curr);
+	curr = next;
+     }
+   f->stdio_mmt_list = NULL;
+}
+
+static Stdio_MMT_List_Type *alloc_stdio_list_elem (void)
+{
+   Stdio_MMT_List_Type *elem;
+
+   elem = (Stdio_MMT_List_Type *) SLmalloc(sizeof(Stdio_MMT_List_Type));
+   if (elem != NULL)
+     memset ((char *)elem, 0, sizeof (Stdio_MMT_List_Type));
+   return elem;
+}
+	
 /* Returns 0 the system call should not be restarted, 1 otherwise */
 static int is_interrupt (int e, int check_eagain)
 {
@@ -233,15 +333,10 @@ static int do_read (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 
 static int posix_close (SLFile_FD_Type *f)
 {
-   if (-1 == do_close (f))
-     return -1;
-   
-   if (f->stdio_mmt != NULL)
-     {
-	SLang_free_mmt (f->stdio_mmt);
-	f->stdio_mmt = NULL;
-     }
-   return 0;
+   int status = do_close (f);
+
+   free_stdio_mmts (f);
+   return status;
 }
 
 /* Usage: Uint write (f, buf); */
@@ -323,6 +418,8 @@ SLFile_FD_Type *SLfile_create_fd (SLFUTURE_CONST char *name, int fd)
    f->close = NULL;
    f->read = NULL;
    f->write = NULL;
+
+   chain_fd_type (f);
 
    return f;
 }
@@ -498,8 +595,9 @@ void SLfile_free_fd (SLFile_FD_Type *f)
        && (f->free_client_data != NULL))
      (*f->free_client_data) (f->clientdata);
 
-   if (f->stdio_mmt != NULL)
-     SLang_free_mmt (f->stdio_mmt);
+   free_stdio_mmts (f);
+
+   unchain_fdtype (f);
 
    SLfree ((char *) f);
 }
@@ -611,16 +709,31 @@ static void posix_fileno (void)
 
 static void posix_fdopen (SLFile_FD_Type *f, char *mode)
 {
-   if (f->stdio_mmt == NULL)
+   Stdio_MMT_List_Type *elem;
+   
+   if (NULL == (elem = alloc_stdio_list_elem ()))
+     return;
+   
+   if (-1 == _pSLstdio_fdopen (f->name, f->fd, mode))
      {
-	if (-1 == _pSLstdio_fdopen (f->name, f->fd, mode))
-	  return;
-
-	if (NULL == (f->stdio_mmt = SLang_pop_mmt (SLANG_FILE_PTR_TYPE)))
-	  return;
+	SLfree ((char *)elem);
+	return;
      }
 
-   (void) SLang_push_mmt (f->stdio_mmt);
+   if (NULL == (elem->stdio_mmt = SLang_pop_mmt (SLANG_FILE_PTR_TYPE)))
+     {
+	SLfree ((char *) elem);
+	return;
+     }
+
+   if (-1 == SLang_push_mmt (elem->stdio_mmt))
+     {
+	SLfree ((char *) elem);
+	return;
+     }
+   
+   elem->next = f->stdio_mmt_list;
+   f->stdio_mmt_list = elem;
 }
 
 static _pSLc_off_t_Type posix_lseek (SLFile_FD_Type *f, _pSLc_off_t_Type *ofs, int *whence)

@@ -984,6 +984,7 @@ extern int _pSLerrno_errno;
 extern int _pSLerrno_init (void);
 
 extern int _pSLstdio_fdopen (char *, int, char *);
+extern void _pSLfclose_fdopen_fp (SLang_MMT_Type *);
 
 extern void _pSLstruct_pop_args (int *);
 extern void _pSLstruct_push_args (SLang_Array_Type *);

@@ -33,7 +33,7 @@ static define open_tmp_file (fileptr, flags, mode)
 
 define run_tests (some_text)
 {
-   variable file, fd, fp;
+   variable file, fd, fp1, fp2;
    variable new_text, nbytes, len;
    variable pos;
 
@@ -42,12 +42,16 @@ define run_tests (some_text)
    if (-1 == write (fd, some_text))
      failed ("write");
 
-   fp = fdopen (fd, "wb");
-   if (fp == NULL)
-     failed ("fdopen");
-   
-   if (isatty (fileno (fp)))
-     failed ("isatty (fileno)");
+   loop (5)
+     {
+	fp1 = fdopen (fd, "wb");
+	fp2 = fdopen (fd, "wb");
+	if ((fp1 == NULL) || (fp2 == NULL))
+	  failed ("fdopen");
+
+	if (isatty (fileno (fp1)))
+	  failed ("isatty (fileno)");
+     }
 
    if (-1 == close (fd))
      failed ("close");

@@ -117,7 +117,7 @@ static int handle_errno (int e)
 	  }
      }
 #endif
-   _pSLerrno_errno = errno;
+   _pSLerrno_errno = e;
    return 0;
 }
 
@@ -384,16 +384,26 @@ static int close_file_type (SL_File_Table_Type *t)
    return ret;
 }
 
-static int stdio_fclose (SL_File_Table_Type *t)
+static int stdio_fclose (void)
 {
    int ret;
+   SLang_MMT_Type *mmt;
+   SL_File_Table_Type *t;
 
+   if (NULL == (mmt = SLang_pop_mmt (SLANG_FILE_PTR_TYPE)))
+     return -1;
+
+   t = (SL_File_Table_Type *) SLang_object_from_mmt (mmt);
    if (NULL == check_fp (t, 0xFFFF))
      return -1;
+
+   if (t->flags & SL_FDOPEN)
+     _pSLfclose_fdopen_fp (mmt);
 
    ret = close_file_type (t);
 
    t->flags = SL_INUSE;
+   SLang_free_mmt (mmt);
    return ret;
 }
 
@@ -697,16 +707,21 @@ static void stdio_fread_bytes (SLang_Ref_Type *ref, unsigned int *num_wantedp, S
    int ret = -1;
    char *buf = NULL;
    SLang_BString_Type *bs;
-
    if (NULL == (fp = check_fp (t, SL_READ)))
      goto the_return;
    
    if (NULL == (buf = SLmalloc (num_wanted + 1)))
      goto the_return;
    
-   errno = 0;
-   while (0 == (num_read = fread (buf, sizeof(char), num_wanted, fp)))
+   while (num_read < num_wanted)
      {
+	unsigned int dnum;
+	
+	dnum = fread (buf + num_read, sizeof(char), num_wanted-num_read, fp);
+	num_read += dnum;
+	if (num_read == num_wanted)
+	  break;
+	
 	if (0 == handle_errno (errno))
 	  break;
      }
@@ -714,7 +729,6 @@ static void stdio_fread_bytes (SLang_Ref_Type *ref, unsigned int *num_wantedp, S
    ret = check_ferror_and_realloc (fp, 0, &buf, num_wanted, num_read, sizeof (char));
    if (ret == -1)
      goto the_return;
-   
 
    bs = SLbstring_create_malloced ((unsigned char *)buf, num_read, 1);
    ret = SLang_assign_to_ref (ref, SLANG_BSTRING_TYPE, (VOID_STAR)&bs);
@@ -1009,7 +1023,7 @@ static SLang_Intrin_Fun_Type Stdio_Name_Table[] =
    MAKE_INTRINSIC_SS("fopen", stdio_fopen, V),
    MAKE_INTRINSIC_1("feof", stdio_feof, I, F),
    MAKE_INTRINSIC_1("ferror", stdio_ferror, I, F),
-   MAKE_INTRINSIC_1("fclose", stdio_fclose, I, F),
+   MAKE_INTRINSIC_0("fclose", stdio_fclose, I),
    MAKE_INTRINSIC_2("fgets", stdio_fgets, I, R, F),
    MAKE_INTRINSIC_1("fflush", stdio_fflush, I, F),
    MAKE_INTRINSIC_2("fputs", stdio_fputs, I, S, F),
@@ -1023,7 +1037,7 @@ static SLang_Intrin_Fun_Type Stdio_Name_Table[] =
    MAKE_INTRINSIC_1("fwrite", stdio_fwrite, V, F),
 #ifdef HAVE_POPEN
    MAKE_INTRINSIC_SS("popen", stdio_popen, V),
-   MAKE_INTRINSIC_1("pclose", stdio_fclose, I, F),
+   MAKE_INTRINSIC_0("pclose", stdio_fclose, I),
 #endif
    SLANG_END_INTRIN_FUN_TABLE
 };

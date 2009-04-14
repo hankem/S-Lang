@@ -21,6 +21,7 @@ USA.
 */
 
 #include "slinclud.h"
+#include <errno.h>
 
 /* #define SL_APP_WANTS_FOREACH */
 #include "slang.h"
@@ -298,22 +299,64 @@ scalar_vector_bin_op (int op,
 static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 			 unsigned int desired, unsigned int *actual)
 {
-   unsigned int n;
+   unsigned int n, total;
+   char *buf = (char *)ptr;
+   unsigned int size = _pSLclass_get_class (type)->cl_sizeof_type;
 
-   n = fread ((char *) ptr, _pSLclass_get_class (type)->cl_sizeof_type,
-	      desired, fp);
-   *actual = n;
+   total = 0;
+   while (desired)
+     {
+	errno = 0;
+	n = fread (buf, size, desired, fp);
+	total += n;
+	
+	if (n == desired)
+	  break;
+
+#ifdef EINTR
+	if ((errno == EINTR)
+	    && (0 == SLang_handle_interrupt ()))
+	  {
+	     desired -= n;
+	     buf += n*size;
+	     continue;
+	  }
+#endif
+	break;
+     }
+   *actual = total;
    return 0;
 }
 
 static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
-			  unsigned int desired, unsigned int *actual)
+			 unsigned int desired, unsigned int *actual)
 {
-   unsigned int n;
+   unsigned int n, total;
+   char *buf = (char *)ptr;
+   unsigned int size = _pSLclass_get_class (type)->cl_sizeof_type;
 
-   n = fwrite ((char *) ptr, _pSLclass_get_class (type)->cl_sizeof_type,
-	       desired, fp);
-   *actual = n;
+   total = 0;
+   while (desired)
+     {
+	errno = 0;
+	n = fwrite (buf, size, desired, fp);
+	total += n;
+	
+	if (n == desired)
+	  break;
+
+#ifdef EINTR
+	if ((errno == EINTR)
+	    && (0 == SLang_handle_interrupt ()))
+	  {
+	     desired -= n;
+	     buf += n*size;
+	     continue;
+	  }
+#endif
+	break;
+     }
+   *actual = total;
    return 0;
 }
 
