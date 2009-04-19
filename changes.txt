@@ -122,6 +122,8 @@ Changes since 2.1.4
 61. src/slang.c,sig.c: Continual bombarding the interpreter with
     signals revealed a subtle race condition in the interpreter's
     implementation of signals.
+62. src/sllist.c: Added list_to_array intrinsic function:
+       array = list_to_array (list [,type])
 
 {{{ Previous Versions
 
