@@ -24,6 +24,7 @@ USA.
 #include <stdlib.h>
 #ifdef __WIN32__
 # include <windows.h>
+# include <io.h>
 #endif
 
 #include <sys/stat.h>
@@ -35,7 +36,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.8.4-0";
+static char *Slsh_Version = "0.8.4-1";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 

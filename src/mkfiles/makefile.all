@@ -554,6 +554,7 @@ $(OBJDIR)\comp.rsp:
 	echo /nologo /W3 /O2 /D "NDEBUG" /D $(CPU) > $(OBJDIR)\comp.rsp
 	echo /D "WIN32" /I "." /MT >> $(OBJDIR)\comp.rsp
 	echo /D "_CRT_SECURE_NO_WARNINGS " >> $(OBJDIR)\comp.rsp
+	echo /D "_CRT_NONSTDC_NO_DEPRECATE" >> $(OBJDIR)\comp.rsp
 ! ifdef DLL
 	echo /D SLANG_DLL >> $(OBJDIR)\comp.rsp
 ! endif

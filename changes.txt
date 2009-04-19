@@ -124,6 +124,8 @@ Changes since 2.1.4
     implementation of signals.
 62. src/sllist.c: Added list_to_array intrinsic function:
        array = list_to_array (list [,type])
+63. .../makefile.all,slsh/slsh.c: Additional Visual C updates.  Also, io.h is
+    needed to compile slsh Visual C. (Jon Parise)
 
 {{{ Previous Versions
 

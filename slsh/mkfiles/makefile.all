@@ -183,7 +183,7 @@ COPY = copy
 ! elifdef VC #{{{
 # Makefile for slang as Win32 GUI using nmake under Visual C.
 CC = cl
-CFLAGS = /nologo /W3 /YX /O2 /D "NDEBUG" /D $(CPU) /D "__WIN32__" /I "." /I $(SLANGINC) /ML
+CFLAGS = /nologo /W3 /O2 /D "NDEBUG" /D $(CPU) /D "__WIN32__" /D "_CRT_SECURE_NO_WARNINGS" /D "_CRT_NONSTDC_NO_DEPRECATE" /I "." /I $(SLANGINC)
 P = \\
 O = obj # Object extension
 SRCDIR = .# Location of sources

@@ -67,7 +67,7 @@ TOOL_PREFIX =
 ! ifdef VC #{{{
 # Makefile for slang as Win32 GUI using nmake under Visual C.
 CC = cl
-CFLAGS = /nologo /W3 /YX /O2 /D "NDEBUG" /D $(CPU) /D "__WIN32__" /ML /DSLANG_DLL=1
+CFLAGS = /nologo /W3 /O2 /D "NDEBUG" /D $(CPU) /D "__WIN32__" /DSLANG_DLL=1
 P = \\
 O = obj # Object extension
 OBJDIR = mw32objs# Location of objects
