@@ -239,7 +239,7 @@ static SLang_Object_Type *Local_Variable_Frame = Local_Variable_Stack;
 
 #define INTERRUPT_ERROR		0x01
 #define INTERRUPT_SIGNAL	0x02
-static int Handle_Interrupt;	       /* bitmapped value */
+static volatile int Handle_Interrupt;	       /* bitmapped value */
 #define IS_SLANG_ERROR	(Handle_Interrupt & INTERRUPT_ERROR)
 
 static void free_function_header (Function_Header_Type *);
@@ -2280,12 +2280,13 @@ static int
 set_array_lvalue (int op)
 {
    SLang_Object_Type x, y;
-   int num_args, is_unary;
+   int is_unary;
    int status;
 #if SLANG_OPTIMIZE_FOR_SPEED
    int class_type;
    SLang_Class_Type *cl;
 #endif
+   int num_args;
 
    if (-1 == map_assignment_op_to_binary (op, &op, &is_unary))
      return -1;
@@ -2293,7 +2294,11 @@ set_array_lvalue (int op)
    /* Grab the indices and the array.  Do not start a new frame. */
    if (-1 == end_arg_list ())
      return -1;
-   num_args = Next_Function_Num_Args;
+   if ((num_args = Next_Function_Num_Args) <= 0)
+     {
+	SLang_verror (SL_INTERNAL_ERROR, "set_array_lvalue: Next_Function_Num_Args<=0");
+	return -1;
+     }
    Next_Function_Num_Args = 0;
 
    if (is_unary)		       /* PLUSPLUS, MINUSMINUS */
@@ -2309,8 +2314,7 @@ set_array_lvalue (int op)
    if (-1 == SLdup_n (num_args))
      return -1;
 
-   SLang_Num_Function_Args = num_args;
-   if (-1 == _pSLarray_aget ())
+   if (-1 == _pSLarray_aget1 (num_args-1))
      return -1;
 
    if (-1 == pop_object(&y))
@@ -2374,8 +2378,7 @@ set_array_lvalue (int op)
    if (-1 == roll_stack (num_args + 1))
      return -1;
 
-   SLang_Num_Function_Args = num_args;
-   return _pSLarray_aput ();
+   return _pSLarray_aput1 (num_args-1);
 }
 
 
@@ -2986,6 +2989,7 @@ static int execute_intrinsic_fun (SLang_Intrin_Fun_Type *objf)
    FVOID_STAR fptr;
    SLtype *arg_types;
    int stk_depth;
+   int num_args;
 
    fptr = objf->i_fun;
    argc = objf->num_args;
@@ -3001,6 +3005,7 @@ static int execute_intrinsic_fun (SLang_Intrin_Fun_Type *objf)
 
    if (-1 == _pSL_increment_frame_pointer ())
      return -1;
+   num_args = SLang_Num_Function_Args;
 
    stk_depth = -1;
    if (Trace_Mode && (_pSLang_Trace > 0))
@@ -3175,6 +3180,9 @@ static int execute_intrinsic_fun (SLang_Intrin_Fun_Type *objf)
 #endif
 	i++;
      }
+
+   if (num_args != SLang_Num_Function_Args)
+     SLang_verror (SL_INTERNAL_ERROR, "execute_intrinsic_fun: SLang_Num_Function_Args changed");
 
    return _pSL_decrement_frame_pointer ();
 }
@@ -3543,6 +3551,7 @@ static int do_try_internal (SLBlock_Type *ev_block, SLBlock_Type *final)
 {
    SLBlock_Type *b;
    int stack_depth, num;
+   unsigned int frame_depth, recurs_depth;
 #if SLANG_HAS_BOSEOS
    int bos_stack_depth;
 #endif
@@ -3556,6 +3565,9 @@ static int do_try_internal (SLBlock_Type *ev_block, SLBlock_Type *final)
     * present.  Line number blocks may also be present.
     */
    stack_depth = SLstack_depth ();
+   frame_depth = Frame_Pointer_Depth;
+   recurs_depth = Recursion_Depth;
+
 #if SLANG_HAS_BOSEOS
    bos_stack_depth = BOS_Stack_Depth;
 #endif
@@ -3572,7 +3584,7 @@ static int do_try_internal (SLBlock_Type *ev_block, SLBlock_Type *final)
    num = SLstack_depth () - stack_depth;
    if (num > 0)
      SLdo_pop_n (num);
-
+   
 #if SLANG_HAS_BOSEOS
    while (bos_stack_depth < BOS_Stack_Depth)
      {
@@ -3580,6 +3592,14 @@ static int do_try_internal (SLBlock_Type *ev_block, SLBlock_Type *final)
 	BOS_Stack_Depth--;
      }
 #endif
+   while (Recursion_Depth > recurs_depth)
+     {
+	(void) _pSL_decrement_frame_pointer ();
+     }
+   while (frame_depth > Frame_Pointer_Depth)
+     {
+	end_arg_list ();
+     }
 
    if (-1 == _pSLang_push_error_context ())
      return -1;
@@ -3961,6 +3981,7 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    SLBlock_Type **user_block_save;
    SLBlock_Type *user_blocks[5];
    int issue_bofeof_info = 0;
+   int nargs;
 
    exit_block_save = Exit_Block_Ptr;
    user_block_save = User_Block_Ptr;
@@ -3970,6 +3991,8 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
 
    if (-1 == increment_slang_frame_pointer (fun, linenum))
      return;
+   nargs = SLang_Num_Function_Args;
+
    header = fun->header;
    /* Make sure we do not allow this header to get destroyed by something
     * like:  define crash () { eval ("define crash ();") }
@@ -4095,6 +4118,10 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    Lang_Break_Condition = Lang_Return = Lang_Break = 0;
    Exit_Block_Ptr = exit_block_save;
    User_Block_Ptr = user_block_save;
+   
+   if (nargs != SLang_Num_Function_Args)
+     SLang_verror (SL_INTERNAL_ERROR, "execute_slang_fun: SLang_Num_Function_Args changed");
+	
    (void) decrement_slang_frame_pointer ();
 #if SLANG_HAS_BOSEOS
    if (issue_bofeof_info)
@@ -4734,7 +4761,8 @@ static int inner_interp (SLBlock_Type *addr_start)
    /* Moving addr++ to top of switch instead of bottom was suggested by
     * Paul Boekholt to improve branch-prediction.
     */
-   addr--;			       
+   addr--;
+
    while (1)
      {
 	addr++;
@@ -9389,16 +9417,41 @@ void _pSLang_signal_interrupt (void)
 
 static int check_signals (void)
 {
-   while (Handle_Interrupt & INTERRUPT_SIGNAL)
+   static volatile int inprogress = 0;
+   int nargs = SLang_Num_Function_Args;
+   int nnargs = Next_Function_Num_Args;
+   int bc, r, br;
+   int status;
+   
+   if (0 == (Handle_Interrupt & INTERRUPT_SIGNAL))
+     return 0;
+
+   if (inprogress)
+     return 0;
+   inprogress = 1;
+
+   bc = Lang_Break_Condition; r = Lang_Return; br = Lang_Break;
+   status = 0;
+   do
      {
 	/* The race condition that may be here can be ignored as long
 	 * as the Handle_Interrupt variable is modified before the
 	 * call to _pSLinterp_handle_signals.
 	 */
 	Handle_Interrupt &= ~INTERRUPT_SIGNAL;
-	(void) _pSLsig_handle_signals ();
+	if (-1 == _pSLsig_handle_signals ())
+	  {
+	     status = -1;
+	     break;
+	  }
      }
-   return 0;
+   while (Handle_Interrupt & INTERRUPT_SIGNAL);
+
+   SLang_Num_Function_Args = nargs;
+   Next_Function_Num_Args = nnargs;
+   Lang_Break = br; Lang_Return = r; Lang_Break_Condition = bc;
+   inprogress = 0;
+   return status;
 }
 
 int _pSLang_check_signals_hook (VOID_STAR unused)

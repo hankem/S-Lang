@@ -785,6 +785,48 @@ static void push_list_elements (SLang_List_Type *list)
      }
 }
 
+static int l2a_get_type_callback (VOID_STAR vlist, SLuindex_Type i, SLtype *type)
+{
+   SLang_Object_Type *obj;
+   
+   if (NULL == (obj = find_nth_element ((SLang_List_Type *)vlist, i, NULL)))
+     return -1;
+   *type = obj->o_data_type;
+   return 0;
+}
+
+static int l2a_push_callback (VOID_STAR vlist, SLuindex_Type i)
+{
+   SLang_Object_Type *obj;
+   
+   if (NULL == (obj = find_nth_element ((SLang_List_Type *)vlist, i, NULL)))
+     return -1;
+
+   return _pSLpush_slang_obj (obj);
+}
+
+
+static void list_to_array (void)
+{
+   SLang_List_Type *list;
+   SLang_MMT_Type *mmt;
+   SLtype type = 0;
+   
+   if ((SLang_Num_Function_Args == 2)
+       && (-1 == SLang_pop_datatype (&type)))
+     return;
+   
+   if (-1 == pop_list (&mmt, &list))
+     return;
+
+   (void) _pSLarray_convert_to_array ((VOID_STAR) list, 
+				      l2a_get_type_callback,
+				      l2a_push_callback,
+				      list->length, type);
+
+   SLang_free_mmt (mmt);
+}
+
 #define L SLANG_LIST_TYPE
 #define I SLANG_INT_TYPE
 static SLang_Intrin_Fun_Type Intrin_Table [] =
@@ -793,6 +835,7 @@ static SLang_Intrin_Fun_Type Intrin_Table [] =
    MAKE_INTRINSIC_1("list_reverse", list_reverse, SLANG_VOID_TYPE, L),
    MAKE_INTRINSIC_0("list_insert", list_insert_elem, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("list_append", list_append_elem, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("list_to_array", list_to_array, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("list_new", list_new, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("list_pop", list_pop, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_1("__push_list", push_list_elements, SLANG_VOID_TYPE, L),
@@ -954,7 +997,7 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
    return 1;
 }
 
-   
+
 int _pSLang_init_sllist (void)
 {
    SLang_Class_Type *cl;

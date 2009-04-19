@@ -115,6 +115,13 @@ Changes since 2.1.4
 57. src/slstdio.c, src/slclass.c: Restart the fread/fwrite calls
     calls when interrupted by a signal.
 58. src/slcommon.c: SLang_handle_interrupt will preserve errno.
+59. src/mkfiles/makefile.all: Updated for newer versions of Visual C
+    (Jon Parise).
+60. src/slang.c: set_array_lvalue was not preserving
+    SLang_Num_Function_Args.
+61. src/slang.c,sig.c: Continual bombarding the interpreter with
+    signals revealed a subtle race condition in the interpreter's
+    implementation of signals.
 
 {{{ Previous Versions
 

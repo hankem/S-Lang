@@ -2974,6 +2974,69 @@ int _pSLarray_inline_array (void)
    return SLang_push_array (at, 1);
 }
 
+int _pSLarray_convert_to_array (VOID_STAR cd, 
+				int (*get_type)(VOID_STAR, SLuindex_Type, SLtype *),
+				int (*push)(VOID_STAR, SLuindex_Type),
+			        SLuindex_Type num_objects, SLtype type)
+{
+   SLtype this_type;
+   SLang_Array_Type *at;
+   SLuindex_Type i;
+   SLindex_Type dims;
+   SLang_Object_Type index_obj;
+
+   at = NULL;
+
+   if (type == 0) for (i = 0; i < num_objects; i++)
+     {
+	if (-1 == (*get_type)(cd, i, &this_type))
+	  goto unknown_error;
+
+	if (type == 0)
+	  type = this_type;
+	else if (type != this_type)
+	  {
+	     if (-1 == promote_to_common_type (type, this_type, &type))
+	       {
+		  _pSLclass_type_mismatch_error (type, this_type);
+		  return -1;
+	       }
+	  }
+     }
+
+   if (type == 0)
+     {
+	SLang_verror (SL_TypeMismatch_Error, "Cannot convert an empty container object to an untyped array");
+	return -1;
+     }
+
+   dims = (SLindex_Type) num_objects;
+
+   if (NULL == (at = SLang_create_array (type, 0, NULL, &dims, 1)))
+     return -1;
+
+   index_obj.o_data_type = SLANG_ARRAY_INDEX_TYPE;
+   for (i = 0; i < num_objects; i++)
+     {
+	if (-1 == (*push)(cd, i))
+	  goto unknown_error;
+
+	index_obj.v.index_val = i;
+	if (-1 == aput_from_indices (at, &index_obj, 1))
+	  goto return_error;
+     }
+
+   return SLang_push_array (at, 1);
+   
+unknown_error:
+   SLang_verror (SL_Unknown_Error, "Unknown array conversion error");
+return_error:   
+   if (at != NULL)
+     SLang_free_array (at);
+   
+   return -1;
+}
+
 static int array_binary_op_result (int op, SLtype a, SLtype b,
 				   SLtype *c)
 {

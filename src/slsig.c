@@ -199,14 +199,18 @@ static int do_sigprocmask (int how, sigset_t *new_mask, sigset_t *old_mask)
 }
 #endif
 
-static int block_signal (int sig)
+static int block_signal (int sig, int *was_blocked)
 {
 #ifdef SLANG_POSIX_SIGNALS
    sigset_t new_mask;
+   sigset_t old_mask;
    sigemptyset (&new_mask);
    sigaddset (&new_mask, sig);
-   (void) do_sigprocmask (SIG_BLOCK, &new_mask, NULL);
+   (void) do_sigprocmask (SIG_BLOCK, &new_mask, &old_mask);
+   *was_blocked = sigismember (&old_mask, sig);
+   return 0;
 #endif
+   *was_blocked = 0;
    return 0;
 }
 
@@ -225,6 +229,7 @@ static int unblock_signal (int sig)
 static void signal_handler (int sig)
 {
    Signal_Type *s;
+   int e = errno;
 
    /* Until the signal has been delivered, block it. */
    /* Hmmm... it appears that the system unblocks the signal as soon
@@ -239,6 +244,7 @@ static void signal_handler (int sig)
    if (sig == SIGINT)
      SLKeyBoard_Quit = 1;
    _pSLang_signal_interrupt ();
+   errno = e;
 }
 
 int _pSLsig_block_and_call (int (*func)(VOID_STAR), VOID_STAR cd)
@@ -281,21 +287,40 @@ int _pSLsig_block_and_call (int (*func)(VOID_STAR), VOID_STAR cd)
 static int handle_signal (Signal_Type *s)
 {
    int status = 0;
-
-   (void) block_signal (s->sig);
-
-   s->pending = 0;
-   if (s->handler == NULL)
+   int was_blocked;
+   static volatile int inprogress = 0;
+   if (inprogress)
      return 0;
 
-   if ((-1 == SLang_start_arg_list ())
-       || (-1 == SLang_push_integer (s->sig))
-       || (-1 == SLang_end_arg_list ())
-       || (-1 == SLexecute_function (s->handler)))
-     status = -1;
+   /* There is a race condition here */
+   inprogress++;
 
-   (void) unblock_signal (s->sig);
+   (void) block_signal (s->sig, &was_blocked);
 
+   s->pending = 0;
+
+   if (s->handler != NULL)
+     {
+	int depth = SLstack_depth ();
+
+	if ((-1 == SLang_start_arg_list ())
+	    || (-1 == SLang_push_integer (s->sig))
+	    || (-1 == SLang_end_arg_list ())
+	    || (-1 == SLexecute_function (s->handler)))
+	  status = -1;
+	
+	if ((status == 0) 
+	    && (depth != SLstack_depth ()))
+	  {
+	     SLang_verror (SL_Application_Error, "The signal handler %s corrupted the stack", s->handler->name);
+	     status = -1;
+	  }
+     }
+
+   if (was_blocked == 0)
+     (void) unblock_signal (s->sig);
+
+   inprogress = 0;
    return status;
 }
 
@@ -305,15 +330,17 @@ static int handle_signal (Signal_Type *s)
 int _pSLsig_handle_signals (void)
 {
    Signal_Type *s = Signal_Table;
+   int status = 0;
 
    while (s->name != NULL)
      {
-	if (s->pending != 0)
-	  handle_signal (s);
+	if ((s->pending != 0)
+	    && (-1 == handle_signal (s)))
+	  status = -1;
 
 	s++;
      }
-   return 0;
+   return status;
 }
 
 static int pop_signal (Signal_Type **sp)
@@ -399,6 +426,12 @@ static void signal_intrinsic (void)
      }
    else old_ref = NULL;
    
+   if (SLang_Num_Function_Args == 0)
+     {
+	SLang_verror (SL_Internal_Error, "signal called with 0 args");
+	return;
+     }
+
    if (SLANG_INT_TYPE == SLang_peek_at_stack ())
      {
 	int h;

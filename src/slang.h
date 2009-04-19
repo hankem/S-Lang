@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20200
-#define SLANG_VERSION_STRING "pre2.2.0-58"
+#define SLANG_VERSION_STRING "pre2.2.0-61"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -881,6 +881,11 @@ typedef struct _pSLang_Array_Type
    VOID_STAR client_data;
 }
 SLang_Array_Type;
+
+extern int _pSLarray_convert_to_array (VOID_STAR cd, 
+				       int (*get_type)(VOID_STAR, SLuindex_Type, SLtype *),
+				       int (*push)(VOID_STAR, SLuindex_Type),
+				       SLuindex_Type num_objects, SLtype type);
 
 SL_EXTERN int SLang_pop_array_of_type (SLang_Array_Type **atp, SLtype type);
 SL_EXTERN int SLang_pop_array (SLang_Array_Type **atp, int convert_scalar);

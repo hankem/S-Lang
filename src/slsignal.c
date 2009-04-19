@@ -60,9 +60,19 @@ SLSig_Fun_Type *SLsignal (int sig, SLSig_Fun_Type *f)
 # ifdef SA_RESTART
    new_sa.sa_flags |= SA_RESTART;
 # endif
-
-   if (-1 == sigaction (sig, &new_sa, &old_sa))
-     return (SLSig_Fun_Type *) SIG_ERR;
+   
+   while (-1 == sigaction (sig, &new_sa, &old_sa))
+     {
+#ifdef EINTR
+	if  (errno == EINTR)
+	  {
+	     if (0 == SLang_handle_interrupt ())
+	       continue;
+	  }
+#endif
+	_pSLerrno_errno = errno;
+	return (SLSig_Fun_Type *) SIG_ERR;
+     }
 
    return old_sa.sa_handler;
 #else
@@ -87,8 +97,18 @@ SLSig_Fun_Type *SLsignal_intr (int sig, SLSig_Fun_Type *f)
    new_sa.sa_flags |= SA_INTERRUPT;
 # endif
 
-   if (-1 == sigaction (sig, &new_sa, &old_sa))
-     return (SLSig_Fun_Type *) SIG_ERR;
+   while (-1 == sigaction (sig, &new_sa, &old_sa))
+     {
+# ifdef EINTR
+	if  (errno == EINTR)
+	  {
+	     if (0 == SLang_handle_interrupt ())
+	       continue;
+	  }
+#endif
+	_pSLerrno_errno = errno;
+	return (SLSig_Fun_Type *) SIG_ERR;
+     }
 
    return old_sa.sa_handler;
 #else
