@@ -1089,6 +1089,26 @@ int SLang_start_arg_list (void)
    return start_arg_list ();
 }
 
+int _pSLang_restart_arg_list (int nargs)
+{
+   if (Frame_Pointer_Depth < SLANG_MAX_RECURSIVE_DEPTH)
+     {
+	if ((nargs < 0) || (Run_Stack + nargs > Stack_Pointer))
+	  {
+	     _pSLang_verror (SL_Internal_Error, "restart_arg_list: stack underflow");
+	     return -1;
+	  }
+	Frame_Pointer_Stack [Frame_Pointer_Depth] = (unsigned int) (Frame_Pointer - Run_Stack);
+	Frame_Pointer = Stack_Pointer - nargs;
+	Frame_Pointer_Depth++;
+	Next_Function_Num_Args = 0;
+	return 0;
+     }
+
+   _pSLang_verror (SL_STACK_OVERFLOW, "Frame Stack Overflow");
+   return -1;
+}
+
 _INLINE_ static int end_arg_list (void)
 {
    if (Frame_Pointer_Depth == 0)
@@ -9415,9 +9435,12 @@ void _pSLang_signal_interrupt (void)
    (void) _pSLsig_block_and_call (set_interrupt_state, (VOID_STAR)&mask);
 }
 
+#define CHECK_SIGNALS_NOT_REENTRANT 0
 static int check_signals (void)
 {
+#if CHECK_SIGNALS_NOT_REENTRANT
    static volatile int inprogress = 0;
+#endif
    int nargs = SLang_Num_Function_Args;
    int nnargs = Next_Function_Num_Args;
    int bc, r, br;
@@ -9425,32 +9448,27 @@ static int check_signals (void)
    
    if (0 == (Handle_Interrupt & INTERRUPT_SIGNAL))
      return 0;
-
+#if CHECK_SIGNALS_NOT_REENTRANT
    if (inprogress)
      return 0;
    inprogress = 1;
-
+#endif
    bc = Lang_Break_Condition; r = Lang_Return; br = Lang_Break;
    status = 0;
-   do
-     {
-	/* The race condition that may be here can be ignored as long
-	 * as the Handle_Interrupt variable is modified before the
-	 * call to _pSLinterp_handle_signals.
-	 */
-	Handle_Interrupt &= ~INTERRUPT_SIGNAL;
-	if (-1 == _pSLsig_handle_signals ())
-	  {
-	     status = -1;
-	     break;
-	  }
-     }
-   while (Handle_Interrupt & INTERRUPT_SIGNAL);
+   /* The race condition that may be here can be ignored as long
+    * as the Handle_Interrupt variable is modified before the
+    * call to _pSLinterp_handle_signals.
+    */
+   Handle_Interrupt &= ~INTERRUPT_SIGNAL;
+   if (-1 == _pSLsig_handle_signals ())
+     status = -1;
 
    SLang_Num_Function_Args = nargs;
    Next_Function_Num_Args = nnargs;
    Lang_Break = br; Lang_Return = r; Lang_Break_Condition = bc;
+#if CHECK_SIGNALS_NOT_REENTRANT
    inprogress = 0;
+#endif
    return status;
 }
 

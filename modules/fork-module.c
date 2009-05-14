@@ -231,7 +231,39 @@ static int execve_intrin (void)
 
 static void _exit_intrin (int *s)
 {
+   (void) fflush (stdout);
+   (void) fflush (stderr);
    _exit (*s);
+}
+
+static void pipe_intrin (void)
+{
+   int fds[2];
+   SLFile_FD_Type *f0;
+   SLFile_FD_Type *f1;
+
+   while (-1 == pipe (fds))
+     {
+	if (errno == EINTR)
+	  {
+	     if (-1 != SLang_handle_interrupt ())
+	       continue;
+	  }
+	SLerrno_set_errno (errno);
+	SLang_verror (SL_OS_Error, "pipe failed: %s", SLerrno_strerror(errno));
+	return;
+     }
+   
+   f0 = SLfile_create_fd ("*pipe*", fds[0]);
+   f1 = SLfile_create_fd ("*pipe*", fds[1]);
+   if ((NULL != f0) && (NULL != f1))
+     {
+	/* Ignore errors and allow the free_fd routines to clean up */
+	(void) SLfile_push_fd (f0);
+	(void) SLfile_push_fd (f1);
+     }
+   SLfile_free_fd (f1);
+   SLfile_free_fd (f0);
 }
 
 static SLang_IConstant_Type Module_IConstants [] =
@@ -249,6 +281,7 @@ static SLang_Intrin_Fun_Type Module_Intrinsics [] =
    MAKE_INTRINSIC_0("execv", execv_intrin, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("execvp", execvp_intrin, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("execve", execve_intrin, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_0("pipe", pipe_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_1("_exit", _exit_intrin, SLANG_VOID_TYPE, SLANG_INT_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };

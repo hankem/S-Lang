@@ -87,7 +87,7 @@ alarm \
 pause \
 vfscanf \
 lstat readlink symlink link \
-kill \
+kill killpg \
 snprintf vsnprintf \
 getppid getegid geteuid getuid getgid setgid setuid \
 setpgid getpgid setpgrp getpgrp setsid \
@@ -224,6 +224,11 @@ fi
 AC_SUBST(ICONV_MODULE)
 dnl # AC_SUBST(ICONV_LIB)
 dnl # AC_SUBST(ICONV_INC)
+
+AC_CHECK_FUNCS(sysconf, [
+ SYSCONF_MODULE="sysconf-module.so"
+ ], [SYSCONF_MODULE=""])
+AC_SUBST(SYSCONF_MODULE)
 
 dnl # Readline support for slsh
 AC_ARG_WITH(readline,

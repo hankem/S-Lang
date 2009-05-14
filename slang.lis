@@ -140,6 +140,8 @@
 @modules/select.sl
 @modules/slsmg-module.c
 @modules/slsmg.sl
+@modules/sysconf-module.c
+@modules/sysconf.sl
 @modules/termios-module.c
 @modules/termios.sl
 @modules/template.c

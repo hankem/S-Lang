@@ -209,7 +209,7 @@ static int is_interrupt (int e, int check_eagain)
 #endif
    return 0;
 }
-	
+
 static int get_fd (SLFile_FD_Type *f, int *fdp)
 {
    if (f->is_closed == 0)
@@ -329,6 +329,17 @@ static int do_read (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 	*nump = 0;
 	return -1;
      }
+}
+
+static int posix_close_fd (int *fd)
+{
+   while (-1 == close (*fd))
+     {
+	if (0 == is_interrupt (errno, 1))
+	  return -1;
+     }
+
+   return 0;
 }
 
 static int posix_close (SLFile_FD_Type *f)
@@ -541,33 +552,27 @@ SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
 }
 
 /* Not yet a public function */
-static SLFile_FD_Type *SLfile_dup2_fd (SLFile_FD_Type *f0, int newfd)
+static int SLfile_dup2_fd (SLFile_FD_Type *f0, int newfd)
 {
-   SLFile_FD_Type *f;
    int fd0, fd;
 
-   if (f0 == NULL)
-     return NULL;
-
-   if (-1 == get_fd (f0, &fd0))
-     return NULL;
+   if ((f0 == NULL)
+       || (-1 == get_fd (f0, &fd0)))
+     {
+#ifdef EBADF
+	SLerrno_set_errno (EBADF);
+#endif
+	return -1;
+     }
 
    while (-1 == (fd = dup2 (fd0, newfd)))
      {
 	if (is_interrupt (errno, 1))
 	  continue;
 	
-	return NULL;
+	return -1;
      }
-   
-   if (NULL == (f = SLfile_create_fd (f0->name, fd)))
-     {
-	while ((-1 == close (fd)) && is_interrupt (errno, 1))
-	  ;
-	return NULL;
-     }
-   
-   return f;
+   return fd;
 }
 
 int SLfile_get_fd (SLFile_FD_Type *f, int *fd)
@@ -674,6 +679,34 @@ static int dummy_close (VOID_STAR cd)
 {
    (void) cd;
    return 0;
+}
+
+static int posix_fileno_int (void)
+{
+   int fd;
+   SLFile_FD_Type *f;
+
+   if (SLang_peek_at_stack () == SLANG_FILE_PTR_TYPE)
+     {
+	SLang_MMT_Type *mmt;
+	FILE *fp;
+
+	if (-1 == SLang_pop_fileptr (&mmt, &fp))
+	  return -1;
+
+	fd = fileno (fp);
+	SLang_free_mmt (mmt);
+	return fd;
+     }
+
+   if (-1 == SLfile_pop_fd (&f))
+     return -1;
+	
+   if (-1 == get_fd (f, &fd))
+     fd = -1;
+	
+   SLfile_free_fd (f);
+   return fd;
 }
 
 static void posix_fileno (void)
@@ -795,13 +828,9 @@ static void posix_dup (SLFile_FD_Type *f)
    SLfile_free_fd (f);
 }
 
-static void posix_dup2 (SLFile_FD_Type *f, int *new_fd)
+static int posix_dup2 (SLFile_FD_Type *f, int *new_fd)
 {
-   if ((NULL == (f = SLfile_dup2_fd (f, *new_fd)))
-       || (-1 == SLfile_push_fd (f)))
-     SLang_push_null ();
-
-   SLfile_free_fd (f);
+   return SLfile_dup2_fd (f, *new_fd);
 }
 	
 #define I SLANG_INT_TYPE
@@ -815,6 +844,7 @@ static void posix_dup2 (SLFile_FD_Type *f, int *new_fd)
 static SLang_Intrin_Fun_Type Fd_Name_Table [] =
 {
    MAKE_INTRINSIC_0("fileno", posix_fileno, V),
+   MAKE_INTRINSIC_0("_fileno", posix_fileno_int, I),
    MAKE_INTRINSIC_0("isatty", posix_isatty, I),
    MAKE_INTRINSIC_0("open", posix_open, V),
    MAKE_INTRINSIC_3("read", posix_read, V, F, R, U),
@@ -822,8 +852,9 @@ static SLang_Intrin_Fun_Type Fd_Name_Table [] =
    MAKE_INTRINSIC_2("fdopen", posix_fdopen, V, F, S),
    MAKE_INTRINSIC_2("write", posix_write, V, F, B),
    MAKE_INTRINSIC_1("dup_fd", posix_dup, V, F),
-   MAKE_INTRINSIC_1("dup2_fd", posix_dup2, V, F),
+   MAKE_INTRINSIC_2("dup2_fd", posix_dup2, I, F, I),
    MAKE_INTRINSIC_1("close", posix_close, I, F),
+   MAKE_INTRINSIC_1("_close", posix_close_fd, I, I),
    SLANG_END_INTRIN_FUN_TABLE
 };
 #undef I

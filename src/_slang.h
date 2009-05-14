@@ -654,6 +654,7 @@ extern SLang_Object_Type *_pSLang_get_run_stack_pointer (void);
 extern SLang_Object_Type *_pSLang_get_run_stack_base (void);
 extern int _pSLang_dump_stack (void);
 extern int _pSLang_peek_at_stack2 (SLtype *);
+extern int _pSLang_restart_arg_list (int nargs);
 
 struct _pSLang_NameSpace_Type
 {
@@ -1450,7 +1451,11 @@ extern int _pSLerr_get_last_error (void);
 extern int _pSLerr_pop_exception (int *);
 extern void _pSLerr_free_queued_messages (void);
 
-extern char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *);
+#define _SLERR_MSG_ERROR	1
+#define _SLERR_MSG_WARNING	2
+#define _SLERR_MSG_TRACEBACK	3
+extern char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *, int);
+
 extern int _pSLerr_throw (void);
 extern int (*_pSLerr_New_Exception_Hook)(SLFUTURE_CONST char *name, SLFUTURE_CONST char *desc, int error_code);
 

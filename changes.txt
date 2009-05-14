@@ -126,6 +126,18 @@ Changes since 2.1.4
        array = list_to_array (list [,type])
 63. .../makefile.all,slsh/slsh.c: Additional Visual C updates.  Also, io.h is
     needed to compile slsh Visual C. (Jon Parise)
+64. src/slproc.c: added killpg intrinsic
+65. modules/sysconf.c: Wrappers around the sysconf, pathconf, and
+    confstr posix function.s
+66. modules/fork-module.c: Added the pipe intrinsic.
+67. src/slexcept.c: Added traceback info to the exception object.
+68. src/slposio.c: Added a _close intrinsic, which takes an integer
+    file descriptor instead of the corresponding slang object.  A
+    _fileno intrinsic was also added that returns the integer
+    descriptor.  A bug in the dup2 intrinsic added in change 51 was
+    fixed.
+69. src/slstruct.c: Added aget/aput methods for user-defined types.
+70. src/slang.c: handle_signals was made reentrant.
 
 {{{ Previous Versions
 

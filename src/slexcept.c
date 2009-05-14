@@ -255,14 +255,14 @@ static int _pSLerr_get_last_error_line_info (SLCONST char **filep, int *linep, S
    return 0;
 }
 
-static char *get_error_msg_from_queue (void)
+static char *get_error_msg_from_queue (int type)
 {
    Error_Context_Type *e = Error_Context;
 
    if (e == NULL)
      return NULL;
 
-   return _pSLerr_get_error_from_queue (e->err_queue);
+   return _pSLerr_get_error_from_queue (e->err_queue, type);
 }
 
 
@@ -378,10 +378,10 @@ static void new_exception (char *name, int *baseclass, char *description)
 
 static void get_exception_info_intrinsic (void)
 {
-#define NUM_EXCEPT_FIELDS 7
+#define NUM_EXCEPT_FIELDS 8
    static SLFUTURE_CONST char *field_names[NUM_EXCEPT_FIELDS] =
      {
-	"error", "descr", "file", "line", "function", "object", "message"
+	"error", "descr", "file", "line", "function", "object", "message", "traceback"
      };
    SLtype field_types[NUM_EXCEPT_FIELDS];
    VOID_STAR field_values[NUM_EXCEPT_FIELDS];
@@ -389,7 +389,8 @@ static void get_exception_info_intrinsic (void)
    SLCONST char *desc;
    SLCONST char *file;
    SLCONST char *function;
-   SLCONST char *msg;
+   SLCONST char *errmsg;
+   SLCONST char *tbmsg;
    int linenum;
 
    err = _pSLerr_get_last_error ();
@@ -431,16 +432,20 @@ static void get_exception_info_intrinsic (void)
 	field_values[5] = _pSLclass_get_ptr_to_value (_pSLclass_get_class (data_type),
 						      &Error_Context->object_thrown);
      }
-   msg = get_error_msg_from_queue  ();
-   if ((msg == NULL) || (*msg == 0))
-     msg = desc;
+   errmsg = get_error_msg_from_queue  (_SLERR_MSG_ERROR);
+   if ((errmsg == NULL) || (*errmsg == 0))
+     errmsg = desc;
    field_types[6] = SLANG_STRING_TYPE;
-   field_values[6] = (VOID_STAR) &msg;
+   field_values[6] = (VOID_STAR) &errmsg;
+
+   tbmsg = get_error_msg_from_queue  (_SLERR_MSG_TRACEBACK);
+   field_types[7] = (tbmsg == NULL) ? SLANG_NULL_TYPE : SLANG_STRING_TYPE;
+   field_values[7] = (VOID_STAR) &tbmsg;
 
    (void) SLstruct_create_struct (NUM_EXCEPT_FIELDS, field_names, field_types, field_values);
-   if (msg != desc) 
-     SLang_free_slstring ((char *) msg);
-   /* (void) SLang_push_integer (_pSLerr_get_last_error ()); */
+   if (errmsg != desc)
+     SLang_free_slstring ((char *) errmsg);
+   SLang_free_slstring ((char *)tbmsg);
 }
 
 int _pSLerr_pop_exception (int *e)

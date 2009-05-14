@@ -377,9 +377,6 @@ typedef struct _Error_Message_Type
 {
    char *msg;			       /* SLstring, may be NULL */
    int msg_type;
-#define _SLERR_MSG_ERROR	1
-#define _SLERR_MSG_WARNING	2
-#define _SLERR_MSG_TRACEBACK	3
    struct _Error_Message_Type *next;
 }
 Error_Message_Type;
@@ -540,31 +537,34 @@ static void print_queue (void)
      }
 }
 
-/* This function returns a pointer to the first error message in the queue.
- * Make no attempts to free the returned pointer.
+/* This function concatenates messages in the queue of the specified type and
+ * returns them as an SLstring.
  */
-char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q)
+char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q, int type)
 {
    Error_Message_Type *m;
    unsigned int len;
    char *err, *err1, *err_max;
+   int nl_len;
 
    if ((q == NULL) 
        && (NULL == (q = Default_Error_Queue)))
      return NULL;
 
    len = 0;
+   /* Only _SLERR_MSG_ERROR type errors need \n to separate them. */
+   nl_len = (type == _SLERR_MSG_ERROR) ? 1 : 0;
    m = q->head;
    while (m != NULL)
      {
-	if (m->msg_type == _SLERR_MSG_ERROR)
-	  len += 1 + strlen (m->msg);
+	if (m->msg_type == type)
+	  len += nl_len + strlen (m->msg);
 
 	m = m->next;
      }
    
    if (len) 
-     len--;			       /* last \n not needed */
+     len -= nl_len;			       /* last \n not needed */
 
    if (NULL == (err = _pSLallocate_slstring (len)))
      return NULL;
@@ -574,12 +574,12 @@ char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q)
    m = q->head;
    while (m != NULL)
      {
-	if (m->msg_type == _SLERR_MSG_ERROR)
+	if (m->msg_type == type)
 	  {
 	     unsigned int dlen = strlen (m->msg);
 	     strcpy (err1, m->msg);
 	     err1 += dlen;
-	     if (err1 != err_max)
+	     if (nl_len && (err1 != err_max))
 	       *err1++ = '\n';
 	  }
 	m = m->next;

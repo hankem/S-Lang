@@ -477,6 +477,6 @@
 #v+
      () = printf ("%s laid %d eggs\n", chicken_name, num_egg);
 #v-
-\seealso{fputs, printf, fwrite, message}
+\seealso{fputs, fprintf, fwrite, message}
 \done
 

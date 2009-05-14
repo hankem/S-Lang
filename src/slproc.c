@@ -66,6 +66,17 @@ static int kill_cmd (int *pid, int *sig)
 }
 #endif
 
+#ifdef HAVE_KILLPG
+static int killpg_cmd (int *pgrp, int *sig)
+{
+   int ret;
+
+   if (-1 == (ret = killpg ((pid_t) *pgrp, *sig)))
+     _pSLerrno_errno = errno;
+   return ret;
+}
+#endif
+
 static int getpid_cmd (void)
 {
    return getpid ();
@@ -228,6 +239,9 @@ static SLang_Intrin_Fun_Type Process_Name_Table[] =
 
 #ifdef HAVE_KILL
    MAKE_INTRINSIC_II("kill", kill_cmd, SLANG_INT_TYPE),
+#endif
+#ifdef HAVE_KILLPG
+   MAKE_INTRINSIC_II("killpg", killpg_cmd, SLANG_INT_TYPE),
 #endif
    SLANG_END_INTRIN_FUN_TABLE
 };

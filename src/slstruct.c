@@ -678,6 +678,8 @@ typedef struct _Struct_Info_Type
    /* Other methods */
    SLang_Name_Type *destroy_method;
    SLang_Name_Type *string_method;
+   SLang_Name_Type *aget_method;
+   SLang_Name_Type *aput_method;
 }
 Struct_Info_Type;
 
@@ -1239,6 +1241,95 @@ static void add_string_method (SLtype *typep, SLang_Ref_Type *ref)
    si->string_method = SLang_copy_function (f);
 }
 
+static int aget_method (SLtype type, unsigned int num_indices)
+{
+   Struct_Info_Type *si;
+   
+   if (NULL == (si = find_struct_info (type, 1)))
+     return -1;
+   
+   if (si->aget_method == NULL)
+     {
+	SLang_verror (SL_Internal_Error, "aget method called but is NULL");
+	return -1;
+     }
+
+   if ((-1 == _pSLang_restart_arg_list ((int) num_indices))
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (si->aget_method)))
+     return -1;
+   
+   return 0;
+}
+
+static int aput_method (SLtype type, unsigned int num_indices)
+{
+   Struct_Info_Type *si;
+   
+   if (NULL == (si = find_struct_info (type, 1)))
+     return -1;
+   
+   if (si->aput_method == NULL)
+     {
+	SLang_verror (SL_Internal_Error, "aput method called but is NULL");
+	return -1;
+     }
+
+   if ((-1 == _pSLang_restart_arg_list ((int) num_indices))
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (si->aput_method)))
+     return -1;
+
+   return 0;
+}
+
+
+static void add_aget_method (SLtype *typep, SLang_Ref_Type *ref)
+{
+   Struct_Info_Type *si;
+   SLang_Name_Type *f;
+   SLtype type = *typep;
+   SLang_Class_Type *cl;
+
+   if (NULL == (cl = _pSLclass_get_class (type)))
+     return;
+
+   if (NULL == (f = SLang_get_fun_from_ref (ref)))
+     return;
+
+   if (NULL == (si = find_struct_info (type, 1)))
+     return;
+   
+   if (si->aget_method != NULL)
+     SLang_free_function (si->aget_method);
+
+   si->aget_method = SLang_copy_function (f);
+   (void) SLclass_set_aput_function (cl, aget_method);
+}
+
+static void add_aput_method (SLtype *typep, SLang_Ref_Type *ref)
+{
+   Struct_Info_Type *si;
+   SLang_Name_Type *f;
+   SLtype type = *typep;
+   SLang_Class_Type *cl;
+
+   if (NULL == (cl = _pSLclass_get_class (type)))
+     return;
+
+   if (NULL == (f = SLang_get_fun_from_ref (ref)))
+     return;
+
+   if (NULL == (si = find_struct_info (type, 1)))
+     return;
+   
+   if (si->aput_method != NULL)
+     SLang_free_function (si->aput_method);
+
+   si->aput_method = SLang_copy_function (f);
+   (void) SLclass_set_aput_function (cl, aput_method);
+}
+
 static Typecast_Info_Type *find_typecast (Struct_Info_Type *si, SLtype to)
 {
    Typecast_Info_Type *ti = si->ti;
@@ -1789,6 +1880,8 @@ static SLang_Intrin_Fun_Type Struct_Table [] =
    MAKE_INTRINSIC_0("__add_binary", add_binary_op_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("__add_destroy", add_destroy_method, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_2("__add_string", add_string_method, SLANG_VOID_TYPE, SLANG_DATATYPE_TYPE, SLANG_REF_TYPE),
+   MAKE_INTRINSIC_2("__add_aget", add_aget_method, SLANG_VOID_TYPE, SLANG_DATATYPE_TYPE, SLANG_REF_TYPE),
+   MAKE_INTRINSIC_2("__add_aput", add_aput_method, SLANG_VOID_TYPE, SLANG_DATATYPE_TYPE, SLANG_REF_TYPE),
    MAKE_INTRINSIC_3("__add_typecast", add_typecast_method, SLANG_VOID_TYPE, SLANG_DATATYPE_TYPE, SLANG_DATATYPE_TYPE, SLANG_REF_TYPE),
 
    /* MAKE_INTRINSIC_I("_create_struct", create_struct, SLANG_VOID_TYPE), */

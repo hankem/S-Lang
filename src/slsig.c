@@ -283,20 +283,18 @@ int _pSLsig_block_and_call (int (*func)(VOID_STAR), VOID_STAR cd)
    
    return status;
 }
-	
+
+/* This function is reentrant */
 static int handle_signal (Signal_Type *s)
 {
    int status = 0;
    int was_blocked;
-   static volatile int inprogress = 0;
-   if (inprogress)
-     return 0;
-
-   /* There is a race condition here */
-   inprogress++;
 
    (void) block_signal (s->sig, &was_blocked);
 
+   /* At this point, sig is blocked and the handler is about to be called. 
+    * The pending flag can be safely set to 0 here.
+    */
    s->pending = 0;
 
    if (s->handler != NULL)
@@ -320,7 +318,6 @@ static int handle_signal (Signal_Type *s)
    if (was_blocked == 0)
      (void) unblock_signal (s->sig);
 
-   inprogress = 0;
    return status;
 }
 
