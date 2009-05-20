@@ -138,6 +138,14 @@ Changes since 2.1.4
     fixed.
 69. src/slstruct.c: Added aget/aput methods for user-defined types.
 70. src/slang.c: handle_signals was made reentrant.
+71. modules/fcntl-module.c: Accept an int as a file descriptor.
+72. src/slposio.c: @FD_Type(int) may be used to convert an int into
+    the corresponding FD_Type object.
+73. modules/sysconf-module.c: Added #ifdefs for HAVE_SYSCONF, etc.
+74. modules/zlib-module.c: Added #ifdefs for the ZLIB constants
+75. src/slstdio.c: Rewrote fputs intrinsic in terms of fwrite to
+    better deal with EINTR.  Also, fopen, fclose and fflush are
+    restarted upon EINTR.
 
 {{{ Previous Versions
 

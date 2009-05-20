@@ -729,7 +729,7 @@ int SLang_pop_array_index (SLindex_Type *i)
    y--;
    if (y->o_data_type == SLANG_ARRAY_INDEX_TYPE)
      {
-	*i = y->v.int_val;
+	*i = y->v.index_val;
 	Stack_Pointer = y;
 	return 0;
      }
@@ -5299,14 +5299,13 @@ static int inner_interp (SLBlock_Type *addr_start)
 #if USE_UNUSED_BYCODES_IN_SWITCH
 # if !SLANG_OPTIMIZE_FOR_SPEED
 	   case SLANG_BC_IF_BLOCK:
-# endif
 	     _pSLang_verror (SL_INTERNAL_ERROR, "Byte-Code 0x%X is not valid", addr->bc_main_type);
 	     break;
+# endif
 #endif
 	   case SLANG_BC_BREAK_N:
 	     Lang_Break_Condition = Lang_Break = addr->b.i_blk;
 	     goto return_1;
-	     break;
 
 	   case SLANG_BC_CONTINUE_N:
 	     Lang_Break = -(addr->b.i_blk - 1);

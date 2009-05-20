@@ -209,9 +209,10 @@ static int block_signal (int sig, int *was_blocked)
    (void) do_sigprocmask (SIG_BLOCK, &new_mask, &old_mask);
    *was_blocked = sigismember (&old_mask, sig);
    return 0;
-#endif
+#else
    *was_blocked = 0;
    return 0;
+#endif
 }
 
 static int unblock_signal (int sig)

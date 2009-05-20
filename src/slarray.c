@@ -2526,6 +2526,11 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 }
 #endif
 
+static int pop_range_int (SLindex_Type *ip)
+{
+   return SLang_pop_array_index (ip);
+}
+
 /* FIXME: Priority=medium
  * This needs to be updated to work with all integer types.
  * Adding support for other types is going to require a generalization
@@ -2565,7 +2570,7 @@ static int inline_implicit_array (int ntype)
 
    if (ntype)
      {
-	if (-1 == SLang_pop_int (&n))
+	if (-1 == pop_range_int (&n))
 	  return -1;
 	has_vals[2] = 0;
 	count--;
@@ -2610,7 +2615,7 @@ static int inline_implicit_array (int ntype)
 	     break;
 #endif
 	   default:
-	     if (-1 == SLang_pop_integer (&itmp))
+	     if (-1 == pop_range_int (&itmp))
 	       return -1;
 	     index_vals[i] = itmp;
 #if SLANG_HAS_FLOAT

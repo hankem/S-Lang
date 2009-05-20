@@ -123,24 +123,41 @@ static int handle_errno (int e)
 
 /* The man page for fputs indicates that it returns a non-negative integer, or
  * EOF.  It says nothing about how many bytes were sucessfully written.  Sigh.
+ * So, use fwrite instead.
  */
 static int signal_safe_fputs (char *buf, FILE *fp)
 {
+   unsigned int len;
+   unsigned int num_written;
+
+   len = strlen (buf);
+   num_written = 0;
    errno = 0;
-   if (EOF != fputs (buf, fp))
-     return 0;
-   _pSLerrno_errno = errno;
-   return -1;
+   while (num_written < len)
+     {
+	unsigned int n = len - num_written;
+	unsigned int dn = fwrite (buf + num_written, 1, n, fp);
+
+	num_written += dn;
+	if (dn < n)
+	  {
+	     if (0 == handle_errno (errno))
+	       return -1;
+	  }
+     }
+   return num_written;
 }
 
 static int signal_safe_fgets (char *buf, unsigned int buflen, FILE *fp)
 {
    errno = 0;
 
-   if (NULL != fgets (buf, buflen, fp))
-     return 0;
-   _pSLerrno_errno = errno;
-   return -1;
+   while (NULL == fgets (buf, buflen, fp))
+     {
+	if (0 == handle_errno (errno))
+	  return -1;
+     }
+   return 0;
 }
 
 
@@ -236,14 +253,26 @@ static int open_file_type (char *file, int fd, char *mode,
 
 static FILE *fopen_fun (char *f, char *m)
 {
-   return fopen (f, m);
+   FILE *fp;
+
+   errno = 0;
+   while (NULL == (fp = fopen (f, m)))
+     {
+	if (0 == handle_errno (errno))
+	  return NULL;
+     }
+   return fp;
 }
+
 static int fclose_fun (FILE *fp)
 {
-   int status = fclose (fp);
-   if (status != 0)
-     _pSLerrno_errno = errno;
-   return status;
+   errno = 0;
+   while (EOF == fclose (fp))
+     {
+	if (0 == handle_errno (errno))
+	  return EOF;
+     }
+   return 0;
 }
 
 static void stdio_fopen (char *file, char *mode)
@@ -365,18 +394,23 @@ static int close_file_type (SL_File_Table_Type *t)
    if (NULL == fp) ret = -1;
    else
      {
-	if (0 == (t->flags & SL_PIPE))
+	while (1)
 	  {
-	     if (EOF == (ret = fclose (fp)))
-	       _pSLerrno_errno = errno;
-	  }
+	     if (0 == (t->flags & SL_PIPE))
+	       {
+		  if (EOF == (ret = fclose (fp)))
+		    ret = -1;
+	       }
 #ifdef HAVE_POPEN
-	else
-	  {
-	     if (-1 == (ret = pclose (fp)))
-	       _pSLerrno_errno = errno;
-	  }
+	     else
+	       {
+		  ret = pclose (fp);
+	       }
 #endif
+	     if ((ret != -1)
+		 || (0 == handle_errno (errno)))
+	       break;
+	  }
      }
 
    if (t->file != NULL) SLang_free_slstring (t->file);
@@ -653,10 +687,7 @@ static int stdio_fputs (char *s, SL_File_Table_Type *t)
    if (NULL == (fp = check_fp (t, SL_WRITE)))
      return -1;
 
-   if (-1 == signal_safe_fputs (s, fp))
-     return -1;
-
-   return (int) _pSLstring_bytelen (s);
+   return signal_safe_fputs (s, fp);
 }
 
 static int stdio_fflush (SL_File_Table_Type *t)
@@ -666,10 +697,11 @@ static int stdio_fflush (SL_File_Table_Type *t)
    if (NULL == (fp = check_fp (t, SL_WRITE)))
      return -1;
 
-   if (EOF == fflush (fp))
+   errno = 0;
+   while (EOF == fflush (fp))
      {
-	_pSLerrno_errno = errno;
-	return -1;
+	if (0 == handle_errno (errno))
+	  return -1;
      }
 
    return 0;
@@ -977,10 +1009,7 @@ static int stdio_fprintf (void)
 	return -1;
      }
    
-   if (-1 == signal_safe_fputs (s, fp))
-     status = -1;
-   else
-     status = (int) _pSLstring_bytelen (s);
+   status = signal_safe_fputs (s, fp);
 
    SLang_free_mmt (mmt);
    _pSLang_free_slstring (s);
@@ -998,10 +1027,7 @@ static int stdio_printf (void)
    if (-1 == SLang_pop_slstring (&s))
      return -1;
    
-   if (-1 == signal_safe_fputs (s, stdout))
-     status = -1;
-   else
-     status = (int) _pSLstring_bytelen (s);
+   status = signal_safe_fputs (s, stdout);
 
    _pSLang_free_slstring (s);
    return status;

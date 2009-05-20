@@ -168,6 +168,10 @@
 #undef HAVE_SYS_UN_H
 #undef socklen_t
 
+#undef HAVE_CONFSTR
+#undef HAVE_SYSCONF
+#undef HAVE_PATHCONF
+
 /* These two are needed on DOS-like systems.  Unix does not require them.
  * They are included here for consistency.
  *

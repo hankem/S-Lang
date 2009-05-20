@@ -25,65 +25,91 @@ static int check_and_set_errno (int e)
    return -1;
 }
 
-static int do_fcntl_2 (SLFile_FD_Type *f, int cmd)
+static int do_fcntl_2 (int fd, int cmd)
 {
    int ret;
-   int fd;
 
-   if (-1 == SLfile_get_fd (f, &fd))
-     return -1;
-     
    while ((-1 == (ret = fcntl (fd, cmd)))
 	  && (0 == check_and_set_errno (errno)))
      ;
-   
+
    return ret;
 }
 
-static int do_fcntl_3_int (SLFile_FD_Type *f, int cmd, int flags)
+static int do_fcntl_3_int (int fd, int cmd, int flags)
 {
    int ret;
-   int fd;
-   
       
-   if (-1 == SLfile_get_fd (f, &fd))
-     return -1;
-
    while ((-1 == (ret = fcntl (fd, cmd, flags)))
 	  && (0 == check_and_set_errno (errno)))
      ;
    
    return ret;
 }
+
+static int pop_fd (int *fdp)
+{
+   SLFile_FD_Type *f;
+   int status;
+
+   if (SLang_peek_at_stack () == SLANG_INT_TYPE)
+     return SLang_pop_int (fdp);
    
-static int fcntl_getfd (SLFile_FD_Type *f)
-{
-   return do_fcntl_2 (f, F_GETFD);
+   if (-1 == SLfile_pop_fd (&f))
+     return -1;
+
+   status = SLfile_get_fd (f, fdp);
+   SLfile_free_fd (f);
+   return status;
 }
 
-static int fcntl_setfd (SLFile_FD_Type *f, int *flags)
+static int fcntl_getfd (void)
 {
-   return do_fcntl_3_int (f, F_SETFD, *flags);
+   int fd;
+
+   if (-1 == pop_fd (&fd))
+     return -1;
+
+   return do_fcntl_2 (fd, F_GETFD);
 }
 
-static int fcntl_getfl (SLFile_FD_Type *f)
+static int fcntl_setfd (int *flags)
+{
+   int fd;
+
+   if (-1 == pop_fd (&fd))
+     return -1;
+   return do_fcntl_3_int (fd, F_SETFD, *flags);
+}
+
+static int fcntl_getfl (void)
 {   
-   return do_fcntl_2 (f, F_GETFL);
+   int fd;
+
+   if (-1 == pop_fd (&fd))
+     return -1;
+
+   return do_fcntl_2 (fd, F_GETFL);
 }
 
-static int fcntl_setfl (SLFile_FD_Type *f, int *flags)
+static int fcntl_setfl (int *flags)
 {
-   return do_fcntl_3_int (f, F_SETFL, *flags);
+   int fd;
+
+   if (-1 == pop_fd (&fd))
+     return -1;
+
+   return do_fcntl_3_int (fd, F_SETFL, *flags);
 }
 
 #define F SLANG_FILE_FD_TYPE
 #define I SLANG_INT_TYPE
 static SLang_Intrin_Fun_Type Fcntl_Intrinsics [] =
 {
-   MAKE_INTRINSIC_1("fcntl_getfd", fcntl_getfd, I, F),
-   MAKE_INTRINSIC_2("fcntl_setfd", fcntl_setfd, I, F, I),
-   MAKE_INTRINSIC_1("fcntl_getfl", fcntl_getfl, I, F),
-   MAKE_INTRINSIC_2("fcntl_setfl", fcntl_setfl, I, F, I),
+   MAKE_INTRINSIC_0("fcntl_getfd", fcntl_getfd, I),
+   MAKE_INTRINSIC_1("fcntl_setfd", fcntl_setfd, I, I),
+   MAKE_INTRINSIC_0("fcntl_getfl", fcntl_getfl, I),
+   MAKE_INTRINSIC_1("fcntl_setfl", fcntl_setfl, I, I),
 
    SLANG_END_INTRIN_FUN_TABLE
 };
@@ -93,6 +119,10 @@ static SLang_Intrin_Fun_Type Fcntl_Intrinsics [] =
 static SLang_IConstant_Type Fcntl_Consts [] =
 {
    MAKE_ICONSTANT("FD_CLOEXEC", FD_CLOEXEC),
+#ifndef O_ACCMODE
+# define O_ACCMODE (O_RDONLY | O_WRONLY | O_RDWR)
+#endif
+   MAKE_ICONSTANT("O_ACCMODE", O_ACCMODE),
    SLANG_END_ICONST_TABLE
 };
 

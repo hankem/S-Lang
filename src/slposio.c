@@ -79,6 +79,9 @@ struct _pSLFile_FD_Type
 
    int is_closed;		       /* non-zero if closed */
 
+#define _SLFD_NO_AUTO_CLOSE	1
+   unsigned int flags;
+
    /* methods */
    int clientdata_id;
    VOID_STAR clientdata;
@@ -94,6 +97,26 @@ struct _pSLFile_FD_Type
 
    SLFile_FD_Type *next;	       /* next in the list */
 };
+
+static int get_fd (SLFile_FD_Type *f, int *fdp)
+{
+   if (f->is_closed == 0)
+     {
+	if (f->get_fd == NULL)
+	  {
+	     *fdp = f->fd;
+	     return 0;
+	  }
+   
+	if (0 == (*f->get_fd)(f->clientdata, fdp))
+	  return 0;
+     }
+   *fdp = -1;
+#ifdef EBADF
+   SLerrno_set_errno (EBADF);
+#endif
+   return -1;
+}
 
 static SLFile_FD_Type *FD_Type_List = NULL;
 
@@ -125,6 +148,25 @@ static void unchain_fdtype (SLFile_FD_Type *f)
 	     return;
 	  }
      }
+}
+
+static SLFile_FD_Type *find_chained_fd (int fd)
+{
+   SLFile_FD_Type *f;
+   
+   f = FD_Type_List;
+   while (f != NULL)
+     {
+	int fd1;
+	
+	if ((0 == get_fd (f, &fd1))
+	    && (fd1 == fd))
+	  return f;
+	
+	f = f->next;
+     }
+   
+   return NULL;
 }
 
 /* This function gets called when the fclose intrinsic is called on an fdopen
@@ -209,27 +251,6 @@ static int is_interrupt (int e, int check_eagain)
 #endif
    return 0;
 }
-
-static int get_fd (SLFile_FD_Type *f, int *fdp)
-{
-   if (f->is_closed == 0)
-     {
-	if (f->get_fd == NULL)
-	  {
-	     *fdp = f->fd;
-	     return 0;
-	  }
-   
-	if (0 == (*f->get_fd)(f->clientdata, fdp))
-	  return 0;
-     }
-   *fdp = -1;
-#ifdef EBADF
-   SLerrno_set_errno (EBADF);
-#endif
-   return -1;
-}
-
 	
 static int do_close (SLFile_FD_Type *f)
 {
@@ -409,6 +430,9 @@ static void posix_read (SLFile_FD_Type *f, SLang_Ref_Type *ref, unsigned int *nb
 SLFile_FD_Type *SLfile_create_fd (SLFUTURE_CONST char *name, int fd)
 {
    SLFile_FD_Type *f;
+
+   if (name == NULL)
+     name = "";
 
    if (NULL == (f = (SLFile_FD_Type *) SLmalloc (sizeof (SLFile_FD_Type))))
      return NULL;
@@ -594,7 +618,8 @@ void SLfile_free_fd (SLFile_FD_Type *f)
 	return;
      }
    
-   (void) do_close (f);
+   if (0 == (f->flags & _SLFD_NO_AUTO_CLOSE))
+     (void) do_close (f);
 
    if ((f->clientdata != NULL)
        && (f->free_client_data != NULL))
@@ -726,13 +751,13 @@ static void posix_fileno (void)
    fd = fileno (fp);
 
    f = SLfile_create_fd (name, fd);
-   
    if (f != NULL)
      {
-	f->close = dummy_close;		       /* prevent fd from being closed 
-						* when it goes out of scope
-						*/
+	/* prevent fd from being closed  when it goes out of scope */
+	f->flags |= _SLFD_NO_AUTO_CLOSE;
+	f->close = dummy_close;
      }
+
    SLang_free_mmt (mmt);
 
    if (-1 == SLfile_push_fd (f))
@@ -832,7 +857,43 @@ static int posix_dup2 (SLFile_FD_Type *f, int *new_fd)
 {
    return SLfile_dup2_fd (f, *new_fd);
 }
+
+static int fdtype_datatype_deref (SLtype type)
+{
+   SLFile_FD_Type *f;
+   int status;
+   int fd;
+
+   (void) type;
+
+   if (-1 == SLang_pop_int (&fd))
+     return -1;
+#ifdef F_GETFL
+   while (-1 == fcntl (fd, F_GETFL))
+     {
+	if (is_interrupt (errno, 1))
+	  continue;
 	
+	return SLang_push_null ();
+     }
+#endif
+   f = find_chained_fd (fd);
+   if (f != NULL)
+     return SLfile_push_fd (f);
+
+   /* The descriptor is valid, but we have no record of what it is.  So make sure
+    * it is not automatically closed.
+    */
+   if (NULL == (f = SLfile_create_fd (NULL, fd)))
+     return -1;
+   f->flags |= _SLFD_NO_AUTO_CLOSE;
+
+   status = SLfile_push_fd (f);
+   SLfile_free_fd (f);
+   return status;
+}
+
+
 #define I SLANG_INT_TYPE
 #define V SLANG_VOID_TYPE
 #define F SLANG_FILE_FD_TYPE
@@ -903,7 +964,9 @@ static SLang_IConstant_Type PosixIO_Consts [] =
 # define O_TEXT 0
 #endif
    MAKE_ICONSTANT("O_TEXT", O_TEXT),
-
+#ifdef O_LARGEFILE
+   MAKE_ICONSTANT("O_LARGEFILE", O_LARGEFILE),
+#endif
    SLANG_END_ICONST_TABLE
 };
 
@@ -1026,6 +1089,7 @@ int SLang_init_posix_io (void)
      return -1;
    cl->cl_destroy = destroy_fd_type;
    (void) SLclass_set_push_function (cl, fd_push);
+   cl->cl_datatype_deref = fdtype_datatype_deref;
 
    if ((-1 == SLclass_register_class (cl, SLANG_FILE_FD_TYPE, sizeof (SLFile_FD_Type), SLANG_CLASS_TYPE_PTR))
        || (-1 == SLclass_add_binary_op (SLANG_FILE_FD_TYPE, SLANG_FILE_FD_TYPE, fd_fd_bin_op, fd_fd_bin_op_result)))

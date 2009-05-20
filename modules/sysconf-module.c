@@ -22,6 +22,10 @@ USA.
 
 #include "config.h"
 
+#ifndef __EXTENSIONS__
+# define __EXTENSIONS__ 1
+#endif
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -671,6 +675,7 @@ static const Name_Map_Type SC_Name_Map_Table[] = /*{{{*/
 
 /*}}}*/
 
+#ifdef HAVE_CONFSTR
 static const Name_Map_Type CS_Name_Map_Table[] = /*{{{*/
 {
 #ifdef _CS_PATH
@@ -809,7 +814,9 @@ static const Name_Map_Type CS_Name_Map_Table[] = /*{{{*/
 };
 
 /*}}}*/
+#endif
 
+#ifdef HAVE_PATHCONF
 static const Name_Map_Type PC_Name_Map_Table[] = /*{{{*/
 {
 #ifdef _PC_LINK_MAX
@@ -879,6 +886,7 @@ static const Name_Map_Type PC_Name_Map_Table[] = /*{{{*/
 };
 
 /*}}}*/
+#endif
 
 /* return -1 upon error, 0 if name not found, 1 if found or specified. */
 static int pop_iname (const Name_Map_Type *map, int *inamep)
@@ -945,6 +953,7 @@ return_default:
      (void) SLang_push_null ();
 }
 
+#ifdef HAVE_PATHCONF
 static void pathconf_intrinsic (void)
 {
    int has_def_val = 0;
@@ -1041,7 +1050,9 @@ return_default:
 	(void) SLang_push_null ();
      }
 }
+#endif
 
+#ifdef HAVE_CONFSTR
 /* Usage: val = sysconf (name|iname [,defval]) */
 static void confstr_intrinsic (void)
 {
@@ -1109,6 +1120,7 @@ static void confstr_intrinsic (void)
      }
    (void) SLang_push_malloced_string (bufstr);   /* frees bufstr */
 }
+#endif
 
 static int push_map (const Name_Map_Type *map)
 {
@@ -1148,24 +1160,32 @@ static void sysconf_names_intrinsic (void)
    (void) push_map (SC_Name_Map_Table);
 }
 
+#ifdef HAVE_PATHCONF
 static void pathconf_names_intrinsic (void)
 {
    (void) push_map (PC_Name_Map_Table);
 }
+#endif
 
+#ifdef HAVE_CONFSTR
 static void confstr_names_intrinsic (void)
 {
    (void) push_map (CS_Name_Map_Table);
 }
+#endif
 
 static SLang_Intrin_Fun_Type Module_Intrinsics [] =
 {
    MAKE_INTRINSIC_0("sysconf", sysconf_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("sysconf_names", sysconf_names_intrinsic, SLANG_VOID_TYPE),
+#ifdef HAVE_PATHCONF
    MAKE_INTRINSIC_0("pathconf", pathconf_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("pathconf_names", pathconf_names_intrinsic, SLANG_VOID_TYPE),
+#endif
+#ifdef HAVE_CONFSTR
    MAKE_INTRINSIC_0("confstr", confstr_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("confstr_names", confstr_names_intrinsic, SLANG_VOID_TYPE),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 

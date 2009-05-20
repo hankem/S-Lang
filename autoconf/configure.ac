@@ -104,6 +104,7 @@ round \
 siglongjmp \
 fork waitpid \
 socket socketpair \
+confstr pathconf \
 )
 
 dnl# Systems that have nl_langinfo may not have CODESET.  Test for both here
