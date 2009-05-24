@@ -117,7 +117,8 @@
     line             Line number where the exception originated
     function         Function where the exception originated
     object           A user-defined object thrown by the exception
-    message          A user-defined message 
+    message          A user-defined message
+    traceback        Traceback messages
 #v-
  If no exception is active, \NULL will be returned.
 

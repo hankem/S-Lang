@@ -775,6 +775,7 @@
     \l matches lowercase
     \u matches uppercase
     \d matches a digit
+    \7 matches any 7bit ascii character
     \\ matches a backslash
     \^ matches a ^ character
 #v-

@@ -96,6 +96,136 @@ static int get_token (_pSLang_Token_Type *ctok)
    return _pSLget_token (ctok);
 }
 
+static int check_int_token_overflow (_pSLang_Token_Type *ctok, int sign)
+{
+   long ival, lval;
+   SLtype stype;
+
+   ctok->v.long_val = lval = sign * ctok->v.long_val;
+
+   switch (ctok->type)
+     {
+      case CHAR_TOKEN:
+	stype = SLANG_CHAR_TYPE;
+	ival = (long)(char) lval;
+	break;
+      case SHORT_TOKEN:
+	stype = SLANG_SHORT_TYPE;
+	ival = (long)(short) lval;
+	break;
+      case INT_TOKEN:
+	stype = SLANG_INT_TYPE;
+	ival = (long)(int) lval;
+	break;
+      case LONG_TOKEN:
+	stype = LONG_TOKEN;
+        ival = lval;
+	break;
+
+      default:
+	return 0;
+     }
+
+   if (ival == lval)
+     {
+	if ((ctok->flags & SLTOKEN_IS_HEX)
+	    || ((lval >= 0) && (sign > 0))
+	    || ((lval < 0) && (sign < 0)))
+	  return 0;
+     }
+   SLang_verror (SL_SYNTAX_ERROR, "Literal integer constant is too large for %s", SLclass_get_datatype_name(stype));
+   return -1;
+}
+
+static int check_uint_token_overflow (_pSLang_Token_Type *ctok, int sign)
+{
+   unsigned long ival, lval;
+   SLtype stype;
+
+   ctok->v.long_val = sign * ctok->v.long_val;
+   lval = (unsigned long) ctok->v.long_val;
+
+   switch (ctok->type)
+     {
+      case UCHAR_TOKEN:
+	ival = (unsigned long)(unsigned char) lval;
+	stype = SLANG_UCHAR_TYPE;
+	break;
+      case USHORT_TOKEN:
+	stype = SLANG_USHORT_TYPE;
+	ival = (unsigned long)(unsigned short) lval;
+	break;
+      case UINT_TOKEN:
+	stype = SLANG_UINT_TYPE;
+	ival = (unsigned long)(unsigned int) lval;
+	break;
+      case ULONG_TOKEN:
+	stype = SLANG_ULONG_TYPE;
+	ival = lval;
+	break;
+      default:
+	return 0;
+     }
+
+   if (ival == lval)
+     return 0;
+
+   SLang_verror (SL_SYNTAX_ERROR, "Literal integer constant is too large for %s", SLclass_get_datatype_name(stype));
+   return -1;
+}
+
+#ifdef HAVE_LONG_LONG
+static int check_llong_token_overflow (_pSLang_Token_Type *ctok, int sign)
+{
+   long long lval = sign * ctok->v.llong_val;
+   ctok->v.llong_val = lval;
+
+   if ((ctok->flags & SLTOKEN_IS_HEX)
+       || ((lval >= 0) && (sign > 0))
+       || ((lval < 0) && (sign < 0)))
+     return 0;
+
+   SLang_verror (SL_SYNTAX_ERROR, "Literal integer constant is too large for %s", SLclass_get_datatype_name(SLANG_LLONG_TYPE));
+   return -1;
+}
+
+static int check_ullong_token_overflow (_pSLang_Token_Type *ctok, int sign)
+{
+   ctok->v.ullong_val *= sign;
+   return 0;
+}
+#endif
+
+static int check_number_token_overflow (_pSLang_Token_Type *tok, int sign)
+{
+   tok->flags |= SLTOKEN_OVERFLOW_CHECKED;
+
+   switch (tok->type)
+     {
+      case CHAR_TOKEN:
+      case SHORT_TOKEN:
+      case INT_TOKEN:
+      case LONG_TOKEN:
+	return check_int_token_overflow (tok, sign);
+
+      case UCHAR_TOKEN:
+      case USHORT_TOKEN:
+      case UINT_TOKEN:
+      case ULONG_TOKEN:
+	return check_uint_token_overflow (tok, sign);
+	break;
+
+#ifdef HAVE_LONG_LONG
+      case LLONG_TOKEN:
+	return check_llong_token_overflow (tok, sign);
+
+      case ULLONG_TOKEN:
+	return check_ullong_token_overflow (tok, sign);
+#endif
+     }
+   return 0;
+}
+
 static int compile_token (_pSLang_Token_Type *t)
 {
 #if SLANG_HAS_DEBUG_CODE
@@ -108,6 +238,11 @@ static int compile_token (_pSLang_Token_Type *t)
 	(*_pSLcompile_ptr) (&tok);
      }
 #endif
+   if ((t->flags & (SLTOKEN_TYPE_INTEGER|SLTOKEN_OVERFLOW_CHECKED)) == SLTOKEN_TYPE_INTEGER)
+     {
+	if (-1 == check_number_token_overflow (t, 1))
+	  return -1;
+     }
    (*_pSLcompile_ptr) (t);
    return 0;
 }
@@ -277,6 +412,7 @@ static int append_int_token (int n)
 
    init_token (&num_tok);
    num_tok.type = INT_TOKEN;
+   num_tok.flags |= SLTOKEN_TYPE_INTEGER|SLTOKEN_OVERFLOW_CHECKED;
    num_tok.v.long_val = n;
    return append_token (&num_tok);
 }
@@ -291,6 +427,7 @@ static int append_token_of_type (unsigned char t)
    /* The memset when the list was created ensures that the other fields
     * are properly initialized.
     */
+#if 0
    if ((t == CHS_TOKEN) && Token_List->len)
      {
 	tok = Token_List->stack + (Token_List->len-1);
@@ -307,6 +444,7 @@ static int append_token_of_type (unsigned char t)
 	  }
 #endif
      }
+#endif
 
    tok = Token_List->stack + Token_List->len;
    init_token (tok);
@@ -444,6 +582,7 @@ static void compile_token_of_type (unsigned char t)
 #if SLANG_HAS_DEBUG_CODE
    tok.line_number = -1;
 #endif
+   tok.flags = 0;
    tok.type = t;
    compile_token(&tok);
 }
@@ -2215,6 +2354,7 @@ static void simple_expression (_pSLang_Token_Type *ctok)
      }
 }
 
+
 /* unary-expression:
  *	 postfix-expression
  *	 case unary-expression
@@ -2252,20 +2392,24 @@ static void unary_expression (_pSLang_Token_Type *ctok)
 
 	   case SUB_TOKEN:
 	     (void) get_token (ctok);
-#if 0
-	     if (IS_INTEGER_TOKEN (ctok->type))
+	     if (ctok->flags & SLTOKEN_TYPE_NUMBER)
 	       {
-		  ctok->v.long_val = -ctok->v.long_val;
-		  break;
+		  _pSLang_Token_Type *last_token;
+		  postfix_expression (ctok);
+		  if ((NULL != (last_token = get_last_token ()))
+		      && (last_token->flags & SLTOKEN_TYPE_INTEGER))
+		    {
+		       if (-1 == check_number_token_overflow (last_token, -1))
+			 return;
+		    }
+		  else
+		    {
+		       if (num_unary_ops == 16)
+			 goto stack_overflow_error;
+		       save_unary_ops [num_unary_ops++] = CHS_TOKEN;
+		    }
+		  goto out_of_switch;
 	       }
-#ifdef HAVE_LONG_LONG
-	     else if ((ctok->type == LLONG_TOKEN) || (ctok->type == ULLONG_TOKEN))
-	       {
-		  ctok->v.llong_val = -ctok->v.llong_val;
-		  break;
-	       }
-#endif
-#endif
 	     if (num_unary_ops == 16)
 	       goto stack_overflow_error;
 	     save_unary_ops [num_unary_ops++] = CHS_TOKEN;
@@ -2468,6 +2612,10 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
       case USHORT_TOKEN:
       case UINT_TOKEN:
       case ULONG_TOKEN:
+#ifdef HAVE_LONG_LONG
+      case LLONG_TOKEN:
+      case ULLONG_TOKEN:
+#endif
       case STRING_TOKEN:
       case BSTRING_TOKEN:
 #ifdef SLANG_HAS_FLOAT
@@ -2479,10 +2627,6 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
       case COMPLEX_TOKEN:
 #endif
       case STRING_DOLLAR_TOKEN:
-#ifdef HAVE_LONG_LONG
-      case LLONG_TOKEN:
-      case ULLONG_TOKEN:
-#endif
       case MULTI_STRING_TOKEN:
 	append_token (ctok);
 	get_token (ctok);

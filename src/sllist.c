@@ -42,20 +42,20 @@ USA.
 
 typedef struct _pSLang_List_Type SLang_List_Type;
 
-#define CHUNK_SIZE 32
+#define CHUNK_SIZE 128
 
 typedef struct _Chunk_Type
 {
    struct _Chunk_Type *next;
    struct _Chunk_Type *prev;
    int num_elements;
-   SLang_Object_Type elements[CHUNK_SIZE];
+   SLang_Object_Type *elements;	       /* CHUNK_SIZE of em */
 }
 Chunk_Type;
 
 struct _pSLang_List_Type
 {
-   int length;
+   SLindex_Type length;
    Chunk_Type *first;
    Chunk_Type *last;
 };
@@ -71,8 +71,8 @@ static void delete_chunk (Chunk_Type *c)
    n = c->num_elements;
    objs = c->elements;
    for (i = 0; i < n; i++)
-     SLang_free_object (&objs[i]);
-   
+     SLang_free_object (objs+i);
+   SLfree ((char *) objs);
    SLfree ((char *) c);
 }
 
@@ -81,6 +81,15 @@ static Chunk_Type *new_chunk (void)
    Chunk_Type *c;
    
    c = (Chunk_Type *) SLcalloc (1, sizeof (Chunk_Type));
+   if (c == NULL)
+     return c;
+
+   c->elements = (SLang_Object_Type *)SLcalloc(CHUNK_SIZE, sizeof(SLang_Object_Type));
+   if (c->elements == NULL)
+     {
+	SLfree ((char *) c);
+	return NULL;
+     }
    return c;
 }
 

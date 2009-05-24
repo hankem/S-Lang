@@ -234,7 +234,13 @@ static SLstring_Type *find_string (SLCONST char *s, unsigned int len, unsigned l
    /* Assume it is an slstring */
    sls = find_slstring (s, hash);
    if (sls != NULL)
-     return sls;
+     {
+	/* This means that sls->bytes == s.  But the string that we are looking
+	 * for consists of just the first len bytes.  Check that too.
+	 */
+	if (sls->len == len)
+	  return sls;
+     }
 
    /* Ok, not an slstring.  Try to find a matching one */
    sls = String_Hash_Table [(unsigned int) MAP_HASH_TO_INDEX(hash)];

@@ -428,14 +428,20 @@ typedef long _pSLc_off_t_Type;
 #if SIZEOF_INT == 2
 # define _pSLANG_INT16_TYPE	SLANG_INT_TYPE
 # define _pSLANG_UINT16_TYPE	SLANG_UINT_TYPE
+typedef int _pSLint16_Type;
+typedef unsigned int _pSLuint16_Type;
 #else
 # if SIZEOF_SHORT == 2
 #  define _pSLANG_INT16_TYPE	SLANG_SHORT_TYPE
 #  define _pSLANG_UINT16_TYPE	SLANG_USHORT_TYPE
+typedef short _pSLint16_Type;
+typedef unsigned short _pSLuint16_Type;
 # else
 #  if SIZEOF_LONG == 2
 #   define _pSLANG_INT16_TYPE	SLANG_LONG_TYPE
 #   define _pSLANG_UINT16_TYPE	SLANG_ULONG_TYPE
+typedef long _pSLInt16_Type;
+typedef unsigned long _pSLuint16_Type;
 #  else
 #   define _pSLANG_INT16_TYPE	0
 #   define _pSLANG_UINT16_TYPE	0
@@ -446,14 +452,20 @@ typedef long _pSLc_off_t_Type;
 #if SIZEOF_INT == 4
 # define _pSLANG_INT32_TYPE	SLANG_INT_TYPE
 # define _pSLANG_UINT32_TYPE	SLANG_UINT_TYPE
+typedef int _pSLint32_Type;
+typedef unsigned int _pSLuint32_Type;
 #else
 # if SIZEOF_SHORT == 4
 #  define _pSLANG_INT32_TYPE	SLANG_SHORT_TYPE
 #  define _pSLANG_UINT32_TYPE	SLANG_USHORT_TYPE
+typedef short _pSLInt32_Type;
+typedef unsigned short _pSLuint32_Type;
 # else
 #  if SIZEOF_LONG == 4
 #   define _pSLANG_INT32_TYPE	SLANG_LONG_TYPE
 #   define _pSLANG_UINT32_TYPE	SLANG_ULONG_TYPE
+typedef long _pSLInt32_Type;
+typedef unsigned long _pSLuint32_Type;
 #  else
 #   define _pSLANG_INT32_TYPE	0
 #   define _pSLANG_UINT32_TYPE	0
@@ -464,18 +476,26 @@ typedef long _pSLc_off_t_Type;
 #if SIZEOF_INT == 8
 # define _pSLANG_INT64_TYPE	SLANG_INT_TYPE
 # define _pSLANG_UINT64_TYPE	SLANG_UINT_TYPE
+typedef int _pSLint64_Type;
+typedef unsigned int _pSLuint64_Type;
 #else
 # if SIZEOF_SHORT == 8
 #  define _pSLANG_INT64_TYPE	SLANG_SHORT_TYPE
 #  define _pSLANG_UINT64_TYPE	SLANG_USHORT_TYPE
+typedef int _pSLInt64_Type;
+typedef unsigned int _pSLuint64_Type;
 # else
 #  if SIZEOF_LONG == 8
 #   define _pSLANG_INT64_TYPE	SLANG_LONG_TYPE
 #   define _pSLANG_UINT64_TYPE	SLANG_ULONG_TYPE
+typedef long _pSLInt64_Type;
+typedef unsigned long _pSLuint64_Type;
 #  else
 #   if SIZEOF_LONG_LONG == 8
 #    define _pSLANG_INT64_TYPE	SLANG_LLONG_TYPE
 #    define _pSLANG_UINT64_TYPE	SLANG_ULLONG_TYPE
+typedef long long _pSLInt64_Type;
+typedef unsigned long long _pSLuint64_Type;
 #   else
 #    define _pSLANG_INT64_TYPE	0
 #    define _pSLANG_UINT64_TYPE	0
@@ -1085,6 +1105,14 @@ typedef struct _pSLang_Token_Type
    void (*free_val_func)(struct _pSLang_Token_Type *);
    unsigned int num_refs;
    unsigned long hash;		       /* hash for slstring, and length for _BSTRING */
+#define SLTOKEN_IS_NEGATIVE		0x001
+#define SLTOKEN_OVERFLOW_CHECKED	0x002
+#define SLTOKEN_IS_HEX			0x004
+#define SLTOKEN_TYPE_INTEGER		0x100
+#define SLTOKEN_TYPE_FLOAT		0x200
+#define SLTOKEN_TYPE_NUMBER		(SLTOKEN_TYPE_INTEGER|SLTOKEN_TYPE_FLOAT)
+   int flags;
+
 #if SLANG_HAS_DEBUG_CODE
    int line_number;
 #endif

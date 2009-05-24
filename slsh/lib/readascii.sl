@@ -41,7 +41,7 @@ define readascii ()
    variable linenump = qualifier ("lastlinenum", NULL);
    variable comment = qualifier ("comment", NULL);
    variable want_columns = qualifier("cols", NULL);
-   variable type=qualifier("type", "f");   %  Float_Type
+   variable type=qualifier("type", "lf");   % Double_Type
    variable is_list = qualifier_exists ("as_list");
 
    if (comment != NULL)

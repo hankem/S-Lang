@@ -4078,6 +4078,7 @@ __get_exception_info
     function         Function where the exception originated
     object           A user-defined object thrown by the exception
     message          A user-defined message
+    traceback        Traceback messages
 
  If no exception is active, NULL will be returned.
 
@@ -7171,7 +7172,7 @@ printf
 
 
  SEE ALSO
-  fputs, printf, fwrite, message
+  fputs, fprintf, fwrite, message
 
 --------------------------------------------------------------
 
@@ -8218,6 +8219,7 @@ strtrans
     \l matches lowercase
     \u matches uppercase
     \d matches a digit
+    \7 matches any 7bit ascii character
     \\ matches a backslash
     \^ matches a ^ character
 

@@ -8176,13 +8176,14 @@ static void compile_llong (long long i, _pSLang_BC_Type bc_main_type, SLtype bc_
 #endif
 
 #if SLANG_HAS_FLOAT
-static void compile_double (SLFUTURE_CONST char *s, _pSLang_BC_Type main_type, SLtype type)
+static void compile_double (_pSLang_Token_Type *t, _pSLang_BC_Type main_type, SLtype type)
 {
    unsigned int factor = 1;
    double *ptr;
    double d;
    
-   d = _pSLang_atof (s);
+   d = _pSLang_atof (t->v.s_val);
+
 #if SLANG_HAS_COMPLEX
    if (type == SLANG_COMPLEX_TYPE) factor = 2;
 #endif
@@ -8201,9 +8202,11 @@ static void compile_double (SLFUTURE_CONST char *s, _pSLang_BC_Type main_type, S
    lang_try_now ();
 }
 
-static void compile_float (SLFUTURE_CONST char *s)
+static void compile_float (_pSLang_Token_Type *t)
 {
-   Compile_ByteCode_Ptr->b.float_blk = (float) _pSLang_atof (s);
+   float f = (float) _pSLang_atof (t->v.s_val);
+
+   Compile_ByteCode_Ptr->b.float_blk = f;
    Compile_ByteCode_Ptr->bc_main_type = SLANG_BC_LITERAL;
    Compile_ByteCode_Ptr->bc_sub_type = SLANG_FLOAT_TYPE;
    lang_try_now ();
@@ -8836,16 +8839,16 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 
 #if SLANG_HAS_FLOAT
       case FLOAT_TOKEN:
-	compile_float (t->v.s_val);
+	compile_float (t);
 	break;
 
       case DOUBLE_TOKEN:
-	compile_double (t->v.s_val, SLANG_BC_LITERAL_DBL, SLANG_DOUBLE_TYPE);
+	compile_double (t, SLANG_BC_LITERAL_DBL, SLANG_DOUBLE_TYPE);
 	break;
 #endif
 #if SLANG_HAS_COMPLEX
       case COMPLEX_TOKEN:
-	compile_double (t->v.s_val, SLANG_BC_LITERAL, SLANG_COMPLEX_TYPE);
+	compile_double (t, SLANG_BC_LITERAL, SLANG_COMPLEX_TYPE);
 	break;
 #endif
 #ifdef HAVE_LONG_LONG

@@ -36,7 +36,7 @@ struct SLwchar_Lut_Type
    SLwchar_Type *chmin, *chmax;
    unsigned int table_len;
    unsigned int malloced_len;
-   unsigned char char_class;
+   unsigned int char_class;
 };
 
 void SLwchar_free_lut (SLwchar_Lut_Type *r)
@@ -125,7 +125,7 @@ int SLwchar_add_range_to_lut (SLwchar_Lut_Type *r, SLwchar_Type a, SLwchar_Type 
    return 0;
 }
 
-static void add_char_class (SLwchar_Lut_Type *r, unsigned char char_class)
+static void add_char_class (SLwchar_Lut_Type *r, unsigned int char_class)
 {
    unsigned int i;
    unsigned char *lut;
@@ -471,6 +471,10 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	lex->lexical_type = LEXICAL_CLASS_TYPE;
 	switch (char_class)
 	  {
+	   case '7':
+	     lex->e.char_class = SLCHARCLASS_ASCII;
+	     break;
+
 	   case 'a':	       /* alpha */
 	     lex->e.char_class = SLCHARCLASS_ALPHA;
 	     break;
@@ -722,6 +726,9 @@ static int is_of_class (int char_class, SLwchar_Type w)
 	
       case SLCHARCLASS_SPACE:
 	return SLwchar_isspace (w);
+	
+      case SLCHARCLASS_ASCII:
+	return w < (SLwchar_Type)0x80;
      }
    
    return 0;
@@ -795,6 +802,11 @@ static void get_range_values (Lexical_Element_Type *lex,
      }
    *chminp = chmin;
    *chmaxp = chmax;
+}
+
+static int is_ascii (SLwchar_Type wch)
+{
+   return wch < (SLwchar_Type) 0x80;
 }
 
 static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int first_time)
@@ -934,6 +946,10 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 	     is_func = SLwchar_isspace;
 	     break;
 		  
+	   case SLCHARCLASS_ASCII:
+	     is_func = is_ascii;
+	     break;
+
 	   default:
 	     _pSLang_verror (SL_INVALID_PARM, "Invalid character class in character map");
 	     return -1;

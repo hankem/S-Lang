@@ -146,6 +146,15 @@ Changes since 2.1.4
 75. src/slstdio.c: Rewrote fputs intrinsic in terms of fwrite to
     better deal with EINTR.  Also, fopen, fclose and fflush are
     restarted upon EINTR.
+76. src/slstring.c: Avoid a problem where the first n bytes of a
+    string hashes to the same location as the full string.
+77. src/slparse.c: Reworked the integer-overflow code.
+78. src/*.h: Updated Unicode tables to v5.1.
+79. src/slwclut.c: Added \7 to indicate a 7 bit character class.
+80. slsh/lib/readascii.sl: The readascii function defaults to using
+    double precision instead of single.
+81. src/sllist.c: Change the chunk size and how it is allocated to be
+    more cache friendly.
 
 {{{ Previous Versions
 

@@ -4,10 +4,10 @@
 #define SL_TOLOWER_LOOKUP(x) \
   (((unsigned)(x)>=SL_TOLOWER_MAX_CHAR)?0:(_pSLwc_Tolower_Table[(unsigned)(x)>>7][(unsigned)(x)&0x7F]))
 
-extern const short *_pSLwc_Tolower_Table[521];
+extern const _pSLint32_Type *_pSLwc_Tolower_Table[521];
 
 #ifdef DEFINE_PSLWC_TOLOWER_TABLE
-static const short Table_00[128] =
+static const _pSLint32_Type Table_00[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -27,7 +27,7 @@ static const short Table_00[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_01[128] =
+static const _pSLint32_Type Table_01[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -47,7 +47,7 @@ static const short Table_01[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_02[128] =
+static const _pSLint32_Type Table_02[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -67,7 +67,7 @@ static const short Table_02[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_03[128] =
+static const _pSLint32_Type Table_03[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -87,7 +87,7 @@ static const short Table_03[128] =
   /*0x78-0x7F*/  -121,     1,     0,     1,     0,     1,     0,     0
 };
 
-static const short Table_04[128] =
+static const _pSLint32_Type Table_04[128] =
 {
   /*0x00-0x07*/     0,   210,     1,     0,     1,     0,   206,     1,
   /*0x08-0x0F*/     0,   205,   205,     1,     0,     0,    79,   202,
@@ -107,7 +107,7 @@ static const short Table_04[128] =
   /*0x78-0x7F*/     1,     0,     1,     0,     1,     0,     1,     0
 };
 
-static const short Table_05[128] =
+static const _pSLint32_Type Table_05[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -127,7 +127,27 @@ static const short Table_05[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_06[128] =
+static const _pSLint32_Type Table_06[128] =
+{
+  /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x10-0x17*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x30-0x37*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x38-0x3F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x40-0x47*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x70-0x77*/     1,     0,     1,     0,     0,     0,     1,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+static const _pSLint32_Type Table_07[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,    38,     0,
   /*0x08-0x0F*/    37,    37,    37,     0,    64,     0,    63,    63,
@@ -138,7 +158,7 @@ static const short Table_06[128] =
   /*0x30-0x37*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x38-0x3F*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x40-0x47*/     0,     0,     0,     0,     0,     0,     0,     0,
-  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     8,
   /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x58-0x5F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x60-0x67*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -147,7 +167,7 @@ static const short Table_06[128] =
   /*0x78-0x7F*/     0,    -7,     1,     0,     0,  -130,  -130,  -130
 };
 
-static const short Table_07[128] =
+static const _pSLint32_Type Table_08[128] =
 {
   /*0x00-0x07*/    80,    80,    80,    80,    80,    80,    80,    80,
   /*0x08-0x0F*/    80,    80,    80,    80,    80,    80,    80,    80,
@@ -167,7 +187,7 @@ static const short Table_07[128] =
   /*0x78-0x7F*/     1,     0,     1,     0,     1,     0,     1,     0
 };
 
-static const short Table_08[128] =
+static const _pSLint32_Type Table_09[128] =
 {
   /*0x00-0x07*/     1,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     1,     0,     1,     0,     1,     0,
@@ -187,13 +207,13 @@ static const short Table_08[128] =
   /*0x78-0x7F*/     1,     0,     1,     0,     1,     0,     1,     0
 };
 
-static const short Table_09[128] =
+static const _pSLint32_Type Table_10[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
-  /*0x10-0x17*/     1,     0,     1,     0,     0,     0,     0,     0,
-  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
-  /*0x20-0x27*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x10-0x17*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x18-0x1F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x20-0x27*/     1,     0,     1,     0,     0,     0,     0,     0,
   /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x30-0x37*/     0,    48,    48,    48,    48,    48,    48,    48,
   /*0x38-0x3F*/    48,    48,    48,    48,    48,    48,    48,    48,
@@ -207,7 +227,7 @@ static const short Table_09[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_10[128] =
+static const _pSLint32_Type Table_11[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -227,7 +247,7 @@ static const short Table_10[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_11[128] =
+static const _pSLint32_Type Table_12[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -247,12 +267,12 @@ static const short Table_11[128] =
   /*0x78-0x7F*/     1,     0,     1,     0,     1,     0,     1,     0
 };
 
-static const short Table_12[128] =
+static const _pSLint32_Type Table_13[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x10-0x17*/     1,     0,     1,     0,     1,     0,     0,     0,
-  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0, -7615,     0,
   /*0x20-0x27*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x28-0x2F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x30-0x37*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -264,10 +284,10 @@ static const short Table_12[128] =
   /*0x60-0x67*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x68-0x6F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x70-0x77*/     1,     0,     1,     0,     1,     0,     1,     0,
-  /*0x78-0x7F*/     1,     0,     0,     0,     0,     0,     0,     0
+  /*0x78-0x7F*/     1,     0,     1,     0,     1,     0,     1,     0
 };
 
-static const short Table_13[128] =
+static const _pSLint32_Type Table_14[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/    -8,    -8,    -8,    -8,    -8,    -8,    -8,    -8,
@@ -287,7 +307,7 @@ static const short Table_13[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_14[128] =
+static const _pSLint32_Type Table_15[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/    -8,    -8,    -8,    -8,    -8,    -8,    -8,    -8,
@@ -307,7 +327,7 @@ static const short Table_14[128] =
   /*0x78-0x7F*/  -128,  -128,  -126,  -126,    -9,     0,     0,     0
 };
 
-static const short Table_15[128] =
+static const _pSLint32_Type Table_16[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -327,7 +347,7 @@ static const short Table_15[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_16[128] =
+static const _pSLint32_Type Table_17[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     1,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -347,7 +367,7 @@ static const short Table_16[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_17[128] =
+static const _pSLint32_Type Table_18[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -367,7 +387,7 @@ static const short Table_17[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_18[128] =
+static const _pSLint32_Type Table_19[128] =
 {
   /*0x00-0x07*/    48,    48,    48,    48,    48,    48,    48,    48,
   /*0x08-0x0F*/    48,    48,    48,    48,    48,    48,    48,    48,
@@ -382,12 +402,12 @@ static const short Table_18[128] =
   /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x60-0x67*/     1,     0, -10743, -3814, -10727,     0,     0,     1,
-  /*0x68-0x6F*/     0,     1,     0,     1,     0,     0,     0,     0,
-  /*0x70-0x77*/     0,     0,     0,     0,     0,     1,     0,     0,
+  /*0x68-0x6F*/     0,     1,     0,     1,     0, -10780, -10749, -10783,
+  /*0x70-0x77*/     0,     0,     1,     0,     0,     1,     0,     0,
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_19[128] =
+static const _pSLint32_Type Table_20[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -407,7 +427,87 @@ static const short Table_19[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_20[128] =
+static const _pSLint32_Type Table_21[128] =
+{
+  /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x10-0x17*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x30-0x37*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x38-0x3F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x40-0x47*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x48-0x4F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x50-0x57*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x58-0x5F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x60-0x67*/     0,     0,     1,     0,     1,     0,     1,     0,
+  /*0x68-0x6F*/     1,     0,     1,     0,     1,     0,     0,     0,
+  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+static const _pSLint32_Type Table_22[128] =
+{
+  /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x10-0x17*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x30-0x37*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x38-0x3F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x40-0x47*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+static const _pSLint32_Type Table_23[128] =
+{
+  /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x10-0x17*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/     0,     0,     1,     0,     1,     0,     1,     0,
+  /*0x28-0x2F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x30-0x37*/     0,     0,     1,     0,     1,     0,     1,     0,
+  /*0x38-0x3F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x40-0x47*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x48-0x4F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x50-0x57*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x58-0x5F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x60-0x67*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x68-0x6F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x78-0x7F*/     0,     1,     0,     1,     0, -35332,     1,     0
+};
+
+static const _pSLint32_Type Table_24[128] =
+{
+  /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x08-0x0F*/     0,     0,     0,     1,     0,     0,     0,     0,
+  /*0x10-0x17*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x30-0x37*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x38-0x3F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x40-0x47*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+static const _pSLint32_Type Table_25[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -427,7 +527,7 @@ static const short Table_20[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const short Table_21[128] =
+static const _pSLint32_Type Table_26[128] =
 {
   /*0x00-0x07*/    40,    40,    40,    40,    40,    40,    40,    40,
   /*0x08-0x0F*/    40,    40,    40,    40,    40,    40,    40,    40,
@@ -447,23 +547,23 @@ static const short Table_21[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-const short *_pSLwc_Tolower_Table[521] =
+const _pSLint32_Type *_pSLwc_Tolower_Table[521] =
 {
   Table_01,  Table_02,  Table_03,  Table_04,  Table_05,  Table_00,
-  Table_00,  Table_06,  Table_07,  Table_08,  Table_09,  Table_00,
+  Table_06,  Table_07,  Table_08,  Table_09,  Table_10,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_00,  Table_00,  Table_10,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_11,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_11,  Table_12,  Table_13,  Table_14,  Table_00,  Table_00,
-  Table_15,  Table_16,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_17,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_12,  Table_13,  Table_14,  Table_15,  Table_00,  Table_00,
+  Table_16,  Table_17,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_18,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_00,  Table_00,  Table_00,  Table_18,  Table_19,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_19,  Table_20,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
@@ -504,6 +604,7 @@ const short *_pSLwc_Tolower_Table[521] =
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_21,  Table_22,  Table_23,  Table_24,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
@@ -533,8 +634,7 @@ const short *_pSLwc_Tolower_Table[521] =
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_20,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_00,  Table_00,  Table_00,  Table_21
+  Table_25,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_26
 };
 #endif /* DEFINE_PSLWC_TOLOWER_TABLE */

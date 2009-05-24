@@ -438,6 +438,7 @@
 @src/test/nspace.sl
 @src/test/nspace2.sl
 @src/test/ospath.sl
+@src/test/overflow.sl
 @src/test/pack.sl
 @src/test/path.sl
 @src/test/posixio.sl

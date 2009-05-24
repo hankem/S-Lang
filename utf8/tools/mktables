@@ -1,7 +1,7 @@
 #!/usr/bin/env slsh
 % The unicode database contains 15 fields
 
-static define usage ()
+private define usage ()
 {
    () = fprintf (stderr, "Usage: %s UnicodeData.txt EastAsianWidth.txt\n", __argv[0]);
    exit (1);
@@ -10,10 +10,10 @@ static define usage ()
 if (__argc != 3)
   usage ();
 
-static variable Unicode_Data_File = __argv[1];
-static variable East_Asian_File = __argv[2];
+private variable Unicode_Data_File = __argv[1];
+private variable East_Asian_File = __argv[2];
 
-static define make_char_def_table (num)
+private define make_char_def_table (num)
 {
    variable s = struct 
      {
@@ -55,7 +55,7 @@ static define make_char_def_table (num)
 }
 
 
-static define fixup_ranges (starts, stops, s)
+private define fixup_ranges (starts, stops, s)
 {
    variable nranges = length (starts);
 
@@ -78,13 +78,13 @@ static define fixup_ranges (starts, stops, s)
      }
 }
 
-static define hexstr_to_int (s)
+private define hexstr_to_int (s)
 {
    return integer (strcat ("0x0", strtrim (s)));
 }
 
 		  
-static define read_file (file)
+private define read_file (file)
 {
    variable lines = fgetslines (fopen (file, "r"));
 
@@ -153,7 +153,7 @@ static define read_file (file)
    return s;
 }
 
-static define read_east_asian_file (s, file)
+private define read_east_asian_file (s, file)
 {
    foreach (fopen (file, "r")) using ("line")
      {
@@ -184,21 +184,25 @@ static define read_east_asian_file (s, file)
      }
 }
 
-static variable LOWER	= 0x0001;
-static variable UPPER	= 0x0002;
-static variable ALPHA	= 0x0004;
-static variable XDIGIT	= 0x0008;
-static variable SPACE	= 0x0010;
-static variable BLANK	= 0x0020;
-static variable CNTRL	= 0x0040;
-static variable PRINT	= 0x0080;
+private variable LOWER	= 0x0001;
+private variable UPPER	= 0x0002;
+private variable ALPHA	= 0x0004;
+private variable XDIGIT	= 0x0008;
+private variable SPACE	= 0x0010;
+private variable BLANK	= 0x0020;
+private variable CNTRL	= 0x0040;
+private variable PRINT	= 0x0080;
 
-static variable DIGIT	= 0x0100;
-static variable GRAPH	= 0x0200;
-static variable ALNUM	= 0x0400;
-static variable PUNCT	= 0x0800;
+private variable DIGIT	= 0x0100;
+private variable GRAPH	= 0x0200;
+private variable ALNUM	= 0x0400;
+private variable PUNCT	= 0x0800;
+private variable ASCII	= 0x1000;
 
-static define init_file (file)
+private variable Classification_C_Table_Type = "_pSLuint16_Type";
+private variable Classification_C_Table_Format = "0x%04X";
+
+private define init_file (file)
 {
    variable fp = fopen (file, "w");
 
@@ -207,7 +211,54 @@ static define init_file (file)
    return fp;
 }
 
-static define write_toxxx_table (fp, s, what, datatype, 
+private define check_data_type (datatype, s, what, table_name)
+{
+   variable min_val, max_val;
+
+   switch (datatype)
+     {
+      case "char":
+	min_val = -128; max_val = 127;
+     }
+     {
+	case "unsigned char":
+	min_val = 0; max_val = 255;
+     }
+     {
+      case "_pSLint16_Type":
+	min_val = -32768; max_val = 32767;
+     }
+     {
+      case "_pSLuint16_Type":
+	min_val = 0; max_val = 0xFFFF;
+     }
+     {
+      case "_pSLint32_Type":
+	min_val = -2147483648; 
+	max_val = 0x7FFFFFFF;
+     }
+     {
+      case "_pSLuint32_Type":
+	min_val = 0; max_val = 0xFFFFFFFFUL;
+     }
+     {
+      case "bit":
+	return;
+     }
+     {
+	() = fprintf (stderr, "check_data_type: %s not supported\n", datatype);
+	return;
+     }
+   
+   variable i = wherenot (min_val <= what <= max_val);
+   if (length (i) == 0)
+     return;
+   
+   () = fprintf (stderr, "***WARNING: table for %s needs a larger type for char 0x%04X\n", table_name, s.code_point[i[0]]);
+}
+
+
+private define write_toxxx_table (fp, s, what, datatype, 
 				 table_name, format, shift_bits,
 				 greater_than_max_value)
 {
@@ -215,6 +266,8 @@ static define write_toxxx_table (fp, s, what, datatype,
    variable use_bitmap = 0;
    variable i, j, k;
    variable bits_per_value;
+
+   check_data_type (datatype, s, what, table_name);
 
    if (datatype == "bit")
      {
@@ -442,12 +495,12 @@ static define write_toxxx_table (fp, s, what, datatype,
 }
 
 
-static define make_char_classes (s)
+private define make_char_classes (s)
 {
    variable i;
    variable code_point = s.code_point;
    variable gcat0 = int (s.general_cat);
-   variable char_classes = UChar_Type[length(code_point)];
+   variable char_classes = UShort_Type[length(code_point)];
 #iftrue
    % LOWER
    i = where (((code_point == s.lowercase_mapping)
@@ -498,10 +551,6 @@ static define make_char_classes (s)
    char_classes[where((s.char_name != "") and not (char_classes & CNTRL))]
      |= PRINT;
 
-   return char_classes;
-
-   % The following using only the char classes and no other information
-
    % DIGIT
    i = where ((char_classes & XDIGIT) and not (char_classes & ALPHA));
    char_classes[i] |= DIGIT;
@@ -517,10 +566,12 @@ static define make_char_classes (s)
    char_classes[where ((char_classes & GRAPH) and not (char_classes & ALNUM))]
      |= PUNCT;
    
+   % ASCII
+   char_classes[where (code_point < 0x80)] |= ASCII;
    return char_classes;
 }
 
-static define write_char_classes (file, s, char_classes)
+private define write_char_classes (file, s, char_classes)
 {
    variable fp = init_file (file);
    () = fprintf (fp, "#define SLCHARCLASS_LOWER\t0x%04X\n", LOWER);
@@ -535,12 +586,13 @@ static define write_char_classes (file, s, char_classes)
    () = fprintf (fp, "#define SLCHARCLASS_GRAPH\t0x%04X\n", GRAPH);
    () = fprintf (fp, "#define SLCHARCLASS_ALNUM\t0x%04X\n", ALNUM);
    () = fprintf (fp, "#define SLCHARCLASS_PUNCT\t0x%04X\n", PUNCT);
+   () = fprintf (fp, "#define SLCHARCLASS_ASCII\t0x%04X\n", ASCII);
    () = fprintf (fp, "\n\n");
-   write_toxxx_table (fp, s, char_classes, "unsigned char",
-		      "Classification", "0x%02X", 8, 0);
+   write_toxxx_table (fp, s, char_classes, Classification_C_Table_Type,
+		      "Classification", Classification_C_Table_Format, 8, 0);
 }
 
-static define main ()
+private define main ()
 {
    variable s = read_file (Unicode_Data_File);
    read_east_asian_file (s, East_Asian_File);
@@ -579,9 +631,10 @@ static define main ()
    write_toxxx_table ("slcombin.h", s, 
 		      is_combining,
 		      "bit", "Combining", "0x%02X", 6, 0);
-   write_toxxx_table ("sllower.h", s, s.lowercase_mapping-ch, "short", 
+   write_toxxx_table ("sllower.h", s, s.lowercase_mapping-ch, "_pSLint32_Type",
 		      "Tolower", "% 5d", 7, 0);
-   write_toxxx_table ("slupper.h", s, s.uppercase_mapping-ch, "short", 
+   variable tmp = s.lowercase_mapping-ch;
+   write_toxxx_table ("slupper.h", s, s.uppercase_mapping-ch, "_pSLint32_Type",
 		      "Toupper", "% 5d", 7, 0);
    write_char_classes ("slischar.h", s, char_classes);
    

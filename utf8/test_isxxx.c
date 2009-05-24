@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <locale.h>
 
-#include "slutf8.h"
+#include <slang.h>
 
 #include <wctype.h>
 
