@@ -155,6 +155,8 @@ Changes since 2.1.4
     double precision instead of single.
 81. src/sllist.c: Change the chunk size and how it is allocated to be
     more cache friendly.
+82. src/slstrops.c: Added string_matches, which combines the
+    operations of string_match and string_match_nth.
 
 {{{ Previous Versions
 

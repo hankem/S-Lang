@@ -7615,7 +7615,7 @@ sscanf
  remaining variables will not be assigned.
 
  SEE ALSO
-  sprintf, unpack, string, atof, int, integer, string_match
+  sprintf, unpack, string, atof, int, integer, string_matches
 
 --------------------------------------------------------------
 
@@ -7851,7 +7851,7 @@ string_match
   expressions.
 
  SEE ALSO
-  string_match_nth, strcmp, strncmp
+  string_matches, string_match_nth, strcmp, strncmp
 
 --------------------------------------------------------------
 
@@ -7893,8 +7893,52 @@ string_match_nth
   value of the last parameter to the `string_match' function had
   been 3, `pos' would still have been set to 6.
 
+  The `string_matches' function may be used as an alternative to
+  `string_match_nth'.
+
  SEE ALSO
-  string_match
+  string_match, string_matches
+
+--------------------------------------------------------------
+
+string_matches
+
+ SYNOPSIS
+  Match a string against a regular expression and return the matches
+
+ USAGE
+  String_Type[] string_match(String_Type str, String_Type pat, Int_Type nth)
+
+ DESCRIPTION
+  The `string_matches' function combines the functionality of
+  `string_match' and `string_match_nth'.  Like
+  `string_match', it matches the test string `str' against
+  the regular expression `pat'.  If the string does not match the
+  pattern the function will return NULL.  Otherwise, the function
+  will return an array of strings whose `ith' element is the string that
+  corresponds to the return value of the `string_match_nth'
+  function.
+
+ EXAMPLE
+
+    strs = string_matches ("p0.5keV_27deg.dat",
+                           "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R, 1);
+    % ==> strs[0] = "p0.5keV_27deg.dat"
+    %     strs[1] = "0.5"
+    %     strs[2] = "27"
+
+    strs = string_matches ("q0.5keV_27deg.dat",
+                           "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R, 1);
+    % ==> strs = NULL
+
+
+ NOTES
+  The function is not yet UTF-8 aware.  If possible, consider using
+  the `pcre' module for better, more sophisticated regular
+  expressions.
+
+ SEE ALSO
+  string_match, string_match_nth, strcmp, strncmp
 
 --------------------------------------------------------------
 

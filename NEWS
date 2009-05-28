@@ -41,7 +41,9 @@ Modules
 =======
  
    1.  zlib: A module that wraps the popular z compression library.
-
+   2.  fork: A module that wraps the fork, exec*, and waitpid functions.
+   3.  sysconf: Module that implements interfaces to the posix
+       sysconf, pathconf, etc. functions.
 	   
        
 

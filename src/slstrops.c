@@ -1843,6 +1843,48 @@ static int string_match_nth_cmd (int *nptr) /*{{{*/
 
 /*}}}*/
 
+static void string_matches_cmd (char *str, char *pat, int *nptr)
+{
+   int status;
+   unsigned int i;
+   unsigned int lens[10];
+   unsigned int offsets[10];
+   char **strs;
+   SLindex_Type num;
+   SLang_Array_Type *at;
+
+   status = string_match_cmd (str, pat, nptr);
+   if (status <= 0)
+     {
+	SLang_push_null ();
+	return;
+     }
+   
+   for (i = 0; i < 10; i++)
+     {
+	if (-1 == SLregexp_nth_match (Regexp, i, offsets+i, lens+i))
+	  break;
+	offsets[i] += Regexp_Match_Byte_Offset;
+     }
+
+   num = (SLindex_Type)i;
+
+   if (NULL == (at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &num, 1)))
+     return;
+   
+   strs = (char **) at->data;
+   for (i = 0; i < (unsigned int) num; i++)
+     {
+	if (NULL == (strs[i] = SLang_create_nslstring (str+offsets[i], lens[i])))
+	  {
+	     SLang_free_array (at);
+	     return;
+	  }
+     }
+
+   (void) SLang_push_array (at, 1);
+}
+
 /* UTF-8 ok */
 static char *create_delimited_string (char **list, unsigned int n, 
 				      char *delim)
@@ -2207,6 +2249,7 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_3("extract_element", extract_element_cmd, SLANG_VOID_TYPE, SLANG_STRING_TYPE, SLANG_INT_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_3("is_list_element", is_list_element_cmd, SLANG_INT_TYPE, SLANG_STRING_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_SSI("string_match", string_match_cmd, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_SSI("string_matches", string_matches_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_I("string_match_nth", string_match_nth_cmd, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("strlow", strlow_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_1("tolower", tolower_cmd, SLANG_INT_TYPE, SLANG_WCHAR_TYPE),

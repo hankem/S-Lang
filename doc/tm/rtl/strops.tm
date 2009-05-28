@@ -348,7 +348,7 @@
 #v-
  will set \exmp{n} to \1, \exmp{item} to \exmp{"Coffee:"} and the
  remaining variables will not be assigned.
-\seealso{sprintf, unpack, string, atof, int, integer, string_match}
+\seealso{sprintf, unpack, string, atof, int, integer, string_matches}
 \done
 
 \function{strbytelen}
@@ -504,7 +504,7 @@
   The function is not yet UTF-8 aware.  If possible, consider using
   the \module{pcre} module for better, more sophisticated regular
   expressions.
-\seealso{string_match_nth, strcmp, strncmp}
+\seealso{string_matches, string_match_nth, strcmp, strncmp}
 \done
 
 \function{string_match_nth}
@@ -537,7 +537,41 @@
   parameter to the \ifun{string_match} function. For example, if the
   value of the last parameter to the \ifun{string_match} function had
   been 3, \exmp{pos} would still have been set to 6.
-\seealso{string_match}
+
+  The \sfun{string_matches} function may be used as an alternative to
+  \sfun{string_match_nth}.
+\seealso{string_match, string_matches}
+\done
+
+\function{string_matches}
+\synopsis{Match a string against a regular expression and return the matches}
+\usage{String_Type[] string_match(String_Type str, String_Type pat, Int_Type nth)}
+\description
+  The \ifun{string_matches} function combines the functionality of
+  \ifun{string_match} and \ifun{string_match_nth}.  Like
+  \ifun{string_match}, it matches the test string \exmp{str} against
+  the regular expression \exmp{pat}.  If the string does not match the
+  pattern the function will return \NULL.  Otherwise, the function
+  will return an array of strings whose \exmp{ith} element is the string that
+  corresponds to the return value of the \ifun{string_match_nth}
+  function.
+\example
+#v+
+    strs = string_matches ("p0.5keV_27deg.dat", 
+                           "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R, 1);
+    % ==> strs[0] = "p0.5keV_27deg.dat"
+    %     strs[1] = "0.5"
+    %     strs[2] = "27"
+
+    strs = string_matches ("q0.5keV_27deg.dat",
+                           "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R, 1);
+    % ==> strs = NULL
+#v-
+\notes
+  The function is not yet UTF-8 aware.  If possible, consider using
+  the \module{pcre} module for better, more sophisticated regular
+  expressions.
+\seealso{string_match, string_match_nth, strcmp, strncmp}
 \done
 
 \function{strjoin}
