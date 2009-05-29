@@ -322,7 +322,11 @@ define new_process ()
    variable other_struct_fields = ["pid", "wait"];
    child_fds = NULL;
 
-   variable s = @Struct_Type([list_to_array(struct_fields), other_struct_fields]);
+   if (length (struct_fields) == 0)
+     struct_fields = String_Type[0];
+   else
+     struct_fields = list_to_array (struct_fields);
+   variable s = @Struct_Type([struct_fields, other_struct_fields]);
 
    _for i (0, length (child_ifds)-1, 1)
      {

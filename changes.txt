@@ -160,6 +160,8 @@ Changes since 2.1.4
 83. modules/fork-module.c: Restart waitpid if EINTR received.
 84. slsh/lib/process.sl: A new process module for creation of child
     processes, pipelines, etc.
+85. slsh/lib/process.sl: If no qualifiers were passed, list_to_array
+    was failing on an empty list.
 
 {{{ Previous Versions
 
