@@ -157,6 +157,9 @@ Changes since 2.1.4
     more cache friendly.
 82. src/slstrops.c: Added string_matches, which combines the
     operations of string_match and string_match_nth.
+83. modules/fork-module.c: Restart waitpid if EINTR received.
+84. slsh/lib/process.sl: A new process module for creation of child
+    processes, pipelines, etc.
 
 {{{ Previous Versions
 

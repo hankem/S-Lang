@@ -160,3 +160,57 @@
   one of the \ifun{execv} functions in a child process.
 \seealso{fork, execv, execvp, execve, waitpid, exit}
 \done
+
+\function{waitpid}
+\synopsis{Wait for a specified process}
+\usage{Struct_Type waitpid (pid, options)}
+\description
+  The \exmp{waitpid} function will cause the calling process to wait
+  for the child process whose process id is \exmp{pid} to change its
+  state, e.g., exit.  It returns information about the process in the
+  form of a structure with the following fields:
+#v+
+    pid           The process-id of the child process, 0 if the process
+                    has not changed state.
+    exited        Non-zero if the child exited normally.
+    exit_status   The exit status of the child.  This field is
+                    meaninful only if the exited field is non-zero.
+    signal        Non-zero of the child was terminated by a signal.
+                    The value of this field is that of the signal.
+    coredump      Non-zero if the child produced a core-dump as the
+                    result of termination by a signal.
+    stopped       Non-zero if the child was stopped via a signal.  The
+                    value is that of the signal that stopped it.
+    continued     Non-zero if the process was continued.
+#v-
+
+  Upon error, the function will return \NULL and set \ifun{errno}
+  accordingly.
+
+  The value of the \exmp{options} parameter is the bitwise-or of one
+  of the following values:
+#v+
+    WNOHANG      causes waitpid to return immediately if the child has
+                  not terminated.  In this case, the value of the pid
+                  field will be 0 if the child is still running.
+
+    WUNTRACED    (see semantics in the OS documentation)
+    WCONTINUED   (see semantics in the OS documentation)
+#v-
+\example
+#v+
+   s = waitpid (pid, WNOHANG);
+   if (s == NULL)
+     throw OSError, "waitpid failed: " + errno_string ();
+   if (s.pid == 0)
+     message ("The child is still running");
+   else if (s.exited)
+     vmessage ("child exited with status %d", s.exit_status);
+   else if (s.signal)
+     {
+        vmessage ("child terminated by signal %d %s", 
+                  s.signal, (s.coredump ? "(coredump)" : ""));
+     }
+#v-
+\seealso{fork, new_process}
+\done

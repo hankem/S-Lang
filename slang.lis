@@ -232,6 +232,7 @@
 @slsh/lib/slshhelp.sl
 @slsh/lib/cmdopt.sl
 @slsh/lib/readascii.sl
+@slsh/lib/process.sl
 
 @slsh/lib/rline/editfuns.sl
 @slsh/lib/rline/emacskeys.sl
@@ -248,6 +249,7 @@
 @slsh/lib/help/readascii.hlp
 @slsh/lib/help/profile.hlp
 @slsh/lib/help/print.hlp
+@slsh/lib/help/process.hlp
 
 @slsh/lib/tm/Makefile
 @slsh/lib/tm/arrayfuns.tm
@@ -258,11 +260,13 @@
 @slsh/lib/tm/readascii.tm
 @slsh/lib/tm/profile.tm
 @slsh/lib/tm/print.tm
+@slsh/lib/tm/process.tm
 
 @slsh/lib/test/test_cmdopt.sl
 @slsh/lib/test/test_structfuns.sl
 @slsh/lib/test/test_readascii.sl
 @slsh/lib/test/test_print.sl
+@slsh/lib/test/test_process.sl
 
 @slsh/doc/tm/slsh.tm
 @slsh/doc/tm/Makefile

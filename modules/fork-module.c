@@ -74,9 +74,13 @@ static void waitpid_intrinsic (int *pid, int *options)
    int status, ret;
    Waitpid_Type s;
 
-   ret = waitpid ((pid_t)*pid, &status, *options);
-   if (ret == -1)
+   while (-1 == (ret = waitpid ((pid_t)*pid, &status, *options)))
      {
+	if (errno == EINTR)
+	  {
+	     if (-1 != SLang_handle_interrupt ())
+	       continue;
+	  }
 	(void) SLerrno_set_errno (errno);
 	(void) SLang_push_null ();
 	return;
