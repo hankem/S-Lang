@@ -21,6 +21,17 @@
 \seealso{open, close}
 \done
 
+\function{_fileno}
+\synopsis{Get the underlying integer file descriptor}
+\usage{Int_Type fileno (File_Type|FD_Type fp)}
+\description
+  The \ifun{_fileno} function returns the underlying integer
+  descriptor for a specified stdio \dtype{File_Type} or
+  \dtype{FD_Type} object.  Upon failure it returns -1 and sets
+  \ivar{errno} accordingly.
+\seealso{fileno, fopen, open, fclose, close, dup_fd}
+\done
+
 \function{fileno}
 \synopsis{Convert a stdio File_Type object to a FD_Type descriptor}
 \usage{FD_Type fileno (File_Type fp)}
@@ -30,7 +41,7 @@
   \NULL is returned.
 \notes
   Closing the resulting file descriptor will have no effect.
-\seealso{fopen, open, fclose, close, dup_fd}
+\seealso{fopen, open, fclose, close, dup_fd, _fileno}
 \done
 
 \function{isatty}

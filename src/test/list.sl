@@ -1,4 +1,4 @@
-_debug_info = 1; () = evalfile ("inc.sl");
+() = evalfile ("./inc.sl");
 
 testing_feature ("lists");
 
@@ -102,7 +102,86 @@ test_push_pop_list ();
 test_push_pop_list ("A");
 test_push_pop_list ({});
 test_push_pop_list ("A", {});
-   
+
+private define make_big_list (len)
+{
+   variable l = {};
+   _for (0, len-1, 1)
+     {
+	variable i = ();
+	list_append (l, i);
+     }
+   return l;
+}
+
+private define random_indices (num, cd)
+{
+   variable i = int (urand () * num);
+   variable j = int (urand () * num);
+   return i, j;
+}
+
+private define forward_indices (num, last_ip)
+{
+   variable i = (@last_ip + 1) mod num;
+   variable j = (i + 1) mod num;
+   @last_ip = i;
+   return i, j;
+}
+
+private define reverse_indices (num, last_ip)
+{
+   variable i = (num + (@last_ip - 1)) mod num;
+   variable j = (num + (i - 1)) mod num;
+   @last_ip = i;
+   return i, j;
+}
+
+private define test_indexing (type, num, nloops, index_fun, cd)
+{
+   variable l = make_big_list (num);
+   loop (nloops)
+     {
+	variable i, j;
+	(i, j) = (@index_fun)(num, cd);
+	if (l[i] != i)
+	  failed ("%s list indexing", type);
+	
+	list_insert (l, -j, j);
+	if (l[j] != -j)
+	  failed ("%s list indexing with insertion", type);
+	
+	if (i < j)
+	  {
+	     if (l[i] != i)
+	       failed ("%s list indexing before insertion", type);
+	  }
+	else if (i > j)
+	  {
+	     if (l[i] != i-1)
+	       failed ("%s list indexing after insertion", type);
+	  }
+	
+	list_delete (l, j);
+	
+	if (l[i] != i)
+	  failed ("%s list indexing with deletion", type);
+     }
+}
+private define run_index_tests ()
+{
+   variable cd;
+   foreach ([1, 100, 127, 128, 129, 255, 256, 257, 1024, 8192, 8193, 0xFFFFF])
+     {
+	variable num = ();
+	test_indexing ("random", num, 10000, &random_indices, NULL);
+	cd = -1;
+	test_indexing ("forward", num, num, &forward_indices, &cd);
+	cd = num+1;
+	test_indexing ("reverse", num, num, &reverse_indices, &cd);
+     }
+}
+run_index_tests ();
 
 print ("Ok\n");
 

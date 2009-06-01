@@ -162,6 +162,7 @@ Changes since 2.1.4
     processes, pipelines, etc.
 85. slsh/lib/process.sl: If no qualifiers were passed, list_to_array
     was failing on an empty list.
+86. src/sllist.c: improved indexing performance.
 
 {{{ Previous Versions
 

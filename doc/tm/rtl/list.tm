@@ -87,3 +87,18 @@
 \seealso{list_new, list_insert, list_append, list_delete, list_pop}
 \done
 
+
+\function{list_to_array}
+\synopsis{Convert a list into an array}
+\usage{Array_Type list_to_array (List_Type list)}
+\description
+ The \ifun{list_to_array} function converts a list of objects into an
+ array of the same length and returns the result.  This function will
+ generate an exception if the list is empty, or the objects in the
+ list cannot be converted to a common type.
+\notes
+ A future version of this function may produce an \dtype{Any_Type}
+ array for an empty or heterogeneous list.
+\seealso{length, typecast, __pop_list, typeof}
+\done
+

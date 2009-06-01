@@ -58,6 +58,9 @@ struct _pSLang_List_Type
    SLindex_Type length;
    Chunk_Type *first;
    Chunk_Type *last;
+   
+   Chunk_Type *recent;		       /* most recent chunk accessed */
+   SLindex_Type recent_num;	       /* num elements before the recent chunk */
 };
 
 static void delete_chunk (Chunk_Type *c)
@@ -154,9 +157,10 @@ static SLang_List_Type *allocate_list (void)
 
 static SLang_Object_Type *find_nth_element (SLang_List_Type *list, int nth, Chunk_Type **cp)
 {
-   Chunk_Type *c;
+   Chunk_Type *c, *first, *last;
    int n, next_n;
    int length;
+   int dir;
 
    length = list->length;
    if (nth < 0)
@@ -167,10 +171,53 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, int nth, Chun
 	_pSLang_verror (SL_Index_Error, "List Index out of range");
 	return NULL;
      }
-   if (nth < length/2)
+
+   n = 0;
+   first = list->first;
+   last = list->last;   
+   dir = 1;
+
+   if (list->recent != NULL)
      {
-	n = 0;
-	c = list->first;
+	int mid = list->recent_num;
+	if (nth < mid)
+	  {
+	     if (nth > mid/2)
+	       {
+		  dir = -1;
+		  n = mid;
+		  last = list->recent->prev;
+		  /* Note: last cannot be NULL.  The only way for it to be NULL 
+		   * is for list->recent == list_first, which would mean that
+		   * mid==0.  But the condition here is that nth < mid, and
+		   * nth >= 0
+		   */
+	       }
+	  }
+	else
+	  {
+	     if (nth > (mid/2 + length/2))
+	       {
+		  dir = -1;
+		  n = length;
+	       }
+	     else
+	       {
+		  dir = 1;
+		  n = mid;
+		  first = list->recent;
+	       }
+	  }
+     }
+   else if (nth > length/2)
+     {
+	n = length;
+	dir = -1;
+     }
+
+   if (dir > 0)
+     {
+	c = first;
 	while (nth >= (next_n = n + c->num_elements))
 	  {
 	     n = next_n;
@@ -178,11 +225,14 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, int nth, Chun
 	  }
 	if (cp != NULL)
 	  *cp = c;
+
+	list->recent = c;
+	list->recent_num = n;
+
 	return c->elements + (nth - n);
      }
 
-   n = length;
-   c = list->last;
+   c = last;
    while ((next_n = n - c->num_elements) > nth)
      {
 	n = next_n;
@@ -191,6 +241,9 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, int nth, Chun
    
    if (cp != NULL)
      *cp = c;
+   
+   list->recent = c;
+   list->recent_num = next_n;
    return c->elements + (nth - next_n);
 }
 
@@ -367,14 +420,18 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, int indx_a, int ind
    return new_list;
 }
 
-static void list_delete_elem (SLang_List_Type *list, int *indx)
+static void list_delete_elem (SLang_List_Type *list, int *indxp)
 {
    SLang_Object_Type *elem;
    Chunk_Type *c;
    char *src, *dest, *src_max;
+   int indx;
 
-   if (NULL == (elem = find_nth_element (list, *indx, &c)))
+   indx = *indxp;
+   if (NULL == (elem = find_nth_element (list, indx, &c)))
      return;
+
+   if (indx < 0) indx += list->length; /* checked by find_nth_element */
 
    SLang_free_object (elem);
    c->num_elements--;
@@ -391,6 +448,8 @@ static void list_delete_elem (SLang_List_Type *list, int *indx)
 	if (c->prev != NULL)
 	  c->prev->next = c->next;
 	delete_chunk (c);
+	if (list->recent == c)
+	  list->recent = NULL;
 	return;
      }
 
@@ -399,11 +458,9 @@ static void list_delete_elem (SLang_List_Type *list, int *indx)
    src_max = src + sizeof(SLang_Object_Type)*((c->elements+c->num_elements)-elem);
    while (src < src_max)
      *dest++ = *src++;
-
-#if 0
-   memcpy ((char *)elem, (char *)(elem+1), 
-	   sizeof(SLang_Object_Type)*((c->elements+c->num_elements)-elem));
-#endif
+   
+   if ((list->recent != NULL) && (list->recent_num > indx))
+     list->recent_num--;
 }
 
 static void slide_right (Chunk_Type *c, int n)
@@ -420,11 +477,12 @@ static void slide_right (Chunk_Type *c, int n)
      }
 }
 
-static int insert_nonlist_element (SLang_List_Type *list, SLang_Object_Type *obj, int indx)
+static int insert_element (SLang_List_Type *list, SLang_Object_Type *obj, int indx)
 {
    Chunk_Type *c, *c1;
    SLang_Object_Type *elem;
    int num;
+   int equality_ok = 0;
 
    if (indx == 0)
      {
@@ -446,6 +504,8 @@ static int insert_nonlist_element (SLang_List_Type *list, SLang_Object_Type *obj
 	if (list->last == NULL)
 	  list->last = c;
 	c->elements[0] = *obj;
+
+        equality_ok = 1;
 	goto the_return;
      }
 
@@ -465,7 +525,7 @@ static int insert_nonlist_element (SLang_List_Type *list, SLang_Object_Type *obj
 	c->elements[0] = *obj;
 	goto the_return;
      }
-   
+
    if (NULL == (elem = find_nth_element (list, indx, &c)))
      return -1;
 
@@ -491,6 +551,7 @@ static int insert_nonlist_element (SLang_List_Type *list, SLang_Object_Type *obj
 	  list->first = c1;
 	c = c1;
 	c->elements[0] = *obj;
+	equality_ok = 1;
 	goto the_return;
      }
    c1->prev = c;
@@ -501,13 +562,21 @@ static int insert_nonlist_element (SLang_List_Type *list, SLang_Object_Type *obj
    if (list->last == c)
      list->last = c1;
 
-   memcpy ((char *)c1->elements, (char *)elem, sizeof(SLang_Object_Type)*num);
+   memcpy ((char *)c1->elements, (char *)elem, num*sizeof(SLang_Object_Type));
    c1->num_elements = num;
    c->num_elements -= num;
    c->elements[c->num_elements] = *obj;
    /* drop */
 
-   the_return:
+the_return:
+
+   if (list->recent != NULL)
+     {
+	if ((list->recent_num > indx) 
+	    || ((list->recent_num == indx) && equality_ok))
+	  list->recent_num++;
+     }
+
    c->num_elements++;
    list->length++;
    return 0;
@@ -516,77 +585,6 @@ static int insert_nonlist_element (SLang_List_Type *list, SLang_Object_Type *obj
 /* Upon sucess, obj is stored in list and calling routine should not free it.
  * Upon failure, calling routine should free obj.
  */
-#define HAS_LISTS_OF_LISTS 1
-#if HAS_LISTS_OF_LISTS
-#define insert_element insert_nonlist_element
-#else
-static int insert_element (SLang_List_Type *list, SLang_Object_Type *obj, int indx)
-{
-   SLang_List_Type *new_list, *tmp_list;
-   SLang_MMT_Type *mmt;
-   Chunk_Type *c;
-
-   if (obj->data_type != SLANG_LIST_TYPE)
-     return insert_nonlist_element (list, obj, indx);
-   
-   mmt = obj->v.ptr_val;
-   if (NULL == (new_list = (SLang_List_Type *)SLang_object_from_mmt (mmt)))
-     return -1;
-
-   if (new_list->length == 0)
-     {
-	SLang_free_mmt (mmt);
-	return 0;
-     }
-
-   if (NULL == (tmp_list = make_sublist (new_list, 0, -1)))
-     return -1;
-
-   c = tmp_list->first;
-   
-   while (c != NULL)
-     {
-	SLang_Object_Type *emin, *emax;
-	SLang_Object_Type new_obj;
-	Chunk_Type *cnext;
-
-	emin = c->elements;
-	emax = emin + c->num_elements;
-	
-	while (emin < emax)
-	  {
-	     if ((-1 == _pSLpush_slang_obj (emin))
-		 || (-1 == SLang_pop (&new_obj)))
-	       {
-		  delete_list (tmp_list);
-		  return -1;
-	       }
-
-	     if (-1 == insert_nonlist_element (list, &new_obj, indx))
-	       {
-		  SLang_free_object (&new_obj);
-		  delete_list (tmp_list);
-		  return -1;
-	       }
-	     emin++;
-	     indx++;
-	  }
-	cnext = c->next;
-	tmp_list->first = cnext;
-	if (cnext != NULL)
-	  cnext->prev = NULL;
-	else 
-	  tmp_list->last = NULL;
-
-	delete_chunk (c);
-	c = cnext;
-     }
-   delete_list (tmp_list);
-
-   SLang_free_mmt (mmt);
-   return 0;
-}
-#endif
    
 static int pop_insert_append_args (SLang_MMT_Type **mmtp, SLang_List_Type **listp,
 				   SLang_Object_Type *obj, int *indx)
@@ -703,6 +701,8 @@ static void list_reverse (SLang_List_Type *list)
 	c->prev = c1;
 	c = c1;
      }
+
+   list->recent = NULL;
 }
 
 static int list_pop_nth (SLang_List_Type *list, int indx)

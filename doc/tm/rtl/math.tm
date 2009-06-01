@@ -149,7 +149,21 @@
   returns the result.  If its argument is an array, the
   \ifun{exp} function will be applied to each element and the result returned
   as an array.
-\seealso{cos, atan, acosh, cosh}
+\seealso{expm1, cos, atan, acosh, cosh}
+\done
+
+\function{expm1}
+\synopsis{Compute exp(x)-1}
+\usage{y = expm1(x)}
+\description
+  The \ifun{expm1} function computes \exmp{exp(x)-1} and returns the
+  result.  If its argument is an array, the \ifun{expm1} function will
+  be applied to each element and the results returned as an array.
+
+  This function should be called whenever \exmp{x} is close to 0 to
+  avoid the numerical error that would arise in a naive computation of
+  \exmp{exp(x)-1}.
+\seealso{expm1, log1p, cos, atan, acosh, cosh}
 \done
 
 \function{feqs}
@@ -274,7 +288,7 @@
   returns the result.  If its argument is an array, the
   \ifun{log} function will be applied to each element and the result returned
   as an array.
-\seealso{cos, atan, acosh, cosh}
+\seealso{cos, atan, acosh, cosh, log1p}
 \done
 
 \function{log10}
@@ -286,6 +300,20 @@
   \ifun{log10} function will be applied to each element and the result returned
   as an array.
 \seealso{cos, atan, acosh, cosh}
+\done
+
+\function{log1p}
+\synopsis{Compute the logarithm of 1 plus a number}
+\usage{y = log1p (x)}
+\description
+  The \ifun{log1p} function computes the natural logarithm of 1.0 plus
+  \exmp{x} returns the result.  If its argument is an array, the
+  \ifun{log1p} function will be applied to each element and the results
+  returned as an array.
+  
+  This function should be used instead of \exmp{log(1+x)} to avoid
+  numerical errors whenever \exmp{x} is close to 0.
+\seealso{log, expm1, cos, atan, acosh, cosh}
 \done
 
 \function{_max}

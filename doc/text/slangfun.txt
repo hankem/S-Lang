@@ -3062,6 +3062,29 @@ list_reverse
 
 --------------------------------------------------------------
 
+list_to_array
+
+ SYNOPSIS
+  Convert a list into an array
+
+ USAGE
+  Array_Type list_to_array (List_Type list)
+
+ DESCRIPTION
+ The `list_to_array' function converts a list of objects into an
+ array of the same length and returns the result.  This function will
+ generate an exception if the list is empty, or the objects in the
+ list cannot be converted to a common type.
+
+ NOTES
+ A future version of this function may produce an Any_Type
+ array for an empty or heterogeneous list.
+
+ SEE ALSO
+  length, typecast, __pop_list, typeof
+
+--------------------------------------------------------------
+
 abs
 
  SYNOPSIS
@@ -3324,7 +3347,29 @@ exp
   as an array.
 
  SEE ALSO
-  cos, atan, acosh, cosh
+  expm1, cos, atan, acosh, cosh
+
+--------------------------------------------------------------
+
+expm1
+
+ SYNOPSIS
+  Compute exp(x)-1
+
+ USAGE
+  y = expm1(x)
+
+ DESCRIPTION
+  The `expm1' function computes `exp(x)-1' and returns the
+  result.  If its argument is an array, the `expm1' function will
+  be applied to each element and the results returned as an array.
+
+  This function should be called whenever `x' is close to 0 to
+  avoid the numerical error that would arise in a naive computation of
+  `exp(x)-1'.
+
+ SEE ALSO
+  expm1, log1p, cos, atan, acosh, cosh
 
 --------------------------------------------------------------
 
@@ -3531,7 +3576,7 @@ log
   as an array.
 
  SEE ALSO
-  cos, atan, acosh, cosh
+  cos, atan, acosh, cosh, log1p
 
 --------------------------------------------------------------
 
@@ -3551,6 +3596,28 @@ log10
 
  SEE ALSO
   cos, atan, acosh, cosh
+
+--------------------------------------------------------------
+
+log1p
+
+ SYNOPSIS
+  Compute the logarithm of 1 plus a number
+
+ USAGE
+  y = log1p (x)
+
+ DESCRIPTION
+  The `log1p' function computes the natural logarithm of 1.0 plus
+  `x' returns the result.  If its argument is an array, the
+  `log1p' function will be applied to each element and the results
+  returned as an array.
+
+  This function should be used instead of `log(1+x)' to avoid
+  numerical errors whenever `x' is close to 0.
+
+ SEE ALSO
+  log, expm1, cos, atan, acosh, cosh
 
 --------------------------------------------------------------
 
@@ -4929,6 +4996,25 @@ dup_fd
 
 --------------------------------------------------------------
 
+_fileno
+
+ SYNOPSIS
+  Get the underlying integer file descriptor
+
+ USAGE
+  Int_Type fileno (File_Type|FD_Type fp)
+
+ DESCRIPTION
+  The `_fileno' function returns the underlying integer
+  descriptor for a specified stdio File_Type or
+  FD_Type object.  Upon failure it returns -1 and sets
+  `errno' accordingly.
+
+ SEE ALSO
+  fileno, fopen, open, fclose, close, dup_fd
+
+--------------------------------------------------------------
+
 fileno
 
  SYNOPSIS
@@ -4946,7 +5032,7 @@ fileno
   Closing the resulting file descriptor will have no effect.
 
  SEE ALSO
-  fopen, open, fclose, close, dup_fd
+  fopen, open, fclose, close, dup_fd, _fileno
 
 --------------------------------------------------------------
 
