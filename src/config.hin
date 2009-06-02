@@ -128,6 +128,7 @@
 #undef HAVE_GETPGRP
 #undef HAVE_SETPGID
 #undef HAVE_SETPGRP
+#undef HAVE_GETSID
 #undef HAVE_SETSID
 
 #undef HAVE_ISSETUGID

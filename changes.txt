@@ -163,6 +163,9 @@ Changes since 2.1.4
 85. slsh/lib/process.sl: If no qualifiers were passed, list_to_array
     was failing on an empty list.
 86. src/sllist.c: improved indexing performance.
+87. src/slproc.c: Added getsid
+88. modules/onig-module.c: Added BString_Type support to onig_search
+    (Paul Boekholt).
 
 {{{ Previous Versions
 

@@ -90,7 +90,7 @@ lstat readlink symlink link \
 kill killpg \
 snprintf vsnprintf \
 getppid getegid geteuid getuid getgid setgid setuid \
-setpgid getpgid setpgrp getpgrp setsid \
+setpgid getpgid setpgrp getpgrp setsid getsid \
 mmap \
 chown popen mkfifo \
 atexit on_exit umask uname \

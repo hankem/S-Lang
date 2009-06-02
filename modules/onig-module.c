@@ -504,6 +504,7 @@ static int do_onig_search (void)
 {
    int start_pos = 0, end_pos = -1;
    char *str, *str_end;
+   SLang_BString_Type *bstr = NULL;
    Onig_Type *o; 
    SLang_MMT_Type *mmt;
    int status = -1;
@@ -533,9 +534,34 @@ static int do_onig_search (void)
 	 break;
      }
 
-   if (-1 == SLang_pop_slstring (&str))
-     return -1;
-   str_end = str + strlen (str);
+   
+   switch(SLang_peek_at_stack())
+     {
+      case SLANG_STRING_TYPE:
+	if (-1 == SLang_pop_slstring (&str))
+	  return -1;
+	str_end = str + strlen (str);
+	break;
+	
+      case SLANG_BSTRING_TYPE:
+      default:
+	  {
+	     unsigned int len;
+	     
+	     if (-1 == SLang_pop_bstring(&bstr))
+	       return -1;
+
+	     str = (char *)SLbstring_get_pointer(bstr, &len);
+	     if (str == NULL)
+	       {
+		  SLbstring_free (bstr);
+		  return -1;
+	       }
+	     str_end = str + len;
+	  }
+	break;
+     }
+
    if (end_pos < 0)
      end_pos = (int) (str_end - str);
 
@@ -561,9 +587,14 @@ static int do_onig_search (void)
    /* Else an error occurred */
    /* drop */
 
-   free_and_return:
+free_and_return:
+
    SLang_free_mmt (mmt);
-   SLang_free_slstring (str);
+   if (bstr != NULL)
+     SLbstring_free (bstr);
+   else
+     SLang_free_slstring (str);
+
    return status;
 }
 

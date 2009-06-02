@@ -41,7 +41,7 @@ static Errno_Map_Type Errno_Map [] =
 #ifndef EPERM
 # define EPERM	-1
 #endif
-     {"Not owner",			EPERM,	"EPERM"},
+     {"Operation not permitted",	EPERM,	"EPERM"},
 #ifndef ENOENT
 # define ENOENT	-1
 #endif
