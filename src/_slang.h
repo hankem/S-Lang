@@ -246,8 +246,8 @@ typedef enum
    SLANG_BC_LITERAL_COMBINED	= 0xB2,
    SLANG_BC_CALL_DIRECT_COMB	= 0xB3,
    SLANG_BC_COMBINED		= 0xB4,
-#define SLANG_IS_BC_COMBINED(b) ((0xB0 <= (b)) && ((b) <= 0xB4))
-   SLANG_BC_UNUSED_0xB5		= 0xB5,
+   SLANG_BC_BLOCK_COMBINED	= 0xB5,
+#define SLANG_IS_BC_COMBINED(b) ((0xB0 <= (b)) && ((b) <= 0xB5))
    SLANG_BC_UNUSED_0xB6		= 0xB6,
    SLANG_BC_UNUSED_0xB7		= 0xB7,
    SLANG_BC_UNUSED_0xB8		= 0xB8,
