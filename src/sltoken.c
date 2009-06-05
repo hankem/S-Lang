@@ -24,8 +24,7 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
-#define MAX_TOKEN_LEN 254
-#define MAX_FILE_LINE_LEN 256
+#define MAX_FILE_LINE_LEN (SL_MAX_TOKEN_LEN + 2)
 
 /* int _pSLang_Compile_Line_Num_Info; */
 #if SLANG_HAS_BOSEOS
@@ -74,7 +73,7 @@ static void free_static_sval_token (_pSLang_Token_Type *tok)
    tok->v.s_val = NULL;
 }
 
-_pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *tok, _pSLtok_Type type, 
+_pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *tok, _pSLtok_Type type,
 					    char *s, unsigned int len)
 {
    if (NULL == (tok->v.s_val = _pSLstring_make_hashed_string (s, len, &tok->hash)))
@@ -527,7 +526,7 @@ static int get_ident_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned 
 	     unget_prep_char (ch);
 	     break;
 	  }
-	if (len == (MAX_TOKEN_LEN - 1))
+	if (len == (SL_MAX_TOKEN_LEN - 1))
 	  {
 	     _pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Identifier length exceeded maximum supported value", NULL, 0);
 	     return tok->type = EOF_TOKEN;
@@ -594,7 +593,7 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 	     /* It must be hex */
 	     do
 	       {
-		  if (len == (MAX_TOKEN_LEN - 1))
+		  if (len == (SL_MAX_TOKEN_LEN - 1))
 		    goto too_long_return_error;
 
 		  s[len++] = ch;
@@ -605,7 +604,7 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 	     is_hex=1;
 	     break;
 	  }
-	if (len == (MAX_TOKEN_LEN - 1))
+	if (len == (SL_MAX_TOKEN_LEN - 1))
 	  goto too_long_return_error;
 	s [len++] = ch;
      }
@@ -614,13 +613,13 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 
    if ((ch == 'e') || (ch == 'E'))
      {
-	if (len == (MAX_TOKEN_LEN - 1))
+	if (len == (SL_MAX_TOKEN_LEN - 1))
 	  goto too_long_return_error;
 	s[len++] = ch;
 	ch = prep_get_char ();
 	if ((ch == '+') || (ch == '-'))
 	  {
-	     if (len == (MAX_TOKEN_LEN - 1))
+	     if (len == (SL_MAX_TOKEN_LEN - 1))
 	       goto too_long_return_error;
 	     s[len++] = ch;
 	     ch = prep_get_char ();
@@ -628,7 +627,7 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 
 	while (DIGIT_CHAR == (type = CHAR_CLASS(ch)))
 	  {
-	     if (len == (MAX_TOKEN_LEN - 1))
+	     if (len == (SL_MAX_TOKEN_LEN - 1))
 	       goto too_long_return_error;
 	     s[len++] = ch;
 	     ch = prep_get_char ();
@@ -638,7 +637,7 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 
    while (ALPHA_CHAR == type)
      {
-	if (len == (MAX_TOKEN_LEN - 1))
+	if (len == (SL_MAX_TOKEN_LEN - 1))
 	  goto too_long_return_error;
 	s[len++] = ch;
 	ch = prep_get_char ();
@@ -1184,7 +1183,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
    int is_binary;
    _pSLtok_Type type;
 
-   status = read_string_token (quote_char, s, MAX_TOKEN_LEN-1, 
+   status = read_string_token (quote_char, s, SL_MAX_TOKEN_LEN-1, 
 			       is_multiline_raw, &has_backslash, &len);
 
    if (status == -1)
@@ -1210,7 +1209,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
 	     goto return_error;
 	  }
 
-	status = read_string_token (quote_char, s, MAX_TOKEN_LEN-1,
+	status = read_string_token (quote_char, s, SL_MAX_TOKEN_LEN-1,
 				    is_multiline_raw, &has_bs, &len);
 	
 	if ((status == -1)
@@ -1284,7 +1283,7 @@ return_error:
 
 static int extract_token (_pSLang_Token_Type *tok, unsigned char ch, unsigned char t)
 {
-   unsigned char s [MAX_TOKEN_LEN];
+   unsigned char s [SL_MAX_TOKEN_LEN];
    unsigned int slen;
 
    s[0] = (char) ch;
@@ -1831,7 +1830,7 @@ static char *check_byte_compiled_token (char *buf)
      }
 
    if ((len_lo < 32) || (len_hi < 32)
-       || ((len = (len_lo - 32) | ((len_hi - 32) << 7)) >= MAX_TOKEN_LEN))
+       || ((len = (len_lo - 32) | ((len_hi - 32) << 7)) >= SL_MAX_TOKEN_LEN))
      goto return_error;
 
    b = buf;
@@ -1965,7 +1964,7 @@ void _pSLcompile_byte_compiled (void)
 {
    _pSLtok_Type type;
    _pSLang_Token_Type tok;
-   char buf[MAX_TOKEN_LEN+1];
+   char buf[SL_MAX_TOKEN_LEN+1];
    char *ebuf;
    unsigned int len;
 
@@ -2271,7 +2270,7 @@ static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
 
 static void byte_compile_token (_pSLang_Token_Type *tok)
 {
-   unsigned char buf [MAX_TOKEN_LEN + 4], *buf_max;
+   unsigned char buf [SL_MAX_TOKEN_LEN + 4], *buf_max;
    unsigned int len;
    char *b3;
    int is_escaped;

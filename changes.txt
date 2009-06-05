@@ -175,6 +175,8 @@ Changes since 2.1.4
 92. src/slarray.c: streamlined the case of getting a single array
     element of non-scalar types.
 93. src/slang.c: Additional optimizations involving binary expressions.
+94. src/slparse.c: Avoid an explicit chs bytecode for negative
+    floating point literals.
 
 {{{ Previous Versions
 
