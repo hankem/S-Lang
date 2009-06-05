@@ -171,7 +171,7 @@ private define test_indexing (type, num, nloops, index_fun, cd)
 private define run_index_tests ()
 {
    variable cd;
-   foreach ([1, 100, 127, 128, 129, 255, 256, 257, 1024, 8192, 8193, 0xFFFFF])
+   foreach ([1, 100, 127, 128, 129, 255, 256, 257, 1024, 8192, 8193])
      {
 	variable num = ();
 	test_indexing ("random", num, 10000, &random_indices, NULL);

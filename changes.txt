@@ -166,6 +166,15 @@ Changes since 2.1.4
 87. src/slproc.c: Added getsid
 88. modules/onig-module.c: Added BString_Type support to onig_search
     (Paul Boekholt).
+89. src/slmath.c: The calling syntax of the polynom function was
+    simplified and extended to support arrays.  As such, this function
+    is not backwards compatible.
+90. src/slang.c: Added optimizations for the power operation a^b.
+91. src/slstruct.c; Added an struct-specific acopy function instead of
+    using the default.
+92. src/slarray.c: streamlined the case of getting a single array
+    element of non-scalar types.
+93. src/slang.c: Additional optimizations involving binary expressions.
 
 {{{ Previous Versions
 

@@ -85,25 +85,6 @@ double SLmath_hypot (double x, double y)
    return x;
 }
 
-/* usage here is a1 a2 ... an n x ==> a1x^n + a2 x ^(n - 1) + ... + an */
-static double math_poly (void)
-{
-   int n;
-   double xn = 1.0, sum = 0.0;
-   double an, x;
-
-   if ((SLang_pop_double(&x))
-       || (SLang_pop_integer(&n))) return(0.0);
-
-   while (n-- > 0)
-     {
-	if (SLang_pop_double(&an)) break;
-	sum += an * xn;
-	xn = xn * x;
-     }
-   return (double) sum;
-}
-
 static int double_math_op_result (int op, SLtype a, SLtype *b)
 {
    switch (op)
@@ -1203,6 +1184,105 @@ static void hypot_fun (void)
    free_array_or_scalar (&ast);
 }
 
+static void math_poly (void)
+{
+   Array_Or_Scalar_Type ast;
+   SLang_Array_Type *coeff_at, *y_at;
+   SLuindex_Type i, k, n;
+   SLuindex_Type num;
+   double *a;
+   double x, y;
+
+   if (SLang_Num_Function_Args != 2)
+     {
+	SLang_verror (SL_Usage_Error, "Usage: y = polynom([a0,a1,...], x)");
+	return;
+     }
+   
+   if (-1 == pop_array_or_scalar (&ast))
+     return;
+
+   if (-1 == SLang_pop_array_of_type (&coeff_at, SLANG_DOUBLE_TYPE))
+     {
+	free_array_or_scalar (&ast);
+	return;
+     }
+   a = (double *) coeff_at->data;
+   n = coeff_at->num_elements;
+
+   if (ast.inc == 0)
+     {
+	if (ast.is_float)
+	  x = (double) ast.f;
+	else
+	  x = ast.d;
+
+	y = 0.0;
+	k = n;
+	while (k != 0)
+	  {
+	     k--;
+	     y = a[k] + x*y;
+	  }
+	
+	if (ast.is_float)
+	  (void) SLang_push_float ((float) y);
+	else
+	  (void) SLang_push_double (y);
+
+	goto free_and_return;
+     }
+   
+   if (NULL == (y_at = create_from_tmp_array (ast.at, NULL, ast.at->data_type)))
+     goto free_and_return;
+
+   num = ast.num;
+
+   if (ast.is_float)
+     {
+	float *f = ast.fptr;
+	float *yf = (float *)y_at->data;
+
+	for (i = 0; i < num; i++)
+	  {
+	     x = (double) f[i];
+	     y = 0.0;
+	     k = n;
+	     while (k != 0)
+	       {
+		  k--;
+		  y = a[k] + x*y;
+	       }
+
+	     yf[i] = (float) y;
+	  }
+     }
+   else
+     {
+	double *d = ast.dptr;
+	double *yd = (double *)y_at->data;
+
+	for (i = 0; i < num; i++)
+	  {
+	     x = d[i];
+	     y = 0.0;
+	     k = n;
+	     while (k != 0)
+	       {
+		  k--;
+		  y = a[k] + x*y;
+	       }
+	     yd[i] = y;
+	  }
+     }
+   
+   (void) SLang_push_array (y_at, 1);
+   /* drop */
+free_and_return:
+   free_array_or_scalar (&ast);
+   SLang_free_array (coeff_at);
+}
+
 static void atan2_fun (void)
 {
    (void) do_binary_function (atan2);
@@ -1620,7 +1700,7 @@ static SLang_Math_Unary_Type SLmath_Table [] =
 static SLang_Intrin_Fun_Type SLang_Math_Table [] =
 {
    MAKE_INTRINSIC_0("nint", nint_intrin, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("polynom", math_poly, SLANG_DOUBLE_TYPE),
+   MAKE_INTRINSIC_0("polynom", math_poly, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("hypot", hypot_fun, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("atan2", atan2_fun, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_min", min_fun, SLANG_VOID_TYPE),

@@ -1304,7 +1304,7 @@ static void add_aget_method (SLtype *typep, SLang_Ref_Type *ref)
      SLang_free_function (si->aget_method);
 
    si->aget_method = SLang_copy_function (f);
-   (void) SLclass_set_aput_function (cl, aget_method);
+   (void) SLclass_set_aget_function (cl, aget_method);
 }
 
 static void add_aput_method (SLtype *typep, SLang_Ref_Type *ref)
@@ -1566,6 +1566,17 @@ static int struct_eqs_method (SLtype a_type, VOID_STAR ap, SLtype b_type, VOID_S
    return 1;
 }
 
+static int struct_acopy (SLtype unused, VOID_STAR src_sptr, VOID_STAR dest_sptr)
+{
+   _pSLang_Struct_Type *s;
+   
+   (void) unused;
+   s = *(_pSLang_Struct_Type **)src_sptr;
+   s->num_refs++;
+   *(_pSLang_Struct_Type **)dest_sptr = s;
+   return 0;
+}
+
 int _pSLstruct_define_typedef (void)
 {
    char *type_name;
@@ -1610,6 +1621,7 @@ int _pSLstruct_define_typedef (void)
 
    (void) SLclass_set_string_function (cl, string_method);
    (void) SLclass_set_eqs_function (cl, struct_eqs_method);
+   (void) SLclass_set_acopy_function (cl, struct_acopy);
 
    cl->cl_sget = struct_sget;
    cl->cl_sput = struct_sput;
@@ -1681,6 +1693,7 @@ static int register_struct (void)
    cl->cl_sput = struct_sput;
    (void) SLclass_set_string_function (cl, string_method);
    (void) SLclass_set_eqs_function (cl, struct_eqs_method);
+   (void) SLclass_set_acopy_function (cl, struct_acopy);
 
    cl->is_container = 1;
 
