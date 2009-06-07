@@ -9,7 +9,7 @@ TEST_SCRIPTS_NO_SLC = autoload nspace2 prep
 TEST_SCRIPTS = $(TEST_SCRIPTS_SLC) $(TEST_SCRIPTS_NO_SLC)
 
 TEST_PGM = sltest
-#RUN_TEST_PGM = valgrind --tool=memcheck --leak-check=yes --log-file=log --num-callers=20 ./$(TEST_PGM)
+MEMCHECK = valgrind --tool=memcheck --leak-check=yes --leak-resolution=med --num-callers=20
 RUN_TEST_PGM = ./$(TEST_PGM)
 SLANGINC = ..
 SLANGLIB = ../$(ARCH)objs
@@ -21,8 +21,8 @@ run_tests: $(TEST_PGM)
 	@echo ""
 	-@for X in $(TEST_SCRIPTS); \
 	do \
-	   $(RUN_TEST_PGM) $$X.sl; \
-	   $(RUN_TEST_PGM) -utf8 $$X.sl; \
+	    $(RUN_TEST_PGM) $$X.sl; \
+	    $(RUN_TEST_PGM) -utf8 $$X.sl; \
 	done
 	touch sltest.c
 
@@ -32,12 +32,35 @@ run_tests_slc: $(TEST_PGM)
 	@echo ""
 	-@for X in $(TEST_SCRIPTS_SLC); \
 	do \
-	   $(RUN_TEST_PGM) $$X.slc; \
-	   $(RUN_TEST_PGM) -utf8 $$X.slc; \
+	    $(RUN_TEST_PGM) $$X.slc; \
+	    $(RUN_TEST_PGM) -utf8 $$X.slc; \
+	done
+	touch sltest.c
+
+memcheck_run_tests: $(TEST_PGM)
+	@echo ""
+	@echo "Running tests:"
+	@echo ""
+	-@for X in $(TEST_SCRIPTS); \
+	do \
+	   $(MEMCHECK) --log-file=log.$${X} $(RUN_TEST_PGM) $$X.sl; \
+	   $(MEMCHECK) --log-file=log.$${X}_u $(RUN_TEST_PGM) -utf8 $$X.sl; \
+	done
+	touch sltest.c
+
+memcheck_run_tests_slc: $(TEST_PGM)
+	@echo ""
+	@echo "Running tests:"
+	@echo ""
+	-@for X in $(TEST_SCRIPTS_SLC); \
+	do \
+	   $(MEMCHECK) --log-file=log.$${X}_c $(RUN_TEST_PGM) $$X.slc; \
+	   $(MEMCHECK) --log-file=log.$${X}_uc $(RUN_TEST_PGM) -utf8 $$X.slc; \
 	done
 	touch sltest.c
 
 all: run_tests run_tests_slc
+memcheck: memcheck_run_tests memcheck_run_tests_slc
 
 sltest: sltest.c $(SLANGLIB)/libslang.a
 	$(CC) $(CFLAGS) $(LDFLAGS) sltest.c -o sltest -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
