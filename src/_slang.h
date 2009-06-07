@@ -574,6 +574,7 @@ extern int _pSLstruct_define_typedef (void);
 
 extern SLang_Object_Type *_pSLstruct_get_field_value (SLang_Struct_Type *, SLCONST char *);
 extern int _pSLstruct_push_field_ref (SLFUTURE_CONST char *);
+extern int _pSLstruct_push_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free);
 
 int _pSLang_get_qualifiers (SLang_Struct_Type **);
 
@@ -917,7 +918,9 @@ struct _pSLang_Class_Type
    SL_OOBinary_Type *cl_this_binary_void;
 
    int is_container;
+   int is_struct;
 };
+#define SLANG_CLASS_IS_SLSTRUCT(cl) ((cl)->is_struct != 0)
 
 extern int _pSLregister_types (void);
 extern SLang_Class_Type *_pSLclass_get_class (SLtype);
