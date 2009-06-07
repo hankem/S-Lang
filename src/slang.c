@@ -2886,21 +2886,34 @@ static void set_deref_lvalue (SLBlock_Type *bc_blk)
 
 static int push_struct_field (SLFUTURE_CONST char *name)
 {
-   int type;
    SLang_Class_Type *cl;
-
-   if (-1 == (type = peek_at_stack ()))
+   SLang_Object_Type obj;
+   SLtype type;
+   
+   if (-1 == pop_object (&obj))
      return -1;
+   
+   if (SLANG_STRUCT_TYPE == (type = obj.o_data_type))
+     return _pSLstruct_push_field (obj.v.struct_val, name, 1);
 
    GET_CLASS(cl, (SLtype) type);
+
+   if (cl->is_struct)
+     return _pSLstruct_push_field (obj.v.struct_val, name, 1);
+
    if (cl->cl_sget == NULL)
      {
 	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "%s does not permit structure access",
 		      cl->cl_name);
+	free_object (&obj, cl);
 	return -1;
      }
-
+   if (-1 == push_object (&obj))
+     {
+	free_object (&obj, cl);
+	return -1;
+     }
    return (*cl->cl_sget) ((SLtype) type, name);
 }
 

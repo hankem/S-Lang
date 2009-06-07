@@ -138,7 +138,7 @@ int SLang_pop_struct (_pSLang_Struct_Type **sp)
    if (type != SLANG_STRUCT_TYPE)
      {
 	cl = _pSLclass_get_class (type);
-	if (cl->cl_struct_def == NULL)
+	if (cl->is_struct == 0)
 	  {
 	     *sp = NULL;
 	     SLang_free_object (&obj);
@@ -1449,6 +1449,22 @@ static int struct_sput (SLtype type, SLFUTURE_CONST char *name)
    return 0;
 }
 
+int _pSLstruct_push_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free)
+{
+   _pSLstruct_Field_Type *f;
+   int ret;
+
+   if (NULL == (f = pop_field (s, name, find_field)))
+     {
+	if (do_free) SLang_free_struct (s);
+	return -1;
+     }
+
+   ret = _pSLpush_slang_obj (&f->obj);
+   if (do_free) SLang_free_struct (s);
+   return ret;
+}
+
 static int struct_sget (SLtype type, SLFUTURE_CONST char *name)
 {
    _pSLang_Struct_Type *s;
@@ -1626,6 +1642,7 @@ int _pSLstruct_define_typedef (void)
    cl->cl_sget = struct_sget;
    cl->cl_sput = struct_sput;
    cl->is_container = 1;
+   cl->is_struct = 1;
 
    if ((-1 == SLclass_register_class (cl,
 				     SLANG_VOID_TYPE,   /* any open slot */
@@ -1696,6 +1713,7 @@ static int register_struct (void)
    (void) SLclass_set_acopy_function (cl, struct_acopy);
 
    cl->is_container = 1;
+   cl->is_struct = 1;
 
    if (-1 == SLclass_register_class (cl, SLANG_STRUCT_TYPE, sizeof (_pSLang_Struct_Type),
 				     SLANG_CLASS_TYPE_PTR))
