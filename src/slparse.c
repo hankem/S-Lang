@@ -2355,6 +2355,26 @@ static void simple_expression (_pSLang_Token_Type *ctok)
 }
 
 
+static int negate_float_type_token (_pSLang_Token_Type *tok)
+{
+   char buf[SL_MAX_TOKEN_LEN];
+   unsigned int len;
+
+   len = 1 + _pSLstring_bytelen (tok->v.s_val);   /* sign */
+   if (len >= sizeof(buf))
+     {
+	_pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Number too long for buffer", tok, 1);
+	return -1;
+     }
+   buf[0] = '-';
+   memcpy (buf+1, tok->v.s_val, len);  /* copys \0 */
+   (*tok->free_val_func)(tok);
+   if (EOF_TOKEN == _pSLtoken_init_slstring_token (tok, tok->type, buf, len))
+     return -1;
+
+   return 0;
+}
+
 /* unary-expression:
  *	 postfix-expression
  *	 case unary-expression
@@ -2397,9 +2417,14 @@ static void unary_expression (_pSLang_Token_Type *ctok)
 		  _pSLang_Token_Type *last_token;
 		  postfix_expression (ctok);
 		  if ((NULL != (last_token = get_last_token ()))
-		      && (last_token->flags & SLTOKEN_TYPE_INTEGER))
+		      && (last_token->flags & SLTOKEN_TYPE_NUMBER))
 		    {
-		       if (-1 == check_number_token_overflow (last_token, -1))
+		       if (last_token->flags & SLTOKEN_TYPE_FLOAT)
+			 {
+			    if (-1 == negate_float_type_token (last_token))
+			      return;
+			 }
+		       else if (-1 == check_number_token_overflow (last_token, -1))
 			 return;
 		    }
 		  else

@@ -59,6 +59,9 @@ USA.
 # define SLSTATIC_HASH_TABLE_SIZE	73
 #endif
 
+/* Do not change this */
+#define SL_MAX_TOKEN_LEN		254
+
 /* Size of the keyboard buffer use by the ungetkey routines */
 #ifdef __MSDOS_16BIT__
 # define SL_MAX_INPUT_BUFFER_LEN	40

@@ -1,7 +1,7 @@
 /* -*- mode: C; mode: fold; -*- */
 /* slang.c  --- guts of S-Lang interpreter */
 /*
-Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
+Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 John E. Davis
 
 This file is part of the S-Lang Library.
 
