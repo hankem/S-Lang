@@ -9,7 +9,9 @@ try
 }
 catch ImportError;
 
+#ifexists signal
 signal (SIGPIPE, SIG_IGN);
+#endif
 
 private define parse_redir (redir)
 {

@@ -196,12 +196,13 @@ static int setsid_cmd (void)
 static int getsid_cmd (void)
 {
    int ipid = 0;
+   pid_t pid;
 
    if ((SLang_Num_Function_Args == 1)
        && (-1 == SLang_pop_int (&ipid)))
      return -1;
 
-   pid_t pid = getsid (ipid);
+   pid = getsid (ipid);
 
    if (pid == (pid_t)-1)
      _pSLerrno_errno = errno;

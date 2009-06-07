@@ -368,16 +368,24 @@
 
 \function{polynom}
 \synopsis{Evaluate a polynomial}
-\usage{Double_Type polynom(Double_Type a, b, ...c, Integer_Type n, Double_Type x)}
+\usage{Double_Type polynom([a0,a1,...aN], x)}
 \description
-  The \ifun{polynom} function returns the value of the polynomial expression:
+  The \ifun{polynom} function returns the value of the polynomial expression
 #v+
-     ax^n + bx^(n - 1) + ... c
+     a0 + a1*x + a2*x^2 + ... + aN*x^N
 #v-
+  where the coefficients are given by an array of values
+  \exmp{[a0,...,aN]}.  If \exmp{x} is an array, the function will
+  return a corresponding array.
 \notes
-  The \ifun{polynom} function should be extended to work with complex
-  and array data types.  The current implementation is limited to
-  \dtype{Double_Type} quantities.
+  Prior to version 2.2, this function had a different calling syntax
+  and and was less useful.
+
+  The \ifun{polynom} function does not yet support complex-valued
+  coefficients.
+  
+  For the case of a scalar value of \exmp{x} and a small degree
+  polynomial, it is more efficient to use an explicit expression.
 \seealso{exp}
 \done
 

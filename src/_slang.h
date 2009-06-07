@@ -224,7 +224,7 @@ typedef enum
    SLANG_BC_LITERAL_AGET1	= 0x9F,
    SLANG_BC_LVARIABLE_APUT1	= 0xA0,
    SLANG_BC_LITERAL_APUT1	= 0xA1,
-   SLANG_BC_LLVARIABLE_BINARY_PLUS	= 0xA2,
+   SLANG_BC_LLVARIABLE_BINARY2	= 0xA2,
    SLANG_BC_SET_LOCLV_LIT_INT	= 0xA3,
    SLANG_BC_SET_LOCLV_LIT_AGET1	= 0xA4,
    SLANG_BC_SET_LOCLV_LVAR	= 0xA5,
@@ -237,7 +237,7 @@ typedef enum
    SLANG_BC_BINARY_SET_LOCLVAL	= 0xAC,
    SLANG_BC_LVAR_AGET_SET_LOCLVAL	= 0xAD,
    SLANG_BC_LVAR_LVAR_APUT1	= 0xAE,
-   SLANG_BC_UNUSED_0xAF		= 0xAF,
+   SLANG_BC_LLVAR_BINARY_IF	= 0xAF,
    /* The following do not actually occur in inner_interp.  They used 
     * to signify the bytecode has been combined with another.
     */
@@ -246,6 +246,7 @@ typedef enum
    SLANG_BC_LITERAL_COMBINED	= 0xB2,
    SLANG_BC_CALL_DIRECT_COMB	= 0xB3,
    SLANG_BC_COMBINED		= 0xB4,
+#define SLANG_IS_BC_COMBINED(b) ((0xB0 <= (b)) && ((b) <= 0xB4))
    SLANG_BC_UNUSED_0xB5		= 0xB5,
    SLANG_BC_UNUSED_0xB6		= 0xB6,
    SLANG_BC_UNUSED_0xB7		= 0xB7,
