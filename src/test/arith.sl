@@ -200,6 +200,10 @@ test_is_same (1,1,1);
 test_is_same (1,'\001', 0);
 #ifexists Double_Type
 test_is_same (1, 1.0, 0);
+test_is_same (-1.0, -(1.0), 1);
+test_is_same (-PI, -(PI), 1);
+test_is_same (-20.312345678, -(20.312345678), 1);
+test_is_same (-20.3123f, -(20.3123f), 1);
 #endif
 test_is_same ("xyz", "xyz", 1);
 test_is_same ([1:3],[1:3],0);
@@ -208,6 +212,7 @@ test_is_same (stderr, 1, 0);
 #ifexists Complex_Type
 test_is_same (1+2i, 1+2i, 1);
 test_is_same (1.0+0.0i, 1.0, 0);
+test_is_same (-20.3-2i, -(20.3+2i), 1);
 #endif
 
 #ifexists Double_Type
