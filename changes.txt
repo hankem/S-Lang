@@ -180,14 +180,6 @@ Changes since 2.1.4
 95. src/slang.c: optimization tweak for expressions involving
     scalar assignments to an array element.
 96. src/slang.c: change #93 introduced a small leak.
-97. src/slang.c: optimization tweak involving pushing the value of a
-    structure field.
-98. src/slstdio.c: If fread/fwrite returns a short, non-zero item count,
-    clear the error and try again.
-99. src/slstdio.c: If fflush appears to succeed, check ferror and if
-    errno==EINTR, try it again.
-100. src/slproc.c: Added get/setpriority functions.
-101. src/slstdio.c: Added setvbuf
 
 {{{ Previous Versions
 
