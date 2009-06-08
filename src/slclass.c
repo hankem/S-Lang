@@ -299,12 +299,11 @@ scalar_vector_bin_op (int op,
 static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 			 unsigned int desired, unsigned int *actual)
 {
-   unsigned int n, total;
+   unsigned int n;
    char *buf = (char *)ptr;
    size_t desired_bytes, actual_bytes;
    size_t size = _pSLclass_get_class (type)->cl_sizeof_type;
 
-   total = 0;
    desired_bytes = size * desired;
    actual_bytes = 0;
 
@@ -313,7 +312,7 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 	int e;
 
 	errno = 0;
-	n = fread (buf, size, desired_bytes, fp);
+	n = fread (buf, 1, desired_bytes, fp);
 
 	actual_bytes += n;
 	if (n == desired_bytes)
@@ -346,12 +345,11 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
 			 unsigned int desired, unsigned int *actual)
 {
-   unsigned int n, total;
+   unsigned int n;
    char *buf = (char *)ptr;
    size_t desired_bytes, actual_bytes;
    size_t size = _pSLclass_get_class (type)->cl_sizeof_type;
 
-   total = 0;
    desired_bytes = size * desired;
    actual_bytes = 0;
 
