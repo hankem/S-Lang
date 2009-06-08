@@ -6457,7 +6457,8 @@ static int pop_block_context (void)
 
    if (Block_Context_Stack_Len == 0)
      {
-	SLang_verror (SL_StackUnderflow_Error, "block context stack underflow");
+	if (_pSLang_Error == 0)
+	  SLang_verror (SL_StackUnderflow_Error, "block context stack underflow");
 	return -1;
      }
 

@@ -141,8 +141,15 @@ static int signal_safe_fputs (char *buf, FILE *fp)
 	num_written += dn;
 	if (dn < n)
 	  {
-	     if (0 == handle_errno (errno))
-	       return -1;
+	     int e = errno;
+
+	     _pSLerrno_errno = e;
+	     clearerr (fp);
+	     if (n == 0)
+	       {
+		  if (0 == handle_errno (e))
+		    break;
+	       }
 	  }
      }
    return num_written;
