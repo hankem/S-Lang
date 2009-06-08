@@ -184,6 +184,8 @@ Changes since 2.1.4
     structure field.
 98. src/slstdio.c: If fread/fwrite returns a short, non-zero item count,
     clear the error and try again.
+99. src/slstdio.c: If fflush appears to succeed, check ferror and if
+    errno==EINTR, try it again.
 
 {{{ Previous Versions
 
