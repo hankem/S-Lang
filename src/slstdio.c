@@ -703,12 +703,13 @@ static int stdio_fflush (SL_File_Table_Type *t)
 
    if (NULL == (fp = check_fp (t, SL_WRITE)))
      return -1;
-
+   
    errno = 0;
-   while (EOF == fflush (fp))
+   while ((EOF == fflush (fp)) || ferror (fp))
      {
 	if (0 == handle_errno (errno))
 	  return -1;
+	clearerr (fp);
      }
 
    return 0;
