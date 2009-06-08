@@ -51,6 +51,31 @@
 \seealso{getpid, getgid}
 \done
 
+
+\function{getpriority}
+\synopsis{Get a process's scheduling priority}
+\usage{result = getpriority (which, who)}
+\description
+ The \ifun{setpriority} function may be used to obtain the kernel's
+ scheduling priority for a process, process group, or a user depending
+ upon the values of the \exmp{which} and \exmp{who} parameters.
+ Specifically, if the value of \exmp{which} is \exmp{PRIO_PROCESS},
+ then the value of \exmp{who} specifies the process id of the affected
+ process. If \exmp{which} is \exmp{PRIO_PGRP}, then \exmp{who}
+ specifies a process group id.  If \exmp{which} is \exmp{PRIO_USER},
+ then the value of \exmp{who} is interpreted as a user id.  For the
+ latter two cases, where \exmp{which} refers to a set of processes,
+ the value returned corresponds to the highest priority of a process
+ in the set.  A value of 0 may be used for who to denote the process
+ id, process group id, or real user ID of the current process.
+ 
+ Upon success, the function returns the specified priority value.  If
+ an error occurs, the function will return \NULL with \ivar{errno} set
+ accordingly.  
+\notes
+\seealso{setpriority, getpid, getppid}
+\done
+
 \function{getuid}
 \synopsis{Get the user-id of the current process}
 \usage{Int_Type getuid ()}
@@ -126,6 +151,42 @@
 \notes
   This function is not supported by all systems.
 \seealso{setgid, setuid}
+\done
+
+\function{setpriority}
+\synopsis{Set the scheduling priority for a process}
+\usage{Int_Type setpriority (which, who, prio)}
+\description
+ The \ifun{setpriority} function may be used to set the kernel's
+ scheduling priority for a process, process group, or a user depending
+ upon the values of the \exmp{which} and \exmp{who} parameters.
+ Specifically, if the value of \exmp{which} is \exmp{PRIO_PROCESS}, then the
+ value of \exmp{who} specifies the process id of the affected process.
+ If \exmp{which} is \exmp{PRIO_PGRP}, then \exmp{who} specifies a process
+ group id.  If \exmp{which} is \exmp{PRIO_USER},  then the value of
+ \exmp{who} is interpreted as a user id.  A value of 0 may be used for
+ who to denote the process id, process group id, or real user ID of
+ the current process.
+ 
+ Upon sucess, the \ifun{setpriority} function returns 0.  If an error occurs,
+ -1 is returned and errno will be set accordingly.
+\example
+  The \ifun{getpriority} and \ifun{setpriority} functions may be used
+  to implement a \exmp{nice} function for incrementing the priority of
+  the current process as follows:
+#v+
+   define nice (dp)
+   {
+      variable p = getpriority (PRIO_PROCESS, 0);
+      if (p == NULL)
+        return -1;
+      variable s = setpriority (PRIO_PROCESS, 0, p + dp);
+      if (s == -1)
+        return -1;
+      return getpriority (PRIO_PROCESS, 0);
+   }
+#v-
+\seealso{getpriority, getpid}
 \done
 
 \function{setuid}

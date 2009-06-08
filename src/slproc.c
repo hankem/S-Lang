@@ -49,6 +49,12 @@ USA.
 #include <sys/stat.h>
 #include <signal.h>
 #include <time.h>
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+#ifdef HAVE_SYS_RESOURCE_H
+# include <sys/resource.h>
+#endif
 
 #include <errno.h>
 
@@ -210,6 +216,32 @@ static int getsid_cmd (void)
 }
 #endif
 
+#ifdef HAVE_GETPRIORITY
+void getpriority_intrin (int *which, int *who)
+{
+   int ret;
+   errno = 0;
+   ret = getpriority (*which, *who);
+   if ((ret == -1) && (errno != 0))
+     {
+	_pSLerrno_errno = errno;
+	(void) SLang_push_null ();
+	return;
+     }
+   (void) SLang_push_int (ret);
+}
+#endif
+
+#ifdef HAVE_SETPRIORITY
+int setpriority_intrin (int *which, int *who, int *prio)
+{
+   int ret;
+   if (-1 == (ret = setpriority (*which, *who, *prio)))
+     _pSLerrno_errno = errno;
+   return ret;
+}
+#endif
+
 static SLang_Intrin_Fun_Type Process_Name_Table[] =
 {
    MAKE_INTRINSIC_0("getpid", getpid_cmd, SLANG_INT_TYPE),
@@ -264,13 +296,35 @@ static SLang_Intrin_Fun_Type Process_Name_Table[] =
 #ifdef HAVE_KILLPG
    MAKE_INTRINSIC_II("killpg", killpg_cmd, SLANG_INT_TYPE),
 #endif
+#ifdef HAVE_SETPRIORITY
+   MAKE_INTRINSIC_III("setpriority", setpriority_intrin, SLANG_INT_TYPE),
+#endif
+#ifdef HAVE_GETPRIORITY
+   MAKE_INTRINSIC_II("getpriority", getpriority_intrin, SLANG_VOID_TYPE),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
+};
+
+static SLang_IConstant_Type Const_Table [] =
+{
+#ifdef PRIO_PROCESS
+   MAKE_ICONSTANT("PRIO_PROCESS", PRIO_PROCESS),
+#endif
+#ifdef PRIO_PGRP
+   MAKE_ICONSTANT("PRIO_PGRP", PRIO_PGRP),
+#endif
+#ifdef PRIO_USER
+   MAKE_ICONSTANT("PRIO_USER", PRIO_USER),
+#endif
+   SLANG_END_ICONST_TABLE
 };
 
 int SLang_init_posix_process (void)
 {
    if ((-1 == SLadd_intrin_fun_table (Process_Name_Table, "__POSIX_PROCESS__"))
+       || (-1 == SLadd_iconstant_table (Const_Table, NULL))	
        || (-1 == _pSLerrno_init ()))
      return -1;
+
    return 0;
 }

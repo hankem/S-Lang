@@ -262,6 +262,8 @@ USA.
 #endif
 #undef HAVE_LONG_LONG
 
+#define HAVE_SETVBUF
+
 #define SIZEOF_OFF_T	4
 
 #if defined (__EMX__) || defined(__BORLANDC__) || defined(__IBMC__) || defined(_MSC_VER) || defined(__WATCOMC__)
