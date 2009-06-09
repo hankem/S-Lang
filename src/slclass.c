@@ -315,7 +315,7 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 	n = fread (buf, 1, desired_bytes, fp);
 
 	actual_bytes += n;
-	if (n == desired_bytes)
+	if ((n == desired_bytes) || feof(fp))
 	  break;
 
 	e = errno;
@@ -324,14 +324,12 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 
 	clearerr (fp);
 #ifdef EINTR
-	if ((errno == EINTR)
+	if ((e == EINTR)
 	    && (0 == SLang_handle_interrupt ()))
 	  continue;
 #endif
 	_pSLerrno_errno = e;
-
-	if (n == 0)
-	  break;
+	break;
      }
 
    if (actual_bytes % size)
@@ -376,6 +374,9 @@ static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
 #endif
 	_pSLerrno_errno = e;
 
+	/* Apparantly, the write can be interrupted returning a short item
+	 * count but not set errno.
+	 */
 	if (n == 0)
 	  break;
      }
