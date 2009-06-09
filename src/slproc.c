@@ -217,7 +217,7 @@ static int getsid_cmd (void)
 #endif
 
 #ifdef HAVE_GETPRIORITY
-void getpriority_intrin (int *which, int *who)
+static void getpriority_intrin (int *which, int *who)
 {
    int ret;
    errno = 0;
@@ -233,7 +233,7 @@ void getpriority_intrin (int *which, int *who)
 #endif
 
 #ifdef HAVE_SETPRIORITY
-int setpriority_intrin (int *which, int *who, int *prio)
+static int setpriority_intrin (int *which, int *who, int *prio)
 {
    int ret;
    if (-1 == (ret = setpriority (*which, *who, *prio)))
