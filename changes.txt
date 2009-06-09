@@ -186,6 +186,8 @@ Changes since 2.1.4
     clear the error and try again.
 99. src/slstdio.c: If fflush appears to succeed, check ferror and if
     errno==EINTR, try it again.
+100. src/slproc.c: Added get/setpriority functions.
+101. src/slstdio.c: Added setvbuf
 
 {{{ Previous Versions
 
