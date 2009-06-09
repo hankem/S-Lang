@@ -188,6 +188,7 @@ Changes since 2.1.4
     errno==EINTR, try it again.
 100. src/slproc.c: Added get/setpriority functions.
 101. src/slstdio.c: Added setvbuf
+102. src/slproc.c: Added the "static" to the get/setpriority wrappers.
 
 {{{ Previous Versions
 
