@@ -177,6 +177,13 @@ Changes since 2.1.4
 93. src/slang.c: Additional optimizations involving binary expressions.
 94. src/slparse.c: Avoid an explicit chs bytecode for negative
     floating point literals.
+95. src/slang.c: optimization tweak for expressions involving
+    scalar assignments to an array element.
+96. src/slang.c: change #93 introduced a small leak.
+97. src/slang.c: optimization tweak involving pushing the value of a
+    structure field.
+98. src/slstdio.c: If fread/fwrite returns a short, non-zero item count,
+    clear the error and try again.
 
 {{{ Previous Versions
 

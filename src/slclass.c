@@ -299,64 +299,92 @@ scalar_vector_bin_op (int op,
 static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 			 unsigned int desired, unsigned int *actual)
 {
-   unsigned int n, total;
+   unsigned int n;
    char *buf = (char *)ptr;
-   unsigned int size = _pSLclass_get_class (type)->cl_sizeof_type;
+   size_t desired_bytes, actual_bytes;
+   size_t size = _pSLclass_get_class (type)->cl_sizeof_type;
 
-   total = 0;
-   while (desired)
+   desired_bytes = size * desired;
+   actual_bytes = 0;
+
+   while (desired_bytes)
      {
+	int e;
+
 	errno = 0;
-	n = fread (buf, size, desired, fp);
-	total += n;
-	
-	if (n == desired)
+	n = fread (buf, 1, desired_bytes, fp);
+
+	actual_bytes += n;
+	if (n == desired_bytes)
 	  break;
 
+	e = errno;
+	desired_bytes -= n;
+	buf += n;
+
+	clearerr (fp);
 #ifdef EINTR
 	if ((errno == EINTR)
 	    && (0 == SLang_handle_interrupt ()))
-	  {
-	     desired -= n;
-	     buf += n*size;
-	     continue;
-	  }
+	  continue;
 #endif
-	break;
+	_pSLerrno_errno = e;
+
+	if (n == 0)
+	  break;
      }
-   *actual = total;
+
+   if (actual_bytes % size)
+     {
+	/* Sigh.  We failed to read a full object. */
+     }
+   *actual = actual_bytes / size;
    return 0;
 }
 
 static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
 			 unsigned int desired, unsigned int *actual)
 {
-   unsigned int n, total;
+   unsigned int n;
    char *buf = (char *)ptr;
-   unsigned int size = _pSLclass_get_class (type)->cl_sizeof_type;
+   size_t desired_bytes, actual_bytes;
+   size_t size = _pSLclass_get_class (type)->cl_sizeof_type;
 
-   total = 0;
-   while (desired)
+   desired_bytes = size * desired;
+   actual_bytes = 0;
+
+   while (desired_bytes)
      {
+	int e;
+
 	errno = 0;
-	n = fwrite (buf, size, desired, fp);
-	total += n;
-	
-	if (n == desired)
+	n = fwrite (buf, 1, desired_bytes, fp);
+
+	actual_bytes += n;
+	if (n == desired_bytes)
 	  break;
 
+	e = errno;
+	desired_bytes -= n;
+	buf += n;
+
+	clearerr (fp);
 #ifdef EINTR
-	if ((errno == EINTR)
+	if ((e == EINTR)
 	    && (0 == SLang_handle_interrupt ()))
-	  {
-	     desired -= n;
-	     buf += n*size;
-	     continue;
-	  }
+	  continue;
 #endif
-	break;
+	_pSLerrno_errno = e;
+
+	if (n == 0)
+	  break;
      }
-   *actual = total;
+
+   if (actual_bytes % size)
+     {
+	/* Sigh.  We failed to write out a full object. */
+     }
+   *actual = actual_bytes / size;
    return 0;
 }
 
