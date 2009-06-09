@@ -6167,6 +6167,7 @@ done
 
 
 
+
 for ac_header in \
 stdlib.h \
 unistd.h \
@@ -6191,6 +6192,7 @@ sys/socket.h \
 netinet/in.h \
 arpa/inet.h \
 sys/un.h \
+sys/resource.h \
 
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -6892,6 +6894,9 @@ fi
 
 
 
+
+
+
 for ac_func in \
 memset \
 memcpy \
@@ -6927,6 +6932,8 @@ siglongjmp \
 fork waitpid \
 socket socketpair \
 confstr pathconf \
+getpriority setpriority \
+setvbuf \
 
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`

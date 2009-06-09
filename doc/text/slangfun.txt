@@ -5306,6 +5306,39 @@ getppid
 
 --------------------------------------------------------------
 
+getpriority
+
+ SYNOPSIS
+  Get a process's scheduling priority
+
+ USAGE
+  result = getpriority (which, who)
+
+ DESCRIPTION
+ The `setpriority' function may be used to obtain the kernel's
+ scheduling priority for a process, process group, or a user depending
+ upon the values of the `which' and `who' parameters.
+ Specifically, if the value of `which' is `PRIO_PROCESS',
+ then the value of `who' specifies the process id of the affected
+ process. If `which' is `PRIO_PGRP', then `who'
+ specifies a process group id.  If `which' is `PRIO_USER',
+ then the value of `who' is interpreted as a user id.  For the
+ latter two cases, where `which' refers to a set of processes,
+ the value returned corresponds to the highest priority of a process
+ in the set.  A value of 0 may be used for who to denote the process
+ id, process group id, or real user ID of the current process.
+
+ Upon success, the function returns the specified priority value.  If
+ an error occurs, the function will return NULL with `errno' set
+ accordingly.
+
+ NOTES
+
+ SEE ALSO
+  setpriority, getpid, getppid
+
+--------------------------------------------------------------
+
 getuid
 
  SYNOPSIS
@@ -5426,6 +5459,51 @@ setpgid
 
  SEE ALSO
   setgid, setuid
+
+--------------------------------------------------------------
+
+setpriority
+
+ SYNOPSIS
+  Set the scheduling priority for a process
+
+ USAGE
+  Int_Type setpriority (which, who, prio)
+
+ DESCRIPTION
+ The `setpriority' function may be used to set the kernel's
+ scheduling priority for a process, process group, or a user depending
+ upon the values of the `which' and `who' parameters.
+ Specifically, if the value of `which' is `PRIO_PROCESS', then the
+ value of `who' specifies the process id of the affected process.
+ If `which' is `PRIO_PGRP', then `who' specifies a process
+ group id.  If `which' is `PRIO_USER',  then the value of
+ `who' is interpreted as a user id.  A value of 0 may be used for
+ who to denote the process id, process group id, or real user ID of
+ the current process.
+
+ Upon sucess, the `setpriority' function returns 0.  If an error occurs,
+ -1 is returned and errno will be set accordingly.
+
+ EXAMPLE
+  The `getpriority' and `setpriority' functions may be used
+  to implement a `nice' function for incrementing the priority of
+  the current process as follows:
+
+   define nice (dp)
+   {
+      variable p = getpriority (PRIO_PROCESS, 0);
+      if (p == NULL)
+        return -1;
+      variable s = setpriority (PRIO_PROCESS, 0, p + dp);
+      if (s == -1)
+        return -1;
+      return getpriority (PRIO_PROCESS, 0);
+   }
+
+
+ SEE ALSO
+  getpriority, getpid
 
 --------------------------------------------------------------
 

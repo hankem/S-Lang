@@ -52,6 +52,7 @@ sys/socket.h \
 netinet/in.h \
 arpa/inet.h \
 sys/un.h \
+sys/resource.h \
 )
 
 AC_TYPE_MODE_T
@@ -105,6 +106,8 @@ siglongjmp \
 fork waitpid \
 socket socketpair \
 confstr pathconf \
+getpriority setpriority \
+setvbuf \
 )
 
 dnl# Systems that have nl_langinfo may not have CODESET.  Test for both here

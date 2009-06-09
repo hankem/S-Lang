@@ -315,7 +315,7 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 	n = fread (buf, 1, desired_bytes, fp);
 
 	actual_bytes += n;
-	if ((n == desired_bytes) || feof(fp))
+	if (n == desired_bytes)
 	  break;
 
 	e = errno;
