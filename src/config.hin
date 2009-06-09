@@ -78,6 +78,8 @@
 
 #undef HAVE_SYS_MMAN_H
 
+#undef HAVE_SYS_RESOURCE_H
+
 /* Set these to the appropriate values */
 #undef SIZEOF_SHORT
 #undef SIZEOF_INT
@@ -131,6 +133,9 @@
 #undef HAVE_GETSID
 #undef HAVE_SETSID
 
+#undef HAVE_GETPRIORITY
+#undef HAVE_SETPRIORITY
+
 #undef HAVE_ISSETUGID
 
 #undef HAVE_ACOSH
@@ -150,6 +155,7 @@
 #undef HAVE_NDIR_H
 
 #undef HAVE_FSEEKO
+#undef HAVE_SETVBUF
 
 #undef HAVE_DLFCN_H
 

@@ -81,6 +81,9 @@ typedef struct
 #define SL_FDOPEN	0x2000
 #define SL_PIPE		0x4000
 #define SL_INUSE	0x8000
+   
+   char *buf;
+   unsigned int buflen;
 }
 SL_File_Table_Type;
 
@@ -419,7 +422,7 @@ static int close_file_type (SL_File_Table_Type *t)
 	       break;
 	  }
      }
-
+   if (t->buf != NULL) SLfree (t->buf);
    if (t->file != NULL) SLang_free_slstring (t->file);
    memset ((char *) t, 0, sizeof (SL_File_Table_Type));
    return ret;
@@ -1041,7 +1044,60 @@ static int stdio_printf (void)
    return status;
 }
 
+#ifdef HAVE_SETVBUF
+static int stdio_setvbuf (SL_File_Table_Type *t, int *modep, int *sizep)
+{
+   FILE *fp;
+   int status;
+   char *newbuf;
+   unsigned int size;
+
+   if (NULL == (fp = check_fp (t, 0xFFFF)))
+     return -1;
    
+   if (*sizep < 0)
+     {
+	SLang_verror (SL_InvalidParm_Error, "setvbuf: Expecting a positive integer for the size parameter");
+	return -1;
+     }
+
+   size = (unsigned int) *sizep;
+   newbuf = NULL;
+
+   errno = 0;
+   if (*modep == _IONBF)
+     status = setvbuf (fp, NULL, _IONBF, 0);
+   else if (*sizep == 0)
+     status = setvbuf (fp, NULL, *modep, 0);
+   else
+     {
+	if (size <= 0) size = BUFSIZ;
+
+	if (NULL == (newbuf = SLmalloc (size)))
+	  return -1;
+	errno = 0;
+	status = setvbuf (fp, newbuf, *modep, size);
+     }
+
+   if (status != 0)
+     {
+	_pSLerrno_errno = errno;
+	if (newbuf != NULL)
+	  SLfree (newbuf);
+	return -1;
+     }
+
+   if (newbuf != NULL)
+     {
+	if (t->buf != NULL)
+	  SLfree (t->buf);
+	t->buf = newbuf;
+	t->buflen = size;
+     }
+   return status;
+}
+#endif
+
 #define F SLANG_FILE_PTR_TYPE
 #define R SLANG_REF_TYPE
 #define I SLANG_INT_TYPE
@@ -1073,6 +1129,9 @@ static SLang_Intrin_Fun_Type Stdio_Name_Table[] =
    MAKE_INTRINSIC_SS("popen", stdio_popen, V),
    MAKE_INTRINSIC_0("pclose", stdio_fclose, I),
 #endif
+#ifdef HAVE_SETVBUF
+   MAKE_INTRINSIC_3("setvbuf", stdio_setvbuf, I, F, I, I),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 #undef F
@@ -1099,6 +1158,15 @@ static SLang_IConstant_Type Stdio_Consts [] =
    MAKE_ICONSTANT("SEEK_SET", SEEK_SET),
    MAKE_ICONSTANT("SEEK_END", SEEK_END),
    MAKE_ICONSTANT("SEEK_CUR", SEEK_CUR),
+#ifdef _IONBF
+   MAKE_ICONSTANT("_IONBF", _IONBF),
+#endif
+#ifdef _IOLBF
+   MAKE_ICONSTANT("_IOLBF", _IOLBF),
+#endif
+#ifdef _IOFBF
+   MAKE_ICONSTANT("_IOFBF", _IOFBF),
+#endif
    SLANG_END_ICONST_TABLE
 };
 
