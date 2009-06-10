@@ -126,7 +126,6 @@
   The \ifun{_tic} function resets the internal CPU timer.  The
  \ifun{_toc} may be used to read this timer.  See the documentation
  for the \ifun{_toc} function for more information.
-\example
 \seealso{_toc, times, tic, toc}
 \done
 
@@ -196,7 +195,6 @@
   The \ifun{_toc} function returns the elapsed CPU time in seconds since
   the last call to \ifun{_tic}.  The CPU time is the amount of time the
   CPU spent running the code of the current process.
-\example
 \notes
   This function may not be available on all systems.
 

@@ -158,7 +158,7 @@ typedef enum
    SLANG_BC_RETURN		= 0x64,
    SLANG_BC_BREAK		= 0x65,
    SLANG_BC_CONTINUE		= 0x66,
-   SLANG_BC_IF_BLOCK		= 0x67,   /* optimized code */
+   SLANG_BC_UNUSED_0x67		= 0x67,
    SLANG_BC_CONTINUE_N		= 0x68,
    SLANG_BC_BREAK_N		= 0x69,
    SLANG_BC_X_ERROR		= 0x6A,
@@ -222,33 +222,30 @@ typedef enum
    SLANG_BC_MANY_LVARIABLE_DIR	= 0x9D,
    SLANG_BC_LVARIABLE_AGET1	= 0x9E,
    SLANG_BC_LITERAL_AGET1	= 0x9F,
-   SLANG_BC_LVARIABLE_APUT1	= 0xA0,
-   SLANG_BC_LITERAL_APUT1	= 0xA1,
-   SLANG_BC_LLVARIABLE_BINARY2	= 0xA2,
-   SLANG_BC_SET_LOCLV_LIT_INT	= 0xA3,
-   SLANG_BC_SET_LOCLV_LIT_AGET1	= 0xA4,
-   SLANG_BC_SET_LOCLV_LVAR	= 0xA5,
-   SLANG_BC_SET_LOCLV_LASTBLOCK	= 0xA6,
-   SLANG_BC_LVAR_EARG_LVAR	= 0xA7,
-   SLANG_BC_LVAR_FIELD		= 0xA8,
-   SLANG_BC_BINARY_LASTBLOCK	= 0xA9,
-   SLANG_BC_EARG_LVARIABLE_INTRINSIC	= 0xAA,
-   SLANG_BC_LVAR_LITERAL_INT	= 0xAB,
-   SLANG_BC_BINARY_SET_LOCLVAL	= 0xAC,
-   SLANG_BC_LVAR_AGET_SET_LOCLVAL	= 0xAD,
-   SLANG_BC_LVAR_LVAR_APUT1	= 0xAE,
+   SLANG_BC_LVAR_LVAR_APUT1	= 0xA0,
+   SLANG_BC_LVARIABLE_APUT1	= 0xA1,
+   SLANG_BC_LITERAL_APUT1	= 0xA2,
+   SLANG_BC_LLVARIABLE_BINARY2	= 0xA3,
+   SLANG_BC_SET_LOCLV_LIT_INT	= 0xA4,
+   SLANG_BC_SET_LOCLV_LIT_AGET1	= 0xA5,
+   SLANG_BC_SET_LOCLV_LVAR	= 0xA6,
+   SLANG_BC_SET_LOCLV_LASTBLOCK	= 0xA7,
+   SLANG_BC_LVAR_EARG_LVAR	= 0xA8,
+   SLANG_BC_LVAR_FIELD		= 0xA9,
+   SLANG_BC_BINARY_LASTBLOCK	= 0xAA,
+   SLANG_BC_EARG_LVARIABLE_INTRINSIC	= 0xAB,
+   SLANG_BC_LVAR_LITERAL_INT	= 0xAC,
+   SLANG_BC_BINARY_SET_LOCLVAL	= 0xAD,
+   SLANG_BC_LVAR_AGET_SET_LOCLVAL	= 0xAE,
    SLANG_BC_LLVAR_BINARY_IF	= 0xAF,
-   /* The following do not actually occur in inner_interp.  They used 
-    * to signify the bytecode has been combined with another.
-    */
-   SLANG_BC_LVARIABLE_COMBINED	= 0xB0,
-   SLANG_BC_GVARIABLE_COMBINED	= 0xB1,
-   SLANG_BC_LITERAL_COMBINED	= 0xB2,
-   SLANG_BC_CALL_DIRECT_COMB	= 0xB3,
-   SLANG_BC_COMBINED		= 0xB4,
-   SLANG_BC_BLOCK_COMBINED	= 0xB5,
-#define SLANG_IS_BC_COMBINED(b) ((0xB0 <= (b)) && ((b) <= 0xB5))
-   SLANG_BC_UNUSED_0xB6		= 0xB6,
+
+   SLANG_BC_IF_BLOCK		= 0xB0,
+   SLANG_BC_LVAR_SET_FIELD	= 0xB1,
+   SLANG_BC_PVAR_SET_GLOB_LVAL	= 0xB2,
+   SLANG_BC_LVAR_SET_GLOB_LVAL	= 0xB3,
+   SLANG_BC_LIT_AGET1_INT_BINARY= 0xB4,
+   SLANG_BC_BINARY2		= 0xB5,
+   SLANG_BC_LVAR_LIT_AGET1	= 0xB6,
    SLANG_BC_UNUSED_0xB7		= 0xB7,
    SLANG_BC_UNUSED_0xB8		= 0xB8,
    SLANG_BC_UNUSED_0xB9		= 0xB9,
@@ -258,12 +255,17 @@ typedef enum
    SLANG_BC_UNUSED_0xBD		= 0xBD,
    SLANG_BC_UNUSED_0xBE		= 0xBE,
    SLANG_BC_UNUSED_0xBF		= 0xBF,
-   SLANG_BC_UNUSED_0xC0		= 0xC0,
-   SLANG_BC_UNUSED_0xC1		= 0xC1,
-   SLANG_BC_UNUSED_0xC2		= 0xC2,
-   SLANG_BC_UNUSED_0xC3		= 0xC3,
-   SLANG_BC_UNUSED_0xC4		= 0xC4,
-   SLANG_BC_UNUSED_0xC5		= 0xC5,
+
+   /* The following do not actually occur in inner_interp.  They used 
+    * to signify the bytecode has been combined with another.
+    */
+   SLANG_BC_LVARIABLE_COMBINED	= 0xC0,
+   SLANG_BC_GVARIABLE_COMBINED	= 0xC1,
+   SLANG_BC_LITERAL_COMBINED	= 0xC2,
+   SLANG_BC_CALL_DIRECT_COMB	= 0xC3,
+   SLANG_BC_COMBINED		= 0xC4,
+   SLANG_BC_BLOCK_COMBINED	= 0xC5,
+#define SLANG_IS_BC_COMBINED(b) ((0xC0 <= (b)) && ((b) <= 0xC5))
    SLANG_BC_UNUSED_0xC6		= 0xC6,
    SLANG_BC_UNUSED_0xC7		= 0xC7,
    SLANG_BC_UNUSED_0xC8		= 0xC8,
@@ -575,6 +577,7 @@ extern int _pSLstruct_define_typedef (void);
 extern SLang_Object_Type *_pSLstruct_get_field_value (SLang_Struct_Type *, SLCONST char *);
 extern int _pSLstruct_push_field_ref (SLFUTURE_CONST char *);
 extern int _pSLstruct_push_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free);
+extern int _pSLstruct_pop_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free);
 
 int _pSLang_get_qualifiers (SLang_Struct_Type **);
 
@@ -965,6 +968,7 @@ extern void _pSLang_set_arith_type (SLtype, unsigned char);
 extern SLclass_Type _pSLang_get_class_type (SLtype);
 extern void _pSLang_set_class_info (SLtype, SLang_Class_Type *);
 extern int _pSLarray_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
+extern int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx);
 #endif
 extern int _pSLarith_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
 

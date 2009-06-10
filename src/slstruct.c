@@ -27,7 +27,7 @@ USA.
 #include "_slang.h"
 
 
-void SLang_free_struct (_pSLang_Struct_Type *s)
+static void free_struct (_pSLang_Struct_Type *s)
 {
    _pSLstruct_Field_Type *field, *field_max;
 
@@ -70,6 +70,11 @@ void SLang_free_struct (_pSLang_Struct_Type *s)
 	SLfree ((char *) s->fields);
      }
    SLfree ((char *) s);
+}
+
+void SLang_free_struct (_pSLang_Struct_Type *s)
+{
+   free_struct (s);
 }
 
 static _pSLang_Struct_Type *allocate_struct (unsigned int nfields)
@@ -1447,6 +1452,16 @@ static int struct_sput (SLtype type, SLFUTURE_CONST char *name)
      }
    SLang_free_struct (s);
    return 0;
+}
+
+int _pSLstruct_pop_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free)
+{
+   int ret = pop_to_struct_field (s, name);
+
+   if (do_free)
+     SLang_free_struct (s);
+
+   return ret;
 }
 
 int _pSLstruct_push_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free)

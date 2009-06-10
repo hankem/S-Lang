@@ -16,7 +16,6 @@
  * size, set this to zero.
  */
 #define SLANG_OPTIMIZE_FOR_SPEED	2
-/* #define SLANG_OPTIMIZE_FOR_SPEED	0 */
 
 #define SLANG_USE_INLINE_CODE		1
 
