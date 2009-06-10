@@ -500,6 +500,19 @@ private define test_indexing_with_1_index ()
 	 a[5,5],a[6,6],a[7,7],a[8,8],a[9,9]];
    if (0 == _eqs (ai, a[i]))
      failed ("[a[0,0],...,a[9,9]] != a[i]");
+   
+   reshape (a, [n*n]);
+   i = -1;
+   if ((a[-1] != a[i]) || (a[-1] != a[i+length(a)]))
+     failed ("a[i] != a[%d], with i==%d", i, i);
+
+   i = -2;
+   if ((a[-2] != a[i]) || (a[-2] != a[i+length(a)]))
+     failed ("a[i] != a[%d], with i==%d", i, i);
+
+   i = 1;
+   if ((a[1] != a[i]) || (a[1] != a[i-length(a)]))
+     failed ("a[i] != a[%d], with i==%d", i, i);
 }
 test_indexing_with_1_index ();
 
@@ -1527,6 +1540,29 @@ test_sumsq (typecast ([1:10], Double_Type));
 #ifexists Complex_Type
 test_sumsq ([1:10] + [2:11]*1i);
 #endif
+
+private define test_linear_combination ()
+{
+   foreach ({1, 1.0})
+     {
+	variable one = ();
+
+	variable a = [1, 2, 3, 4] * one;
+	variable b = [1, 2, 3, 4];
+	variable ans, ans1;
+
+	ans = sum (a*b);
+	ans1 = 1*a[0] + 2*a[1] + 3*a[2] + 4*a[3];
+	if (ans != ans1)
+	  failed ("%S*%S linear combination1 not equal to sum", _typeof(a), _typeof(b));
+	
+	ans1 = a[0]*1 + a[1]*2 + a[2]*3 + a[3]*4;
+	if (ans != ans1)
+	  failed ("%S*%S linear combination2 not equal to sum", _typeof(a), _typeof(b));
+     }
+   
+}
+test_linear_combination ();
 
 print ("Ok\n");
 exit (0);

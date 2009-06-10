@@ -102,9 +102,10 @@
 @doc/tm/rtl/strops.tm
 @doc/tm/rtl/struct.tm
 @doc/tm/rtl/time.tm
+@doc/tm/rtl/checktm.sl 0755
 @doc/tm/rtl/tm-sort.sl 0755
-@doc/tm/rtl/type.tm
 @doc/tm/rtl/whatelse.sl 0755
+@doc/tm/rtl/type.tm
 @doc/tm/slang.tm
 @doc/tm/slangfun.tm
 @doc/tm/tools/Makefile

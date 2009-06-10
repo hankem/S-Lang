@@ -325,8 +325,37 @@ define test_ternary ()
 	  failed ("ternary expression involving array index");
      }
 }
-
 test_ternary ();
+
+private variable P = "foo";
+private define test_private_variable_ops ()
+{
+   % This test is for valgrind
+   loop (5)
+     {
+	variable x;
+	foreach x ({2, [1,2,3], "foobar"})
+	  {
+	     x = x;
+	     P = x;
+	     P += x;
+	     P += (x+x);
+	     P = P;
+	     P += P;
+	     P = __tmp(P);
+
+	     x = x+x;
+	     x = x;
+	     P = x;
+	     P += x;
+	     P += (x+x);
+	     P = P;
+	     P += P;
+	     P = __tmp(P);
+	  }
+     }
+}
+test_private_variable_ops ();
 
 exit (0);
 

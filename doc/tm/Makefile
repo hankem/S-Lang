@@ -3,10 +3,11 @@
 # To create the SGML files, you will need to install the tmexpand
 # package.  See http://www.jedsoft.org/ for more information.
 #
-TMEXPAND = $(HOME)/lib/tmexpand/bin/tmexpand
+#TMEXPAND = $(HOME)/lib/tmexpand/bin/tmexpand
+TMEXPAND = tmexpand
+MACRODIR = -I$(HOME)/lib/tmexpand/macros
 TM2SGML = $(TMEXPAND)
-MACRODIR = $(HOME)/lib/tmexpand/macros
-TM2HLP = $(TMEXPAND) -I$(MACRODIR) -Mslhlp
+TM2HLP = $(TMEXPAND) -Mslhlp
 
 TXT_FILES = slang.txt cslang.txt cref.txt slangfun.txt
 SGML_FILES = slang.sgml cslang.sgml cref.sgml slangfun.sgml
@@ -17,7 +18,8 @@ PDF_FILES = slang.pdf cslang.pdf slangfun.pdf cref.pdf
 
 SGML2LATEX = sgml2latex -p letter -o tex
 SGML2HTML = sgml2html
-SGML2TXT = sgml2txt -f
+#SGML2TXT = sgml2txt -f
+SGML2TXT = linuxdoc -B txt
 TM2TXT = tools/$(ARCH)objs/tm2txt --quiet
 LATEX = latex
 PDFLATEX = pdflatex
@@ -34,13 +36,13 @@ text-files: $(TXT_FILES)
 all: $(SGML_FILES) $(HTML_FILES) $(TEX_FILES) $(TXT_FILES) $(PDF_FILES) $(PS_FILES)
 #----- SGML Files -----------------------------------------------------------
 cslang.sgml : cslang.tm preface.tm copyright.tm local.tm apinews.tm
-	$(TM2SGML) -I$(MACRODIR) cslang.tm cslang.sgml
+	$(TM2SGML) cslang.tm cslang.sgml
 slang.sgml : slang.tm preface.tm copyright.tm local.tm intnews.tm
-	$(TM2SGML) -I$(MACRODIR) slang.tm slang.sgml
+	$(TM2SGML) slang.tm slang.sgml
 cref.sgml : cref.tm crtl/*.tm
-	$(TM2SGML) -I$(MACRODIR) cref.tm cref.sgml
-slangfun.sgml : slangfun.tm local.tm
-	$(TM2SGML) -I$(MACRODIR) slangfun.tm slangfun.sgml
+	$(TM2SGML) cref.tm cref.sgml
+slangfun.sgml : slangfun.tm local.tm rtl/*.tm
+	$(TM2SGML) slangfun.tm slangfun.sgml
 #----- HTML Files -----------------------------------------------------------
 html-files: $(HTML_FILES)
 cslang.html : cslang.sgml
@@ -103,7 +105,7 @@ slang.txt: slang.sgml
 	$(SGML2TXT) slang.sgml
 	./tools/fixtxt slang.txt
 #
-slangfun.txt : slangfun.tm hlpdefs.tm
+slangfun.txt : slangfun.tm hlpdefs.tm rtl/*.tm
 	cat hlpdefs.tm rtl/*.tm | $(TM2HLP) - slangfun.txt
 #	cat rtl/*.tm | $(TM2TXT) > slangfun.txt
 cref.txt : cref.sgml
