@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20200
-#define SLANG_VERSION_STRING "pre2.2.0-107"
+#define SLANG_VERSION_STRING "pre2.2.0-110"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -405,7 +405,7 @@ SLuchar_Type *SLuchar_apply_char_map (SLwchar_Map_Type *map, SLuchar_Type *str);
 /*{{{ Interpreter Typedefs */
 
 typedef unsigned int SLtype;
-/* typedef unsigned short SLtype; */
+#define SLANG_SLTYPE_INT_TYPE SLANG_UINT_TYPE
 
 typedef struct _pSLang_Name_Type
 {

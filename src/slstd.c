@@ -673,6 +673,20 @@ static int class_id_intrinsic (void)
    return _pSLclass_get_class (type)->cl_data_type;
 }
 
+static void datatype_intrinsic (SLtype *t)
+{
+   SLang_Class_Type *cl;
+
+   if (0 == SLclass_is_class_defined (*t))
+     {
+	(void) SLang_push_null ();
+	return;
+     }
+
+   cl = _pSLclass_get_class (*t);
+   (void) SLang_push_datatype (cl->cl_data_type);
+}
+
 static int do_obj_cmp_fun (int (*fun)(SLang_Object_Type *, SLang_Object_Type *))
 {
    int eqs;
@@ -1101,6 +1115,7 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_0("__is_same", is_same_intrinsic, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("__class_type", class_type_intrinsic, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("__class_id", class_id_intrinsic, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_1("__datatype", datatype_intrinsic, SLANG_VOID_TYPE, SLANG_SLTYPE_INT_TYPE),
    MAKE_INTRINSIC_0("_eqs", eqs_intrinsic, SLANG_INT_TYPE),
    MAKE_INTRINSIC_S("get_doc_string_from_file",  get_doc_string_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("add_doc_file", add_doc_file_intrin, SLANG_VOID_TYPE),
