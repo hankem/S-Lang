@@ -1287,13 +1287,33 @@ static int pop_array_as_bstring (SLang_BString_Type **bs)
    return ret;
 }
 
-/* indx already checked */
-static int aget_from_single_checked_index (SLang_Array_Type *at, SLindex_Type indx)
+
+#if SLANG_OPTIMIZE_FOR_SPEED
+/* This routine assumes that the array is 1d */
+int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx)
 {
+   VOID_STAR data;
    char *new_data;
    size_t sizeof_type;
    int is_ptr, ret;
    SLang_Class_Type *cl;
+   
+   switch (at->data_type)
+     {
+      case SLANG_CHAR_TYPE:
+	if (NULL == (data = at->index_fun(at, &idx))) return -1;
+	return SLclass_push_char_obj (SLANG_CHAR_TYPE, *(char *)data);
+
+      case SLANG_INT_TYPE:
+	if (NULL == (data = at->index_fun(at, &idx))) return -1;
+	return SLclass_push_int_obj (SLANG_INT_TYPE, *(int *)data);
+
+#if SLANG_HAS_FLOAT
+      case SLANG_DOUBLE_TYPE:
+	if (NULL == (data = at->index_fun(at, &idx))) return -1;
+	return SLclass_push_double_obj (SLANG_DOUBLE_TYPE, *(double *)data);
+#endif
+     }
 
    is_ptr = (at->flags & SLARR_DATA_VALUE_IS_POINTER);
    sizeof_type = at->sizeof_type;
@@ -1301,7 +1321,7 @@ static int aget_from_single_checked_index (SLang_Array_Type *at, SLindex_Type in
    new_data = (char *)cl->cl_transfer_buf;
    memset (new_data, 0, sizeof_type);
 
-   if (-1 == _pSLarray_aget_transfer_elem (at, &indx, (VOID_STAR)new_data, sizeof_type, is_ptr))
+   if (-1 == _pSLarray_aget_transfer_elem (at, &idx, (VOID_STAR)new_data, sizeof_type, is_ptr))
      return -1;
 
    if (is_ptr && (*(VOID_STAR *)new_data == NULL))
@@ -1311,6 +1331,7 @@ static int aget_from_single_checked_index (SLang_Array_Type *at, SLindex_Type in
    (*cl->cl_adestroy) (at->data_type, (VOID_STAR)new_data);
    return ret;
 }
+#endif
 
 static int aget_from_array (unsigned int num_indices)
 {
@@ -1339,31 +1360,11 @@ static int aget_from_array (unsigned int num_indices)
    if (is_index_array == 0)
      {
 #if SLANG_OPTIMIZE_FOR_SPEED
-	if ((num_indices == 1) && (index_objs[0].o_data_type == SLANG_ARRAY_INDEX_TYPE)
-	    && (0 == (at->flags & (SLARR_DATA_VALUE_IS_RANGE)))
-	    && (1 == at->num_dims)
-	    && (at->data != NULL))
+	if ((num_indices == 1) 
+	    && (index_objs[0].o_data_type == SLANG_ARRAY_INDEX_TYPE)
+	    && (at->num_dims == 1))
 	  {
-	     SLindex_Type ofs = index_objs[0].v.index_val;
-	     if (ofs < 0) ofs += at->dims[0];
-	     if ((ofs >= at->dims[0]) || (ofs < 0))
-	       ret = aget_from_indices (at, index_objs, num_indices);
-	     else switch (at->data_type)
-	       {
-		case SLANG_CHAR_TYPE:
-		  ret = SLclass_push_char_obj (SLANG_CHAR_TYPE, *((char *)at->data + ofs));
-		  break;
-		case SLANG_INT_TYPE:
-		  ret = SLclass_push_int_obj (SLANG_INT_TYPE, *((int *)at->data + ofs));
-		  break;
-#if SLANG_HAS_FLOAT
-		case SLANG_DOUBLE_TYPE:
-		  ret = SLclass_push_double_obj (SLANG_DOUBLE_TYPE, *((double *)at->data + ofs));
-		  break;
-#endif
-		default:
-		  ret = aget_from_single_checked_index (at, ofs);
-	       }
+	     ret = _pSLarray1d_push_elem (at, index_objs[0].v.index_val);
 	     free_indices = 0;
 	  }
 	else
@@ -3220,7 +3221,7 @@ static int array_binary_op (int op,
 
 	if (num_dims != bt->num_dims)
 	  {
-	     _pSLang_verror (SL_TYPE_MISMATCH, "Arrays must have same dim for binary operation");
+	     _pSLang_verror (SL_TYPE_MISMATCH, "Arrays must have same dimensions for binary operation");
 	     return -1;
 	  }
 

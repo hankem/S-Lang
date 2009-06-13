@@ -5502,6 +5502,12 @@ setpriority
    }
 
 
+ NOTES
+ Priority values are sometimes called "nice" values.  The actual
+ range of priority values is system dependent but commonly range from
+ -20 to 20, with -20 being the highest scheduling priority, and +20
+ the lowest.
+
  SEE ALSO
   getpriority, getpid
 
@@ -5764,8 +5770,6 @@ rline_bolp
   The `rline_bolp' function returns a non-zero value if the
   current editing position is at the beginning of the line.
 
- EXAMPLE
-
  NOTES
  This function is part of the S-Lang readline interface.
 
@@ -5785,8 +5789,6 @@ rline_eolp
  DESCRIPTION
   The `rline_bolp' function returns a non-zero value if the
   current editing position is at the end of the line.
-
- EXAMPLE
 
  NOTES
  This function is part of the S-Lang readline interface.
@@ -5814,8 +5816,6 @@ rline_call
   See the documentation for the `rline_setkey' function for a
   list of internal functions that may be invoked by `rline_call'.
 
- EXAMPLE
-
  NOTES
  This function is part of the S-Lang readline interface.
 
@@ -5838,8 +5838,6 @@ rline_del
  previous `n' characters will be deleted.  Otherwise, the next
  `n' characters will be deleted.
 
- EXAMPLE
-
  NOTES
  This function is part of the S-Lang readline interface.
 
@@ -5859,8 +5857,6 @@ rline_get_edit_width
  DESCRIPTION
   This function returns the width of the edit window.  For `slsh', this
   number corresponds to the width of the terminal window.
-
- EXAMPLE
 
  NOTES
  This function is part of the S-Lang readline interface.
@@ -5882,8 +5878,6 @@ rline_get_history
   This function returns the readline edit history as an array of
   strings.
 
- EXAMPLE
-
  NOTES
  This function is part of the S-Lang readline interface.
 
@@ -5902,8 +5896,6 @@ rline_get_line
 
  DESCRIPTION
   This function returns the current edit line.
-
- EXAMPLE
 
  NOTES
  This function is part of the S-Lang readline interface.
@@ -5925,8 +5917,6 @@ rline_get_point
  The `rline_get_point' function returns the byte-offset of the
  current editing position.
 
- EXAMPLE
-
  NOTES
  This function is part of the S-Lang readline interface.
 
@@ -5946,8 +5936,6 @@ rline_getkey
   If no byte is available, the function will wait until one is.
 
  DESCRIPTION
-
- EXAMPLE
 
  NOTES
  This function is part of the S-Lang readline interface.
@@ -5971,8 +5959,6 @@ rline_input_pending
   wait for up to `tsecs' tenths of a second for input before
   returning.
 
- EXAMPLE
-
  NOTES
  This function is part of the S-Lang readline interface.
 
@@ -5991,8 +5977,6 @@ rline_ins
 
  DESCRIPTION
   This function inserts the specified string into the line being edited.
-
- EXAMPLE
 
  NOTES
  This function is part of the S-Lang readline interface.
@@ -6014,8 +5998,6 @@ rline_set_history
   The `rline_set_history' function replaces the current history
   by the specified array of strings.
 
- EXAMPLE
-
  NOTES
  This function is part of the S-Lang readline interface.
 
@@ -6036,8 +6018,6 @@ rline_set_line
   The `rline_set_line' function replaces the line being edited by
   the specified one.
 
- EXAMPLE
-
  NOTES
  This function is part of the S-Lang readline interface.
 
@@ -6057,8 +6037,6 @@ rline_set_point
  DESCRIPTION
  The `rline_set_point' function sets the editing point to the
  specified byte-offset from the beginning of the line.
-
- EXAMPLE
 
  NOTES
  This function is part of the S-Lang readline interface.
@@ -6122,8 +6100,6 @@ rline_unsetkey
  DESCRIPTION
   The `rline_unsetkey' function unbinds the specified key sequence
   from the readline keymap.
-
- EXAMPLE
 
  NOTES
  This function is part of the S-Lang readline interface.
@@ -9267,8 +9243,6 @@ _tic
  `_toc' may be used to read this timer.  See the documentation
  for the `_toc' function for more information.
 
- EXAMPLE
-
  SEE ALSO
   _toc, times, tic, toc
 
@@ -9380,8 +9354,6 @@ _toc
   The `_toc' function returns the elapsed CPU time in seconds since
   the last call to `_tic'.  The CPU time is the amount of time the
   CPU spent running the code of the current process.
-
- EXAMPLE
 
  NOTES
   This function may not be available on all systems.

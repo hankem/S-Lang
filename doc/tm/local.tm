@@ -25,6 +25,7 @@
 #d ifun#1 \tt{$1}
 #d icon#1 \tt{$1}
 #d sfun#1 \tt{$1}
+#d svar#1 \tt{$1}
 #d exfile#1 \tt{$1}
 #d exns#1 \tt{$1}
 #d exstr#1 \tt{"$1"}

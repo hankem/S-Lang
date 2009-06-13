@@ -6,7 +6,6 @@
 \description
   The \ifun{rline_bolp} function returns a non-zero value if the
   current editing position is at the beginning of the line.
-\example
 \notes
  \notes_comment
 \seealso{rline_eolp, rline_get_point, rline_get_line}
@@ -18,7 +17,6 @@
 \description
   The \ifun{rline_bolp} function returns a non-zero value if the
   current editing position is at the end of the line.
-\example
 \notes
  \notes_comment
 \seealso{rline_bolp, rline_get_point, rline_get_line}
@@ -36,7 +34,6 @@
 #v-
   See the documentation for the \ifun{rline_setkey} function for a
   list of internal functions that may be invoked by \ifun{rline_call}.
-\example
 \notes
  \notes_comment
 \seealso{rline_setkey, rline_del, rline_ins}
@@ -51,7 +48,6 @@
  editing position.  If the number \exmp{n} is less than zero, then the
  previous \exmp{n} characters will be deleted.  Otherwise, the next
  \exmp{n} characters will be deleted.
-\example
 \notes
  \notes_comment
 \seealso{rline_ins, rline_setkey}
@@ -64,7 +60,6 @@
 \description
   This function returns the width of the edit window.  For \slsh, this
   number corresponds to the width of the terminal window.
-\example
 \notes
  \notes_comment
 \seealso{rline_ins}
@@ -77,7 +72,6 @@
 \description
   This function returns the readline edit history as an array of
   strings.
-\example
 \notes
  \notes_comment
 \seealso{rline_set_line}
@@ -89,7 +83,6 @@
 \usage{String_Type rline_get_line ()}
 \description
   This function returns the current edit line.
-\example
 \notes
  \notes_comment
 \seealso{rline_set_line, rline_get_history}
@@ -101,7 +94,6 @@
 \description
  The \ifun{rline_get_point} function returns the byte-offset of the
  current editing position.
-\example
 \notes
  \notes_comment
 \seealso{rline_set_point}
@@ -114,7 +106,6 @@
   This function returns the next byte in the readline input stream.
   If no byte is available, the function will wait until one is.
 \description
-\example
 \notes
  \notes_comment
 \seealso{rline_input_pending, rline_setkey}
@@ -128,7 +119,6 @@
   available to be read.  If none is immediately available, it will
   wait for up to \exmp{tsecs} tenths of a second for input before
   returning.
-\example
 \notes
  \notes_comment
 \seealso{rline_getkey}
@@ -140,7 +130,6 @@
 \usage{rline_ins (String_Type text)}
 \description
   This function inserts the specified string into the line being edited.
-\example
 \notes
  \notes_comment
 \seealso{rline_set_line, rline_del}
@@ -153,7 +142,6 @@
 \description
   The \ifun{rline_set_history} function replaces the current history
   by the specified array of strings.
-\example
 \notes
  \notes_comment
 \seealso{rline_get_history}
@@ -165,7 +153,6 @@
 \description
   The \ifun{rline_set_line} function replaces the line being edited by
   the specified one.
-\example
 \notes
  \notes_comment
 \seealso{rline_get_line}
@@ -178,7 +165,6 @@
 \description
  The \ifun{rline_set_point} function sets the editing point to the
  specified byte-offset from the beginning of the line.
-\example
 \notes
  \notes_comment
 \seealso{rline_get_point}
@@ -226,7 +212,6 @@
 \description
   The \ifun{rline_unsetkey} function unbinds the specified key sequence
   from the readline keymap.
-\example
 \notes
  \notes_comment
 \seealso{rline_setkey}
