@@ -329,7 +329,9 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 	  continue;
 #endif
 	_pSLerrno_errno = e;
-	break;
+
+	if (n == 0)
+	  break;
      }
 
    if (actual_bytes % size)
@@ -374,9 +376,6 @@ static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
 #endif
 	_pSLerrno_errno = e;
 
-	/* Apparantly, the write can be interrupted returning a short item
-	 * count but not set errno.
-	 */
 	if (n == 0)
 	  break;
      }
