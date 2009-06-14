@@ -206,8 +206,8 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define SUM_RESULT_TYPE double
 # define MIN_FUNCTION min_ulongs
 # define MAX_FUNCTION max_ulongs
-#define ANY_FUNCTION any_ulongs
-#define ALL_FUNCTION all_ulongs
+# define ANY_FUNCTION any_ulongs
+# define ALL_FUNCTION all_ulongs
 # include "slarrfun.inc"
 #else
 # define transpose_longs transpose_ints
@@ -215,6 +215,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define sumsq_longs sumsq_ints
 # define sum_ulongs sum_uints
 # define sumsq_ulongs sumsq_uints
+# define prod_longs prod_ints
 # define min_longs min_ints
 # define minabs_longs minabs_ints
 # define min_ulongs min_uints
@@ -1029,7 +1030,7 @@ static SLCONST SLarray_Contract_Type Prod_Functions [] =
 {
      {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},
      {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_ints},
-     {SLANG_LONG_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},
+     {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_longs},
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) prod_floats},
      {SLANG_UINT_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},
      {SLANG_ULONG_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) prod_doubles},

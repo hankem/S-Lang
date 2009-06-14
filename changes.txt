@@ -207,6 +207,8 @@ Changes since 2.1.4
      of the __class_id function.
 110. src/slang.c: set_struct_obj_lvalue was not always incrementing a
      reference count on non-struct objects with struct semantics.
+111. src/slarith.c: On a system where sizeof(long)==sizeof(long long),
+     omit the long-long specific functions.
 
 {{{ Previous Versions
 

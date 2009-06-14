@@ -213,7 +213,6 @@ static int check_number_token_overflow (_pSLang_Token_Type *tok, int sign)
       case UINT_TOKEN:
       case ULONG_TOKEN:
 	return check_uint_token_overflow (tok, sign);
-	break;
 
 #ifdef HAVE_LONG_LONG
       case LLONG_TOKEN:
