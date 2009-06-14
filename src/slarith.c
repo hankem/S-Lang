@@ -301,44 +301,51 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #endif				       /* LONG_IS_NOT_INT */
 
 #ifdef HAVE_LONG_LONG
-#define GENERIC_BINARY_FUNCTION llong_llong_bin_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE long long
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) ((a) % (b))
-#define TRAP_DIV_ZERO	1
-#define GENERIC_UNARY_FUNCTION llong_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION llong_arith_unary_op
-#define ABS_FUNCTION(a) (((a) >= 0) ? (a) : -(a))
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
-#if SLANG_OPTIMIZE_FOR_SPEED
-# define SCALAR_BINARY_FUNCTION llong_llong_scalar_bin_op
-#endif
-#define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_llong_obj(SLANG_LLONG_TYPE,(x))
-#define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#define CMP_FUNCTION llong_cmp_function
-#include "slarith.inc"
+# if LLONG_IS_NOT_LONG
+#  define GENERIC_BINARY_FUNCTION llong_llong_bin_op
+#  define GENERIC_BIT_OPERATIONS
+#  define GENERIC_TYPE long long
+#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+#  define POW_RESULT_TYPE double
+#  define MOD_FUNCTION(a,b) ((a) % (b))
+#  define TRAP_DIV_ZERO	1
+#  define GENERIC_UNARY_FUNCTION llong_unary_op
+#  define GENERIC_ARITH_UNARY_FUNCTION llong_arith_unary_op
+#  define ABS_FUNCTION(a) (((a) >= 0) ? (a) : -(a))
+#  define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
+#  if SLANG_OPTIMIZE_FOR_SPEED
+#   define SCALAR_BINARY_FUNCTION llong_llong_scalar_bin_op
+#  endif
+#  define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_llong_obj(SLANG_LLONG_TYPE,(x))
+#  define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
+#  define CMP_FUNCTION llong_cmp_function
+#  include "slarith.inc"
 
-#define GENERIC_BINARY_FUNCTION ullong_ullong_bin_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE unsigned long long
-#define GENERIC_TYPE_IS_UNSIGNED
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) ((a) % (b))
-#define TRAP_DIV_ZERO	1
-#define GENERIC_UNARY_FUNCTION ullong_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION ullong_arith_unary_op
-#define ABS_FUNCTION(a) (a)
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
-#if SLANG_OPTIMIZE_FOR_SPEED
-# define SCALAR_BINARY_FUNCTION ullong_ullong_scalar_bin_op
-#endif
-#define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_llong_obj(SLANG_ULLONG_TYPE,(long long)(x))
-#define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#define CMP_FUNCTION ullong_cmp_function
-#include "slarith.inc"
+#  define GENERIC_BINARY_FUNCTION ullong_ullong_bin_op
+#  define GENERIC_BIT_OPERATIONS
+#  define GENERIC_TYPE unsigned long long
+#  define GENERIC_TYPE_IS_UNSIGNED
+#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+#  define POW_RESULT_TYPE double
+#  define MOD_FUNCTION(a,b) ((a) % (b))
+#  define TRAP_DIV_ZERO	1
+#  define GENERIC_UNARY_FUNCTION ullong_unary_op
+#  define GENERIC_ARITH_UNARY_FUNCTION ullong_arith_unary_op
+#  define ABS_FUNCTION(a) (a)
+#  define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
+#  if SLANG_OPTIMIZE_FOR_SPEED
+#   define SCALAR_BINARY_FUNCTION ullong_ullong_scalar_bin_op
+#  endif
+#  define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_llong_obj(SLANG_ULLONG_TYPE,(long long)(x))
+#  define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
+#  define CMP_FUNCTION ullong_cmp_function
+#  include "slarith.inc"
+# else
+#  define llong_llong_bin_op long_long_bin_op
+#  define ullong_ullong_bin_op ulong_ulong_bin_op
+#  define llong_llong_scalar_bin_op long_long_scalar_bin_op
+#  define ullong_ullong_scalar_bin_op ulong_ulong_scalar_bin_op
+# endif				       /* LLONG_IS_NOT_LONG */
 #endif				       /* HAVE_LONG_LONG */
 
 #if SLANG_HAS_FLOAT
@@ -712,13 +719,13 @@ int SLang_pop_ulong (unsigned long *i)
 }
 
 #ifdef HAVE_LONG_LONG
-
+#if LLONG_IS_NOT_LONG
 static void llong_byte_code_destroy (SLtype unused, VOID_STAR ptr)
 {
    (void) unused;
    SLfree (*(char **) ptr);
 }
-
+#endif
 int SLang_pop_long_long (long long *i)
 {
    return integer_pop (_pSLANG_LLONG_TYPE, (VOID_STAR) i);
@@ -1199,10 +1206,12 @@ static int push_long_literal (SLtype type, VOID_STAR ptr)
 #endif
 
 #ifdef HAVE_LONG_LONG
+#if LLONG_IS_NOT_LONG
 static int push_llong_literal (SLtype type, VOID_STAR ptr)
 {
    return SLclass_push_llong_obj (type, **(long long **)ptr);
 }
+#endif
 #endif
 typedef struct
 {
