@@ -925,14 +925,26 @@ static int anytype_apush (SLtype type, VOID_STAR ptr)
 /* SLANG_INTP_TYPE */
 static int intp_push (SLtype unused, VOID_STAR ptr)
 {
+   int *addr;
    (void) unused;
-   return SLclass_push_int_obj (SLANG_INT_TYPE, **(int **)ptr);
+   addr = *(int **)ptr;
+   if (addr == NULL)
+     return SLclass_push_int_obj (SLANG_INT_TYPE, 0);
+   return SLclass_push_int_obj (SLANG_INT_TYPE, *addr);
 }
 
 static int intp_pop (SLtype unused, VOID_STAR ptr)
 {
+   int *addr;
+
    (void) unused;
-   return SLang_pop_integer (*(int **) ptr);
+   addr = *(int **)ptr;
+   if (addr == NULL)
+     {
+	SLang_verror (SL_VariableUninitialized_Error, "_IntegerP_Type: integer pointer address is NULL");
+	return -1;
+     }
+   return SLang_pop_integer (addr);
 }
 
 static int undefined_method (SLtype t, VOID_STAR p)
@@ -968,8 +980,8 @@ int _pSLregister_types (void)
    (void) SLclass_set_push_function (cl, undefined_method);
    (void) SLclass_set_pop_function (cl, undefined_method);
    (void) SLclass_set_destroy_function (cl, void_undefined_method);
-   if (-1 == SLclass_register_class (cl, SLANG_UNDEFINED_TYPE, sizeof (char *),
-				     SLANG_CLASS_TYPE_PTR))
+   if (-1 == SLclass_register_class (cl, SLANG_UNDEFINED_TYPE, sizeof (int),
+				     SLANG_CLASS_TYPE_SCALAR))
      return -1;
    /* Make Void_Type a synonym for Undefined_Type.  Note that this does 
     * not mean that Void_Type represents SLANG_VOID_TYPE.  Void_Type is 
@@ -981,12 +993,12 @@ int _pSLregister_types (void)
    if (-1 == _pSLarith_register_types ())
      return -1;
 
-   /* SLANG_INTP_TYPE */
+   /* SLANG_INTP_TYPE -- not used within the interpreter */
    if (NULL == (cl = SLclass_allocate_class ("_IntegerP_Type")))
      return -1;
    (void) SLclass_set_push_function (cl, intp_push);
    (void) SLclass_set_pop_function (cl, intp_pop);
-   if (-1 == SLclass_register_class (cl, SLANG_INTP_TYPE, sizeof (int),
+   if (-1 == SLclass_register_class (cl, SLANG_INTP_TYPE, sizeof (int *),
 				     SLANG_CLASS_TYPE_SCALAR))
      return -1;
 
