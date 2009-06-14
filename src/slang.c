@@ -2441,7 +2441,7 @@ set_struct_obj_lvalue (SLBlock_Type *bc_blk, SLang_Object_Type *objA, int do_fre
 	return ret;
      }
 
-   if (-1 == push_object (objA))
+   if (-1 == _pSLpush_slang_obj (objA))
      {
 	if (do_free) free_object (objA, cl);
 	return -1;
@@ -5154,6 +5154,20 @@ static void add_to_statistics (SLBlock_Type *b)
 
 #endif
 
+#define EXECUTE_INTRINSIC(addr) \
+   { \
+      SLang_Intrin_Fun_Type *f = (addr)->b.nt_ifun_blk; \
+      if ((f->num_args == 0) && (f->return_type == SLANG_VOID_TYPE) && (Trace_Mode == 0)) \
+	{ \
+	   if (0 == _pSL_increment_frame_pointer ()) \
+	     { \
+		((VF0_Type) f->i_fun)(); \
+		(void) _pSL_decrement_frame_pointer (); \
+	     } \
+	} \
+      else execute_intrinsic_fun (f); \
+   }
+
 /* inner interpreter */
 /* The return value from this function is only meaningful when it is used
  * to process blocks for the switch statement.  If it returns 0, the calling
@@ -5214,21 +5228,9 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     break;
 
 	   case SLANG_BC_INTRINSIC:
-	       {
-		  SLang_Intrin_Fun_Type *f = addr->b.nt_ifun_blk;
-		  if ((f->num_args == 0) && (f->return_type == SLANG_VOID_TYPE) && (Trace_Mode == 0))
-		    {
-		       if (0 == _pSL_increment_frame_pointer ())
-			 {
-			    ((VF0_Type) f->i_fun)();
-			    (void) _pSL_decrement_frame_pointer ();
-			 }
-		    }
-		  else execute_intrinsic_fun (f);
-
-		  if (IS_SLANG_ERROR)
-		    do_traceback(addr->b.nt_ifun_blk->name);
-	       }
+	     EXECUTE_INTRINSIC(addr)
+	     if (IS_SLANG_ERROR)
+	       do_traceback(addr->b.nt_ifun_blk->name);
 	     break;
 
 	   case SLANG_BC_FUNCTION:
@@ -5790,13 +5792,13 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_CALL_DIRECT_INTRINSIC:
 	     (*addr->b.call_function) ();
 	     addr++;
-	     execute_intrinsic_fun (addr->b.nt_ifun_blk);
+	     EXECUTE_INTRINSIC(addr)
 	     if (IS_SLANG_ERROR)
 	       do_traceback(addr->b.nt_ifun_blk->name);
 	     break;
 
 	   case SLANG_BC_INTRINSIC_CALL_DIRECT:
-	     execute_intrinsic_fun (addr->b.nt_ifun_blk);
+	     EXECUTE_INTRINSIC(addr)
 	     if (IS_SLANG_ERROR)
 	       {
 		  do_traceback(addr->b.nt_ifun_blk->name);
@@ -5824,7 +5826,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     addr++;
 	     /* drop */
 	   case SLANG_BC_RET_INTRINSIC:
-	     execute_intrinsic_fun (addr->b.nt_ifun_blk);
+	     EXECUTE_INTRINSIC (addr)
 	     if (0 == Handle_Interrupt)
 	       return 1;
 	     if (IS_SLANG_ERROR)
@@ -6220,7 +6222,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     if (0 == end_arg_list ())
 	       {
 		  addr++;
-		  execute_intrinsic_fun (addr->b.nt_ifun_blk);
+		  EXECUTE_INTRINSIC(addr)
 		  if (IS_SLANG_ERROR)
 		    do_traceback(addr->b.nt_ifun_blk->name);
 	       }

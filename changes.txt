@@ -203,6 +203,10 @@ Changes since 2.1.4
      performance of the profiler a bit.
 108. src/slang.c: If an intrinsic takes no arguments and returns
      nothing, then call it directly from inner_interp.
+109. src/sltype.c: Added __datatype intrinsic, which is the opposite
+     of the __class_id function.
+110. src/slang.c: set_struct_obj_lvalue was not always incrementing a
+     reference count on non-struct objects with struct semantics.
 
 {{{ Previous Versions
 
