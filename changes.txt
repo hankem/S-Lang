@@ -201,6 +201,8 @@ Changes since 2.1.4
      switch statement and optimized some of the code that deals with
      assignments to global variables.  The latter change improves the
      performance of the profiler a bit.
+108. src/slang.c: If an intrinsic takes no arguments and returns
+     nothing, then call it directly from inner_interp.
 
 {{{ Previous Versions
 

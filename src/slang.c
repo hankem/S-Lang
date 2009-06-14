@@ -5214,9 +5214,21 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     break;
 
 	   case SLANG_BC_INTRINSIC:
-	     execute_intrinsic_fun (addr->b.nt_ifun_blk);
-	     if (IS_SLANG_ERROR)
-	       do_traceback(addr->b.nt_ifun_blk->name);
+	       {
+		  SLang_Intrin_Fun_Type *f = addr->b.nt_ifun_blk;
+		  if ((f->num_args == 0) && (f->return_type == SLANG_VOID_TYPE) && (Trace_Mode == 0))
+		    {
+		       if (0 == _pSL_increment_frame_pointer ())
+			 {
+			    ((VF0_Type) f->i_fun)();
+			    (void) _pSL_decrement_frame_pointer ();
+			 }
+		    }
+		  else execute_intrinsic_fun (f);
+
+		  if (IS_SLANG_ERROR)
+		    do_traceback(addr->b.nt_ifun_blk->name);
+	       }
 	     break;
 
 	   case SLANG_BC_FUNCTION:
