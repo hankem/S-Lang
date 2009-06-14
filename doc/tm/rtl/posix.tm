@@ -186,11 +186,6 @@
       return getpriority (PRIO_PROCESS, 0);
    }
 #v-
-\notes
- Priority values are sometimes called "nice" values.  The actual
- range of priority values is system dependent but commonly range from
- -20 to 20, with -20 being the highest scheduling priority, and +20
- the lowest.
 \seealso{getpriority, getpid}
 \done
 
