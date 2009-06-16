@@ -209,6 +209,8 @@ Changes since 2.1.4
      reference count on non-struct objects with struct semantics.
 111. src/slarith.c: On a system where sizeof(long)==sizeof(long long),
      omit the long-long specific functions.
+112. modules/pcre.sl: Added pcre_matches function that combines the
+     other pcre functions into a simple to use form.
 
 {{{ Previous Versions
 

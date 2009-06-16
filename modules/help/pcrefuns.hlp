@@ -32,7 +32,7 @@ pcre_compile
  exception will be thrown.
 
  SEE ALSO
-  pcre_exec, pcre_nth_match, pcre_nth_substr
+  pcre_exec, pcre_nth_match, pcre_nth_substr, pcre_matches
 
 --------------------------------------------------------------
 
@@ -73,7 +73,54 @@ pcre_exec
  fails to match the string.
 
  SEE ALSO
-  pcre_compile, pcre_nth_match, pcre_nth_substr
+  pcre_compile, pcre_nth_match, pcre_nth_substr, pcre_matches
+
+--------------------------------------------------------------
+
+pcre_matches
+
+ SYNOPSIS
+  Match a PCRE to a string and return the matches
+
+ USAGE
+  String_Type[] = pcre_matches (regexp, str [,pcre_exec_options])
+
+ DESCRIPTION
+  This function combines the `pcre_exec' and
+ `pcre_nth_substr' functions into simple to use function that
+ matches the specified regular expression `regexp' to the string
+ `string' and returns matched substrings as an array.  If
+ `regexp' is a string, the function will first compile the
+ pattern using the `pcre_compile' function.  The third parameter
+ is optional and if providied, will be passed as the `options'
+ parameter to `pcre_exec'.
+
+ If no match is found, the function will return NULL.
+
+ QUALIFIERS
+ The following qualifiers are supported:
+
+   options=int        Options to pass to pcre_compile
+   offset=int         Start matching offset in bytes for pcre_exec
+
+
+ EXAMPLE
+ After the execution of:
+
+    str = "Error in file foo.c, line 127, column 10";
+    pattern = "file ([^,]+), line (\\d+)";
+    matches = pcre_matches (pattern, str);
+
+ the value of the matches variable will be the array:
+
+    [ "file foo.c, line 127",
+      "foo.c",
+      127
+    ]
+
+
+ SEE ALSO
+  pcre_compile, pcre_exec, pcre_nth_substr, pcre_nth_match
 
 --------------------------------------------------------------
 
@@ -121,7 +168,7 @@ pcre_nth_match
 
 
  SEE ALSO
-  pcre_compile, pcre_exec, pcre_nth_substr
+  pcre_compile, pcre_exec, pcre_nth_substr, pcre_matches
 
 --------------------------------------------------------------
 
@@ -141,7 +188,7 @@ pcre_nth_substr
  For this reason, the subject string of the pattern is a required argument.
 
  SEE ALSO
-  pcre_compile, pcre_exec, pcre_nth_match
+  pcre_matches, pcre_compile, pcre_exec, pcre_nth_match
 
 --------------------------------------------------------------
 
