@@ -4447,6 +4447,29 @@ current_namespace
 
 --------------------------------------------------------------
 
+__datatype
+
+ SYNOPSIS
+  Get the DataType_Type for a specified internal class-id
+
+ USAGE
+  DataType_Type __datatype (Int_Type id)
+
+ DESCRIPTION
+ This function is the inverse of __class_type in the sense that it
+ returns the DataType_Type for the specified class-id.  If no
+ such class exists, the function will return NULL.
+
+ NOTES
+ One should not expect distinct interpreter instances to always return
+ the same value for a dynamically assigned class-id such as one
+ defined by a module or one stemming from a `typedef' statement.
+
+ SEE ALSO
+  __class_id, __class_type, typeof
+
+--------------------------------------------------------------
+
 _eqs
 
  SYNOPSIS

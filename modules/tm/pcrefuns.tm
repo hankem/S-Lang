@@ -25,7 +25,7 @@
  Upon success, this function returns a \dtype{PCRE_Type} object representing
  the compiled patterned.  If compilation fails, a \exc{ParseError}
  exception will be thrown.
-\seealso{pcre_exec, pcre_nth_match, pcre_nth_substr}
+\seealso{pcre_exec, pcre_nth_match, pcre_nth_substr, pcre_matches}
 \done
 
 \function{pcre_exec}
@@ -58,7 +58,44 @@
  Upon success, this function returns a positive integer equal to 1 plus the
  number of so-called captured substrings.  It returns 0 if the pattern
  fails to match the string.
-\seealso{pcre_compile, pcre_nth_match, pcre_nth_substr}
+\seealso{pcre_compile, pcre_nth_match, pcre_nth_substr, pcre_matches}
+\done
+
+\function{pcre_matches}
+\synopsis{Match a PCRE to a string and return the matches}
+\usage{String_Type[] = pcre_matches (regexp, str [,pcre_exec_options])}
+\description
+  This function combines the \ifun{pcre_exec} and
+ \ifun{pcre_nth_substr} functions into simple to use function that
+ matches the specified regular expression \exmp{regexp} to the string
+ \exmp{string} and returns matched substrings as an array.  If
+ \exmp{regexp} is a string, the function will first compile the
+ pattern using the \ifun{pcre_compile} function.  The third parameter
+ is optional and if providied, will be passed as the \exmp{options}
+ parameter to \ifun{pcre_exec}.
+ 
+ If no match is found, the function will return NULL.
+\qualifiers
+ The following qualifiers are supported:
+#v+
+   options=int        Options to pass to pcre_compile
+   offset=int         Start matching offset in bytes for pcre_exec
+#v-
+\example
+ After the execution of:
+#v+
+    str = "Error in file foo.c, line 127, column 10";
+    pattern = "file ([^,]+), line (\\d+)";
+    matches = pcre_matches (pattern, str);
+#v-
+ the value of the matches variable will be the array:
+#v+
+    [ "file foo.c, line 127", 
+      "foo.c",
+      127
+    ]
+#v-
+\seealso{pcre_compile, pcre_exec, pcre_nth_substr, pcre_nth_match}
 \done
 
 \function{pcre_nth_match}
@@ -97,7 +134,7 @@
 #v+
      file = pcre_nth_substr (p, str, 0);
 #v-
-\seealso{pcre_compile, pcre_exec, pcre_nth_substr}
+\seealso{pcre_compile, pcre_exec, pcre_nth_substr, pcre_matches}
 \done
 
 \function{pcre_nth_substr}
@@ -109,7 +146,7 @@
  \ifun{pcre_exec} function.  Unlike \ifun{pcre_nth_match}, this function returns
  the specified captured substring itself and not the position of the substring.
  For this reason, the subject string of the pattern is a required argument.
-\seealso{pcre_compile, pcre_exec, pcre_nth_match}
+\seealso{pcre_matches, pcre_compile, pcre_exec, pcre_nth_match}
 \done
 
 \function{slang_to_pcre}

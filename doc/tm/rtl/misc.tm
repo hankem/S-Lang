@@ -71,6 +71,20 @@
 \seealso{implements, use_namespace, import, evalfile}
 \done
 
+\function{__datatype}
+\synopsis{Get the DataType_Type for a specified internal class-id}
+\usage{DataType_Type __datatype (Int_Type id)}
+\description
+ This function is the inverse of __class_type in the sense that it
+ returns the \dtype{DataType_Type} for the specified class-id.  If no
+ such class exists, the function will return \NULL.
+\notes
+ One should not expect distinct interpreter instances to always return
+ the same value for a dynamically assigned class-id such as one
+ defined by a module or one stemming from a \kw{typedef} statement.
+\seealso{__class_id, __class_type, typeof}
+\done
+
 \function{_eqs}
 \synopsis{Test for equality of two objects}
 \usage{Int_Type _eqs (a, b)}

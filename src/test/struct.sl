@@ -513,6 +513,38 @@ define test_struct_refs ()
 }
 test_struct_refs ();
 
+private define test_internal_struct_type ()
+{
+   variable t;
+   
+   loop (100)
+     {
+	t = new_test_type ();
+	t.field1 = 7;
+	t.field2 = 3;
+	t.field1 += 3;
+	t.field1 -= t.field2;
+     }
+}
+test_internal_struct_type ();
+
+private define test_it (p)
+{
+   loop (10)
+     {
+	variable userdata = struct{items};
+   
+	p.any = @userdata;
+	p.any.items = {};
+   
+	p.any = @userdata;
+	variable x = @userdata;
+	p.any = x;
+	x.items = {};
+     }
+}
+test_it (new_test_type ());
+
 print ("Ok\n");
 exit (0);
 

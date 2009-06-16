@@ -75,6 +75,7 @@ struct _pSLRegexp_Type
 #define UPPERCASE(x)  (cs ? (x) : UPPER_CASE(x))
 #define LOWERCASE(x)  (cs ? (x) : LOWER_CASE(x))
 
+/* FIXME: UTF8 */
 static unsigned char Word_Chars[256];
 #define IS_WORD_CHAR(x) Word_Chars[(unsigned int) (x)]
 
@@ -362,26 +363,31 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	     /* needs finished */
 	     return (NULL);
 
-	   case ANY:
+	   case ANY:		       /* . */
+	     /* FIXME: UTF8 */
 	     if ((str >= estr) || (*str == '\n')) return (NULL);
 	     str++;
 	     break;
 
-	   case MAYBE_ONCE | ANY:
+	   case MAYBE_ONCE | ANY:      /* .? */
+	     /* FIXME: UTF8 */
 	     save_str = str;
 	     if ((str < estr) && (*str != '\n')) str++;
 	     goto match_rest;
 
-	   case LEAST_ONCE | ANY:
+	   case LEAST_ONCE | ANY:      /* .+ */
+	     /* FIXME: UTF8 */
 	     if ((str >= estr) || (*str == '\n')) return (NULL);
 	     str++;
 	     /* drop */
-	   case STAR | ANY:
+	   case STAR | ANY:	       /* .* */
+	     /* FIXME: UTF8 */
 	     save_str = str;
 	     while ((str < estr) && (*str != '\n')) str++;
 	     goto match_rest;
 
 	   case MANY | ANY:
+	     /* FIXME: Not implemented */
 	     return (NULL);
 	     /* needs finished */
 

@@ -132,6 +132,148 @@ static void test_pop_mmt (void)
      SLang_free_mmt (mmt);
 }
 
+
+typedef struct
+{
+   int field1;
+   int field2;
+   SLang_Any_Type *any;
+   int num_refs;
+}
+Test_Type;
+static int Test_Type_Id = -1;
+
+static void free_test_type (Test_Type *t)
+{
+   if (t == NULL)
+     return;
+
+   if (t->num_refs > 1)
+     {
+	t->num_refs -= 1;
+	return;
+     }
+   if (t->any != NULL)
+     SLang_free_anytype (t->any);
+   SLfree ((char *)t);
+}
+
+static void test_type_destroy (SLtype type, VOID_STAR addr)
+{
+   (void) type;
+   free_test_type (*(Test_Type **)addr);
+}
+
+static int push_test_type (Test_Type *t)
+{
+   t->num_refs++;
+   if (0 == SLclass_push_ptr_obj (Test_Type_Id, (VOID_STAR) t))
+     return 0;
+   t->num_refs--;
+   return -1;
+}
+
+static int pop_test_type (Test_Type **tp)
+{
+   return SLclass_pop_ptr_obj (Test_Type_Id, (VOID_STAR *)tp);
+}
+
+static int test_type_sget (SLtype type, SLFUTURE_CONST char *name)
+{
+   Test_Type *t;
+   int status;
+
+   (void) type;
+   if (-1 == pop_test_type (&t))
+     return -1;
+
+   status = -1;
+   if (0 == strcmp (name, "field1"))
+     status = SLang_push_int (t->field1);
+   else if (0 == strcmp (name, "field2"))
+     status = SLang_push_int (t->field2);
+   else if (0 == strcmp (name, "any"))
+     status = SLang_push_anytype (t->any);
+   else
+     SLang_verror (SL_INVALID_PARM,
+		   "Test_Type.%s is invalid", name);
+
+   free_test_type (t);
+   return status;
+}
+
+static int test_type_sput (SLtype type, SLFUTURE_CONST char *name)
+{
+   Test_Type *t;
+   int status;
+
+   (void) type;
+   if (-1 == pop_test_type (&t))
+     return -1;
+
+   status = -1;
+   if (0 == strcmp (name, "field1"))
+     status = SLang_pop_int (&t->field1);
+   else if (0 == strcmp (name, "field2"))
+     status = SLang_pop_int (&t->field2);
+   else if (0 == strcmp (name, "any"))
+     {
+	SLang_Any_Type *any;
+	if (0 == (status = SLang_pop_anytype (&any)))
+	  {
+	     SLang_free_anytype (t->any);
+	     t->any = any;
+	  }
+     }
+   else
+     SLang_verror (SL_INVALID_PARM,
+		   "Test_Type.%s is invalid", name);
+
+   free_test_type (t);
+   return status;
+}
+
+static int test_type_push (SLtype type, VOID_STAR addr)
+{
+   (void) type;
+   
+   return push_test_type (*(Test_Type **)addr);
+}
+
+
+static void new_test_type (void)
+{
+   Test_Type *t;
+
+   if (NULL == (t = (Test_Type *)SLmalloc (sizeof(Test_Type))))
+     return;
+   memset ((char *)t, 0, sizeof(Test_Type));
+   t->field1 = -1;
+   t->field2 = -1;
+   t->num_refs = 1;
+   (void) push_test_type (t);
+   free_test_type (t);
+}
+     
+static int add_test_classes (void)
+{
+   SLang_Class_Type *cl;
+
+   cl = SLclass_allocate_class ("Test_Type");
+   if (cl == NULL) return -1;
+   (void) SLclass_set_destroy_function (cl, test_type_destroy);
+   (void) SLclass_set_sget_function (cl, test_type_sget);
+   (void) SLclass_set_sput_function (cl, test_type_sput);
+   (void) SLclass_set_push_function (cl, test_type_push);
+   
+   if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE, sizeof (Test_Type *), SLANG_CLASS_TYPE_PTR))
+     return -1;
+   Test_Type_Id = SLclass_get_class_id (cl);
+
+   return 0;
+}
+
+
 static void fake_import (char *);
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
@@ -149,6 +291,7 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_0("get_c_struct", get_c_struct, VOID_TYPE),
    MAKE_INTRINSIC_0("set_c_struct", set_c_struct, VOID_TYPE),
    MAKE_INTRINSIC_1("get_c_struct_via_ref", get_c_struct_via_ref, VOID_TYPE, SLANG_REF_TYPE),
+   MAKE_INTRINSIC_0("new_test_type", new_test_type, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 
@@ -160,7 +303,7 @@ static void fake_import (char *ns_name)
    
    (void) SLns_add_intrin_fun_table (ns, Intrinsics, NULL);
 }
-
+	
 int main (int argc, char **argv)
 {
    int i;
@@ -189,7 +332,8 @@ int main (int argc, char **argv)
 
    if ((-1 == SLang_init_all ())
        || (-1 == SLang_init_array_extra ())
-       || (-1 == SLadd_intrin_fun_table (Intrinsics, NULL)))
+       || (-1 == SLadd_intrin_fun_table (Intrinsics, NULL))
+       || (-1 == add_test_classes ()))
      return 1;
    
    SLang_Traceback = 1;
