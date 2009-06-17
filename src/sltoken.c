@@ -548,13 +548,21 @@ static int get_ident_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned 
    return _pSLtoken_init_slstring_token (tok, IDENT_TOKEN, (char *) s, len);
 }
 
-/* In these two routines, if check_overflow==1, then do not check for sign errors.
- * If it is 2, then check for bother overflow and the sign.
- */
-static int str_to_signed_constant (unsigned char *s, SLtype stype, _pSLtok_Type ttype,
+#define LONG_MASK (~(long)(unsigned long)-1)   /* 0 */
+#define INT_MASK (~(long)(unsigned int)-1)
+#define SHORT_MASK (~(long)(unsigned short)-1)
+#define CHAR_MASK (~(long)(unsigned char)-1)
+
+static int str_to_signed_constant (unsigned char *s, SLtype stype, _pSLtok_Type ttype, long mask,
 				   _pSLang_Token_Type *tok)
 {
    long lval = SLatol (s);
+
+   if (lval & mask)
+     {
+	SLang_verror (SL_SYNTAX_ERROR, "Literal integer constant is too large for %s", SLclass_get_datatype_name(stype));
+	return tok->type = EOF_TOKEN;
+     }
 
    (void) stype;
    tok->flags |= SLTOKEN_TYPE_INTEGER;
@@ -562,10 +570,16 @@ static int str_to_signed_constant (unsigned char *s, SLtype stype, _pSLtok_Type 
    return tok->type = ttype;
 }
 
-static int str_to_unsigned_constant (unsigned char *s, SLtype stype, _pSLtok_Type ttype,
+static int str_to_unsigned_constant (unsigned char *s, SLtype stype, _pSLtok_Type ttype, long mask,
 				     _pSLang_Token_Type *tok)
 {
    unsigned long lval = SLatoul (s);
+
+   if (lval & mask)
+     {
+	SLang_verror (SL_SYNTAX_ERROR, "Literal integer constant is too large for %s", SLclass_get_datatype_name(stype));
+	return tok->type = EOF_TOKEN;
+     }
 
    (void) stype;
    tok->flags |= SLTOKEN_TYPE_INTEGER;
@@ -675,28 +689,28 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 	return status;
 #endif
       case SLANG_CHAR_TYPE:
-	return str_to_signed_constant (s, SLANG_CHAR_TYPE, CHAR_TOKEN, tok);
+	return str_to_signed_constant (s, SLANG_CHAR_TYPE, CHAR_TOKEN, CHAR_MASK, tok);
 
       case SLANG_UCHAR_TYPE:
-	return str_to_unsigned_constant (s, SLANG_UCHAR_TYPE, UCHAR_TOKEN, tok);
+	return str_to_unsigned_constant (s, SLANG_UCHAR_TYPE, UCHAR_TOKEN, CHAR_MASK, tok);
 
       case SLANG_SHORT_TYPE:
-	return str_to_signed_constant (s, SLANG_SHORT_TYPE, SHORT_TOKEN, tok);
+	return str_to_signed_constant (s, SLANG_SHORT_TYPE, SHORT_TOKEN, SHORT_MASK, tok);
 
       case SLANG_USHORT_TYPE:
-	return str_to_unsigned_constant (s, SLANG_USHORT_TYPE, USHORT_TOKEN, tok);
+	return str_to_unsigned_constant (s, SLANG_USHORT_TYPE, USHORT_TOKEN, SHORT_MASK, tok);
 
       case SLANG_INT_TYPE:
-	return str_to_signed_constant (s, SLANG_INT_TYPE, INT_TOKEN, tok);
+	return str_to_signed_constant (s, SLANG_INT_TYPE, INT_TOKEN, INT_MASK, tok);
 
       case SLANG_UINT_TYPE:
-	return str_to_unsigned_constant (s, SLANG_UINT_TYPE, UINT_TOKEN, tok);
+	return str_to_unsigned_constant (s, SLANG_UINT_TYPE, UINT_TOKEN, INT_MASK, tok);
 
       case SLANG_LONG_TYPE:
-	return str_to_signed_constant (s, SLANG_LONG_TYPE, LONG_TOKEN, tok);
+	return str_to_signed_constant (s, SLANG_LONG_TYPE, LONG_TOKEN, LONG_MASK, tok);
 
       case SLANG_ULONG_TYPE:
-	return str_to_unsigned_constant (s, SLANG_ULONG_TYPE, ULONG_TOKEN, tok);
+	return str_to_unsigned_constant (s, SLANG_ULONG_TYPE, ULONG_TOKEN, LONG_MASK, tok);
 
 #ifdef HAVE_LONG_LONG
       case SLANG_LLONG_TYPE:

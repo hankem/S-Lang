@@ -211,7 +211,8 @@ Changes since 2.1.4
      omit the long-long specific functions.
 112. modules/pcre.sl: Added pcre_matches function that combines the
      other pcre functions into a simple to use form.
-
+113. src/sltoken.c,slparse.c: Overflow check was failing on 64 bit
+     systems.
 {{{ Previous Versions
 
 Changes since 2.1.3
