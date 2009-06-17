@@ -103,6 +103,9 @@ static int check_int_token_overflow (_pSLang_Token_Type *ctok, int sign)
 
    ctok->v.long_val = lval = sign * ctok->v.long_val;
 
+   if (ctok->flags & SLTOKEN_IS_HEX)
+     return 0;
+
    switch (ctok->type)
      {
       case CHAR_TOKEN:
@@ -128,8 +131,7 @@ static int check_int_token_overflow (_pSLang_Token_Type *ctok, int sign)
 
    if (ival == lval)
      {
-	if ((ctok->flags & SLTOKEN_IS_HEX)
-	    || ((lval >= 0) && (sign > 0))
+	if (((lval >= 0) && (sign > 0))
 	    || ((lval < 0) && (sign < 0)))
 	  return 0;
      }
