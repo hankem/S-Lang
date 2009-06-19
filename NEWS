@@ -3,6 +3,7 @@ NEWS for version 2.2                                               -*-text-*-
 Interpreter Enhancements
 ========================
 
+
    1.  The ternary expression was added:  
    
            expression = condition ? val1 : val2
@@ -41,13 +42,64 @@ Modules
 =======
  
    1.  zlib: A module that wraps the popular z compression library.
+
    2.  fork: A module that wraps the fork, exec*, and waitpid functions.
+   
+         slsh/lib/process.sl utilizes this module to allow an
+	 application to easily create subprocesses and pipelines.
+
    3.  sysconf: Module that implements interfaces to the posix
        sysconf, pathconf, etc. functions.
 	   
-       
+
+Intrinsic Functions
+===================
+
+   The following intrinsic functions have been added for 2.2:
+   
+      sumsq           
+          equivalent to sum(x*x)
+
+      expm1           
+          More accurate version of exp(x)-1 for x near 0.
+
+      log1p           
+          More accurate version of log(1+x) for x near 0
+
+      list_to_array   
+          Creates an array from a list.
+
+      string_matches
+          A convenient alternative to string_match and string_match_nth
+	  functions.
+		       
+      _close          
+          Close an integer descriptor
+      _fileno        
+          Returns the descriptor as an integer
+
+      dup2, getsid, killpg, getpriority/setpriority:
+          Wraps the corresponding system functions.
+
+
+   The following functions have been enhanced:
+      
+      hypot
+          If given a single array argument, it returns the equivalent
+	  of sqrt(sum(X*X)).
+
+      polynom
+          The calling interface to this function was changed and
+	  support added for arrays.
+
+Misc
+====
+
+   Unicode tables updated to version 5.1.
+
 
 =x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x
+
 NEWS for version 2.1
 
 Building the library

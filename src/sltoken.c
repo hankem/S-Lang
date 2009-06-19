@@ -1709,6 +1709,7 @@ static char *read_from_file (SLang_Load_Type *x)
 {
    FILE *fp;
    File_Client_Data_Type *c;
+   char *buf;
 
    c = (File_Client_Data_Type *)x->client_data;
    fp = c->fp;
@@ -1719,7 +1720,20 @@ static char *read_from_file (SLang_Load_Type *x)
 	fflush (stdout);
      }
 
-   return fgets (c->buf, MAX_FILE_LINE_LEN, c->fp);
+   buf = fgets (c->buf, MAX_FILE_LINE_LEN, c->fp);
+   if (buf != NULL)
+     {
+	unsigned int num;
+
+	num = strlen (buf);
+	if ((num + 1 == MAX_FILE_LINE_LEN)
+	    && (buf[num-1] != '\n'))
+	  {
+	     SLang_verror (SL_LimitExceeded_Error, "Line %u is too long or lacks a newline character", x->line_num);
+	     return NULL;
+	  }
+     }
+   return buf;
 }
 
 int _pSLang_Load_File_Verbose = 0;

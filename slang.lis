@@ -434,6 +434,7 @@
 @src/test/inc.sl
 @src/test/leak.sl
 @src/test/list.sl
+@src/test/longline.inc
 @src/test/loops.sl
 @src/test/method.sl
 @src/test/multline.sl
