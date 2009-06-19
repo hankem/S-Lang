@@ -357,5 +357,10 @@ private define test_private_variable_ops ()
 }
 test_private_variable_ops ();
 
+try
+{
+   () = evalfile("./longline.inc");
+}
+catch LimitExceededError;
 exit (0);
 

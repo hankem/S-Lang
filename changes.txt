@@ -213,6 +213,10 @@ Changes since 2.1.4
      other pcre functions into a simple to use form.
 113. src/sltoken.c,slparse.c: Overflow check was failing on 64 bit
      systems.
+114. src/sltoken.c: If the default read method encounters a too long line,
+     then issue an error instead of passing it back up for the parser
+     to handle.
+
 {{{ Previous Versions
 
 Changes since 2.1.3
