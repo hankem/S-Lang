@@ -103,6 +103,65 @@ test_push_pop_list ("A");
 test_push_pop_list ({});
 test_push_pop_list ("A", {});
 
+private define test_complex_list ()
+{
+   variable l = {};
+   variable n1 = 0;
+   variable s0 = "string";
+   variable z0 = 1;
+#ifexists Complex_Type
+   z0 += 2i;
+#endif
+   
+   variable n = 20;
+   loop (n)
+     {
+	list_append (l, z0);
+	list_append (l, s0);
+     }
+   
+   variable za, sa, zl, sl;
+
+   zl = l[[::2]];
+   sl = l[[1::2]];
+
+   za = list_to_array (zl);
+   sa = list_to_array (sl);
+
+   if (any(za != z0))
+     failed ("list of complex numbers with array indexing");
+   
+   if (any (sa != s0))
+     failed ("list of strings with array indexing");
+   
+   % LHS = array
+   l[[::2]] = sa;
+   l[[1::2]] = za;
+
+   sa = list_to_array (l[[::2]]);
+   za = list_to_array (l[[1::2]]);
+
+   if (any(za != z0))
+     failed ("aput complex with array LHS");
+
+   if (any (sa != s0))
+     failed ("aput string with array LHS");
+
+   % LHS = list
+   l[[::2]] = zl;
+   l[[1::2]] = sl;
+
+   sa = list_to_array (l[[::2]]);
+   za = list_to_array (l[[1::2]]);
+   
+   if (any(za != z0))
+     failed ("aput complex with array LHS");
+
+   if (any (sa != s0))
+     failed ("aput string with array LHS");   
+}
+test_complex_list ();
+
 private define make_big_list (len)
 {
    variable l = {};

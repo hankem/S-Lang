@@ -1419,7 +1419,7 @@ int _pSLget_token (_pSLang_Token_Type *tok)
 
 static int prep_exists_function (SLprep_Type *pt, SLFUTURE_CONST char *line)
 {
-   char buf[MAX_FILE_LINE_LEN], *b, *bmax;
+   char buf[MAX_FILE_LINE_LEN+1], *b, *bmax;
    unsigned char ch;
    unsigned char comment;
 
@@ -1720,13 +1720,13 @@ static char *read_from_file (SLang_Load_Type *x)
 	fflush (stdout);
      }
 
-   buf = fgets (c->buf, MAX_FILE_LINE_LEN, c->fp);
+   buf = fgets (c->buf, MAX_FILE_LINE_LEN+1, c->fp);
    if (buf != NULL)
      {
 	unsigned int num;
 
 	num = strlen (buf);
-	if ((num + 1 == MAX_FILE_LINE_LEN)
+	if ((num == MAX_FILE_LINE_LEN)
 	    && (buf[num-1] != '\n'))
 	  {
 	     SLang_verror (SL_LimitExceeded_Error, "Line %u is too long or lacks a newline character", x->line_num);

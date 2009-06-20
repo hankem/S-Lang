@@ -1172,8 +1172,13 @@ static SLang_IConstant_Type Stdio_Consts [] =
 
 static void destroy_file_type (SLtype type, VOID_STAR ptr)
 {
+   /* Do not change errno when a variable goes out of scope */
+   int e = _pSLerrno_errno;
+
    (void) type;
    (void) close_file_type ((SL_File_Table_Type *) ptr);
+
+   _pSLerrno_errno = e;
 }
 
 

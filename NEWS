@@ -36,6 +36,9 @@ Interpreter Enhancements
 	    string that 
 	    does not require 
 	    a \ for continuation`
+
+    4.  List_Type objects may be indexed using an array of indices
+        instead of just a single scalar index.
 	    
 
 Modules

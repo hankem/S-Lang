@@ -44,9 +44,9 @@ memcheck_run_tests: $(TEST_PGM)
 	-@for X in $(TEST_SCRIPTS); \
 	do \
 	   $(MEMCHECK) --log-file=log.$${X} $(RUN_TEST_PGM) $$X.sl; \
-	   grep ERROR log.$${X}.*; grep 'lost: [^0]' log.$${X}.*; \
-	   $(MEMCHECK) --log-file=log.$${X}_u.* $(RUN_TEST_PGM) -utf8 $$X.sl; \
-	   grep ERROR log.$${X}_u.*; grep 'lost: [^0]' log.$${X}_u.*; \
+	   grep ERROR log.$${X}; grep 'lost: [^0]' log.$${X}; \
+	   $(MEMCHECK) --log-file=log.$${X}_u $(RUN_TEST_PGM) -utf8 $$X.sl; \
+	   grep ERROR log.$${X}_u; grep 'lost: [^0]' log.$${X}_u; \
 	done
 	touch sltest.c
 

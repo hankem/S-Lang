@@ -258,87 +258,6 @@ static int pop_list (SLang_MMT_Type **mmtp, SLang_List_Type **list)
    return 0;
 }
 
-static int pop_list_and_index (unsigned int num_indices, 
-			       SLang_MMT_Type **mmtp, SLang_List_Type **listp,
-			       int *indx)
-{
-   int idx;
-   SLang_MMT_Type *mmt;
-   SLang_List_Type *list;
-
-   if (-1 == pop_list (&mmt, &list))
-     return -1;
-
-   if (num_indices != 1)
-     {
-	_pSLang_verror (SL_InvalidParm_Error, "List_Type objects are limited to a single index");
-	SLang_free_mmt (mmt);
-	return -1;
-     }
-
-   if (-1 == SLang_pop_integer (&idx))
-     {
-	SLang_free_mmt (mmt);
-	return -1;
-     }
-   *indx = idx;
-   *listp = list;
-   *mmtp = mmt;
-   return 0;
-}
-
-/* FIXME: Extend this to allow an index array */
-static int _pSLlist_aget (SLtype type, unsigned int num_indices)
-{
-   SLang_MMT_Type *mmt;
-   SLang_List_Type *list;
-   SLang_Object_Type *obj;
-   int ret = 0;
-   int indx;
-
-   (void) type;
-
-   if (-1 == pop_list_and_index (num_indices, &mmt, &list, &indx))
-     return -1;
-   
-   obj = find_nth_element (list, indx, NULL);
-   if (obj != NULL)
-     ret = _pSLpush_slang_obj (obj);
-
-   SLang_free_mmt (mmt);
-   return ret;
-}
-
-static int _pSLlist_aput (SLtype type, unsigned int num_indices)
-{
-   SLang_MMT_Type *mmt;
-   SLang_List_Type *list;
-   SLang_Object_Type obj;
-   SLang_Object_Type *elem;
-   int indx;
-
-   (void) type;
-
-   if (-1 == pop_list_and_index (num_indices, &mmt, &list, &indx))
-     return -1;
-
-   if (-1 == SLang_pop (&obj))
-     {
-	SLang_free_mmt (mmt);
-	return -1;
-     }
-   
-   if (NULL == (elem = find_nth_element (list, indx, NULL)))
-     {
-	SLang_free_object (&obj);
-	SLang_free_mmt (mmt);
-	return -1;
-     }
-   SLang_free_object (elem);
-   *elem = obj;
-   SLang_free_mmt (mmt);
-   return 0;
-}
 
 static SLang_List_Type *make_sublist (SLang_List_Type *list, int indx_a, int indx_b)
 {
@@ -1006,6 +925,260 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
    return 1;
 }
 
+static int pop_list_and_index (unsigned int num_indices, 
+			       SLang_MMT_Type **mmtp, SLang_List_Type **listp,
+			       SLang_Array_Type **ind_atp,
+			       SLindex_Type *indx)
+{
+   SLang_MMT_Type *mmt;
+   SLang_List_Type *list;
+
+   if (-1 == pop_list (&mmt, &list))
+     return -1;
+
+   if (num_indices != 1)
+     {
+	_pSLang_verror (SL_InvalidParm_Error, "List_Type objects are limited to a single index");
+	SLang_free_mmt (mmt);
+	return -1;
+     }
+
+   *ind_atp = NULL;
+   if (SLang_peek_at_stack () == SLANG_ARRAY_INDEX_TYPE)
+     {
+	if (-1 == SLang_pop_array_index (indx))
+	  {
+	     SLang_free_mmt (mmt);
+	     return -1;
+	  }
+     }
+   else
+     {
+	if (-1 == _pSLarray_pop_index (list->length, ind_atp, indx))
+	  {
+	     SLang_free_mmt (mmt);
+	     return -1;
+	  }
+     }
+
+   *listp = list;
+   *mmtp = mmt;
+   return 0;
+}
+
+
+/* FIXME: Extend this to allow an index array */
+static int _pSLlist_aget (SLtype type, unsigned int num_indices)
+{
+   SLang_MMT_Type *mmt;
+   SLang_List_Type *list, *new_list;
+   SLang_Object_Type *obj;
+   SLang_Array_Type *ind_at;
+   SLindex_Type indx, *idx_data;
+   SLuindex_Type i, num, list_len;
+   int ret;
+
+   (void) type;
+
+   if (-1 == pop_list_and_index (num_indices, &mmt, &list, &ind_at, &indx))
+     return -1;
+   
+   ret = -1;
+   if (ind_at == NULL)
+     {
+	obj = find_nth_element (list, indx, NULL);
+	if (obj != NULL)
+	  ret = _pSLpush_slang_obj (obj);
+
+	SLang_free_mmt (mmt);
+	return ret;
+     }
+
+   if (NULL == (new_list = allocate_list ()))
+     goto free_and_return;
+   
+   list_len = list->length;
+   num = ind_at->num_elements;
+   idx_data = (SLindex_Type *)ind_at->data;
+   for (i = 0; i < num; i++)
+     {
+	SLang_Object_Type *obja;
+	SLang_Object_Type objb;
+
+	indx = idx_data[i];
+	if (NULL == (obja = find_nth_element (list, idx_data[i], NULL)))
+	  goto free_and_return;
+
+	if (-1 == _pSLslang_copy_obj (obja, &objb))
+	  goto free_and_return;
+
+	if (-1 == insert_element (new_list, &objb, i))
+	  {
+	     SLang_free_object (&objb);
+	     goto free_and_return;
+	  }
+     }
+
+   ret = push_list (new_list);	       /* frees upon error */
+   new_list = NULL;
+ 
+free_and_return:
+
+   if (new_list != NULL)
+     delete_list (new_list);
+   SLang_free_mmt (mmt);
+   SLang_free_array (ind_at);
+   return ret;
+}
+
+static int aput_object (SLang_List_Type *list, SLindex_Type indx, SLang_Object_Type *obj)
+{
+   SLang_Object_Type *elem;
+   
+   if (NULL == (elem = find_nth_element (list, indx, NULL)))
+     return -1;
+
+   SLang_free_object (elem);
+   *elem = *obj;
+   return 0;
+}
+
+static int _pSLlist_aput (SLtype type, unsigned int num_indices)
+{
+   SLang_MMT_Type *mmt;
+   SLang_List_Type *list;
+   SLang_Object_Type obj;
+   SLang_Array_Type *ind_at;
+   SLindex_Type indx, *idx_data;
+   SLuindex_Type i, num, list_len;
+   int ret;
+
+   (void) type;
+
+   if (-1 == pop_list_and_index (num_indices, &mmt, &list, &ind_at, &indx))
+     return -1;
+
+   if (ind_at == NULL)
+     {
+	if (-1 == SLang_pop (&obj))
+	  {
+	     SLang_free_mmt (mmt);
+	     return -1;
+	  }
+   
+	if (-1 == aput_object (list, indx, &obj))
+	  {
+	     SLang_free_object (&obj);
+	     SLang_free_mmt (mmt);
+	     return -1;
+	  }
+	SLang_free_mmt (mmt);
+	return 0;
+     }
+   
+   idx_data = (SLindex_Type *)ind_at->data;
+   num = ind_at->num_elements;
+   list_len = list->length;
+   
+   if (-1 == SLang_pop (&obj))
+     {
+	SLang_free_mmt (mmt);
+	SLang_free_array (ind_at);
+	return -1;
+     }
+
+   ret = -1;
+   
+   if (obj.o_data_type == SLANG_ARRAY_TYPE)
+     {
+	SLang_Array_Type *at = obj.v.array_val;
+	if ((at->num_elements != num) || (at->num_dims != 1))
+	  {
+	     SLang_verror (SL_Index_Error, "Inappropriate array for list[indices]=array expression");
+	     goto free_and_return;
+	  }
+	
+	for (i = 0; i < num; i++)
+	  {
+	     SLang_Object_Type objb;
+	     indx = idx_data[i];
+	
+	     if ((-1 == _pSLarray1d_push_elem (at, i))
+		 || (-1 == SLang_pop (&objb)))
+	       goto free_and_return;
+
+	     if (-1 == aput_object (list, indx, &objb))
+	       {
+		  SLang_free_object (&objb);
+		  goto free_and_return;
+	       }
+	  }
+	ret = 0;
+	goto free_and_return;
+     }
+   
+   if (obj.o_data_type == SLANG_LIST_TYPE)
+     {
+	SLang_MMT_Type *mmt2;
+	SLang_List_Type *list2;
+	
+	mmt2 = obj.v.ref;
+	if (NULL == (list2 = (SLang_List_Type *)SLang_object_from_mmt (mmt2)))
+	  goto free_and_return;
+
+	if (list2->length != (SLindex_Type)num)
+	  {
+	     SLang_verror (SL_Index_Error, "Inappropriate list2 size for list[indices]=list2 expression");
+	     goto free_and_return;
+	  }
+
+	for (i = 0; i < num; i++)
+	  {
+	     SLang_Object_Type *obja;
+	     SLang_Object_Type objb;
+	     indx = idx_data[i];
+	
+	     if (NULL == (obja = find_nth_element (list, idx_data[i], NULL)))
+	       goto free_and_return;
+
+	     if (-1 == _pSLslang_copy_obj (obja, &objb))
+	       goto free_and_return;
+
+	     if (-1 == aput_object (list, indx, &objb))
+	       {
+		  SLang_free_object (&objb);
+		  goto free_and_return;
+	       }
+	  }
+	ret = 0;
+	goto free_and_return;
+     }
+   
+   for (i = 0; i < num; i++)
+     {
+	SLang_Object_Type objb;
+	indx = idx_data[i];
+	
+	if (-1 == _pSLslang_copy_obj (&obj, &objb))
+	  goto free_and_return;
+
+	if (-1 == aput_object (list, indx, &objb))
+	  {
+	     SLang_free_object (&objb);
+	     goto free_and_return;
+	  }
+	SLang_free_mmt (mmt);
+     }
+
+   ret = 0;
+   /* drop */
+free_and_return:
+
+   SLang_free_object (&obj);
+   SLang_free_array (ind_at);
+   SLang_free_mmt (mmt);
+   return ret;
+}
 
 int _pSLang_init_sllist (void)
 {
