@@ -4580,6 +4580,27 @@ static int carefully_push_object (SLang_Object_Type *obj)
    return (*cl->cl_push) (subtype, (VOID_STAR) &obj->v);
 }
 
+int _pSLslang_copy_obj (SLang_Object_Type *obja, SLang_Object_Type *objb)
+{
+   SLtype type;
+
+   type = obja->o_data_type;
+
+#if SLANG_OPTIMIZE_FOR_SPEED
+   if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(type))
+     {
+	*objb = *obja;
+	return 0;
+     }
+#endif
+
+   if (-1 == carefully_push_object (obja))
+     return -1;
+   
+   return pop_object (objb);
+}
+
+
 #define PUSH_LOCAL_VARIABLE(_indx) \
    { \
       SLang_Object_Type *_obj = Local_Variable_Frame - (_indx); \

@@ -216,6 +216,8 @@ Changes since 2.1.4
 114. src/sltoken.c: If the default read method encounters a too long line,
      then issue an error instead of passing it back up for the parser
      to handle.
+115. src/sltoken.c: preparsed files were being mishandled by #114.
+116. src/sllist.c: Added array indexing support to list objects.
 
 {{{ Previous Versions
 

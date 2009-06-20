@@ -560,8 +560,11 @@ free_index_objects (SLang_Object_Type *index_objs, unsigned int num_indices)
      }
 }
 
+/* If *is_index_array!=0, then only one index object is returned, which is
+ * to index all the elements, and not just a single dimension.
+ */
 static int
-pop_indices (SLang_Array_Type *at_to_index,
+pop_indices (unsigned num_dims, SLindex_Type *dims, SLuindex_Type num_elements,
 	     SLang_Object_Type *index_objs, unsigned int num_indices,
 	     int *is_index_array)
 {
@@ -571,7 +574,7 @@ pop_indices (SLang_Array_Type *at_to_index,
 
    *is_index_array = 0;
 
-   if (num_indices != at_to_index->num_dims)
+   if (num_indices != num_dims)
      {
 	if (num_indices != 1)	       /* when 1, it is an index array */
 	  {
@@ -626,9 +629,9 @@ pop_indices (SLang_Array_Type *at_to_index,
 		  SLindex_Type n;
 
 		  if (num_indices == 1)/* could be index array */
-		    n = (SLindex_Type)at_to_index->num_elements;
+		    n = (SLindex_Type)num_elements;
 		  else
-		    n = at_to_index->dims[i];
+		    n = dims[i];
 
 		  if (r->has_first_index)
 		    {
@@ -686,6 +689,42 @@ static void do_index_error (SLindex_Type i, SLindex_Type indx, SLindex_Type dim)
 		 i, (long)indx, (long)dim);
 }
 
+int _pSLarray_pop_index (unsigned int num_elements, SLang_Array_Type **ind_atp, SLindex_Type *ind)
+{
+   SLang_Object_Type index_obj;
+   SLindex_Type dims;
+   int is_index_array = 0;
+   SLang_Array_Type *ind_at;
+
+   *ind_atp = NULL;
+   dims = (SLindex_Type) num_elements;
+   if (dims < 0)
+     {
+	SLang_verror (SL_Index_Error, "Objected is too large to be indexed");
+	return -1;
+     }
+
+   if (-1 == pop_indices (1, &dims, num_elements, &index_obj, 1, &is_index_array))
+     return -1;
+   
+   if (index_obj.o_data_type != SLANG_ARRAY_TYPE)
+     {
+	*ind = index_obj.v.index_val;
+	return 0;
+     }
+
+   ind_at = index_obj.v.array_val;
+
+   if (-1 == coerse_array_to_linear (ind_at))
+     {
+	SLang_free_array (ind_at);
+	return -1;
+     }
+   *ind_atp = ind_at;
+   return 0;
+}
+
+       
 static int
 transfer_n_elements (SLang_Array_Type *at, VOID_STAR dest_data, VOID_STAR src_data,
 		     size_t sizeof_type, SLuindex_Type n, int is_ptr)
@@ -1350,7 +1389,7 @@ static int aget_from_array (unsigned int num_indices)
    if (-1 == pop_array (&at, 1))
      return -1;
 
-   if (-1 == pop_indices (at, index_objs, num_indices, &is_index_array))
+   if (-1 == pop_indices (at->num_dims, at->dims, at->num_elements, index_objs, num_indices, &is_index_array))
      {
 	free_array (at);
 	return -1;
@@ -2009,7 +2048,7 @@ int _pSLarray_aput1 (unsigned int num_indices)
 	return -1;
      }
 
-   if (-1 == pop_indices (at, index_objs, num_indices, &is_index_array))
+   if (-1 == pop_indices (at->num_dims, at->dims, at->num_elements, index_objs, num_indices, &is_index_array))
      {
 	free_array (at);
 	return -1;

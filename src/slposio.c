@@ -992,8 +992,13 @@ int SLfile_pop_fd (SLFile_FD_Type **f)
 
 static void destroy_fd_type (SLtype type, VOID_STAR ptr)
 {
+   /* Avoid setting errno when a variable goes out of scope */
+   int e = _pSLerrno_errno;
+
    (void) type;
+
    SLfile_free_fd (*(SLFile_FD_Type **) ptr);
+   e = _pSLerrno_errno;
 }
 
 static int fd_push (SLtype type, VOID_STAR v)

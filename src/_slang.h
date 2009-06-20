@@ -665,6 +665,7 @@ extern int _pSLcheck_identifier_syntax (SLCONST char *);
 extern int _pSLang_uninitialize_ref (SLang_Ref_Type *);
 
 extern int _pSLpush_slang_obj (SLang_Object_Type *);
+extern int _pSLslang_copy_obj (SLang_Object_Type *obja, SLang_Object_Type *objb);
 
 extern char *_pSLexpand_escaped_char(char *, char *, SLwchar_Type *, int *);
 extern void _pSLexpand_escaped_string (char *, char *, char *);
@@ -878,6 +879,12 @@ struct _pSLang_Class_Type
    int (*cl_datatype_deref)_PROTO((SLtype));
    SLang_Struct_Type *cl_struct_def;
    int (*cl_dereference) _PROTO((SLtype, VOID_STAR));
+
+   /* cl_a* functions deal with functions that have array addresses.  For 
+    * scalar and vector types, there is no difference.  However, for vector
+    * types such as Complex, which is stored as double[2], the address is
+    * the address of the first byte, and not the object itself.
+    */
    int (*cl_acopy) (SLtype, VOID_STAR, VOID_STAR);
    int (*cl_apop) _PROTO((SLtype, VOID_STAR));
    int (*cl_apush) _PROTO((SLtype, VOID_STAR));
@@ -916,7 +923,9 @@ struct _pSLang_Class_Type
    int (*cl_cmp)(SLtype, VOID_STAR, VOID_STAR, int *);   
    int (*cl_eqs)(SLtype, VOID_STAR, SLtype, VOID_STAR);
    
+   /* required for any object that takes advantage of __tmp optimization */
    void (*cl_inc_ref)(SLtype, VOID_STAR, int);
+
    SL_OOBinary_Type *cl_void_binary_this;
    SL_OOBinary_Type *cl_this_binary_void;
 
@@ -971,6 +980,11 @@ extern int _pSLarray_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
 extern int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx);
 #endif
 extern int _pSLarith_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
+
+/* Does not perform any range checking.  It is up to the caller. 
+ * If *atp!=NULL, then it is an array of indices.
+ */
+extern int _pSLarray_pop_index (unsigned int num_elements, SLang_Array_Type **ind_atp, SLindex_Type *ind);
 
 extern int _pSLarray_add_bin_op (SLtype);
 extern int _pSLarray_push_elem_ref (void);

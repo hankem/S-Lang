@@ -48,6 +48,13 @@ T.a -= 20;
 if (T.a != -15) 
   failed ("structure arithmetic");
 
+#ifexists Complex_Type
+T.a += 3+2i;			       %  =-18+2i
+T.a -= 2*T.a - T.a;		       %  = 0
+if (T.a != 0)
+  failed ("structure arithmetic with complex fields");
+#endif
+
 T.c = S;
 S.a = T;
 
