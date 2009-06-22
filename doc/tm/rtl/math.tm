@@ -368,15 +368,20 @@
 
 \function{polynom}
 \synopsis{Evaluate a polynomial}
-\usage{Double_Type polynom([a0,a1,...aN], x)}
+\usage{Double_Type polynom([a0,a1,...aN], x [,use_factorial])}
 \description
-  The \ifun{polynom} function returns the value of the polynomial expression
+ The \ifun{polynom} function returns the value of the polynomial expression
 #v+
      a0 + a1*x + a2*x^2 + ... + aN*x^N
 #v-
-  where the coefficients are given by an array of values
-  \exmp{[a0,...,aN]}.  If \exmp{x} is an array, the function will
-  return a corresponding array.
+ where the coefficients are given by an array of values
+ \exmp{[a0,...,aN]}.  If \exmp{x} is an array, the function will
+ return a corresponding array.  If the value of the optional
+ \exmp{use_factorial} parameter is non-zero, then each term in the sum
+ will be normalized by the corresponding factorial, i.e.,
+#v+
+     a0/0! + a1*x/1! + a2*x^2/2! + ... + aN*x^N/N!
+#v-
 \notes
   Prior to version 2.2, this function had a different calling syntax
   and and was less useful.

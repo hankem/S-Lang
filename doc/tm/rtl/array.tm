@@ -213,7 +213,19 @@
 #v+
      A = A[array_sort(A)];
 #v-
-\seealso{strcmp}
+\example
+  A homogeneous list may be sorted by first converting it to an array
+  as follows:
+#v+
+    list = list[ array_sort( list_to_array(list) ) ];
+#v-
+  Alternatively one may use 
+#v+
+    a = list_to_array (list);
+    list[*] = a[array_sort(a)];
+#v-
+  to get the effect of an "in-place" sort.
+\seealso{strcmp, list_to_array}
 \done
 
 \function{array_swap}

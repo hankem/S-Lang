@@ -2,6 +2,16 @@
 
 /* Some "inline" functions for generic scalar types */
 
+#if SLANG_HAS_FLOAT
+# ifndef IS_INFINITY
+#  ifdef HAVE_INF
+#   define IS_INFINITY(x) isinf(x)
+#  else
+#   define IS_INFINITY(x) _pSLmath_isinf(x)
+#  endif
+# endif
+#endif
+
 #ifdef TRANSPOSE_2D_ARRAY
 static SLang_Array_Type *TRANSPOSE_2D_ARRAY (SLang_Array_Type *at, SLang_Array_Type *bt)
 {
@@ -316,32 +326,21 @@ static int SUM_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_
 {
    GENERIC_TYPE *x, *xmax;
    double sum, sumerr;
-   
-   sum = 0.0;
-   sumerr = 0.0;
 
    x = (GENERIC_TYPE *) xp;
    xmax = x + num;
-#if 0 && SLANG_OPTIMIZE_FOR_SPEED
-   if (inc == 1)
-     {
-	while (x < xmax)
-	  {
-	     sum += (double) *x;
-	     x++;
-	  }
-     }
-   else
-#endif
+
+   sumerr = 0.0;
+   sum = 0.0;
    while (x < xmax)
      {
-	double v = *x;
+	double v = *x - sumerr;
 	double new_sum = sum + v;
-	sumerr += v - (new_sum-sum);
+	sumerr = (new_sum - sum) - v;
 	sum = new_sum;
 	x += inc;
      }
-   *(SUM_RESULT_TYPE *)yp = (SUM_RESULT_TYPE) (sum + sumerr);
+   *(SUM_RESULT_TYPE *)yp = (SUM_RESULT_TYPE) sum;
    return 0;
 }
 #endif				       /* SLANG_HAS_FLOAT */
@@ -362,13 +361,13 @@ static int SUMSQ_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOI
    xmax = x + num;
    while (x < xmax)
      {
-	double v = (*x) * (*x);
+	double v = (*x) * (*x) - sumerr;
 	double new_sum = sum + v;
-	sumerr += v - (new_sum-sum);
+	sumerr = (new_sum - sum) - v;
 	sum = new_sum;
 	x += inc;
      }
-   *(SUM_RESULT_TYPE *)yp = (SUM_RESULT_TYPE) (sum + sumerr);
+   *(SUM_RESULT_TYPE *)yp = (SUM_RESULT_TYPE) sum;
    return 0;
 }
 #endif				       /* SLANG_HAS_FLOAT */
@@ -590,11 +589,11 @@ CUMSUM_FUNCTION (SLtype xtype, VOID_STAR xp, unsigned int inc,
    cerr = 0.0;
    while (x < xmax)
      {
-	double d = (double) *x;
+	double d = (double) *x - cerr;
 	double c1 = c + d;
-	cerr += d - (c1 - c);
+	cerr = (c1 - c) - d;
 	c = c1;
-	*y = (CUMSUM_RESULT_TYPE) (c + cerr);
+	*y = (CUMSUM_RESULT_TYPE) c;
 	x += inc;
 	y += inc;
      }

@@ -274,8 +274,21 @@ array_sort
      A = A[array_sort(A)];
 
 
+ EXAMPLE
+  A homogeneous list may be sorted by first converting it to an array
+  as follows:
+
+    list = list[ array_sort( list_to_array(list) ) ];
+
+  Alternatively one may use
+
+    a = list_to_array (list);
+    list[*] = a[array_sort(a)];
+
+  to get the effect of an "in-place" sort.
+
  SEE ALSO
-  strcmp
+  strcmp, list_to_array
 
 --------------------------------------------------------------
 
@@ -3081,7 +3094,7 @@ list_to_array
  array for an empty or heterogeneous list.
 
  SEE ALSO
-  length, typecast, __pop_list, typeof
+  length, typecast, __pop_list, typeof, array_sort
 
 --------------------------------------------------------------
 
@@ -3711,16 +3724,21 @@ polynom
   Evaluate a polynomial
 
  USAGE
-  Double_Type polynom([a0,a1,...aN], x)
+  Double_Type polynom([a0,a1,...aN], x [,use_factorial])
 
  DESCRIPTION
-  The `polynom' function returns the value of the polynomial expression
+ The `polynom' function returns the value of the polynomial expression
 
      a0 + a1*x + a2*x^2 + ... + aN*x^N
 
-  where the coefficients are given by an array of values
-  `[a0,...,aN]'.  If `x' is an array, the function will
-  return a corresponding array.
+ where the coefficients are given by an array of values
+ `[a0,...,aN]'.  If `x' is an array, the function will
+ return a corresponding array.  If the value of the optional
+ `use_factorial' parameter is non-zero, then each term in the sum
+ will be normalized by the corresponding factorial, i.e.,
+
+     a0/0! + a1*x/1! + a2*x^2/2! + ... + aN*x^N/N!
+
 
  NOTES
   Prior to version 2.2, this function had a different calling syntax

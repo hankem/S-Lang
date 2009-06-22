@@ -148,6 +148,10 @@
 #undef HAVE_ISNAN
 #undef HAVE_HYPOT
 #undef HAVE_ATAN2
+#undef HAVE_FREXP
+#undef HAVE_FREXPF
+#undef HAVE_LDEXP
+#undef HAVE_LDEXPF
 
 #undef HAVE_DIRENT_H
 #undef HAVE_SYS_NDIR_H

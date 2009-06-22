@@ -65,6 +65,9 @@ static void math_floating_point_exception (int sig)
 
 double SLmath_hypot (double x, double y)
 {
+#ifdef HAVE_HYPOT
+   return hypot (x,y);
+#else
    double fr, fi, ratio;
 
    fr = fabs(x);
@@ -83,6 +86,7 @@ double SLmath_hypot (double x, double y)
      }
 
    return x;
+#endif
 }
 
 static int double_math_op_result (int op, SLtype a, SLtype *b)
@@ -856,7 +860,7 @@ typedef struct
    double *dptr;
    char *cptr;
    unsigned int inc;		       /* inc = 0, if at==NULL */
-   unsigned int num;
+   SLuindex_Type num;
 }
 Array_Or_Scalar_Type;
 
@@ -1192,13 +1196,23 @@ static void math_poly (void)
    SLuindex_Type num;
    double *a;
    double x, y;
+   int use_factorial = 0;
 
-   if (SLang_Num_Function_Args != 2)
+   switch (SLang_Num_Function_Args)
      {
-	SLang_verror (SL_Usage_Error, "Usage: y = polynom([a0,a1,...], x)");
+      case 3:
+	if (-1 == SLang_pop_int (&use_factorial))
+	  return;
+	/* drop */
+      case 2:
+	break;
+	
+      default:
+	SLang_verror (SL_Usage_Error, "\
+Usage: y = polynom([a0,a1,...], x [,use_factorial_form])");
 	return;
      }
-   
+
    if (-1 == pop_array_or_scalar (&ast))
      return;
 
@@ -1219,7 +1233,16 @@ static void math_poly (void)
 
 	y = 0.0;
 	k = n;
-	while (k != 0)
+
+	if (use_factorial)
+	  {
+	     while (k != 0)
+	       {
+		  y = a[k-1] + (x/k)*y;
+		  k--;
+	       }
+	  }
+	else while (k != 0)
 	  {
 	     k--;
 	     y = a[k] + x*y;
@@ -1248,12 +1271,19 @@ static void math_poly (void)
 	     x = (double) f[i];
 	     y = 0.0;
 	     k = n;
-	     while (k != 0)
+	     if (use_factorial)
+	       {
+		  while (k != 0)
+		    {
+		       y = a[k-1] + (x/k)*y;
+		       k--;
+		    }
+	       }
+	     else while (k != 0)
 	       {
 		  k--;
 		  y = a[k] + x*y;
 	       }
-
 	     yf[i] = (float) y;
 	  }
      }
@@ -1267,7 +1297,15 @@ static void math_poly (void)
 	     x = d[i];
 	     y = 0.0;
 	     k = n;
-	     while (k != 0)
+	     if (use_factorial)
+	       {
+		  while (k != 0)
+		    {
+		       y = a[k-1] + (x/k)*y;
+		       k--;
+		    }
+	       }
+	     else while (k != 0)
 	       {
 		  k--;
 		  y = a[k] + x*y;
@@ -1645,6 +1683,231 @@ static void nint_intrin (void)
    SLang_free_array (at);
 }
 
+#ifdef HAVE_FREXP
+# define FREXP_FUN(x,e) frexp(x,e)
+# ifdef HAVE_FREXPF
+#  define FREXPF_FUN(x,e) frexpf(x,e)
+# else
+#  define FREXPF_FUN(x,e) (float)FREXP(x,e)
+# endif
+
+static void frexp_intrin (void)
+{
+   double d;
+   float f;
+   int e, *ep;
+   SLuindex_Type i, imax;
+   SLang_Array_Type *at, *bt, *et;
+
+   switch (SLang_peek_at_stack ())
+     {
+      case SLANG_ARRAY_TYPE:
+	break;
+
+      case SLANG_FLOAT_TYPE:
+	if (-1 == SLang_pop_float (&f))
+	  return;
+	f = FREXPF_FUN(f, &e);
+	(void) SLang_push_float (f);
+	(void) SLang_push_int (e);
+	return;
+	
+      default:
+      case SLANG_DOUBLE_TYPE:
+	if (-1 == SLang_pop_double (&d))
+	  return;
+	d = FREXP_FUN(d, &e);
+	(void) SLang_push_double (d);
+	(void) SLang_push_int (e);
+	return;
+     }
+   
+   switch (SLang_peek_at_stack1 ())
+     {
+      case SLANG_FLOAT_TYPE:
+	if (-1 == SLang_pop_array_of_type (&at, SLANG_FLOAT_TYPE))
+	  return;
+	break;
+	
+      default:
+      case SLANG_DOUBLE_TYPE:
+	if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
+	  return;
+	break;
+     }
+   
+   if (NULL == (bt = SLang_create_array1 (at->data_type, 0, NULL, at->dims, at->num_dims, 1)))
+     {
+	SLang_free_array (at);
+	return;
+     }
+   if (NULL == (et = SLang_create_array1 (SLANG_INT_TYPE, 0, NULL, at->dims, at->num_dims, 1)))
+     {
+	SLang_free_array (at);
+	SLang_free_array (bt);
+	return;
+     }
+   
+   imax = at->num_elements;
+   ep = (int *)et->data;
+
+   if (at->data_type == SLANG_DOUBLE_TYPE)
+     {
+	double *a = (double *)at->data;
+	double *b = (double *)bt->data;
+	for (i = 0; i < imax; i++)
+	  {
+	     b[i] = FREXP_FUN(a[i], ep+i);
+	  }
+     }
+   else
+     {
+	float *a = (float *)at->data;
+	float *b = (float *)bt->data;
+	for (i = 0; i < imax; i++)
+	  {
+	     b[i] = FREXPF_FUN(a[i], ep+i);
+	  }
+     }
+   
+   (void) SLang_push_array (bt, 0);
+   (void) SLang_push_array (et, 0);
+   SLang_free_array (et);
+   SLang_free_array (bt);
+   SLang_free_array (at);
+}
+#endif				       /* HAVE_FREXP */
+
+#ifdef HAVE_LDEXP
+# define LDEXP_FUN(a,b) ldexp(a,b)
+# ifdef HAVE_LDEXPF
+#  define LDEXPF_FUN(a,b) ldexpf(a,b)
+# else
+#  define LDEXPF_FUN(a,b) (float)LDEXP_FUN(a,b)
+# endif
+static void ldexp_intrin (void)
+{
+   Array_Or_Scalar_Type ast;
+   SLang_Array_Type *e_at = NULL, *c_at;
+   int *e_ptr, e_data;
+   SLuindex_Type i, imax;
+
+   if (SLang_peek_at_stack () == SLANG_ARRAY_TYPE)
+     {
+	if (-1 == SLang_pop_array_of_type (&e_at, SLANG_INT_TYPE))
+	  return;
+	e_ptr = (int *)e_at->data;
+     }
+   else 
+     {
+	if (-1 == SLang_pop_int (&e_data))
+	  return;
+	e_ptr = &e_data;
+     }
+
+   if (-1 == pop_array_or_scalar (&ast))
+     {
+	if (e_at != NULL)
+	  SLang_free_array (e_at);
+	return;
+     }
+
+   if ((e_at == NULL) && (ast.at == NULL))
+     {
+	/* Scalar case */
+	if (ast.is_float)
+	  (void) SLang_push_float (LDEXPF_FUN(ast.f, *e_ptr));
+	else
+	  (void) SLang_push_double (LDEXP_FUN(ast.d, *e_ptr));
+	/* free_array_or_scalar (&ast);   Nothing to free */
+	return;
+     }
+
+   if (NULL == (c_at = create_from_tmp_array (ast.at, e_at, ast.is_float ? SLANG_FLOAT_TYPE : SLANG_DOUBLE_TYPE)))
+     {
+	free_array_or_scalar (&ast);
+	SLang_free_array (e_at);
+	return;
+     }
+
+   if (e_at == NULL)
+     {
+	int e = *e_ptr;
+	imax = ast.num;
+
+	if (ast.is_float)
+	  {
+	     float *c, *a;
+	     a = ast.fptr;
+	     c = (float *)c_at->data;
+	     for (i = 0; i < imax; i++)
+	       c[i] = LDEXPF_FUN(a[i], e);
+	  }
+	else
+	  {
+	     double *c, *a;
+	     a = ast.dptr;
+	     c = (double *)c_at->data;
+	     for (i = 0; i < imax; i++)
+	       c[i] = LDEXP_FUN(a[i], e);
+	  }
+	goto push_free_and_return;
+     }
+
+   if (ast.at == NULL)
+     {
+	imax = e_at->num_elements;
+
+	if (ast.is_float)
+	  {
+	     float *c, a;
+	     a = ast.f;
+	     c = (float *)c_at->data;
+	     for (i = 0; i < imax; i++)
+	       c[i] = LDEXPF_FUN(a, e_ptr[i]);
+	  }
+	else
+	  {
+	     double *c, a;
+	     a = ast.d;
+	     c = (double *)c_at->data;
+	     for (i = 0; i < imax; i++)
+	       c[i] = LDEXP_FUN(a, e_ptr[i]);
+	  }
+	goto push_free_and_return;
+     }
+   
+   if (e_at->num_elements != ast.num)
+     {
+	SLang_verror (SL_TypeMismatch_Error, "ldexp: Array sizes do not match");
+	goto free_and_return;
+     }
+
+   imax = ast.num;
+   if (ast.is_float)
+     {
+	float *c = (float *)c_at->data;
+	float *a = ast.fptr;
+	for (i = 0; i < imax; i++)
+	  c[i] = LDEXPF_FUN(a[i], e_ptr[i]);
+     }
+   else
+     {
+	double *c = (double *)c_at->data;
+	double *a = ast.dptr;
+	for (i = 0; i < imax; i++)
+	  c[i] = LDEXP_FUN(a[i], e_ptr[i]);
+     }
+   /* drop */
+push_free_and_return:
+   (void) SLang_push_array (c_at, 0);
+   /* drop */
+free_and_return:
+   if (e_at != NULL) SLang_free_array (e_at);
+   SLang_free_array (c_at);
+   free_array_or_scalar (&ast);
+}
+#endif				       /* HAVE_LDEXPF */
 
 static void fpu_clear_except_bits (void)
 {
@@ -1712,6 +1975,12 @@ static SLang_Intrin_Fun_Type SLang_Math_Table [] =
    MAKE_INTRINSIC_0("fgteqs", fgeqs_fun, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("fpu_clear_except_bits", fpu_clear_except_bits, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_1("fpu_test_except_bits", fpu_test_except_bits, _pSLANG_LONG_TYPE, _pSLANG_LONG_TYPE),
+#ifdef HAVE_FREXP
+   MAKE_INTRINSIC_0("frexp", frexp_intrin, SLANG_VOID_TYPE),
+#endif
+#ifdef HAVE_LDEXP
+   MAKE_INTRINSIC_0("ldexp", ldexp_intrin, SLANG_VOID_TYPE),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 

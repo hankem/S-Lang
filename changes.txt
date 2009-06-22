@@ -218,6 +218,10 @@ Changes since 2.1.4
      to handle.
 115. src/sltoken.c: preparsed files were being mishandled by #114.
 116. src/sllist.c: Added array indexing support to list objects.
+117. src/slarrfun.inc: Tweaked the implmentation of Kahan sums.
+118. src/slmath.c: An optional argument may be provided to the polynom
+     function to indicate that the kth term should be divided by k!.
+119. src/slmath.c: Added frexp and ldexp intrinsic functions.
 
 {{{ Previous Versions
 
