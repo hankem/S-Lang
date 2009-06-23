@@ -219,6 +219,10 @@ USA.
 #endif
 #define HAVE_HYPOT	1
 #define HAVE_ATAN2	1
+#define HAVE_FREXP	1
+#undef HAVE_FREXPF
+#define HAVE_LDEXP	1
+#undef HAVE_LDEXPF
 
 #if defined(__WIN32__)
 # define isnan _isnan

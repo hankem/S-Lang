@@ -83,7 +83,10 @@ Intrinsic Functions
 
       dup2, getsid, killpg, getpriority/setpriority:
           Wraps the corresponding system functions.
-
+	  
+      ldexp, frexp:
+          If x == a*2^b, where 0.5<=a<1.0 then (a,b)=frexp(x), 
+	  and x=ldexp(a,b).
 
    The following functions have been enhanced:
       

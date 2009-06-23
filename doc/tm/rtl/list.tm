@@ -99,6 +99,6 @@
 \notes
  A future version of this function may produce an \dtype{Any_Type}
  array for an empty or heterogeneous list.
-\seealso{length, typecast, __pop_list, typeof}
+\seealso{length, typecast, __pop_list, typeof, array_sort}
 \done
 
