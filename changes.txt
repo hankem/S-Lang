@@ -222,6 +222,8 @@ Changes since 2.1.4
 118. src/slmath.c: An optional argument may be provided to the polynom
      function to indicate that the kth term should be divided by k!.
 119. src/slmath.c: Added frexp and ldexp intrinsic functions.
+120. src/slmath.c: #119 introduced a typo that was preventing
+     compilation on systems that lack frexpf.
 
 {{{ Previous Versions
 

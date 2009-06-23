@@ -1688,7 +1688,7 @@ static void nint_intrin (void)
 # ifdef HAVE_FREXPF
 #  define FREXPF_FUN(x,e) frexpf(x,e)
 # else
-#  define FREXPF_FUN(x,e) (float)FREXP(x,e)
+#  define FREXPF_FUN(x,e) (float)FREXP_FUN(x,e)
 # endif
 
 static void frexp_intrin (void)
