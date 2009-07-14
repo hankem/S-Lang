@@ -93,7 +93,7 @@ static int pop_array (SLang_Array_Type **at_ptr, int convert_scalar)
 	SLang_free_array (at);
 	return -1;
      }
-
+   at->flags |= SLARR_DERIVED_FROM_SCALAR;
    *at_ptr = at;
 
    return 0;
@@ -352,7 +352,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
      }
 
    /* Now set the rest of the unused dimensions to 1.  This makes it easier
-    * when transposing arrays.
+    * when transposing arrays and when indexing arrays derived from scalars.
     */
    while (i < SLARRAY_MAX_DIMS)
      at->dims[i++] = 1;
@@ -1382,12 +1382,21 @@ static int aget_from_array (unsigned int num_indices)
 
    if (num_indices > SLARRAY_MAX_DIMS)
      {
-	_pSLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", SLARRAY_MAX_DIMS);
+	_pSLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", 1+SLARRAY_MAX_DIMS);
 	return -1;
      }
 
    if (-1 == pop_array (&at, 1))
      return -1;
+
+   /* Allow a scalar to be indexed using any number of indices, e.g.,
+    *    x = 2;  a = x[0]; b = x[0,0];
+    */
+   if ((at->flags & SLARR_DERIVED_FROM_SCALAR)
+       && (at->num_refs == 1))
+     {
+	at->num_dims = num_indices;
+     }
 
    if (-1 == pop_indices (at->num_dims, at->dims, at->num_elements, index_objs, num_indices, &is_index_array))
      {
@@ -4880,7 +4889,7 @@ int _pSLarray_push_elem_ref (void)
 
    if (num_indices > SLARRAY_MAX_DIMS)
      {
-	_pSLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", SLARRAY_MAX_DIMS);
+	_pSLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", 1+SLARRAY_MAX_DIMS);
 	return -1;
      }
 
