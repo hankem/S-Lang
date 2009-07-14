@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20200
-#define SLANG_VERSION_STRING "pre2.2.0-120"
+#define SLANG_VERSION_STRING "pre2.2.0-121"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -871,10 +871,11 @@ typedef struct _pSLang_Array_Type
     * value at the specified index location.
     */
    unsigned int flags;
-#define SLARR_DATA_VALUE_IS_READ_ONLY		1
-#define SLARR_DATA_VALUE_IS_POINTER		2
-#define SLARR_DATA_VALUE_IS_RANGE		4
-#define SLARR_DATA_VALUE_IS_INTRINSIC		8
+#define SLARR_DATA_VALUE_IS_READ_ONLY		0x0001
+#define SLARR_DATA_VALUE_IS_POINTER		0x0002
+#define SLARR_DATA_VALUE_IS_RANGE		0x0004
+#define SLARR_DATA_VALUE_IS_INTRINSIC		0x0008
+#define SLARR_DERIVED_FROM_SCALAR		0x0100
    SLang_Class_Type *cl;
    unsigned int num_refs;
    void (*free_fun)_PROTO((struct _pSLang_Array_Type *));
