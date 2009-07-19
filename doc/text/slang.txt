@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.1)
   John E. Davis, jed@jedsoft.org
-  Jun 14, 2009
+  Jul 18, 2009
   ____________________________________________________________
 
 

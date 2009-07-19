@@ -1,6 +1,6 @@
 /* Array manipulation routines for S-Lang */
 /*
-Copyright (C) 2004, 2005, 2006, 2007, 2008 John E. Davis
+Copyright (C) 2004-2009 John E. Davis
 
 This file is part of the S-Lang Library.
 
