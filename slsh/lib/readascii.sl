@@ -148,6 +148,8 @@ define readascii ()
 
    variable nlines = 0;
    variable line = NULL;
+   variable comment_char = (comment != NULL) ? comment[0] : 0;
+
    while ((nitems != nrows) && (nlines != maxlines))
      {
 	if (fp_is_array)
@@ -163,11 +165,15 @@ define readascii ()
 	     continue;
 	  }
 
+	if ((comment_char == line[0])
+	    && (0 == strnbytecmp (comment, line, comment_len)))
+	  continue;
+
 	if (ncols != sscanf (line, fmt, __push_list(ref_list)))
 	  {
-	     if (stop_on_mismatch
-		 && ((comment == NULL) || strnbytecmp (comment, line, comment_len)))
+	     if (stop_on_mismatch)
 	       break;
+
 	     continue;
 	  }
 	

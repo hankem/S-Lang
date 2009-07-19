@@ -226,6 +226,10 @@ Changes since 2.1.4
      compilation on systems that lack frexpf.
 121. src/slarray.c: When indexing a scalar as an array, allow the use
      of multiple indices, e.g., x=2; y=x[0]; z=x[0,0]; w=x[0,0,0];
+122. slsh/lib/readascii.sl: When reading the first column as a string, comments
+     were not getting ignored.
+123. slsh/lib/rline/emacskeys.sl: The IBMPC_SYSTEM preprocessor macro
+     was used but not defined causing readline to fail on windows.
 
 {{{ Previous Versions
 
