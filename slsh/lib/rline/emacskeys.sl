@@ -34,7 +34,7 @@ rline_setkey ("trim",			"\e\\");
 rline_setkey (&rline_copy_region,	"\ew");
 rline_setkey ("complete",		"\t");
 
-#ifndef IBMPC_SYSTEM
+#ifdef UNIX VMS
 rline_setkey (&rline_set_mark,		"^@");
 rline_setkey ("up",			"\e[A");
 rline_setkey ("down",			"\e[B");
