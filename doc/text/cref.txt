@@ -1,6 +1,6 @@
   The SS--LLaanngg C Library Reference
   John E. Davis, jed@jedsoft.org
-  Jun 9, 2009
+  May 28, 2009
   ____________________________________________________________
 
 
