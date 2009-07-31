@@ -487,11 +487,11 @@
 
 \function{string_match}
 \synopsis{Match a string against a regular expression}
-\usage{Int_Type string_match(String_Type str, String_Type pat, Int_Type nth)}
+\usage{Int_Type string_match(String_Type str, String_Type pat, Int_Type pos)}
 \description
   The \ifun{string_match} function returns zero if \exmp{str} does not
   match regular expression specified by \exmp{pat}.  This function
-  performs the match starting at the \exmp{nth} byte in the string
+  performs the match starting at byte-offset \exmp{pos} in the string
   \exmp{str} (numbered from 1).  This function returns the position in
   bytes (numbered from 1) of the start of the match in \exmp{str}.  
   The exact substring matched may be found using
@@ -545,7 +545,7 @@
 
 \function{string_matches}
 \synopsis{Match a string against a regular expression and return the matches}
-\usage{String_Type[] string_match(String_Type str, String_Type pat, Int_Type nth)}
+\usage{String_Type[] string_matches(String_Type str, String_Type pat, Int_Type pos)}
 \description
   The \ifun{string_matches} function combines the functionality of
   \ifun{string_match} and \ifun{string_match_nth}.  Like

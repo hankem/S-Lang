@@ -102,7 +102,7 @@ array_info
 
 
  SEE ALSO
-  typeof, array_info, array_shape, length, reshape, _reshape
+  typeof, array_shape, length, reshape, _reshape
 
 --------------------------------------------------------------
 
@@ -5620,7 +5620,30 @@ system
   VMS.
 
  SEE ALSO
-  popen, listdir
+  system_intr, new_process, popen
+
+--------------------------------------------------------------
+
+system_intr
+
+ SYNOPSIS
+  Execute a shell command
+
+ USAGE
+  Integer_Type system_intr (String_Type cmd)
+
+ DESCRIPTION
+ The `system_intr' function performs the same task as the
+ `system' function, except that the `SIGINT' signal will not
+ be ignored by the calling process.  This means that if a S-Lang script
+ calls `system_intr' function, and Ctrl-C is pressed, both the
+ command invoked by the `system_intr' function and the script
+ will be interrupted.  In contrast, if the command were invoked using
+ the `system' function, only the command called by it would be
+ interrupted, but the script would continue executing.
+
+ SEE ALSO
+  system, new_process, popen
 
 --------------------------------------------------------------
 
@@ -7329,8 +7352,11 @@ popen
  NOTES
   This function is not available on all systems.
 
+ The `process' module's `new_process' function provides a
+ much more secure and powerful interface to process I/O.
+
  SEE ALSO
-  pclose, fopen
+  new_process, pclose, fopen
 
 --------------------------------------------------------------
 
@@ -8019,12 +8045,12 @@ string_match
   Match a string against a regular expression
 
  USAGE
-  Int_Type string_match(String_Type str, String_Type pat, Int_Type nth)
+  Int_Type string_match(String_Type str, String_Type pat, Int_Type pos)
 
  DESCRIPTION
   The `string_match' function returns zero if `str' does not
   match regular expression specified by `pat'.  This function
-  performs the match starting at the `nth' byte in the string
+  performs the match starting at byte-offset `pos' in the string
   `str' (numbered from 1).  This function returns the position in
   bytes (numbered from 1) of the start of the match in `str'.
   The exact substring matched may be found using
@@ -8096,7 +8122,7 @@ string_matches
   Match a string against a regular expression and return the matches
 
  USAGE
-  String_Type[] string_match(String_Type str, String_Type pat, Int_Type nth)
+  String_Type[] string_matches(String_Type str, String_Type pat, Int_Type pos)
 
  DESCRIPTION
   The `string_matches' function combines the functionality of

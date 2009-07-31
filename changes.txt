@@ -231,6 +231,8 @@ Changes since 2.1.4
 123. slsh/lib/rline/emacskeys.sl: The IBMPC_SYSTEM preprocessor macro
      was used but not defined causing readline to fail on windows.
 124. Updated copyrights on files for upcoming release.
+125. doc/tm/slang.tm: Add documentation for the looping-then clause,
+     and various other documentation tweaks.
 
 {{{ Previous Versions
 

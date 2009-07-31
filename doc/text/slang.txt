@@ -1,6 +1,6 @@
-  A Guide to the S-Lang Language (v2.1)
+  A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  Jul 18, 2009
+  Jul 26, 2009
   ____________________________________________________________
 
 
@@ -1953,11 +1953,16 @@
 
   88..33..22..  LLooooppiinngg FFoorrmmss
 
+  In this section, the various looping statements are discussed. Each of
+  these statements support an optional then clause, which is discussed
+  in a separate section below.
+
   88..33..22..11..  wwhhiillee
 
   The while statement follows the syntax
 
-       while (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+       while (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-
+       _b_l_o_c_k ] _n_e_x_t_-_s_t_a_t_e_m_e_n_t
 
   It simply causes _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k to get executed as long as _i_n_t_e_-
   _g_e_r_-_e_x_p_r_e_s_s_i_o_n evaluates to a non-zero result. For example,
@@ -1984,8 +1989,8 @@
   If you are a C programmer, do not let the syntax of the language
   seduce you into writing this example as you would in C:
 
-        i = 10;
-        while (i--) newline ();
+             i = 10;
+             while (i--) newline ();
 
   Keep in mind that expressions such as i-- do not return a value in SS--
   LLaanngg as they do in C. The same effect can be achieved to use a comma
@@ -1998,7 +2003,8 @@
 
   The do...while statement follows the syntax
 
-       do _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k while (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n);
+       do _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k while (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n); [ then _s_t_a_t_e_m_e_n_t_-_o_r_-
+       _b_l_o_c_k ]
 
   The main difference between this statement and the while statement is
   that the do...while form performs the test involving _i_n_t_e_g_e_r_-_e_x_p_r_e_s_-
@@ -2025,7 +2031,7 @@
   obeys the syntax
 
        for (_i_n_i_t_-_e_x_p_r_e_s_s_i_o_n; _i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n; _e_n_d_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-
-       _o_r_-_b_l_o_c_k _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+       _o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k ] _n_e_x_t_-_s_t_a_t_e_m_e_n_t
 
   In addition to _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k, its specification requires three
   other expressions. When executed, the for statement evaluates _i_n_i_t_-
@@ -2056,7 +2062,8 @@
   The loop statement simply executes a block of code a fixed number of
   times. It follows the syntax
 
-       loop (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+       loop (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
+       ] _n_e_x_t_-_s_t_a_t_e_m_e_n_t
 
   If the _i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n evaluates to a positive integer, _s_t_a_t_e_m_e_n_t_-
   _o_r_-_b_l_o_c_k will get executed that many times.  Otherwise, control will
@@ -2074,8 +2081,8 @@
   number times. Unlike the loop statement, the _for loop is useful in
   situations where the loop index is needed. It obeys the syntax
 
-       _for _l_o_o_p_-_v_a_r_i_a_b_l_e (_f_i_r_s_t_-_v_a_l_u_e, _l_a_s_t_-_v_a_l_u_e, _i_n_c_r_e_m_e_n_t) _b_l_o_c_k _n_e_x_t_-
-       _s_t_a_t_e_m_e_n_t
+       _for _l_o_o_p_-_v_a_r_i_a_b_l_e (_f_i_r_s_t_-_v_a_l_u_e, _l_a_s_t_-_v_a_l_u_e, _i_n_c_r_e_m_e_n_t) _b_l_o_c_k [ then
+       _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k ] _n_e_x_t_-_s_t_a_t_e_m_e_n_t
 
   Each time through the loop, the loop-variable will take on the succes-
   sive values dictated by the other parameters. The first time through,
@@ -2088,9 +2095,9 @@
   For example, the _for statement may be used to compute the sum of the
   first ten integers:
 
-       s = 0;
-       _for i (1, 10, 1)
-         s += i;
+            s = 0;
+            _for i (1, 10, 1)
+              s += i;
 
   The execution speed of the _for loop is more than twice as fast as the
   more powerful for loop making it a better choice for many situations.
@@ -2101,7 +2108,7 @@
   loops forever, or until a break or a return statement is executed. It
   obeys the syntax
 
-       forever _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
+       forever _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k ]
 
   A trivial example of this statement is
 
@@ -2122,7 +2129,7 @@
 
   The simple type of foreach statement obeys the syntax
 
-       foreach _v_a_r (_o_b_j_e_c_t) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
+       foreach _v_a_r (_o_b_j_e_c_t) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k ]
 
   Here _o_b_j_e_c_t can be an expression that evaluates to a value.  Each time
   through the loop the variable _v_a_r will take on a value that depends
@@ -2186,18 +2193,18 @@
 
   This foreach statement is equivalent
 
-       s = linked_list;
-       while (s != NULL)
-         {
-            .
-            .
-           s = s.next;
-         }
+            s = linked_list;
+            while (s != NULL)
+              {
+                 .
+                 .
+                s = s.next;
+              }
 
   Consult the type-specific documentation for a discussion of the using
   control words, if any, appropriate for a given type.
 
-  88..44..  bbrreeaakk,, rreettuurrnn,, aanndd ccoonnttiinnuuee
+  88..33..33..  bbrreeaakk,, rreettuurrnn,, aanndd ccoonnttiinnuuee
 
   SS--LLaanngg also includes the non-local transfer statements return, break,
   and continue. The return statement causes control to return to the
@@ -2232,6 +2239,87 @@
   return statement will cause control to pass back to the caller of fun.
   Finally, the continue statement will cause control to pass back to the
   start of the loop, skipping the statement s3 altogether.
+
+  88..33..44..  TThhee llooooppiinngg tthheenn ccllaauussee
+
+  As mentioned above, all the looping statements support an optional
+  then clause. The statements that comprise this clause get executed
+  only when the loop has run to completion and was not prematurely
+  terminated via a break statement. As an example, consider the
+  following:
+
+           count = 0;
+           max_tries = 20;
+           while (count < max_tries)
+             {
+                if (try_something ())
+                  break;
+
+                count++;
+                % Failed -- try again
+             }
+           if (count == 20)
+             throw RunTimeError, "try_something failed 20 times";
+
+  Here, the code makes 20 attempts to perform some task (via the
+  try_something function) and if not successful it will throw an excep-
+  tion. Compare the above to an equivalent form that makes use of a
+  then-clause for the loop statement:
+
+           max_tries = 20;
+           loop (max_tries)
+             {
+                if (try_something ())
+                  break;
+                % Failed -- try again
+             }
+           then throw RunTimeError, "try_something failed 20 times";
+
+  Here, the then statement would get executed only if the loop statement
+  has run to completion, i.e., loops 20 times in this case.  This only
+  happens if the try_something function fails each time through the
+  loop. However, if the try_something function succeeds, then the break
+  statement will get executed causing the loop to abort prematurely,
+  which would result in the then clause _n_o_t getting executed.
+
+  The use of such a construct can also simplify code such as:
+
+          if (some_condition)
+            {
+               foo_statements;
+               if (another_condition)
+                 bar_statements;
+               else
+                 fizzle_statements;
+            }
+          else fizzle_statements;
+
+  In this case the fizzle_statements are duplicated making the code ugly
+  and less maintainable. Ideally one would wrap the fizzle_statements in
+  a separate function and call it twice.  However, this is not always
+  possible or convenient. The duplication can be eliminated by using the
+  then form of the loop statement:
+
+          loop (some_condition != 0)
+            {
+               foo_statements;
+               if (another_condition)
+                 {
+                   bar_statements;
+                   break;
+                 }
+            }
+          then fizzle_statements;
+
+  Here, the expression some_condition != 0 is going to result in either
+  0 or 1, causing the code to execute 0 or 1 loops. Since the fiz-
+  zle_statements are contained in the then clause, they will get exe-
+  cuted only when the requested number of loops executes to completion.
+  Executing 0 loops is regarded as successful completion of the loop
+  statement. Hence, when some_condition is 0, the fizzle_statements will
+  get executed. The fizzle_statements will not get executed only when
+  the loop is prematurely terminated, and that will occur when both
+  some_condition and another_condition are non-zero.
 
   99..  FFuunnccttiioonnss
 
