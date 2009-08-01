@@ -455,7 +455,10 @@
   the function failed and \NULL will be returned.
 \notes
   This function is not available on all systems.
-\seealso{pclose, fopen}
+  
+ The \module{process} module's \ifun{new_process} function provides a
+ much more secure and powerful interface to process I/O.
+\seealso{new_process, pclose, fopen}
 \done
 
 \function{printf}

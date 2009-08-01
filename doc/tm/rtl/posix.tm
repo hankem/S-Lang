@@ -236,7 +236,22 @@
 #v-
   displays a directory listing of the current directory under MSDOS or
   VMS.
-\seealso{popen, listdir}
+\seealso{system_intr, new_process, popen}
+\done
+
+\function{system_intr}
+\synopsis{Execute a shell command}
+\usage{Integer_Type system_intr (String_Type cmd)}
+\description
+ The \ifun{system_intr} function performs the same task as the
+ \ifun{system} function, except that the \var{SIGINT} signal will not
+ be ignored by the calling process.  This means that if a \slang script
+ calls \ifun{system_intr} function, and Ctrl-C is pressed, both the
+ command invoked by the \ifun{system_intr} function and the script
+ will be interrupted.  In contrast, if the command were invoked using
+ the \ifun{system} function, only the command called by it would be
+ interrupted, but the script would continue executing.
+\seealso{system, new_process, popen}
 \done
 
 \function{umask}

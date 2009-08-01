@@ -18,7 +18,7 @@
 
 \begin{\documentstyle}
 
-\title A Guide to the S-Lang Language (v2.1)
+\title A Guide to the S-Lang Language (v2.2)
 \author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 
@@ -2076,10 +2076,15 @@
 
 \sect1{Looping Forms} #%{{{
 
+  In this section, the various looping statements are discussed.  Each
+  of these statements support an optional \kw{then} clause, which is
+  discussed in a separate section below.
+
 \sect2{while}
    The \kw{while} statement follows the syntax
 \begin{tscreen}
       while (\em{integer-expression}) \em{statement-or-block}
+      [ then \em{statement-or-block} ]
       \em{next-statement}
 \end{tscreen}
    It simply causes \em{statement-or-block} to get executed as long as
@@ -2126,6 +2131,7 @@
       do 
          \em{statement-or-block}
       while (\em{integer-expression});
+      [ then \em{statement-or-block} ]
 \end{tscreen}
    The main difference between this statement and the \var{while}
    statement is that the \kw{do...while} form performs the test
@@ -2152,6 +2158,7 @@
 \begin{tscreen}
     for (\em{init-expression}; \em{integer-expression}; \em{end-expression}) 
       \em{statement-or-block}
+    [ then \em{statement-or-block} ]
     \em{next-statement}
 \end{tscreen}
    In addition to \em{statement-or-block}, its specification requires
@@ -2188,6 +2195,7 @@
    number of times.  It follows the syntax
 \begin{tscreen}
       loop (\em{integer-expression}) \em{statement-or-block}
+      [ then \em{statement-or-block} ]
       \em{next-statement}
 \end{tscreen}
    If the \em{integer-expression} evaluates to a positive integer,
@@ -2208,6 +2216,7 @@
 \begin{tscreen}
       _for \em{loop-variable} (\em{first-value}, \em{last-value}, \em{increment})
          \em{block}
+      [ then \em{statement-or-block} ]
       \em{next-statement}
 \end{tscreen}
    Each time through the loop, the loop-variable will take on the
@@ -2238,6 +2247,7 @@
    \kw{return} statement is executed.  It obeys the syntax
 \begin{tscreen}
      forever \em{statement-or-block}
+     [ then \em{statement-or-block} ]
 \end{tscreen}
    A trivial example of this statement is
 #v+
@@ -2259,6 +2269,7 @@
    The simple type of \kw{foreach} statement obeys the syntax
 \begin{tscreen}
      foreach \em{var} (\em{object}) \em{statement-or-block}
+     [ then \em{statement-or-block} ]
 \end{tscreen}
    Here \em{object} can be an expression that evaluates to a value.
    Each time through the loop the variable \em{var} will take on a
@@ -2335,7 +2346,9 @@
   Consult the type-specific documentation for a discussion of the
   \kw{using} control words, if any, appropriate for a given type.
 
-\sect{break, return, and continue}
+#%}}}
+
+\sect1{break, return, and continue} #%{{{
 
    \slang also includes the non-local transfer statements
    \var{return}, \var{break}, and \var{continue}.  The \var{return}
@@ -2376,6 +2389,93 @@
 
 
 #%}}}
+
+\sect1{The looping then clause} #%{{{
+  
+  As mentioned above, all the looping statements support an optional
+  \kw{then} clause.  The statements that comprise this clause get
+  executed only when the loop has run to completion and was not
+  prematurely terminated via a \kw{break} statement.  As an example,
+  consider the following:
+#v+
+    count = 0;
+    max_tries = 20;
+    while (count < max_tries)
+      {
+         if (try_something ())
+           break;
+           
+         count++;
+         % Failed -- try again
+      }
+    if (count == 20)
+      throw RunTimeError, "try_something failed 20 times";
+#v-
+  Here, the code makes 20 attempts to perform some task (via the
+  \exmp{try_something} function) and if not successful it will throw
+  an exception.  Compare the above to an equivalent form that makes
+  use of a \kw{then}-clause for the \kw{loop} statement:
+#v+
+    max_tries = 20;
+    loop (max_tries)
+      {
+         if (try_something ())
+           break;
+         % Failed -- try again
+      }
+    then throw RunTimeError, "try_something failed 20 times";
+#v-
+  Here, the \kw{then} statement would get executed only if the loop
+  statement has run to completion, i.e., loops 20 times in this case.
+  This only happens if the \exmp{try_something} function fails each
+  time through the loop.  However, if the \exmp{try_something}
+  function succeeds, then the \kw{break} statement will get executed
+  causing the loop to abort prematurely, which would result in the
+  \kw{then} clause \em{not} getting executed.
+
+  The use of such a construct can also simplify code such as:
+#v+
+   if (some_condition)
+     {
+        foo_statements;
+        if (another_condition)
+          bar_statements;
+        else
+          fizzle_statements;
+     }
+   else fizzle_statements;
+#v-
+  In this case the \exmp{fizzle_statements} are duplicated making the
+  code ugly and less maintainable.  Ideally one would wrap the
+  \exmp{fizzle_statements} in a separate function and call it twice.
+  However, this is not always possible or convenient.  The duplication
+  can be eliminated by using the \key{then} form of the \kw{loop}
+  statement:
+#v+
+   loop (some_condition != 0)
+     {
+        foo_statements;
+        if (another_condition)
+          {
+            bar_statements;
+            break;
+          }
+     }
+   then fizzle_statements;
+#v-
+  Here, the expression \exmp{some_condition != 0} is going to result
+  in either 0 or 1, causing the code to execute 0 or 1 loops.  Since
+  the \exmp{fizzle_statements} are contained in the \kw{then} clause,
+  they will get executed only when the requested number of loops
+  executes to completion.  Executing 0 loops is regarded as successful
+  completion of the loop statement.  Hence, when \exmp{some_condition}
+  is 0, the \exmp{fizzle_statements} will get executed.  The
+  \exmp{fizzle_statements} will not get executed only when the loop is
+  prematurely terminated, and that will occur when both
+  \exmp{some_condition} and \exmp{another_condition} are non-zero.
+  
+#%}}}
+
 
 #%}}}
 

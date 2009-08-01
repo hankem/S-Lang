@@ -2197,7 +2197,8 @@ static char *fixup_tgetstr (char *what)
 	if (*w == 0) break;
 	w++;
 	wsave = w1;
-	while ((*w1++ = *w++) != 0);
+	while ((*w1++ = *w++) != 0)
+	  ;
 	w = wsave;
      }
 

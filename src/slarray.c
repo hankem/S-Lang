@@ -1784,7 +1784,7 @@ aput_from_indices (SLang_Array_Type *at,
 	if (last_index_num)
 	  {
 	     if (-1 == aput_transfer_n_elems (at, last_index_num, indices, 
-					      (VOID_STAR)data_to_put, data_increment,
+					      data_to_put, data_increment,
 					      sizeof_type, is_ptr))
 	       goto return_error;
 

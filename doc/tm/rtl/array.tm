@@ -76,7 +76,7 @@
        return dims [0];
     }
 #v-
-\seealso{typeof, array_info, array_shape, length, reshape, _reshape}
+\seealso{typeof, array_shape, length, reshape, _reshape}
 \done
 
 \function{array_map}
