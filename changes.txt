@@ -233,6 +233,10 @@ Changes since 2.1.4
 124. Updated copyrights on files for upcoming release.
 125. doc/tm/slang.tm: Add documentation for the looping-then clause,
      and various other documentation tweaks.
+126. src/slconfig.h: non-Unix systems: Remove defines for mode_t etc.
+     Define HAVE_POPEN for MINGW32.
+127. slsh/lib/print.sl: Do not attempt to call popen unless it
+     actually exists.
 
 {{{ Previous Versions
 

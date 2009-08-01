@@ -207,6 +207,9 @@ USA.
 #undef HAVE_UNAME
 
 #undef HAVE_POPEN
+#if defined(__MINGW32__)
+# define HAVE_POPEN 1
+#endif
 
 /* #define HAVE_ROUND	1 */
 #if !defined(__os2__) && !defined(__WATCOMC__)
@@ -253,17 +256,14 @@ USA.
 # endif
 #endif
 
-#if defined(__unix__) || defined(__DECC) || defined(__BORLAND_V5__)
-#else
-# define mode_t int
-# if !defined(_MSC_VER) && !defined(__WATCOMC__)
-#  define pid_t int
-#  define uid_t int
-#  define gid_t int
-#  define off_t int
-# endif
-/* # define size_t unsigned int */
-#endif
+/* Some compilers may not have definitions for these. */
+/* #define mode_t int */
+/* #define pid_t int */
+/* #define uid_t int */
+/* #define gid_t int */
+/* #define off_t int */
+/* #define size_t unsigned int */
+
 #undef HAVE_LONG_LONG
 
 #define HAVE_SETVBUF

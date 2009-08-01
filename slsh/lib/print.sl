@@ -59,9 +59,12 @@ private define pager_close_method (p)
 
 private define new_pager_print (cmd)
 {
-#ifexists SIGPIPE
+#ifnexists popen
+   return NULL;
+#else
+# ifexists SIGPIPE
    signal (SIGPIPE, SIG_IGN, &Sigpipe_Handler);
-#endif
+# endif
    variable fp = popen (cmd, "w");
    
    try
@@ -78,6 +81,7 @@ private define new_pager_print (cmd)
 	close_pager (fp);
 	throw;
      }
+#endif
 }
 
 % Print to a filename
