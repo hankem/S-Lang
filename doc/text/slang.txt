@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  Jul 26, 2009
+  Aug 2, 2009
   ____________________________________________________________
 
 
@@ -5804,17 +5804,116 @@
 
   AA..  SS--LLaanngg 22 IInntteerrpprreetteerr NNEEWWSS
 
-  AA..11..  WWhhaatt''ss nneeww ffoorr SS--LLaanngg 22..11
+  This chapter describes features that were added to various 2.0
+  releases. For a much more complete and detailed list of changes, see
+  the changes.txt file that is distributed with the library.
 
-  The next section describes the features that were added to version
-  2.0. This section is devoted to what's new in version 2.1. For a much
-  more complete and detailed list of changes, see the changes.txt file
-  that is distributed with the library.
+  AA..11..  WWhhaatt''ss nneeww ffoorr SS--LLaanngg 22..22
+
+  +o  The ternary expression was added:
+
+            expression = condition ? val1 : val2
+
+  If _c_o_n_d_i_t_i_o_n is non-zero, then _e_x_p_r_e_s_s_i_o_n _= _v_a_l_1, otherwise _e_x_p_r_e_s_s_i_o_n
+  _= _v_a_l_2.
+
+  +o  The break and condition statements support an optional integer that
+     indicates how many loop levels the statement affects, e.g., the
+     break statement in
+
+          while (1)
+            {
+              loop (10)
+                {
+                  break 2;
+                }
+            }
+
+  will cause both loops to be terminated.
+
+  +o  Multiline strings have been added:
+
+           "This is a \
+           multiline \
+           string"
+
+           `This is
+           another multiline
+           string that
+           does not require
+           a \ for continuation`
+
+  +o  List_Type objects may be indexed using an array of indices instead
+     of just a single scalar index.
+
+  The following intrinsic function were added in version 2.2:
+
+     sumsq
+        Equivalent to sum(x*x).
+
+     expm1
+        More accurate version of exp(x)-1 for x near 0.
+
+     log1p
+        More accurate version of log(1+x) for x near 0.
+
+     list_to_array
+        Creates an array from a list.
+
+     string_matches
+        A convenient alternative to the string_match and
+        string_match_nth functions.
+
+     _close
+        Close an integer descriptor.
+
+     _fileno
+        Returns the descriptor as an integer.
+
+     dup2_fd
+        Duplicates a file descriptor via the dup2 POSIX function.
+
+     getsid, killpg, getpriority, setpriority
+        These functions correspond to the corresponding POSIX functions.
+
+     ldexp, frexp
+        If x == a*2^b, where 0.5<=a<1.0 then (a,b)=frexp(x), and
+        x=ldexp(a,b).
+
+  The following functions have been enhanced:
+
+     hypot
+        If given a single array argument X, it returns the equivalent of
+        sqrt(sum(X*X).
+
+     polynom
+        The calling interface to this function was changed and support
+        added for arrays.
+
+  The following modules were added to version 2.2:
+
+     zlib
+        A module that wraps the popular z compression library.
+
+     fork
+        A module that wraps the fork, exec*, and waitpid functions.
+
+     sysconf
+        A module that implements interfaces to the POSIX sysconf,
+        pathconf, and confstr functions.
+
+  The following library files and functions were add to ssllsshh:
+
+     process.sl
+        The code in this file utilizes the fork module to implement the
+        new_process function, which allows the caller to easily create
+        and communicate with subprocesses and pipelines.
+
+  AA..22..  WWhhaatt''ss nneeww ffoorr SS--LLaanngg 22..11
 
   +o   Short circuiting boolean operators || and && have been added to
      the languange. The use of orelse and andelse constructs are
      nolonger necessary nor encouraged.
-
   +o  _Q_u_a_l_i_f_i_e_r_s have been added to the language as a convenient and
      powerful mechanism to pass optional information to functions.
 
@@ -5899,7 +5998,7 @@
   readline interface, and as a result, ssllsshh now supports history and
   command/file completion.
 
-  AA..22..  WWhhaatt''ss nneeww ffoorr SS--LLaanngg 22..00
+  AA..33..  WWhhaatt''ss nneeww ffoorr SS--LLaanngg 22..00
 
   Here is a brief list of some of the new features and improvements in
   SS--LLaanngg 2.0.
@@ -5923,7 +6022,6 @@
 
   +o  Operator overloading for user-defined types.  For example it is
      possible to define a meaning to X+Y where X and Y are defined as
-
            typedef struct { x, y, z } Vector;
            define vector (x,y,z) { variable v = @Vector; v.x=x; v.y=y; v.z=z;}
            X = vector (1,2,3);
@@ -5962,7 +6060,7 @@
 
   See the relevent chapters in in the manual for more information.
 
-  AA..33..  UUppggrraaddiinngg ttoo SS--LLaanngg 22
+  AA..44..  UUppggrraaddiinngg ttoo SS--LLaanngg 22
 
   For the most part SS--LLaanngg 2 is backwards-compatible with SS--LLaanngg 1.
   However there are a few important differences that need to be
@@ -6041,6 +6139,7 @@
 
      If your code passes the structure as the first argument of the
      method call, e.g.,
+
                (@s.foo)(s, moreargs);
 
      then it may be changed to
@@ -6086,17 +6185,17 @@
 
      should be changed to make use of a finally clause:
 
-            variable e;
-            try (e)
-              {
-                 do_something ();
-                   .
-                   .
-              }
-            finally
-              {
-                 cleanup_after_error ();
-              }
+                 variable e;
+                 try (e)
+                   {
+                      do_something ();
+                        .
+                        .
+                   }
+                 finally
+                   {
+                      cleanup_after_error ();
+                   }
 
      It is not possible to emulate the complete semantics of the
      _clear_error function. However, those semantics are flawed and
@@ -6139,21 +6238,21 @@
 
      should be changed to:
 
-                 variable e;
-                 try (e)
-                   {
-                      do_something ();
-                        .
-                        .
-                   }
-                 catch RunTimeError:
-                   {
-                      cleanup_after_error ();
-                   }
-                 finally:
-                   {
-                      cleanup_after_error ();
-                   }
+            variable e;
+            try (e)
+              {
+                 do_something ();
+                   .
+                   .
+              }
+            catch RunTimeError:
+              {
+                 cleanup_after_error ();
+              }
+            finally:
+              {
+                 cleanup_after_error ();
+              }
 
      ffrreeaadd
         When reading Char_Type and UChar_Type objects the SS--LLaanngg 1

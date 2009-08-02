@@ -37,7 +37,7 @@
 \linuxdoc
 \begin{\documentstyle}
 
-\title SLSH Library Reference (version 2.1.0)
+\title SLSH Library Reference (version 2.2.0)
 \author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 
@@ -67,6 +67,11 @@ available to the interpreter.  The \sfun{require} function itself is
 defined in the file \file{require.sl}, which a conforming application
 will automatically load.
 
+\chapter{The \tt{require} Function}
+The functions in \file{require.sl} facilitate the loading of \slang
+code.
+#i ../../lib/tm/require.tm
+
 \chapter{Command Line Parsing Functions}
 These functions are defined in the \file{cmdopt.sl} file.
 #i ../../lib/tm/cmdopt.tm
@@ -88,6 +93,11 @@ These functions are defined in \file{structfuns.sl}.
 additional functions described here are defined in
 \file{arrayfuns.sl}.
 #i ../../lib/tm/arrayfuns.tm
+
+\chapter{Subprocess Functions}
+These functions in \file{process.sl} facilitate the creation of
+subprocesses and pipelines.
+#i ../../lib/tm/process.tm
 
 \chapter{Profiling Functions}
 These functions are used by \bf{slprof} for profiling \slsh

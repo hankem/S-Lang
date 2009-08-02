@@ -15,7 +15,8 @@
 #d description <tag> Description </tag>
 #d example <tag> Example </tag>
 #d notes <tag> Notes </tag>
-#d seealso#1 <tag> See Also </tag> <tt>$1</tt>
+#% d seealso#1 <tag> See Also </tag> <tt>$1</tt>
+#d seealso#1 <tag> See Also </tag> \linuxdoc_list_to_ref{$1}
 #d r#1 \ref{$1}{$1}
 #d done </descrip><p>
 #d -1 <tt>-1</tt>

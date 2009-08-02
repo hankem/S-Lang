@@ -30,7 +30,6 @@
  This function may be used to generate a random integer \exmp{X} such
  that \exmp{imin <= X <= imax}.
  \optparm_text
-\notes
 \seealso{rand_uniform, rand, rand_new}
 \done
 
@@ -172,7 +171,6 @@
    P(x; sigma) = 1/sqrt(2*PI*sigma^2) * exp(-0.5*x^2/sigma^2)
 #v-
  \optparm_text
-\example
 \notes
   This implementation utilizes the Box-Muller algorithm.
 \seealso{rand_uniform, rand_poisson, rand_chisq, rand_gauss, rand_new}
@@ -185,7 +183,6 @@
  This function generates unsigned 32 bit randomly distributed
  integers on the closed interval 0<=X<=0xFFFFFFFFUL.
  \optparm_text
-\notes
 \seealso{rand_new, rand_int, rand_uniform, rand_flat}
 \done
 
@@ -196,9 +193,7 @@
   This function generates uniformly distributed random numbers in open
   interval \exmp{0<X<1}.
  \optparm_text
-\example
-\notes
-\seealso{}
+\seealso{rand_uniform, rand_new}
 \done
 
 \function{rand_uniform}
@@ -261,7 +256,6 @@
  carry generator (also by Marsaglia), and a product generator.  The
  combined generator has a 192 bit state and a period exceeding 10^46.
 
-#d url#1 <$1>
  The resulting random sequences were tested using version 2.24.4 of
  the dieharder random number testing program.  The tests showed that
  this generator performed better than the famous Marsenne
@@ -271,7 +265,6 @@
 
  The \exmp{mt19937} generator is separately available via the GSL
  module.
-\notes
 \seealso{srand, rand_int, rand_uniform}
 \done
 

@@ -44,8 +44,6 @@ socket
      }
 
 
- NOTES
-
  SEE ALSO
   accept, bind, connect, listen, setsockopt, getsockopt
 
@@ -84,8 +82,6 @@ connect
      catch SocketHError: {...}
      catch SocketError: {...}
 
-
- NOTES
 
  SEE ALSO
   accept, bind, listen, socket, setsockopt, getsockopt
