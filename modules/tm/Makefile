@@ -5,13 +5,23 @@
 #
 #TMEXPAND = $(HOME)/lib/tmexpand/bin/tmexpand
 TMEXPAND=tmexpand
-MACRODIR = -I$(HOME)/lib/tmexpand/macros
+MACRODIR = # -I$(HOME)/lib/tmexpand/macros
+TM2SGML = tmexpand
+SGML2HTML = sgml2html
 
 HLP_FILES = pngfuns.hlp pcrefuns.hlp sockfuns.hlp onigfuns.hlp \
   randfuns.hlp forkfuns.hlp
 
 all: help-files
 help-files: $(HLP_FILES)
+html: modfuns.html
+
+#----------------------------------------------------------------------------
+modfuns.sgml : modfuns.tm $(HLP_FILES)
+	$(TM2SGML) modfuns.tm modfuns.sgml
+modfuns.html : modfuns.sgml
+	$(SGML2HTML) modfuns.sgml
+#----------------------------------------------------------------------------
 pngfuns.hlp: pngfuns.tm
 	$(TMEXPAND) $(MACRODIR) -Mslhlp pngfuns.tm pngfuns.hlp
 pcrefuns.hlp: pcrefuns.tm
@@ -26,8 +36,9 @@ forkfuns.hlp: forkfuns.tm
 	$(TMEXPAND) $(MACRODIR) -Mslhlp forkfuns.tm forkfuns.hlp
 #----------------------------------------------------------------------------
 clean:
-	-rm -f *~ *.dvi *.log *.aux *.toc *.bak
+	-rm -f *~ *.dvi *.log *.aux *.toc *.bak *.sgml
 distclean: clean
 	-rm -f *.html *.ps $(HLP_FILES)
-install: $(HLP_FILES)
+install: $(HLP_FILES) html
 	-mv $(HLP_FILES) ../help
+	-mv *.html ../../doc/html/

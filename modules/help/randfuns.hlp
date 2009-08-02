@@ -47,8 +47,6 @@ rand_int
  The `num' parameter indicates that `num' random values are to
  be generated and returned as an array.
 
- NOTES
-
  SEE ALSO
   rand_uniform, rand, rand_new
 
@@ -326,8 +324,6 @@ rand_gauss
  The `num' parameter indicates that `num' random values are to
  be generated and returned as an array.
 
- EXAMPLE
-
  NOTES
   This implementation utilizes the Box-Muller algorithm.
 
@@ -354,8 +350,6 @@ rand
  The `num' parameter indicates that `num' random values are to
  be generated and returned as an array.
 
- NOTES
-
  SEE ALSO
   rand_new, rand_int, rand_uniform, rand_flat
 
@@ -379,11 +373,8 @@ rand_uniform_pos
  The `num' parameter indicates that `num' random values are to
  be generated and returned as an array.
 
- EXAMPLE
-
- NOTES
-
  SEE ALSO
+  rand_uniform, rand_new
 
 --------------------------------------------------------------
 
@@ -485,12 +476,10 @@ rand_new
  this generator performed better than the famous Marsenne
  Twister (`mt19937') both in terms of randomness and speed.  More
  information about the test results may be found at
- <http://www.jedsoft.org/slang/modules/rand.html>.
+ `http://www.jedsoft.org/slang/modules/rand.html'.
 
  The `mt19937' generator is separately available via the GSL
  module.
-
- NOTES
 
  SEE ALSO
   srand, rand_int, rand_uniform

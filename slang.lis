@@ -167,6 +167,7 @@
 @modules/tm/randfuns.tm
 @modules/tm/forkfuns.tm
 @modules/tm/Makefile
+@modules/tm/modfuns.tm
 @modules/help/pcrefuns.hlp
 @modules/help/pngfuns.hlp
 @modules/help/randfuns.hlp
@@ -282,6 +283,8 @@
 @slsh/doc/html/slshfun-5.html
 @slsh/doc/html/slshfun-6.html
 @slsh/doc/html/slshfun-7.html
+@slsh/doc/html/slshfun-8.html
+@slsh/doc/html/slshfun-9.html
 @slsh/scripts/badlinks 0755
 @slsh/scripts/htmlstrip 0755
 @slsh/scripts/ls 0755

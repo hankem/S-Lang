@@ -38,7 +38,6 @@
         exit (1);
      }
 #v-
-\notes
 \seealso{accept, bind, connect, listen, setsockopt, getsockopt}
 \done
 
@@ -69,7 +68,6 @@
      catch SocketHError: {...}
      catch SocketError: {...}
 #v-
-\notes
 \seealso{accept, bind, listen, socket, setsockopt, getsockopt}
 \done
 

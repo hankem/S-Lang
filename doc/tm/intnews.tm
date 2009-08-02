@@ -1,11 +1,111 @@
 \chapter{S-Lang 2 Interpreter NEWS}
 
-\sect{What's new for \slang 2.1}
+ This chapter describes features that were added to various 2.0
+ releases.  For a much more complete and detailed list of changes, see
+ the \file{changes.txt} file that is distributed with the library.
 
- The next section describes the features that were added to version
- 2.0.  This section is devoted to what's new in version 2.1.  For a
- much more complete and detailed list of changes, see the
- \file{changes.txt} file that is distributed with the library.
+\sect{What's new for \slang 2.2}
+#d tagexmp#1 \tag{\exmp{$1}}
+
+\begin{itemize}
+\item
+  The ternary expression was added:  
+#v+
+     expression = condition ? val1 : val2
+#v-
+  If \em{condition} is non-zero, then \em{expression = val1},
+  otherwise \em{expression = val2}.
+
+\item
+  The break and condition statements support an optional integer that
+  indicates how many loop levels the statement affects, e.g., the
+  break statement in
+#v+
+   while (1)
+     {
+       loop (10)
+         {
+           break 2;
+         }
+     }
+#v-
+   will cause both loops to be terminated.
+
+\item
+   Multiline strings have been added:
+#v+
+    "This is a \
+    multiline \
+    string"
+
+    `This is
+    another multiline
+    string that 
+    does not require 
+    a \ for continuation`
+#v-
+\item
+   \dtype{List_Type} objects may be indexed using an array of indices
+   instead of just a single scalar index.
+\end{itemize}
+
+The following intrinsic function were added in version 2.2:
+\begin{descrip}
+\tagexmp{sumsq}
+  Equivalent to \exmp{sum(x*x)}.
+\tagexmp{expm1}
+  More accurate version of \exmp{exp(x)-1} for \exmp{x} near 0.
+\tagexmp{log1p}
+  More accurate version of \exmp{log(1+x)} for \exmp{x} near 0.
+\tagexmp{list_to_array}
+  Creates an array from a list.
+\tagexmp{string_matches}
+  A convenient alternative to the \exmp{string_match} and
+  \exmp{string_match_nth} functions.
+\tagexmp{_close}
+  Close an integer descriptor.
+\tagexmp{_fileno}
+  Returns the descriptor as an integer.
+\tagexmp{dup2_fd}
+  Duplicates a file descriptor via the \exmp{dup2} POSIX function.
+\tagexmp{getsid, killpg, getpriority, setpriority}
+  These functions correspond to the corresponding POSIX functions.
+\tagexmp{ldexp, frexp}
+  If \exmp{x == a*2^b}, where \exmp{0.5<=a<1.0} then
+  \exmp{(a,b)=frexp(x)}, and \exmp{x=ldexp(a,b)}.
+\end{descrip}
+
+The following functions have been enhanced:
+\begin{descrip}
+\tagexmp{hypot}
+  If given a single array argument \exmp{X}, it returns the equivalent
+  of \exmp{sqrt(sum(X*X)}.
+\tagexmp{polynom}
+  The calling interface to this function was changed and support added
+  for arrays.
+\end{descrip}
+
+The following modules were added to version 2.2:
+\begin{descrip}
+\tagexmp{zlib}
+  A module that wraps the popular z compression library.
+\tagexmp{fork} 
+  A module that wraps the \exmp{fork}, \exmp{exec*}, and
+  \exmp{waitpid} functions.
+\tagexmp{sysconf}
+  A module that implements interfaces to the POSIX
+  \exmp{sysconf}, \exmp{pathconf}, and \exmp{confstr} functions.
+\end{descrip}
+
+The following library files and functions were add to \slsh:
+\begin{descrip}
+\tagexmp{process.sl}
+  The code in this file utilizes the \exmp{fork} module to implement
+  the \exmp{new_process} function, which allows the caller to easily
+  create and communicate with subprocesses and pipelines.
+\end{descrip}
+
+\sect{What's new for \slang 2.1}
 
 \begin{itemize}
 \item 
@@ -55,7 +155,6 @@
 \end{itemize}
 
 The following intrinsic function were added in version 2.1:
-#d tagexmp#1 \tag{\exmp{$1}}
 \begin{descrip}
 \tagexmp{wherenot(x)} Equivalent to where (not(x))
 \tagexmp{_$(str)}
