@@ -402,6 +402,15 @@ static Host_Addr_Info_Type *alloc_host_addr_info (unsigned int num, int h_length
    return hinfo;
 }
 
+/* glibc removed the h_addr compat macro, which messes up the logic below. */
+#ifndef h_addr
+# ifdef __GNUC_PREREQ
+#  if __GNUC_PREREQ(2,8)
+#   define h_addr "unused"	       /* define it, but do not use it */
+#  endif
+# endif
+#endif
+
 static Host_Addr_Info_Type *get_host_addr_info (char *host)
 {
    in_addr_t addr;
