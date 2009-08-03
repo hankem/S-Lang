@@ -1,4 +1,7 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.2.0
+1. modules/socket-module.c: glibc-2.8 removed the h_addr macro.
+
 Changes since 2.1.4
 1. modules/termios-module.c: Added the VMIN constant (Laurent Perez).
 2. src/slbstr.c: Added foreach method to BString_Type objects.
