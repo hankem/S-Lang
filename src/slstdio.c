@@ -139,7 +139,10 @@ static int signal_safe_fputs (char *buf, FILE *fp)
    while (num_written < len)
      {
 	unsigned int n = len - num_written;
-	unsigned int dn = fwrite (buf + num_written, 1, n, fp);
+	unsigned int dn;
+	
+	clearerr (fp);
+	dn = fwrite (buf + num_written, 1, n, fp);
 
 	num_written += dn;
 	if (dn < n)
@@ -147,8 +150,8 @@ static int signal_safe_fputs (char *buf, FILE *fp)
 	     int e = errno;
 
 	     _pSLerrno_errno = e;
-	     clearerr (fp);
-	     if (n == 0)
+	     /* clearerr (fp); */
+	     if (dn == 0)
 	       {
 		  if (0 == handle_errno (e))
 		    break;
@@ -708,6 +711,7 @@ static int stdio_fflush (SL_File_Table_Type *t)
      return -1;
    
    errno = 0;
+   clearerr (fp);
    while ((EOF == fflush (fp)) || ferror (fp))
      {
 	if (0 == handle_errno (errno))
@@ -1071,7 +1075,7 @@ static int stdio_setvbuf (SL_File_Table_Type *t, int *modep, int *sizep)
      status = setvbuf (fp, NULL, *modep, 0);
    else
      {
-	if (size <= 0) size = BUFSIZ;
+	if (size == 0) size = BUFSIZ;
 
 	if (NULL == (newbuf = SLmalloc (size)))
 	  return -1;

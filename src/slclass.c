@@ -312,6 +312,7 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 	int e;
 
 	errno = 0;
+	clearerr (fp);
 	n = fread (buf, 1, desired_bytes, fp);
 
 	actual_bytes += n;
@@ -322,7 +323,7 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 	desired_bytes -= n;
 	buf += n;
 
-	clearerr (fp);
+	/* clearerr (fp); */
 #ifdef EINTR
 	if ((e == EINTR)
 	    && (0 == SLang_handle_interrupt ()))
@@ -356,6 +357,7 @@ static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
 	int e;
 
 	errno = 0;
+	clearerr (fp);
 	n = fwrite (buf, 1, desired_bytes, fp);
 
 	actual_bytes += n;
@@ -366,7 +368,7 @@ static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
 	desired_bytes -= n;
 	buf += n;
 
-	clearerr (fp);
+	/* clearerr (fp); */
 #ifdef EINTR
 	if ((e == EINTR)
 	    && (0 == SLang_handle_interrupt ()))

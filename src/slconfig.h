@@ -213,13 +213,13 @@ USA.
 
 /* #define HAVE_ROUND	1 */
 #if !defined(__os2__) && !defined(__WATCOMC__)
-# define HAVE_FINITE	1
+# ifndef VMS			       /* FIXME */
+#  define HAVE_FINITE	1
+#  define HAVE_ISNAN	1
+#  define HAVE_ISINF	1
+# endif
 #endif
 
-/* #define HAVE_ISINF	1 */
-#ifndef __WATCOMC__
-# define HAVE_ISNAN	1
-#endif
 #define HAVE_HYPOT	1
 #define HAVE_ATAN2	1
 #define HAVE_FREXP	1
