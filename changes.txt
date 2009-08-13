@@ -1,6 +1,12 @@
 -*- mode: text; mode: fold -*-
 Changes since 2.2.0
 1. modules/socket-module.c: glibc-2.8 removed the h_addr macro.
+2. src/slclass.c: Call clearerr before performing the
+   stdio_fread/fwrite functions.
+3. src/slstdio.c: typeof in the fputs intrinsic fixed (n instead of dn
+   was compared to 0).
+
+{{{ Previous Versions
 
 Changes since 2.1.4
 1. modules/termios-module.c: Added the VMIN constant (Laurent Perez).
@@ -240,8 +246,6 @@ Changes since 2.1.4
      Define HAVE_POPEN for MINGW32.
 127. slsh/lib/print.sl: Do not attempt to call popen unless it
      actually exists.
-
-{{{ Previous Versions
 
 Changes since 2.1.3
 1. src/slang.c: The identifier syntax was not being checked for

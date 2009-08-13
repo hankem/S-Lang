@@ -1,3 +1,5 @@
+-*- text -*-
+
 Note: You are looking in the wrong place if you intend to compile a
       Unix version using the MINGW32 or the DJGPP development 
       environments.  As far as the S-Lang library is concerned, these
@@ -12,10 +14,31 @@ that may be ``imported'' into the interpreter.  Be sure to install all
                            Prerequisites
 ---------------------------------------------------------------------
 
-In order to create the png and pcre modules, the corresponding
-libraries need to be installed.  If the configure script cannot find
-these libraries, then the corresponding module will not be built.  If
-you have these installed in non-standard places and the configure
+Some of the modules require third party libraries.  If the configure
+script cannot find one of the libraries, the corresponding module will
+not be built.  Currently, the following additional libraries are
+strongly recommended:
+
+   PCRE (Perl Compatible Regular Expression)
+     URL: <http://www.pcre.org>
+
+   PNG  (Portable Network Graphics)
+     URL: <http://www.libpng.org/pub/png/>
+
+   ZLIB (Z compression library)
+     URL: <http://www.zlib.net/>
+
+   ONIGURUMA (Regular expression library)
+     URL: <http://www.geocities.jp/kosako3/oniguruma/>
+
+On a Debian system, these libraries can be installed using:
+
+  apt-get install libpng12-dev zlib1g-dev libpcre3-dev libonig-dev
+
+ (Double check the package names-- the ones quoted above are
+   appropriate for Debian lenny)
+
+If you have these installed in non-standard places and the configure
 script cannot find them, then run configure with the "--with-pcre" and
 "--with-png" options.  Use "./configure --help" to see other options.
 In any case, these libraries are not required but without them the png
