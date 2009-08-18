@@ -168,9 +168,32 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 	  {
 	     if (ch == 'n')
 	       {
-		  if (((s[1]|0x20) == 'a') && (s[2] == 'n'))
+		  if (((s[1]|0x20) == 'a') && ((s[2]|0x20) == 'n'))
 		    {
-		       *sp = s + 3;
+		       s += 3;
+		       s0 = s;
+		       /* Now parse the nan(chars) form.  Here we allow
+			*   ([a-zA-Z_0-9]*)
+			*/
+		       if ((s < smax) && (*s == '('))
+			 {
+			    s++;
+			    while (s < smax)
+			      {
+				 ch = *s++;
+				 if (isdigit(ch)
+				     || ((ch >= 'a') && (ch <= 'z'))
+				     || ((ch >= 'A') && (ch <= 'Z'))
+				     || (ch == '_'))
+				   continue;
+
+				 if (ch == ')')
+				   s0 = s;
+				 
+				 break;
+			      }
+			 }
+		       *sp = s0;
 		       *d = _pSLang_NaN;
 		       return 1;
 		    }
@@ -187,7 +210,7 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 		    *sp = s + 8;
 		  else
 		    *sp = s + 3;
-		  *d = _pSLang_Inf;
+		  *d = _pSLang_Inf * sign;
 		  return 1;
 	       }
 	  }
