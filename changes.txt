@@ -5,6 +5,8 @@ Changes since 2.2.0
    stdio_fread/fwrite functions.
 3. src/slstdio.c: typeof in the fputs intrinsic fixed (n instead of dn
    was compared to 0).
+4. src/slscanf.c: sscanf will treat NaN and Inf in a case-insensitive
+   manner.  Also, the NaN([a-zA-Z0-9]*) form is also supported.
 
 {{{ Previous Versions
 
