@@ -184,8 +184,14 @@ double _pSLmath_log1p (double x)
     * So compute:
     *   log1p(x) = log(1+x) - (((1+x)-1)-x)/(1+x)
     */
-   volatile double xp1 = 1.0 + x;
-   volatile double xx = xp1-1.0;
+   volatile double xp1, xx;
+   if (ISINF_FUN(x))
+     {
+	if (x < 0) return _pSLang_NaN;
+	return _pSLang_Inf;
+     }
+   xp1 = 1.0 + x;
+   xx = xp1-1.0;
    return log(xp1) - (xx-x)/xp1;
 }
 #endif
@@ -200,7 +206,14 @@ double _pSLmath_expm1 (double x)
     * While the above works, it is not as accurate as the algroithm below,
     * which is due to Kahan (yes, that Kahan).
     */
-   volatile double u = exp(x);
+   volatile double u;
+   if (ISINF_FUN(x))
+     {
+	if (x < 0) return -1.0;
+	return _pSLang_Inf;
+     }
+
+   u = exp(x);
    if (u == 1.0)
      return x;
    if (u - 1.0 == -1.0)

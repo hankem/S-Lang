@@ -7,6 +7,10 @@ Changes since 2.2.0
    was compared to 0).
 4. src/slscanf.c: sscanf will treat NaN and Inf in a case-insensitive
    manner.  Also, the NaN([a-zA-Z0-9]*) form is also supported.
+5. src/slang.h: SLclass_set_aelem_init_function was missing from the
+   API.
+6. src/slmath.c: The expm1 and log1p functions were returning NaN when
+   given Inf arguments.
 
 {{{ Previous Versions
 

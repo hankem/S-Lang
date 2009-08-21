@@ -686,3 +686,8 @@ SLANG2.2.0 {
         global:
 		SLsystem_intr;
 } SLANG2.1.1;
+
+SLANG2.2.1 {
+	global:
+		SLclass_set_aelem_init_function;
+} SLANG2.2.0;
