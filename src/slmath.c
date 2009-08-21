@@ -191,6 +191,8 @@ double _pSLmath_log1p (double x)
 	return _pSLang_Inf;
      }
    xp1 = 1.0 + x;
+   if (xp1 == 0.0)
+     return -_pSLang_Inf;
    xx = xp1-1.0;
    return log(xp1) - (xx-x)/xp1;
 }
