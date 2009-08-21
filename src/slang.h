@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20201
-#define SLANG_VERSION_STRING "pre2.2.1-4"
+#define SLANG_VERSION_STRING "pre2.2.1-6"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -745,7 +745,12 @@ SL_EXTERN int SLclass_set_foreach_functions (
   int (*)(SLtype, SLang_Foreach_Context_Type *),   /* foreach method */
   void (*)(SLtype, SLang_Foreach_Context_Type *));/* close method */
 
-   
+/* When an array is created, this callback function is called to initialize the data
+ * at the specified address.
+ */
+SL_EXTERN int SLclass_set_aelem_init_function (SLang_Class_Type *cl, int (*f)(SLtype, VOID_STAR));
+
+
 /* Typecast object on the stack to type p1.  p2 and p3 should be set to 1 */
 SL_EXTERN int SLclass_typecast (SLtype, int, int);
 

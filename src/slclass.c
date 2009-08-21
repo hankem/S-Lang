@@ -1268,6 +1268,13 @@ int SLclass_set_anew_function (SLang_Class_Type *cl, int (*f)(SLtype, unsigned i
    return 0;
 }
 
+int SLclass_set_aelem_init_function (SLang_Class_Type *cl, int (*f)(SLtype, VOID_STAR))
+{
+   if (cl == NULL) return -1;
+   cl->cl_init_array_object = f;
+   return 0;
+}
+
 int SLclass_set_foreach_functions (SLang_Class_Type *cl,
 				   SLang_Foreach_Context_Type *(*fe_open)(SLtype, unsigned int),
 				   int (*fe)(SLtype, SLang_Foreach_Context_Type *),  
