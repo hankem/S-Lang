@@ -11,6 +11,7 @@ Changes since 2.2.0
    API.
 6. src/slmath.c: The expm1 and log1p functions were returning NaN when
    given Inf arguments.
+7. src/slmath,c: log1p(-1) produced nan instead of -inf.
 
 {{{ Previous Versions
 
