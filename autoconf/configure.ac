@@ -24,6 +24,14 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PROG_INSTALL
 
+AC_ARG_WITH(pkgconfigdir,
+  AC_HELP_STRING([--with-pkgconfigdir=DIR],
+  [pkgconfig dir (libdir/pkgconfig)]),
+  [pkgconfigdir=${withval}],
+  [pkgconfigdir='${libdir}/pkgconfig'])
+AC_SUBST(pkgconfigdir)
+
+
 # For the socket module
 AC_PATH_XTRA
 
@@ -284,7 +292,9 @@ AC_CONFIG_HEADER(src/sysconf.h:src/config.hin)
 dnl AC_CONFIG_SUBDIRS(demo)
 
 AC_OUTPUT(Makefile:autoconf/Makefile.in \
-  src/Makefile slsh/Makefile modules/Makefile demo/Makefile)
+  src/Makefile slsh/Makefile modules/Makefile demo/Makefile \
+  slang.pc:autoconf/slangpc.in \
+)
 
 JD_CREATE_EXEC_RULE(calc)
 JD_CREATE_EXEC_RULE(untic)

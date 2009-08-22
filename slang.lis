@@ -25,6 +25,7 @@
 @autoconf/install.sh 0755
 @autoconf/mkinsdir.sh 0755
 @autoconf/iconv.m4
+@autoconf/slangpc.in
 
 @changes.txt
 @configure 0755
