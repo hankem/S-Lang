@@ -677,6 +677,7 @@ RANLIB
 INSTALL_PROGRAM
 INSTALL_SCRIPT
 INSTALL_DATA
+pkgconfigdir
 XMKMF
 X_CFLAGS
 X_PRE_LIBS
@@ -1329,6 +1330,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-pkgconfigdir=DIR pkgconfig dir (libdir/pkgconfig)
   --with-x                use the X Window System
   --with-pcre=DIR      Use DIR/lib and DIR/include for pcre
   --with-pcrelib=DIR   pcre library in DIR
@@ -4582,6 +4584,17 @@ test -z "$INSTALL_PROGRAM" && INSTALL_PROGRAM='${INSTALL}'
 test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
+
+
+
+# Check whether --with-pkgconfigdir was given.
+if test "${with_pkgconfigdir+set}" = set; then
+  withval=$with_pkgconfigdir; pkgconfigdir=${withval}
+else
+  pkgconfigdir='${libdir}/pkgconfig'
+fi
+
+
 
 
 # For the socket module
@@ -13671,7 +13684,7 @@ ac_config_headers="$ac_config_headers src/sysconf.h:src/config.hin"
 
 
 
-ac_config_files="$ac_config_files Makefile:autoconf/Makefile.in src/Makefile slsh/Makefile modules/Makefile demo/Makefile"
+ac_config_files="$ac_config_files Makefile:autoconf/Makefile.in src/Makefile slsh/Makefile modules/Makefile demo/Makefile slang.pc:autoconf/slangpc.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -14232,6 +14245,7 @@ do
     "slsh/Makefile") CONFIG_FILES="$CONFIG_FILES slsh/Makefile" ;;
     "modules/Makefile") CONFIG_FILES="$CONFIG_FILES modules/Makefile" ;;
     "demo/Makefile") CONFIG_FILES="$CONFIG_FILES demo/Makefile" ;;
+    "slang.pc") CONFIG_FILES="$CONFIG_FILES slang.pc:autoconf/slangpc.in" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
@@ -14355,6 +14369,7 @@ RANLIB!$RANLIB$ac_delim
 INSTALL_PROGRAM!$INSTALL_PROGRAM$ac_delim
 INSTALL_SCRIPT!$INSTALL_SCRIPT$ac_delim
 INSTALL_DATA!$INSTALL_DATA$ac_delim
+pkgconfigdir!$pkgconfigdir$ac_delim
 XMKMF!$XMKMF$ac_delim
 X_CFLAGS!$X_CFLAGS$ac_delim
 X_PRE_LIBS!$X_PRE_LIBS$ac_delim
@@ -14389,7 +14404,6 @@ PCRE_LIB!$PCRE_LIB$ac_delim
 PCRE_INC!$PCRE_INC$ac_delim
 PCRE_MODULE!$PCRE_MODULE$ac_delim
 ONIG_LIB!$ONIG_LIB$ac_delim
-ONIG_INC!$ONIG_INC$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -14431,6 +14445,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ONIG_INC!$ONIG_INC$ac_delim
 ONIG_MODULE!$ONIG_MODULE$ac_delim
 PNG_LIB!$PNG_LIB$ac_delim
 PNG_INC!$PNG_INC$ac_delim
@@ -14457,7 +14472,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 24; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 25; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
