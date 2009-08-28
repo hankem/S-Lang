@@ -3496,6 +3496,25 @@ fneqs
 
 --------------------------------------------------------------
 
+get_float_format
+
+ SYNOPSIS
+  Get the format for printing floating point values.
+
+ USAGE
+  String_Type get_float_format ()
+
+ DESCRIPTION
+ The `get_float_format' retrieves the format string used for
+ printing single and double precision floating point numbers.  See the
+ documentation for the `set_float_format' function for more
+ information about the format.
+
+ SEE ALSO
+  set_float_format
+
+--------------------------------------------------------------
+
 hypot
 
  SYNOPSIS
@@ -3804,11 +3823,14 @@ set_float_format
   point format to be used when floating point numbers are printed.
   The routines that use this are the traceback routines and the
   `string' function, any anything based upon the `string'
-  function. The default value is `"%g"'
+  function. The default value is `"%S"', which causes the number
+  to be displayed with enough significant digits such that
+  `x==atof(string(x))'.
 
  EXAMPLE
 
-     s = string (PI);                %  --> s = "3.14159"
+     set_float_format ("%S");        % default
+     s = string (PI);                %  --> s = "3.141592653589793"
      set_float_format ("%16.10f");
      s = string (PI);                %  --> s = "3.1415926536"
      set_float_format ("%10.6e");
@@ -3816,7 +3838,7 @@ set_float_format
 
 
  SEE ALSO
-  string, sprintf, double
+  get_float_format, string, sprintf, atof, double
 
 --------------------------------------------------------------
 

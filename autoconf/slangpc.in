@@ -5,6 +5,8 @@ includedir=${prefix}/include
 
 Name: slang 
 Description: S-Lang programming library and interpreter
+URL: http://www.jedsoft.org/slang/
 Version: @slang_version@
 Libs: -L${libdir} -lslang
+Libs.private: @TERMCAP@ @DYNAMIC_LINK_LIB@ @LIBS@ @M_LIB@
 Cflags: -I${includedir}

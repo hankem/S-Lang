@@ -14,6 +14,10 @@ Changes since 2.2.0
 7. src/slmath,c: log1p(-1) produced nan instead of -inf.
 8. configure: Added pkg-config support (based upon a debian patch sent
    to me by Luca Bigliardi).
+9. doc/tm/rtl/math.tm: Updated the help for set_float_format and added
+   documentation for the get_float_format function.
+10. autoconf/slangpc.in: Added URL and Libs.private entries to the
+    slang.pc pkg-config file.
 
 {{{ Previous Versions
 
