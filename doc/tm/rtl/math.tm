@@ -234,6 +234,17 @@
 \seealso{feqs, fgteqs, flteqs}
 \done
 
+\function{get_float_format}
+\synopsis{Get the format for printing floating point values.}
+\usage{String_Type get_float_format ()}
+\description
+ The \ifun{get_float_format} retrieves the format string used for
+ printing single and double precision floating point numbers.  See the
+ documentation for the \ifun{set_float_format} function for more
+ information about the format.
+\seealso{set_float_format}
+\done
+
 \function{hypot}
 \synopsis{Compute sqrt(x^2+y^2)}
 \usage{r = hypot (x [,y])}
@@ -422,16 +433,19 @@
   point format to be used when floating point numbers are printed.
   The routines that use this are the traceback routines and the
   \ifun{string} function, any anything based upon the \ifun{string}
-  function. The default value is \exmp{"%g"}
+  function. The default value is \exmp{"%S"}, which causes the number
+  to be displayed with enough significant digits such that
+  \exmp{x==atof(string(x))}.
 \example
 #v+
-     s = string (PI);                %  --> s = "3.14159"
+     set_float_format ("%S");        % default
+     s = string (PI);                %  --> s = "3.141592653589793"
      set_float_format ("%16.10f");
      s = string (PI);                %  --> s = "3.1415926536"
      set_float_format ("%10.6e");
      s = string (PI);                %  --> s = "3.141593e+00"
 #v-
-\seealso{string, sprintf, double}
+\seealso{get_float_format, string, sprintf, atof, double}
 \done
 
 \function{sign}
