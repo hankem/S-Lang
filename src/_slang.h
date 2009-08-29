@@ -1065,8 +1065,6 @@ extern void (*_pSLang_Matrix_Multiply)(void);
 extern int _pSLarray_next_index (SLindex_Type *, SLindex_Type *, unsigned int);
 
 extern int _pSLarray_init_slarray (void);
-extern SLang_Array_Type *
-SLang_create_array1 (SLtype, int, VOID_STAR, SLindex_Type *, unsigned int, int);
 
 extern int _pSLassoc_aput (SLtype, unsigned int);
 extern int _pSLassoc_aget (SLtype, unsigned int);

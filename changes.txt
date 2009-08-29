@@ -18,6 +18,7 @@ Changes since 2.2.0
    documentation for the get_float_format function.
 10. autoconf/slangpc.in: Added URL and Libs.private entries to the
     slang.pc pkg-config file.
+11. src/slang.h: prototype for SLang_create_array1 missing from slang.h.
 
 {{{ Previous Versions
 

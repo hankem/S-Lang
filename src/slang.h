@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20201
-#define SLANG_VERSION_STRING "pre2.2.1-10"
+#define SLANG_VERSION_STRING "pre2.2.1-11"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -898,6 +898,7 @@ SL_EXTERN int SLang_pop_array (SLang_Array_Type **atp, int convert_scalar);
 SL_EXTERN int SLang_push_array (SLang_Array_Type *at, int do_free);
 SL_EXTERN void SLang_free_array (SLang_Array_Type *at);
 SL_EXTERN SLang_Array_Type *SLang_create_array (SLtype, int, VOID_STAR, SLindex_Type *, unsigned int);
+SL_EXTERN SLang_Array_Type *SLang_create_array1 (SLtype, int, VOID_STAR, SLindex_Type *, unsigned int, int);
 SL_EXTERN SLang_Array_Type *SLang_duplicate_array (SLang_Array_Type *);
 SL_EXTERN int SLang_get_array_element (SLang_Array_Type *, SLindex_Type *, VOID_STAR);
 SL_EXTERN int SLang_set_array_element (SLang_Array_Type *, SLindex_Type *, VOID_STAR);
