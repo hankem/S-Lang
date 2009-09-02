@@ -248,6 +248,14 @@ static void free_function_header (Function_Header_Type *);
 static int check_signals (void);
 #endif
 
+#if 1 && SLANG_OPTIMIZE_FOR_SPEED && defined(__GNUC__) && (__GNUC__ >= 3)
+# define IF_LIKELY(x) if (__builtin_expect((x),1))
+# define IF_UNLIKELY(x) if (__builtin_expect ((x), 0))
+#else
+# define IF_LIKELY(x) if (x)
+# define IF_UNLIKELY(x) if (x)
+#endif
+
 #if SLANG_OPTIMIZE_FOR_SPEED
 # define NUM_CLASSES 512		       /* must be large enough for built-ins */
 static SLclass_Type The_Class_Types [NUM_CLASSES];
@@ -311,7 +319,7 @@ _INLINE_ static int pop_object (SLang_Object_Type *x)
    register SLang_Object_Type *y;
 
    y = Stack_Pointer;
-   if (y == Run_Stack)
+   IF_UNLIKELY(y == Run_Stack)
      {
 	(void) SLang_set_error (SL_STACK_UNDERFLOW);
 	x->o_data_type = 0;
@@ -384,7 +392,7 @@ static int pop_n_objs_reverse (SLang_Object_Type *x, unsigned int n)
 _INLINE_
 static int peek_at_stack (void)
 {
-   if (Stack_Pointer == Run_Stack)
+   IF_UNLIKELY(Stack_Pointer == Run_Stack)
      {
 	(void) SLang_set_error (SL_STACK_UNDERFLOW);
 	return -1;
@@ -438,7 +446,7 @@ static int pop_ctrl_integer (int *i)
     * Optimize these cases.
     */
    y = Stack_Pointer;
-   if (y == Run_Stack)
+   IF_UNLIKELY(y == Run_Stack)
      {
 	(void) SLang_set_error (SL_STACK_UNDERFLOW);
 	return -1;
@@ -530,7 +538,7 @@ _INLINE_ static int push_object (SLang_Object_Type *x)
    /* if (SLang_Error) return; */
 
    /* flag it now */
-   if (y >= Stack_Pointer_Max)
+   IF_UNLIKELY(y >= Stack_Pointer_Max)
      {
 	(void) SLang_set_error (SL_STACK_OVERFLOW);
 	return -1;
@@ -552,7 +560,7 @@ int SLclass_push_ptr_obj (SLtype type, VOID_STAR pval)
    register SLang_Object_Type *y;
    y = Stack_Pointer;
 
-   if (y >= Stack_Pointer_Max)
+   IF_UNLIKELY(y >= Stack_Pointer_Max)
      {
 	(void) SLang_set_error (SL_STACK_OVERFLOW);
 	return -1;
@@ -570,7 +578,7 @@ _INLINE_ static int push_int_object (SLtype type, int x)
    register SLang_Object_Type *y;
    y = Stack_Pointer;
 
-   if (y >= Stack_Pointer_Max)
+   IF_UNLIKELY(y >= Stack_Pointer_Max)
      {
 	(void) SLang_set_error (SL_STACK_OVERFLOW);
 	return -1;
@@ -594,7 +602,7 @@ int _pSLang_push_array (SLang_Array_Type *at, int free_array)
 
    y = Stack_Pointer;
 
-   if (y >= Stack_Pointer_Max)
+   IF_UNLIKELY(y >= Stack_Pointer_Max)
      {
 	(void) SLang_set_error (SL_STACK_OVERFLOW);
 	if (free_array) SLang_free_array (at);
@@ -616,7 +624,7 @@ _INLINE_ static int push_double_object (SLtype type, double x)
    register SLang_Object_Type *y;
    y = Stack_Pointer;
 
-   if (y >= Stack_Pointer_Max)
+   IF_UNLIKELY(y >= Stack_Pointer_Max)
      {
 	(void) SLang_set_error (SL_STACK_OVERFLOW);
 	return -1;
@@ -640,7 +648,7 @@ _INLINE_ static int push_char_object (SLtype type, char x)
    register SLang_Object_Type *y;
    y = Stack_Pointer;
 
-   if (y >= Stack_Pointer_Max)
+   IF_UNLIKELY(y >= Stack_Pointer_Max)
      {
 	(void) SLang_set_error (SL_STACK_OVERFLOW);
 	return -1;
@@ -695,8 +703,8 @@ _INLINE_
    SLang_Object_Type obj;
 
    y = Stack_Pointer;
-   if (y == Run_Stack)
-     return pop_object (&obj);	       /* let it fail */
+   IF_UNLIKELY(y == Run_Stack)
+     return SLang_pop(&obj);	       /* let it fail */
    y--;
    if (y->o_data_type == SLANG_INT_TYPE)
      {
@@ -727,7 +735,7 @@ int SLang_pop_array_index (SLindex_Type *i)
 
    y = Stack_Pointer;
    if (y == Run_Stack)
-     return pop_object (&obj);	       /* let it fail */
+     return SLang_pop (&obj);	       /* let it fail */
    y--;
    if (y->o_data_type == SLANG_ARRAY_INDEX_TYPE)
      {
@@ -751,8 +759,8 @@ _INLINE_ static int pop_object_of_type (SLtype type, SLang_Object_Type *obj,
    register SLang_Object_Type *y;
 
    y = Stack_Pointer;
-   if (y == Run_Stack)
-     return pop_object (obj);	       /* let it fail */
+   IF_UNLIKELY(y == Run_Stack)
+     return SLang_pop(obj);	       /* let it fail */
    y--;
    if (y->o_data_type == type)
      {
@@ -919,7 +927,7 @@ int SLdup_n (int n)
 _INLINE_
 int _pSL_increment_frame_pointer (void)
 {
-   if (Recursion_Depth >= SLANG_MAX_RECURSIVE_DEPTH)
+   IF_UNLIKELY(Recursion_Depth >= SLANG_MAX_RECURSIVE_DEPTH)
      {
 #if SLANG_HAS_QUALIFIERS
 	if (Next_Function_Qualifiers != NULL)
@@ -953,7 +961,7 @@ int _pSL_decrement_frame_pointer (void)
 	Function_Qualifiers = NULL;
      }
 #endif
-   if (Recursion_Depth == 0)
+   IF_UNLIKELY(Recursion_Depth == 0)
      {
 	_pSLang_verror (SL_STACK_UNDERFLOW, "Num Args Stack Underflow");
 	return -1;
@@ -1073,7 +1081,7 @@ int _pSLang_get_qualifiers (SLang_Struct_Type **qp)
 _INLINE_
 static int start_arg_list (void)
 {
-   if (Frame_Pointer_Depth < SLANG_MAX_RECURSIVE_DEPTH)
+   IF_LIKELY(Frame_Pointer_Depth < SLANG_MAX_RECURSIVE_DEPTH)
      {
 	Frame_Pointer_Stack [Frame_Pointer_Depth] = (unsigned int) (Frame_Pointer - Run_Stack);
 	Frame_Pointer = Stack_Pointer;
@@ -1113,7 +1121,7 @@ int _pSLang_restart_arg_list (int nargs)
 
 _INLINE_ static int end_arg_list (void)
 {
-   if (Frame_Pointer_Depth == 0)
+   IF_UNLIKELY(Frame_Pointer_Depth == 0)
      {
 	_pSLang_verror (SL_STACK_UNDERFLOW, "Frame Stack Underflow");
 	return -1;
@@ -6536,7 +6544,7 @@ execute_BC_IF_BLOCK:
 	     _pSLang_verror (SL_INTERNAL_ERROR, "Byte-Code 0x%X is not valid", addr->bc_main_type);
 	  }
 
-	if (Handle_Interrupt)
+	IF_UNLIKELY(Handle_Interrupt != 0)
 	  {
 	     if (SLang_get_error ())
 	       {

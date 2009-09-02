@@ -22,6 +22,8 @@ Changes since 2.2.0
 12. src/slcurses.c: Added debian patch that adds support for
     additional graphics characters (DIAMOND, DEGREE, etc...).
 13. doc/tm/slang.tm: Added a small section about arrays of arrays.
+14. src/slang.c: __builtin_expect is used for the stack functions if
+    compiled with gcc.
 
 {{{ Previous Versions
 
