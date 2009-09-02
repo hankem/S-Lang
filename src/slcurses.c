@@ -389,22 +389,42 @@ SLcurses_Window_Type *SLcurses_initscr (void)
        SLcurses_Acs_Map[SLSMG_HLINE_CHAR] = SLSMG_HLINE_CHAR | A_ALTCHARSET;
        SLcurses_Acs_Map[SLSMG_PLUS_CHAR] = SLSMG_PLUS_CHAR | A_ALTCHARSET;
        SLcurses_Acs_Map[SLSMG_CKBRD_CHAR] = SLSMG_CKBRD_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_DIAMOND_CHAR] = SLSMG_DIAMOND_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_DEGREE_CHAR] = SLSMG_DEGREE_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_PLMINUS_CHAR] = SLSMG_PLMINUS_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_BULLET_CHAR] = SLSMG_BULLET_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_LARROW_CHAR] = SLSMG_LARROW_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_RARROW_CHAR] = SLSMG_RARROW_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_DARROW_CHAR] = SLSMG_DARROW_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_UARROW_CHAR] = SLSMG_UARROW_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_BOARD_CHAR] = SLSMG_BOARD_CHAR | A_ALTCHARSET;
+       SLcurses_Acs_Map[SLSMG_BLOCK_CHAR] = SLSMG_BLOCK_CHAR | A_ALTCHARSET;
      }
    else
      {
        /* ugly defaults to use on terminals which don't support graphics */
-       SLcurses_Acs_Map[SLSMG_ULCORN_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_URCORN_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_LLCORN_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_LRCORN_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_UTEE_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_DTEE_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_LTEE_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_RTEE_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_VLINE_CHAR] = '|';
-       SLcurses_Acs_Map[SLSMG_HLINE_CHAR] = '-';
-       SLcurses_Acs_Map[SLSMG_PLUS_CHAR] = '+';
-       SLcurses_Acs_Map[SLSMG_CKBRD_CHAR] = '#';
+	SLcurses_Acs_Map[SLSMG_ULCORN_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_URCORN_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_LLCORN_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_LRCORN_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_UTEE_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_DTEE_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_LTEE_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_RTEE_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_VLINE_CHAR] = '|';
+	SLcurses_Acs_Map[SLSMG_HLINE_CHAR] = '-';
+	SLcurses_Acs_Map[SLSMG_PLUS_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_CKBRD_CHAR] = '#';
+	SLcurses_Acs_Map[SLSMG_DIAMOND_CHAR] = '+';
+	SLcurses_Acs_Map[SLSMG_DEGREE_CHAR] = '\\';
+	SLcurses_Acs_Map[SLSMG_PLMINUS_CHAR] = '#';
+	SLcurses_Acs_Map[SLSMG_BULLET_CHAR] = 'o';
+	SLcurses_Acs_Map[SLSMG_LARROW_CHAR] = '<';
+	SLcurses_Acs_Map[SLSMG_RARROW_CHAR] = '>';
+	SLcurses_Acs_Map[SLSMG_DARROW_CHAR] = 'v';
+	SLcurses_Acs_Map[SLSMG_UARROW_CHAR] = '^';
+	SLcurses_Acs_Map[SLSMG_BOARD_CHAR] = '#';
+	SLcurses_Acs_Map[SLSMG_BLOCK_CHAR] = '#';
      }
 
    return SLcurses_Stdscr;

@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  Aug 2, 2009
+  Sep 1, 2009
   ____________________________________________________________
 
 
@@ -3627,6 +3627,33 @@
 
   Finally, the array_info function may be used to get additional
   information about an array, such as its data type and size.
+
+  1111..77..  AArrrraayyss ooff AArrrraayyss:: AA CCaauuttiioonnaarryy NNoottee
+
+  Sometimes it is desirable to create an array of arrays. For example,
+
+            a = Array_Type[3];
+            a[0] = [1:10];
+            a[1] = [1:100];
+            a[2] = [1:1000];
+
+  will produce an array of the 3 arrays [1:10], [1:100], and [1:1000].
+  Index arrays may be used to access elements of an array of arrays:
+  a[[1,2]] will produce an array of arrays that consists of the elements
+  a[1] and a[2]. However, it is important to note that setting the ele-
+  ments of an array of arrays via an index array does not work as one
+  might naively expect. Consider the following:
+
+            b = Array_Type[3];
+            b[*] = a[[2,1,0]];
+
+  where a is the array of arrays given in the previous example.  The
+  reader might expect b to have elements b[0]=a[2], b[1]=a[1], and
+  b[2]=a[0], and be surprised to learn that b[0]=b[1]=b[2]=a[[2,1,0]].
+  The reason for this is that, by definition, b is an array of arrays,
+  and even though a[[2,1,0]] is an array of arrays, it is first and
+  foremost an array, and it is that array that is assigned to the ele-
+  ments of b.
 
   1122..  AAssssoocciiaattiivvee AArrrraayyss
 

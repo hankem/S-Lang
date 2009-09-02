@@ -3896,6 +3896,34 @@
 
 #%}}}
 
+\sect{Arrays of Arrays: A Cautionary Note}
+  Sometimes it is desirable to create an array of arrays.  For example,
+#v+
+     a = Array_Type[3];
+     a[0] = [1:10];
+     a[1] = [1:100];
+     a[2] = [1:1000];
+#v-
+  will produce an array of the 3 arrays \exmp{[1:10]}, \exmp{[1:100]},
+  and \exmp{[1:1000]}.  Index arrays may be used to access elements of
+  an array of arrays: a[[1,2]] will produce an array of arrays that
+  consists of the elements a[1] and a[2].  However, it is important to
+  note that setting the elements of an array of arrays via an index
+  array does not work as one might naively expect.  Consider the
+  following:
+#v+
+     b = Array_Type[3];
+     b[*] = a[[2,1,0]];
+#v-
+  where \exmp{a} is the array of arrays given in the previous example.
+  The reader might expect \exmp{b} to have elements
+  \exmp{b[0]=a[2]}, \exmp{b[1]=a[1]}, and \exmp{b[2]=a[0]}, and be
+  surprised to learn that \exmp{b[0]=b[1]=b[2]=a[[2,1,0]]}.  The reason
+  for this is that, by definition, \exmp{b} is an array of arrays, and
+  even though \exmp{a[[2,1,0]]} is an array of arrays, it is
+  first and foremost an array, and it is that array that is assigned
+  to the elements of \exmp{b}.
+  
 #%}}}
 
 \chapter{Associative Arrays} #%{{{
