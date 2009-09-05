@@ -97,9 +97,9 @@ USA.
 
 int SLtt_Screen_Cols = 80;
 int SLtt_Screen_Rows = 24;
-int SLtt_Term_Cannot_Insert;
-int SLtt_Term_Cannot_Scroll;
-int SLtt_Use_Ansi_Colors;
+int SLtt_Term_Cannot_Insert = 0;
+int SLtt_Term_Cannot_Scroll = 0;
+int SLtt_Use_Ansi_Colors = 0;
 int SLtt_Blink_Mode = 0;
 int SLtt_Use_Blink_For_ACS = 0;
 int SLtt_Newline_Ok = 0;
@@ -172,7 +172,7 @@ static SLCONST char *Default_Color_Bg_Str = "\033[49m";
 
 static int Max_Terminfo_Colors = 8;	       /* termcap Co */
 
-char *SLtt_Graphics_Char_Pairs;	       /* ac termcap string -- def is vt100 */
+char *SLtt_Graphics_Char_Pairs = NULL;	       /* ac termcap string -- def is vt100 */
 
 /* 1 if terminal lacks the ability to go into insert mode or into delete
    mode. Currently controlled by S-Lang but later perhaps termcap. */
@@ -238,7 +238,7 @@ static int Cursor_Set;		       /* 1 if cursor position known, 0
 static unsigned char Output_Buffer[MAX_OUTPUT_BUFFER_SIZE];
 static unsigned char *Output_Bufferp = Output_Buffer;
 
-unsigned long SLtt_Num_Chars_Output;
+unsigned long SLtt_Num_Chars_Output = 0;
 
 int _pSLusleep (unsigned long usecs)
 {
@@ -293,7 +293,7 @@ int SLtt_flush_output (void)
    return n;
 }
 
-int SLtt_Baud_Rate;
+int SLtt_Baud_Rate = 0;
 static void tt_write(SLCONST char *str, unsigned int n)
 {
    static unsigned long last_time;

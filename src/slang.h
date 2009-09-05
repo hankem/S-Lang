@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20201
-#define SLANG_VERSION_STRING "pre2.2.1-14"
+#define SLANG_VERSION_STRING "pre2.2.1-15"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -2157,7 +2157,7 @@ SL_EXTERN int SLang_get_int_size (SLtype);
 
 #define SLANG_UNARY_OP_MAX	0x2B
 
-SL_EXTERN SLFUTURE_CONST char *SLang_Error_Message;
+/* SL_EXTERN SLFUTURE_CONST char *SLang_Error_Message; */
 
 SL_EXTERN int SLadd_intrinsic_variable (SLFUTURE_CONST char *, VOID_STAR, SLtype, int);
 SL_EXTERN int SLadd_intrinsic_function (SLFUTURE_CONST char *, FVOID_STAR, SLtype, unsigned int,...);

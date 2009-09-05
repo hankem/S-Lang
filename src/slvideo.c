@@ -31,10 +31,10 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
-int SLtt_Term_Cannot_Insert;
-int SLtt_Term_Cannot_Scroll;
+int SLtt_Term_Cannot_Insert = 0;
+int SLtt_Term_Cannot_Scroll = 0;
 int SLtt_Ignore_Beep = 3;
-int SLtt_Use_Ansi_Colors;
+int SLtt_Use_Ansi_Colors = 0;
 int SLtt_Has_Status_Line = 0;
 int SLtt_Screen_Rows = 25;
 int SLtt_Screen_Cols = 80;

@@ -42,9 +42,9 @@ USA.
 int SLang_Key_TimeOut_Flag = 0;	       /* true if more than 1 sec has elapsed
                                           without key in multikey sequence */
 
-int SLang_Last_Key_Char;
+int SLang_Last_Key_Char = 0;
 
-SLkeymap_Type *SLKeyMap_List_Root;
+SLkeymap_Type *SLKeyMap_List_Root = NULL;
 
 typedef struct _Key_Methods_Type
 {

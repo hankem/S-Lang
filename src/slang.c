@@ -173,7 +173,7 @@ static SLFUTURE_CONST char *This_Compile_Filename;
 static unsigned int This_Compile_Linenum;
 
 /* These variables handle _NARGS processing by the parser */
-int SLang_Num_Function_Args;
+int SLang_Num_Function_Args = 0;
 static int *Num_Args_Stack;
 static unsigned int Recursion_Depth;
 static SLang_Object_Type *Frame_Pointer;
@@ -246,14 +246,6 @@ static void free_function_header (Function_Header_Type *);
 
 #if SLANG_HAS_SIGNALS
 static int check_signals (void);
-#endif
-
-#if 1 && SLANG_OPTIMIZE_FOR_SPEED && defined(__GNUC__) && (__GNUC__ >= 3)
-# define IF_LIKELY(x) if (__builtin_expect((x),1))
-# define IF_UNLIKELY(x) if (__builtin_expect ((x), 0))
-#else
-# define IF_LIKELY(x) if (x)
-# define IF_UNLIKELY(x) if (x)
 #endif
 
 #if SLANG_OPTIMIZE_FOR_SPEED

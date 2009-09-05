@@ -73,7 +73,7 @@ USA.
 #include "_slang.h"
 
 int SLang_TT_Read_FD = -1;
-int SLang_TT_Baud_Rate;
+int SLang_TT_Baud_Rate = 0;
 
 #ifdef HAVE_TERMIOS_H
 # if !defined(HAVE_TCGETATTR) || !defined(HAVE_TCSETATTR)

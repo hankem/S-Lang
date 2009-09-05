@@ -1568,6 +1568,14 @@ extern int _pSLang_check_signals_hook (VOID_STAR);
 # define _INLINE_
 #endif
 
+#if SLANG_OPTIMIZE_FOR_SPEED && defined(__GNUC__) && (__GNUC__ >= 3)
+# define IF_LIKELY(x) if (__builtin_expect((x),1))
+# define IF_UNLIKELY(x) if (__builtin_expect ((x), 0))
+#else
+# define IF_LIKELY(x) if (x)
+# define IF_UNLIKELY(x) if (x)
+#endif
+
 /* This is a macro that permits:
  *
  *   extern fun (void **addr);

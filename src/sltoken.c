@@ -1704,7 +1704,7 @@ typedef struct
 }
 File_Client_Data_Type;
 
-char *SLang_User_Prompt;
+char *SLang_User_Prompt = NULL;
 static char *read_from_file (SLang_Load_Type *x)
 {
    FILE *fp;
