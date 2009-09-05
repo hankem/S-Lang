@@ -268,7 +268,7 @@ static char *get_error_msg_from_queue (int type)
 }
 
 
-void (*SLang_User_Clear_Error)(void);
+void (*SLang_User_Clear_Error)(void) = NULL;
 void _pSLerr_clear_error (int set_clear_err_flag)
 {
    SLang_set_error (0);

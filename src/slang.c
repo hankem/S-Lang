@@ -4538,7 +4538,7 @@ int _pSLang_uninitialize_ref (SLang_Ref_Type *ref)
 }
 
 
-void (*SLang_Interrupt)(void);
+void (*SLang_Interrupt)(void) = NULL;
 
 int _pSLpush_slang_obj (SLang_Object_Type *obj)
 {

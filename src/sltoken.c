@@ -1747,8 +1747,8 @@ int SLang_load_file_verbose (int v)
 /* Note that file could be freed from Slang during run of this routine
  * so get it and store it !! (e.g., autoloading)
  */
-int (*SLang_Load_File_Hook) (SLFUTURE_CONST char *);
-int (*SLns_Load_File_Hook) (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+int (*SLang_Load_File_Hook) (SLFUTURE_CONST char *) = NULL;
+int (*SLns_Load_File_Hook) (SLFUTURE_CONST char *, SLFUTURE_CONST char *) = NULL;
 int SLang_load_file (SLFUTURE_CONST char *f)
 {
    return SLns_load_file (f, NULL);

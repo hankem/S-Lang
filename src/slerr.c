@@ -25,12 +25,12 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
-void (*_pSLinterpreter_Error_Hook) (int);
+void (*_pSLinterpreter_Error_Hook) (int) = NULL;
 
-void (*SLang_VMessage_Hook) (SLFUTURE_CONST char *, va_list);
-void (*SLang_Error_Hook)(SLFUTURE_CONST char *);
-void (*SLang_Exit_Error_Hook)(SLFUTURE_CONST char *, va_list);
-void (*SLang_Dump_Routine)(SLFUTURE_CONST char *);
+void (*SLang_VMessage_Hook) (SLFUTURE_CONST char *, va_list) = NULL;
+void (*SLang_Error_Hook)(SLFUTURE_CONST char *) = NULL;
+void (*SLang_Exit_Error_Hook)(SLFUTURE_CONST char *, va_list) = NULL;
+void (*SLang_Dump_Routine)(SLFUTURE_CONST char *) = NULL;
 
 volatile int _pSLang_Error = 0;
 volatile int SLKeyBoard_Quit = 0;

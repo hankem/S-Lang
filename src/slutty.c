@@ -518,7 +518,7 @@ int _pSLsys_input_pending(int tsecs)
    return select(SLang_TT_Read_FD + 1, &Read_FD_Set, NULL, NULL, &wait);
 }
 
-int (*SLang_getkey_intr_hook) (void);
+int (*SLang_getkey_intr_hook) (void) = NULL;
 
 static int handle_interrupt (void)
 {

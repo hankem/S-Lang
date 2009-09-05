@@ -733,8 +733,8 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
 /* 8bit clean upper and lowercase tables.  These are used _only_ when UTF-8
  * mode is not active, or when uppercasing ASCII.
  */
-unsigned char _pSLChg_LCase_Lut[256];
-unsigned char _pSLChg_UCase_Lut[256];
+unsigned char _pSLChg_LCase_Lut[256] = {0};
+unsigned char _pSLChg_UCase_Lut[256] = {0};
     
 void SLang_define_case (int *u, int *l)
 {
