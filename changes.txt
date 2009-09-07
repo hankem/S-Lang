@@ -24,7 +24,7 @@ Changes since 2.2.0
 13. doc/tm/slang.tm: Added a small section about arrays of arrays.
 14. src/slang.c: __builtin_expect is used for the stack functions if
     compiled with gcc.
-15. src/*.c: A few public variables were not explicitely initialized
+15. src/*.c: A few public variables were not explicitly initialized
     to 0.  Apparantly not doing so causes them not be be exported from
     the windows DLL.
 
