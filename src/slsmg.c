@@ -1587,7 +1587,7 @@ int SLsmg_init_smg (void)
      SLsmg_reset_smg ();
 
    if (UTF8_Mode == -1)
-     UTF8_Mode = _pSLutf8_mode;
+     (void) SLsmg_utf8_enable (-1);
 
    if (-1 == (*tt_init_video) ())
      {
@@ -2236,8 +2236,11 @@ int SLsmg_char_at (SLsmg_Char_Type *cp)
 int SLsmg_utf8_enable (int mode)
 {
    if (mode == -1)
-     mode = _pSLutf8_mode;
-   
+     {
+	mode = _pSLutf8_mode;
+	if (mode == -1)
+	  mode = SLutf8_enable (-1);
+     }
    return UTF8_Mode = mode;
 }
 

@@ -1,4 +1,9 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.2.1
+1. src/slsmg.c: Call SLutf8_enable if UTF8 mode has not been setup.
+
+{{{ Previous Versions
+
 Changes since 2.2.0
 1. modules/socket-module.c: glibc-2.8 removed the h_addr macro.
 2. src/slclass.c: Call clearerr before performing the
@@ -27,8 +32,6 @@ Changes since 2.2.0
 15. src/*.c: A few public variables were not explicitly initialized
     to 0.  Apparantly not doing so causes them not be be exported from
     the windows DLL.
-
-{{{ Previous Versions
 
 Changes since 2.1.4
 1. modules/termios-module.c: Added the VMIN constant (Laurent Perez).
