@@ -1,6 +1,10 @@
 -*- mode: text; mode: fold -*-
 Changes since 2.2.1
 1. src/slsmg.c: Call SLutf8_enable if UTF8 mode has not been setup.
+2. src/slutty.c:  Allow the hook that gets called when the read
+   function gets interrupted to change the read file descriptor.
+   Before, if this happened, the SLang_getkey function would return
+   SLANG_GETKEY_ERROR.
 
 {{{ Previous Versions
 

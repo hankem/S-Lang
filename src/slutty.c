@@ -524,13 +524,18 @@ static int handle_interrupt (void)
 {
    if (SLang_getkey_intr_hook != NULL)
      {
-	int save_tty_fd = SLang_TT_Read_FD;
+	/* int save_tty_fd = SLang_TT_Read_FD; */
 
 	if (-1 == (*SLang_getkey_intr_hook) ())
 	  return -1;
 
-	if (save_tty_fd != SLang_TT_Read_FD)
-	  return -1;
+	/* The interrupt hook may suspend the process and reset the tty.  
+	 * When it comes back up, a new descriptor may allocated.  
+	 * Allow that here.
+	 */
+
+	/* if (save_tty_fd != SLang_TT_Read_FD) */
+	  /* return -1; */
      }
 
    return 0;
