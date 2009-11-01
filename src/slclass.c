@@ -381,6 +381,12 @@ static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
 	 */
 	if (n == 0)
 	  break;
+
+	/* See the comment in slstdio.c:signal_safe_fputs about this */
+#ifdef EPIPE
+	if (e == EPIPE)
+	  break;
+#endif
      }
 
    if (actual_bytes % size)

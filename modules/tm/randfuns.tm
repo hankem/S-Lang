@@ -34,7 +34,7 @@
 \done
 
 
-\function{rand_tist}
+\function{rand_tdist}
 \synopsis{Generate random numbers from the Student t distribution}
 \usage{X = rand_tdist ([Rand_Type g,] nu [,num])}
 \description

@@ -5,6 +5,12 @@ Changes since 2.2.1
    function gets interrupted to change the read file descriptor.
    Before, if this happened, the SLang_getkey function would return
    SLANG_GETKEY_ERROR.
+3. lib/slsh/print.sl: Turn off buffering of the pager pipe.
+4. modules/tm/*.tm: A couple of typos corrected (John Houck)
+5. src/slmath.c: The round function was not correctly rounding values
+   between 0.5 and 1.0.
+6. src/slstdio.c,slclass.c: If a call to fwrite produces errno=EPIPE,
+   then do not bother trying the write again.
 
 {{{ Previous Versions
 

@@ -52,7 +52,7 @@ rand_int
 
 --------------------------------------------------------------
 
-rand_tist
+rand_tdist
 
  SYNOPSIS
   Generate random numbers from the Student t distribution

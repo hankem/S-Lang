@@ -14,15 +14,19 @@ private variable Print_Device_Type = struct
 };
 
 % Print to file-pointer method
+private define fp_puts_method (p, str)
+{
+   variable n = fputs (str, p.fp);
+   if (n != strbytelen (str))
+     return -1;
+   return n;
+}
+
 private define fp_printf_method ()
 {
    variable args = __pop_args (_NARGS-1);
    variable p = ();
-   return fprintf (p.fp, __push_args (args));
-}
-private define fp_puts_method (p, str)
-{
-   return fputs (str, p.fp);
+   return fp_puts_method (p, sprintf (__push_args(args)));
 }
 private define fp_close_method (p)
 {
@@ -72,6 +76,9 @@ private define new_pager_print (cmd)
 	if (fp == NULL)
 	  throw OpenError, "Unable to open the pager ($cmd)"$;
 
+# ifexists setvbuf
+	() = setvbuf (fp, _IONBF, 0);
+# endif
 	variable p = new_fp_print (fp);
 	p.close = &pager_close_method;
 	return p;

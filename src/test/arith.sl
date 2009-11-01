@@ -369,6 +369,23 @@ check_nint (-1.4, -1);
 check_nint (-1.5, -2);
 check_nint (-1.51, -2);
 
+private define check_round (x, rx)
+{
+   if (round (x) != rx)
+     failed ("round(%g)!=%g, found %g", x, rx, round(x));
+}
+check_round (0.0, 0);
+check_round (0.4, 0);
+check_round (-0.4, 0);
+check_round (0.51, 1);
+check_round (-0.51, -1);
+check_round (0.9, 1);
+check_round (-0.9, -1);
+check_round (1.1, 1);
+check_round (-1.1, -1);
+check_round (-1.51, -2);
+check_round (1.51, 2);
+
 private define sl_feqs (a, b, relerr, abserr)
 {
    if (abs(a-b) <= abserr)

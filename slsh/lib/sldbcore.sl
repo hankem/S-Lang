@@ -188,7 +188,7 @@ private define delete_cmd (cmd, args, file, line)
 	output ("Deleted breakpoint #%d\n", n);
 	return 0;
      }
-   if (cmd == "")
+   if (args == "")
      {
 	new_breakpoints ();
 	output ("Deleted all breakpoints\n");
@@ -201,10 +201,9 @@ private define delete_cmd (cmd, args, file, line)
    foreach (eval (sprintf ("[%s]", args)))
      {
 	bp = ();
-	variable i = where (vals == bp);
-	if (0 == length (i))
+	variable i = wherefirst (vals == bp);
+	if (i == NULL)
 	  continue;
-	i = i[0];
 	assoc_delete_key (Breakpoints, keys[i]);
 	output ("Deleted breakpoint %d\n", bp);
      }
@@ -695,6 +694,7 @@ private define bof_handler (fun, file)
    variable bp = Breakpoints[fun];
    if (bp)
      {
+	output ("Breakpoint %d, %s\n", abs(bp), fun);
 	if (bp < 0) Breakpoints[fun] = 0;   %  clear temporary breakpoint
 	Debugger_Step = STEP_NEXT;
 	Stop_Depth = Depth;

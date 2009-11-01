@@ -135,13 +135,13 @@ static int signal_safe_fputs (char *buf, FILE *fp)
 
    len = strlen (buf);
    num_written = 0;
-   errno = 0;
    while (num_written < len)
      {
 	unsigned int n = len - num_written;
 	unsigned int dn;
 	
 	clearerr (fp);
+	errno = 0;
 	dn = fwrite (buf + num_written, 1, n, fp);
 
 	num_written += dn;
@@ -149,9 +149,26 @@ static int signal_safe_fputs (char *buf, FILE *fp)
 	  {
 	     int e = errno;
 
+	     /* The idea is that since some of the bytes were written
+	      * (dn != 0), trying it again would not hurt.  The reason for this
+	      * is that sometimes glibc's fwrite would get interrupted by a
+	      * signal, but return with errno==0 (not EINTR), which resulted
+	      * in data being lost.  So it seemed that as long as something was
+	      * being written, things would work out ok.
+	      * 
+	      * However, it was discovered that this work-around would fail
+	      * when writing to a stream buffered pipe that was closed.  In 
+	      * such a case, glibc was returning a short non-zero item count
+	      * even though the underlying stream was closed.  For this reason
+	      * I recommend that one should turn off stdio buffering when
+	      * writing to pipes.  Here, a special check is added for EPIPE.
+	      */
 	     _pSLerrno_errno = e;
-	     /* clearerr (fp); */
-	     if (dn == 0)
+	     if ((dn == 0)
+#ifdef EPIPE
+		 || (e == EPIPE)
+#endif
+		)
 	       {
 		  if (0 == handle_errno (e))
 		    break;

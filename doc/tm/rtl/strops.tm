@@ -261,7 +261,7 @@
     sprintf("%s","hello")               ===> "hello"
     sprintf("%s %s","hello", "world")   ===> "hello world"
     sprintf("Agent %.3d",7)             ===> "Agent 007"
-    sprintf("%S",PI)                    ===> "3.14159"
+    sprintf("%S",PI)                    ===> "3.141592653589793"
     sprintf("%g",PI)                    ===> "3.14159"
     sprintf("%.2g",PI)                  ===> "3.1"
     sprintf("%.2e",PI)                  ===> "3.14e+00"

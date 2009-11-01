@@ -90,7 +90,7 @@ This module provides an interface to the PCRE library.  It may be
 loaded using \exmp{require("pcre")}.
 #i pcrefuns.tm
 
-\chapter{Oniguruma Regulare Expression Module}
+\chapter{Oniguruma Regular Expression Module}
 This module provides an interface to the Oniguruma regular expression
 library.  Use \exmp{require("onig")} to load it.
 #i onigfuns.tm

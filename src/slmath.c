@@ -160,11 +160,19 @@ static double my_round (double x)
 	if (xf >= 0.5)
 	  return xi + 1.0;
      }
-   else 
+   else if (xi < 0)
      {
 	if (xf <= -0.5)
 	  return xi - 1.0;
      }
+   else if (xf < 0)		       /* xi=0 */
+     {
+	if (xf <= -0.5)
+	  return -1.0;
+     }
+   else if (xf >= 0.5)		       /* xi=0 */
+     return 1.0;
+	  
    return xi;
 }
 #endif
