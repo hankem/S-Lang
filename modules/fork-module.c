@@ -101,8 +101,9 @@ static void waitpid_intrinsic (int *pid, int *options)
      }
    if (WIFSTOPPED(status))
      s.stopped = WSTOPSIG(status);
-
+#ifdef WIFCONTINUED
    s.continued = WIFCONTINUED(status);
+#endif
    s.pid = ret;
    (void) SLang_push_cstruct ((VOID_STAR)&s, Waitpid_Struct);
 }

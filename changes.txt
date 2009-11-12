@@ -11,6 +11,9 @@ Changes since 2.2.1
    between 0.5 and 1.0.
 6. src/slstdio.c,slclass.c: If a call to fwrite produces errno=EPIPE,
    then do not bother trying the write again.
+7. modules/fork-module.c:  Use WIFCONTINUED only if it is defined.
+8. slsh/Makefile.in: Change the order of the libraries such that the
+   newly built ones will be found first.  (Markus Hennecke)
 
 {{{ Previous Versions
 
