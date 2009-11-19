@@ -17,7 +17,7 @@ static int AGET_FROM_INDEX_ARRAY_FUN (GENERIC_TYPE *src_data, SLindex_Type num_e
 
 	if ((idx >= 0) 
 	    && ((idx + delta * (jmax-1)) >= 0)
-	    && ((idx + delta * (jmax-1)) <= num_elements))
+	    && ((idx + delta * (jmax-1)) < num_elements))
 	  {
 	     for (j = 0; j < jmax; j++)
 	       {

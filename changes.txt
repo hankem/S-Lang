@@ -14,6 +14,8 @@ Changes since 2.2.1
 7. modules/fork-module.c:  Use WIFCONTINUED only if it is defined.
 8. slsh/Makefile.in: Change the order of the libraries such that the
    newly built ones will be found first.  (Markus Hennecke)
+9. src/slagetput.inc: Avoid possible access violation when using a
+   range array as an index.
 
 {{{ Previous Versions
 
