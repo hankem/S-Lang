@@ -90,12 +90,15 @@
 
 \function{list_to_array}
 \synopsis{Convert a list into an array}
-\usage{Array_Type list_to_array (List_Type list)}
+\usage{Array_Type list_to_array (List_Type list [,DataType_Type type])}
 \description
  The \ifun{list_to_array} function converts a list of objects into an
- array of the same length and returns the result.  This function will
- generate an exception if the list is empty, or the objects in the
- list cannot be converted to a common type.
+ array of the same length and returns the result.  The optional
+ argument may be used to specify the array's data type.  If no
+ \exmp{type} is given, \ifun{list_to_array} tries to find the common
+ data type of all list elements. This function will generate an
+ exception if the list is empty and no type has been specified, or the
+ objects in the list cannot be converted to a common type. 
 \notes
  A future version of this function may produce an \dtype{Any_Type}
  array for an empty or heterogeneous list.

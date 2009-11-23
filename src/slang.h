@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20202
-#define SLANG_VERSION_STRING "pre2.2.2-9"
+#define SLANG_VERSION_STRING "pre2.2.2-10"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */

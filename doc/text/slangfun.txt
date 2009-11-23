@@ -3081,13 +3081,16 @@ list_to_array
   Convert a list into an array
 
  USAGE
-  Array_Type list_to_array (List_Type list)
+  Array_Type list_to_array (List_Type list [,DataType_Type type])
 
  DESCRIPTION
  The `list_to_array' function converts a list of objects into an
- array of the same length and returns the result.  This function will
- generate an exception if the list is empty, or the objects in the
- list cannot be converted to a common type.
+ array of the same length and returns the result.  The optional
+ argument may be used to specify the array's data type.  If no
+ `type' is given, `list_to_array' tries to find the common
+ data type of all list elements. This function will generate an
+ exception if the list is empty and no type has been specified, or the
+ objects in the list cannot be converted to a common type.
 
  NOTES
  A future version of this function may produce an Any_Type
@@ -7753,7 +7756,7 @@ sprintf
     sprintf("%s","hello")               ===> "hello"
     sprintf("%s %s","hello", "world")   ===> "hello world"
     sprintf("Agent %.3d",7)             ===> "Agent 007"
-    sprintf("%S",PI)                    ===> "3.14159"
+    sprintf("%S",PI)                    ===> "3.141592653589793"
     sprintf("%g",PI)                    ===> "3.14159"
     sprintf("%.2g",PI)                  ===> "3.1"
     sprintf("%.2e",PI)                  ===> "3.14e+00"

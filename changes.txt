@@ -16,6 +16,8 @@ Changes since 2.2.1
    newly built ones will be found first.  (Markus Hennecke)
 9. src/slagetput.inc: Avoid possible access violation when using a
    range array as an index.
+10. doc/tm/rtl/lists.tm: Documented the optional argument to the
+    list_to_array function (Manfred Hanke).
 
 {{{ Previous Versions
 
