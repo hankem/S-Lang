@@ -85,6 +85,7 @@ ELF_MICRO_VERSION	= @slang_micro_version@#
 INSTALL_ELFLIB_TARGET	= @INSTALL_ELFLIB_TARGET@
 
 CONFIG_H		= config.h
+TERMINFO_INC		= terminfo/@TERMINFO_LAYOUT@.inc
 ALL_CFLAGS		= $(CFLAGS) -Dunix $(THIS_LIB_DEFINES)
 ALL_ELF_CFLAGS		= $(ELF_CFLAGS) -Dunix $(THIS_LIB_DEFINES)
 COMPILE_CMD		= $(CC) -c $(ALL_CFLAGS)
@@ -129,7 +130,7 @@ slwcwidth_O_DEP = slwcwidth.h
 slcommon_O_DEP = slang.h
 slstd_O_DEP = Makefile
 slimport_O_DEP = Makefile
-sltermin_O_DEP = Makefile
+sltermin_O_DEP = Makefile terminfo.inc
 slstd_C_FLAGS = -DSLANG_DOC_DIR='"$(install_doc_dir)"' -DSLANG_INSTALL_PREFIX='"$(prefix)"'
 slimport_C_FLAGS = -DMODULE_INSTALL_DIR='"$(MODULE_INSTALL_DIR)"' -DMODULE_PATH_ENV_NAME='$(MODULE_PATH_ENV_NAME)'
 sltermin_C_FLAGS = -DMISC_TERMINFO_DIRS='"$(MISC_TERMINFO_DIRS)"'
@@ -166,7 +167,8 @@ $(ELFDIR) :
 	-$(MKDIR) $(ELFDIR)
 $(CONFIG_H) : sysconf.h
 	-$(CP) sysconf.h $(CONFIG_H)
-
+terminfo.inc: $(TERMINFO_INC) Makefile
+	-$(CP) $(TERMINFO_INC) terminfo.inc
 #---------------------------------------------------------------------------
 # Intallation rules
 #---------------------------------------------------------------------------

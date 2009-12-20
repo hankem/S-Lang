@@ -259,6 +259,9 @@ static int pop_list (SLang_MMT_Type **mmtp, SLang_List_Type **list)
 }
 
 
+/* FIXME: This is currently used only by list_dereference and breaks on an
+ * empty list.  For this reason, it would probably fail in other contexts.
+ */
 static SLang_List_Type *make_sublist (SLang_List_Type *list, int indx_a, int indx_b)
 {
    SLang_List_Type *new_list;

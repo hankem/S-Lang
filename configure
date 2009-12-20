@@ -678,6 +678,9 @@ INSTALL_PROGRAM
 INSTALL_SCRIPT
 INSTALL_DATA
 pkgconfigdir
+TERMINFO_LAYOUT
+GNU_READLINE
+LIB_READLINE
 XMKMF
 X_CFLAGS
 X_PRE_LIBS
@@ -724,8 +727,6 @@ ICONV_LIB
 ICONV_INC
 ICONV_MODULE
 SYSCONF_MODULE
-GNU_READLINE
-LIB_READLINE
 PROGRAM_OFILES
 PROGRAM_CFILES
 PROGRAM_HFILES
@@ -1331,6 +1332,8 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-pkgconfigdir=DIR pkgconfig dir (libdir/pkgconfig)
+  --with-terminfo=xxx  Terminfo layout: default, hpux11, osf1r5, aix4, uwin
+  --with-readline=xxx       use slang(default) or gnu readline for slsh
   --with-x                use the X Window System
   --with-pcre=DIR      Use DIR/lib and DIR/include for pcre
   --with-pcrelib=DIR   pcre library in DIR
@@ -1347,7 +1350,6 @@ Optional Packages:
   --with-iconv=DIR      Use DIR/lib and DIR/include for iconv
   --with-iconvlib=DIR   iconv library in DIR
   --with-iconvinc=DIR   iconv include files in DIR
-  --with-readline=xxx       use slang(default) or gnu readline for slsh
 
 Some influential environment variables:
   CC          C compiler command
@@ -4594,6 +4596,59 @@ else
   pkgconfigdir='${libdir}/pkgconfig'
 fi
 
+
+
+
+
+# Check whether --with-terminfo was given.
+if test "${with_terminfo+set}" = set; then
+  withval=$with_terminfo;  jd_with_terminfo_arg=$withval
+else
+  jd_with_terminfo_arg=default
+fi
+
+{ echo "$as_me:$LINENO: checking terminfo layout" >&5
+echo $ECHO_N "checking terminfo layout... $ECHO_C" >&6; }
+if test "x$jd_with_terminfo_arg" = "x"
+then
+  jd_with_terminfo_arg="default"
+fi
+if test -r src/terminfo/$jd_with_terminfo_arg.inc
+then
+  { echo "$as_me:$LINENO: result: $jd_with_terminfo_arg" >&5
+echo "${ECHO_T}$jd_with_terminfo_arg" >&6; }
+  TERMINFO_LAYOUT="$jd_with_terminfo_arg"
+else
+  { { echo "$as_me:$LINENO: error: -\"-with-terminfo=$jd_with_terminfo_arg is invalid.  src/terminfo/$jd_with_terminfo_arg.inc does not exist\"" >&5
+echo "$as_me: error: -\"-with-terminfo=$jd_with_terminfo_arg is invalid.  src/terminfo/$jd_with_terminfo_arg.inc does not exist\"" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+
+# Check whether --with-readline was given.
+if test "${with_readline+set}" = set; then
+  withval=$with_readline;  jd_with_readline_arg=$withval
+else
+  jd_with_readline_arg=slang
+fi
+
+{ echo "$as_me:$LINENO: checking type of readline support for slsh" >&5
+echo $ECHO_N "checking type of readline support for slsh... $ECHO_C" >&6; }
+case "x$jd_with_readline_arg" in
+  xgnu|xGNU )
+    GNU_READLINE=1
+    LIB_READLINE=-lreadline
+    { echo "$as_me:$LINENO: result: gnu" >&5
+echo "${ECHO_T}gnu" >&6; };
+    ;;
+  *)
+    GNU_READLINE=0
+    LIB_READLINE="# -lreadline"
+    { echo "$as_me:$LINENO: result: slang" >&5
+echo "${ECHO_T}slang" >&6; };
+    ;;
+esac
 
 
 
@@ -13592,33 +13647,6 @@ done
 
 
 
-# Check whether --with-readline was given.
-if test "${with_readline+set}" = set; then
-  withval=$with_readline;  jd_with_readline_arg=$withval
-else
-  jd_with_readline_arg=slang
-fi
-
-{ echo "$as_me:$LINENO: checking type of readline support for slsh" >&5
-echo $ECHO_N "checking type of readline support for slsh... $ECHO_C" >&6; }
-case "x$jd_with_readline_arg" in
-  xgnu|xGNU )
-    GNU_READLINE=1
-    LIB_READLINE=-lreadline
-    { echo "$as_me:$LINENO: result: gnu" >&5
-echo "${ECHO_T}gnu" >&6; };
-    ;;
-  *)
-    GNU_READLINE=0
-    LIB_READLINE="# -lreadline"
-    { echo "$as_me:$LINENO: result: slang" >&5
-echo "${ECHO_T}slang" >&6; };
-    ;;
-esac
-
-
-
-
  PROGRAM_HFILES=""
  PROGRAM_OFILES=""
  PROGRAM_CFILES=""
@@ -14370,6 +14398,9 @@ INSTALL_PROGRAM!$INSTALL_PROGRAM$ac_delim
 INSTALL_SCRIPT!$INSTALL_SCRIPT$ac_delim
 INSTALL_DATA!$INSTALL_DATA$ac_delim
 pkgconfigdir!$pkgconfigdir$ac_delim
+TERMINFO_LAYOUT!$TERMINFO_LAYOUT$ac_delim
+GNU_READLINE!$GNU_READLINE$ac_delim
+LIB_READLINE!$LIB_READLINE$ac_delim
 XMKMF!$XMKMF$ac_delim
 X_CFLAGS!$X_CFLAGS$ac_delim
 X_PRE_LIBS!$X_PRE_LIBS$ac_delim
@@ -14401,9 +14432,6 @@ SRCDIR!$SRCDIR$ac_delim
 OBJDIR!$OBJDIR$ac_delim
 ELFDIR!$ELFDIR$ac_delim
 PCRE_LIB!$PCRE_LIB$ac_delim
-PCRE_INC!$PCRE_INC$ac_delim
-PCRE_MODULE!$PCRE_MODULE$ac_delim
-ONIG_LIB!$ONIG_LIB$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -14445,6 +14473,9 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+PCRE_INC!$PCRE_INC$ac_delim
+PCRE_MODULE!$PCRE_MODULE$ac_delim
+ONIG_LIB!$ONIG_LIB$ac_delim
 ONIG_INC!$ONIG_INC$ac_delim
 ONIG_MODULE!$ONIG_MODULE$ac_delim
 PNG_LIB!$PNG_LIB$ac_delim
@@ -14457,8 +14488,6 @@ ICONV_LIB!$ICONV_LIB$ac_delim
 ICONV_INC!$ICONV_INC$ac_delim
 ICONV_MODULE!$ICONV_MODULE$ac_delim
 SYSCONF_MODULE!$SYSCONF_MODULE$ac_delim
-GNU_READLINE!$GNU_READLINE$ac_delim
-LIB_READLINE!$LIB_READLINE$ac_delim
 PROGRAM_OFILES!$PROGRAM_OFILES$ac_delim
 PROGRAM_CFILES!$PROGRAM_CFILES$ac_delim
 PROGRAM_HFILES!$PROGRAM_HFILES$ac_delim
@@ -14472,7 +14501,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 25; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 26; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

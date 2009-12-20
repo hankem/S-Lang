@@ -32,6 +32,44 @@ AC_ARG_WITH(pkgconfigdir,
 AC_SUBST(pkgconfigdir)
 
 
+dnl # Terminfo binary format
+AC_ARG_WITH(terminfo,
+   [  --with-terminfo=xxx  Terminfo layout: default, hpux11, osf1r5, aix4, uwin ],
+   [ jd_with_terminfo_arg=$withval ], [jd_with_terminfo_arg=default])
+AC_MSG_CHECKING(terminfo layout)
+if test "x$jd_with_terminfo_arg" = "x"
+then
+  jd_with_terminfo_arg="default"
+fi
+if test -r src/terminfo/$jd_with_terminfo_arg.inc
+then
+  AC_MSG_RESULT($jd_with_terminfo_arg)
+  TERMINFO_LAYOUT="$jd_with_terminfo_arg"
+else
+  AC_MSG_ERROR(-"-with-terminfo=$jd_with_terminfo_arg is invalid.  src/terminfo/$jd_with_terminfo_arg.inc does not exist")
+fi
+AC_SUBST(TERMINFO_LAYOUT)
+
+dnl # Readline support for slsh
+AC_ARG_WITH(readline,
+   [  --with-readline=xxx       use slang(default) or gnu readline for slsh ],
+   [ jd_with_readline_arg=$withval ], [jd_with_readline_arg=slang])
+AC_MSG_CHECKING(type of readline support for slsh)
+case "x$jd_with_readline_arg" in
+  xgnu|xGNU )
+    GNU_READLINE=1
+    LIB_READLINE=-lreadline
+    AC_MSG_RESULT(gnu);
+    ;;
+  *)
+    GNU_READLINE=0
+    LIB_READLINE="# -lreadline"
+    AC_MSG_RESULT(slang);
+    ;;
+esac
+AC_SUBST(GNU_READLINE)
+AC_SUBST(LIB_READLINE)
+
 # For the socket module
 AC_PATH_XTRA
 
@@ -245,26 +283,6 @@ AC_CHECK_FUNCS(sysconf, [
  SYSCONF_MODULE="sysconf-module.so"
  ], [SYSCONF_MODULE=""])
 AC_SUBST(SYSCONF_MODULE)
-
-dnl # Readline support for slsh
-AC_ARG_WITH(readline,
-   [  --with-readline=xxx       use slang(default) or gnu readline for slsh ],
-   [ jd_with_readline_arg=$withval ], [jd_with_readline_arg=slang])
-AC_MSG_CHECKING(type of readline support for slsh)
-case "x$jd_with_readline_arg" in
-  xgnu|xGNU )
-    GNU_READLINE=1
-    LIB_READLINE=-lreadline
-    AC_MSG_RESULT(gnu);
-    ;;
-  *)
-    GNU_READLINE=0
-    LIB_READLINE="# -lreadline"
-    AC_MSG_RESULT(slang);
-    ;;
-esac
-AC_SUBST(GNU_READLINE)
-AC_SUBST(LIB_READLINE)
 
 JD_GET_MODULES(src/modules.unx)
 JD_CREATE_MODULE_ORULES

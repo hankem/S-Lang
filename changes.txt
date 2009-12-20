@@ -1,4 +1,11 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.2.2
+1. src/sltermin.c: Added support for native terminfo binary layouts.
+   Some systems have binary terminfo files that are incompatible with
+   the standard ncurses layout.  Use the --terminfo=layout configure
+   option to specify a non-standard layout (hpux11, osf1r5, uwin,
+   aix4, default).  This incompatibity was pointed out by River Tarnell.
+
 Changes since 2.2.1
 1. src/slsmg.c: Call SLutf8_enable if UTF8 mode has not been setup.
 2. src/slutty.c:  Allow the hook that gets called when the read

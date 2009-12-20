@@ -472,6 +472,14 @@
 @src/test/longlong.sl
 @src/untic.c
 @src/slang.ver
+@src/terminfo/aix4.inc
+@src/terminfo/Makefile
+@src/terminfo/README
+@src/terminfo/default.inc
+@src/terminfo/osf1r5.inc
+@src/terminfo/uwin.inc
+@src/terminfo/hpux11.inc
+@src/terminfo/parsecaps.sl
 @src/util/Makefile
 @src/util/bcdump.c
 @src/util/chkproto.c
