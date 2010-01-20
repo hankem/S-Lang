@@ -357,6 +357,20 @@ private define test_private_variable_ops ()
 }
 test_private_variable_ops ();
 
+private define test_assignment_expressions ()
+{
+   variable a = [1,2,3];
+   (a)[1] = -1;
+   if ((a[1] != -1) || ((a)[1]!=-1))
+     failed ("lvalue parse problem: (a)[1]=-1");
+
+   (a)[1] += 10*(a)[1];
+   if ((a[1] != -11)||(a[1]!=-11))
+     failed ("lvalue parse problem: (a)[1] += 10*(a)[1]");
+   
+   (a+a)[1] = -1;
+}
+test_assignment_expressions ();
 try
 {
    () = evalfile("./longline.inc");

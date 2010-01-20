@@ -516,6 +516,8 @@ static int compile_token_list (void)
  * with the elements at pos1, e.g.,
  * ...ABCDEabc ==> ...abcABCDE
  * where pos1 denotes A and pos2 denotes a.
+ * 
+ * NOTE: The caller must make special provisions for NO_OP_LITERAL tokens.
  */
 static int token_list_element_exchange (unsigned int pos1, unsigned int pos2)
 {
@@ -2080,7 +2082,16 @@ static void assignment_expression (_pSLang_Token_Type *ctok)
 	return;
      }
    start_pos = Token_List->len;
-   
+
+   if (ctok->type == NO_OP_LITERAL)
+     {
+	/* This is called from try_multiple_assignment with a new token list.
+	 * The tokens added to that list collectively make up a object that 
+	 * is treated as a literal.  Reset the list start position to 
+	 * those start of those elements.
+	 */
+	start_pos = 0;
+     }
    simple_expression (ctok);
    switch (ctok->type)
      {
