@@ -3,7 +3,7 @@
 \usage{list_append (List_Type list, object [,Int_Type nth])}
 \description
   The \ifun{list_append} function is like \ifun{list_insert} except
-  this function appends the object to the the list.  The optional
+  this function appends the object to the list.  The optional
   argument \exmp{nth} may be used to specify where the object is to be
   appended.  See the documentation on \ifun{list_insert} for more details.
 \seealso{list_insert, list_delete, list_pop, list_new, list_reverse}

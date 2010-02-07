@@ -98,9 +98,9 @@
        %m      month (01-12)
        %p      local equivalent of AM or PM
        %S      second (00-59)
-       %U      week-of-year, first day sunday (00-53)
-       %W      week-of-year, first day monday (00-53)
-       %w      weekday (0-6, sunday is 0)
+       %U      week-of-year, first day Sunday (00-53)
+       %W      week-of-year, first day Monday (00-53)
+       %w      weekday (0-6, Sunday is 0)
        %X      standard time representation
        %x      standard date representation
        %Y      year with century

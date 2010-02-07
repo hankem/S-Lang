@@ -3,7 +3,7 @@
 \usage{Int_Type _bofeof_info}
 \description
  This value of this variable dictates whether or not the \slang
- interpeter will generate code to call the beginning and end of
+ interpreter will generate code to call the beginning and end of
  function callback handlers.  The value of this variable is local to
  the compilation unit, but is inherited by other units loaded by the
  current unit.
@@ -19,7 +19,7 @@
 \usage{Int_Type _boseos_info}
 \description
  This value of this variable dictates whether or not the \slang
- interpeter will generate code to call the beginning and end of
+ interpreter will generate code to call the beginning and end of
  statement callback handlers.  The value of this variable is local to
  the compilation unit, but is inherited by other units loaded by the
  current unit.

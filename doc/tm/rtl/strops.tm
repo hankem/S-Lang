@@ -1,6 +1,6 @@
 
 \function{count_char_occurances}
-\synopsis{Count the number of occurances of a character in a string}
+\synopsis{Count the number of occurrences of a character in a string}
 \usage{UInt_Type count_char_occurances (str, ch)}
 \description
   This function returns the number of times the specified character
@@ -706,6 +706,28 @@
 \seealso{is_substr, strsub, strtrim, strtrans, str_delete_chars}
 \done
 
+
+\function{strskipbytes}
+\synopsis{Skip a range of bytes in a byte string}
+\usage{Int_Type strskipbytes (str, range [n0 [,nmax]])}
+#v+
+   String_Type s;
+   String_Type range;
+   Int_Type n0, nmax;
+#v-
+\description
+  This function skips over a range of bytes in a string \exmp{str}. 
+  The byte range to be skipped is specified by the \exmp{range}
+  parameter.  Optional start (\exmp{n0}) and stop (\exmp{nmax})
+  (0-based) parameters may be used to specifiy the part of the input
+  string to be processed.  The function returns a 0-based offset from
+  the beginning of the string where processing stopped.
+  
+  See the documentation for the \ifun{strtrans} function for the
+  format of the range parameter.
+\seealso{strtrans}
+\done
+
 \function{strsub}
 \synopsis{Replace a character with another in a string.}
 \usage{String_Type strsub (String_Type s, Int_Type pos, Int_Type ch)}
@@ -980,7 +1002,7 @@
 #v-
   returns the string \exmp{"Hello   World"}.
 \notes
-  This routine does not handle multicharacter comment delimiters and it
+  This routine does not handle multi-character comment delimiters and it
   assumes that comments are not nested.
 \seealso{str_quote_string, str_delete_chars, strtrans}
 \done

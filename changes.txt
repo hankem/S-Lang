@@ -7,6 +7,14 @@ Changes since 2.2.2
    aix4, default).  This incompatibity was pointed out by River Tarnell.
 2. src/slparse.c: complicated lvalue expressions were not being properly
    parsed.
+3. src/slstrops.c: Added strskipbytes function.
+4. doc/tm/rtl/*.tm: A number of typos were corrected.  (Agathoklis D.
+   Hatzimanikas)
+5. src/slang.c,slparse.c: Qualifiers were not being passed to functions called
+   via derefencing an array of function references, e.g.,
+   (@f[n])(args;q).
+6. src/slparse.c: Flag attempts to call literals as functions.
+
 
 {{{ Previous Versions
 

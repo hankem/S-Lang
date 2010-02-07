@@ -157,7 +157,7 @@ array_map
 
 
  NOTES
-  Many mathematical functions already work transparantly on arrays.
+  Many mathematical functions already work transparently on arrays.
   For example, the following two statements produce identical results:
 
      B = sin (A);
@@ -709,7 +709,7 @@ where
 
      i = where (a, &j);
 
-  are equivalent, but the latter form is prefered since it executes
+  are equivalent, but the latter form is preferred since it executes
   about twice as fast as the former.
 
   Although this function may appear to be simple or even trivial, it
@@ -968,7 +968,7 @@ bstrlen
  DESCRIPTION
   The `bstrlen' function may be used to obtain the length of a
   binary string.  A binary string differs from an ordinary string (a C
-  string) in that a binary string may include null chracters.
+  string) in that a binary string may include null characters.
 
  EXAMPLE
 
@@ -985,7 +985,7 @@ bstrlen
 count_byte_occurances
 
  SYNOPSIS
-  Count the number of occurances of a byte in a binary string
+  Count the number of occurrences of a byte in a binary string
 
  USAGE
   UInt_Type count_byte_occurances (bstring, byte)
@@ -995,7 +995,7 @@ count_byte_occurances
   occurs in the binary string `bstr'.
 
  NOTES
-  This function uses byte-semanics.  If character semantics are
+  This function uses byte-semantics.  If character semantics are
   desired, use the `count_char_occurances' function.
 
  SEE ALSO
@@ -1299,7 +1299,7 @@ String_Type
   When UTF-8 mode is not in effect, the byte and character forms will
   produce the same sequence.  Otherwise, the string will be decoded
   to generate the (wide) character sequence.  If the string contains
-  an invalid UTF-8 encoded character, sucessive bytes of the invalid
+  an invalid UTF-8 encoded character, successive bytes of the invalid
   sequence will be returned as negative integers.  For example,
   `"a\xAB\x{AB}"' specifies a string composed of the character
   `a', a byte `0xAB', and the character `0xAB'.  In
@@ -1482,7 +1482,7 @@ _bofeof_info
 
  DESCRIPTION
  This value of this variable dictates whether or not the S-Lang
- interpeter will generate code to call the beginning and end of
+ interpreter will generate code to call the beginning and end of
  function callback handlers.  The value of this variable is local to
  the compilation unit, but is inherited by other units loaded by the
  current unit.
@@ -1506,7 +1506,7 @@ _boseos_info
 
  DESCRIPTION
  This value of this variable dictates whether or not the S-Lang
- interpeter will generate code to call the beginning and end of
+ interpreter will generate code to call the beginning and end of
  statement callback handlers.  The value of this variable is local to
  the compilation unit, but is inherited by other units loaded by the
  current unit.
@@ -1868,7 +1868,7 @@ _use_frame_namespace
 access
 
  SYNOPSIS
-  Check to see if a file is accessable
+  Check to see if a file is accessible
 
  USAGE
   Int_Type access (String_Type pathname, Int_Type mode)
@@ -1999,7 +1999,7 @@ hardlink
  DESCRIPTION
   The `hardlink' function creates a hard-link called
   `newpath' to the existing file `oldpath'.  If the link was
-  sucessfully created, the function will return 0.  Upon error, the
+  successfully created, the function will return 0.  Upon error, the
   function returns -1 and sets `errno' accordingly.
 
  NOTES
@@ -2946,7 +2946,7 @@ list_append
 
  DESCRIPTION
   The `list_append' function is like `list_insert' except
-  this function appends the object to the the list.  The optional
+  this function appends the object to the list.  The optional
   argument `nth' may be used to specify where the object is to be
   appended.  See the documentation on `list_insert' for more details.
 
@@ -4151,7 +4151,7 @@ error
   Generate an error condition (deprecated)
 
  USAGE
-  error (String_Type msg
+  error (String_Type msg)
 
  DESCRIPTION
   This function has been deprecated in favor of `throw'.
@@ -4625,7 +4625,7 @@ implements
   In addition to creating a new static namespace and associating it
   with the compilation unit, the function will also create a new
   private namespace.  As a result, any symbols in the previous private
-  namespace will be no longer be accessable.  For this reason, it is
+  namespace will be no longer be accessible.  For this reason, it is
   recommended that this function should be used before any private
   symbols have been created.
 
@@ -5726,7 +5726,7 @@ qualifier
   value = qualifier (String_Type name [,default_value])
 
  DESCRIPTION
- This function may be used to get the value of a qualifer.  If the
+ This function may be used to get the value of a qualifier.  If the
  specified qualifier does not exist, `NULL' will be returned,
  unless a default value has been provided.
 
@@ -5804,9 +5804,9 @@ __qualifiers
     line_segment (1,1, 10,10; color="blue");
 
  Note that in this implementation of `line_segment', the
- `color' qualifier was explicitely passed to the `lineto'
+ `color' qualifier was explicitly passed to the `lineto'
  function.  However, this technique does not scale well.  For example, the
- `lineto' function might also take a qualifer that specifies the
+ `lineto' function might also take a qualifier that specifies the
  line-style, to be used as
 
     line_segment (1,1, 10,10; color="blue", linestyle="solid");
@@ -6948,7 +6948,7 @@ fgets
 
        fp = fopen(file, "r");
        if (fp == NULL)
-         error("fopen %s failed." file);
+         throw OpenError, "fopen failed to open $file for reading"$;
        while (-1 != fgets (&buf, fp))
          {
             if (root == NULL)
@@ -7049,12 +7049,12 @@ fopen
   The following function opens a file in append mode and writes a
   string to it:
 
-    define append_string_to_file (file, str)
+    define append_string_to_file (str, file)
     {
        variable fp = fopen (file, "a");
        if (fp == NULL)
          throw OpenError, "$file could not be opened"$;
-       () = fputs (string, fp);
+       () = fputs (str, fp);
        () = fclose (fp);
     }
 
@@ -7419,7 +7419,7 @@ printf
 count_char_occurances
 
  SYNOPSIS
-  Count the number of occurances of a character in a string
+  Count the number of occurrences of a character in a string
 
  USAGE
   UInt_Type count_char_occurances (str, ch)
@@ -8376,6 +8376,35 @@ strreplace
 
 --------------------------------------------------------------
 
+strskipbytes
+
+ SYNOPSIS
+  Skip a range of bytes in a byte string
+
+ USAGE
+  Int_Type strskipbytes (str, range [n0 [,nmax]])
+
+   String_Type s;
+   String_Type range;
+   Int_Type n0, nmax;
+
+
+ DESCRIPTION
+  This function skips over a range of bytes in a string `str'.
+  The byte range to be skipped is specified by the `range'
+  parameter.  Optional start (`n0') and stop (`nmax')
+  (0-based) parameters may be used to specifiy the part of the input
+  string to be processed.  The function returns a 0-based offset from
+  the beginning of the string where processing stopped.
+
+  See the documentation for the `strtrans' function for the
+  format of the range parameter.
+
+ SEE ALSO
+  strtrans
+
+--------------------------------------------------------------
+
 strsub
 
  SYNOPSIS
@@ -8745,7 +8774,7 @@ str_uncomment_string
   returns the string `"Hello   World"'.
 
  NOTES
-  This routine does not handle multicharacter comment delimiters and it
+  This routine does not handle multi-character comment delimiters and it
   assumes that comments are not nested.
 
  SEE ALSO
@@ -9297,9 +9326,9 @@ strftime
        %m      month (01-12)
        %p      local equivalent of AM or PM
        %S      second (00-59)
-       %U      week-of-year, first day sunday (00-53)
-       %W      week-of-year, first day monday (00-53)
-       %w      weekday (0-6, sunday is 0)
+       %U      week-of-year, first day Sunday (00-53)
+       %W      week-of-year, first day Monday (00-53)
+       %w      weekday (0-6, Sunday is 0)
        %X      standard time representation
        %x      standard date representation
        %Y      year with century
@@ -9878,7 +9907,7 @@ _typeof
  DESCRIPTION
   This function is similar to the `typeof' function except in the
   case of arrays.  If the object `x' is an array, then the data
-  type of the array will be returned. otherwise `_typeof' returns
+  type of the array will be returned. Otherwise `_typeof' returns
   the data type of `x'.
 
  EXAMPLE

@@ -179,14 +179,14 @@ static unsigned int Recursion_Depth;
 static SLang_Object_Type *Frame_Pointer;
 static int Next_Function_Num_Args;
 
+static unsigned int Frame_Pointer_Depth;
+static unsigned int *Frame_Pointer_Stack;
+
 #if SLANG_HAS_QUALIFIERS
 static SLang_Struct_Type *Next_Function_Qualifiers;
 static SLang_Struct_Type *Function_Qualifiers;
 static SLang_Struct_Type **Function_Qualifiers_Stack;
 #endif
-
-static unsigned int Frame_Pointer_Depth;
-static unsigned int *Frame_Pointer_Stack;
 
 static _pSLang_Function_Type *Current_Function = NULL;
 static Function_Header_Type *Current_Function_Header;
@@ -1140,6 +1140,23 @@ static int do_bc_call_direct_frame (int (*f)(void))
      {
 	(void) (*f) ();
 	_pSL_decrement_frame_pointer ();
+     }
+   if (IS_SLANG_ERROR)
+     return -1;
+   return 0;
+}
+
+_INLINE_
+static int do_bc_call_direct_nargs (int (*f)(void))
+{
+   if (0 == end_arg_list ())
+     {
+	int nargs = SLang_Num_Function_Args;
+	
+	SLang_Num_Function_Args = Next_Function_Num_Args;
+	Next_Function_Num_Args = 0;
+	(void) (*f) ();
+	SLang_Num_Function_Args = nargs;
      }
    if (IS_SLANG_ERROR)
      return -1;
@@ -2547,7 +2564,7 @@ static int make_unit_object (SLang_Object_Type *a, SLang_Object_Type *u)
  * has been generated is:  X __args i A __aput-op
  * where __aput-op represents this function.  We need to generate:
  * __args i A __eargs __aget X op __args i A __eargs __aput
- * Here, __eargs implies a call to do_bc_call_direct_frame with either
+ * Here, __eargs implies a call to do_bc_call_direct_nargs with either
  * the aput or aget function.  In addition, __args represents a call to 
  * start_arg_list.  Of course, i represents a set of indices.
  * 
@@ -4796,6 +4813,10 @@ static int dereference_object (void)
    return ret;
 }
 
+/* This function gets called with the stack of the form:
+ *   ... func __args ... 
+ * We need to pop func from within the stack.
+ */
 /* End the argument list, and make the function call */
 static int deref_fun_call (int linenum)
 {
@@ -4803,7 +4824,11 @@ static int deref_fun_call (int linenum)
 
    if (-1 == end_arg_list ())
      return -1;
-   Next_Function_Num_Args--;	       /* do not include function to be derefed. */
+   
+   if (-1 == roll_stack (-(Next_Function_Num_Args + 1)))
+     return -1;
+
+   /* Next_Function_Num_Args--;	*/       /* do not include function to be derefed. */
 
    if (-1 == pop_object(&obj))
      return -1;
@@ -5367,7 +5392,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	       {
 		  SLang_Object_Type *obj = Local_Variable_Frame - addr->b.i_blk;
 		  if (0 == carefully_push_object (obj))
-		    do_bc_call_direct_frame (_pSLarray_aget);
+		    do_bc_call_direct_nargs (_pSLarray_aget);
 	       }
 	     break;
 
@@ -5375,7 +5400,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	       {
 		  SLang_Object_Type *obj = Local_Variable_Frame - addr->b.i_blk;
 		  if (0 == carefully_push_object (obj))
-		    do_bc_call_direct_frame (_pSLarray_aput);
+		    do_bc_call_direct_nargs (_pSLarray_aput);
 	       }
 	     break;
 #else
@@ -5761,11 +5786,11 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_CALL_DIRECT_FRAME:
 	     do_bc_call_direct_frame (addr->b.call_function);
 	     break;
-#if USE_UNUSED_BYCODES_IN_SWITCH
-	   case SLANG_BC_UNUSED_0x72:
-	     _pSLang_verror (SL_INTERNAL_ERROR, "Byte-Code 0x%X is not valid", addr->bc_main_type);
+
+	   case SLANG_BC_CALL_DIRECT_NARGS:
+	     do_bc_call_direct_nargs (addr->b.call_function);
 	     break;
-#endif
+
 	   case SLANG_BC_EARG_LVARIABLE:
 	     PUSH_LOCAL_VARIABLE(addr->b.i_blk)
 	     (void) end_arg_list ();
@@ -6266,7 +6291,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	       {
 		  SLang_Object_Type *obj = Local_Variable_Frame - addr->b.i_blk;
 		  if ((0 == carefully_push_object (obj))
-		      && (0 == do_bc_call_direct_frame (_pSLarray_aget)))
+		      && (0 == do_bc_call_direct_nargs (_pSLarray_aget)))
 		    {
 		       addr++;
 		       (void) set_lvalue_obj (addr->bc_sub_type, Local_Variable_Frame - addr->b.i_blk);
@@ -9562,23 +9587,23 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case _INLINE_ARRAY_TOKEN:
-	compile_call_direct (_pSLarray_inline_array, SLANG_BC_CALL_DIRECT_FRAME);
+	compile_call_direct (_pSLarray_inline_array, SLANG_BC_CALL_DIRECT_NARGS);
 	break;
 
       case _INLINE_IMPLICIT_ARRAY_TOKEN:
-	compile_call_direct (_pSLarray_inline_implicit_array, SLANG_BC_CALL_DIRECT_FRAME);
+	compile_call_direct (_pSLarray_inline_implicit_array, SLANG_BC_CALL_DIRECT_NARGS);
 	break;
 
       case _INLINE_LIST_TOKEN:
-	compile_call_direct (_pSLlist_inline_list, SLANG_BC_CALL_DIRECT_FRAME);
+	compile_call_direct (_pSLlist_inline_list, SLANG_BC_CALL_DIRECT_NARGS);
 	break;
 
       case ARRAY_TOKEN:
-	compile_lvar_call_direct (_pSLarray_aget, SLANG_BC_LVARIABLE_AGET, SLANG_BC_CALL_DIRECT_FRAME);
+	compile_lvar_call_direct (_pSLarray_aget, SLANG_BC_LVARIABLE_AGET, SLANG_BC_CALL_DIRECT_NARGS);
 	break;
 
       case _INLINE_IMPLICIT_ARRAYN_TOKEN:
-	compile_call_direct (_pSLarray_inline_implicit_arrayn, SLANG_BC_CALL_DIRECT_FRAME);
+	compile_call_direct (_pSLarray_inline_implicit_arrayn, SLANG_BC_CALL_DIRECT_NARGS);
 	break;
 
 	/* Note: I need to add the other _ARRAY assign tokens. */
@@ -9596,7 +9621,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case _ARRAY_ASSIGN_TOKEN:
-	compile_lvar_call_direct (_pSLarray_aput, SLANG_BC_LVARIABLE_APUT, SLANG_BC_CALL_DIRECT_FRAME);
+	compile_lvar_call_direct (_pSLarray_aput, SLANG_BC_LVARIABLE_APUT, SLANG_BC_CALL_DIRECT_NARGS);
 	break;
 
       case _STRUCT_ASSIGN_TOKEN:
@@ -9837,7 +9862,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case THROW_TOKEN:
-	compile_call_direct (_pSLerr_throw, SLANG_BC_CALL_DIRECT_FRAME);
+	compile_call_direct (_pSLerr_throw, SLANG_BC_CALL_DIRECT_NARGS);
 	break;
 
       case DEFINE_TOKEN:
@@ -9892,7 +9917,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case _ARRAY_ELEM_REF_TOKEN:
-	compile_call_direct (_pSLarray_push_elem_ref, SLANG_BC_CALL_DIRECT_FRAME);
+	compile_call_direct (_pSLarray_push_elem_ref, SLANG_BC_CALL_DIRECT_NARGS);
 	break;
 
       case _STRUCT_FIELD_REF_TOKEN:
@@ -10145,12 +10170,27 @@ int _pSLang_check_signals_hook (VOID_STAR unused)
 #endif				       /* SLANG_HAS_SIGNALS */
 
 
+static void free_stacks (void)
+{
+   /* SLfree can grok NULLs */
+   SLfree ((char *)Num_Args_Stack); Num_Args_Stack = NULL;
+   SLfree ((char *)Run_Stack); Run_Stack = NULL;
+   SLfree ((char *)Num_Args_Stack); Num_Args_Stack = NULL;
+   SLfree ((char *)Frame_Pointer_Stack); Frame_Pointer_Stack = NULL;
+#if SLANG_HAS_QUALIFIERS
+   SLfree ((char *)Function_Qualifiers_Stack); Function_Qualifiers_Stack = NULL;
+#endif
+}
+
+
 static int init_interpreter (void)
 {
    SLang_NameSpace_Type *ns;
 
    if (Global_NameSpace != NULL)
      return 0;
+
+   free_stacks ();
 
    _pSLinterpreter_Error_Hook = interpreter_error_hook;
 
@@ -10163,56 +10203,41 @@ static int init_interpreter (void)
    Run_Stack = (SLang_Object_Type *) SLcalloc (SLANG_MAX_STACK_LEN,
 						  sizeof (SLang_Object_Type));
    if (Run_Stack == NULL)
-     return -1;
+     goto return_error;
 
    Stack_Pointer = Run_Stack;
    Stack_Pointer_Max = Run_Stack + SLANG_MAX_STACK_LEN;
 
    Num_Args_Stack = (int *) SLmalloc (sizeof (int) * SLANG_MAX_RECURSIVE_DEPTH);
    if (Num_Args_Stack == NULL)
-     {
-	SLfree ((char *) Run_Stack);
-	return -1;
-     }
-#if SLANG_HAS_QUALIFIERS
-   Function_Qualifiers_Stack = (SLang_Struct_Type **) SLcalloc (SLANG_MAX_RECURSIVE_DEPTH, sizeof (SLang_Struct_Type *));
-   if (Function_Qualifiers_Stack == NULL)
-     {
-	SLfree ((char *) Run_Stack);
-	SLfree ((char *) Num_Args_Stack);
-	return -1;
-     }
-#endif
+     goto return_error;
+
    Recursion_Depth = 0;
    Frame_Pointer_Stack = (unsigned int *) SLmalloc (sizeof (unsigned int) * SLANG_MAX_RECURSIVE_DEPTH);
    if (Frame_Pointer_Stack == NULL)
-     {
-	SLfree ((char *) Run_Stack);
-	SLfree ((char *)Num_Args_Stack);
-#if SLANG_HAS_QUALIFIERS
-	SLfree ((char *) Function_Qualifiers_Stack);
-#endif
-	return -1;
-     }
+     goto return_error;
    Frame_Pointer_Depth = 0;
    Frame_Pointer = Run_Stack;
+   
+#if SLANG_HAS_QUALIFIERS
+   Function_Qualifiers_Stack = (SLang_Struct_Type **) SLcalloc (SLANG_MAX_RECURSIVE_DEPTH, sizeof (SLang_Struct_Type *));
+   if (Function_Qualifiers_Stack == NULL)
+     goto return_error;
+#endif
 
    Function_Stack = (Function_Stack_Type *) SLmalloc (sizeof (Function_Stack_Type) * SLANG_MAX_RECURSIVE_DEPTH);
    if (Function_Stack == NULL)
-     {
-	SLfree ((char *) Run_Stack);
-	SLfree ((char *) Num_Args_Stack);
-	SLfree ((char *) Frame_Pointer_Stack);
-#if SLANG_HAS_QUALIFIERS
-	SLfree ((char *) Function_Qualifiers_Stack);
-#endif
-	return -1;
-     }
+     goto return_error;
+
    Function_Stack_Ptr = Function_Stack;
    /* Function_Stack_Ptr_Max = Function_Stack_Ptr + SLANG_MAX_RECURSIVE_DEPTH; */
 
    (void) setup_default_compile_linkage (1);
    return 0;
+   
+return_error:
+   free_stacks ();
+   return -1;
 }
 
 static int add_generic_table (SLang_NameSpace_Type *ns,

@@ -83,7 +83,7 @@
 
 \function{error}
 \synopsis{Generate an error condition (deprecated)}
-\usage{error (String_Type msg}
+\usage{error (String_Type msg)}
 \description
   This function has been deprecated in favor of \kw{throw}.
 

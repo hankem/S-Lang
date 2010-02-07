@@ -125,7 +125,7 @@ static unsigned int do_trim (SLuchar_Type **beg, int do_beg,
 
 /*}}}*/
 
-static int pop_3_strings (char **a, char **b, char **c)
+static int pop_3_malloced_strings (char **a, char **b, char **c)
 {
    *a = *b = *c = NULL;
    if (-1 == SLpop_string (c))
@@ -149,7 +149,7 @@ static int pop_3_strings (char **a, char **b, char **c)
    return 0;
 }
 
-static void free_3_strings (char *a, char *b, char *c)
+static void free_3_malloced_strings (char *a, char *b, char *c)
 {
    SLfree (a);
    SLfree (b);
@@ -445,7 +445,7 @@ static int strreplace_cmd (int *np)
 
    max_num_replaces = *np;
 
-   if (-1 == pop_3_strings (&orig, &match, &rep))
+   if (-1 == pop_3_malloced_strings (&orig, &match, &rep))
      return -1;
 
    if (max_num_replaces < 0)
@@ -472,7 +472,7 @@ static int strreplace_cmd (int *np)
 	  ret = -1;
      }
 
-   free_3_strings (orig, match, rep);
+   free_3_malloced_strings (orig, match, rep);
    return ret;
 }
 
@@ -2225,7 +2225,96 @@ static void define_case_intrin (int *a, int *b)
 {
    SLang_define_case (a, b);
 }
-	  
+
+static char *convert_offset_to_ptr (char *str, unsigned int len, int ofs)
+{
+   if (ofs < 0)
+     {
+	if ((unsigned int) -ofs > len)
+	  {
+	     SLang_verror (SL_InvalidParm_Error, "offset parameter is too large for input string");
+	     return NULL;
+	  }
+	return (str + len) + ofs;
+     }
+
+   if ((unsigned int) ofs > len)
+     {
+	SLang_verror (SL_InvalidParm_Error, "offset parameter is too large for input string");
+	return NULL;
+     }
+   return str + ofs;
+}
+
+static void skip_bytes_intrin (void)
+{
+   int nmax = -1, n0 = 0;
+   int has_nmax = 0, utf8_mode;
+   unsigned int len;
+   char *str, *chars;
+   SLuchar_Type *strmin, *strmax;
+   int invert;
+   int nargs = SLang_Num_Function_Args;
+   SLwchar_Lut_Type *lut;
+   int ignore_combining = 0;
+
+   switch (nargs)
+     {
+      case 4:
+	if (-1 == SLang_pop_int (&nmax))
+	  return;
+	has_nmax = 1;
+	/* drop */
+      case 3:
+	if (-1 == SLang_pop_int (&n0))
+	  return;
+	/* drop */
+      default:
+	if (-1 == SLang_pop_slstring (&chars))
+	  return;
+	if (-1 == SLang_pop_slstring (&str))
+	  {
+	     SLang_free_slstring (chars);
+	     return;
+	  }
+     }
+   len = _pSLstring_bytelen (str);
+   if (has_nmax)
+     {
+	strmax = (SLuchar_Type *)convert_offset_to_ptr (str, len, nmax);
+	if (strmax == NULL)
+	  goto free_and_return;
+     }
+   else strmax = (SLuchar_Type *)str + len;
+
+   strmin = (SLuchar_Type *)convert_offset_to_ptr (str, len, n0);
+   if (strmin == NULL)
+     goto free_and_return;
+
+   /* FIXME!! There should be a way of specifying this when making the lut */
+   utf8_mode = _pSLinterp_UTF8_Mode; _pSLinterp_UTF8_Mode = 0;   
+   invert = (chars[0] == '^');
+   if (invert)
+     lut = SLwchar_strtolut ((SLuchar_Type*)chars+1, 1, 1);
+   else
+     lut = SLwchar_strtolut ((SLuchar_Type*)chars, 1, 1);
+   _pSLinterp_UTF8_Mode = utf8_mode;
+   if (lut == NULL)
+     goto free_and_return;
+
+   strmax = SLwchar_skip_range (lut, strmin, strmax, ignore_combining, invert);
+   SLwchar_free_lut (lut);
+   if (strmax == NULL)
+     goto free_and_return;
+   
+   (void) SLang_push_integer ((int)((char *)strmax - str));
+   /* drop */
+
+free_and_return:
+   SLang_free_slstring (str);
+   SLang_free_slstring (chars);
+}
+
 static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
 {
    MAKE_INTRINSIC_I("create_delimited_string",  create_delimited_string_cmd, SLANG_VOID_TYPE),
@@ -2273,7 +2362,7 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_SS("str_delete_chars", str_delete_chars_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("glob_to_regexp", glob_to_regexp, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_2("count_char_occurances", count_char_occurances, SLANG_UINT_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE),
-
+   MAKE_INTRINSIC_0("strskipbytes", skip_bytes_intrin, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

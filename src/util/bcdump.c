@@ -217,7 +217,7 @@ static void dump_token (_pSLang_Token_Type *t)
 	break;
 	
       case QUALIFIER_TOKEN:
-	b = "__qualifiers";
+	b = "set __qualifiers";
 	break;
 	
       case RETURN_TOKEN:

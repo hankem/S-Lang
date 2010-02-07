@@ -119,7 +119,7 @@
   When UTF-8 mode is not in effect, the byte and character forms will
   produce the same sequence.  Otherwise, the string will be decoded
   to generate the (wide) character sequence.  If the string contains
-  an invalid UTF-8 encoded character, sucessive bytes of the invalid
+  an invalid UTF-8 encoded character, successive bytes of the invalid
   sequence will be returned as negative integers.  For example, 
   \exmp{"a\\xAB\\x{AB}"} specifies a string composed of the character
   \exmp{a}, a byte \exmp{0xAB}, and the character \exmp{0xAB}.  In

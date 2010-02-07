@@ -136,7 +136,7 @@
 
        fp = fopen(file, "r");
        if (fp == NULL)
-         error("fopen %s failed." file);
+         throw OpenError, "fopen failed to open $file for reading"$;
        while (-1 != fgets (&buf, fp))
          {
             if (root == NULL)
@@ -219,12 +219,12 @@
   The following function opens a file in append mode and writes a
   string to it:
 #v+
-    define append_string_to_file (file, str)
+    define append_string_to_file (str, file)
     {
        variable fp = fopen (file, "a");
        if (fp == NULL) 
          throw OpenError, "$file could not be opened"$;
-       () = fputs (string, fp);
+       () = fputs (str, fp);
        () = fclose (fp);
     }
 #v-

@@ -123,7 +123,7 @@
      % ==> xfiles = ["slang.a", "slstring.b", "slarray.c"];
 #v-
 \notes
-  Many mathematical functions already work transparantly on arrays.
+  Many mathematical functions already work transparently on arrays.
   For example, the following two statements produce identical results:
 #v+
      B = sin (A);
@@ -516,7 +516,7 @@
 #v+
      i = where (a, &j);
 #v-
-  are equivalent, but the latter form is prefered since it executes
+  are equivalent, but the latter form is preferred since it executes
   about twice as fast as the former.
 
   Although this function may appear to be simple or even trivial, it

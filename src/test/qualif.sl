@@ -126,6 +126,27 @@ test_qualifier_exists ("foo", 0; food=7);
 test_qualifier_exists ("foo", 0;; struct{food=7});
 test_qualifier_exists ("foo", 1;; struct{food=7, foo});
 
+private variable Funcs = Assoc_Type[];
+Funcs["f"] = &test_qualifier_exists;
+
+private define passthru ();
+private define test_qualifier_passing (name, exists)
+{
+   (@Funcs["f"])(name, exists;; __qualifiers);
+   (@Funcs["f"])(passthru(name, exists);; __qualifiers);
+   (@Funcs["f"])(name, exists;; passthru(__qualifiers));
+   (@passthru(Funcs["f"]))(name, exists;; __qualifiers);
+}
+
+test_qualifier_passing ("foo", 0);
+test_qualifier_passing ("foo", 1; goo, foo=7);
+test_qualifier_passing ("goo", 1; goo, foo=7);
+test_qualifier_passing ("foo", 1; goo, foo);
+test_qualifier_passing ("boo", 0; goo, foo);
+test_qualifier_passing ("foo", 0; food=7);
+test_qualifier_passing ("foo", 0;; struct{food=7});
+test_qualifier_passing ("foo", 1;; struct{food=7, foo});
+
 print ("Ok\n");
 
 exit (0);

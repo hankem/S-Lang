@@ -2619,7 +2619,7 @@ static int get_identifier_expr_token (_pSLang_Token_Type *ctok)
  */
 static void postfix_expression (_pSLang_Token_Type *ctok)
 {
-   unsigned int start_pos, end_pos;
+   unsigned int start_pos;
    unsigned char type;
    _pSLang_Token_Type *last_token;
 
@@ -2667,6 +2667,8 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
       case MULTI_STRING_TOKEN:
 	append_token (ctok);
 	get_token (ctok);
+	if (ctok->type == OPAREN_TOKEN)
+	  _pSLparse_error(SL_SYNTAX_ERROR, "Literal constant is not callable", ctok, 1);
 	break;
 
       case OPAREN_TOKEN:
@@ -2775,7 +2777,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 
    while (_pSLang_Error == 0)
      {
-	end_pos = Token_List->len;
+	unsigned int end_pos = Token_List->len;
 	type = ctok->type;
 	switch (type)
 	  {
@@ -2806,7 +2808,11 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 		  append_token_of_type (ARG_TOKEN);
 		  (void) get_token (ctok);
 		  function_args_expression (ctok, 0, 1);
-		  token_list_element_exchange (start_pos, end_pos);
+		  /* Now we have: ... @ __args ...
+		   * and we want: ... __args ... @
+		   */
+		  /* token_list_element_exchange (start_pos, end_pos); */
+		  token_list_element_exchange (end_pos-1, end_pos);
 		  break;
 	       } 
 	     
@@ -2902,6 +2908,8 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 	       append_token_of_type (_NULL_TOKEN);
 	     if (handle_num_args) append_token_of_type (EARG_TOKEN);
 	     get_token (ctok);
+	     if (ctok->type == OPAREN_TOKEN)
+	       _pSLparse_error (SL_SYNTAX_ERROR, "A '(' is not permitted here", ctok, 0);
 	     return;
 
 	   case SEMICOLON_TOKEN:

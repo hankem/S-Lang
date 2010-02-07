@@ -258,7 +258,7 @@
 \description
   This function is similar to the \ifun{typeof} function except in the
   case of arrays.  If the object \exmp{x} is an array, then the data
-  type of the array will be returned. otherwise \ifun{_typeof} returns
+  type of the array will be returned. Otherwise \ifun{_typeof} returns
   the data type of \exmp{x}. 
 \example
 #v+

@@ -23,7 +23,7 @@
 \description
   The \ifun{bstrlen} function may be used to obtain the length of a
   binary string.  A binary string differs from an ordinary string (a C
-  string) in that a binary string may include null chracters.
+  string) in that a binary string may include null characters.
 \example
 #v+
     s = "hello\0";
@@ -34,13 +34,13 @@
 \done
 
 \function{count_byte_occurances}
-\synopsis{Count the number of occurances of a byte in a binary string}
+\synopsis{Count the number of occurrences of a byte in a binary string}
 \usage{UInt_Type count_byte_occurances (bstring, byte)}
 \description
   This function returns the number of times the specified byte
   occurs in the binary string \exmp{bstr}.
 \notes
-  This function uses byte-semanics.  If character semantics are
+  This function uses byte-semantics.  If character semantics are
   desired, use the \ifun{count_char_occurances} function.
 \seealso{count_char_occurances}
 \done

@@ -171,8 +171,7 @@ typedef enum
    /* byte codes for dealing with the frame pointer and arg list */
    SLANG_BC_CALL_DIRECT		= 0x70,
    SLANG_BC_CALL_DIRECT_FRAME	= 0x71,
-   /* SLANG_BC_ARG_LVARIABLE	= 0x72, */
-   SLANG_BC_UNUSED_0x72		= 0x72,
+   SLANG_BC_CALL_DIRECT_NARGS	= 0x72,
    SLANG_BC_EARG_LVARIABLE	= 0x73,
 #define USE_BC_LINE_NUM	0	       /* used in slang.c */
    /* SLANG_BC_LINE_NUM		= 0x74, */

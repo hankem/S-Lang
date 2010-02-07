@@ -425,5 +425,32 @@ if (_slang_utf8_ok)
    test_count_occur (&count_char_occurances, "\u{00FF}  \u{00FF} ", 0xFF, 2);
 }
 
+private define test_strskipbytes (args, ans)
+{
+   variable n1 = strskipbytes (__push_list(args));
+   if (n1 != ans)
+     {
+	failed ("strskipbytes failed, expected %d, got %d", ans, n1);
+     }
+}
+
+test_strskipbytes ({"abc def", "a-z", 4}, 7);
+test_strskipbytes ({"abc def", "a-z", 4, -1}, 6);
+test_strskipbytes ({"abc def", "a-z"}, 3);
+test_strskipbytes ({"abc def", "a-z", 0}, 3);
+test_strskipbytes ({"abc def", "a-z", 1}, 3);
+test_strskipbytes ({"abc def", "a-z", 2}, 3);
+test_strskipbytes ({"abc def", "a-z", 3}, 3);
+test_strskipbytes ({"abc def", "a-z", 5}, 7);
+test_strskipbytes ({"abc def", "a-z", 6}, 7);
+test_strskipbytes ({"abc def", "a-z", 7}, 7);
+
+test_strskipbytes ({"abc def", "a-z", 0, 0}, 0);
+test_strskipbytes ({"abc def", "a-z", 0, 1}, 1);
+test_strskipbytes ({"abc def", "a-z", 0, 2}, 2);
+test_strskipbytes ({"abc def", "a-z", 0, 4}, 3);
+test_strskipbytes ({"abc def", "a-z", 0, -1}, 3);
+test_strskipbytes ({"abc def", "a-z", -3, -1}, 6);
+		      
 print ("Ok\n");
 exit (0);

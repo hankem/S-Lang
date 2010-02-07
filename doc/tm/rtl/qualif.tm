@@ -2,7 +2,7 @@
 \synopsis{Get the value of a qualifier}
 \usage{value = qualifier (String_Type name [,default_value])}
 \description
- This function may be used to get the value of a qualifer.  If the
+ This function may be used to get the value of a qualifier.  If the
  specified qualifier does not exist, \exmp{NULL} will be returned,
  unless a default value has been provided.
 \example
@@ -70,9 +70,9 @@
     line_segment (1,1, 10,10; color="blue");
 #v-
  Note that in this implementation of \exmp{line_segment}, the
- \exmp{color} qualifier was explicitely passed to the \exmp{lineto}
+ \exmp{color} qualifier was explicitly passed to the \exmp{lineto}
  function.  However, this technique does not scale well.  For example, the
- \exmp{lineto} function might also take a qualifer that specifies the
+ \exmp{lineto} function might also take a qualifier that specifies the
  line-style, to be used as
 #v+
     line_segment (1,1, 10,10; color="blue", linestyle="solid");

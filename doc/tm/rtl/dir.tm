@@ -1,6 +1,6 @@
 
 \function{access}
-\synopsis{Check to see if a file is accessable}
+\synopsis{Check to see if a file is accessible}
 \usage{Int_Type access (String_Type pathname, Int_Type mode)}
 \description
  This functions checks to see if the current process has access to the
@@ -86,7 +86,7 @@
 \description
   The \ifun{hardlink} function creates a hard-link called
   \exmp{newpath} to the existing file \exmp{oldpath}.  If the link was
-  sucessfully created, the function will return 0.  Upon error, the
+  successfully created, the function will return 0.  Upon error, the
   function returns -1 and sets \ivar{errno} accordingly.
 \notes
   Not all systems support the concept of a hard-link.

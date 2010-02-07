@@ -164,7 +164,7 @@
   In addition to creating a new static namespace and associating it
   with the compilation unit, the function will also create a new
   private namespace.  As a result, any symbols in the previous private
-  namespace will be no longer be accessable.  For this reason, it is
+  namespace will be no longer be accessible.  For this reason, it is
   recommended that this function should be used before any private
   symbols have been created.
 \example
