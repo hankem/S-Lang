@@ -308,6 +308,13 @@ define new_process ()
 	variable e;
 	try (e)
 	  {
+	     variable dir = qualifier ("dir");
+	     if (dir != NULL)
+	       {
+		  if (-1 == chdir (dir))
+		    throw OSError, "chdir: " + errno_string ();
+	       }
+
 	     % We do not need the parent descriptors, so close them.
 	     parent_fds = NULL;
 	     exec_child (argv, child_fds, child_ifds;; __qualifiers);

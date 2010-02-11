@@ -49,13 +49,16 @@
    stderr=filename
 #v-
     These qualifiers allow the stdin, stdout, and stderr file
-    descriptors in the subprocess to be redirected to a file.
+    descriptors in the subprocess to be redirected to a file.  Note:
+    The filenames are interpreted relative to the value of the
+    \exmp{dir} qualifier.
 #v+
    fdN=string
 #v- 
     This qualifier will cause the integer file descriptor N to be open
     in the subprocess and redirected to the filename represented by
-    the string.  The access mode is dictated by the first few
+    the string, which is interpreted relative to the value of the \exmp{dir}
+    qualifier.  The access mode is dictated by the first few
     characters of the string as described in more detail below.
 #v+ 
    stdin=File_Type|FD_Type
@@ -74,6 +77,13 @@
      subprocess is created by duping the descriptor given by the
      integer value of the qualifier.  For example, dup2=1 would cause
      stderr (fd=2) in the subprocess to be redirected to stdout (fd=1).
+#v+
+   dir=string
+#v-
+     Change to the specified directory in the child process.  This
+     will happen after the child process is started, but before any
+     files have been opened.  Hence, files attached to \ivar{stdin},
+     \ivar{stdout}, etc will be opened relative to this directory.
 #v+
    pre_exec_hook=&func
 #v-

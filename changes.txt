@@ -14,7 +14,9 @@ Changes since 2.2.2
    via derefencing an array of function references, e.g.,
    (@f[n])(args;q).
 6. src/slparse.c: Flag attempts to call literals as functions.
-
+7. slsh/lib/process.sl: Added a "dir" qualifier to the new_process
+   function.  This allows the subprocess to be started in a specified
+   directory.
 
 {{{ Previous Versions
 
