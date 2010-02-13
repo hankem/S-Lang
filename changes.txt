@@ -17,6 +17,11 @@ Changes since 2.2.2
 7. slsh/lib/process.sl: Added a "dir" qualifier to the new_process
    function.  This allows the subprocess to be started in a specified
    directory.
+8. src/slrline.c: Added rline_get_last_key_function, which returns the
+   last slang readline key function.
+9. */Makefile.in: Commmened out "DESTDIR=" lines (Marcel Telka).
+10. slsh/lib/rline.sl: Added rline_edit_history (allows the history to
+    be edited in an external editor) and rline_up/down_hist functions.
 
 {{{ Previous Versions
 

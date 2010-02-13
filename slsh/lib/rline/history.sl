@@ -5,8 +5,14 @@
 %
 
 variable RLine_Hist_Max_Lines = 50;
-
 variable RLine_History_File = NULL;
+#ifdef UNIX
+%if (getenv ("HOME") != NULL) RLine_History_File = "$HOME/.${name}_slhist";
+#endif
+
+autoload ("rline_edit_history", "rline/histedit.sl");
+autoload ("rline_up_hist_search", "rline/histsrch.sl");
+autoload ("rline_down_hist_search", "rline/histsrch.sl");
 
 define rline_load_history ()
 {

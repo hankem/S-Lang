@@ -1,3 +1,4 @@
+#-*-sh-*-
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
 LDFLAGS		= @LDFLAGS@ @DYNAMIC_LINK_FLAGS@
@@ -46,7 +47,7 @@ READLINE_LIB	= @LIB_READLINE@
 #---------------------------------------------------------------------------
 # DESTDIR is designed to facilitate making packages.  Normally it is empty
 #---------------------------------------------------------------------------
-DESTDIR		=
+#DESTDIR		=
 BIN_DIR		= @bindir@
 MAN_DIR		= @mandir@/man1
 DEST_LIB_DIR	= -L$(DESTDIR)@libdir@

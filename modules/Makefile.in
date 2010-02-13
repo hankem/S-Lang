@@ -67,7 +67,7 @@ HELP_DIR	= $(SLSH_DIR)/help
 #---------------------------------------------------------------------------
 # DESTDIR is designed to facilitate making packages.  Normally it is empty
 #---------------------------------------------------------------------------
-DESTDIR =
+#DESTDIR =
 DEST_MODULEDIR	= $(DESTDIR)$(MODULE_INSTALL_DIR)
 DEST_SLSH_DIR	= $(DESTDIR)$(SLSH_DIR)
 DEST_CMAPSDIR	= $(DESTDIR)$(CMAPS_DIR)

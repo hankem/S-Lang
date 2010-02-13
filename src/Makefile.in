@@ -51,7 +51,7 @@ MODULE_INSTALL_DIR = @libdir@/slang/v@slang_major_version@/modules
 #---------------------------------------------------------------------------
 # DESTDIR is designed to facilitate making packages.  Normally it is empty
 #---------------------------------------------------------------------------
-DESTDIR =
+#DESTDIR =
 DEST_LIBDIR = $(DESTDIR)$(install_lib_dir)
 DEST_DOCDIR = $(DESTDIR)$(install_doc_dir)
 DEST_INCDIR = $(DESTDIR)$(install_include_dir)

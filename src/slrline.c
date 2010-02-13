@@ -54,7 +54,7 @@ struct _pSLrline_Type
    unsigned int hscroll;		       /* amount to use for horiz scroll */
    SLFUTURE_CONST char *prompt;
 
-   FVOID_STAR last_fun;		       /* last function executed by rl */
+   SLang_Key_Type last_key;	       /* last key executed by rl */
 
    /* These two contain an image of what is on the display.  They are 
     * used by the default display handling functions. (update_hook is NULL)
@@ -1029,6 +1029,74 @@ static void blink_match (SLrline_Type *rli)
      }
 }
 
+static void free_last_key (SLrline_Type *rli)
+{
+   SLang_Key_Type *last_key;
+
+   if (rli == NULL)
+     return;
+   
+   last_key = &rli->last_key;
+   switch (last_key->type)
+     {
+      case SLKEY_F_INTERPRET:
+	if (last_key->f.s != NULL)
+	  {
+	     SLang_free_slstring (last_key->f.s);
+	     last_key->f.s = NULL;
+	  }
+	break;
+
+      case SLKEY_F_SLANG:
+	if (NULL != last_key->f.slang_fun)
+	  {
+	     SLang_free_function (last_key->f.slang_fun);
+	     last_key->f.slang_fun = NULL;
+	  }
+	break;
+     }
+
+   last_key->type = 0;
+}
+
+static int save_last_key (SLrline_Type *rli, SLang_Key_Type *key)
+{
+   SLang_Key_Type *last_key;
+
+   if ((rli == NULL) || (key == NULL))
+     return 0;
+
+   free_last_key (rli);
+
+   last_key = &rli->last_key;
+   last_key->type = 0;
+
+   switch (key->type)
+     {
+      case SLKEY_F_INTERPRET:
+	if (NULL == (last_key->f.s = SLang_create_slstring (key->f.s)))
+	  return -1;
+	break;
+
+      case SLKEY_F_KEYSYM:
+	last_key->f.keysym = key->f.keysym; 
+	break;
+
+      case SLKEY_F_SLANG:
+	if (NULL == (last_key->f.slang_fun = SLang_copy_function (key->f.slang_fun)))
+	  return -1;
+	break;
+
+      default:
+      case SLKEY_F_INTRINSIC:
+	last_key->f.f = key->f.f;
+     }
+
+   last_key->type = key->type;
+   memcpy (last_key->str, key->str, sizeof(key->str));
+   return 0;
+}
+
 static SLrline_Type *Active_Rline_Info = NULL;
 
 char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigned int *lenp)
@@ -1080,7 +1148,7 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
    rli->curs_pos = rli->start_column = 0;
    rli->new_upd_len = rli->old_upd_len = 0;
 
-   rli->last_fun = NULL;
+   free_last_key (rli);
    if (rli->update_hook == NULL)
      putc ('\r', stdout);
 
@@ -1157,7 +1225,7 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 	     return SLmake_nstring ((char *)rli->buf, rli->len);
 	  }
 	if (key != NULL)
-	  rli->last_fun = key->f.f;
+	  (void) save_last_key (rli, key);
      }
 }
 
@@ -1305,6 +1373,7 @@ void SLrline_close (SLrline_Type *rli)
 	SLang_free_slstring (rli->name);
      }
 
+   free_last_key (rli);
    free_history (rli->root);
    free_history_item (rli->saved_line);
    SLang_free_function (rli->list_completions_callback);
@@ -1794,7 +1863,7 @@ static void rline_call_intrinsic (char *fun)
      }
 
    (void) (*f)(Active_Rline_Info);
-   Active_Rline_Info->last_fun = (FVOID_STAR) f;
+   /* Active_Rline_Info->last_fun = (FVOID_STAR) f; */
 }
 
 static void rline_get_line_intrinsic (void)
@@ -1963,6 +2032,69 @@ static void rline_set_history_intrinsic (void)
    SLang_free_array (at);
 }
 
+static char *find_function_string (SLrline_Type *rli, FVOID_STAR f)
+{
+   SLKeymap_Function_Type *fp;
+   
+   if ((rli == NULL) || (rli->keymap == NULL))
+     return NULL;
+
+   fp = rli->keymap->functions;
+   while ((fp != NULL) && (fp->name != NULL))
+     {
+	if ((FVOID_STAR) fp->f == f) return (char *) fp->name;
+	fp++;
+     }
+   return NULL;
+}
+
+static void rline_get_last_key_function_intrinsic (void)
+{
+   SLang_Key_Type *last_key;
+   char *s;
+
+   if (Active_Rline_Info == NULL)
+     {
+	(void) SLang_push_null ();
+	return;
+     }
+   
+   last_key = &Active_Rline_Info->last_key;
+   switch (last_key->type)
+     {
+      case SLKEY_F_INTERPRET:
+	if (last_key->f.s != NULL)
+	  {
+	     (void) SLang_push_string (last_key->f.s);
+	     return;
+	  }
+	break;
+
+      case SLKEY_F_INTRINSIC:
+	if (NULL != (s = find_function_string (Active_Rline_Info, last_key->f.f)))
+	  {
+	     (void) SLang_push_string (s);
+	     return;
+	  }
+	break;
+
+      case SLKEY_F_SLANG:
+	if (NULL != last_key->f.slang_fun)
+	  {
+	     (void) SLang_push_function (last_key->f.slang_fun);
+	     return;
+	  }
+      case SLKEY_F_KEYSYM:
+	(void) SLang_push_uint (last_key->f.keysym);
+	return;
+	
+      default:
+	break;
+     }
+   
+   (void) SLang_push_null ();
+}
+
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
    MAKE_INTRINSIC_S("rline_call", rline_call_intrinsic, VOID_TYPE),
@@ -1983,6 +2115,7 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_I("rline_input_pending", rline_input_pending_intrinsic, INT_TYPE),
    MAKE_INTRINSIC_0("rline_set_completion_callback", rline_set_completion_callback, VOID_TYPE),
    MAKE_INTRINSIC_0("rline_set_list_completions_callback", rline_set_list_completions_callback, VOID_TYPE),
+   MAKE_INTRINSIC_0("rline_get_last_key_function", rline_get_last_key_function_intrinsic, VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

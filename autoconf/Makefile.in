@@ -13,7 +13,7 @@ pkgconfigdir = @pkgconfigdir@
 #---------------------------------------------------------------------------
 # DESTDIR is designed to facilitate making packages.  Normally it is empty
 #---------------------------------------------------------------------------
-DESTDIR =
+#DESTDIR =
 DEST_PKGCONFIGDIR = $(DESTDIR)$(pkgconfigdir)
 #
 MKINSDIR = autoconf/mkinsdir.sh
