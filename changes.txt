@@ -22,6 +22,8 @@ Changes since 2.2.2
 9. */Makefile.in: Commmened out "DESTDIR=" lines (Marcel Telka).
 10. slsh/lib/rline.sl: Added rline_edit_history (allows the history to
     be edited in an external editor) and rline_up/down_hist functions.
+11. src/slparse.c: An incorrect check (< instead of <=) was causing -0
+    to generate an error.
 
 {{{ Previous Versions
 

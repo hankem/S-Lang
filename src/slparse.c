@@ -132,7 +132,7 @@ static int check_int_token_overflow (_pSLang_Token_Type *ctok, int sign)
    if (ival == lval)
      {
 	if (((lval >= 0) && (sign > 0))
-	    || ((lval < 0) && (sign < 0)))
+	    || ((lval <= 0) && (sign < 0)))
 	  return 0;
      }
    SLang_verror (SL_SYNTAX_ERROR, "Literal integer constant is too large for %s", SLclass_get_datatype_name(stype));
@@ -184,7 +184,7 @@ static int check_llong_token_overflow (_pSLang_Token_Type *ctok, int sign)
 
    if ((ctok->flags & SLTOKEN_IS_HEX)
        || ((lval >= 0) && (sign > 0))
-       || ((lval < 0) && (sign < 0)))
+       || ((lval <= 0) && (sign < 0)))
      return 0;
 
    SLang_verror (SL_SYNTAX_ERROR, "Literal integer constant is too large for %s", SLclass_get_datatype_name(SLANG_LLONG_TYPE));

@@ -274,7 +274,6 @@ test ("-1L != 0L-1L");
 test ("-11^2 != -121");
 test ("-2.0^2 != -4");
 #endif
-print ("Ok\n");
 
 #ifexists test_pop_mmt
 try
@@ -376,5 +375,9 @@ try
    () = evalfile("./longline.inc");
 }
 catch LimitExceededError;
+
+$1 = -0;
+print ("Ok\n");
+
 exit (0);
 
