@@ -24,6 +24,8 @@ Changes since 2.2.2
     be edited in an external editor) and rline_up/down_hist functions.
 11. src/slparse.c: An incorrect check (< instead of <=) was causing -0
     to generate an error.
+12. .../tm/*:  Corrected some documentation typos and spelling errors
+    (Agathoklis D. Hatzimanikas).
 
 {{{ Previous Versions
 

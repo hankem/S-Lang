@@ -8659,7 +8659,7 @@ str_delete_chars
   Delete characters from a string
 
  USAGE
-  String_Type str_delete_chars (String_Type str, String_Type del_set
+  String_Type str_delete_chars (String_Type str, String_Type del_set)
 
  DESCRIPTION
   This function may be used to delete the set of characters specified
@@ -9046,23 +9046,6 @@ get_struct_field
    The `get_struct_field' function gets the value of the field
    whose name is specified by `field_name' of the structure `s'.
 
- EXAMPLE
-   The following example illustrates how this function may be used to
-   to print the value of a structure.
-
-      define print_struct (s)
-      {
-         variable name;
-
-         foreach (get_struct_field_names (s))
-           {
-             name = ();
-             value = get_struct_field (s, name);
-             vmessage ("s.%s = %s\n", name, string(value));
-           }
-      }
-
-
  SEE ALSO
   set_struct_field, get_struct_field_names, array_info
 
@@ -9083,7 +9066,8 @@ get_struct_field_names
 
  EXAMPLE
    The following example illustrates how the
-   `get_struct_field_names' function may be used to print the
+   `get_struct_field_names' function may be used in conjunction
+   with the `get_struct_field' function to print the
    value of a structure.
 
       define print_struct (s)

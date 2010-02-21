@@ -153,22 +153,6 @@
 \description
    The \ifun{get_struct_field} function gets the value of the field
    whose name is specified by \exmp{field_name} of the structure \exmp{s}.
-\example
-   The following example illustrates how this function may be used to 
-   to print the value of a structure.
-#v+
-      define print_struct (s)
-      {
-         variable name;
-
-         foreach (get_struct_field_names (s))
-           {
-             name = ();
-             value = get_struct_field (s, name);
-             vmessage ("s.%s = %s\n", name, string(value));
-           }
-      }
-#v-
 \seealso{set_struct_field, get_struct_field_names, array_info}
 \done
 
@@ -181,7 +165,8 @@
    struct \exmp{s}.
 \example
    The following example illustrates how the
-   \ifun{get_struct_field_names} function may be used to print the
+   \ifun{get_struct_field_names} function may be used in conjunction
+   with the \ifun{get_struct_field} function to print the
    value of a structure.
 #v+
       define print_struct (s)

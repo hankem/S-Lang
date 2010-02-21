@@ -6,7 +6,7 @@
  \exmp{fork} system function.  See the approriate documentation for
  the actual semantics involved such as what is preserved in the child
  process.  Upon sucess, the function returns a value that is greater
- than 0 to the parent process that representsthe child process's id.
+ than 0 to the parent process that represents the child process's id.
  It will return 0 to the child process.  If the fork function fails, a
  value of -1 will be returned and \ivar{errno} set accordingly.
 \example

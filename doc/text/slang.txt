@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  Sep 1, 2009
+  Feb 21, 2010
   ____________________________________________________________
 
 
@@ -192,8 +192,8 @@
   precision complex numbers. In addition, it supports user defined
   structure types, multi-dimensional array types, lists, and associative
   arrays. To facilitate the construction of sophisticated data
-  structures such as linked lists and trees, the language also inclues a
-  ``reference'' type. The reference type provides much of the same
+  structures such as linked lists and trees, the language also includes
+  a ``reference'' type. The reference type provides much of the same
   flexibility as pointers in other languages. Finally, applications
   embedding the interpreter may also provide special application
   specific types, such as the Mark_Type that the jjeedd editor provides.
@@ -289,7 +289,7 @@
   Users with generic questions about the interpreter are encouraged to
   post questions to the Usenet newsgroup alt.lang.s-lang. More specific
   questions relating to the use of SS--LLaanngg within some application may be
-  better answered in an application-specifc forum.  For example, users
+  better answered in an application-specific forum.  For example, users
   with questions about using SS--LLaanngg as embedded in the jjeedd editor are
   more likely to be answered in the comp.editors newsgroup or on the jjeedd
   mailing list. Similarly users with questions concerning ssllrrnn will find
@@ -754,7 +754,7 @@
   or public namespace, each SS--LLaanngg source file or compilation unit has a
   private or anonymous namespace associated with it. The private
   namespace may be used to define symbols that are local to the
-  compilation unit and inaccessable from the outside. The language also
+  compilation unit and inaccessible from the outside. The language also
   allows the creation of named (non-anonymous or static) namespaces that
   permit access via the namespace operator. See the chapter on
   ``Namespaces'' for more information.
@@ -1181,7 +1181,7 @@
   Strictly speaking, SS--LLaanngg has no separate boolean type; rather it
   represents boolean values as Char_Type objects. In particular, boolean
   FALSE is equivalent to Char_Type 0, and TRUE as any non-zero Char_Type
-  value. Since the exact value of TRUE is unspecfied, it is unnecessary
+  value. Since the exact value of TRUE is unspecified, it is unnecessary
   and even pointless to define TRUE and FALSE literals in SS--LLaanngg.
 
   44..22..  TTyyppeeccaassttiinngg:: CCoonnvveerrttiinngg ffrroomm oonnee TTyyppee ttoo AAnnootthheerr
@@ -1281,7 +1281,7 @@
 
   66..  VVaarriiaabblleess
 
-  As many of the preceeding examples have shown, a variable must be
+  As many of the preceding examples have shown, a variable must be
   declared before it can be used, otherwise an undefined name error will
   be generated. A variable is declared using the variable keyword, e.g,
 
@@ -1651,7 +1651,7 @@
 
   Loosely speaking, a _s_t_a_t_e_m_e_n_t is composed of _e_x_p_r_e_s_s_i_o_n_s that are
   grouped according to the syntax or grammar of the language to express
-  a complete computation. A semicolon is used to denote the the end of a
+  a complete computation. A semicolon is used to denote the end of a
   statement.
 
   A statement that occurs within a function is executed only during
@@ -1894,13 +1894,13 @@
               { ...  :  ...}
 
   The `:' operator is a special symbol that in the context of the switch
-  statement, causes the the top item on the stack to be tested, and if
-  it is non-zero, the rest of the block will get executed and control
-  will pass out of the switch statement.  Otherwise, the execution of
-  the block will be terminated and the process will be repeated for the
-  next block. If a block contains no : operator, the entire block is
-  executed and control will pass onto the next statement following the
-  switch statement.  Such a block is known as the _d_e_f_a_u_l_t case.
+  statement, causes the top item on the stack to be tested, and if it is
+  non-zero, the rest of the block will get executed and control will
+  pass out of the switch statement.  Otherwise, the execution of the
+  block will be terminated and the process will be repeated for the next
+  block. If a block contains no : operator, the entire block is executed
+  and control will pass onto the next statement following the switch
+  statement.  Such a block is known as the _d_e_f_a_u_l_t case.
 
   As a simple example, consider the following:
 
@@ -2330,7 +2330,7 @@
   compiled language and is callable from the interpreter. Nearly all of
   the built-in functions are of this variety. At the moment the basic
   interpreter provides nearly 300 intrinsic functions. Examples include
-  the trigometric functions sin and cos, string functions such as
+  the trigonometric functions sin and cos, string functions such as
   strcat, etc. Dynamically loaded modules such as the png and pcre
   modules add additional intrinsic functions.
 
@@ -2778,10 +2778,10 @@
   Note that the qualifiers are not handled in the parameter list; rather
   they are handled in the function body using the qualifier function,
   which is used to obtain the value of the qualifier. The second argu-
-  ment to the qualifier function specifies a the default value to be
-  used if the function was not called with the specified qualifier. Also
-  note that the variable associated with the qualifier need not have the
-  same name as the qualifier.
+  ment to the qualifier function specifies the default value to be used
+  if the function was not called with the specified qualifier. Also note
+  that the variable associated with the qualifier need not have the same
+  name as the qualifier.
 
   A qualifier need not have a value--- its mere presence may be used to
   enable or disable a feature or trigger some action. For example,
@@ -2789,8 +2789,8 @@
             plot (x, y; connect_points);
 
   specifies a qualifier called connect_points that indicates that a line
-  should be drawn betweeen the data points. The presence of such a qual-
-  ifier can be detected using the qualifier_exists function:
+  should be drawn between the data points. The presence of such a quali-
+  fier can be detected using the qualifier_exists function:
 
             define plot (x,y)
             {
@@ -2804,8 +2804,8 @@
   Sometimes it is useful for a function to pass the qualifiers that it
   has received to other functions. Suppose that the plot function calls
   draw_symbol to plot the specified symbol at a particular location and
-  that it requires the symbol attibutes to be specified using qualfiers.
-  Then the plot function might look like:
+  that it requires the symbol attibutes to be specified using
+  qualifiers. Then the plot function might look like:
 
       define plot (x, y)
       {
@@ -2839,10 +2839,10 @@
                 draw_symbol (x[i],y[i] ;; __qualifiers());
            }
 
-  Note the syntax is slightly slightly different. The two semicolons
-  indicate that the qualifiers are specfied not as name-value pairs, but
-  as a structure. Using a single semicolon would have created a quali-
-  fier called __qualifiers, which is not what was desired.
+  Note the syntax is slightly different. The two semicolons indicate
+  that the qualifiers are specified not as name-value pairs, but as a
+  structure. Using a single semicolon would have created a qualifier
+  called __qualifiers, which is not what was desired.
 
   As alluded to above an added benefit of this approach is that the plot
   function does not need to know nor care about the qualifiers supported
@@ -3919,7 +3919,7 @@
       }
 
       vmessage ("%s is the largest city in the list",
-                 get_largest_city (Population_List)));
+                 get_largest_city (Population_List));
 
   The get_largest_city is a typical example of how one traverses a lin-
   ear linked-list by starting at the head of the list and successively
@@ -3933,10 +3933,10 @@
               variable largest, elem;
 
               largest = list;
-              foreach item (list)
+              foreach elem (list)
                 {
-                   if (item.population > largest.population)
-                     largest = item;
+                   if (elem.population > largest.population)
+                     largest = elem;
                 }
               return largest.city_name;
            }
@@ -3954,7 +3954,8 @@
               }
 
   would have been used. In other words, unless otherwise indicated via
-  the using clause, foreach walks the list using a field named next.
+  the using clause, foreach walks the list using a field named next by
+  default.
 
   Now consider a function that sorts the list according to population.
   To illustrate the technique, a _b_u_b_b_l_e_-_s_o_r_t will be used, not because
@@ -4184,7 +4185,7 @@
   Just because it is possible to define the action of a binary or unary
   operator on an user-defined type, it is not always wise to do so. A
   useful rule of thumb is to ask whether defining a particular operation
-  leads to more readable and maintanable code. For example, simply
+  leads to more readable and maintainable code. For example, simply
   looking at
 
      c = a + b;
@@ -4212,7 +4213,7 @@
 
            message ("The value is " + string (V));
            vmessage ("The result of %S+%S is %S", V1, V1, V1+V2);
-           str = The value of V is $V"$;
+           str = "The value of V is $V"$;
 
   For the Vector_Type one might want to use the string represention gen-
   erated by
@@ -4331,9 +4332,9 @@
 
   1155..11..  TTrraaddiittiioonnaall EErrrroorr HHaannddlliinngg
 
-  The simplist and perhaps most common mechanism for signalling a
-  failure or error in a function is for the function to return an error
-  code, e.g.,
+  The simplist and perhaps most common mechanism for signaling a failure
+  or error in a function is for the function to return an error code,
+  e.g.,
 
            define write_to_file (file, str)
            {
@@ -4391,10 +4392,10 @@
   making the appropriate changes for a small program can be a trivial
   task, for a large program this could be a major undertaking opening
   the possibility of introducing additional errors along the way. In a
-  nutshell, this is a code maintainence issue. For this reason, a vet-
-  eran programmer using this approach to error handling will consider
-  such possibilities from the outset and allow for error codes the first
-  time regardless of whether the functions can fail or not, e.g.,
+  nutshell, this is a code maintenance issue. For this reason, a veteran
+  programmer using this approach to error handling will consider such
+  possibilities from the outset and allow for error codes the first time
+  regardless of whether the functions can fail or not, e.g.,
 
             define simple_function ()
             {
@@ -4771,7 +4772,7 @@
 
   In order to make use of a module, it must first be ``imported'' into
   the interpreter. There are two ways to go about this. One is to use
-  the import function to dynamically link-in the specfied module, e.g.,
+  the import function to dynamically link-in the specified module, e.g.,
 
            import ("pcre");
 
@@ -5234,7 +5235,7 @@
   ssllsshh will read the script and feed it to the SS--LLaanngg interpreter for
   execution. If the script defines a public function called slsh_main,
   then ssllsshh will call it after the script has been loaded. In this
-  sense, slsh_main is analagous to main in CC or CC++++.
+  sense, slsh_main is analogous to main in CC or CC++++.
 
   A typical ssllsshh script is be structured as
 
@@ -5697,11 +5698,11 @@
           while (get_word (&word))
             a[word]++;
 
-  Note the concisness of the above code. It is important to appreciate
-  the fact that SS--LLaanngg is an byte-compiled interpreter that executes
+  Note the conciseness of the above code. It is important to appreciate
+  the fact that SS--LLaanngg is a byte-compiled interpreter that executes
   statements much slower than that of a language that compiles to
-  machine code. The roughly overhead of the processing of byte-codes by
-  the interpreter may be used to justify the rule of thumb that the
+  machine code. The overhead of the processing of byte-codes by the
+  interpreter may be used to roughly justify the rule of thumb that the
   smaller the code is, the faster it will run.
 
   When possible, always take advantage of SS--LLaanngg's powerful array
@@ -5722,7 +5723,7 @@
   2211..22..  UUssiinngg tthhee pprrooffiilleerr
 
   ssllpprrooff is an executable ssllsshh script that implements a standalone
-  profiler for ssllsshh scripts. The script is essentually a front-end for a
+  profiler for ssllsshh scripts. The script is essentially a front-end for a
   set of interpreter hooks defined in a file called profile.sl, which
   may be used by any application embedding SS--LLaanngg. The use of the
   profiler will first be demonstrated in the context of ssllpprrooff, and

@@ -917,7 +917,7 @@
 
 \function{str_delete_chars}
 \synopsis{Delete characters from a string}
-\usage{String_Type str_delete_chars (String_Type str, String_Type del_set}
+\usage{String_Type str_delete_chars (String_Type str, String_Type del_set)}
 \description
   This function may be used to delete the set of characters specified
   by \exmp{del_set} from the string \exmp{str}.  The result is returned.

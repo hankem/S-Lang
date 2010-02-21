@@ -146,7 +146,7 @@
    defined structure types, multi-dimensional array types, lists, and
    associative arrays.  To facilitate the construction of
    sophisticated data structures such as linked lists and trees, the
-   language also inclues a ``reference'' type.  The reference type
+   language also includes a ``reference'' type.  The reference type
    provides much of the same flexibility as pointers in other
    languages.  Finally, applications embedding the interpreter may
    also provide special application specific types, such as the
@@ -256,7 +256,7 @@
   Users with generic questions about the interpreter are encouraged to
   post questions to the Usenet newsgroup \var{alt.lang.s-lang}.  More
   specific questions relating to the use of \slang within some
-  application may be better answered in an application-specifc forum.
+  application may be better answered in an application-specific forum.
   For example, users with questions about using \slang as embedded in
   the \jed editor are more likely to be answered in the
   \var{comp.editors} newsgroup or on the \jed mailing list.  Similarly
@@ -756,7 +756,7 @@
   global or public namespace, each \slang source file or compilation
   unit has a private or anonymous namespace associated with it.  The
   private namespace may be used to define symbols that are local to
-  the compilation unit and inaccessable from the outside.  The
+  the compilation unit and inaccessible from the outside.  The
   language also allows the creation of named (non-anonymous or static)
   namespaces that permit access via the namespace operator.  See
   \chapterref{Namespaces} for more information.
@@ -1218,7 +1218,7 @@
    represents boolean values as \dtype{Char_Type} objects.  In
    particular, boolean FALSE is equivalent to \dtype{Char_Type} 0,
    and TRUE as any non-zero \dtype{Char_Type} value.  Since the
-   exact value of TRUE is unspecfied, it is unnecessary and even
+   exact value of TRUE is unspecified, it is unnecessary and even
    pointless to define TRUE and FALSE literals in \slang.
 
 #%}}}
@@ -1332,7 +1332,7 @@
 
 \labeled_chapter{Variables} #%{{{
 
-   As many of the preceeding examples have shown, a variable must be
+   As many of the preceding examples have shown, a variable must be
    declared before it can be used, otherwise an undefined name error
    will be generated.  A variable is declared using the \kw{variable}
    keyword, e.g,
@@ -1753,7 +1753,7 @@
    Loosely speaking, a \em{statement} is composed of \em{expressions}
    that are grouped according to the syntax or grammar of the language
    to express a complete computation.  A semicolon is used to denote
-   the the end of a statement.
+   the end of a statement.
 
    A statement that occurs within a function is executed only during
    execution of the function.  However, statements that occur outside
@@ -2011,7 +2011,7 @@
             { ...  :  ...}
 #v-
    The `\var{:}' operator is a special symbol that in the context of
-   the switch statement, causes the the top item on the stack to be
+   the switch statement, causes the top item on the stack to be
    tested, and if it is non-zero, the rest of the block
    will get executed and control will pass out of the switch statement.
    Otherwise, the execution of the block will be terminated and the process
@@ -2490,7 +2490,7 @@
    compiled language and is callable from the interpreter.  Nearly all
    of the built-in functions are of this variety.  At the moment the
    basic interpreter provides nearly 300 intrinsic functions. Examples
-   include the trigometric functions \ifun{sin} and \ifun{cos}, string
+   include the trigonometric functions \ifun{sin} and \ifun{cos}, string
    functions such as \ifun{strcat}, etc. Dynamically loaded modules
    such as the \module{png} and \module{pcre} modules add additional
    intrinsic functions.
@@ -2971,7 +2971,7 @@
   rather they are handled in the function body using the
   \ifun{qualifier} function, which is used to obtain the value of the
   qualifier. The second argument to the \ifun{qualifier} function
-  specifies a the default value to be used if the function was not
+  specifies the default value to be used if the function was not
   called with the specified qualifier.  Also note that the variable
   associated with the qualifier need not have the same name as the
   qualifier.
@@ -2982,7 +2982,7 @@
      plot (x, y; connect_points);
 #v-
   specifies a qualifier called \exmp{connect_points} that indicates
-  that a line should be drawn betweeen the data points.  The presence
+  that a line should be drawn between the data points.  The presence
   of such a qualifier can be detected using the
   \ifun{qualifier_exists} function:
 #v+
@@ -3000,7 +3000,7 @@
   has received to other functions.  Suppose that the \exmp{plot}
   function calls \exmp{draw_symbol} to plot the specified symbol at a
   particular location and that it requires the symbol attibutes to be
-  specified using qualfiers.  Then the plot function might look like:
+  specified using qualifiers.  Then the plot function might look like:
 #v+
     define plot (x, y)
     {
@@ -3035,10 +3035,10 @@
          draw_symbol (x[i],y[i] ;; __qualifiers());
     }
 #v-
-  Note the syntax is slightly slightly different.  The two semicolons
-  indicate that the qualifiers are specfied not as name-value pairs,
-  but as a structure.  Using a single semicolon would have created a
-  qualifier called \exmp{__qualifiers}, which is not what was desired.
+  Note the syntax is slightly different.  The two semicolons indicate
+  that the qualifiers are specified not as name-value pairs, but as a
+  structure.  Using a single semicolon would have created a qualifier
+  called \exmp{__qualifiers}, which is not what was desired.
 
   As alluded to above an added benefit of this approach is that the
   \exmp{plot} function does not need to know nor care about the
@@ -4208,7 +4208,7 @@
     }
 
     vmessage ("%s is the largest city in the list", 
-               get_largest_city (Population_List)));
+               get_largest_city (Population_List));
 #v-
   The \exmp{get_largest_city} is a typical example of how one traverses
   a linear linked-list by starting at the head of the list and
@@ -4223,10 +4223,10 @@
        variable largest, elem;
 
        largest = list;
-       foreach item (list)
+       foreach elem (list)
          {
-            if (item.population > largest.population)
-              largest = item;
+            if (elem.population > largest.population)
+              largest = elem;
          }
        return largest.city_name;
     }
@@ -4245,8 +4245,8 @@
 #v-
   would have been used.  In other words, unless otherwise indicated
   via the \kw{using} clause, \kw{foreach} walks the list using a field
-  named \exmp{next}.
-  
+  named \exmp{next} by default.
+
   Now consider a function that sorts the list according to population.
   To illustrate the technique, a \em{bubble-sort} will be used, not
   because it is efficient (it is not), but because it is simple, 
@@ -4488,7 +4488,7 @@
  Just because it is possible to define the action of a binary or unary
  operator on an user-defined type, it is not always wise to do so.  A
  useful rule of thumb is to ask whether defining a particular
- operation leads to more readable and maintanable code.  For example,
+ operation leads to more readable and maintainable code.  For example,
  simply looking at
 #v+
    c = a + b;
@@ -4516,7 +4516,7 @@
 #v+
     message ("The value is " + string (V));
     vmessage ("The result of %S+%S is %S", V1, V1, V1+V2);
-    str = The value of V is $V"$;
+    str = "The value of V is $V"$;
 #v-
  For the \exmp{Vector_Type} one might want to use the string
  represention generated by
@@ -4645,7 +4645,7 @@
    turn to \slang's more powerful exception handling mechanisms.
 
 \sect{Traditional Error Handling} #%{{{
-   The simplist and perhaps most common mechanism for signalling a
+   The simplist and perhaps most common mechanism for signaling a
    failure or error in a function is for the function to return an
    error code, e.g.,
 #v+
@@ -4708,7 +4708,7 @@
   entire call chain.  While making the appropriate changes for a small
   program can be a trivial task, for a large program this could be a
   major undertaking opening the possibility of introducing additional
-  errors along the way.  In a nutshell, this is a code maintainence
+  errors along the way.  In a nutshell, this is a code maintenance
   issue.  For this reason, a veteran programmer using this approach to
   error handling will consider such possibilities from the outset and
   allow for error codes the first time regardless of whether the
@@ -5112,7 +5112,7 @@
 
   In order to make use of a module, it must first be ``imported'' into
   the interpreter.  There are two ways to go about this.  One is to
-  use the \ifun{import} function to dynamically link-in the specfied
+  use the \ifun{import} function to dynamically link-in the specified
   module, e.g.,
 #v+
     import ("pcre");
@@ -5607,7 +5607,7 @@
  \slsh will read the script and feed it to the \slang interpreter for
  execution.  If the script defines a public function called
  \sfun{slsh_main}, then \slsh will call it after the script has been
- loaded.  In this sense, \exmp{slsh_main} is analagous to \exmp{main}
+ loaded.  In this sense, \exmp{slsh_main} is analogous to \exmp{main}
  in \bf{C} or \bf{C++}.
  
  A typical \slsh script is be structured as
@@ -6091,12 +6091,12 @@ suited to the task:
      a[word]++;
 #v-
 
-Note the concisness of the above code.  It is important to appreciate
-the fact that \slang is an byte-compiled interpreter that executes statements
-much slower than that of a language that compiles to machine code. The
-roughly overhead of the processing of byte-codes by the interpreter
-may be used to justify the rule of thumb that the smaller the code is,
-the faster it will run.  
+Note the conciseness of the above code.  It is important to appreciate
+the fact that \slang is a byte-compiled interpreter that executes
+statements much slower than that of a language that compiles to
+machine code.  The overhead of the processing of byte-codes by the
+interpreter may be used to roughly justify the rule of thumb that the
+smaller the code is, the faster it will run.  
 
 When possible, always take advantage of \slang's powerful array
 facilities.  For example, consider the act of clipping an array by
@@ -6117,7 +6117,7 @@ for \slang.
 \sect{Using the profiler}
 
 \slprof is an executable \slsh script that implements a standalone
-profiler for \slsh scripts.  The script is essentually a front-end for
+profiler for \slsh scripts.  The script is essentially a front-end for
 a set of interpreter hooks defined in a file called \file{profile.sl},
 which may be used by any application embedding \slang.  The use of the
 profiler will first be demonstrated in the context of \slprof, and
