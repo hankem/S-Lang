@@ -131,6 +131,8 @@
   particular, if the directory already exists, the function will fail
   and set errno to \icon{EEXIST}.
 \example
+  The following function creates a new directory, if it does not
+  already exist (indicated by \exmp{errno==EEXIST}).
 #v+
      define my_mkdir (dir)
      {

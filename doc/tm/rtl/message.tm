@@ -12,49 +12,49 @@
   symbolic constants (read-only variables) and the corresponding
   \ifun{errno_string} value:
 #v+
-     EPERM            "Not owner"
-     ENOENT           "No such file or directory"
-     ESRCH            "No such process"
-     ENXIO            "No such device or address"
-     ENOEXEC          "Exec format error"
-     EBADF            "Bad file number"
-     ECHILD           "No children"
-     ENOMEM           "Not enough core"
+     E2BIG            "Arg list too long"
      EACCES           "Permission denied"
-     EFAULT           "Bad address"
-     ENOTBLK          "Block device required"
+     EBADF            "Bad file number"
      EBUSY            "Mount device busy"
+     ECHILD           "No children"
      EEXIST           "File exists"
-     EXDEV            "Cross-device link"
-     ENODEV           "No such device"
-     ENOTDIR          "Not a directory"
-     EISDIR           "Is a directory"
-     EINVAL           "Invalid argument"
-     ENFILE           "File table overflow"
-     EMFILE           "Too many open files"
-     ENOTTY           "Not a typewriter"
-     ETXTBSY          "Text file busy"
+     EFAULT           "Bad address"
      EFBIG            "File too large"
-     ENOSPC           "No space left on device"
-     ESPIPE           "Illegal seek"
-     EROFS            "Read-only file system"
-     EMLINK           "Too many links"
-     EPIPE            "Broken pipe"
+     EINTR            "Interrupted system call"
+     EINVAL           "Invalid argument"
+     EIO              "I/O error"
+     EISDIR           "Is a directory"
      ELOOP            "Too many levels of symbolic links"
+     EMFILE           "Too many open files"
+     EMLINK           "Too many links"
      ENAMETOOLONG     "File name too long"
+     ENFILE           "File table overflow"
+     ENODEV           "No such device"
+     ENOENT           "No such file or directory"
+     ENOEXEC          "Exec format error"
+     ENOMEM           "Not enough core"
+     ENOSPC           "No space left on device"
+     ENOTBLK          "Block device required"
+     ENOTDIR          "Not a directory"
+     ENOTEMPTY        "Directory not empty"
+     ENOTTY           "Not a typewriter"
+     ENXIO            "No such device or address"
+     EPERM            "Operation not permitted"
+     EPIPE            "Broken pipe"
+     EROFS            "Read-only file system"
+     ESPIPE           "Illegal seek"
+     ESRCH            "No such process"
+     ETXTBSY          "Text file busy"
+     EXDEV            "Cross-device link"
 #v-
 \example
-  The \ifun{mkdir} function will attempt to create a directory.  If
-  that directory already exists, the function will fail and set
-  \ivar{errno} to \icon{EEXIST}.
+  The \ifun{mkdir} function will attempt to create a directory.  If it
+  fails, the function will throw an IOError exception with a message
+  containing the string representation of the \ivar{errno} value.
 #v+
-    define create_dir (dir)
-    {
-       if (0 == mkdir (dir)) return;
-       if (errno != EEXIST)
-         throw IOError, sprintf ("mkdir %s failed: %s", 
-                                  dir, errno_string (errno));
-    }
+    if (-1 == mkdir (dir))
+       throw IOError, sprintf ("mkdir %s failed: %s", 
+                               dir, errno_string (errno));
 #v-
 \seealso{errno_string, error, mkdir}
 \done
@@ -133,7 +133,7 @@
      finally
        {
           if (e != NULL)
-            vmessage ("An error occured: %s", e.message);
+            vmessage ("An error occurred: %s", e.message);
        }
 #v-
 \seealso{error}
@@ -141,7 +141,7 @@
 
 \function{message}
 \synopsis{Print a string onto the message device}
-\usage{message (String_Type s}
+\usage{message (String_Type s)}
 \description
   The \ifun{message} function will print the string specified by
   \exmp{s} onto the message device.

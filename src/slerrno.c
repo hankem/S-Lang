@@ -199,10 +199,6 @@ static Errno_Map_Type Errno_Map [] =
 # define ENOTEMPTY	-1
 #endif
      {"Directory not empty", ENOTEMPTY,	"ENOTEMPTY"},
-#ifndef ELOOP
-# define ELOOP	-1
-#endif
-     {" Too many symbolic links encountered ",	ELOOP,	"ELOOP"},
 #ifndef ENOMSG
 # define ENOMSG	-1
 #endif

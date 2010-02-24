@@ -26,6 +26,9 @@ Changes since 2.2.2
     to generate an error.
 12. .../tm/*:  Corrected some documentation typos and spelling errors
     (Agathoklis D. Hatzimanikas).
+13. doc/tm/rtl/misc.tm: Documented the __tmp function and corrected a
+    few more documentation typos (Agathoklis D. Hatzimanikas).
+14. src/slerrno.c: ELOOP was defined twice (Agathoklis D. Hatzimanikas).
 
 {{{ Previous Versions
 

@@ -319,6 +319,30 @@
 \seealso{__tmp, __is_initialized}
 \done
 
+\function{__tmp}
+\synopsis{Returns the value of a variable and uninitialize the variable}
+\usage{__tmp (x)}
+\description
+  The \ifun{__tmp} function takes a single argument, a variable,
+  returns the value of the variable, and then undefines the variable.
+  The purpose of this pseudo-function is to free any memory
+  associated with a variable if that variable is going to be
+  re-assigned. 
+\example
+#v+
+     x = 3;
+     y = __tmp(x);
+#v-
+  will result in `y' having a value of `3' and `x' will be undefined.
+\notes
+  This function is a pseudo-function because a syntax error results if
+  used like
+#v+
+      __tmp(sin(x));
+#v-
+\seealso{__uninitialize, __is_initialized}
+\done
+
 \function{use_namespace}
 \synopsis{Change to another namespace}
 \usage{use_namespace (String_Type name)}
