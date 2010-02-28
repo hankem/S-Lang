@@ -1,7 +1,7 @@
 #!/usr/bin/env slsh
 % Find links that point to non-existent files
 
-static define warn ()
+private define warn ()
 {
    variable args = __pop_args (_NARGS-1);
    variable err = ();
@@ -18,7 +18,7 @@ static define warn ()
 		 __argv[0], msg, err);
 }
 
-static define badlinks (dir)
+private define badlinks (dir)
 {
    variable files, file;
    variable st;

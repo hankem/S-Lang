@@ -2,14 +2,14 @@
 %_debug_info = 1;
 % A simple ls designed primarily for windows.
 
-static variable Months = 
+private variable Months = 
   ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
   "Oct", "Nov", "Dec"];
 
-static variable Six_Months_Ago = _time () - 3600*24*30*6;
+private variable Six_Months_Ago = _time () - 3600*24*30*6;
    
 
-static define ls_long (this_dir, file_list, st_list)
+private define ls_long (this_dir, file_list, st_list)
 {
    _for (0, length(file_list)-1, 1)
      {
@@ -69,7 +69,7 @@ static define ls_long (this_dir, file_list, st_list)
      }
 }
 
-static variable 
+private variable 
   Use_Long_Form = 0,
   Use_atime = 0,
   Sort_By_Time = 0,
@@ -80,7 +80,7 @@ static variable
   Use_d_Option = 0;
 
 
-static define parse_args (args)
+private define parse_args (args)
 {
    variable ch;
    
@@ -150,17 +150,17 @@ define ls_short (dirs)
      }
 }
 
-static define size_sort (a, b)
+private define size_sort (a, b)
 {
    b.st_size - a.st_size;
 }
 
-static define time_sort (a, b)
+private define time_sort (a, b)
 {
    b.st_mtime - a.st_mtime;
 }
 
-static define is_non_null_fun (a)
+private define is_non_null_fun (a)
 {
    a != NULL;
 }
@@ -197,12 +197,12 @@ define sort_files (dirs, sts)
    return dirs[i], sts[i];
 }
 
-static define isdir_fun (st)
+private define isdir_fun (st)
 {
    stat_is ("dir", st.st_mode);
 }
 
-static define list_dir (dir)
+private define list_dir (dir)
 {
 #ifndef UNIX
    if (Use_a_Option)

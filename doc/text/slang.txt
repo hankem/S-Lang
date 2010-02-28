@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  Feb 21, 2010
+  Feb 25, 2010
   ____________________________________________________________
 
 
@@ -1126,12 +1126,12 @@
   important type can be found in the section on ``Referencing
   Variables''.
 
-  44..11..77..  AArrrraayy__TTyyppee,, LLiisstt__TTyyppee,, aanndd SSttrruucctt__TTyyppee
+  44..11..77..  AArrrraayy__TTyyppee,, AAssssoocc__TTyyppee,, LLiisstt__TTyyppee,, aanndd SSttrruucctt__TTyyppee
 
-  Variables of type Array_Type, List_Type, and Struct_Type are known as
-  _c_o_n_t_a_i_n_e_r _o_b_j_e_c_t_s. They are much more complicated than the simple data
-  types discussed so far and each obeys a special syntax. For these
-  reasons they are discussed in a separate chapters.
+  Variables of type Array_Type, Assoc_Type, List_Type, and Struct_Type
+  are known as _c_o_n_t_a_i_n_e_r _o_b_j_e_c_t_s. They are more complicated than the
+  simple data types discussed so far and each obeys a special syntax.
+  For these reasons they are discussed in a separate chapters.
 
   44..11..88..  DDaattaaTTyyppee__TTyyppee TTyyppee
 
@@ -1157,6 +1157,7 @@
             Ref_Type             (references)
             Null_Type            (NULL)
             Array_Type           (arrays)
+            Assoc_Type           (associative arrays/hashes)
             List_Type            (lists)
             DataType_Type        (data types)
 
@@ -1715,7 +1716,7 @@
 
              a = "hello"; b = "world";
              a += b;                      % a will become "helloworld"
-             c = b + a;                   % c will become "worldhello"
+             c = b + a;                   % c will become "worldhelloworld"
 
   Since adding or subtracting 1 from a variable is quite common, SS--LLaanngg
   also supports the unary increment and decrement operators ++, and --,

@@ -1,22 +1,22 @@
 #! /usr/bin/env slsh
 % Generate a listing of an RPM file
 
-static define pgm_usage ()
+private define pgm_usage ()
 {
    vmessage ("Usage: lsrpm FILENAME");
    exit (1);
 }
 
-static variable RPM_Command = "rpm -q -l --dump -p ";
+private variable RPM_Command = "rpm -q -l --dump -p ";
 
-static define exit_error (msg)
+private define exit_error (msg)
 {
    () = fprintf (stderr, "%s\n", msg);
    exit (1);
 }
 
 
-static define run_rpm (file)
+private define run_rpm (file)
 {
    variable fp;
    variable lines;

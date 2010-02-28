@@ -7,24 +7,24 @@ if (__argc < 2)
    exit (1);
 }
 
-static variable M_SOF0	= 0xC0;	       %/* Start Of Frame N */  
-static variable M_SOF1	= 0xC1;	       %/* N indicates which compression process */  
-static variable M_SOF2	= 0xC2;	       %/* Only SOF0-SOF2 are now in common use */  
-static variable M_SOF3	= 0xC3;	       %  
-static variable M_SOF5	= 0xC5;	       %/* NB: codes C4 and CC are NOT SOF markers */  
-static variable M_SOF6	= 0xC6;	       %  
-static variable M_SOF7	= 0xC7;	       %  
-static variable M_SOF9	= 0xC9;	       %  
-static variable M_SOF10	= 0xCA;	       %  
-static variable M_SOF11	= 0xCB;	       %  
-static variable M_SOF13	= 0xCD;	       %  
-static variable M_SOF14	= 0xCE;	       %  
-static variable M_SOF15	= 0xCF;	       %  
-static variable M_SOI	= 0xD8;	       %/* Start Of Image (beginning of datastream) */  
-static variable M_EOI	= 0xD9;	       %/* End Of Image (end of datastream) */  
-static variable M_SOI	= 0xD8;	       % Start Of Image (beginning of datastream)  
+private variable M_SOF0	= 0xC0;	       %/* Start Of Frame N */  
+private variable M_SOF1	= 0xC1;	       %/* N indicates which compression process */  
+private variable M_SOF2	= 0xC2;	       %/* Only SOF0-SOF2 are now in common use */  
+private variable M_SOF3	= 0xC3;	       %  
+private variable M_SOF5	= 0xC5;	       %/* NB: codes C4 and CC are NOT SOF markers */  
+private variable M_SOF6	= 0xC6;	       %  
+private variable M_SOF7	= 0xC7;	       %  
+private variable M_SOF9	= 0xC9;	       %  
+private variable M_SOF10	= 0xCA;	       %  
+private variable M_SOF11	= 0xCB;	       %  
+private variable M_SOF13	= 0xCD;	       %  
+private variable M_SOF14	= 0xCE;	       %  
+private variable M_SOF15	= 0xCF;	       %  
+private variable M_SOI	= 0xD8;	       %/* Start Of Image (beginning of datastream) */  
+private variable M_EOI	= 0xD9;	       %/* End Of Image (end of datastream) */  
+private variable M_SOI	= 0xD8;	       % Start Of Image (beginning of datastream)  
 
-static define read_nbytes (fp, n)
+private define read_nbytes (fp, n)
 {
    variable b;
    if (n != fread_bytes (&b, n, fp))
@@ -32,12 +32,12 @@ static define read_nbytes (fp, n)
    return b;
 }
 
-static define read_ushort (fp)
+private define read_ushort (fp)
 {
    return unpack (">H", read_nbytes (fp, 2));
 }
 
-static define open_jpg_file_for_read (file)
+private define open_jpg_file_for_read (file)
 {
    variable fp = fopen (file, "rb");
    variable b = read_nbytes (fp, 2);
@@ -46,7 +46,7 @@ static define open_jpg_file_for_read (file)
    return fp;
 }
 
-static define next_marker (fp)
+private define next_marker (fp)
 {
    variable c = read_nbytes (fp, 1);
    while (c != 0xFF)
@@ -60,7 +60,7 @@ static define next_marker (fp)
    return c;
 }
 
-static define skip_variable (fp)
+private define skip_variable (fp)
 {
    variable len = read_ushort (fp);
    if (len < 2)
@@ -110,7 +110,7 @@ public define jpeg_size (file, width, height)
    return 0;
 }
 
-static define main ()
+private define main ()
 {
    variable file;
    foreach file (__argv[[1:]])

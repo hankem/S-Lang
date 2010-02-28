@@ -2,7 +2,7 @@
 % -*- mode: slang -*-
 _debug_info = 1;
 
-static define purge_file (file, age, print_option)
+private define purge_file (file, age, print_option)
 {
    variable st = stat_file (file);
    if (st == NULL)
@@ -24,7 +24,7 @@ static define purge_file (file, age, print_option)
      () = fprintf (stderr, "remove %s failed: %s\n", file, errno_string (errno));
 }
 
-static define purge_usage ()
+private define purge_usage ()
 {
    () = fprintf (stderr, "Usage: %s [-n] NUM-DAYS-OLD files...\n", __argv[0]);
    () = fprintf (stderr, "  Files older than NUM-DAYS-OLD be deleted.\n");
@@ -32,7 +32,7 @@ static define purge_usage ()
    exit (1);
 }
 
-static define main (argc, argv)
+private define main (argc, argv)
 {
    variable age, i, print_option, file;
    

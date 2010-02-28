@@ -297,7 +297,7 @@
   skipped.
 \example
 #v+
-    if (length (lines) != fputslines (fp, lines))
+    if (length (lines) != fputslines (lines, fp))
       throw WriteError;   
 #v-
 \seealso{fputs, fgetslines, fopen}

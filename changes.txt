@@ -29,6 +29,10 @@ Changes since 2.2.2
 13. doc/tm/rtl/misc.tm: Documented the __tmp function and corrected a
     few more documentation typos (Agathoklis D. Hatzimanikas).
 14. src/slerrno.c: ELOOP was defined twice (Agathoklis D. Hatzimanikas).
+15. doc/tm/slang.tm: Fixed a few doc errors noticed by Manfred Hanke.
+16. src/slsh/scripts/mv: removed redundant call to rename, and added
+    force, noclobber, and verbose options (Agathoklis D. Hatzimanikas).
+17. src/slsh/scripts/*: changed "static" to "private".
 
 {{{ Previous Versions
 

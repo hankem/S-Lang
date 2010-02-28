@@ -1155,13 +1155,13 @@
    an instance of a structure.  For these reasons, further discussion
    of this important type can be found in \sectref{Referencing Variables}.
 
-\sect1{Array_Type, List_Type, and Struct_Type}
+\sect1{Array_Type, Assoc_Type, List_Type, and Struct_Type}
    
-   Variables of type \dtype{Array_Type}, \dtype{List_Type}, and
-   \dtype{Struct_Type} are known as \em{container objects}.  They are
-   much more complicated than the simple data types discussed so far
-   and each obeys a special syntax. For these reasons they are
-   discussed in a separate chapters.
+   Variables of type \dtype{Array_Type}, \dtype{Assoc_Type},
+   \dtype{List_Type}, and \dtype{Struct_Type} are known as
+   \em{container objects}.  They are more complicated than the
+   simple data types discussed so far and each obeys a special syntax.
+   For these reasons they are discussed in a separate chapters.
 
 \sect1{DataType_Type Type} #%{{{
 
@@ -1189,6 +1189,7 @@
      Ref_Type             (references)
      Null_Type            (NULL)
      Array_Type           (arrays)
+     Assoc_Type           (associative arrays/hashes)
      List_Type            (lists)
      DataType_Type        (data types)
 #v-
@@ -1817,7 +1818,7 @@
 #v+
       a = "hello"; b = "world";
       a += b;                      % a will become "helloworld"
-      c = b + a;                   % c will become "worldhello"
+      c = b + a;                   % c will become "worldhelloworld"
 #v-
 
    Since adding or subtracting 1 from a variable is quite

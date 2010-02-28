@@ -10,17 +10,17 @@
 % Use it at your own risk!
 %
 
-static variable SVNSH_VERSION = "0.1.0-1";
+private variable SVNSH_VERSION = "0.1.0-1";
 
-static variable Repository;
-static variable Repository_CWD;
-static variable Echo_Commands = 0;
+private variable Repository;
+private variable Repository_CWD;
+private variable Echo_Commands = 0;
 
-static variable Rline;
+private variable Rline;
 
 new_exception ("SVNError", AnyError, "svn error");
 
-static define expand_path (path)
+private define expand_path (path)
 {
    variable dir = Repository_CWD;
 
@@ -48,7 +48,7 @@ static define expand_path (path)
    return dir;
 }
 
-static define _svn_execute ()
+private define _svn_execute ()
 {
    variable args = __pop_args (_NARGS);
    variable cmd = "svn " + sprintf (__push_args(args));
@@ -59,7 +59,7 @@ static define _svn_execute ()
      throw SVNError, sprintf ("%s returned %d", cmd, status);
 }
 
-static define _svn_path_exists (path)
+private define _svn_path_exists (path)
 {
    if (path == NULL)
      return 0;
@@ -71,7 +71,7 @@ static define _svn_path_exists (path)
    return 1;
 }
 
-static define _svn_cd (argv)
+private define _svn_cd (argv)
 {
    variable dir = expand_path (argv[0]);
    if (0 == _svn_path_exists (dir))
@@ -82,7 +82,7 @@ static define _svn_cd (argv)
    Repository_CWD = dir;
 }
 
-static define get_opts (argv)
+private define get_opts (argv)
 {
    variable i;
    variable opts = "";
@@ -109,7 +109,7 @@ static define get_opts (argv)
    return opts, args;
 }
 
-static define _svn_cp (argv)
+private define _svn_cp (argv)
 {
    variable opts, files;
 
@@ -126,7 +126,7 @@ static define _svn_cp (argv)
    _svn_execute ("cp %s %s %s", opts, from, to);
 }
 
-static define _svn_ls (argv)
+private define _svn_ls (argv)
 {
    variable opts, files;
    (opts, files) = get_opts (argv);
@@ -151,7 +151,7 @@ static define _svn_ls (argv)
      }
 }
 
-static define _svn_mv (argv)
+private define _svn_mv (argv)
 {
    variable opts, files;
    (opts, files) = get_opts (argv);
@@ -174,7 +174,7 @@ static define _svn_mv (argv)
    _svn_execute ("mv %s %s %s", opts, from, to);
 }
 
-static define _svn_mkdir (argv)
+private define _svn_mkdir (argv)
 {
    variable opts, files;
 
@@ -190,7 +190,7 @@ static define _svn_mkdir (argv)
    _svn_execute ("mkdir %s %s", opts, dir);
 }
 
-static define _svn_rm (argv)
+private define _svn_rm (argv)
 {
    variable opts, files;
 
@@ -206,7 +206,7 @@ static define _svn_rm (argv)
    _svn_execute ("rm %s %s", opts, dir);
 }
 
-static define _svn_most (argv)
+private define _svn_most (argv)
 {
    if (length (argv) != 1)
      {
@@ -219,20 +219,20 @@ static define _svn_most (argv)
    _svn_execute ("cat %s | most", file);
 }
 
-static define _svn_help (argv)
+private define _svn_help (argv)
 {
    _svn_execute ("help %s", strjoin (argv, " "));
    () = fprintf (stdout, "\nAlso use ? for a list of interractive commands\n");
 }
 
-static define _svn_quit (argv)
+private define _svn_quit (argv)
 {
    Rline = NULL;
    exit (0);
 }
 
-static variable Cmd_Table = Assoc_Type [Ref_Type];
-static define _svn_local_help (argv)
+private variable Cmd_Table = Assoc_Type [Ref_Type];
+private define _svn_local_help (argv)
 {
    () = fprintf (stdout, "Local commands:\n");
    foreach (assoc_get_keys (Cmd_Table))
@@ -255,7 +255,7 @@ Cmd_Table["most"] = &_svn_most;
 Cmd_Table["quit"] = &_svn_quit;
 Cmd_Table["?"] = &_svn_local_help;
 
-static define take_input ()
+private define take_input ()
 {
    variable line;
    forever 
