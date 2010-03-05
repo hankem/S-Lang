@@ -231,6 +231,19 @@ static char *Colors [NUM_COLORS] =
    "white"
 };
 
+#define MONO_UNDERLINE_COLOR	100
+#define MONO_BOLD_COLOR		101
+#define MONO_REVVIDEO_COLOR	102
+#define MONO_BOLDULINE_COLOR	103
+#define MONO_REVULINE_COLOR	104
+
+static void set_mono_color (int obj, SLtt_Char_Type mask)
+{
+   SLtt_set_color (obj, NULL, "lightgray", "blue");
+   SLtt_add_color_attribute (obj, mask);
+   SLtt_set_mono (obj, NULL, mask);
+}
+
 static void init_colors (void)
 {
    int i;
@@ -245,6 +258,12 @@ static void init_colors (void)
 	SLtt_set_color (i + 1, NULL, fg, bg);
 	SLtt_set_color (i + 1 + NUM_COLORS, NULL, bg, fg);
      }
+   set_mono_color (MONO_UNDERLINE_COLOR, SLTT_ULINE_MASK);
+   set_mono_color (MONO_REVVIDEO_COLOR, SLTT_REV_MASK);
+   set_mono_color (MONO_BOLDULINE_COLOR, SLTT_BOLD_MASK|SLTT_ULINE_MASK);
+   set_mono_color (MONO_BOLD_COLOR, SLTT_BOLD_MASK);
+   set_mono_color (MONO_REVVIDEO_COLOR, SLTT_REV_MASK);
+   set_mono_color (MONO_REVULINE_COLOR, SLTT_REV_MASK|SLTT_ULINE_MASK);
 }
 
 
@@ -638,36 +657,59 @@ static void mouse_test (void)
    post_test ();
 }
 
-static void mono_test (void)
+static void mono_test_internal (int uac, char *msg)
 {
    int row;
    int c;
 
    c = SLtt_Use_Ansi_Colors;
-   SLtt_Use_Ansi_Colors = 0;
+   SLtt_Use_Ansi_Colors = uac;
    SLsmg_normal_video ();
    SLsmg_cls ();
 
    pre_test ("Mono Test");
 
-   row = SLtt_Screen_Rows / 2;
-   SLsmg_set_color(1);
+   row = 2;
    SLsmg_gotorc (row, 0);
-   
-   /* Make a gap for testing erase_eol in bw mode */
-   SLsmg_write_string ("This line");
-   SLsmg_set_color (2);
-   SLsmg_erase_eol ();
-   SLsmg_gotorc (row, 30);
-   SLsmg_write_string ("should be in reverse video");
+   SLsmg_write_string (msg);
 
-   SLsmg_refresh ();
-   (void) SLkp_getkey ();
-   SLsmg_gotorc (row, 20);
-   SLsmg_write_string ("xxxxx");
+   row = SLtt_Screen_Rows / 2;
+
+   SLsmg_gotorc (row, 0);
+   SLsmg_set_color (MONO_UNDERLINE_COLOR);
+   SLsmg_write_string ("This line should be completely underlined");
+   SLsmg_erase_eol ();
+
+   row++;
+   SLsmg_gotorc (row, 0);
+   SLsmg_set_color (MONO_REVVIDEO_COLOR);
+   SLsmg_write_string ("This line should be in reverse video");
+
+   row++;
+   SLsmg_gotorc (row, 0);
+   SLsmg_set_color (MONO_BOLD_COLOR);
+   SLsmg_write_string ("This line should appear in bold");
+
+   row++;
+   SLsmg_gotorc (row, 0);
+   SLsmg_set_color (MONO_BOLDULINE_COLOR);
+   SLsmg_write_string ("This line should appear underlined and in bold");
+   
+   row++;
+   SLsmg_gotorc (row, 0);
+   SLsmg_set_color (MONO_REVULINE_COLOR);
+   SLsmg_write_string ("This line should appear completely underlined in reverse video");
+   SLsmg_erase_eol ();
+
    SLsmg_refresh ();
    post_test ();
    SLtt_Use_Ansi_Colors = c;
+}
+
+static void mono_test (void)
+{
+   mono_test_internal (0, "This test uses SLtt_Use_Ansi_Colors=0, assuming a monochrome terminal");
+   mono_test_internal (1, "This test uses SLtt_Use_Ansi_Colors=1, assuming a color terminal");
 }
 
 static void wrapped_string_test (void)

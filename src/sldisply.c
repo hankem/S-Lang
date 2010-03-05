@@ -1485,7 +1485,10 @@ static int bce_colors_eq (SLsmg_Color_Type ca, SLsmg_Color_Type cb, int just_bg)
    if (ba->fgbg == bb->fgbg)
      return 1;
    if (just_bg)
-     return GET_BG(ba->fgbg) == GET_BG(bb->fgbg);
+     {
+	return (ba->mono == bb->mono)
+	  && GET_BG(ba->fgbg) == GET_BG(bb->fgbg);
+     }
    return 0;
 }
 

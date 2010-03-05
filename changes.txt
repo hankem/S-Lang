@@ -33,6 +33,8 @@ Changes since 2.2.2
 16. src/slsh/scripts/mv: removed redundant call to rename, and added
     force, noclobber, and verbose options (Agathoklis D. Hatzimanikas).
 17. src/slsh/scripts/*: changed "static" to "private".
+18. src/sldisply.c: Underlined space characters were not appearing
+    with the underline.
 
 {{{ Previous Versions
 
