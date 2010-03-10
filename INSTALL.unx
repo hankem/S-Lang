@@ -45,6 +45,8 @@ In any case, these libraries are not required but without them the png
 and pcre modules will not be created.
 
 ---------------------------------------------------------------------
+Building and installing the S-Lang library
+---------------------------------------------------------------------
 
 Under Unix, the S-Lang library makes use of the GNU autoconf package.
 The process may be as simple as:
@@ -70,6 +72,13 @@ will build a static version of the library in src/objs.  By default,
 
 The 'runtests' step is designed to test the interpeter.  It uses the
 static version of the library for this.
+
+  ***Note: If you are installing the library for other users, be sure
+           to set your umask value to 022 before running `make install`,
+	   i.e.,
+	   
+	      umask 022
+	      make install
 
   ***Note: If you have the png or pcre libraries installed in a
 	   non-standard location, e.g., /opt/software, then the script

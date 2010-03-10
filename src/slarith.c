@@ -1069,7 +1069,73 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
    if (EOF == SLsnprintf (b, bufmax-b, "e+%02d", expon))
      sprintf (buf, "%e", x);
 }
-	
+
+static int massage_decimal_buffer (char *inbuf, char *buf, 
+				   unsigned int buflen, unsigned int min_slen)
+{
+   char *s;
+   unsigned int slen, count;
+   char c;
+
+   slen = strlen(inbuf);
+   if ((slen < min_slen) || (slen+1 > buflen))
+     return 0;
+
+   s = inbuf + slen;
+   s -= 2;			       /* skip last digit */
+   c = *s;
+   if ((c != '0') && (c != '9'))
+     return 0;
+   s--;
+
+   count = 0;
+   while ((s > inbuf) && (*s == c))
+     {
+	count++;
+	s--;
+     }
+
+   if ((count < 4) || (0 == isdigit (*s)))
+     return 0;
+   
+   if (c == '9')
+     {
+	/* e.g., 9.699999999999999 */
+	slen = s-inbuf;
+	memcpy (buf, inbuf, slen);
+	buf[slen] = *s + 1;	       /* assumes ascii */
+	buf[slen+1] = 0;
+     }
+   else
+     {
+	/* 9.300000000000001 */
+	slen = (s+1)-inbuf;
+	memcpy (buf, inbuf, slen);
+	buf[slen] = 0;
+     }
+
+   return 1;
+}
+
+static void massage_double_buffer (char *inbuf, double x)
+{
+   char buf[1024];
+
+   if (massage_decimal_buffer (inbuf, buf, sizeof(buf), 16)
+       && (atof(buf) == x))
+     strcpy (inbuf, buf);
+}
+
+static void massage_float_buffer (char *inbuf, float x)
+{
+   char buf[1024];
+
+   if (massage_decimal_buffer (inbuf, buf, sizeof(buf), 8)
+       && ((float)atof(buf) == x))
+     strcpy (inbuf, buf);
+}
+
+
 static void default_format_double (double x, char *buf, unsigned int buflen)
 {
    if (EOF == SLsnprintf (buf, buflen, "%.16g", x))
@@ -1086,6 +1152,7 @@ static void default_format_double (double x, char *buf, unsigned int buflen)
 	     return;
 	  }
      }
+   massage_double_buffer (buf,x);
    check_decimal (buf, buflen, x);
 }
 
@@ -1104,6 +1171,7 @@ static void default_format_float (float x, char *buf, unsigned int buflen)
 	     return;
 	  }
      }
+   massage_float_buffer (buf, x);
    check_decimal (buf, buflen, x);
 }
 #endif

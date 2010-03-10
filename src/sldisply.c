@@ -1828,9 +1828,15 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 	 * if the color is known via something like COLORFGBG.  For now, 
 	 * I just will not perform the optimization for such terminals.
 	 */
-	if ((Can_Background_Color_Erase)
+	if (Can_Background_Color_Erase
 	    && SLtt_Use_Ansi_Colors)
-	  space_char = pmax - 1;
+	  {
+	     SLtt_Char_Type fgbg;
+	     
+	     fgbg = get_brush_attr (COLOR_OF(pmax-1));
+	     if (0 == (fgbg & ATTR_MASK))
+	       space_char = pmax - 1;
+	  }
 
 	while (pmax > p)
 	  {

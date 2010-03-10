@@ -35,6 +35,13 @@ Changes since 2.2.2
 17. src/slsh/scripts/*: changed "static" to "private".
 18. src/sldisply.c: Underlined space characters were not appearing
     with the underline.
+19. src/sldisply.c: Do not rely upon terminals that can
+    background-color-erase (BCE) to erase using the monochrome attributes (e.g.,
+    underline).
+20. src/slarith.c: Tweaked the %S format to better round decimals with
+    repeated 9s or 0s.
+21. autoconf/mkinsdir.sh: Updated to a newer version of
+    mkinstalldirs.
 
 {{{ Previous Versions
 

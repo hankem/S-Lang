@@ -59,6 +59,7 @@ static void box_test (void);
 static void draw_symbols_test (void);
 static void lr_corner_test (void);
 static void mono_test (void);
+static void mono_attr_test (void);
 static void wrapped_string_test (void);
 
 typedef struct
@@ -86,6 +87,7 @@ static Menu_Type Root_Menu [] =
      {"Write Wrapped String Test", wrapped_string_test},
      {"Test Low Level Functions", low_level_test},
      {"Test monochrome functions", mono_test},
+     {"Test monochrome attributes", mono_attr_test},
      {"Quit", quit},
      {NULL, NULL}
 };
@@ -231,17 +233,27 @@ static char *Colors [NUM_COLORS] =
    "white"
 };
 
-#define MONO_UNDERLINE_COLOR	100
-#define MONO_BOLD_COLOR		101
-#define MONO_REVVIDEO_COLOR	102
-#define MONO_BOLDULINE_COLOR	103
-#define MONO_REVULINE_COLOR	104
+#define MONO_UNDERLINE_COLOR	1
+#define MONO_BOLD_COLOR		2
+#define MONO_REVVIDEO_COLOR	3
+#define MONO_BOLDULINE_COLOR	4
+#define MONO_REVULINE_COLOR	5
 
 static void set_mono_color (int obj, SLtt_Char_Type mask)
 {
    SLtt_set_color (obj, NULL, "lightgray", "blue");
    SLtt_add_color_attribute (obj, mask);
    SLtt_set_mono (obj, NULL, mask);
+}
+
+static void init_mono_colors (void)
+{
+   set_mono_color (MONO_UNDERLINE_COLOR, SLTT_ULINE_MASK);
+   set_mono_color (MONO_REVVIDEO_COLOR, SLTT_REV_MASK);
+   set_mono_color (MONO_BOLDULINE_COLOR, SLTT_BOLD_MASK|SLTT_ULINE_MASK);
+   set_mono_color (MONO_BOLD_COLOR, SLTT_BOLD_MASK);
+   set_mono_color (MONO_REVVIDEO_COLOR, SLTT_REV_MASK);
+   set_mono_color (MONO_REVULINE_COLOR, SLTT_REV_MASK|SLTT_ULINE_MASK);
 }
 
 static void init_colors (void)
@@ -258,12 +270,6 @@ static void init_colors (void)
 	SLtt_set_color (i + 1, NULL, fg, bg);
 	SLtt_set_color (i + 1 + NUM_COLORS, NULL, bg, fg);
      }
-   set_mono_color (MONO_UNDERLINE_COLOR, SLTT_ULINE_MASK);
-   set_mono_color (MONO_REVVIDEO_COLOR, SLTT_REV_MASK);
-   set_mono_color (MONO_BOLDULINE_COLOR, SLTT_BOLD_MASK|SLTT_ULINE_MASK);
-   set_mono_color (MONO_BOLD_COLOR, SLTT_BOLD_MASK);
-   set_mono_color (MONO_REVVIDEO_COLOR, SLTT_REV_MASK);
-   set_mono_color (MONO_REVULINE_COLOR, SLTT_REV_MASK|SLTT_ULINE_MASK);
 }
 
 
@@ -663,7 +669,12 @@ static void mono_test_internal (int uac, char *msg)
    int c;
 
    c = SLtt_Use_Ansi_Colors;
+   SLsmg_suspend_smg ();
    SLtt_Use_Ansi_Colors = uac;
+   SLsmg_resume_smg ();
+
+   init_mono_colors ();
+
    SLsmg_normal_video ();
    SLsmg_cls ();
 
@@ -702,14 +713,65 @@ static void mono_test_internal (int uac, char *msg)
    SLsmg_erase_eol ();
 
    SLsmg_refresh ();
+   SLsmg_set_color (0);
    post_test ();
    SLtt_Use_Ansi_Colors = c;
+   init_colors ();
 }
 
 static void mono_test (void)
 {
    mono_test_internal (0, "This test uses SLtt_Use_Ansi_Colors=0, assuming a monochrome terminal");
    mono_test_internal (1, "This test uses SLtt_Use_Ansi_Colors=1, assuming a color terminal");
+}
+
+static void mono_attr_test (void)
+{
+   int row;
+   int col;
+   int c, i;
+   int num_chars;
+#define NUM_MONO_COLORS 6
+   static int colors [NUM_MONO_COLORS] =
+     {
+	MONO_REVULINE_COLOR, MONO_BOLD_COLOR, MONO_REVVIDEO_COLOR,
+	MONO_BOLDULINE_COLOR, MONO_REVULINE_COLOR
+     };
+   pre_test ("Mono Attr Test");
+
+   init_mono_colors ();
+   c = 0, i = 0;
+   num_chars = NUM_MONO_COLORS;
+   col = 0;
+   do
+     {
+	SLsmg_set_color (0);
+	SLsmg_gotorc (2, 0); SLsmg_erase_eos ();
+	for (row = 2; row < SLtt_Screen_Rows - 2; row++)
+	  {
+	     col = col % SLtt_Screen_Cols;
+	     while (col < SLtt_Screen_Cols)
+	       {
+		  SLsmg_gotorc (row, col);
+		  c = c % NUM_MONO_COLORS;
+		  SLsmg_set_color (colors[c]);
+		  SLsmg_write_char ('A' + i); col++;
+		  SLsmg_set_color (colors[row % NUM_MONO_COLORS]);
+		  SLsmg_write_string ("**********");
+		  col += 10;
+		  i = (i + 1) % num_chars;
+		  /* if (i == 0) col += 9; */
+		  c++;
+	       }
+	     col = 0;
+	  }
+	SLsmg_gotorc (0,0);
+	SLsmg_refresh ();
+     }
+   while (0 == SLang_input_pending (10));
+
+   init_colors ();
+   post_test ();
 }
 
 static void wrapped_string_test (void)
