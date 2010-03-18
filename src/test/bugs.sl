@@ -216,5 +216,17 @@ define test_overzealous_tmp_opt_bug ()
 }
 test_overzealous_tmp_opt_bug ();
 
+define test_array_index_bug ()
+{
+   variable x = Double_Type[7];
+   try
+     {
+	x[[1:7]] = 0.0;
+     }
+   catch IndexError: return;
+   throw InternalError, "test_array_index_bug: this bug has returned.";
+}
+test_array_index_bug ();
+
 exit (0);
 

@@ -2298,32 +2298,6 @@ int SLtt_tgetflag (SLFUTURE_CONST char *s)
    return tt_tgetflag (s);
 }
 
-#if 0
-int SLtt_tgetent(char *term)
-{
-   return SLtt_initialize(term) == 0;
-}
-
-int SLtt_tputs(char *str, int affcnt, int (*p)(int))
-{
-   while (*str) (*p)(*str++);
-   return 0;
-}
-
-
-char *SLtt_tgoto(char *cap, int col, int row)
-{
-  static char buf[64];
-
-  /* beware of overflows. 2^64 is 20 bytes printed */
-  if (strlen(cap) > 23)
-	strcpy(buf, "capability too long");
-  else
-	tt_sprintf(buf, cap, row, col);
-  return buf;
-}
-#endif
-
 static int Vt100_Like = 0;
 
 void SLtt_get_terminfo (void)

@@ -92,7 +92,7 @@ static int APUT_FROM_INDEX_ARRAY_FUN (char *src_data, SLuindex_Type data_increme
 
 	if ((idx >= 0) 
 	    && ((idx + delta * (jmax-1)) >= 0)
-	    && ((idx + delta * (jmax-1)) <= num_elements))
+	    && ((idx + delta * (jmax-1)) < num_elements))
 	  {
 	     for (j = 0; j < jmax; j++)
 	       {

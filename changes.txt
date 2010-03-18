@@ -42,6 +42,8 @@ Changes since 2.2.2
     repeated 9s or 0s.
 21. autoconf/mkinsdir.sh: Updated to a newer version of
     mkinstalldirs.
+22. src/slagetput.c: Change 2.2.2-10 fixed a problem with aget.  The
+    same change needed to be made to aput to avoid an access violation.
 
 {{{ Previous Versions
 
