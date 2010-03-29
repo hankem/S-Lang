@@ -44,6 +44,8 @@ Changes since 2.2.2
     mkinstalldirs.
 22. src/slagetput.c: Change 2.2.2-10 fixed a problem with aget.  The
     same change needed to be made to aput to avoid an access violation.
+23. modules/pcre-module.c: Added support for binary strings (Paul
+    Boekholt).
 
 {{{ Previous Versions
 

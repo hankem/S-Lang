@@ -130,13 +130,11 @@ static void _pcre_compile (void)
 
 
 /* returns number of matches */
-static int _pcre_exec_1 (PCRE_Type *pt, char *str, int pos, int options)
+static int _pcre_exec_1 (PCRE_Type *pt, char *str, unsigned int len, int pos, int options)
 {
    int rc;
-   unsigned int len;
    
    pt->num_matches = 0;
-   len = strlen (str);
    if ((unsigned int) pos > len)
      return 0;
 
@@ -160,6 +158,8 @@ static int _pcre_exec (void)
    PCRE_Type *p;
    SLang_MMT_Type *mmt;
    char *str;
+   SLang_BString_Type *bstr = NULL;
+   unsigned int len;
    int pos = 0;
    int options = 0;
    int ret = -1;
@@ -169,22 +169,48 @@ static int _pcre_exec (void)
       case 4:
 	if (-1 == SLang_pop_integer (&options))
 	  return -1;
+	/* drop */
       case 3:
+	/* drop */
 	if (-1 == SLang_pop_integer (&pos))
 	  return -1;
+	/* drop */
       default:
-	if (-1 == SLang_pop_slstring (&str))
-	  return -1;
+	switch (SLang_peek_at_stack())
+	  {
+	   case SLANG_STRING_TYPE:
+	     if (-1 == SLang_pop_slstring (&str))
+	       return -1;
+	     len = strlen (str);
+	     break;
 
-	if (NULL == (mmt = SLang_pop_mmt (PCRE_Type_Id)))
-	  goto free_and_return;
-	p = (PCRE_Type *)SLang_object_from_mmt (mmt);
+	   case SLANG_BSTRING_TYPE:
+	   default:
+	     if (-1 == SLang_pop_bstring(&bstr))
+	       return -1;
+	     str = (char *)SLbstring_get_pointer(bstr, &len);
+	     if (str == NULL)
+	       {
+		  SLbstring_free (bstr);
+		  return -1;
+	       }
+	     break;
+	  }
      }
-   ret = _pcre_exec_1 (p, str, pos, options);
-   
-   free_and_return:
-   SLang_free_slstring (str);
+
+   if (NULL == (mmt = SLang_pop_mmt (PCRE_Type_Id)))
+     goto free_and_return;
+   p = (PCRE_Type *)SLang_object_from_mmt (mmt);
+
+   ret = _pcre_exec_1 (p, str, len, pos, options);
+
+free_and_return:
+
    SLang_free_mmt (mmt);
+   if (bstr != NULL)
+     SLbstring_free (bstr);
+   else
+     SLang_free_slstring (str);
    return ret;
 }
 
