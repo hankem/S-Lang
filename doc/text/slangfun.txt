@@ -2214,7 +2214,7 @@ stat_file
 
 
  SEE ALSO
-  lstat_file, stat_is
+  lstat_file, stat_is, utime
 
 --------------------------------------------------------------
 
@@ -2280,6 +2280,31 @@ symlink
 
  SEE ALSO
   readlink, hardlink
+
+--------------------------------------------------------------
+
+utime
+
+ SYNOPSIS
+  Change a file's last access and modification times
+
+ USAGE
+  Int_Type utime(String_Type file, Double_Type actime, Double_Type modtime)
+
+ DESCRIPTION
+ This function may be used to change the last access (actime) and last
+ modification (modtime) times associated with the specified file.  If
+ sucessful, the function returns 0; otherwise it returns -1 and sets
+ `errno' accordingly.
+
+ NOTES
+ The `utime' function will call the C library `utimes'
+ function if available, which permits microsecond accuracy.
+ Otherwise, it will truncate the time arguments to integers and call
+ the `utime' function.
+
+ SEE ALSO
+  stat_file
 
 --------------------------------------------------------------
 

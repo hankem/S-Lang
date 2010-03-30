@@ -76,6 +76,10 @@
 #undef HAVE_SYS_TIMES_H
 #undef HAVE_SYS_TIME_H
 
+#undef HAVE_UTIME_H
+#undef HAVE_UTIME
+#undef HAVE_UTIMES
+
 #undef HAVE_SYS_MMAN_H
 
 #undef HAVE_SYS_RESOURCE_H

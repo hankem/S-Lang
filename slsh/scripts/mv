@@ -132,8 +132,7 @@ private define move_files (from_files, to)
      {
 	variable old = ();
 	variable new = path_concat (to, path_basename (old));
-
-	() = move_file (old, new, st);
+	() = move_file (old, new, stat_file (new));
      }
 }
 

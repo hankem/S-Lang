@@ -6236,6 +6236,7 @@ done
 
 
 
+
 for ac_header in \
 stdlib.h \
 unistd.h \
@@ -6251,6 +6252,7 @@ sys/wait.h \
 sys/utsname.h \
 sys/times.h \
 sys/time.h \
+utime.h \
 floatingpoint.h \
 ieeefp.h \
 nan.h \
@@ -6965,6 +6967,8 @@ fi
 
 
 
+
+
 for ac_func in \
 memset \
 memcpy \
@@ -7002,6 +7006,7 @@ socket socketpair \
 confstr pathconf \
 getpriority setpriority \
 setvbuf \
+utime utimes \
 
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`

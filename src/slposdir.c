@@ -26,6 +26,15 @@ USA.
 # include <sys/types.h>
 #endif
 
+#include <time.h>
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+
+#ifdef HAVE_UTIME_H
+# include <utime.h>
+#endif
+
 #ifdef HAVE_IO_H
 # include <io.h>		       /* for chmod */
 #endif
@@ -237,6 +246,36 @@ static void lstat_cmd (char *file)
    stat_cmd (file);
 #endif
 }
+
+#if defined(HAVE_UTIME) || defined(HAVE_UTIMES)
+static int utime_intrin (char *file, double *t0p, double *t1p)
+{
+# ifdef HAVE_UTIMES
+   struct timeval tv[2];
+# else
+   struct utimbuf u;
+# endif
+   int ret;
+   double t0 = *t0p, t1 = *t1p;
+
+# ifdef HAVE_UTIMES
+   tv[0].tv_sec = (long) t0;
+   tv[0].tv_usec = (long) ((t0 - (long)t0)*1e6);
+   tv[1].tv_sec = (long) t1;
+   tv[1].tv_usec = (long) ((t1 - (long)t1)*1e6);
+   ret = utimes (file, tv);
+# else
+   u.actime = (time_t) t0;
+   u.modtime = (time_t) t1;
+   ret = utime (file, &u);
+# endif
+   
+   if (ret == -1)
+     _pSLerrno_errno = errno;
+
+   return ret;
+}
+#endif
 
 /* Well, it appears that on some systems, these are not defined.  Here I
  * provide them.  These are derived from the Linux stat.h file.
@@ -1100,6 +1139,9 @@ static SLang_Intrin_Fun_Type PosixDir_Name_Table [] =
 #endif
 #if USE_LISTDIR_INTRINSIC
    MAKE_INTRINSIC("listdir", listdir_cmd_wrap, SLANG_VOID_TYPE, 0),
+#endif
+#if HAVE_UTIME
+   MAKE_INTRINSIC_3("utime", utime_intrin, SLANG_INT_TYPE, SLANG_STRING_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE),
 #endif
    SLANG_END_INTRIN_FUN_TABLE
 };

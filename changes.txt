@@ -46,6 +46,9 @@ Changes since 2.2.2
     same change needed to be made to aput to avoid an access violation.
 23. modules/pcre-module.c: Added support for binary strings (Paul
     Boekholt).
+24. src/slposdir.c: Added utime function.
+25. slsh/scripts/mv: Added a missing call to stat_file (Agathoklis
+    Hatzimanikas).
 
 {{{ Previous Versions
 

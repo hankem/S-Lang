@@ -206,6 +206,12 @@ USA.
 #undef HAVE_READLINK
 #undef HAVE_UNAME
 
+#if defined(__MINGW32__)
+# define HAVE_UTIME
+# define HVE_UTIME_H
+#endif
+#undef HAVE_UTIMES
+
 #undef HAVE_POPEN
 #if defined(__MINGW32__)
 # define HAVE_POPEN 1

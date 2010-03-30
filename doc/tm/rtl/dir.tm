@@ -228,7 +228,7 @@
         return st.st_size;
      }
 #v-
-\seealso{lstat_file, stat_is}
+\seealso{lstat_file, stat_is, utime}
 \done
 
 \function{stat_is}
@@ -278,3 +278,19 @@
 \seealso{readlink, hardlink}
 \done
 
+
+\function{utime}
+\synopsis{Change a file's last access and modification times}
+\usage{Int_Type utime(String_Type file, Double_Type actime, Double_Type modtime)}
+\description
+ This function may be used to change the last access (actime) and last
+ modification (modtime) times associated with the specified file.  If
+ sucessful, the function returns 0; otherwise it returns -1 and sets
+ \ivar{errno} accordingly.
+\notes
+ The \ifun{utime} function will call the C library \cfun{utimes}
+ function if available, which permits microsecond accuracy.
+ Otherwise, it will truncate the time arguments to integers and call
+ the \cfun{utime} function.
+\seealso{stat_file}
+\done

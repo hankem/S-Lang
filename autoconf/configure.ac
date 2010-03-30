@@ -89,6 +89,7 @@ sys/wait.h \
 sys/utsname.h \
 sys/times.h \
 sys/time.h \
+utime.h \
 floatingpoint.h \
 ieeefp.h \
 nan.h \
@@ -154,6 +155,7 @@ socket socketpair \
 confstr pathconf \
 getpriority setpriority \
 setvbuf \
+utime utimes \
 )
 
 dnl# Systems that have nl_langinfo may not have CODESET.  Test for both here
