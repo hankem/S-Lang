@@ -49,6 +49,15 @@ Changes since 2.2.2
 24. src/slposdir.c: Added utime function.
 25. slsh/scripts/mv: Added a missing call to stat_file (Agathoklis
     Hatzimanikas).
+26. src/sldisply.c: Moved the keypad init/deinit code to separate
+    functions for more fine-grained control.
+27. slsh/rline/editor.sl: Added rline_call_editor and rline_edit_line functions
+28. src/slbstr.c: Added is_substrbytes function.
+29. doc/tm/rtl/strops.tm: The strncmp example used strcmp function
+    (Brian Murray).
+30. src/sltermin.c: Changed the search order for terminfo files to:
+     $TERMINFO, $HOME/.terminfo, /usr/local/{etc,share,lib}/terminfo,
+     /etc/terminfo, ...
 
 {{{ Previous Versions
 

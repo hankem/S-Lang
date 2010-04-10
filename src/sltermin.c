@@ -232,17 +232,19 @@ static char *read_string_table (FILE *fp, SLterminfo_Type *t)
 
 static SLCONST char *Terminfo_Dirs [] =
 {
-   "", /* $HOME/.terminfo */
    "", /* $TERMINFO */
+   "", /* $HOME/.terminfo */
 #ifdef MISC_TERMINFO_DIRS
    MISC_TERMINFO_DIRS,
 #endif
+   "/usr/local/etc/terminfo",
+   "/usr/local/share/terminfo",
+   "/usr/local/lib/terminfo",
+   "/etc/terminfo",
    "/usr/share/terminfo",
    "/usr/lib/terminfo",
    "/usr/share/lib/terminfo",
-   "/etc/terminfo",
    "/lib/terminfo",
-   "/usr/local/lib/terminfo",
    NULL,
 };
 
@@ -297,16 +299,16 @@ SLterminfo_Type *_pSLtt_tigetent (SLCONST char *term)
    /* If we are on a termcap based system, use termcap */
    if (0 == tcap_getent (term, ti)) return ti;
 
+   if (NULL != (env = _pSLsecure_getenv ("TERMINFO")))
+     Terminfo_Dirs[0] = env;
+
    if (NULL != (env = _pSLsecure_getenv ("HOME")))
      {
 	strncpy (home_ti, env, sizeof (home_ti) - 11);
 	home_ti [sizeof(home_ti) - 11] = 0;
 	strcat (home_ti, "/.terminfo");
-	Terminfo_Dirs [0] = home_ti;
+	Terminfo_Dirs [1] = home_ti;
      }
-
-   if (NULL != (env = _pSLsecure_getenv ("TERMINFO")))
-     Terminfo_Dirs[1] = env;
 
    tidirs = Terminfo_Dirs;
    while (NULL != (tidir = *tidirs++))

@@ -104,7 +104,7 @@ int SLtt_Blink_Mode = 0;
 int SLtt_Use_Blink_For_ACS = 0;
 int SLtt_Newline_Ok = 0;
 int SLtt_Has_Alt_Charset = 0;
-int SLtt_Force_Keypad_Init = 0;
+int SLtt_Force_Keypad_Init = -1;
 
 /* static int UTF8_Mode = -1; */
 
@@ -2427,11 +2427,10 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
    /* If I do this for vtxxx terminals, arrow keys start sending ESC O A,
     * which I do not want.  This is mainly for HP terminals.
     */
-   if ((almost_vtxxx == 0) || SLtt_Force_Keypad_Init)
-     {
-	Keypad_Init_Str = tt_tgetstr ("ks");
-	Keypad_Reset_Str = tt_tgetstr ("ke");
-     }
+   Keypad_Init_Str = tt_tgetstr ("ks");
+   Keypad_Reset_Str = tt_tgetstr ("ke");
+   if ((almost_vtxxx == 0) && (SLtt_Force_Keypad_Init == -1))
+     SLtt_Force_Keypad_Init = 1;
 
    /* Make up for defective termcap/terminfo databases */
    if ((Vt100_Like && (term[2] != '1'))
@@ -2712,12 +2711,30 @@ void SLtt_set_term_vtxxx(int *vt100)
    /* No_Move_In_Standout = 0; */
 }
 
+void SLtt_init_keypad (void)
+{
+   if (SLtt_Force_Keypad_Init > 0)
+     {
+	tt_write_string (Keypad_Init_Str);
+	SLtt_flush_output ();
+     }
+}
+
+void SLtt_deinit_keypad (void)
+{
+   if (SLtt_Force_Keypad_Init > 0)
+     {
+	tt_write_string (Keypad_Reset_Str);
+	SLtt_flush_output ();
+     }
+}
+
 int SLtt_init_video (void)
 {
    /*   send_string_to_term("\033[?6h"); */
    /* relative origin mode */
    tt_write_string (Term_Init_Str);
-   tt_write_string (Keypad_Init_Str);
+   SLtt_init_keypad ();
    SLtt_reset_scroll_region();
    SLtt_end_insert();
    tt_write_string (Enable_Alt_Char_Set);
@@ -2747,7 +2764,7 @@ int SLtt_reset_video (void)
 	Current_Fgbg = 0xFFFFFFFFU;
      }
    SLtt_erase_line ();
-   tt_write_string (Keypad_Reset_Str);
+   SLtt_deinit_keypad ();
    tt_write_string (Term_Reset_Str);
 
    if (Mouse_Mode == 1)

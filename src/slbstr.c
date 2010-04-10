@@ -640,6 +640,50 @@ static unsigned int count_byte_occurances (SLang_BString_Type *b, unsigned char 
    return n;
 }
 
+
+/* returns the character position of substring in a string or null */
+static int issubbytes (SLang_BString_Type *as, SLang_BString_Type *bs)
+{
+   unsigned int lena, lenb;
+   unsigned char *a, *b, *amax, *bmax, *astart;
+   unsigned char ch0;
+
+   a = BS_GET_POINTER(as);
+   b = BS_GET_POINTER(bs);
+   lena = as->len;
+   lenb = bs->len;
+   
+   if ((lenb > lena) || (lenb == 0))
+     return 0;
+   
+   lena -= lenb;
+   amax = a + lena;
+   bmax = b + lenb;
+
+   astart = a;
+   ch0 = *b++;
+   while (a <= amax)
+     {
+	unsigned char *a0, *b0;
+
+	if (ch0 != *a++)
+	  continue;
+	a0 = a;
+	b0 = b;
+	while ((b < bmax) && (*a == *b))
+	  {
+	     a++;
+	     b++;
+	  }
+	if (b == bmax)
+	  return (a0 - astart);
+	
+	a = a0;
+	b = b0;
+     }
+   return 0;
+}
+
 static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
 {
    MAKE_INTRINSIC_1("bstrlen",  bstrlen_cmd, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE),
@@ -648,6 +692,7 @@ static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
    MAKE_INTRINSIC_2("unpack", _pSLunpack, SLANG_VOID_TYPE, SLANG_STRING_TYPE, SLANG_BSTRING_TYPE),
    MAKE_INTRINSIC_1("pad_pack_format", _pSLpack_pad_format, SLANG_VOID_TYPE, SLANG_STRING_TYPE),
    MAKE_INTRINSIC_1("sizeof_pack", _pSLpack_compute_size, SLANG_UINT_TYPE, SLANG_STRING_TYPE),
+   MAKE_INTRINSIC_2("is_substrbytes", issubbytes, SLANG_INT_TYPE, SLANG_BSTRING_TYPE, SLANG_BSTRING_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

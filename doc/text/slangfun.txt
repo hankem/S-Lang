@@ -8387,7 +8387,7 @@ strncmp
  EXAMPLE
   The expression
 
-     strcmp ("apple", "appliance", 3);
+     strncmp ("apple", "appliance", 3);
 
   will return zero since the first three characters match.
 

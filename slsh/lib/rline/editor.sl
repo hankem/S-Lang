@@ -1,10 +1,14 @@
-% Public function: rline_edit_history
-% Binding this function to a key will allow the history to be edited in 
-% an external editor.
+% Public functions:
+%   rline_edit_line
+%      Binding this will allow the current line to be
+%      edited in an external editor.
+%   rline_call_editor
+%      A utility function to call the editor
+%
 autoload ("new_process", "process");
 
 variable RLine_Tmp_Dir;
-private define open_tmp_file ()
+private define open_tmp_file (prefix, ext)
 {
    variable dir, dirs = ["/tmp", "$HOME"$];
    if (__is_initialized (&RLine_Tmp_Dir))
@@ -20,7 +24,7 @@ private define open_tmp_file ()
      }
    then dir = "";
    
-   variable fmt = path_concat (dir, "histedit%X%d.tmp");
+   variable fmt = path_concat (dir, "%s%X%d.%s");
    variable pid = getpid ();
    variable n = 0;
    variable file, fp;
@@ -28,7 +32,7 @@ private define open_tmp_file ()
    loop (100)
      {
 	n++;
-	file = sprintf (fmt, pid*_time(), n);
+	file = sprintf (fmt, prefix, pid*_time(), n, ext);
 
 	variable fd = open (file, O_WRONLY|O_CREAT|O_TRUNC|O_TEXT, S_IRUSR|S_IWUSR);
 	if (fd == NULL)
@@ -49,43 +53,51 @@ private define get_editor ()
    return editor;
 }
 
-define rline_edit_history ()
+define rline_call_editor (lines, prefix, ext)
 {
    variable editor = get_editor ();
    variable file, fp, fd;
-   (fp, fd, file) = open_tmp_file ();
+   (fp, fd, file) = open_tmp_file (prefix, ext);
 
    EXIT_BLOCK
      {
 	() = remove (file);
      }
-
-   () = array_map (Int_Type, &fputs, rline_get_history ()+"\n", fp);
+   
+   () = array_map (Int_Type, &fputs, lines+"\n", fp);
    () = fclose (fp);
 
    variable st = stat_file (file);
    if (st == NULL)
-     return;
+     return NULL;
 
    variable mtime = st.st_mtime;
   
    variable p = new_process ([editor, file]).wait();
    if ((p.exited == 0) || (p.exit_status != 0))
-     return;
-   
+     return NULL;
+
    st = stat_file (file);
    if ((st == NULL) || (st.st_mtime == mtime))
-     return;
+     return NULL;
 
    fp = fopen (file, "r");
    if (fp == NULL)
-     return;
-   
-   variable lines = fgetslines (fp);
+     return NULL;
+
+   lines = fgetslines (fp);
    () = fclose (fp);
 
-   if (length (lines) == 0)
-     return;
-
-   rline_set_history (array_map (String_Type, &strtrim_end, lines, "\n"));
+   return lines;
 }
+
+define rline_edit_line ()
+{
+   variable lines = rline_get_line ();
+   lines = rline_call_editor (lines, "rline", "sl");
+   if ((lines == NULL) || (length (lines) == 0))
+     return;
+   lines = array_map (String_Type, &strtrim_end, lines, "\n");
+   rline_set_line (strjoin (lines, ""));
+}
+

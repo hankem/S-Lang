@@ -243,7 +243,7 @@
 @slsh/lib/rline/vikeys.sl
 @slsh/lib/rline/complete.sl
 @slsh/lib/rline/slrline.rc
-@slsh/lib/rline/histedit.sl
+@slsh/lib/rline/editor.sl
 @slsh/lib/rline/histsrch.sl
 
 @slsh/lib/help/arrayfuns.hlp

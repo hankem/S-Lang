@@ -4,6 +4,9 @@
 
 autoload ("require", "require");
 
+autoload ("rline_call_editor", "rline/editor");
+autoload ("rline_edit_line", "rline/editor");
+
 % Load the completion hooks
 require ("rline/complete");
 

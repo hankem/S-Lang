@@ -10,10 +10,8 @@ variable RLine_History_File = NULL;
 %if (getenv ("HOME") != NULL) RLine_History_File = "$HOME/.${name}_slhist";
 #endif
 
-autoload ("rline_edit_history", "rline/histedit.sl");
 autoload ("rline_up_hist_search", "rline/histsrch.sl");
 autoload ("rline_down_hist_search", "rline/histsrch.sl");
-
 define rline_load_history ()
 {
    variable file = RLine_History_File;
@@ -62,4 +60,15 @@ define rline_save_history ()
      }
    () = fflush (fp);
    () = close (fd);
+}
+
+define rline_edit_history ()
+{
+   variable lines = rline_get_history ();
+   lines = rline_call_editor (lines, "histedit", "tmp");
+   if ((lines == NULL)
+       || (length (lines) == 0))
+     return;
+
+   rline_set_history (array_map (String_Type, &strtrim_end, lines, "\n"));
 }

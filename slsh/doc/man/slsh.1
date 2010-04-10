@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "SLSH" "1" "02 August 2009" "" ""
+.TH "SLSH" "1" "08 April 2010" "" ""
 
 .SH NAME
 slsh \- Interpreter for S-Lang scripts
@@ -242,6 +242,16 @@ an example, here is a version of the author's
      rline_setkey (&rline_kill_region, "^K^V");
      rline_setkey (&rline_yank,  "^K^P");
      rline_setkey ("redraw",   "^R");
+
+     #ifexists rline_up_hist_search
+     % Map the up/down arrow to the history search mechanism
+     rline_setkey (&rline_up_hist_search, "\\e[A");
+     rline_setkey (&rline_down_hist_search, "\\e[B");
+     #endif
+
+     #ifexists rline_edit_history
+     rline_setkey (&rline_edit_history, "^Kj");
+     #endif
 
      % Add a new function
      private define double_line ()

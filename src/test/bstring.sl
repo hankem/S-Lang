@@ -53,5 +53,31 @@ define test ()
 }
 test ();
 
+define test_is_substrbytes (a, b, ans)
+{
+   variable x = is_substrbytes (a, b);
+   if (ans != x)
+     failed ("%d != (%d = is_substrbytes (%S, %S))", ans, x, a, b);
+}
+test_is_substrbytes ("hello", "o", 5);
+test_is_substrbytes ("hello", "x", 0);
+test_is_substrbytes ("hello", "h", 1);
+test_is_substrbytes ("hello", "hello", 1);
+test_is_substrbytes ("hello", "hellox", 0);
+test_is_substrbytes ("hell\0", "\0", 5);
+test_is_substrbytes ("hell\0w", "l\0w", 4);
+test_is_substrbytes ("hell\0w", "", 0);
+test_is_substrbytes ("", "", 0);
+test_is_substrbytes ("\0hello", "h", 2);
+test_is_substrbytes ("\0", "h", 0);
+test_is_substrbytes ("\0", "", 0);
+test_is_substrbytes ("\0", "\0", 1);
+test_is_substrbytes ("\0x", "\0", 1);
+test_is_substrbytes ("\0x", "\0x", 1);
+test_is_substrbytes ("\0x", "\0xy", 0);
+test_is_substrbytes ("", "\0xy", 0);
+test_is_substrbytes ("", "\0x", 0);
+test_is_substrbytes ("", "\0", 0);
+
 print ("Ok\n");
 exit (0);

@@ -669,7 +669,7 @@
 \example
   The expression
 #v+
-     strcmp ("apple", "appliance", 3);
+     strncmp ("apple", "appliance", 3);
 #v-
   will return zero since the first three characters match.
 \notes

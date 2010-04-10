@@ -779,6 +779,11 @@ extern char *_pSLtt_tigetstr (SLterminfo_Type *, SLCONST char *);
 extern int _pSLtt_tigetnum (SLterminfo_Type *, SLCONST char *);
 extern int _pSLtt_tigetflag (SLterminfo_Type *, SLCONST char *);
 
+#if defined(REAL_UNIX_SYSTEM) || defined(VMS)
+extern void SLtt_init_keypad (void);
+extern void SLtt_deinit_keypad (void);
+#endif
+
 #if SLTT_HAS_NON_BCE_SUPPORT
 extern int _pSLtt_get_bce_color_offset (void);
 #endif

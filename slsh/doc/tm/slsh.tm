@@ -264,6 +264,16 @@
      rline_setkey (&rline_yank,  "^K^P");
      rline_setkey ("redraw",   "^R");
 
+     #ifexists rline_up_hist_search
+     % Map the up/down arrow to the history search mechanism
+     rline_setkey (&rline_up_hist_search, "\e[A");
+     rline_setkey (&rline_down_hist_search, "\e[B");
+     #endif
+
+     #ifexists rline_edit_history
+     rline_setkey (&rline_edit_history, "^Kj");
+     #endif
+
      % Add a new function
      private define double_line ()
      {
