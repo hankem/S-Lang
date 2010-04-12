@@ -652,7 +652,7 @@ static void variable_list (_pSLang_Token_Type *, unsigned char);
 static void struct_declaration (_pSLang_Token_Type *, int);
 static void define_function_args (_pSLang_Token_Type *);
 static void typedef_definition (_pSLang_Token_Type *);
-static void function_args_expression (_pSLang_Token_Type *, int, int);
+static void function_args_expression (_pSLang_Token_Type *, int, int, int);
 static void expression (_pSLang_Token_Type *);
 static void expression_with_commas (_pSLang_Token_Type *, int);
 static void simple_expression (_pSLang_Token_Type *);
@@ -1535,7 +1535,7 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 	     goto free_return;
 	  }
 	get_token (ctok);
-	function_args_expression (ctok, 0, 0);
+	function_args_expression (ctok, 0, 0, 0);
      }
    append_token_of_type (EARG_TOKEN);
    
@@ -2807,7 +2807,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 		  last_token->type = _DEREF_FUNCALL_TOKEN;
 		  append_token_of_type (ARG_TOKEN);
 		  (void) get_token (ctok);
-		  function_args_expression (ctok, 0, 1);
+		  function_args_expression (ctok, 0, 1, 1);
 		  /* Now we have: ... @ __args ...
 		   * and we want: ... __args ... @
 		   */
@@ -2818,7 +2818,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	     
 	     if (CPAREN_TOKEN != get_token (ctok))
 	       {
-		  function_args_expression (ctok, 1, 1);
+		  function_args_expression (ctok, 1, 1, 1);
 		  token_list_element_exchange (start_pos, end_pos);
 	       }
 	     else get_token (ctok);
@@ -2845,7 +2845,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 		  end_pos = Token_List->len;
 		  append_token_of_type (ARG_TOKEN);
 		  get_token (ctok);
-		  function_args_expression (ctok, 0, 1);
+		  function_args_expression (ctok, 0, 1, 1);
 		  token_list_element_exchange (start_pos, end_pos);
 	       }
 #endif
@@ -2883,7 +2883,9 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
      }
 }
 
-static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_args, int handle_qualifiers)
+/* This function is used for more than function arguments */
+static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_args, int handle_qualifiers, 
+				      int is_function)
 {
    unsigned char last_type, this_type;
    
@@ -2908,7 +2910,7 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 	       append_token_of_type (_NULL_TOKEN);
 	     if (handle_num_args) append_token_of_type (EARG_TOKEN);
 	     get_token (ctok);
-	     if (ctok->type == OPAREN_TOKEN)
+	     if (is_function && (ctok->type == OPAREN_TOKEN))
 	       _pSLparse_error (SL_SYNTAX_ERROR, "A '(' is not permitted here", ctok, 0);
 	     return;
 

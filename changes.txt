@@ -58,6 +58,10 @@ Changes since 2.2.2
 30. src/sltermin.c: Changed the search order for terminfo files to:
      $TERMINFO, $HOME/.terminfo, /usr/local/{etc,share,lib}/terminfo,
      /etc/terminfo, ...
+31. src/slparse.c: Change #6 triggered an invalid parse error for
+    statements involving foreach-using such as: 
+    
+       foreach x (y) using ("bar") (@foo)();
 
 {{{ Previous Versions
 
