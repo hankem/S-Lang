@@ -679,28 +679,39 @@
 
 \function{strreplace}
 \synopsis{Replace one or more substrings}
-\usage{(new, n) = strreplace (a, b, c, max_n)}
+\usage{
 #v+
-   String_Type a, b, c, rep;
+   (new,n) = strreplace(a, b, c, max_n);  % Form 1
+   new = strreplace(a, b, c);             % Form 2
+
+   String_Type a, b, c;
    Int_Type n, max_n;
 #v-
+}
 \description
   The \ifun{strreplace} function may be used to replace one or more
-  occurrences of \exmp{b} in \exmp{a} with \exmp{c}.  If the integer
-  \exmp{max_n} is positive, then the first \exmp{max_n} occurrences of
-  \exmp{b} in \exmp{a} will be replaced.  Otherwise, if \exmp{max_n} is
-  negative, then the last \exmp{abs(max_n)} occurrences will be replaced.
+  occurrences of \exmp{b} in \exmp{a} with \exmp{c}.  This function
+  supports two calling interfaces.
   
-  The function returns the resulting string and an integer indicating
-  how many replacements were made.
+  The first form may be used to replace a specified number of
+  substrings.  If \exmp{max_n} is positive, then the first
+  \exmp{max_n} occurrences of \exmp{b} in \exmp{a} will be replaced.
+  Otherwise, if \exmp{max_n} is negative, then the last
+  \exmp{abs(max_n)} occurrences will be replaced. The function returns
+  the resulting string and an integer indicating how many replacements
+  were made.
+  
+  The second calling form may be used to replace all occurances of
+  \exmp{b} in \exmp{a} with \exmp{c}.  In this case, only the
+  resulting string will be returned.
+
 \example
   The following function illustrates how \ifun{strreplace} may be used
   to remove all occurrences of a specified substring:
 #v+
      define delete_substrings (a, b)
      {
-        (a, ) = strreplace (a, b, "", strlen (a));
-        return a;
+        return strreplace (a, b, "");
      }
 #v-
 \seealso{is_substr, strsub, strtrim, strtrans, str_delete_chars}

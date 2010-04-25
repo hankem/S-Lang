@@ -137,7 +137,7 @@ test_strtrans ("HeLLo", "^A-Z", "", "HLL");
 test_strtrans ("HeLLo", "\\l\\u", "aA", "AaAAa");
 test_strtrans ("He11o", "\l\u\d"R, "aAx", "Aaxxa");
 
-define test_str_replace (a, b, c, result, n)
+define test_str_replace_all (a, b, c, result, n)
 {
    variable new;
    variable m;
@@ -155,6 +155,32 @@ define test_str_replace (a, b, c, result, n)
 	if (new != result)
 	  failed ("str_replace (%s, %s, %s) ==> %s!=", a, b, c, new, result);
      }
+}
+
+define test_str_replace (a, b, c, result, n)
+{
+   variable new;
+   variable m;
+
+   (new, m) = strreplace (a, b, c, n);
+
+   if (new != result)
+     failed ("strreplace (%s, %s, %s, %d) ==> %s!=%s", a, b, c, n, new, result);
+   
+   if (n == 1)
+     {
+	n = str_replace (a, b, c);
+	!if (n) a;
+	new = ();
+	if (new != result)
+	  failed ("str_replace (%s, %s, %s) ==> %s!=%S", a, b, c, new, result);
+     }
+   
+   % Alternate interface
+   variable new1 = strreplace (a, b, c);
+   (new,) = strreplace (a, b, c, strbytelen (a));
+   if (new1 != new)
+     failed ("str_replace (%s, %s, %s) ==> %s!=%s", a, b, c, new, new1);
 }
 
 test_str_replace ("a", "b", "x", "a", 1);

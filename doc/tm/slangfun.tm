@@ -42,9 +42,9 @@
 \linuxdoc
 \begin{\documentstyle}
 
-\title S-Lang Run-Time Library Intrinsic Function Reference: Version 2.1.0
+\title S-Lang Run-Time Library Intrinsic Function Reference
 \author John E. Davis, \tt{jed@jedsoft.org}
-\date \__today__
+\date \__today__ (v2.3.0)
 
 \toc
 

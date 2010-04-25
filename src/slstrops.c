@@ -436,17 +436,24 @@ static void reverse_string (char *a)
      }
 }
 
-static int strreplace_cmd (int *np)
+static void strreplace_cmd (void)
 {   
    char *orig, *match, *rep;
    char *new_str;
-   int max_num_replaces;
+   int max_num_replaces = -1;
    int ret;
+   int has_max_num_replaces;
 
-   max_num_replaces = *np;
+   has_max_num_replaces = (SLang_Num_Function_Args == 4);
+   if (has_max_num_replaces
+       && (-1 == SLang_pop_int (&max_num_replaces)))
+     return;
 
    if (-1 == pop_3_malloced_strings (&orig, &match, &rep))
-     return -1;
+     return;
+
+   if (has_max_num_replaces == 0)
+     max_num_replaces = _pSLstring_bytelen (orig);
 
    if (max_num_replaces < 0)
      {
@@ -459,23 +466,24 @@ static int strreplace_cmd (int *np)
 	  reverse_string (orig);
      }
    else ret = str_replace_cmd_1 (orig, match, rep, max_num_replaces, &new_str);
-   
-   if (ret == 0)
-     {
-	if (-1 == SLang_push_malloced_string (orig))
-	  ret = -1;
-	orig = NULL;
-     }
-   else if (ret > 0)
-     {
-	if (-1 == SLang_push_malloced_string (new_str))
-	  ret = -1;
-     }
 
+   if (ret >= 0)
+     {
+	if (ret == 0)
+	  {
+	     (void) SLang_push_malloced_string (orig);   /* Always frees orig */
+	     orig = NULL;
+	  }
+	else
+	  (void) SLang_push_malloced_string (new_str);
+
+	if (has_max_num_replaces)
+	  (void) SLang_push_integer (ret);
+     }
    free_3_malloced_strings (orig, match, rep);
-   return ret;
 }
 
+/* FIXME: This function is deprecated and should removed  */
 static int str_replace_cmd (char *orig, char *match, char *rep)
 {
    char *s;
@@ -2328,7 +2336,7 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_S("strbytelen",  strbytelen_cmd, SLANG_INT_TYPE),
    MAKE_INTRINSIC_3("strchop", strchop_cmd, SLANG_VOID_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_3("strchopr", strchopr_cmd, SLANG_VOID_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE, SLANG_WCHAR_TYPE),
-   MAKE_INTRINSIC_I("strreplace", strreplace_cmd, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_0("strreplace", strreplace_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_SSS("str_replace", str_replace_cmd, SLANG_INT_TYPE),
    MAKE_INTRINSIC_SII("substr",  substr_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_SII("substrbytes",  subbytes_cmd, SLANG_VOID_TYPE),

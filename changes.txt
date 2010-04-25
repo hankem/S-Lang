@@ -63,6 +63,16 @@ Changes since 2.2.2
     
        foreach x (y) using ("bar") (@foo)();
 
+32. src/slstrops.c: Added an alternative interface to strreplace that
+    facilitates the most common case where one wants to replace all
+    substrings.  The function now supports
+    
+        new = strreplace (a, b, c);
+    
+    in addition to the older usage:
+    
+        (new,m) = strreplace (a, b, c, n);
+
 {{{ Previous Versions
 
 Changes since 2.2.1
