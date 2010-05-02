@@ -248,7 +248,8 @@
      d    as a signed decimal integer
      u    as an unsigned decimal integer
      o    as an octal integer
-     X    as hexadecimal
+     X,x  as hexadecimal
+     B    as a binary integer
      S    convert object to a string and format accordingly
 #v-
   The \exmp{S} conversion specifier is a \slang extension which will
@@ -269,6 +270,9 @@
     sprintf("|% 8.2f|",PI)              ===> "|    3.14|"
     sprintf("|%-8.2f|",PI)              ===> "|3.14    |"
     sprintf("|%+8.2f|",PI)              ===> "|   +3.14|"
+    sprintf("|%8B|", 21)                ===> "|   10101|"
+    sprintf("|%.8B|", 21)               ===> "|00010101|"
+    sprintf("|%#.8B|", 21)              ===> "|0b00010101|"
     sprintf("%S",{1,2,3})               ===> "List_Type with 3 elements"
     sprintf("%S",1+2i)                  ===> "(1 + 2i)"
 #v-

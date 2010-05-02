@@ -1285,7 +1285,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
    register char *p = fmt, ch;
    char *out = NULL, *outp = NULL;
    char dfmt[1024];	       /* used to hold part of format */
-   char *f;
+   char *f, *f1;
    char *str;
    unsigned int want_width, width, precis;
    int int_var, use_string;
@@ -1301,7 +1301,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
    double x;
 #endif
    unsigned char uch;
-   int use_long = 0;
+   int use_long = 0, use_alt_format = 0;
 
    while (1)
      {
@@ -1345,10 +1345,14 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	/* Make sure cases such as "% #g" can be handled. */
 	if ((ch == '-') || (ch == '+') || (ch == ' ') || (ch == '#'))
 	  {
+	     if (ch == '#')
+	       use_alt_format = 1;
 	     *f++ = ch;
 	     ch = *p++;
 	     if ((ch == '-') || (ch == '+') || (ch == ' ') || (ch == '#'))
 	       {
+		  if (ch == '#')
+		    use_alt_format = 1;
 		  *f++ = ch;
 		  ch = *p++;
 	       }
@@ -1443,8 +1447,26 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	/* Now the actual format specifier */
 	switch (ch)
 	  {
+	   case 'B':
+	     if (-1 == _pSLformat_as_binary (precis, use_alt_format))
+	       return out;
+	     /* Remove the precision value from the format string */
+	     f1 = f-1;
+	     while (f1 > dfmt)
+	       {
+		  if (*f1 == '.')
+		    {
+		       *f1 = 0;
+		       f = f1;
+		       break;
+		    }
+		  f1--;
+	       }
+
+	     /* drop */
 	   case 'S':
-	     _pSLstring_intrinsic ();
+	     if (ch == 'S')
+	       _pSLstring_intrinsic ();
 	     ch = 's';
 	     /* drop */
 	   case 's':

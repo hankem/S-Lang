@@ -103,7 +103,7 @@ static int check_int_token_overflow (_pSLang_Token_Type *ctok, int sign)
 
    ctok->v.long_val = lval = sign * ctok->v.long_val;
 
-   if (ctok->flags & SLTOKEN_IS_HEX)
+   if (ctok->flags & (SLTOKEN_IS_HEX|SLTOKEN_IS_BINARY))
      return 0;
 
    switch (ctok->type)
@@ -182,7 +182,7 @@ static int check_llong_token_overflow (_pSLang_Token_Type *ctok, int sign)
    long long lval = sign * ctok->v.llong_val;
    ctok->v.llong_val = lval;
 
-   if ((ctok->flags & SLTOKEN_IS_HEX)
+   if ((ctok->flags & (SLTOKEN_IS_HEX|SLTOKEN_IS_BINARY))
        || ((lval >= 0) && (sign > 0))
        || ((lval <= 0) && (sign < 0)))
      return 0;

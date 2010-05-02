@@ -813,6 +813,45 @@ static int CMP_FUNCTION (SLtype unused, VOID_STAR a, VOID_STAR b, int *c)
 }
 #endif
 
+#ifdef TO_BINARY_FUNCTION
+static int TO_BINARY_FUNCTION (GENERIC_TYPE x, char *buf, unsigned int buflen,
+			       unsigned int min_num_bits)
+{
+   GENERIC_TYPE x1;
+   unsigned int nbits;
+   char *s;
+
+   nbits = 1;
+   x1 = x;
+   while (x1 >> 8) { x1 = x1 >> 8; nbits += 8; }
+   while (x1 >> 4) { x1 = x1 >> 4; nbits += 4; }
+   while (x1 >> 1) { x1 = x1 >> 1; nbits += 1; }
+
+   if (nbits >= buflen)
+     return -1;			       /* calling routine must issue error */
+
+   if (nbits < min_num_bits)
+     {
+	unsigned int dnbits = min_num_bits - nbits;
+	if (nbits + dnbits + 1 > buflen)
+	  dnbits = buflen - (nbits + 1);
+	nbits += dnbits;
+     }
+   s = buf + nbits;
+   *s = 0;
+   while (x)
+     {
+	*(--s) = '0' + (x & 1);
+	x = x >> 1;
+     }
+   while (s > buf)
+     *(--s) = '0';
+
+   return 0;
+}
+#endif
+
+#undef TO_BINARY_FUNCTION
 #undef CMP_FUNCTION
 #undef SCALAR_BINARY_FUNCTION
 #undef PUSH_POW_OBJ_FUN

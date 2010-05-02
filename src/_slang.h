@@ -608,6 +608,7 @@ extern void SLang_free_object (SLang_Object_Type *);
 extern int _pSLanytype_typecast (SLtype, VOID_STAR, unsigned int,
 				SLtype, VOID_STAR);
 extern void _pSLstring_intrinsic (void);
+extern int _pSLformat_as_binary (unsigned int min_num_bits, int use_binary_prefix);
 
 #if 0
 /* NULL not allowed here */
@@ -1132,6 +1133,7 @@ typedef struct _pSLang_Token_Type
 #define SLTOKEN_IS_NEGATIVE		0x001
 #define SLTOKEN_OVERFLOW_CHECKED	0x002
 #define SLTOKEN_IS_HEX			0x004
+#define SLTOKEN_IS_BINARY		0x008
 #define SLTOKEN_TYPE_INTEGER		0x100
 #define SLTOKEN_TYPE_FLOAT		0x200
 #define SLTOKEN_TYPE_NUMBER		(SLTOKEN_TYPE_INTEGER|SLTOKEN_TYPE_FLOAT)

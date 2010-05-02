@@ -73,6 +73,16 @@ Changes since 2.2.2
     
         (new,m) = strreplace (a, b, c, n);
 
+33. src/sltoken.c,...: Added support for binary integer literals of
+    the form 0b010101.  Integers may be formatted as unsigned binary using the
+    %B format specifier, e.g.,
+    
+        sprintf ("%B", 5)      ==> "101"
+	sprintf ("%#B", 5)     ==> "0b101"
+	sprintf ("%#8B", 5)    ==> "   0b101"
+	sprintf ("%#.8B", 5)   ==> "0b00000101"
+	sprintf ("%#12.8B", 5) ==> "  0b00000101"
+	
 {{{ Previous Versions
 
 Changes since 2.2.1

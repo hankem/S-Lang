@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  Apr 25, 2010
+  May 2, 2010
   ____________________________________________________________
 
 
@@ -804,6 +804,9 @@
      must begin with a leading 0. For example, 0177 and 127 represent
      the same integer.
 
+  +o  In Binary notation using characters 0 and 1 with the 0b prefix. For
+     example, 21 may be expressed in binary using 0b10101.
+
   Short, long, long long, and unsigned types may be specified by using
   the proper suffixes: L indicates that the integer is a long integer,
   LL indicates a long long integer, h indicates that the integer is a
@@ -816,7 +819,7 @@
   will be determined by the ASCII value of the character in quotes. For
   example,
 
-                i = '0';
+                     i = '0';
 
   assigns to i the character 48 since the '0' character has an ASCII
   value of 48.
@@ -854,7 +857,6 @@
   part, while the second number forms the _i_m_a_g_i_n_a_r_y part. That is, a
   complex number may be regarded as the sum of a real number and an
   imaginary number.
-
   Strictly speaking, the current implementation of the SS--LLaanngg does not
   support generic complex literals. However, it does support imaginary
   literals permitting a more generic complex number with a non-zero real
@@ -898,8 +900,8 @@
   possible to construct strings longer than this by string
   concatenation, e.g.,
 
-             "This is the first part of a long string"
-              + " and this is the second part"
+        "This is the first part of a long string"
+         + " and this is the second part"
 
   SS--LLaanngg version 2.2 introduced support for multi-line string literals.
   There are basic variants supported. The first makes use of the
@@ -1004,10 +1006,10 @@
   off backslash expansion, and as a result the following statements are
   equivalent:
 
-        file = "C:\\windows\\apps\\slrn.rc";
-        file = "C:\\windows\\apps\\slrn.rc"Q;
-        file = "C:\windows\apps\slrn.rc"R;
-        file = `C:\windows\apps\slrn.rc`;        % slang-2.2 and above
+             file = "C:\\windows\\apps\\slrn.rc";
+             file = "C:\\windows\\apps\\slrn.rc"Q;
+             file = "C:\windows\apps\slrn.rc"R;
+             file = `C:\windows\apps\slrn.rc`;        % slang-2.2 and above
 
   The only exception is that a backslash character is not permitted as
   the last character of a string with the R suffix. That is,

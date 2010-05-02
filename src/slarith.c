@@ -250,6 +250,7 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_int_obj(SLANG_UINT_TYPE,(int)(x))
 #define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
 #define CMP_FUNCTION uint_cmp_function
+#define TO_BINARY_FUNCTION uint_to_binary
 #include "slarith.inc"
 
 #if LONG_IS_NOT_INT
@@ -290,6 +291,7 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_long_obj(SLANG_ULONG_TYPE,(long)(x))
 #define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
 #define CMP_FUNCTION ulong_cmp_function
+#define TO_BINARY_FUNCTION ulong_to_binary
 #include "slarith.inc"
 #else
 #define long_long_bin_op	int_int_bin_op
@@ -298,6 +300,7 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #define ulong_unary_op		uint_unary_op
 #define long_cmp_function	int_cmp_function
 #define ulong_cmp_function	uint_cmp_function
+#define ulong_to_binary		uint_to_binary
 #endif				       /* LONG_IS_NOT_INT */
 
 #ifdef HAVE_LONG_LONG
@@ -339,6 +342,7 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #  define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_llong_obj(SLANG_ULLONG_TYPE,(long long)(x))
 #  define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
 #  define CMP_FUNCTION ullong_cmp_function
+#  define TO_BINARY_FUNCTION ullong_to_binary
 #  include "slarith.inc"
 # else
 #  define llong_llong_bin_op long_long_bin_op
@@ -405,6 +409,7 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #define ABS_FUNCTION(x) (x)
 #define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
 #define CMP_FUNCTION uchar_cmp_function
+#define TO_BINARY_FUNCTION uchar_to_binary
 #include "slarith.inc"
 
 #if SHORT_IS_NOT_INT
@@ -425,6 +430,7 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #define ABS_FUNCTION(x) (x)
 #define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
 #define CMP_FUNCTION ushort_cmp_function
+#define TO_BINARY_FUNCTION ushort_to_binary
 #include "slarith.inc"
 #endif				       /* SHORT_IS_NOT_INT */
 
@@ -1331,6 +1337,108 @@ static Integer_Info_Type Integer_Types [NUM_INTEGER_TYPES] =
 #endif
 };
 
+int _pSLformat_as_binary (unsigned int min_num_bits, int use_binary_prefix)
+{
+#ifdef HAVE_LONG_LONG
+   char buf [2*8*SIZEOF_LONG_LONG];
+#else
+   char buf [2*8*SIZEOF_LONG];
+#endif
+   char *bufp;
+   int ret;
+   unsigned int buflen;
+
+   bufp = buf;
+   buflen = sizeof(buf);
+   if (use_binary_prefix)
+     {
+	*bufp++ = '0';
+	*bufp++ = 'b';
+	buflen -= 2;
+     }
+
+   switch (SLang_peek_at_stack ())
+     {
+      default:
+      case SLANG_INT_TYPE:
+      case SLANG_UINT_TYPE:
+	  {
+	     unsigned int u;
+	     if (-1 == SLang_pop_uint (&u))
+	       return -1;
+	     ret = uint_to_binary (u, bufp, buflen, min_num_bits);
+	  }
+	break;
+
+      case SLANG_CHAR_TYPE:
+      case SLANG_UCHAR_TYPE:
+	  {
+	     unsigned char u;
+	     if (-1 == SLang_pop_uchar (&u))
+	       return -1;
+	     ret = uchar_to_binary (u, bufp, buflen, min_num_bits);
+	  }
+	break;
+	
+      case SLANG_SHORT_TYPE:
+      case SLANG_USHORT_TYPE:
+	  {
+	     unsigned short u;
+	     if (-1 == SLang_pop_ushort (&u))
+	       return -1;
+	     ret = ushort_to_binary (u, bufp, buflen, min_num_bits);
+	  }
+	break;
+
+      case SLANG_LONG_TYPE:
+      case SLANG_ULONG_TYPE:
+	  {
+	     unsigned long u;
+	     if (-1 == SLang_pop_ulong (&u))
+	       return -1;
+	     ret = ulong_to_binary (u, bufp, buflen, min_num_bits);
+	  }
+	break;
+
+#ifdef HAVE_LONG_LONG
+      case SLANG_LLONG_TYPE:
+      case SLANG_ULLONG_TYPE:
+	  {
+	     unsigned long long u;
+	     if (-1 == SLang_pop_ulong_long (&u))
+	       return -1;
+	     ret = ullong_to_binary (u, bufp, buflen, min_num_bits);
+	  }
+	break;
+#endif
+     }
+   if (ret == -1)
+     {
+	SLang_verror (SL_INTERNAL_ERROR, "Buffer is not large enough for the binary representations");
+	return -1;
+     }
+   
+   (void) SLang_push_string (buf);
+   return 0;
+}
+
+#if 0
+static void to_binary_string_intrin (void)
+{
+   unsigned int min_num_bits = 0;
+
+   if (SLang_Num_Function_Args == 2)
+     {
+	int n;
+	if (-1 == SLang_pop_int (&n))
+	  return;
+	if (n > 0)
+	  min_num_bits = (unsigned int) n;
+     }
+   
+   (void) _pSLformat_as_binary (min_num_bits, 0);
+}
+#endif
 static int create_synonyms (void)
 {
    static SLFUTURE_CONST char *names[8] =
@@ -1452,6 +1560,14 @@ static SLang_Arith_Binary_Type Binary_Table [] =
    MAKE_ARITH_BINARY("_op_shr", SLANG_SHR),
    MAKE_ARITH_BINARY("_op_mod", SLANG_MOD),
    SLANG_END_ARITH_BINARY_TABLE
+};
+
+static SLang_Intrin_Fun_Type Intrinsic_Table [] =
+{
+#if 0				       /* need to think of a better name */
+   MAKE_INTRINSIC_0("to_binary_string", to_binary_string_intrin, SLANG_VOID_TYPE),
+#endif
+   SLANG_END_INTRIN_FUN_TABLE
 };
 
 static SLang_IConstant_Type IConst_Table [] =
@@ -1677,6 +1793,8 @@ int _pSLarith_register_types (void)
 	  }
      }
 
+   if (-1 == SLadd_intrin_fun_table (Intrinsic_Table, NULL))
+     return -1;
    if (-1 == _pSLadd_arith_unary_table (Unary_Table, NULL))
      return -1;
    if (-1 == _pSLadd_arith_binary_table (Binary_Table, NULL))

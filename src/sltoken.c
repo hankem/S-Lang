@@ -591,10 +591,10 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 {
    unsigned char ch;
    unsigned char type;
-   int is_hex = 0;
+   int tok_flags = 0;
    int status;
 
-   /* Look for pattern  [0-9.xX]*([eE][-+]?[digits])?[ijfhul]? */
+   /* Look for pattern  [0-9.xXb]*([eE][-+]?[digits])?[ijfhul]? */
    while (1)
      {
 	ch = prep_get_char ();
@@ -602,9 +602,13 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 	type = CHAR_CLASS (ch);
 	if ((type != DIGIT_CHAR) && (type != DOT_CHAR))
 	  {
-	     if ((ch != 'x') && (ch != 'X'))
+	     if ((ch == 'x') || (ch == 'X'))
+	       tok_flags = SLTOKEN_IS_HEX;
+	     else if ((ch == 'b') || (ch == 'B'))
+	       tok_flags = SLTOKEN_IS_BINARY;
+	     else 
 	       break;
-	     /* It must be hex */
+
 	     do
 	       {
 		  if (len == (SL_MAX_TOKEN_LEN - 1))
@@ -615,12 +619,11 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 		  type = CHAR_CLASS (ch);
 	       }
 	     while ((type == DIGIT_CHAR) || (type == ALPHA_CHAR));
-	     is_hex=1;
 	     break;
 	  }
 	if (len == (SL_MAX_TOKEN_LEN - 1))
 	  goto too_long_return_error;
-	s [len++] = ch;
+	s[len++] = ch;
      }
 
    /* At this point, type and ch are synchronized */
@@ -647,7 +650,7 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 	     ch = prep_get_char ();
 	  }
      }
-   if (is_hex) tok->flags |= SLTOKEN_IS_HEX;
+   tok->flags |= tok_flags;
 
    while (ALPHA_CHAR == type)
      {

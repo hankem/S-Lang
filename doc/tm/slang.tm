@@ -809,6 +809,10 @@
 \item In Octal notation using characters 0 through 7.  The Octal
       number must begin with a leading 0.  For example,
       0177 and 127 represent the same integer.
+
+\item In Binary notation using characters 0 and 1 with the \exmp{0b}
+      prefix.  For example, 21 may be expressed in binary using
+      \exmp{0b10101}.
 \end{itemize}
 
    Short, long, long long, and unsigned types may be specified by

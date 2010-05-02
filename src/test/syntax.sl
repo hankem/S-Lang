@@ -376,6 +376,26 @@ try
 }
 catch LimitExceededError;
 
+private define test_binary (astr, b)
+{
+   variable a = eval (astr);
+   if (a != b)
+     {
+	failed ("Binary string %S ==> %S != %S", astr, a, b);
+     }
+}
+test_binary ("0b0", 0);
+test_binary ("0b00", 0);
+test_binary ("0b1", 1);
+test_binary ("-0b1", -1);
+test_binary ("0b01", 1);
+test_binary ("0b0001", 1);
+test_binary ("0b0011", 3);
+test_binary ("0b11", 3);
+test_binary ("0b111", 7);
+test_binary ("0b1110", 14);
+test_binary ("-0b1110", -14);
+
 $1 = -0;
 print ("Ok\n");
 

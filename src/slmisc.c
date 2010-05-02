@@ -418,6 +418,7 @@ int SLang_guess_type (SLFUTURE_CONST char *t)
 #define MODIFIER_LL	0x08
 #define MODIFIER_SIZE_MASK 0x0F
 #define MODIFIER_HEX	0x10
+#define MODIFIER_BINARY	0x20
 
    modifier = 0;
    if ((*t == '-') || (*t == '+')) t++;
@@ -429,13 +430,23 @@ int SLang_guess_type (SLFUTURE_CONST char *t)
 #endif
 	while ((*p >= '0') && (*p <= '9')) p++;
 	if (t == p) return (SLANG_STRING_TYPE);
-	if ((*p == 'x') && (p == t + 1))   /* 0x?? */
+	if (p == t + 1)
 	  {
-	     modifier |= MODIFIER_HEX;
-	     p++;
-	     while (ch = *p,
-		    ((ch >= '0') && (ch <= '9'))
-		    || (((ch | 0x20) >= 'a') && ((ch | 0x20) <= 'f'))) p++;
+	     if (*p == 'x')
+	       {		  
+		  modifier |= MODIFIER_HEX;
+		  p++;
+		  while (ch = *p,
+			 ((ch >= '0') && (ch <= '9'))
+			 || (((ch | 0x20) >= 'a') && ((ch | 0x20) <= 'f'))) p++;
+	       }
+	     else if (*p == 'b')
+	       {
+		  modifier |= MODIFIER_BINARY;
+		  p++;
+		  while ((*p == '0') || (*p == '1'))
+		    p++;
+	       }
 	  }
 
 	/* Now look for U, H, L, LL, UH, UL, ULL, modifiers */
@@ -566,6 +577,16 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 		  return -1;
 	       }
 	  }
+	else if ((*s | 0x20) == 'b')
+	  {
+	     base = 2;
+	     s++;
+	     if (*s == 0)
+	       {
+		  SLang_set_error (SL_SYNTAX_ERROR);
+		  return -1;
+	       }
+	  }
 	else 
 	  {
 	     base = 8;
@@ -596,22 +617,27 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 	     *ul = value;
 	     return 0;
 
-	   case '8':
 	   case '9':
-	     if (base == 8) 
+	   case '8':
+	     if (base <= 8)
 	       {
-		  _pSLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in an octal number");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in binary or octal numbers");
 		  return -1;
 	       }
 	     /* drop */
-	   case '0':
-	   case '1':
-	   case '2':
-	   case '3':
-	   case '4':
-	   case '5':
-	   case '6':
 	   case '7':
+	   case '6':
+	   case '5':
+	   case '4':
+	   case '3':
+	   case '2':
+	     if (base <= 2)
+	       {
+		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits 0 and 1 are permitted in binary numbers");
+		  return -1;
+	       }
+	   case '1':
+	   case '0':
 	     ch1 -= '0';
 	     break;
 
@@ -623,7 +649,7 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 	   case 'f':
 	     if (base != 16) 
 	       {
-		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in an octal or decimal number");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in a binary, octal, or decimal number");
 		  return -1;
 	       }
 	     ch1 = (ch1 - 'a') + 10;
@@ -671,6 +697,16 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 		  return -1;
 	       }
 	  }
+	else if ((*s | 0x20) == 'b')
+	  {
+	     base = 2;
+	     s++;
+	     if (*s == 0)
+	       {
+		  SLang_set_error (SL_SYNTAX_ERROR);
+		  return -1;
+	       }
+	  }
 	else base = 8;
      }
 
@@ -694,22 +730,27 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 	     *ul = value;
 	     return 0;
 
-	   case '8':
 	   case '9':
-	     if (base == 8) 
+	   case '8':
+	     if (base <= 8)
 	       {
-		  _pSLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in an octal number");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in binary or octal numbers");
 		  return -1;
 	       }
 	     /* drop */
-	   case '0':
-	   case '1':
-	   case '2':
-	   case '3':
-	   case '4':
-	   case '5':
-	   case '6':
 	   case '7':
+	   case '6':
+	   case '5':
+	   case '4':
+	   case '3':
+	   case '2':
+	     if (base <= 2)
+	       {
+		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits 0 and 1 are permitted in binary numbers");
+		  return -1;
+	       }
+	   case '1':
+	   case '0':
 	     ch1 -= '0';
 	     break;
 
@@ -721,7 +762,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 	   case 'f':
 	     if (base != 16) 
 	       {
-		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in an octal or decimal number");
+		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in a binary, octal, or decimal number");
 		  return -1;
 	       }
 	     ch1 = (ch1 - 'a') + 10;
