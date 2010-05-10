@@ -349,6 +349,7 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #  define ullong_ullong_bin_op ulong_ulong_bin_op
 #  define llong_llong_scalar_bin_op long_long_scalar_bin_op
 #  define ullong_ullong_scalar_bin_op ulong_ulong_scalar_bin_op
+#  define ullong_to_binary ulong_to_binary
 # endif				       /* LLONG_IS_NOT_LONG */
 #endif				       /* HAVE_LONG_LONG */
 

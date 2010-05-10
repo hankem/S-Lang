@@ -117,7 +117,7 @@
 \notes
   On systems that do not support symbolic links, there is no
   difference between this function and the \ifun{stat_file} function.
-\seealso{stat_file, readlink}
+\seealso{stat_file, stat_is, stat_mode_to_string, readlink}
 \done
 
 \function{mkdir}
@@ -228,7 +228,7 @@
         return st.st_size;
      }
 #v-
-\seealso{lstat_file, stat_is, utime}
+\seealso{lstat_file, stat_is, stat_mode_to_string, utime}
 \done
 
 \function{stat_is}
@@ -262,7 +262,37 @@
         return stat_is ("dir", st.st_mode);
      }
 #v-
-\seealso{stat_file, lstat_file}
+\seealso{stat_file, lstat_file, stat_mode_to_string}
+\done
+
+\function{stat_mode_to_string}
+\synopsis{Format the file type code and access permission bits as a string}
+\usage{String_Type stat_mode_to_string (Int_Type st_mode)}
+\description
+  The \ifun{stat_mode_to_string} function returns a 10 characters string
+  that indicates the type and permissions of a file as represented by
+  the \var{st_mode} parameter.  The returned string consists of the following
+  characters: 
+#v+
+     "s"      (socket)
+     "p"      (fifo)
+     "b"      (block device)
+     "c"      (character device)
+     "-"      (regular file)
+     "l"      (link)
+     "d"      (dir)
+#v-
+  The access permission bit is one of the following characters:
+#v+
+     "s"      (set-user-id)
+     "w"      (writable)
+     "x"      (executable)
+     "r"      (readable)
+#v-
+\notes
+  This function is an \slsh intrinsic.  As such, it is not part of
+  \slang proper.
+\seealso{stat_file, lstat_file, stat_is}
 \done
 
 \function{symlink}

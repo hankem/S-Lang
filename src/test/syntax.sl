@@ -383,6 +383,15 @@ private define test_binary (astr, b)
      {
 	failed ("Binary string %S ==> %S != %S", astr, a, b);
      }
+   if (b >= 0)
+     {
+	variable fmt = sprintf ("%%#.%dB", strbytelen (astr)-2);
+	variable bstr = sprintf (fmt, b);
+	if (bstr != astr)
+	  {
+	     failed ("%S != %S=sprintf(%S, %S)", astr, bstr, fmt, b);
+	  }
+     }
 }
 test_binary ("0b0", 0);
 test_binary ("0b00", 0);

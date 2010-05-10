@@ -82,7 +82,12 @@ Changes since 2.2.2
 	sprintf ("%#8B", 5)    ==> "   0b101"
 	sprintf ("%#.8B", 5)   ==> "0b00000101"
 	sprintf ("%#12.8B", 5) ==> "  0b00000101"
-	
+
+34. src/slarith.c: ullong_to_binary was not getting defined on systems
+    where sizeof(long)==sizeof(long long).  (Mark Olesen).
+35. src/slsh.c: The stat_mode_to_string function was using 'f' unstead
+    of 'p' for FIFOs.  (Agathoklis Hatzimanikas).
+
 {{{ Previous Versions
 
 Changes since 2.2.1

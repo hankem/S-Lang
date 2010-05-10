@@ -2050,7 +2050,7 @@ lstat_file
   difference between this function and the `stat_file' function.
 
  SEE ALSO
-  stat_file, readlink
+  stat_file, stat_is, stat_mode_to_string, readlink
 
 --------------------------------------------------------------
 
@@ -2214,7 +2214,7 @@ stat_file
 
 
  SEE ALSO
-  lstat_file, stat_is, utime
+  lstat_file, stat_is, stat_mode_to_string, utime
 
 --------------------------------------------------------------
 
@@ -2257,7 +2257,46 @@ stat_is
 
 
  SEE ALSO
-  stat_file, lstat_file
+  stat_file, lstat_file, stat_mode_to_string
+
+--------------------------------------------------------------
+
+stat_mode_to_string
+
+ SYNOPSIS
+  Format the file type code and access permission bits as a string
+
+ USAGE
+  String_Type stat_mode_to_string (Int_Type st_mode)
+
+ DESCRIPTION
+  The `stat_mode_to_string' function returns a 10 characters string
+  that indicates the type and permissions of a file as represented by
+  the `st_mode' parameter.  The returned string consists of the following
+  characters:
+
+     "s"      (socket)
+     "p"      (fifo)
+     "b"      (block device)
+     "c"      (character device)
+     "-"      (regular file)
+     "l"      (link)
+     "d"      (dir)
+
+  The access permission bit is one of the following characters:
+
+     "s"      (set-user-id)
+     "w"      (writable)
+     "x"      (executable)
+     "r"      (readable)
+
+
+ NOTES
+  This function is an `slsh' intrinsic.  As such, it is not part of
+  S-Lang proper.
+
+ SEE ALSO
+  stat_file, lstat_file, stat_is
 
 --------------------------------------------------------------
 

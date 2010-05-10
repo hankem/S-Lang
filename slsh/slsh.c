@@ -240,7 +240,7 @@ static void stat_mode_to_string (void)
    else if (S_ISDIR(mode)) mode_string[0] = 'd';
    else if (S_ISLNK(mode)) mode_string[0] = 'l';
    else if (S_ISCHR(mode)) mode_string[0] = 'c';
-   else if (S_ISFIFO(mode)) mode_string[0] = 'f';
+   else if (S_ISFIFO(mode)) mode_string[0] = 'p';
    else if (S_ISSOCK(mode)) mode_string[0] = 's';
    else if (S_ISBLK(mode)) mode_string[0] = 'b';
    
