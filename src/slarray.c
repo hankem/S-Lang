@@ -2110,6 +2110,92 @@ int _pSLarray_aput (void)
    return _pSLarray_aput1 ((unsigned int)(SLang_Num_Function_Args-1));
 }
 
+static void _pSLmergesort (void *obj, 
+			   SLindex_Type *sort_indices, SLindex_Type *tmp,
+			   SLindex_Type n,
+			   int (*cmp) (void *, SLindex_Type, SLindex_Type))
+{
+   SLindex_Type i, j, k, jmax, kmax, n1, m;
+     
+   for (i = 0; i < n; i++)
+     sort_indices[i] = i;
+
+   /* Insertion sort for 4 elements */
+   n1 = n-1;
+   m = 4; i = 0;
+   while (i < n1)
+     {
+	kmax = i + m - 1;
+	if (kmax >= n)
+	  kmax = n1;
+	for (k = i+1; k <= kmax; k++)
+	  {
+	     j = k;
+	     while (j > i)
+	       {
+		  SLindex_Type t;
+		  j--;
+		  if ((*cmp)(obj, sort_indices[j], k) <= 0)
+		    break;
+		  t = sort_indices[j];
+		  sort_indices[j] = sort_indices[j+1];
+		  sort_indices[j+1] = t;
+	       }
+	  }
+	i += m;
+     }
+
+   /* Now do a bottom-up merge sort */
+   while (m < n)
+     {
+	i = 0;
+	while (i < n-m)
+	  {
+	     SLindex_Type ilast, l, tmp_j, tmp_k;
+
+	     j = 0; jmax = m;
+	     k = m; kmax = k+m;
+	     ilast = i + kmax-1;
+
+	     if (ilast >= n)
+	       {
+		  ilast = n1;
+		  kmax = ilast - i + 1;
+	       }
+
+	     memcpy (tmp, sort_indices+i, kmax*sizeof(SLindex_Type));
+
+	     l = i;
+	     tmp_j = tmp[j]; tmp_k = tmp[k];
+	     while (1)
+	       {
+		  if ((*cmp)(obj, tmp_j, tmp_k) <= 0)
+		    {
+		       sort_indices[l] = tmp_j;
+		       l++; j++;
+		       if (j == jmax)
+			 break; /* No need to copy the tmp[k...] values. */
+		       tmp_j = tmp[j];
+		       continue;
+		    }
+
+		  sort_indices[l] = tmp_k;
+		  l++; k++;
+		  if (k == kmax)
+		    {
+		       SLindex_Type ll;
+
+		       for (ll = l; ll <= ilast; ll++)
+			 sort_indices[ll] = tmp[j+(ll-l)];
+		       break;
+		    }
+		  tmp_k = tmp[k];
+	       }
+	     i = i + 2*m;
+	  }
+	m = m * 2;
+     }
+}
 
 /* This is for 1-d matrices only.  It is used by the sort function */
 static int push_element_at_index (SLang_Array_Type *at, SLindex_Type indx)
@@ -2122,182 +2208,332 @@ static int push_element_at_index (SLang_Array_Type *at, SLindex_Type indx)
    return push_element_at_addr (at, (VOID_STAR) data, 1);
 }
 
-static SLang_Name_Type *Sort_Function;
-static SLang_Array_Type *Sort_Array;
-
 #if SLANG_OPTIMIZE_FOR_SPEED
-static int double_sort_fun (SLindex_Type *a, SLindex_Type *b)
+#if SLANG_HAS_FLOAT
+static int ms_double_sort_fun (void *obj, SLindex_Type i, SLindex_Type j)
 {
-   double *da, *db;
-   
-   da = (double *) Sort_Array->data;
-   db = da + *b;
-   da = da + *a;
+   double *data = (double *)obj;
 
-   if (*da > *db) return 1;
-   if (*da == *db) return 0;
-   return -1;
+   if (data[i] > data[j])
+     return 1;
+   if (data[i] < data[j])
+     return -1;
+   return i-j;
 }
-static int int_sort_fun (SLindex_Type *a, SLindex_Type *b)
-{
-   int *da, *db;
-   
-   da = (int *) Sort_Array->data;
-   db = da + *b;
-   da = da + *a;
 
-   if (*da > *db) return 1;
-   if (*da == *db) return 0;
-   return -1;
+static int ms_float_sort_fun (void *obj, SLindex_Type i, SLindex_Type j)
+{
+   float *data = (float *)obj;
+
+   if (data[i] > data[j])
+     return 1;
+   if (data[i] < data[j])
+     return -1;
+   return i-j;
+}
+static int ms_double_sort_down_fun (void *obj, SLindex_Type i, SLindex_Type j)
+{
+   double *data = (double *)obj;
+
+   if (data[i] > data[j])
+     return -1;
+   if (data[i] < data[j])
+     return 1;
+   return i-j;
+}
+
+static int ms_float_sort_down_fun (void *obj, SLindex_Type i, SLindex_Type j)
+{
+   float *data = (float *)obj;
+
+   if (data[i] > data[j])
+     return -1;
+   if (data[i] < data[j])
+     return 1;
+   return i-j;
 }
 #endif
 
-static int sort_cmp_fun (SLindex_Type *a, SLindex_Type *b)
+static int ms_int_sort_fun (void *obj, SLindex_Type i, SLindex_Type j)
+{
+   int *data = (int *)obj;
+
+   if (data[i] > data[j])
+     return 1;
+   if (data[i] < data[j])
+     return -1;
+   return i-j;
+}
+static int ms_int_sort_down_fun (void *obj, SLindex_Type i, SLindex_Type j)
+{
+   int *data = (int *)obj;
+
+   if (data[i] > data[j])
+     return -1;
+   if (data[i] < data[j])
+     return 1;
+   return i-j;
+}
+#endif
+
+typedef struct
+{
+   SLang_Name_Type *func;
+   SLang_Object_Type obj;
+   int dir;			       /* +1=ascend, -1=descend */
+}
+Sort_Object_Type;
+
+static int ms_sort_cmp_fun (void *vobj, SLindex_Type i, SLindex_Type j)
 {
    int cmp;
+   SLang_Array_Type *at;
+   Sort_Object_Type *sort_obj = (Sort_Object_Type *)vobj;
+
+   at = sort_obj->obj.v.array_val;
 
    if (SLang_get_error ()
-       || (-1 == push_element_at_index (Sort_Array, *a))
-       || (-1 == push_element_at_index (Sort_Array, *b))
-       || (-1 == SLexecute_function (Sort_Function))
+       || (-1 == push_element_at_index (at, i))
+       || (-1 == push_element_at_index (at, j))
+       || (-1 == SLexecute_function (sort_obj->func))
        || (-1 == SLang_pop_integer (&cmp)))
      {
-	/* DO not allow qsort to loop forever.  Return something meaningful */
-	if (*a > *b) return 1;
-	if (*a < *b) return -1;
+	/* error: return something meaninful */
+	if (i > j) return 1;
+	if (i < j) return -1;
 	return 0;
      }
+   if (cmp == 0) 
+     return i - j;
 
-   return cmp;
+   return cmp*sort_obj->dir;
 }
 
-static int builtin_sort_cmp_fun (SLindex_Type *a, SLindex_Type *b)
+static int ms_sort_opaque_cmp_fun (void *vobj, SLindex_Type i, SLindex_Type j)
+{
+   int cmp;
+   Sort_Object_Type *sort_obj = (Sort_Object_Type *)vobj;
+
+   if (SLang_get_error ()
+       || (-1 == _pSLpush_slang_obj (&sort_obj->obj))
+       || (-1 == SLclass_push_int_obj (SLANG_ARRAY_INDEX_TYPE, i))
+       || (-1 == SLclass_push_int_obj (SLANG_ARRAY_INDEX_TYPE, j))
+       || (-1 == SLexecute_function (sort_obj->func))
+       || (-1 == SLang_pop_integer (&cmp)))
+     {
+	/* error: return something meaninful */
+	if (i > j) return 1;
+	if (i < j) return -1;
+	return 0;
+     }
+   if (cmp == 0)
+     return i-j;
+
+   return sort_obj->dir*cmp;
+}
+
+static int ms_builtin_sort_cmp_fun (void *vobj, SLindex_Type i, SLindex_Type j)
 {
    VOID_STAR a_data;
    VOID_STAR b_data;
+   Sort_Object_Type *sort_obj = (Sort_Object_Type *)vobj;
+   SLang_Array_Type *at;
    SLang_Class_Type *cl;
-   
-   cl = Sort_Array->cl;
+
+   at = sort_obj->obj.v.array_val;
+   cl = at->cl;
 
    if ((SLang_get_error () == 0)
-       && (NULL != (a_data = get_data_addr (Sort_Array, a)))
-       && (NULL != (b_data = get_data_addr (Sort_Array, b))))
+       && (NULL != (a_data = get_data_addr (at, &i)))
+       && (NULL != (b_data = get_data_addr (at, &j))))
      {
 	int cmp;
 
-	if ((Sort_Array->flags & SLARR_DATA_VALUE_IS_POINTER)
+	if ((at->flags & SLARR_DATA_VALUE_IS_POINTER)
 	    && ((*(VOID_STAR *) a_data == NULL) || (*(VOID_STAR *) a_data == NULL)))
 	  {
 	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED,
 			   "%s array has uninitialized element", cl->cl_name);
 	  }
-	else if (0 == (*cl->cl_cmp)(Sort_Array->data_type, a_data, b_data, &cmp))
-	  return cmp;
+	else if (0 == (*cl->cl_cmp)(at->data_type, a_data, b_data, &cmp))
+	  {
+	     if (cmp == 0) return i-j;
+	     return cmp * sort_obj->dir;
+	  }
      }
        
-       
-   if (*a > *b) return 1;
-   if (*a == *b) return 0;
-   return -1;
+   if (i > j) return 1;
+   if (i < j) return -1;
+   return i-j;
 }
 
-static void sort_array_internal (SLang_Array_Type *at_str, 
-				 SLang_Name_Type *entry,
-				 int (*sort_fun)(SLindex_Type *, SLindex_Type *))
+static void ms_sort_array_internal (void *vobj, SLindex_Type n,
+				    int (*sort_fun)(void *, SLindex_Type, SLindex_Type))
 {
    SLang_Array_Type *ind_at;
-   /* This is a silly hack to make up for braindead compilers and the lack of
-    * uniformity in prototypes for qsort.
-    */
-   void (*qsort_fun) (char *, unsigned int, int, int (*)(SLindex_Type *, SLindex_Type *));
-   SLindex_Type *indx;
-   int i, n;
-   SLindex_Type dims[1];
+   SLindex_Type *indx, *tmp_indx;
+   SLindex_Type nn;
 
-   if (Sort_Array != NULL)
-     {
-	_pSLang_verror (SL_NOT_IMPLEMENTED, "array_sort is not recursive");
-	return;
-     }
-
-   n = at_str->num_elements;
-
-   if (at_str->num_dims != 1)
-     {
-	_pSLang_verror (SL_INVALID_PARM, "sort is restricted to 1 dim arrays");
-	return;
-     }
-
-   dims [0] = n;
-
-   if (NULL == (ind_at = SLang_create_array (SLANG_ARRAY_INDEX_TYPE, 0, NULL, dims, 1)))
+   if (NULL == (ind_at = SLang_create_array1 (SLANG_ARRAY_INDEX_TYPE, 0, NULL, &n, 1, 1)))
      return;
+   
+   nn = n;
+   if (nn == 0) nn++;
+   if (NULL == (tmp_indx = (SLindex_Type *)SLmalloc (nn * sizeof (SLindex_Type))))
+     {
+	free_array (ind_at);
+	return;
+     }
 
    indx = (SLindex_Type *) ind_at->data;
-   for (i = 0; i < n; i++) indx[i] = i;
-
-   if (n > 1)
-     {
-	qsort_fun = (void (*)(char *, unsigned int, int, int (*)(SLindex_Type *,
-								 SLindex_Type *)))
-	  qsort;
-
-	Sort_Array = at_str;
-	Sort_Function = entry;
-	(*qsort_fun) ((char *) indx, n, sizeof (SLindex_Type), sort_fun);
-     }
-
-   Sort_Array = NULL;
+   _pSLmergesort (vobj, indx, tmp_indx, n, sort_fun);
+   
+   SLfree ((char *)tmp_indx);
    (void) SLang_push_array (ind_at, 1);
 }
 
-static void sort_array (void)
+static int pop_1d_array (SLang_Array_Type **atp)
 {
-   SLang_Name_Type *entry;
    SLang_Array_Type *at;
-   int (*sort_fun) (SLindex_Type *, SLindex_Type *);
 
-   if (SLang_Num_Function_Args != 1)
+   if (-1 == SLang_pop_array (&at, 1))
+     return -1;
+
+   if (at->num_dims != 1)
      {
-	sort_fun = sort_cmp_fun;
+	_pSLang_verror (SL_INVALID_PARM, "sort is restricted to 1 dim arrays");
+	free_array (at);
+	return -1;
+     }
+   *atp = at;
+   return 0;
+}
+   
+/* Usage Forms:
+ *    i = sort (a);
+ *    i = sort (a, &fun);       % sort using function fun(a[i],a[j])
+ *    i = sort (a, &fun, n);    % sort using fun(a, i, j); 0 <= i,j < n
+ */
+static void ms_sort_array (void)
+{
+   SLang_Array_Type *at;
+   Sort_Object_Type sort_obj;
+   void *vobj;
+   SLindex_Type n;
+   int nargs = SLang_Num_Function_Args;
+   int (*sort_fun)(void *, SLindex_Type, SLindex_Type);
+   int dir = 1;
+   
+   if (-1 == _pSLang_get_int_qualifier ("dir", &dir, 1))
+     return;
+   dir = (dir >= 0) ? 1 : -1;
+
+   if (nargs == 1)		       /* i = sort (a) */
+     {
+	if (-1 == pop_1d_array (&at))
+	  return;
+
+	switch (at->data_type)
+	  {
+#if SLANG_OPTIMIZE_FOR_SPEED
+# if SLANG_HAS_FLOAT
+	   case SLANG_DOUBLE_TYPE:
+	     sort_fun = (dir > 0) ? ms_double_sort_fun : ms_double_sort_down_fun;
+	     vobj = at->data;
+	     break;
+	   case SLANG_FLOAT_TYPE:
+	     sort_fun = (dir > 0) ? ms_float_sort_fun : ms_float_sort_down_fun;
+	     vobj = at->data;
+	     break;
+# endif
+	   case SLANG_INT_TYPE:
+	     sort_fun = (dir > 0) ? ms_int_sort_fun : ms_int_sort_down_fun;
+	     vobj = at->data;
+	     break;
+#endif
+	   default:
+	     if (at->cl->cl_cmp == NULL)
+	       {
+		  _pSLang_verror (SL_NOT_IMPLEMENTED, 
+				  "%s does not have a predefined sorting method",
+				  at->cl->cl_name);
+		  free_array (at);
+		  return;
+	       }
+	     sort_fun = ms_builtin_sort_cmp_fun;
+	     sort_obj.obj.o_data_type = SLANG_ARRAY_TYPE;
+	     sort_obj.obj.v.array_val = at;
+	     sort_obj.dir = dir;
+	     vobj = (void *)&sort_obj;
+	  }
+
+	n = (SLindex_Type) at->num_elements;
+	ms_sort_array_internal (vobj, n, sort_fun);
+	free_array (at);
+	return;
+     }
+
+   if (nargs == 2)		       /* i = sort (a, &fun) */
+     {
+	SLang_Name_Type *entry;
 
 	if (NULL == (entry = SLang_pop_function ()))
 	  return;
 
-	if (-1 == SLang_pop_array (&at, 1))
-	  return;
-     }
-   else
-     {
-	if (-1 == SLang_pop_array (&at, 1))
-	  return;
-	
-#if SLANG_OPTIMIZE_FOR_SPEED
-#if SLANG_HAS_FLOAT
-	if (at->data_type == SLANG_DOUBLE_TYPE)
-	  sort_fun = double_sort_fun;
-	else
-#endif
-	  if (at->data_type == SLANG_INT_TYPE)
-	  sort_fun = int_sort_fun;
-	else
-#endif
-	  sort_fun = builtin_sort_cmp_fun;
-
-	if (at->cl->cl_cmp == NULL)
+	if (-1 == pop_1d_array (&at))
 	  {
-	     _pSLang_verror (SL_NOT_IMPLEMENTED, 
-			   "%s does not have a predefined sorting method",
-			   at->cl->cl_name);
-	     free_array (at);
+	     SLang_free_function (entry);
 	     return;
 	  }
-	entry = NULL;
-     }
 
-   sort_array_internal (at, entry, sort_fun);
-   free_array (at);
-   SLang_free_function (entry);
+	sort_obj.func = entry;
+	sort_obj.obj.o_data_type = SLANG_ARRAY_TYPE;
+	sort_obj.obj.v.array_val = at;
+	sort_obj.dir = dir;
+	vobj = (void *)&sort_obj;
+	
+	n = (SLindex_Type) at->num_elements;
+	ms_sort_array_internal (vobj, n, ms_sort_cmp_fun);
+	free_array (at);
+	SLang_free_function (entry);
+	return;
+     }
+   
+   if (nargs == 3)		       /* i = sort (a, fun, n) */
+     {
+	SLang_Name_Type *entry;
+
+	if (-1 == SLang_pop_array_index (&n))
+	  return;
+	
+	if (n < 0)
+	  {
+	     SLang_verror (SL_Index_Error, "Sort object cannot have a negative size");
+	     return;
+	  }
+
+	if (NULL == (entry = SLang_pop_function ()))
+	  return;
+
+	if (-1 == SLang_pop (&sort_obj.obj))
+	  {
+	     SLang_free_function (entry);
+	     return;
+	  }
+	sort_obj.func = entry;
+	sort_obj.dir = dir;
+	vobj = (void *)&sort_obj;
+	
+	ms_sort_array_internal (vobj, n, ms_sort_opaque_cmp_fun);
+	SLang_free_object (&sort_obj.obj);
+	SLang_free_function (entry);
+	return;
+     }
+   
+   SLang_verror (SL_Usage_Error, "\
+Usage: i = array_sort(a);\n\
+       i = array_sort(a, &func);        %% cmp = func(a[i], b[j]);\n\
+       i = array_sort(obj, &func, n);   %% cmp = func(obj, i, j)\n");
 }
 
 static void bstring_to_array (SLang_BString_Type *bs)
@@ -4193,7 +4429,7 @@ static void aget_intrin (void)
 static SLang_Intrin_Fun_Type Array_Table [] =
 {
    MAKE_INTRINSIC_0("array_map", array_map, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("array_sort", sort_array, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("array_sort", ms_sort_array, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_1("array_to_bstring", array_to_bstring, SLANG_VOID_TYPE, SLANG_ARRAY_TYPE),
    MAKE_INTRINSIC_1("bstring_to_array", bstring_to_array, SLANG_VOID_TYPE, SLANG_BSTRING_TYPE),
    MAKE_INTRINSIC("init_char_array", init_char_array, SLANG_VOID_TYPE, 0),

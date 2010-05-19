@@ -463,6 +463,7 @@
 @src/test/scircuit.sl
 @src/test/signal.sl
 @src/test/sltest.c
+@src/test/sort.sl
 @src/test/sscanf.sl
 @src/test/stdio.sl
 @src/test/strops.sl

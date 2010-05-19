@@ -578,7 +578,11 @@ extern int _pSLstruct_push_field_ref (SLFUTURE_CONST char *);
 extern int _pSLstruct_push_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free);
 extern int _pSLstruct_pop_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free);
 
-int _pSLang_get_qualifiers (SLang_Struct_Type **);
+extern int _pSLang_get_qualifiers_intrin (SLang_Struct_Type **);
+
+/* The following qualifier functions will eventually be part of the public API */
+extern int _pSLang_qualifier_exists (SLCONST char *);
+extern int _pSLang_get_int_qualifier (SLCONST char *, int *, int);
 
 struct _pSLang_Ref_Type
 {

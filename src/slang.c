@@ -1056,7 +1056,8 @@ static int set_qualifier (void)
    return SLang_pop_struct (&Next_Function_Qualifiers);
 }
 
-int _pSLang_get_qualifiers (SLang_Struct_Type **qp)
+/* This function is called from slang code */
+int _pSLang_get_qualifiers_intrin (SLang_Struct_Type **qp)
 {
    /* The assumption is that this is being called from a function one level up.
     * Grab the qualifiers from the previous frame stack.
@@ -1066,6 +1067,39 @@ int _pSLang_get_qualifiers (SLang_Struct_Type **qp)
    else 
      *qp = NULL;
 
+   return 0;
+}
+
+/* This may be called from intrinsic functions */
+int _pSLang_qualifier_exists (SLCONST char *name)
+{
+   if (Function_Qualifiers == NULL)
+     return 0;
+   
+   return (NULL != _pSLstruct_get_field_value (Function_Qualifiers, name));
+}
+
+int _pSLang_get_int_qualifier (SLCONST char *name, int *p, int def)
+{
+   SLang_Object_Type *objp;
+
+   if ((Function_Qualifiers == NULL)
+       || (NULL == (objp = _pSLstruct_get_field_value (Function_Qualifiers, name))))
+     {
+	*p = def;
+	return 0;
+     }
+   if (objp->o_data_type == SLANG_INT_TYPE)
+     {
+	*p = objp->v.int_val;
+	return 0;
+     }
+   if ((-1 == _pSLpush_slang_obj (objp))
+       || (-1 == pop_int (p)))
+     {
+	SLang_verror (0, "Expecting '%s' qualifier to be an integer", name);
+	return -1;
+     }
    return 0;
 }
 #endif

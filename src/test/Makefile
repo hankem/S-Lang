@@ -1,7 +1,7 @@
 # -*-sh-*-
 TEST_SCRIPTS_SLC = argv syntax scircuit eqs sscanf loops arith array strops \
   bstring pack stdio assoc selfload struct nspace path ifeval anytype arrmult \
-  time utf8 except bugs list regexp method deref naninf overflow \
+  time utf8 except bugs list regexp method deref naninf overflow sort \
   longlong signal dollar req docfun debug qualif compare break multline
 
 TEST_SCRIPTS_NO_SLC = autoload nspace2 prep

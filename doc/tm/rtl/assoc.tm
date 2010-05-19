@@ -34,14 +34,10 @@
   The the following may be used to print the values of the array in
   ascending order:
 #v+
-      static define int_sort_fun (x, y)
-      {
-         return sign (x - y);
-      }
-      define sort_and_print_values (a)
+      define print_sorted_values (a)
       {
          variable v = assoc_get_values (a);
-         variable i = array_sort (v, &int_sort_fun);
+         variable i = array_sort (v);
          v = v[i];
          foreach (v)
            {

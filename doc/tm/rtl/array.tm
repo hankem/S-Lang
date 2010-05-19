@@ -166,31 +166,57 @@
 \done
 
 \function{array_sort}
-\synopsis{Sort an array}
-\usage{Array_Type array_sort (Array_Type a [, String_Type or Ref_Type f])}
+\synopsis{Sort an array or opaque object}
+\usage{Array_Type array_sort (obj [, &func [, n]])}
 \description
+  The \ifun{array_sort} function may be used to sort an object and
+  returns an integer index array that represents the result of the
+  sort as a permutation.  
+  
+  If a single parameter is passed, that parameter must be an array,
+  which will be sorted into ascending order using a built-in type-specific
+  comparison function.
+  
+  If two parameters are passed (\exmp{obj} and \exmp{func}), then the
+  first parameter must be the array to be sorted, and the second is a
+  reference to the comparison function.  In this case, the comparison
+  function represented by \exmp{func} must take two arguments
+  representing two array elements to be compared, and must return an
+  integer that represents the result of the comparison.  The return
+  value must be less than zero if the first parameter is
+  less than the second, zero if they are equal, and a value greater
+  than zero if the first is greater than the second.
+
+  If three parameters are passed, then the first argument will be
+  regarded as an opaque object by the sorting algorithm.  For this
+  reason, the number of elements represented by the object must also
+  be passed to \ifun{array_sort} function as the third function
+  argument.  The second function argument must be a reference to
+  comparison function.  In this case, the comparison function will be
+  passed three values: the opaque object, the (0-based) index of the
+  first element to be compared, and the (0-based) index of the second
+  element.  The return value must be less than zero if the value of
+  the element at the first index considered to be less than the value
+  of the element at the second index, zero if the values are equal,
+  and a value greater than zero if the first value is greater than the
+  second.
+
   \ifun{array_sort} sorts the array \exmp{a} into ascending order and
   returns an integer array that represents the result of the sort. If
   the optional second parameter \exmp{f} is present, the function
   specified by \exmp{f} will be used to compare elements of \exmp{a};
   otherwise, a built-in sorting function will be used.  
 
-  If \exmp{f} is present, then it must be either a string representing
-  the name of the comparison function, or a reference to the function.
-  The sort function represented by \exmp{f} must be a \slang function
-  that takes two arguments.  The function must return an integer that
-  is less than zero if the first parameter is considered to be less
-  than the second, zero if they are equal, and a value greater than
-  zero if the first is greater than the second.
-
-  If the comparison function is not specified, then a built-in comparison
-  function appropriate for the data type will be used.  For example,
-  if \exmp{a} is an array of character strings, then the sort will be
-  performed using the \ifun{strcmp} function.
-
   The integer array returned by this function is simply an index array
-  that indicates the order of the sorted array.  The input array
-  \exmp{a} is not changed.
+  that indicates the order of the sorted object.  The input object
+  \exmp{obj} is not changed.
+
+\qualifiers
+  By default, elements are sorted in ascending order.  The \exmp{dir}
+  qualifier may be used to specify the sort direction.  Specifically
+  if \exmp{dir>=0}, the sort will be an ascending one, otherwise it
+  will be descending.
+
 \example
   An array of strings may be sorted using the \ifun{strcmp} function
   since it fits the specification for the sorting function described
@@ -214,17 +240,37 @@
      A = A[array_sort(A)];
 #v-
 \example
-  A homogeneous list may be sorted by first converting it to an array
-  as follows:
+  A homogeneous list may be sorted by using the opaque form of the
+  \ifun{array_sort} function:
 #v+
-    list = list[ array_sort( list_to_array(list) ) ];
+    private define cmp_function (s, i, j)
+    { 
+       if (s[i] > s[j]) return 1;
+       if (s[i] < s[j]) return -1;
+       return 0;
+    }
+    
+    list = {};
+    % fill list ....
+    % now sort it
+    i = array_sort (list, &cmp_function, length(list));
+    
+    % Create a new sorted list
+    list = list[i];
 #v-
-  Alternatively one may use 
+  Alternatively one may first convert it to an array and use the
+  built-in comparison function:
 #v+
     a = list_to_array (list);
-    list[*] = a[array_sort(a)];
+    i = array_sort(a);
+
+    % Rearrange the elements
+    list[*] = a[i];
 #v-
   to get the effect of an "in-place" sort.
+\notes
+  The underlying sorting algorithm is based upon merge-sort.  This is a
+  stable sorting algorithm that preserves the order equal elements.
 \seealso{strcmp, list_to_array}
 \done
 

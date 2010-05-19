@@ -87,6 +87,9 @@ Changes since 2.2.2
     where sizeof(long)==sizeof(long long).  (Mark Olesen).
 35. src/slsh.c: The stat_mode_to_string function was using 'f' unstead
     of 'p' for FIFOs.  (Agathoklis Hatzimanikas).
+36. src/slarray.c: Switched to using mergesort instead of qsort and
+    added support for sorting non-array types.  For details, see the
+    updated documentation for array_sort.
 
 {{{ Previous Versions
 

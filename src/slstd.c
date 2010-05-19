@@ -1040,7 +1040,7 @@ static void expand_dollar_string (char *s)
 static void get_qualifiers_intrin (void)
 {
    SLang_Struct_Type *q;
-   if (0 == _pSLang_get_qualifiers (&q))
+   if (0 == _pSLang_get_qualifiers_intrin (&q))
      (void) SLang_push_struct (q);
 }
 
@@ -1048,7 +1048,7 @@ static int qualifier_exists_intrin (char *name)
 {
    SLang_Struct_Type *q;
 
-   if (-1 == _pSLang_get_qualifiers (&q))
+   if (-1 == _pSLang_get_qualifiers_intrin (&q))
      return -1;
    
    if ((q == NULL)
@@ -1065,7 +1065,7 @@ static void qualifier_intrin (void)
    SLang_Struct_Type *q;
    SLang_Object_Type *objp;
 
-   if (-1 == _pSLang_get_qualifiers (&q))
+   if (-1 == _pSLang_get_qualifiers_intrin (&q))
      return;
 
    has_default = (SLang_Num_Function_Args == 2);

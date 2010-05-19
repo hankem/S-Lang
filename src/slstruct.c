@@ -188,10 +188,31 @@ static _pSLstruct_Field_Type *find_field (_pSLang_Struct_Type *s, SLCONST char *
    return NULL;
 }
 
-/* This function is used by the qualifier-code */
+static _pSLstruct_Field_Type *find_field_strcmp (_pSLang_Struct_Type *s, SLCONST char *name)
+{
+   _pSLstruct_Field_Type *f, *fmax;
+
+   f = s->fields;
+   fmax = f + s->nfields;
+
+   while (f < fmax)
+     {
+	if ((name == f->name)
+	    || (0 == strcmp (name, f->name)))
+	  return f;
+
+	f++;
+     }
+
+   return NULL;
+}
+
+/* This function is used by the qualifier-code.  Here "name" cannot be
+ * assumed to be an slstring.
+ */
 SLang_Object_Type *_pSLstruct_get_field_value (SLang_Struct_Type *s, SLCONST char *name)
 {
-   _pSLstruct_Field_Type *f = find_field (s, name);
+   _pSLstruct_Field_Type *f = find_field_strcmp (s, name);
 
    if (f == NULL)
      return NULL;
