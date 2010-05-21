@@ -270,7 +270,13 @@
   to get the effect of an "in-place" sort.
 \notes
   The underlying sorting algorithm is based upon merge-sort.  This is a
-  stable sorting algorithm that preserves the order equal elements.
+  stable sorting algorithm that preserves the order of equal elements.
+  Because of this, the following two statments may not produce the
+  same results:
+#v+
+     i = array_sort (a; dir=-1);
+     i = array_reverse (array_sort (a; dir=1));
+#v-
 \seealso{strcmp, list_to_array}
 \done
 

@@ -44,9 +44,15 @@ private define test_simple_sort (n, dir)
      }
 }
 
+test_simple_sort (1, 1);
 test_simple_sort (2, 1);
 test_simple_sort (3, 1);
+test_simple_sort (4, 1);
+test_simple_sort (5, 1);
+test_simple_sort (14, 1);
 test_simple_sort (15, 1);
+test_simple_sort (16, 1);
+test_simple_sort (17, 1);
 test_simple_sort (1023, 1);
 test_simple_sort (1024, 1);
 test_simple_sort (1025, 1);

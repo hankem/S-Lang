@@ -90,6 +90,8 @@ Changes since 2.2.2
 36. src/slarray.c: Switched to using mergesort instead of qsort and
     added support for sorting non-array types.  For details, see the
     updated documentation for array_sort.
+37. src/slarray.c: Reduced the memory requirments for the mergesort
+    function, which produced a 5% speed improvement.
 
 {{{ Previous Versions
 

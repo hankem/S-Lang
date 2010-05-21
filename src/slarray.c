@@ -2110,13 +2110,20 @@ int _pSLarray_aput (void)
    return _pSLarray_aput1 ((unsigned int)(SLang_Num_Function_Args-1));
 }
 
-static void _pSLmergesort (void *obj, 
-			   SLindex_Type *sort_indices, SLindex_Type *tmp,
-			   SLindex_Type n,
-			   int (*cmp) (void *, SLindex_Type, SLindex_Type))
+static int _pSLmergesort (void *obj, 
+			  SLindex_Type *sort_indices, SLindex_Type n,
+			  int (*cmp) (void *, SLindex_Type, SLindex_Type))
 {
-   SLindex_Type i, j, k, jmax, kmax, n1, m;
-     
+   SLindex_Type i, j, k, kmax, n1, m;
+   SLindex_Type *tmp;
+   int try_quick_merge;
+
+   if (n < 0)
+     {
+	SLang_verror (SL_INVALID_PARM, "_pSLmergesort: The number of elements must be non-negative");
+	return -1;
+     }
+
    for (i = 0; i < n; i++)
      sort_indices[i] = i;
 
@@ -2144,57 +2151,79 @@ static void _pSLmergesort (void *obj,
 	  }
 	i += m;
      }
+   
+   if (m >= n)
+     return 0;
 
+   /* Note that 1073741824*2 < 0 */
+   i = (n <= 65536) ? m : 65536;
+   while ((i*2 < n) && (i*2 > 0))
+     i *= 2;
+
+   if (NULL == (tmp = (SLindex_Type *)SLmalloc (i * sizeof(SLindex_Type))))
+     return -1;
+
+   try_quick_merge = 0;
    /* Now do a bottom-up merge sort */
-   while (m < n)
+   while ((m < n) && (m > 0))
      {
 	i = 0;
 	while (i < n-m)
 	  {
-	     SLindex_Type ilast, l, tmp_j, tmp_k;
+	     SLindex_Type imax, jmax, l, e_j, e_k;
+	     SLindex_Type *sort_indices_i;
+
+	     sort_indices_i = sort_indices + i;
+	     k = m;
+	     e_k = sort_indices_i[k];
+	     if (try_quick_merge)
+	       {
+		  if ((*cmp)(obj, sort_indices_i[k-1], e_k) <= 0)
+		    goto next_i;
+	       }
 
 	     j = 0; jmax = m;
-	     k = m; kmax = k+m;
-	     ilast = i + kmax-1;
+	     kmax = k+m;
+	     imax = i + kmax;
 
-	     if (ilast >= n)
+	     if (imax > n)
 	       {
-		  ilast = n1;
-		  kmax = ilast - i + 1;
+		  imax = n;
+		  kmax = imax - i;
 	       }
 
-	     memcpy (tmp, sort_indices+i, kmax*sizeof(SLindex_Type));
+	     /* Only need to copy the left group */
+	     memcpy (tmp, sort_indices_i, jmax*sizeof(SLindex_Type));
+	     e_j = tmp[j];
 
 	     l = i;
-	     tmp_j = tmp[j]; tmp_k = tmp[k];
 	     while (1)
 	       {
-		  if ((*cmp)(obj, tmp_j, tmp_k) <= 0)
+		  if ((*cmp)(obj, e_j, e_k) <= 0)
 		    {
-		       sort_indices[l] = tmp_j;
-		       l++; j++;
+		       sort_indices[l] = e_j; l++; j++;
 		       if (j == jmax)
-			 break; /* No need to copy the tmp[k...] values. */
-		       tmp_j = tmp[j];
+			 break;
+		       e_j = tmp[j];
 		       continue;
 		    }
-
-		  sort_indices[l] = tmp_k;
-		  l++; k++;
+		  sort_indices[l] = e_k; l++; k++;
 		  if (k == kmax)
 		    {
-		       SLindex_Type ll;
-
-		       for (ll = l; ll <= ilast; ll++)
-			 sort_indices[ll] = tmp[j+(ll-l)];
+		       memcpy (sort_indices+l, tmp+j, (imax-l)*sizeof(SLindex_Type));
 		       break;
 		    }
-		  tmp_k = tmp[k];
+		  e_k = sort_indices_i[k];
 	       }
+	     try_quick_merge = (k == m);
+next_i:
 	     i = i + 2*m;
 	  }
 	m = m * 2;
      }
+
+   SLfree ((char *)tmp);
+   return 0;
 }
 
 /* This is for 1-d matrices only.  It is used by the sort function */
@@ -2371,24 +2400,18 @@ static void ms_sort_array_internal (void *vobj, SLindex_Type n,
 				    int (*sort_fun)(void *, SLindex_Type, SLindex_Type))
 {
    SLang_Array_Type *ind_at;
-   SLindex_Type *indx, *tmp_indx;
-   SLindex_Type nn;
+   SLindex_Type *indx;
 
    if (NULL == (ind_at = SLang_create_array1 (SLANG_ARRAY_INDEX_TYPE, 0, NULL, &n, 1, 1)))
      return;
-   
-   nn = n;
-   if (nn == 0) nn++;
-   if (NULL == (tmp_indx = (SLindex_Type *)SLmalloc (nn * sizeof (SLindex_Type))))
+
+   indx = (SLindex_Type *) ind_at->data;
+   if (-1 == _pSLmergesort (vobj, indx, n, sort_fun))
      {
 	free_array (ind_at);
 	return;
      }
 
-   indx = (SLindex_Type *) ind_at->data;
-   _pSLmergesort (vobj, indx, tmp_indx, n, sort_fun);
-   
-   SLfree ((char *)tmp_indx);
    (void) SLang_push_array (ind_at, 1);
 }
 
