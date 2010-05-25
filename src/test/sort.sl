@@ -44,25 +44,33 @@ private define test_simple_sort (n, dir)
      }
 }
 
-test_simple_sort (1, 1);
-test_simple_sort (2, 1);
-test_simple_sort (3, 1);
-test_simple_sort (4, 1);
-test_simple_sort (5, 1);
-test_simple_sort (14, 1);
-test_simple_sort (15, 1);
-test_simple_sort (16, 1);
-test_simple_sort (17, 1);
-test_simple_sort (1023, 1);
-test_simple_sort (1024, 1);
-test_simple_sort (1025, 1);
+define run_test_simple_sorts (method)
+{
+   set_default_sort_method (method);
+   if (method != get_default_sort_method ())
+     failed ("get/set_default_sort_method");
 
-test_simple_sort (2, -1);
-test_simple_sort (3, -1);
-test_simple_sort (15, -1);
-test_simple_sort (1023, -1);
-test_simple_sort (1024, -1);
-test_simple_sort (1025, -1);
+   test_simple_sort (1, 1);
+   test_simple_sort (2, 1);
+   test_simple_sort (3, 1);
+   test_simple_sort (4, 1);
+   test_simple_sort (5, 1);
+   test_simple_sort (14, 1);
+   test_simple_sort (15, 1);
+   test_simple_sort (16, 1);
+   test_simple_sort (17, 1);
+   test_simple_sort (1023, 1);
+   test_simple_sort (1024, 1);
+   test_simple_sort (1025, 1);
+   test_simple_sort (2, -1);
+   test_simple_sort (3, -1);
+   test_simple_sort (15, -1);
+   test_simple_sort (1023, -1);
+   test_simple_sort (1024, -1);
+   test_simple_sort (1025, -1);
+}
+run_test_simple_sorts ("qsort");
+run_test_simple_sorts ("msort");
 
 private define opaque_sort_func (s, i, j)
 {
@@ -114,33 +122,41 @@ private define test_sort (x, n, ans)
      failed ("array_sort(struct, &opaque_sort_func, n)");
 }
 
-private variable A = [2, 3, 7, 9, 4, 1, 0, 8, 6, 5];
-test_sort (A, length(A), [0:length(A)-1]);
-test_sort ([2], 1, [2]);
-test_sort (A[[0:-1]], 0, A[[0:-1]]);
+private define run_test_sort (method)
+{
+   set_default_sort_method (method);
+   if (method != get_default_sort_method ())
+     failed ("get/set_default_sort_method");
 
-test_sort (A, length(A), [length(A)-1:0:-1] ;dir=-1);
-test_sort ([2], 1, [2]; dir=-1);
-test_sort (A[[0:-1]], 0, A[[0:-1]]; dir=-1);
+   variable A = [2, 3, 7, 9, 4, 1, 0, 8, 6, 5];
+   test_sort (A, length(A), [0:length(A)-1]);
+   test_sort ([2], 1, [2]);
+   test_sort (A[[0:-1]], 0, A[[0:-1]]);
 
-private define test_stability ()
+   test_sort (A, length(A), [length(A)-1:0:-1] ;dir=-1);
+   test_sort ([2], 1, [2]; dir=-1);
+   test_sort (A[[0:-1]], 0, A[[0:-1]]; dir=-1);
+}
+
+private define test_stability (method)
 {
    variable a = [1, 2, 3, 3, 4, 5, 5, 6];
    variable i = [7, 5, 6, 4, 2, 3, 1, 0];
 
-   variable j = array_sort (a; dir=-1);
+   variable j = array_sort (a; dir=-1, method=method);
    ifnot (_eqs (j, i))
-     failed ("descend sort was not stable");
+     failed ("[%s]: descend sort was not stable", method);
 
    a = [6, 6, 5, 4, 4, 3, 2, 1, 1];
    i = [7, 8, 6, 5, 3, 4, 2, 0, 1];
 
-   j = array_sort (a; dir=1);
+   j = array_sort (a; dir=1, method=method);
    ifnot (_eqs (j, i))
-     failed ("ascend sort was not stable");
+     failed ("[%s]: ascend sort was not stable", method);
    
 }
-test_stability ();
+test_stability ("qsort");
+test_stability ("msort");
 
 
 print ("Ok\n");

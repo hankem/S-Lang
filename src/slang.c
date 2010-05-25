@@ -1102,6 +1102,41 @@ int _pSLang_get_int_qualifier (SLCONST char *name, int *p, int def)
      }
    return 0;
 }
+
+int _pSLang_get_string_qualifier (SLCONST char *name, char **p, SLFUTURE_CONST char *def)
+{
+   SLang_Object_Type *objp;
+
+   if ((Function_Qualifiers == NULL)
+       || (NULL == (objp = _pSLstruct_get_field_value (Function_Qualifiers, name))))
+     {
+	if (def == NULL)
+	  {
+	     *p = NULL;
+	     return 0;
+	  }
+
+	if (NULL == (*p = SLang_create_slstring (def)))
+	  return -1;
+	
+	return 0;
+     }
+
+   if (objp->o_data_type == SLANG_STRING_TYPE)
+     {
+	if (NULL == (*p = SLang_create_slstring (objp->v.s_val)))
+	  return -1;
+	return 0;
+     }
+
+   if ((-1 == _pSLpush_slang_obj (objp))
+       || (-1 == SLang_pop_slstring (p)))
+     {
+	SLang_verror (0, "Expecting '%s' qualifier to be a string", name);
+	return -1;
+     }
+   return 0;
+}
 #endif
 
 _INLINE_

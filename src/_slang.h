@@ -583,6 +583,7 @@ extern int _pSLang_get_qualifiers_intrin (SLang_Struct_Type **);
 /* The following qualifier functions will eventually be part of the public API */
 extern int _pSLang_qualifier_exists (SLCONST char *);
 extern int _pSLang_get_int_qualifier (SLCONST char *, int *, int);
+extern int _pSLang_get_string_qualifier (SLCONST char *, char **p, SLFUTURE_CONST char *);
 
 struct _pSLang_Ref_Type
 {

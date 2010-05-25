@@ -216,6 +216,12 @@
   qualifier may be used to specify the sort direction.  Specifically
   if \exmp{dir>=0}, the sort will be an ascending one, otherwise it
   will be descending.
+  
+  The \exmp{method} qualifier may be used to select between the
+  available sorting algorithms.  There are currently two algorithms
+  supported: merge-sort and quick-sort.  Using \exmp{method="msort"}
+  will cause the merge-sort algorithm to be used.  The quick-sort
+  algorithm may be selected using \exmp{method="qsort"}.
 
 \example
   An array of strings may be sorted using the \ifun{strcmp} function
@@ -269,15 +275,22 @@
 #v-
   to get the effect of an "in-place" sort.
 \notes
-  The underlying sorting algorithm is based upon merge-sort.  This is a
-  stable sorting algorithm that preserves the order of equal elements.
-  Because of this, the following two statments may not produce the
-  same results:
+  The default sorting algorithm is merge-sort.  It has an N*log(N)
+  worst-case runtime compared to quick-sort's worst-case N^2 runtime.
+  The primary advantage of quick-sort is that it uses O(1) additional
+  memory, whereas merge-sort requires O(N) additional memory.
+
+  A stable sorting algorithm is one that preserves the order of equal
+  elements. Merge-sort is an inherently stable algorithm, whereas
+  quick-sort is not. Nevertheless, the slang library ensures the
+  stability of the results because it uses the indices themeselves as
+  tie-breakers.  As a result, the following two statments may not
+  produce the same results:
 #v+
      i = array_sort (a; dir=-1);
      i = array_reverse (array_sort (a; dir=1));
 #v-
-\seealso{strcmp, list_to_array}
+\seealso{set_default_sort_method, get_default_sort_method, strcmp, list_to_array}
 \done
 
 \function{array_swap}
@@ -304,6 +317,19 @@
   \exmp{[1,2,3,4]}, is the array \exmp{[1,1+2,1+2+3,1+2+3+4]}, i.e.,
   \exmp{[1,3,6,10]}.
 \seealso{sum, sumsq}
+\done
+
+\function{get_default_sort_method}
+\synopsis{Get the default sorting method}
+\usage{String_Type get_default_sort_method ()}
+\description
+  This function may be used to get the default sorting method used by
+  \ifun{array_sort}.  It will return one of the following strings:
+#v+
+    "msort"               Merge-Sort
+    "qsort"               Quick-Sort
+#v-
+\seealso{set_default_sort_method, array_sort}
 \done
 
 \function{init_char_array}
@@ -498,6 +524,19 @@
   reference the new shape.  If this effect is unwanted, then use the 
   \ifun{_reshape} function instead.
 \seealso{_reshape, array_info, array_shape}
+\done
+
+\function{set_default_sort_method}
+\synopsis{Set the default sorting method}
+\usage{set_default_sort_method (String_Type method)}
+\description
+  This function may be used to set the default sorting method used by
+  \ifun{array_sort}.  The following methods are supported:
+#v+
+    "msort"               Merge-Sort
+    "qsort"               Quick-Sort
+#v-
+\seealso{get_default_sort_method, array_sort}
 \done
 
 \function{sum}

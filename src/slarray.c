@@ -2226,6 +2226,17 @@ next_i:
    return 0;
 }
 
+/* Sorting Functions */
+
+typedef struct
+{
+   SLang_Name_Type *func;
+   SLang_Object_Type obj;
+   int dir;			       /* +1=ascend, -1=descend */
+}
+Sort_Object_Type;
+static void *QSort_Obj = NULL;
+
 /* This is for 1-d matrices only.  It is used by the sort function */
 static int push_element_at_index (SLang_Array_Type *at, SLindex_Type indx)
 {
@@ -2238,80 +2249,70 @@ static int push_element_at_index (SLang_Array_Type *at, SLindex_Type indx)
 }
 
 #if SLANG_OPTIMIZE_FOR_SPEED
+#define MS_SCALAR_CMP(func, type) \
+   static int func(void *obj, SLindex_Type i, SLindex_Type j) \
+   { \
+      type *data = (type *)obj; \
+      if (data[i] > data[j]) \
+	return 1; \
+      if (data[i] < data[j]) \
+	return -1; \
+      return i-j; \
+   }
+
+#define MS_SCALAR_CMP_DOWN(func, type) \
+   static int func(void *obj, SLindex_Type i, SLindex_Type j) \
+   { \
+      type *data = (type *)obj; \
+      if (data[i] > data[j]) \
+	return -1; \
+      if (data[i] < data[j]) \
+	return 1; \
+      return i-j; \
+   }
+
+#define QS_SCALAR_CMP(func, type) \
+   static int func(const void *ip, const void *jp) \
+   { \
+      SLindex_Type i = *(SLindex_Type *)ip, j = *(SLindex_Type *)jp; \
+      type *data = (type *)QSort_Obj; \
+      if (data[i] > data[j]) \
+	return 1; \
+      if (data[i] < data[j]) \
+	return -1; \
+      return i-j; \
+   }
+
+#define QS_SCALAR_CMP_DOWN(func, type) \
+   static int func(const void *ip, const void *jp) \
+   { \
+      SLindex_Type i = *(SLindex_Type *)ip, j = *(SLindex_Type *)jp; \
+      type *data = (type *)QSort_Obj; \
+      if (data[i] > data[j]) \
+	return -1; \
+      if (data[i] < data[j]) \
+	return 1; \
+      return i-j; \
+   }
+
 #if SLANG_HAS_FLOAT
-static int ms_double_sort_fun (void *obj, SLindex_Type i, SLindex_Type j)
-{
-   double *data = (double *)obj;
+MS_SCALAR_CMP(ms_double_sort_cmp, double)
+MS_SCALAR_CMP_DOWN(ms_double_sort_down_cmp, double)
+MS_SCALAR_CMP(ms_float_sort_cmp, float)
+MS_SCALAR_CMP_DOWN(ms_float_sort_down_cmp, float)
 
-   if (data[i] > data[j])
-     return 1;
-   if (data[i] < data[j])
-     return -1;
-   return i-j;
-}
-
-static int ms_float_sort_fun (void *obj, SLindex_Type i, SLindex_Type j)
-{
-   float *data = (float *)obj;
-
-   if (data[i] > data[j])
-     return 1;
-   if (data[i] < data[j])
-     return -1;
-   return i-j;
-}
-static int ms_double_sort_down_fun (void *obj, SLindex_Type i, SLindex_Type j)
-{
-   double *data = (double *)obj;
-
-   if (data[i] > data[j])
-     return -1;
-   if (data[i] < data[j])
-     return 1;
-   return i-j;
-}
-
-static int ms_float_sort_down_fun (void *obj, SLindex_Type i, SLindex_Type j)
-{
-   float *data = (float *)obj;
-
-   if (data[i] > data[j])
-     return -1;
-   if (data[i] < data[j])
-     return 1;
-   return i-j;
-}
+QS_SCALAR_CMP(qs_double_sort_cmp, double)
+QS_SCALAR_CMP_DOWN(qs_double_sort_down_cmp, double)
+QS_SCALAR_CMP(qs_float_sort_cmp, float)
+QS_SCALAR_CMP_DOWN(qs_float_sort_down_cmp, float)
 #endif
 
-static int ms_int_sort_fun (void *obj, SLindex_Type i, SLindex_Type j)
-{
-   int *data = (int *)obj;
+MS_SCALAR_CMP(ms_int_sort_cmp, int)
+MS_SCALAR_CMP_DOWN(ms_int_sort_down_cmp, int)
+QS_SCALAR_CMP(qs_int_sort_cmp, int)
+QS_SCALAR_CMP_DOWN(qs_int_sort_down_cmp, int)
 
-   if (data[i] > data[j])
-     return 1;
-   if (data[i] < data[j])
-     return -1;
-   return i-j;
-}
-static int ms_int_sort_down_fun (void *obj, SLindex_Type i, SLindex_Type j)
-{
-   int *data = (int *)obj;
-
-   if (data[i] > data[j])
-     return -1;
-   if (data[i] < data[j])
-     return 1;
-   return i-j;
-}
-#endif
-
-typedef struct
-{
-   SLang_Name_Type *func;
-   SLang_Object_Type obj;
-   int dir;			       /* +1=ascend, -1=descend */
-}
-Sort_Object_Type;
+#endif				       /* SLANG_OPTIMIZE_FOR_SPEED */
 
 static int ms_sort_cmp_fun (void *vobj, SLindex_Type i, SLindex_Type j)
 {
@@ -2327,7 +2328,7 @@ static int ms_sort_cmp_fun (void *vobj, SLindex_Type i, SLindex_Type j)
        || (-1 == SLexecute_function (sort_obj->func))
        || (-1 == SLang_pop_integer (&cmp)))
      {
-	/* error: return something meaninful */
+	/* error: return something meaningful */
 	if (i > j) return 1;
 	if (i < j) return -1;
 	return 0;
@@ -2397,7 +2398,7 @@ static int ms_builtin_sort_cmp_fun (void *vobj, SLindex_Type i, SLindex_Type j)
 }
 
 static void ms_sort_array_internal (void *vobj, SLindex_Type n,
-				    int (*sort_fun)(void *, SLindex_Type, SLindex_Type))
+				    int (*sort_cmp)(void *, SLindex_Type, SLindex_Type))
 {
    SLang_Array_Type *ind_at;
    SLindex_Type *indx;
@@ -2406,11 +2407,47 @@ static void ms_sort_array_internal (void *vobj, SLindex_Type n,
      return;
 
    indx = (SLindex_Type *) ind_at->data;
-   if (-1 == _pSLmergesort (vobj, indx, n, sort_fun))
+   if (-1 == _pSLmergesort (vobj, indx, n, sort_cmp))
      {
 	free_array (ind_at);
 	return;
      }
+
+   (void) SLang_push_array (ind_at, 1);
+}
+
+static int qs_builtin_sort_cmp_fun (const void *ip, const void *jp)
+{
+   return ms_builtin_sort_cmp_fun (QSort_Obj, *(SLindex_Type *)ip, *(SLindex_Type *)jp);
+}
+static int qs_sort_opaque_cmp_fun (const void *ip, const void *jp)
+{
+   return ms_sort_opaque_cmp_fun (QSort_Obj, *(SLindex_Type *)ip, *(SLindex_Type *)jp);
+}
+static int qs_sort_cmp_fun (const void *ip, const void *jp)
+{
+   return ms_sort_cmp_fun (QSort_Obj, *(SLindex_Type *)ip, *(SLindex_Type *)jp);
+}
+
+static void qs_sort_array_internal (void *vobj, SLindex_Type n,
+				    int (*sort_cmp)(const void *, const void *))
+{
+   SLang_Array_Type *ind_at;
+   SLindex_Type *indx;
+   SLindex_Type i;
+   void *save_vobj;
+
+   if (NULL == (ind_at = SLang_create_array1 (SLANG_ARRAY_INDEX_TYPE, 0, NULL, &n, 1, 1)))
+     return;
+   
+   indx = (SLindex_Type *) ind_at->data;
+   for (i = 0; i < n; i++)
+     indx[i] = i;
+   
+   save_vobj = QSort_Obj;
+   QSort_Obj = vobj;
+   qsort ((void *)indx, n, sizeof (SLindex_Type), sort_cmp);
+   QSort_Obj = vobj;
 
    (void) SLang_push_array (ind_at, 1);
 }
@@ -2431,25 +2468,61 @@ static int pop_1d_array (SLang_Array_Type **atp)
    *atp = at;
    return 0;
 }
+
+#define SORT_METHOD_MSORT	0
+#define SORT_METHOD_QSORT	1
+static int Default_Sort_Method = SORT_METHOD_MSORT;
+static void get_default_sort_method (void)
+{
+   char *method = NULL;
+   switch (Default_Sort_Method)
+     {
+      case SORT_METHOD_QSORT: method = "qsort"; break;
+      case SORT_METHOD_MSORT: method = "msort"; break;
+     }
+   (void) SLang_push_string (method);
+}
+static void set_default_sort_method (char *method)
+{
+   if (0 == strcmp (method, "qsort"))
+     {
+	Default_Sort_Method = SORT_METHOD_QSORT;
+	return;
+     }
+   Default_Sort_Method = SORT_METHOD_MSORT;
+}     
    
 /* Usage Forms:
  *    i = sort (a);
  *    i = sort (a, &fun);       % sort using function fun(a[i],a[j])
  *    i = sort (a, &fun, n);    % sort using fun(a, i, j); 0 <= i,j < n
  */
-static void ms_sort_array (void)
+static void array_sort_intrin (void)
 {
    SLang_Array_Type *at;
    Sort_Object_Type sort_obj;
    void *vobj;
    SLindex_Type n;
    int nargs = SLang_Num_Function_Args;
-   int (*sort_fun)(void *, SLindex_Type, SLindex_Type);
+   int (*msort_fun)(void *, SLindex_Type, SLindex_Type);
+   int (*qsort_fun)(const void *, const void *);
    int dir = 1;
-   
+   int use_qsort = 0;
+   char *method;
+
    if (-1 == _pSLang_get_int_qualifier ("dir", &dir, 1))
      return;
    dir = (dir >= 0) ? 1 : -1;
+   use_qsort = (Default_Sort_Method == SORT_METHOD_QSORT);
+   if (_pSLang_qualifier_exists ("qsort")) use_qsort = 1;
+   if (-1 == _pSLang_get_string_qualifier ("method", &method, NULL))
+     return;
+   if (method != NULL)
+     {
+	if (0 == strcmp(method, "qsort"))
+	  use_qsort = 1;
+	SLang_free_slstring (method);
+     }
 
    if (nargs == 1)		       /* i = sort (a) */
      {
@@ -2461,16 +2534,19 @@ static void ms_sort_array (void)
 #if SLANG_OPTIMIZE_FOR_SPEED
 # if SLANG_HAS_FLOAT
 	   case SLANG_DOUBLE_TYPE:
-	     sort_fun = (dir > 0) ? ms_double_sort_fun : ms_double_sort_down_fun;
+	     msort_fun = (dir > 0) ? ms_double_sort_cmp : ms_double_sort_down_cmp;
+	     qsort_fun = (dir > 0) ? qs_double_sort_cmp : qs_double_sort_down_cmp;
 	     vobj = at->data;
 	     break;
 	   case SLANG_FLOAT_TYPE:
-	     sort_fun = (dir > 0) ? ms_float_sort_fun : ms_float_sort_down_fun;
+	     msort_fun = (dir > 0) ? ms_float_sort_cmp : ms_float_sort_down_cmp;
+	     qsort_fun = (dir > 0) ? qs_float_sort_cmp : qs_float_sort_down_cmp;
 	     vobj = at->data;
 	     break;
 # endif
 	   case SLANG_INT_TYPE:
-	     sort_fun = (dir > 0) ? ms_int_sort_fun : ms_int_sort_down_fun;
+	     msort_fun = (dir > 0) ? ms_int_sort_cmp : ms_int_sort_down_cmp;
+	     qsort_fun = (dir > 0) ? qs_int_sort_cmp : qs_int_sort_down_cmp;
 	     vobj = at->data;
 	     break;
 #endif
@@ -2483,7 +2559,8 @@ static void ms_sort_array (void)
 		  free_array (at);
 		  return;
 	       }
-	     sort_fun = ms_builtin_sort_cmp_fun;
+	     msort_fun = ms_builtin_sort_cmp_fun;
+	     qsort_fun = qs_builtin_sort_cmp_fun;
 	     sort_obj.obj.o_data_type = SLANG_ARRAY_TYPE;
 	     sort_obj.obj.v.array_val = at;
 	     sort_obj.dir = dir;
@@ -2491,7 +2568,10 @@ static void ms_sort_array (void)
 	  }
 
 	n = (SLindex_Type) at->num_elements;
-	ms_sort_array_internal (vobj, n, sort_fun);
+	if (use_qsort)
+	  qs_sort_array_internal (vobj, n, qsort_fun);
+	else
+	  ms_sort_array_internal (vobj, n, msort_fun);
 	free_array (at);
 	return;
      }
@@ -2516,7 +2596,10 @@ static void ms_sort_array (void)
 	vobj = (void *)&sort_obj;
 	
 	n = (SLindex_Type) at->num_elements;
-	ms_sort_array_internal (vobj, n, ms_sort_cmp_fun);
+	if (use_qsort)
+	  qs_sort_array_internal (vobj, n, qs_sort_cmp_fun);
+	else
+	  ms_sort_array_internal (vobj, n, ms_sort_cmp_fun);
 	free_array (at);
 	SLang_free_function (entry);
 	return;
@@ -2547,7 +2630,10 @@ static void ms_sort_array (void)
 	sort_obj.dir = dir;
 	vobj = (void *)&sort_obj;
 	
-	ms_sort_array_internal (vobj, n, ms_sort_opaque_cmp_fun);
+	if (use_qsort)
+	  qs_sort_array_internal (vobj, n, qs_sort_opaque_cmp_fun);
+	else
+	  ms_sort_array_internal (vobj, n, ms_sort_opaque_cmp_fun);
 	SLang_free_object (&sort_obj.obj);
 	SLang_free_function (entry);
 	return;
@@ -4452,7 +4538,9 @@ static void aget_intrin (void)
 static SLang_Intrin_Fun_Type Array_Table [] =
 {
    MAKE_INTRINSIC_0("array_map", array_map, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("array_sort", ms_sort_array, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("array_sort", array_sort_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("get_default_sort_method", get_default_sort_method, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_S("set_default_sort_method", set_default_sort_method, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_1("array_to_bstring", array_to_bstring, SLANG_VOID_TYPE, SLANG_ARRAY_TYPE),
    MAKE_INTRINSIC_1("bstring_to_array", bstring_to_array, SLANG_VOID_TYPE, SLANG_BSTRING_TYPE),
    MAKE_INTRINSIC("init_char_array", init_char_array, SLANG_VOID_TYPE, 0),

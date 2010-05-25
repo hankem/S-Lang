@@ -276,6 +276,12 @@ array_sort
   if `dir>=0', the sort will be an ascending one, otherwise it
   will be descending.
 
+  The `method' qualifier may be used to select between the
+  available sorting algorithms.  There are currently two algorithms
+  supported: merge-sort and quick-sort.  Using `method="msort"'
+  will cause the merge-sort algorithm to be used.  The quick-sort
+  algorithm may be selected using `method="qsort"'.
+
  EXAMPLE
   An array of strings may be sorted using the `strcmp' function
   since it fits the specification for the sorting function described
@@ -330,17 +336,24 @@ array_sort
   to get the effect of an "in-place" sort.
 
  NOTES
-  The underlying sorting algorithm is based upon merge-sort.  This is a
-  stable sorting algorithm that preserves the order of equal elements.
-  Because of this, the following two statments may not produce the
-  same results:
+  The default sorting algorithm is merge-sort.  It has an N*log(N)
+  worst-case runtime compared to quick-sort's worst-case N^2 runtime.
+  The primary advantage of quick-sort is that it uses O(1) additional
+  memory, whereas merge-sort requires O(N) additional memory.
+
+  A stable sorting algorithm is one that preserves the order of equal
+  elements. Merge-sort is an inherently stable algorithm, whereas
+  quick-sort is not. Nevertheless, the slang library ensures the
+  stability of the results because it uses the indices themeselves as
+  tie-breakers.  As a result, the following two statments may not
+  produce the same results:
 
      i = array_sort (a; dir=-1);
      i = array_reverse (array_sort (a; dir=1));
 
 
  SEE ALSO
-  strcmp, list_to_array
+  set_default_sort_method, get_default_sort_method, strcmp, list_to_array
 
 --------------------------------------------------------------
 
@@ -383,6 +396,27 @@ cumsum
 
  SEE ALSO
   sum, sumsq
+
+--------------------------------------------------------------
+
+get_default_sort_method
+
+ SYNOPSIS
+  Get the default sorting method
+
+ USAGE
+  String_Type get_default_sort_method ()
+
+ DESCRIPTION
+  This function may be used to get the default sorting method used by
+  `array_sort'.  It will return one of the following strings:
+
+    "msort"               Merge-Sort
+    "qsort"               Quick-Sort
+
+
+ SEE ALSO
+  set_default_sort_method, array_sort
 
 --------------------------------------------------------------
 
@@ -662,6 +696,27 @@ reshape
 
  SEE ALSO
   _reshape, array_info, array_shape
+
+--------------------------------------------------------------
+
+set_default_sort_method
+
+ SYNOPSIS
+  Set the default sorting method
+
+ USAGE
+  set_default_sort_method (String_Type method)
+
+ DESCRIPTION
+  This function may be used to set the default sorting method used by
+  `array_sort'.  The following methods are supported:
+
+    "msort"               Merge-Sort
+    "qsort"               Quick-Sort
+
+
+ SEE ALSO
+  get_default_sort_method, array_sort
 
 --------------------------------------------------------------
 

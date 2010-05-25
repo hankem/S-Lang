@@ -92,6 +92,8 @@ Changes since 2.2.2
     updated documentation for array_sort.
 37. src/slarray.c: Reduced the memory requirments for the mergesort
     function, which produced a 5% speed improvement.
+38. src/slarray.c: Added support for qsort to array_sort.  See the
+    updated documentation for details.
 
 {{{ Previous Versions
 
