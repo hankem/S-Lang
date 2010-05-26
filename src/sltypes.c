@@ -760,6 +760,12 @@ static int null_pop (SLtype type, VOID_STAR ptr)
    return 0;
 }
 
+static int null_dereference (SLtype unused, VOID_STAR ptr)
+{
+   (void) unused; (void) ptr;
+   return SLang_push_null ();
+}
+
 /* Implement foreach (NULL) using (whatever) to do nothing.  This is useful
  * because suppose that X is a list but is NULL in some situations.  Then
  * when it is NULL, we want foreach(X) to do nothing.
@@ -1034,6 +1040,7 @@ int _pSLregister_types (void)
 
    if (NULL == (cl = SLclass_allocate_class ("Null_Type")))
      return -1;
+   cl->cl_dereference = null_dereference,
    cl->cl_push = null_push;
    cl->cl_pop = null_pop;
    cl->cl_foreach_open = null_foreach_open;

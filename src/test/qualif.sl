@@ -147,6 +147,46 @@ test_qualifier_passing ("foo", 0; food=7);
 test_qualifier_passing ("foo", 0;; struct{food=7});
 test_qualifier_passing ("foo", 1;; struct{food=7, foo});
 
+private define fun2 (x, y)
+{
+   return qualifier ("x", x), qualifier ("y", y);
+}
+
+private define fun1 (x, y)
+{
+   return fun2 (x, y;; __qualifiers ());
+}
+
+private define qualifiers_as_func ()
+{
+   return __qualifiers ();
+}
+
+private define test_mixed_qualifiers ()
+{
+   variable x, y, x0, y0, x1, y1;
+   x0 = 1, y0 = 2; x1 = "one", y1="two";
+
+   (x,y) = fun1 (x0, y0; @qualifiers_as_func());
+   if ((x0 != x)||(y0!=y))
+     failed ("mixed qualifiers NULL");
+
+   (x,y) = fun1 (x0, y0; @qualifiers_as_func(;x=x1));
+   if ((x != x1)||(y0!=y))
+     failed ("mixed qualifiers ;x=x1");
+
+   (x,y) = fun1 (x0, y0; x=x0, @qualifiers_as_func(;x=x1));
+   if ((x != x1)||(y0!=y))
+     failed ("mixed qualifiers ;x=x0,x=x1");
+   (x,y) = fun1 (x0, y0; y=y0, @qualifiers_as_func(;x=x1), x=x0);
+   if ((x != x0)||(y0!=y))
+     failed ("mixed qualifiers ;x=x1,x=x0");
+   (x,y) = fun1 (x0, y0; @qualifiers_as_func(;x=x1,y=y1), x=y1);
+   if ((x != y1)||(y1!=y))
+     failed ("mixed qualifiers ;x=x1,y=y0,x=y1");
+}
+test_mixed_qualifiers ();
+
 print ("Ok\n");
 
 exit (0);

@@ -552,6 +552,27 @@ private define test_it (p)
 }
 test_it (new_test_type ());
 
+define test_struct_merge ()
+{
+   variable s = struct
+     {
+	x = 3,
+	@ @Vector_Type,
+	t = 1,
+     };
+   if (s.x != NULL)
+     failed ("struct merge: x is non-NULL");
+
+   s = struct
+     {
+	@ vector(1,2,3)+vector(4,5,6),
+	x = -1, y = -2,
+     };
+   if ((s.z != 9) || (s.x != -1) || (s.y != -2))
+     failed ("struct merge: vector+vector");
+}
+test_struct_merge ();
+
 print ("Ok\n");
 exit (0);
 

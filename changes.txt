@@ -94,6 +94,17 @@ Changes since 2.2.2
     function, which produced a 5% speed improvement.
 38. src/slarray.c: Added support for qsort to array_sort.  See the
     updated documentation for details.
+39. src/slparse.c: Added a syntax enhancement to structs and
+    qualifiers to allow the fields of structure-valued expressions to
+    be used to define the structure.  For example:
+    
+       space = struct {x, y, z};
+       spacetime = struct {@space, t};
+
+    Here spacetime is a structure containing 4 fields: (x,y,z,t).  In
+    this context, @ is not a dereference operator.  Rather it is used
+    to tell the parser that the following expression is a structure
+    valued.
 
 {{{ Previous Versions
 

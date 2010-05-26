@@ -407,7 +407,7 @@ static int append_copy_of_string_token (_pSLang_Token_Type *t)
    return 0;
 }
 
-static int append_int_token (int n)
+static int append_int_as_token (int n)
 {     
    _pSLang_Token_Type num_tok;
 
@@ -417,6 +417,27 @@ static int append_int_token (int n)
    num_tok.v.long_val = n;
    return append_token (&num_tok);
 }
+
+#if 0
+static int append_string_as_token (char *str)
+{
+   _pSLang_Token_Type *t;
+
+   if (-1 == check_token_list_space (Token_List, 1))
+     return -1;
+
+   t = Token_List->stack + Token_List->len;
+   init_token (t);
+
+   if (EOF_TOKEN == _pSLtoken_init_slstring_token (t, STRING_TOKEN, str, strlen (str)))
+     return -1;
+
+   t->num_refs = 1;
+
+   Token_List->len += 1;
+   return 0;
+}
+#endif
 
 static int append_token_of_type (unsigned char t)
 {
@@ -1771,6 +1792,29 @@ static void free_token_linked_list (_pSLang_Token_Type *tok)
      }
 }
 
+/* This works with any string-like token */
+static int prefix_token_sval_field (_pSLang_Token_Type *tok, char *prefix)
+{
+   char buf[2*SL_MAX_TOKEN_LEN];
+   unsigned int len, prefix_len;
+   
+   prefix_len = strlen (prefix);
+   len = _pSLstring_bytelen (tok->v.s_val);   /* sign */
+   if (len + prefix_len >= sizeof(buf))
+     {
+	_pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Number too long for buffer", tok, 1);
+	return -1;
+     }
+   memcpy (buf, prefix, prefix_len);
+   memcpy (buf+prefix_len, tok->v.s_val, len);  /* copys \0 */
+   (*tok->free_val_func)(tok);
+   if (EOF_TOKEN == _pSLtoken_init_slstring_token (tok, tok->type, buf, len+prefix_len))
+     return -1;
+
+   return 0;
+}
+
+
 /*
  * This function parses a structure definition block.  It returns the names
  * of the structure fields in the form of a linked list of tokens.
@@ -1788,12 +1832,32 @@ static _pSLang_Token_Type *
    _pSLang_Token_Type *name_list_root = NULL;
    _pSLang_Token_Type *name_list_tail = NULL;
    unsigned int n, m;
+   char buf[64];
 
    n = m = 0;
-   while ((_pSLang_Error == 0) 
-	  && (IDENT_TOKEN == ctok->type))
+   while (_pSLang_Error == 0) 
      {
-	_pSLang_Token_Type *new_tok = allocate_token ();
+	_pSLang_Token_Type *new_tok;
+	int is_deref = 0;
+
+	if (assign_ok && (ctok->type == DEREF_TOKEN))
+	  {
+	     /* struct { @ expr, ... } */
+	     
+	     (void) SLsnprintf (buf, sizeof(buf), "@%d", n);
+	     free_token (ctok);
+	     if (EOF_TOKEN == _pSLtoken_init_slstring_token (ctok, STRING_TOKEN, buf, strlen (buf)))
+	       break;
+
+	     is_deref = 1;
+	  }
+	else
+	  {
+	     if (IDENT_TOKEN != ctok->type)
+	       break;
+	  }
+	
+	new_tok = allocate_token ();
 	if (new_tok == NULL)
 	  break;
 
@@ -1809,35 +1873,43 @@ static _pSLang_Token_Type *
 	name_list_tail = new_tok;
 
 	n++;
-
-	if (COMMA_TOKEN == get_token (ctok))
+	
+	if ((COMMA_TOKEN == get_token (ctok))
+	    && (is_deref == 0))
 	  {
 	     get_token (ctok);
 	     continue;
 	  }
 
-	if (assign_ok && (ASSIGN_TOKEN == ctok->type))
+	if (assign_ok == 0)
+	  break;
+	
+	if ((ASSIGN_TOKEN == ctok->type) || is_deref)
 	  {
 	     /* name = ... */
 #if SLANG_HAS_BOSEOS
-	     int eos = compile_bos (ctok, 1);
+	     int eos = append_bos (ctok, 1);
 #endif
-	     get_token (ctok);
+	     if (is_deref == 0)
+	       get_token (ctok);
+
 	     simple_expression (ctok);
 #if SLANG_HAS_BOSEOS
-	     if (eos) compile_eos ();
+	     if (eos) append_eos ();
 #endif
+
 	     if (-1 == append_copy_of_string_token (new_tok))
 	       break;
-	     
+
 	     m++;
 
-	     if (ctok->type == COMMA_TOKEN)
-	       {
-		  get_token (ctok);
-		  continue;
-	       }
-	  }	
+	     if (ctok->type != COMMA_TOKEN)
+	       break;
+
+	     get_token (ctok);
+	     continue;
+	  }
+
 	break;
      }
 
@@ -1879,12 +1951,12 @@ static int handle_struct_fields (_pSLang_Token_Type *ctok, int assign_ok)
    if (_pSLang_Error)
      return -1;
 
-   append_int_token (n);
+   append_int_as_token (n);
    if (m == 0)
      append_token_of_type (STRUCT_TOKEN);
    else
      {
-	append_int_token (m);
+	append_int_as_token (m);
 	append_token_of_type (STRUCT_WITH_ASSIGN_TOKEN);
      }
    
@@ -2366,25 +2438,9 @@ static void simple_expression (_pSLang_Token_Type *ctok)
      }
 }
 
-
 static int negate_float_type_token (_pSLang_Token_Type *tok)
 {
-   char buf[SL_MAX_TOKEN_LEN];
-   unsigned int len;
-
-   len = 1 + _pSLstring_bytelen (tok->v.s_val);   /* sign */
-   if (len >= sizeof(buf))
-     {
-	_pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, "Number too long for buffer", tok, 1);
-	return -1;
-     }
-   buf[0] = '-';
-   memcpy (buf+1, tok->v.s_val, len);  /* copys \0 */
-   (*tok->free_val_func)(tok);
-   if (EOF_TOKEN == _pSLtoken_init_slstring_token (tok, tok->type, buf, len))
-     return -1;
-
-   return 0;
+   return prefix_token_sval_field (tok, "-");
 }
 
 /* unary-expression:

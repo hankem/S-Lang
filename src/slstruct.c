@@ -26,11 +26,27 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
-
-static void free_struct (_pSLang_Struct_Type *s)
+static void free_fields (_pSLstruct_Field_Type *fields, unsigned int n)
 {
    _pSLstruct_Field_Type *field, *field_max;
 
+   if (fields == NULL)
+     return;
+
+   field = fields;
+   field_max = field + n;
+
+   while (field < field_max)
+     {
+	SLang_free_object (&field->obj);
+	SLang_free_slstring ((char *) field->name);   /* could be NULL */
+	field++;
+     }
+   SLfree ((char *) fields);
+}
+
+static void free_struct (_pSLang_Struct_Type *s)
+{
    if (s == NULL) return;
 
    if (s->num_refs > 1)
@@ -55,20 +71,7 @@ static void free_struct (_pSLang_Struct_Type *s)
 	SLang_free_function (s->destroy_method);
      }
 
-     
-   field = s->fields;
-   if (field != NULL)
-     {
-	field_max = field + s->nfields;
-
-	while (field < field_max)
-	  {
-	     SLang_free_object (&field->obj);
-	     SLang_free_slstring ((char *) field->name);   /* could be NULL */
-	     field++;
-	  }
-	SLfree ((char *) s->fields);
-     }
+   free_fields (s->fields, s->nfields);
    SLfree ((char *) s);
 }
 
@@ -169,12 +172,12 @@ static int struct_push (SLtype type, VOID_STAR ptr)
    return push_struct_of_type (type, *(_pSLang_Struct_Type **) ptr);
 }
 
-static _pSLstruct_Field_Type *find_field (_pSLang_Struct_Type *s, SLCONST char *name)
+static _pSLstruct_Field_Type *find_field_in_fields (_pSLstruct_Field_Type *fields, unsigned int n, SLCONST char *name)
 {
    _pSLstruct_Field_Type *f, *fmax;
 
-   f = s->fields;
-   fmax = f + s->nfields;
+   f = fields;
+   fmax = fields + n;
 
    while (f < fmax)
      {
@@ -186,6 +189,11 @@ static _pSLstruct_Field_Type *find_field (_pSLang_Struct_Type *s, SLCONST char *
      }
 
    return NULL;
+}
+
+static _pSLstruct_Field_Type *find_field (_pSLang_Struct_Type *s, SLCONST char *name)
+{
+   return find_field_in_fields (s->fields, s->nfields, name);
 }
 
 static _pSLstruct_Field_Type *find_field_strcmp (_pSLang_Struct_Type *s, SLCONST char *name)
@@ -388,6 +396,127 @@ static int pop_to_struct_field (_pSLang_Struct_Type *s, SLCONST char *name)
    return 0;
 }
 
+/* Take the fields of b and use those to replace the field atname of a */
+static int merge_struct_fields (SLCONST char *atname, _pSLang_Struct_Type *a, _pSLang_Struct_Type *b)
+{
+   unsigned int i, j, nb;
+   char **new_names;
+   _pSLstruct_Field_Type *f, *fmax, *new_fields;
+   _pSLstruct_Field_Type *atfield;
+   unsigned int num_before, num_insert, num_after, new_num;
+
+   atfield = find_field (a, atname);
+   if (atfield == NULL)
+     {
+	SLang_verror (SL_Internal_Error, "Unable to find struct field %s", atname);
+	return -1;
+     }
+   num_before = atfield - a->fields;
+   num_after = a->nfields - (1 + num_before);
+   num_insert = 0;
+
+   if (b != NULL)
+     {
+	nb = b->nfields;
+	new_names = (char **)SLmalloc (nb * sizeof (char *));
+	if (new_names == NULL)
+	  return -1;
+
+	f = b->fields;
+	fmax = f + nb;
+	while (f < fmax)
+	  {
+	     if (NULL == find_field (a, f->name))
+	       new_names[num_insert++] = f->name;
+	     f++;
+	  }
+     }
+   else new_names = NULL;
+
+   new_num = num_before + num_insert + num_after;
+   new_fields = (_pSLstruct_Field_Type *)SLcalloc (new_num, sizeof(_pSLstruct_Field_Type));
+   if (new_fields == NULL)
+     {
+	SLfree ((char *) new_names);
+	return -1;
+     }
+
+   f = a->fields;
+   j = 0;
+   for (i = 0; i < num_before; i++)
+     {
+	new_fields[j++] = f[i];
+	memset ((char *)&f[i], 0, sizeof(_pSLstruct_Field_Type));
+     }
+
+   for (i = 0; i < num_insert; i++)
+     {
+	if (NULL == (new_fields[j].name = SLang_create_slstring (new_names[i])))
+	  goto return_error;
+	j++;
+     }
+
+   f = a->fields + num_before + 1;
+   for (i = 0; i < num_after; i++)
+     {
+	new_fields[j++] = f[i];
+	memset ((char *)&f[i], 0, sizeof(_pSLstruct_Field_Type));
+     }
+
+   if (b != NULL)
+     {
+	f = b->fields;
+	fmax = f + nb;
+	while (f < fmax)
+	  {
+	     _pSLstruct_Field_Type *fa;
+	
+	     /* Cannot fail by construction */
+	     fa = find_field_in_fields (new_fields, new_num, f->name);
+
+	     if ((-1 == _pSLpush_slang_obj (&f->obj))
+		 || (-1 == SLang_pop (&fa->obj)))
+	       goto return_error;
+
+	     f++;
+	  }
+     }
+
+   SLfree ((char *) new_names);
+   free_fields (a->fields, a->nfields);
+   a->fields = new_fields;
+   a->nfields = new_num;
+   return 0;
+   
+return_error:
+
+   free_fields (new_fields, new_num);
+   SLfree ((char *) new_names);
+   return -1;
+}
+
+static int pop_struct_into_field (_pSLang_Struct_Type *s, SLCONST char *name)
+{
+   _pSLang_Struct_Type *t;
+   int status;
+
+   if (SLang_peek_at_stack () == SLANG_NULL_TYPE)
+     {
+	(void) SLdo_pop_n(1);
+	return merge_struct_fields (name, s, NULL);
+     }
+
+   if (-1 == SLang_pop_struct (&t))
+     {
+	SLang_verror (SL_TypeMismatch_Error, "Field %s should represent a struct", name);
+	return -1;
+     }
+
+   status = merge_struct_fields (name, s, t);
+   free_struct (t);
+   return status;
+}
+
 /* This function is used for structure definitions with embedded assignments */
 int _pSLstruct_define_struct2 (void)
 {
@@ -404,25 +533,37 @@ int _pSLstruct_define_struct2 (void)
    if (NULL == (s = struct_from_struct_fields (nfields)))
      return -1;
 
+   /* On stack: nameN, valN, ...., name1, val1 .... */
+   if (nassigns 
+       && (-1 == SLreverse_stack (2*nassigns)))
+     goto return_error;
    while (nassigns > 0)
      {
 	char *name;
-	if (-1 == SLang_pop_slstring (&name))
+	int status;
+
+	/* Stack: val1, name1, val2, name2, ...
+	 */
+	if ((-1 == SLreverse_stack (2))
+	    || (-1 == SLang_pop_slstring (&name)))
 	  goto return_error;
-	
-	if (-1 == pop_to_struct_field (s, name))
-	  {
-	     SLang_free_slstring (name);
-	     goto return_error;
-	  }
+
+	if (*name == '@')
+	  status = pop_struct_into_field (s, name);
+	else
+	  status = pop_to_struct_field (s, name);
+
 	SLang_free_slstring (name);
+	if (status == -1)
+	  goto return_error;
+
 	nassigns--;
      }
 
    if (0 == SLang_push_struct (s))
      return 0;
    
-   return_error:
+return_error:
    
    SLang_free_struct (s);
    return -1;
