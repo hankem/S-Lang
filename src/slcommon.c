@@ -166,12 +166,19 @@ int SLutf8_enable (int mode)
    return mode;
 }
 
+/* Mallocing 0 bytes leads to undefined behavior.  Some C libraries will
+ * return NULL, and others return non-NULL.  Here, if 0 bytes is requested,
+ * and the library malloc function returns NULL, then malloc will be retried 
+ * using 1 byte.
+ */
 char *SLmalloc (unsigned int len)
 {
    char *p;
 
-   p = (char *) SLMALLOC_FUN (len);
-   if (p == NULL)
+   if (NULL != (p = (char *) SLMALLOC_FUN (len)))
+     return p;
+
+   if (len || (NULL == (p = (char *)SLMALLOC_FUN(1))))
      SLang_set_error (SL_MALLOC_ERROR);
 
    return p;

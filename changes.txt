@@ -105,6 +105,10 @@ Changes since 2.2.2
     this context, @ is not a dereference operator.  Rather it is used
     to tell the parser that the following expression is a structure
     valued.
+40. src/slcommon.c: SLmalloc inherited malloc's undefined behavior
+    when 0 bytes were requested.  The change will cause SLmalloc to
+    allocate at least 1 byte if the OS version of malloc returns NULL
+    for 0 byte sizes.
 
 {{{ Previous Versions
 
