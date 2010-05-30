@@ -935,7 +935,7 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
 	if (cl->cl_fread == NULL) cl->cl_fread = scalar_fread;
 	if (cl->cl_fwrite == NULL) cl->cl_fwrite = scalar_fwrite;
 	if (cl->cl_acopy == NULL) cl->cl_acopy = scalar_acopy;
-
+	if (cl->cl_dereference == NULL) cl->cl_dereference = cl->cl_push;
 	can_binop = 1;
 	break;
 
@@ -956,6 +956,7 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
 	if (cl->cl_fread == NULL) cl->cl_fread = scalar_fread;
 	if (cl->cl_fwrite == NULL) cl->cl_fwrite = scalar_fwrite;
 	if (cl->cl_acopy == NULL) cl->cl_acopy = scalar_acopy;
+	if (cl->cl_dereference == NULL) cl->cl_dereference = cl->cl_push;
 	can_binop = 1;
 	break;
 
