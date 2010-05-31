@@ -501,11 +501,11 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	     lex->e.char_class = SLCHARCLASS_LOWER;
 	     break;
 	     
-	   case 'p':	       /* lowercase */
+	   case 'p':	       /* printable */
 	     lex->e.char_class = SLCHARCLASS_PRINT;
 	     break;
 	     
-	   case ',':	       /* lowercase */
+	   case ',':	       /* punctuation */
 	     lex->e.char_class = SLCHARCLASS_PUNCT;
 	     break;
 	     
@@ -948,6 +948,30 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 		  
 	   case SLCHARCLASS_ASCII:
 	     is_func = is_ascii;
+	     break;
+
+	   case SLCHARCLASS_BLANK:
+	     is_func = SLwchar_isblank;
+	     break;
+
+	   case SLCHARCLASS_CNTRL:
+	     is_func = SLwchar_iscntrl;
+	     break;
+
+	   case SLCHARCLASS_GRAPH:
+	     is_func = SLwchar_isgraph;
+	     break;
+
+	   case SLCHARCLASS_PRINT:
+	     is_func = SLwchar_isprint;
+	     break;
+
+	   case SLCHARCLASS_PUNCT:
+	     is_func = SLwchar_ispunct;
+	     break;
+
+	   case SLCHARCLASS_XDIGIT:
+	     is_func = SLwchar_isxdigit;
 	     break;
 
 	   default:

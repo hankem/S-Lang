@@ -840,15 +840,20 @@
   \exmp{new_set} must be commensurate.  Each set may consist of
   character ranges such as \exmp{A-Z} and character classes:
 #v+
-    \w matches a unicode "word" character, taken to be alphanumeric.
-    \a alphabetic character, excluding digits
-    \s matches whitespace
-    \l matches lowercase
-    \u matches uppercase
-    \d matches a digit
+    \, matches a punctuation character
     \7 matches any 7bit ascii character
     \\ matches a backslash
-    \^ matches a ^ character
+    \^ matches the ^ character
+    \a matches an alphabetic character, excluding digits
+    \c matches a control character
+    \d matches a digit
+    \g matches a graphic character
+    \l matches lowercase
+    \p matches a printable character
+    \s matches whitespace
+    \u matches uppercase
+    \w matches a unicode "word" character, taken to be alphanumeric.
+    \x matches hex digit (a-fA-F0-9)
 #v-
   If the first character of a set is \exmp{^} then the set is taken to
   be the complement set.

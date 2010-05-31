@@ -109,6 +109,12 @@ Changes since 2.2.2
     when 0 bytes were requested.  The change will cause SLmalloc to
     allocate at least 1 byte if the OS version of malloc returns NULL
     for 0 byte sizes.
+41. src/slclass.c: The default dereference method for all scalar and
+    vector classes was changed from undefined to duplicate.  That is,
+    @7 will not produce 7 instead of triggering a method-undefined
+    exception.
+42. src/slwclut.c: Added \x\c\p\,\g character classes to strtrans (See
+    strtrans doc).
 
 {{{ Previous Versions
 
