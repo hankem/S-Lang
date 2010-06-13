@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -694,7 +694,7 @@ static SLang_Intrin_Fun_Type Assoc_Table [] =
 #undef A
 #undef S
 
-static int assoc_length (SLtype type, VOID_STAR v, unsigned int *len)
+static int assoc_length (SLtype type, VOID_STAR v, SLuindex_Type *len)
 {
    SLang_Assoc_Array_Type *a;
 

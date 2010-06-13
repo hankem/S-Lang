@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -301,8 +301,8 @@ static void free_n_bstrings (SLang_BString_Type **a, unsigned int n)
 
 static int
 bstring_bstring_bin_op (int op,
-			SLtype a_type, VOID_STAR ap, unsigned int na,
-			SLtype b_type, VOID_STAR bp, unsigned int nb,
+			SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+			SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 			VOID_STAR cp)
 {
    char *ic;
@@ -455,8 +455,8 @@ make_n_bstrings (SLang_BString_Type **b, char **a, unsigned int n, int ptr_type)
 
 static int
 bstring_string_bin_op (int op,
-		       SLtype a_type, VOID_STAR ap, unsigned int na,
-		       SLtype b_type, VOID_STAR bp, unsigned int nb,
+		       SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+		       SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 		       VOID_STAR cp)
 {
    SLang_BString_Type **b;
@@ -477,8 +477,8 @@ bstring_string_bin_op (int op,
 
 static int
 string_bstring_bin_op (int op,
-		       SLtype a_type, VOID_STAR ap, unsigned int na,
-		       SLtype b_type, VOID_STAR bp, unsigned int nb,
+		       SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+		       SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 		       VOID_STAR cp)
 {
    SLang_BString_Type **a;
@@ -511,7 +511,7 @@ static int bstring_push (SLtype unused, VOID_STAR sptr)
    return SLang_push_bstring (*(SLang_BString_Type **) sptr);
 }
 
-static int string_to_bstring (SLtype a_type, VOID_STAR ap, unsigned int na,
+static int string_to_bstring (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			      SLtype b_type, VOID_STAR bp)
 {
    char **s;
@@ -529,11 +529,11 @@ static int string_to_bstring (SLtype a_type, VOID_STAR ap, unsigned int na,
    return 1;
 }
 
-static int bstring_to_string (SLtype a_type, VOID_STAR ap, unsigned int na,
+static int bstring_to_string (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			      SLtype b_type, VOID_STAR bp)
 {
    char **s;
-   unsigned int i;
+   SLuindex_Type i;
    SLang_BString_Type **a;
 
    (void) a_type;

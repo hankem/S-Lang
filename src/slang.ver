@@ -691,3 +691,8 @@ SLANG2.2.1 {
 	global:
 		SLclass_set_aelem_init_function;
 } SLANG2.2.0;
+SLANG2.2.3 {
+	global:
+		SLang_push_array_index;
+} SLANG2.2.1;
+

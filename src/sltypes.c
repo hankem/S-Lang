@@ -1,6 +1,6 @@
 /* Basic type operations for S-Lang */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -169,8 +169,8 @@ string_string_bin_op_result (int op, SLtype a, SLtype b,
 
 static int
 string_string_bin_op (int op,
-		      SLtype a_type, VOID_STAR ap, unsigned int na,
-		      SLtype b_type, VOID_STAR bp, unsigned int nb,
+		      SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+		      SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 		      VOID_STAR cp)
 {
    char *ic;
@@ -327,7 +327,7 @@ static int string_cmp (SLtype unused, VOID_STAR ap, VOID_STAR bp, int *c)
    return 0;
 }
 
-static int string_to_int (SLtype a_type, VOID_STAR ap, unsigned int na,
+static int string_to_int (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			  SLtype b_type, VOID_STAR bp)
 {
    char **s;
@@ -799,8 +799,8 @@ static int null_to_bool (SLtype type, int *t)
 }
 
 /* AnyType */
-int _pSLanytype_typecast (SLtype a_type, VOID_STAR ap, unsigned int na,
-			 SLtype b_type, VOID_STAR bp)
+int _pSLanytype_typecast (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+			  SLtype b_type, VOID_STAR bp)
 {
    SLang_Class_Type *cl;
    SLang_Any_Type **any;

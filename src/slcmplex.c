@@ -1,6 +1,6 @@
 /* Complex Data Type definition for S-Lang */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -499,14 +499,14 @@ static int complex_binary_result (int op, SLtype a, SLtype b,
 }
 
 static int complex_complex_binary (int op,
-				   SLtype a_type, VOID_STAR ap, unsigned int na,
-				   SLtype b_type, VOID_STAR bp, unsigned int nb,
+				   SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+				   SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 				   VOID_STAR cp)
 {
    char *ic;
    double *a, *b, *c;
-   unsigned int n, n_max;
-   unsigned int da, db;
+   SLuindex_Type n, n_max;
+   SLuindex_Type da, db;
 
    (void) a_type;
    (void) b_type;
@@ -598,14 +598,14 @@ static int complex_complex_binary (int op,
 }
 
 static int complex_double_binary (int op,
-				  SLtype a_type, VOID_STAR ap, unsigned int na,
-				  SLtype b_type, VOID_STAR bp, unsigned int nb,
+				  SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+				  SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 				  VOID_STAR cp)
 {
    char *ic;
    double *a, *b, *c;
-   unsigned int n, n_max;
-   unsigned int da, db;
+   SLuindex_Type n, n_max;
+   SLuindex_Type da, db;
 
    (void) a_type;
    (void) b_type;
@@ -700,14 +700,14 @@ static int complex_double_binary (int op,
 }
 
 static int double_complex_binary (int op,
-				  SLtype a_type, VOID_STAR ap, unsigned int na,
-				  SLtype b_type, VOID_STAR bp, unsigned int nb,
+				  SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+				  SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 				  VOID_STAR cp)
 {
    char *ic;
    double *a, *b, *c;
-   unsigned int n, n_max;
-   unsigned int da, db;
+   SLuindex_Type n, n_max;
+   SLuindex_Type da, db;
 
    (void) a_type;
    (void) b_type;
@@ -803,15 +803,15 @@ static int double_complex_binary (int op,
 }
 
 static int complex_generic_binary (int op,
-				   SLtype a_type, VOID_STAR ap, unsigned int na,
-				   SLtype b_type, VOID_STAR bp, unsigned int nb,
+				   SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+				   SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 				   VOID_STAR cp)
 {
    char *ic;
    char *b;
    double *a, *c;
-   unsigned int n, n_max;
-   unsigned int da, db;
+   SLuindex_Type n, n_max;
+   SLuindex_Type da, db;
    unsigned int sizeof_b;
    SLang_To_Double_Fun_Type to_double;
 
@@ -910,14 +910,14 @@ static int complex_generic_binary (int op,
 }
 
 static int generic_complex_binary (int op,
-				   SLtype a_type, VOID_STAR ap, unsigned int na,
-				   SLtype b_type, VOID_STAR bp, unsigned int nb,
+				   SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+				   SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 				   VOID_STAR cp)
 {
    double *b, *c;
    char *a, *ic;
-   unsigned int n, n_max;
-   unsigned int da, db;
+   SLuindex_Type n, n_max;
+   SLuindex_Type da, db;
    unsigned int sizeof_a;
    SLang_To_Double_Fun_Type to_double;
 
@@ -1044,10 +1044,10 @@ static int complex_unary_result (int op, SLtype a, SLtype *b)
 }
 
 static int complex_unary (int op,
-			  SLtype a_type, VOID_STAR ap, unsigned int na,
+			  SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			  VOID_STAR bp)
 {
-   unsigned int n;
+   SLuindex_Type n;
    double *a, *b;
    int *ic;
 
@@ -1112,13 +1112,13 @@ static int complex_unary (int op,
 }
 
 static int
-complex_typecast (SLtype from_type, VOID_STAR from, unsigned int num,
+complex_typecast (SLtype from_type, VOID_STAR from, SLuindex_Type num,
 		  SLtype to_type, VOID_STAR to)
 {
    double *z;
    double *d;
    char *i;
-   unsigned int n;
+   SLuindex_Type n;
    unsigned int sizeof_i;
    SLang_To_Double_Fun_Type to_double;
 

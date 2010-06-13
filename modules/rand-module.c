@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold -*-
-Copyright (C) 2007-2009 John E. Davis
+Copyright (C) 2007-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -1352,7 +1352,7 @@ static void rand_permutation_intrin (void)
    SLang_MMT_Type *mmt = NULL;
    SLang_Array_Type *at = NULL;
    int *data;
-   int i, n;
+   SLindex_Type i, n;
 
    switch (nargs)
      {
@@ -1362,7 +1362,7 @@ static void rand_permutation_intrin (void)
 	
       case 2:
       case 1:
-	if (-1 == SLang_pop_int (&n))
+	if (-1 == SLang_pop_array_index (&n))
 	  return;
 	if (nargs == 2)
 	  {

@@ -2,7 +2,7 @@
 /* Standard intrinsic functions for S-Lang.  Included here are string
    and array operations */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -71,31 +71,31 @@ static void do_dup(void) /*{{{*/
 
 /*}}}*/
 
-static int length_cmd (void)
+static void length_cmd (void)
 {
    SLang_Class_Type *cl;
    SLang_Object_Type obj;
    VOID_STAR p;
-   unsigned int length;
-   int len;
+   SLuindex_Type length;
+   SLindex_Type ilen;
 
    if (-1 == SLang_pop (&obj))
-     return -1;
+     return;
 
    cl = _pSLclass_get_class (obj.o_data_type);
    p = _pSLclass_get_ptr_to_value (cl, &obj);
 
-   len = 1;
+   ilen = 1;
    if (cl->cl_length != NULL)
      {
 	if (0 == (*cl->cl_length)(obj.o_data_type, p, &length))
-	  len = (int) length;
+	  ilen = (SLindex_Type) length;
 	else
-	  len = -1;
+	  ilen = -1;
      }
 
    SLang_free_object (&obj);
-   return len;
+   (void) SLang_push_array_index (ilen);
 }
 
 /* convert integer to a string of length 1 */
@@ -1174,7 +1174,7 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_S("implements", _pSLang_implements_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("use_namespace", _pSLang_use_namespace_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("current_namespace", _pSLang_cur_namespace_intrinsic, SLANG_STRING_TYPE),
-   MAKE_INTRINSIC_0("length", length_cmd, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_0("length", length_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("__set_argc_argv", set_argv_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("_$", expand_dollar_string, SLANG_VOID_TYPE),
 #if SLANG_HAS_QUALIFIERS

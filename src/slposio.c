@@ -1,7 +1,7 @@
 /* This module implements an interface to posix system calls */
 /* file stdio intrinsics for S-Lang */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -1034,14 +1034,14 @@ fd_fd_bin_op_result (int op, SLtype a, SLtype b,
 
 static int
 fd_fd_bin_op (int op,
-		      SLtype a_type, VOID_STAR ap, unsigned int na,
-		      SLtype b_type, VOID_STAR bp, unsigned int nb,
+		      SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+		      SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 		      VOID_STAR cp)
 {
    char *ic;
    SLFile_FD_Type **a, **b;
-   unsigned int n, n_max;
-   unsigned int da, db;
+   SLuindex_Type n, n_max;
+   SLuindex_Type da, db;
 
    (void) a_type;
    (void) b_type;

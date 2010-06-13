@@ -1,6 +1,6 @@
 /* Advanced array manipulation routines for S-Lang */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -296,6 +296,41 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define ALL_FUNCTION all_uchars
 #include "slarrfun.inc"
 
+#ifdef HAVE_LONG_LONG
+# if SIZEOF_LONG != SIZEOF_LONG_LONG
+/* -------------- LONG LONG --------------------- */
+#  define GENERIC_TYPE long long
+#  define TRANSPOSE_2D_ARRAY transpose_llongs
+#  define MIN_FUNCTION min_llongs
+#  define MINABS_FUNCTION minabs_llongs
+#  define MAX_FUNCTION max_llongs
+#  define MAXABS_FUNCTION maxabs_llongs
+#  define ANY_FUNCTION any_llongs
+#  define ALL_FUNCTION all_llongs
+#  define ABS_FUNCTION(x) (((x)>=0)?(x):-(x))
+#  include "slarrfun.inc"
+/* -------------- UNSIGNED LONG --------------------- */
+#  define GENERIC_TYPE unsigned long long
+#  define MIN_FUNCTION min_ullongs
+#  define MAX_FUNCTION max_ullongs
+#  define ANY_FUNCTION any_ullongs
+#  define ALL_FUNCTION all_ullongs
+#  include "slarrfun.inc"
+# else
+#  define transpose_llongs transpose_longs
+#  define min_llongs min_longs
+#  define minabs_llongs minabs_llongs
+#  define min_ullongs min_ullongs
+#  define max_llongs max_llongs
+#  define maxabs_llongs maxabs_llongs
+#  define max_ullongs max_ullongs
+#  define any_llongs any_llongs
+#  define any_ullongs any_ullongs
+#  define all_llongs all_llongs
+#  define all_ullongs all_ullongs
+# endif
+#endif				       /* HAVE_LONG_LONG */
+
 /* This routine works only with linear arrays */
 static SLang_Array_Type *transpose (SLang_Array_Type *at)
 {
@@ -345,6 +380,9 @@ static SLang_Array_Type *transpose (SLang_Array_Type *at)
 	   case SLANG_SHORT_TYPE:
 	   case SLANG_USHORT_TYPE:
 	     return transpose_shorts (at, bt);
+	   case SLANG_LLONG_TYPE:
+	   case SLANG_ULLONG_TYPE:
+	     return transpose_llongs (at, bt);
 	  }
      }
    else
@@ -1061,6 +1099,10 @@ static SLCONST SLarray_Contract_Type Array_Min_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) min_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) min_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) min_ulongs},
+#ifdef HAVE_LONG_LONG
+     {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) min_llongs},
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) min_ullongs},   
+#endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) min_floats},
      {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) min_doubles},
@@ -1084,6 +1126,10 @@ static SLCONST SLarray_Contract_Type Array_Max_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) max_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) max_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) max_ulongs},
+#ifdef HAVE_LONG_LONG
+     {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) max_llongs},
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) max_ullongs},   
+#endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) max_floats},
      {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) max_doubles},
@@ -1107,6 +1153,10 @@ static SLCONST SLarray_Contract_Type Array_Maxabs_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) max_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) maxabs_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) max_ulongs},
+#ifdef HAVE_LONG_LONG
+     {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) maxabs_llongs},
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) max_ullongs},   
+#endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) maxabs_floats},
      {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) maxabs_doubles},
@@ -1131,6 +1181,10 @@ static SLCONST SLarray_Contract_Type Array_Minabs_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) min_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) minabs_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) min_ulongs},
+#ifdef HAVE_LONG_LONG
+     {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) minabs_llongs},
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) min_ullongs},
+#endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) minabs_floats},
      {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, (SLarray_Contract_Fun_Type *) minabs_doubles},
@@ -1442,6 +1496,10 @@ static SLCONST SLarray_Contract_Type Array_Any_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_ulongs},
+#ifdef HAVE_LONG_LONG
+     {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) any_llongs},
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) any_ullongs},   
+#endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_floats},
      {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_doubles},
@@ -1466,6 +1524,10 @@ static SLCONST SLarray_Contract_Type Array_All_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) all_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) all_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) all_ulongs},
+#ifdef HAVE_LONG_LONG
+     {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) all_llongs},
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) all_ullongs},
+#endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) all_floats},
      {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) all_doubles},

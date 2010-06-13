@@ -2,7 +2,7 @@
 #define DAVIS_SLANG_H_
 /* -*- mode: C; mode: fold; -*- */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20203
-#define SLANG_VERSION_STRING "pre2.2.3-42"
+#define SLANG_VERSION_STRING "pre2.2.3-43"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -669,6 +669,12 @@ SL_EXTERN int SLang_generate_debug_info (int);
 # define _PROTO(x) ()
 #endif
 
+typedef int SLindex_Type;
+typedef unsigned int SLuindex_Type;
+#define SLANG_ARRAY_INDEX_TYPE SLANG_INT_TYPE
+SL_EXTERN int SLang_pop_array_index (SLindex_Type *);
+SL_EXTERN int SLang_push_array_index (SLindex_Type);
+
 typedef struct _pSLang_Struct_Type SLang_Struct_Type;
 SL_EXTERN void SLang_free_struct (SLang_Struct_Type *);
 SL_EXTERN int SLang_push_struct (SLang_Struct_Type *);
@@ -736,7 +742,7 @@ SL_EXTERN int SLclass_set_acopy_function (SLang_Class_Type *, int (*)(SLtype, VO
 SL_EXTERN int SLclass_set_deref_function (SLang_Class_Type *, int (*)(SLtype, VOID_STAR));
 SL_EXTERN int SLclass_set_eqs_function (SLang_Class_Type *, int (*)(SLtype, VOID_STAR, SLtype, VOID_STAR));
 
-SL_EXTERN int SLclass_set_length_function (SLang_Class_Type *, int(*)(SLtype, VOID_STAR, unsigned int *));
+SL_EXTERN int SLclass_set_length_function (SLang_Class_Type *, int(*)(SLtype, VOID_STAR, SLuindex_Type *));
 
 SL_EXTERN int SLclass_set_is_container (SLang_Class_Type *, int);
 SL_EXTERN int SLclass_set_foreach_functions (
@@ -784,35 +790,35 @@ SL_EXTERN int SLclass_typecast (SLtype, int, int);
 
 SL_EXTERN int SLclass_add_unary_op (SLtype,
 				 int (*) (int,
-					  SLtype, VOID_STAR, unsigned int,
+					  SLtype, VOID_STAR, SLuindex_Type,
 					  VOID_STAR),
 				 int (*) (int, SLtype, SLtype *));
 
 SL_EXTERN int
 SLclass_add_app_unary_op (SLtype,
 			  int (*) (int,
-				   SLtype, VOID_STAR, unsigned int,
+				   SLtype, VOID_STAR, SLuindex_Type,
 				   VOID_STAR),
 			  int (*) (int, SLtype, SLtype *));
 
 SL_EXTERN int
 SLclass_add_binary_op (SLtype, SLtype,
 		       int (*) (int,
-				SLtype, VOID_STAR, unsigned int,
-				SLtype, VOID_STAR, unsigned int,
+				SLtype, VOID_STAR, SLuindex_Type,
+				SLtype, VOID_STAR, SLuindex_Type,
 				VOID_STAR),
 		       int (*) (int, SLtype, SLtype, SLtype *));
 
 SL_EXTERN int
 SLclass_add_math_op (SLtype,
 		     int (*)(int,
-			     SLtype, VOID_STAR, unsigned int,
+			     SLtype, VOID_STAR, SLuindex_Type,
 			     VOID_STAR),
 		     int (*)(int, SLtype, SLtype *));
 
 SL_EXTERN int
 SLclass_add_typecast (SLtype /* from */, SLtype /* to */,
-		      int (*)_PROTO((SLtype, VOID_STAR, unsigned int,
+		      int (*)_PROTO((SLtype, VOID_STAR, SLuindex_Type,
 				     SLtype, VOID_STAR)),
 		      int	       /* allow implicit typecasts */
 		      );
@@ -858,10 +864,6 @@ SL_EXTERN void SLang_inc_mmt (SLang_MMT_Type *);
 
 /* Maximum number of dimensions of an array. */
 #define SLARRAY_MAX_DIMS		7
-typedef int SLindex_Type;
-typedef unsigned int SLuindex_Type;
-#define SLANG_ARRAY_INDEX_TYPE SLANG_INT_TYPE
-SL_EXTERN int SLang_pop_array_index (SLindex_Type *);
 typedef struct _pSLang_Array_Type
 {
    SLtype data_type;

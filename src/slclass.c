@@ -1,6 +1,6 @@
 /* User defined objects */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -248,8 +248,8 @@ scalar_vector_bin_op_result (int op, SLtype a, SLtype b,
 
 static int
 scalar_vector_bin_op (int op,
-		      SLtype a_type, VOID_STAR ap, unsigned int na,
-		      SLtype b_type, VOID_STAR bp, unsigned int nb,
+		      SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+		      SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 		      VOID_STAR cp)
 {
    char *c;
@@ -533,8 +533,8 @@ use_cmp_bin_op_result (int op, SLtype a, SLtype b,
 
 static int
 use_cmp_bin_op (int op,
-		SLtype a_type, VOID_STAR ap, unsigned int na,
-		SLtype b_type, VOID_STAR bp, unsigned int nb,
+		SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+		SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 		VOID_STAR cp)
 {
    int *c;
@@ -656,8 +656,8 @@ static int do_default_eqs (SLang_Class_Type *a_cl, VOID_STAR pa,
 {
    SLang_Class_Type *c_cl;
    int (*binary_fun) (int,
-		      SLtype, VOID_STAR, unsigned int,
-		      SLtype, VOID_STAR, unsigned int,
+		      SLtype, VOID_STAR, SLuindex_Type,
+		      SLtype, VOID_STAR, SLuindex_Type,
 		      VOID_STAR);
    VOID_STAR pc;
    int ret;
@@ -1028,7 +1028,7 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
 
 int SLclass_add_math_op (SLtype type,
 			 int (*handler)(int,
-					SLtype, VOID_STAR, unsigned int,
+					SLtype, VOID_STAR, SLuindex_Type,
 					VOID_STAR),
 			 int (*result) (int, SLtype, SLtype *))
 {
@@ -1041,8 +1041,8 @@ int SLclass_add_math_op (SLtype type,
 
 int SLclass_add_binary_op (SLtype a, SLtype b,
 			   int (*f) (int,
-				     SLtype, VOID_STAR, unsigned int,
-				     SLtype, VOID_STAR, unsigned int,
+				     SLtype, VOID_STAR, SLuindex_Type,
+				     SLtype, VOID_STAR, SLuindex_Type,
 				     VOID_STAR),
 			   int (*r) (int, SLtype, SLtype, SLtype *))
 {
@@ -1097,7 +1097,7 @@ int SLclass_add_binary_op (SLtype a, SLtype b,
 
 int SLclass_add_unary_op (SLtype type,
 			  int (*f)(int,
-				   SLtype, VOID_STAR, unsigned int,
+				   SLtype, VOID_STAR, SLuindex_Type,
 				   VOID_STAR),
 			  int (*r)(int, SLtype, SLtype *))
 {
@@ -1141,7 +1141,7 @@ int _pSLclass_add_arith_unary_op (SLtype type,
 
 int SLclass_add_app_unary_op (SLtype type,
 			      int (*f)(int,
-				       SLtype, VOID_STAR, unsigned int,
+				       SLtype, VOID_STAR, SLuindex_Type,
 				       VOID_STAR),
 			      int (*r)(int, SLtype, SLtype *))
 {
@@ -1208,7 +1208,7 @@ int SLclass_set_eqs_function (SLang_Class_Type *cl, int (*f)(SLtype, VOID_STAR, 
    return 0;
 }
 
-int SLclass_set_length_function (SLang_Class_Type *cl, int (*f)(SLtype, VOID_STAR, unsigned int *))
+int SLclass_set_length_function (SLang_Class_Type *cl, int (*f)(SLtype, VOID_STAR, SLuindex_Type *))
 {
    if (cl == NULL) return -1;
    cl->cl_length = f;
@@ -1313,8 +1313,8 @@ void _pSLclass_type_mismatch_error (SLtype a, SLtype b)
 /* */
 
 static int null_binary_fun (int op,
-			    SLtype a, VOID_STAR ap, unsigned int na,
-			    SLtype b, VOID_STAR bp, unsigned int nb,
+			    SLtype a, VOID_STAR ap, SLuindex_Type na,
+			    SLtype b, VOID_STAR bp, SLuindex_Type nb,
 			    VOID_STAR cp)
 {
    char *ic;
@@ -1396,8 +1396,8 @@ int (*_pSLclass_get_binary_fun (int op,
 			       SLang_Class_Type *a_cl, SLang_Class_Type *b_cl,
 			       SLang_Class_Type **c_cl, int do_error))
 (int,
- SLtype, VOID_STAR, unsigned int,
- SLtype, VOID_STAR, unsigned int,
+ SLtype, VOID_STAR, SLuindex_Type,
+ SLtype, VOID_STAR, SLuindex_Type,
  VOID_STAR)
 {
    SL_OOBinary_Type *bt;
@@ -1458,9 +1458,9 @@ int (*_pSLclass_get_unary_fun (int op,
 			      SLang_Class_Type *a_cl,
 			      SLang_Class_Type **b_cl,
 			      int utype))
-(int, SLtype, VOID_STAR, unsigned int, VOID_STAR)
+(int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR)
 {
-   int (*f)(int, SLtype, VOID_STAR, unsigned int, VOID_STAR);
+   int (*f)(int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR);
    int (*r)(int, SLtype, SLtype *);
    SLtype a;
    SLtype b;
@@ -1550,7 +1550,7 @@ SLclass_typecast (SLtype to_type, int is_implicit, int allow_array)
      }
    else
      {
-	int (*t) (SLtype, VOID_STAR, unsigned int, SLtype, VOID_STAR);
+	int (*t) (SLtype, VOID_STAR, SLuindex_Type, SLtype, VOID_STAR);
 
 	if (NULL == (t = _pSLclass_get_typecast (from_type, to_type, is_implicit)))
 	  {
@@ -1596,7 +1596,7 @@ SLclass_typecast (SLtype to_type, int is_implicit, int allow_array)
 }
 
 int (*_pSLclass_get_typecast (SLtype from, SLtype to, int is_implicit))
-(SLtype, VOID_STAR, unsigned int,
+(SLtype, VOID_STAR, SLuindex_Type,
  SLtype, VOID_STAR)
 {
    SL_Typecast_Type *t;
@@ -1635,7 +1635,7 @@ int (*_pSLclass_get_typecast (SLtype from, SLtype to, int is_implicit))
 
 int
 SLclass_add_typecast (SLtype from, SLtype to,
-		      int (*f)_PROTO((SLtype, VOID_STAR, unsigned int,
+		      int (*f)_PROTO((SLtype, VOID_STAR, SLuindex_Type,
 				      SLtype, VOID_STAR)),
 		      int allow_implicit)
 {

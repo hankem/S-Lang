@@ -1,6 +1,6 @@
 /* sin, cos, etc, for S-Lang */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -302,7 +302,7 @@ static double my_atanh (double x)
 #endif
 
 static int double_math_op (int op,
-			   SLtype type, VOID_STAR ap, unsigned int na,
+			   SLtype type, VOID_STAR ap, SLuindex_Type na,
 			   VOID_STAR bp)
 {
    double *a, *b;
@@ -409,12 +409,12 @@ static int double_math_op (int op,
 	for (i = 0; i < na; i++) b[i] = LOG1P_FUNC(a[i]);
 	break;
      }
-   
+
    return 1;
 }
 
 static int float_math_op (int op,
-			  SLtype type, VOID_STAR ap, unsigned int na,
+			  SLtype type, VOID_STAR ap, SLuindex_Type na,
 			  VOID_STAR bp)
 {
    float *a, *b;
@@ -527,7 +527,7 @@ static int float_math_op (int op,
 }
 
 static int generic_math_op (int op,
-			    SLtype type, VOID_STAR ap, unsigned int na,
+			    SLtype type, VOID_STAR ap, SLuindex_Type na,
 			    VOID_STAR bp)
 {
    double *b;
@@ -758,7 +758,7 @@ static int complex_math_op_result (int op, SLtype a, SLtype *b)
 }
 
 static int complex_math_op (int op,
-			    SLtype type, VOID_STAR ap, unsigned int na,
+			    SLtype type, VOID_STAR ap, SLuindex_Type na,
 			    VOID_STAR bp)
 {
    double *a, *b;

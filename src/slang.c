@@ -1,7 +1,7 @@
 /* -*- mode: C; mode: fold; -*- */
 /* slang.c  --- guts of S-Lang interpreter */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -583,6 +583,28 @@ _INLINE_ static int push_int_object (SLtype type, int x)
    return 0;
 }
 
+#if (SLANG_ARRAY_INDEX_TYPE == SLANG_INT_TYPE)
+# define push_array_index push_int_object
+#else
+_INLINE_ static int push_array_index (SLtype type, SLindex_Type x)
+{
+   register SLang_Object_Type *y;
+   y = Stack_Pointer;
+
+   IF_UNLIKELY(y >= Stack_Pointer_Max)
+     {
+	(void) SLang_set_error (SL_STACK_OVERFLOW);
+	return -1;
+     }
+
+   y->o_data_type = type;
+   y->v.index_val = x;
+
+   Stack_Pointer = y + 1;
+   return 0;
+}
+#endif
+
 int SLclass_push_int_obj (SLtype type, int x)
 {
    return push_int_object (type, x);
@@ -743,6 +765,11 @@ int SLang_pop_array_index (SLindex_Type *i)
    *i = obj.v.index_val;
    Stack_Pointer = y;
    return 0;
+}
+
+int SLang_push_array_index (SLindex_Type i)
+{
+   return push_array_index (SLANG_ARRAY_INDEX_TYPE, i);
 }
 
 _INLINE_ static int pop_object_of_type (SLtype type, SLang_Object_Type *obj,
@@ -1250,8 +1277,8 @@ static int do_binary_ab (int op, SLang_Object_Type *obja, SLang_Object_Type *obj
    SLang_Class_Type *a_cl, *b_cl, *c_cl;
    SLtype b_data_type, a_data_type, c_data_type;
    int (*binary_fun) (int,
-		      SLtype, VOID_STAR, unsigned int,
-		      SLtype, VOID_STAR, unsigned int,
+		      SLtype, VOID_STAR, SLuindex_Type,
+		      SLtype, VOID_STAR, SLuindex_Type,
 		      VOID_STAR);
    VOID_STAR pa;
    VOID_STAR pb;
@@ -2160,7 +2187,7 @@ the_hard_way:
 
 static int do_unary_op (int op, SLang_Object_Type *obj, int unary_type)
 {
-   int (*f) (int, SLtype, VOID_STAR, unsigned int, VOID_STAR);
+   int (*f) (int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR);
    VOID_STAR pa;
    VOID_STAR pb;
    SLang_Class_Type *a_cl, *b_cl;
@@ -4748,10 +4775,10 @@ static int push_array_element (int lvaridx, SLindex_Type idx)
      }
 
    /* Do it the hard way */
-   if ((0 == push_int_object (SLANG_INT_TYPE, idx))
+   if ((0 == push_array_index (SLANG_ARRAY_INDEX_TYPE, idx))
        && (0 == push_local_variable (lvaridx)))
      return _pSLarray_aget1 (1);
-   
+
    return -1;
 }
 #endif
@@ -4785,7 +4812,7 @@ static int pop_to_lvar_array_element (int lvaridx, SLindex_Type idx)
 	  }
      }
    /* Do it the hard way */
-   if ((0 == push_int_object (SLANG_ARRAY_INDEX_TYPE, idx))
+   if ((0 == push_array_index (SLANG_ARRAY_INDEX_TYPE, idx))
        && (0 == push_local_variable (lvaridx)))
      return _pSLarray_aput1 (1);
    

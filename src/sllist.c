@@ -1,6 +1,6 @@
 /* List of objects */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -155,11 +155,11 @@ static SLang_List_Type *allocate_list (void)
    return (SLang_List_Type *)SLcalloc (1, sizeof (SLang_List_Type));
 }
 
-static SLang_Object_Type *find_nth_element (SLang_List_Type *list, int nth, Chunk_Type **cp)
+static SLang_Object_Type *find_nth_element (SLang_List_Type *list, SLindex_Type nth, Chunk_Type **cp)
 {
    Chunk_Type *c, *first, *last;
-   int n, next_n;
-   int length;
+   SLindex_Type n, next_n;
+   SLindex_Type length;
    int dir;
 
    length = list->length;
@@ -179,7 +179,7 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, int nth, Chun
 
    if (list->recent != NULL)
      {
-	int mid = list->recent_num;
+	SLindex_Type mid = list->recent_num;
 	if (nth < mid)
 	  {
 	     if (nth > mid/2)
@@ -238,10 +238,10 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, int nth, Chun
 	n = next_n;
 	c = c->prev;
      }
-   
+
    if (cp != NULL)
      *cp = c;
-   
+
    list->recent = c;
    list->recent_num = next_n;
    return c->elements + (nth - next_n);
@@ -262,11 +262,11 @@ static int pop_list (SLang_MMT_Type **mmtp, SLang_List_Type **list)
 /* FIXME: This is currently used only by list_dereference and breaks on an
  * empty list.  For this reason, it would probably fail in other contexts.
  */
-static SLang_List_Type *make_sublist (SLang_List_Type *list, int indx_a, int indx_b)
+static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a, SLindex_Type indx_b)
 {
    SLang_List_Type *new_list;
    Chunk_Type *c, *new_c;
-   int i, length;
+   SLindex_Type i, length;
    SLang_Object_Type *obj, *obj_max, *new_obj, *new_obj_max;
 
    length = list->length;
@@ -277,7 +277,7 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, int indx_a, int ind
 
    if (indx_a > indx_b)
      {
-	int tmp = indx_a;
+	SLindex_Type tmp = indx_a;
 	indx_a = indx_b;
 	indx_b = tmp;
      }
@@ -334,7 +334,7 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, int indx_a, int ind
 	     delete_list (new_list);
 	     return NULL;
 	  }
-	
+
 	new_c->num_elements++;
 	obj++;
 	new_obj++;
@@ -342,12 +342,12 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, int indx_a, int ind
    return new_list;
 }
 
-static void list_delete_elem (SLang_List_Type *list, int *indxp)
+static void list_delete_elem (SLang_List_Type *list, SLindex_Type *indxp)
 {
    SLang_Object_Type *elem;
    Chunk_Type *c;
    char *src, *dest, *src_max;
-   int indx;
+   SLindex_Type indx;
 
    indx = *indxp;
    if (NULL == (elem = find_nth_element (list, indx, &c)))
@@ -399,7 +399,7 @@ static void slide_right (Chunk_Type *c, int n)
      }
 }
 
-static int insert_element (SLang_List_Type *list, SLang_Object_Type *obj, int indx)
+static int insert_element (SLang_List_Type *list, SLang_Object_Type *obj, SLindex_Type indx)
 {
    Chunk_Type *c, *c1;
    SLang_Object_Type *elem;
@@ -627,16 +627,16 @@ static void list_reverse (SLang_List_Type *list)
    list->recent = NULL;
 }
 
-static int list_pop_nth (SLang_List_Type *list, int indx)
+static int list_pop_nth (SLang_List_Type *list, SLindex_Type indx)
 {
    SLang_Object_Type *obj;
 
    if (NULL == (obj = find_nth_element (list, indx, NULL)))
      return -1;
-   
+
    if (-1 == _pSLpush_slang_obj (obj))
      return -1;
-   
+
    list_delete_elem (list, &indx);
    return 0;
 }
@@ -705,8 +705,8 @@ int _pSLlist_inline_list (void)
 
 static void push_list_elements (SLang_List_Type *list)
 {
-   int n = list->length;
-   int i;
+   SLindex_Type n = list->length;
+   SLindex_Type i;
    
    for (i = 0; i < n; i++)
      {
@@ -760,9 +760,10 @@ static void list_to_array (void)
 
 #define L SLANG_LIST_TYPE
 #define I SLANG_INT_TYPE
+#define A SLANG_ARRAY_INDEX_TYPE
 static SLang_Intrin_Fun_Type Intrin_Table [] =
 {
-   MAKE_INTRINSIC_2("list_delete", list_delete_elem, SLANG_VOID_TYPE, L, I),
+   MAKE_INTRINSIC_2("list_delete", list_delete_elem, SLANG_VOID_TYPE, L, A),
    MAKE_INTRINSIC_1("list_reverse", list_reverse, SLANG_VOID_TYPE, L),
    MAKE_INTRINSIC_0("list_insert", list_insert_elem, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("list_append", list_append_elem, SLANG_VOID_TYPE),
@@ -775,8 +776,9 @@ static SLang_Intrin_Fun_Type Intrin_Table [] =
 };
 #undef L
 #undef I
+#undef A
 
-static int list_length (SLtype type, VOID_STAR v, unsigned int *len)
+static int list_length (SLtype type, VOID_STAR v, SLuindex_Type *len)
 {
    SLang_List_Type *list;
 
@@ -806,7 +808,7 @@ static char *string_method (SLtype type, VOID_STAR p)
    (void) type;
    list = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)p);
    
-   sprintf (buf, "List_Type with %d elements", list->length);
+   sprintf (buf, "List_Type with %ld elements", (long)list->length);
    return SLmake_string (buf);
 }
 
@@ -985,7 +987,7 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
 
    if (-1 == pop_list_and_index (num_indices, &mmt, &list, &ind_at, &indx))
      return -1;
-   
+
    ret = -1;
    if (ind_at == NULL)
      {
@@ -999,7 +1001,7 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
 
    if (NULL == (new_list = allocate_list ()))
      goto free_and_return;
-   
+
    list_len = list->length;
    num = ind_at->num_elements;
    idx_data = (SLindex_Type *)ind_at->data;

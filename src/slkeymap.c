@@ -4,7 +4,7 @@
  * structures.  Also included are routines for managing the keymaps.
  */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 

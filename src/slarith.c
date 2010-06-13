@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -533,8 +533,8 @@ static int arith_bin_op_result (int op, SLtype a_type, SLtype b_type,
 }
 
 typedef int (*Bin_Fun_Type) (int,
-			     SLtype, VOID_STAR, unsigned int,
-			     SLtype, VOID_STAR, unsigned int,
+			     SLtype, VOID_STAR, SLuindex_Type,
+			     SLtype, VOID_STAR, SLuindex_Type,
 			     VOID_STAR);
 
 /* This array of functions must be indexed by precedence after arithmetic
@@ -561,8 +561,8 @@ static Bin_Fun_Type Bin_Fun_Map [MAX_ARITHMETIC_TYPES] =
 };
 
 static int arith_bin_op (int op,
-			 SLtype a_type, VOID_STAR ap, unsigned int na,
-			 SLtype b_type, VOID_STAR bp, unsigned int nb,
+			 SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+			 SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 			 VOID_STAR cp)
 {
    Bin_Fun_Type binfun;
@@ -795,17 +795,17 @@ int SLang_push_ulong_long (unsigned long long i)
 #endif
 
 _INLINE_
-int _pSLarith_typecast (SLtype a_type, VOID_STAR ap, unsigned int na,
-		       SLtype b_type, VOID_STAR bp)
+int _pSLarith_typecast (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+			SLtype b_type, VOID_STAR bp)
 {
    int i, j;
 
-   void (*copy)(VOID_STAR, VOID_STAR, unsigned int);
+   void (*copy)(VOID_STAR, VOID_STAR, SLuindex_Type);
 
    i = TYPE_TO_TABLE_INDEX (a_type);
    j = TYPE_TO_TABLE_INDEX (b_type);
 
-   copy = (void (*)(VOID_STAR, VOID_STAR, unsigned int))
+   copy = (void (*)(VOID_STAR, VOID_STAR, SLuindex_Type))
      Binary_Matrix[i][j].copy_function;
 
    (*copy) (bp, ap, na);
@@ -1293,7 +1293,7 @@ typedef struct
    SLFUTURE_CONST char *name;
    SLtype data_type;
    unsigned int sizeof_type;
-   int (*unary_fun)(int, SLtype, VOID_STAR, unsigned int, VOID_STAR);
+   int (*unary_fun)(int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR);
    int (*push_literal) (SLtype, VOID_STAR);
    void (*byte_code_destroy)(SLtype, VOID_STAR);
    int (*cmp_fun) (SLtype, VOID_STAR, VOID_STAR, int *);

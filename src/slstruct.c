@@ -1,6 +1,6 @@
 /* Structure type implementation */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -930,7 +930,7 @@ static int check_struct_array (SLtype t, SLang_Struct_Type **sp, unsigned int n)
    return 0;
 }
 
-static int struct_unary (int op, SLtype a_type, VOID_STAR ap, unsigned int na,
+static int struct_unary (int op, SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			 VOID_STAR bp)
 {
    SLang_Struct_Type **sa;
@@ -1088,8 +1088,8 @@ static int do_struct_binary (SLang_Name_Type *function,
 }
 
 static int this_binary_any (int op, 
-			     SLtype a, VOID_STAR ap, unsigned int na,
-			     SLtype b, VOID_STAR bp, unsigned int nb,
+			     SLtype a, VOID_STAR ap, SLuindex_Type na,
+			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
 			     VOID_STAR cp)
 {
    Binary_Op_Info_Type *bi;
@@ -1108,8 +1108,8 @@ static int this_binary_any (int op,
 
 
 static int any_binary_this (int op, 
-			     SLtype a, VOID_STAR ap, unsigned int na,
-			     SLtype b, VOID_STAR bp, unsigned int nb,
+			     SLtype a, VOID_STAR ap, SLuindex_Type na,
+			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
 			     VOID_STAR cp)
 {
    Binary_Op_Info_Type *bi;
@@ -1127,8 +1127,8 @@ static int any_binary_this (int op,
 }
 
 static int this_binary_this (int op, 
-			     SLtype a, VOID_STAR ap, unsigned int na,
-			     SLtype b, VOID_STAR bp, unsigned int nb,
+			     SLtype a, VOID_STAR ap, SLuindex_Type na,
+			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
 			     VOID_STAR cp)
 {
    Binary_Op_Info_Type *bi;
@@ -1149,7 +1149,7 @@ static int register_unary_ops (Struct_Info_Type *si, SLtype t)
 {
    if (si->unary_registered)
      return 0;
-   
+
    if (-1 == SLclass_add_unary_op (t, struct_unary, struct_unary_result))
      return -1;
 
@@ -1665,7 +1665,7 @@ static int struct_sget (SLtype type, SLFUTURE_CONST char *name)
 }
 
 static int struct_typecast
-  (SLtype a_type, VOID_STAR ap, unsigned int na,
+  (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
    SLtype b_type, VOID_STAR bp)
 {
    _pSLang_Struct_Type **a, **b;

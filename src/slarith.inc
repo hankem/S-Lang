@@ -24,17 +24,17 @@
 
 static int GENERIC_BINARY_FUNCTION
   (int op,
-   SLtype a_type, VOID_STAR ap, unsigned int na,
-   SLtype b_type, VOID_STAR bp, unsigned int nb,
+   SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+   SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
    VOID_STAR cp)
 {
    GENERIC_TYPE *c, *a, *b;
 # ifdef POW_FUNCTION
    POW_RESULT_TYPE *d;
 # endif
-   unsigned int n;
+   SLuindex_Type n;
 # if SLANG_OPTIMIZE_FOR_SPEED < 2
-   unsigned int n_max, da, db;
+   SLuindex_Type n_max, da, db;
 # endif
    char *cc;
 
@@ -654,12 +654,12 @@ static int GENERIC_BINARY_FUNCTION
 
 static int GENERIC_UNARY_FUNCTION
   (int op,
-   SLtype a_type, VOID_STAR ap, unsigned int na,
+   SLtype a_type, VOID_STAR ap, SLuindex_Type na,
    VOID_STAR bp
    )
 {
    GENERIC_TYPE *a, *b;
-   unsigned int n;
+   SLuindex_Type n;
    int *ib;
    char *cb;
 

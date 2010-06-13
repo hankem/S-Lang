@@ -1,26 +1,20 @@
 #! /usr/bin/env slsh
 
-if (__argc < 2)
-{
-   () = fprintf (stderr, "Usage: %s files....\n", __argv[0]);
-   exit (1);
-}
+private variable Data;
 
-static variable Data;
-
-static define init ()
+private define init ()
 {
    Data = Assoc_Type[String_Type];
 }
 
-static define warning ()
+private define warning ()
 {
    variable args = __pop_args (_NARGS);
    () = fprintf (stderr, "***WARNING: %s\n", sprintf (__push_args (args)));
 }
 
 		 
-static define process_function (line, fp)
+private define process_function (line, fp)
 {
    variable fname;
    variable lines;
@@ -54,16 +48,16 @@ static define process_function (line, fp)
    return 0;
 }
 
-static define process_variable (line, fp)
+private define process_variable (line, fp)
 {
    process_function (line, fp);
 }
-static define process_datatype (line, fp)
+private define process_datatype (line, fp)
 {
    process_function (line, fp);
 }
 
-static define read_file_contents (file)
+private define read_file_contents (file)
 {
    variable fp = fopen (file, "r");
    variable n = 0;
@@ -109,7 +103,7 @@ static define read_file_contents (file)
    return 0;
 }
 
-static define sort_keys (a, b)
+private define sort_keys (a, b)
 {
    variable a1 = strup (strtrim_beg (a, "_"));
    variable b1 = strup (strtrim_beg (b, "_"));
@@ -119,7 +113,7 @@ static define sort_keys (a, b)
    return ret;
 }
    
-static define sort_and_write_file_elements (file)
+private define sort_and_write_file_elements (file)
 {
    variable fp;
    variable i, keys;
@@ -150,7 +144,7 @@ static define sort_and_write_file_elements (file)
 }
 
 
-static define process_file (file)
+private define process_file (file)
 {
    init ();
    
@@ -167,7 +161,14 @@ static define process_file (file)
    return 0;
 }
 
-foreach (__argv[[1:]])
-  process_file ();
+define slsh_main ()
+{
+   if (__argc < 2)
+     {
+	() = fprintf (stderr, "Usage: %s files....\n", __argv[0]);
+	exit (1);
+     }
 
-exit (0);
+   foreach (__argv[[1:]])
+     process_file ();
+}

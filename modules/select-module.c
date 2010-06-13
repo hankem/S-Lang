@@ -1,8 +1,8 @@
-/* Copyright (c) 2001 John E. Davis
+/* Copyright (c) 2010 John E. Davis
  * This file is part of the S-Lang library.
  *
- * You may distribute under the terms of either the GNU General Public
- * License or the Perl Artistic License.
+ * You may distribute under the terms of the GNU General Public
+ * License.
  */
 #include <stdio.h>
 #include <slang.h>

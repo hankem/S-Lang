@@ -111,10 +111,15 @@ Changes since 2.2.2
     for 0 byte sizes.
 41. src/slclass.c: The default dereference method for all scalar and
     vector classes was changed from undefined to duplicate.  That is,
-    @7 will not produce 7 instead of triggering a method-undefined
+    @7 will produce 7 instead of triggering a method-undefined
     exception.
 42. src/slwclut.c: Added \x\c\p\,\g character classes to strtrans (See
     strtrans doc).
+43. src/*.c: Made numerous int->SLindex changes to match function
+    prototypes.  Note that SLindex_Type is currently typedef'd to be
+    an int, but if that ever changes, these changes will be necessary.
+    I also added SLang_push_array_index to the public API.  Also
+    updated copyright year since a number of files changed.
 
 {{{ Previous Versions
 

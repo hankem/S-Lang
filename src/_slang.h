@@ -3,7 +3,7 @@
 /* header file for S-Lang internal structures that users do not (should not)
    need.  Use slang.h for that purpose. */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -610,8 +610,8 @@ extern int _pSL_decrement_frame_pointer (void);
 
 extern int SLang_pop(SLang_Object_Type *);
 extern void SLang_free_object (SLang_Object_Type *);
-extern int _pSLanytype_typecast (SLtype, VOID_STAR, unsigned int,
-				SLtype, VOID_STAR);
+extern int _pSLanytype_typecast (SLtype, VOID_STAR, SLuindex_Type,
+				 SLtype, VOID_STAR);
 extern void _pSLstring_intrinsic (void);
 extern int _pSLformat_as_binary (unsigned int min_num_bits, int use_binary_prefix);
 
@@ -762,8 +762,8 @@ extern int _pSLang_push_slstring (char *);
 
 extern SLtype _pSLarith_promote_type (SLtype);
 extern int _pSLarith_get_precedence (SLtype);
-extern int _pSLarith_typecast (SLtype, VOID_STAR, unsigned int,
-			      SLtype, VOID_STAR);
+extern int _pSLarith_typecast (SLtype, VOID_STAR, SLuindex_Type,
+			       SLtype, VOID_STAR);
 
 extern int SLang_push(SLang_Object_Type *);
 extern int SLadd_global_variable (SLCONST char *);
@@ -802,8 +802,8 @@ typedef struct SL_OOBinary_Type
    SLtype data_type;	       /* partner type for binary op */
 
     int (*binary_function)_PROTO((int,
-				 SLtype, VOID_STAR, unsigned int,
-				 SLtype, VOID_STAR, unsigned int,
+				 SLtype, VOID_STAR, SLuindex_Type,
+				 SLtype, VOID_STAR, SLuindex_Type,
 				 VOID_STAR));
 
    int (*binary_result) _PROTO((int, SLtype, SLtype, SLtype *));
@@ -816,7 +816,7 @@ typedef struct _pSL_Typecast_Type
    SLtype data_type;	       /* to_type */
    int allow_implicit;
 
-   int (*typecast)_PROTO((SLtype, VOID_STAR, unsigned int,
+   int (*typecast)_PROTO((SLtype, VOID_STAR, SLuindex_Type,
 			  SLtype, VOID_STAR));
    struct _pSL_Typecast_Type *next;
 }
@@ -866,18 +866,18 @@ struct _pSLang_Class_Type
 
    /* mul2, sign, etc... */
    int (*cl_unary_op_result_type)_PROTO((int, SLtype, SLtype *));
-   int (*cl_unary_op)_PROTO((int, SLtype, VOID_STAR, unsigned int, VOID_STAR));
+   int (*cl_unary_op)_PROTO((int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR));
 
 #if 0
    int (*cl_arith_unary_op_result_type)_PROTO((int, SLtype, SLtype *));
-   int (*cl_arith_unary_op)_PROTO((int, SLtype, VOID_STAR, unsigned int, VOID_STAR));
+   int (*cl_arith_unary_op)_PROTO((int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR));
 #endif
    int (*cl_app_unary_op_result_type)_PROTO((int, SLtype, SLtype *));
-   int (*cl_app_unary_op)_PROTO((int, SLtype, VOID_STAR, unsigned int, VOID_STAR));
+   int (*cl_app_unary_op)_PROTO((int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR));
 
    /* If this function is non-NULL, it will be called for sin, cos, etc... */
 
-   int (*cl_math_op)_PROTO((int, SLtype, VOID_STAR, unsigned int, VOID_STAR));
+   int (*cl_math_op)_PROTO((int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR));
    int (*cl_math_op_result_type)_PROTO((int, SLtype, SLtype *));
 
    SL_OOBinary_Type *cl_binary_ops;
@@ -901,9 +901,9 @@ struct _pSLang_Class_Type
    int (*cl_push_literal) _PROTO((SLtype, VOID_STAR));
    void (*cl_adestroy)_PROTO((SLtype, VOID_STAR));
    int (*cl_push_intrinsic)_PROTO((SLtype, VOID_STAR));
-   int (*cl_void_typecast)_PROTO((SLtype, VOID_STAR, unsigned int, SLtype, VOID_STAR));
+   int (*cl_void_typecast)_PROTO((SLtype, VOID_STAR, SLuindex_Type, SLtype, VOID_STAR));
 
-   int (*cl_anytype_typecast)_PROTO((SLtype, VOID_STAR, unsigned int, SLtype, VOID_STAR));
+   int (*cl_anytype_typecast)_PROTO((SLtype, VOID_STAR, SLuindex_Type, SLtype, VOID_STAR));
 
    /* Array access functions */
    int (*cl_aput) (SLtype, unsigned int);
@@ -911,7 +911,7 @@ struct _pSLang_Class_Type
    int (*cl_anew) (SLtype, unsigned int);
 
    /* length method */
-   int (*cl_length) (SLtype, VOID_STAR, unsigned int *);
+   int (*cl_length) (SLtype, VOID_STAR, SLuindex_Type *);
 
    /* foreach */
    SLang_Foreach_Context_Type *(*cl_foreach_open) (SLtype, unsigned int);
@@ -952,17 +952,17 @@ extern int _pSLclass_init (void);
 extern int _pSLclass_copy_class (SLtype, SLtype);
 
 extern int (*_pSLclass_get_typecast (SLtype, SLtype, int))
-(SLtype, VOID_STAR, unsigned int,
+(SLtype, VOID_STAR, SLuindex_Type,
  SLtype, VOID_STAR);
 
 extern int (*_pSLclass_get_binary_fun (int, SLang_Class_Type *, SLang_Class_Type *, SLang_Class_Type **, int))
 (int,
- SLtype, VOID_STAR, unsigned int,
- SLtype, VOID_STAR, unsigned int,
+ SLtype, VOID_STAR, SLuindex_Type,
+ SLtype, VOID_STAR, SLuindex_Type,
  VOID_STAR);
 
 extern int (*_pSLclass_get_unary_fun (int, SLang_Class_Type *, SLang_Class_Type **, int))
-(int, SLtype, VOID_STAR, unsigned int, VOID_STAR);
+(int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR);
 
 #if 0
 extern int _pSLclass_add_arith_unary_op (SLtype type,
@@ -1055,8 +1055,8 @@ extern int _pSLarray_inline_array (void);
 extern int _pSLarray_wildcard_array (void);
 
 extern int
-_pSLarray_typecast (SLtype, VOID_STAR, unsigned int,
-		   SLtype, VOID_STAR, int);
+_pSLarray_typecast (SLtype, VOID_STAR, SLuindex_Type,
+		    SLtype, VOID_STAR, int);
 
 extern int _pSLarray_aput_transfer_elem (SLang_Array_Type *, SLindex_Type *,
 					VOID_STAR, size_t, int);

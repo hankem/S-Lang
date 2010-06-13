@@ -1,6 +1,6 @@
 /* Array manipulation routines for S-Lang */
 /*
-Copyright (C) 2004-2009 John E. Davis
+Copyright (C) 2004-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -39,7 +39,7 @@ struct Range_Array_Type
    int (*to_linear_fun) (SLang_Array_Type *, SLarray_Range_Array_Type *, VOID_STAR);
 };
 
-static SLang_Array_Type *inline_implicit_int_array (SLindex_Type *, SLindex_Type *, SLindex_Type *);
+static SLang_Array_Type *inline_implicit_index_array (SLindex_Type *, SLindex_Type *, SLindex_Type *);
 
 /* Use SLang_pop_array when a linear array is required. */
 static int pop_array (SLang_Array_Type **at_ptr, int convert_scalar)
@@ -306,7 +306,8 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
 {
    SLang_Class_Type *cl;
    SLang_Array_Type *at;
-   SLuindex_Type i, num_elements;
+   unsigned int i;
+   SLuindex_Type num_elements;
    size_t sizeof_type;
    unsigned int size;
 
@@ -663,9 +664,9 @@ pop_indices (unsigned num_dims, SLindex_Type *dims, SLuindex_Type num_elements,
 			 }
 		    }
 
-		  if (NULL == (new_at = inline_implicit_int_array (&first_index, &last_index, &delta)))
+		  if (NULL == (new_at = inline_implicit_index_array (&first_index, &last_index, &delta)))
 		    goto return_error;
-	     
+
 		  free_array (at);
 		  obj->v.array_val = new_at;
 	       }
@@ -683,7 +684,7 @@ pop_indices (unsigned num_dims, SLindex_Type *dims, SLuindex_Type num_elements,
    return -1;
 }
 
-static void do_index_error (SLindex_Type i, SLindex_Type indx, SLindex_Type dim)
+static void do_index_error (unsigned int i, SLindex_Type indx, SLindex_Type dim)
 {
    _pSLang_verror (SL_Index_Error, "Array index %u (value=%ld) out of allowed range 0<=index<%ld",
 		 i, (long)indx, (long)dim);
@@ -1079,7 +1080,7 @@ convert_nasty_index_objs (SLang_Array_Type *at,
 	     is_dim_array[i] = 0;
 	  }
 #if SLANG_ARRAY_INDEX_TYPE != SLANG_INT_TYPE
-	else if (obj->data_type == SLANG_INT_TYPE)
+	else if (obj->o_data_type == SLANG_INT_TYPE)
 	  {
 	     range_buf [i] = obj->v.index_val;
 	     max_dims [i] = 1;
@@ -2803,10 +2804,10 @@ static int get_range_array_limits (SLindex_Type *first_indexp, SLindex_Type *las
 static int index_range_to_linear (SLang_Array_Type *at, SLarray_Range_Array_Type *range, VOID_STAR buf)
 {
    SLindex_Type *data = (SLindex_Type *)buf;
-   SLindex_Type i, imax;
+   SLuindex_Type i, imax;
    SLindex_Type xmin, dx;
 
-   imax = (SLindex_Type) at->num_elements;
+   imax = at->num_elements;
    xmin = range->first_index;
    dx = range->delta;
    for (i = 0; i < imax; i++)
@@ -2817,6 +2818,21 @@ static int index_range_to_linear (SLang_Array_Type *at, SLarray_Range_Array_Type
    return 0;
 }
 
+static SLang_Array_Type *inline_implicit_index_array (SLindex_Type *xminptr, SLindex_Type *xmaxptr, SLindex_Type *dxptr)
+{
+   SLarray_Range_Array_Type r;
+   SLindex_Type num;
+
+   if (-1 == get_range_array_limits (xminptr, xmaxptr, dxptr, &r, &num))
+     return NULL;
+
+   return create_range_array (&r, num, SLANG_ARRAY_INDEX_TYPE, index_range_to_linear);
+}
+
+#if (SLANG_ARRAY_INDEX_TYPE == SLANG_INT_TYPE)
+# define int_range_to_linear index_range_to_linear
+# define inline_implicit_int_array inline_implicit_index_array
+#else
 static int int_range_to_linear (SLang_Array_Type *at, SLarray_Range_Array_Type *range, VOID_STAR buf)
 {
    int *data = (int *)buf;
@@ -2844,6 +2860,7 @@ static SLang_Array_Type *inline_implicit_int_array (SLindex_Type *xminptr, SLind
 
    return create_range_array (&r, num, SLANG_INT_TYPE, int_range_to_linear);
 }
+#endif
 
 #if SLANG_HAS_FLOAT
 static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
@@ -2971,7 +2988,7 @@ static int inline_implicit_array (int ntype)
 #endif
    int has_vals[3];
    unsigned int i, count;
-   int n = 0;
+   SLindex_Type n = 0;
    SLang_Array_Type *at;
    int precedence;
    SLtype type;
@@ -3005,7 +3022,7 @@ static int inline_implicit_array (int ntype)
    while (i--)
      {
 	int this_type, this_precedence;
-	int itmp;
+	SLindex_Type itmp;
 
 	if (-1 == (this_type = SLang_peek_at_stack ()))
 	  return -1;
@@ -3097,7 +3114,7 @@ static int try_typecast_range_array (SLang_Array_Type *at, SLtype to_type,
 	if (at->data_type == SLANG_INT_TYPE)
 	  {
 	     SLarray_Range_Array_Type *range;
-	     
+
 	     range = (SLarray_Range_Array_Type *)at->data;
 	     bt = create_range_array (range, at->num_elements,
 				      to_type, index_range_to_linear);
@@ -3532,15 +3549,15 @@ static int try_range_int_binary (SLang_Array_Type *at, int op, int x, int swap, 
 }
 
 static int array_binary_op (int op,
-			    SLtype a_type, VOID_STAR ap, unsigned int na,
-			    SLtype b_type, VOID_STAR bp, unsigned int nb,
+			    SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+			    SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 			    VOID_STAR cp)
 {
    SLang_Array_Type *at, *bt, *ct;
-   unsigned int i, num_dims;
+   SLuindex_Type i, num_dims;
    int (*binary_fun) (int,
-		      SLtype, VOID_STAR, unsigned int,
-		      SLtype, VOID_STAR, unsigned int,
+		      SLtype, VOID_STAR, SLuindex_Type,
+		      SLtype, VOID_STAR, SLuindex_Type,
 		      VOID_STAR);
    SLang_Class_Type *a_cl, *b_cl, *c_cl;
    int no_init, ret;
@@ -3717,7 +3734,7 @@ int _pSLarray_bin_op (SLang_Object_Type *a, SLang_Object_Type *b, int op)
 static int array_eqs_method (SLtype a_type, VOID_STAR ap, SLtype b_type, VOID_STAR bp)
 {
    SLang_Array_Type *at, *bt, *ct;
-   unsigned int i, num_dims, num_elements;
+   SLuindex_Type i, num_dims, num_elements;
    SLang_Class_Type *a_cl, *b_cl, *c_cl;
    int is_eqs;
    int *ip, *ipmax;
@@ -4670,7 +4687,7 @@ do_array_math_op (int op, int unary_type,
 		  SLang_Array_Type *at, unsigned int na)
 {
    SLtype a_type, b_type;
-   int (*f) (int, SLtype, VOID_STAR, unsigned int, VOID_STAR);
+   int (*f) (int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR);
    SLang_Array_Type *bt;
    SLang_Class_Type *b_cl;
    int no_init;
@@ -4731,7 +4748,7 @@ array_unary_op_result (int op, SLtype a, SLtype *b)
 
 static int
 array_unary_op (int op,
-		SLtype a, VOID_STAR ap, unsigned int na,
+		SLtype a, VOID_STAR ap, SLuindex_Type na,
 		VOID_STAR bp)
 {
    SLang_Array_Type *at;
@@ -4749,7 +4766,7 @@ array_unary_op (int op,
 
 static int
 array_math_op (int op,
-	       SLtype a, VOID_STAR ap, unsigned int na,
+	       SLtype a, VOID_STAR ap, SLuindex_Type na,
 	       VOID_STAR bp)
 {
    SLang_Array_Type *at;
@@ -4767,7 +4784,7 @@ array_math_op (int op,
 
 static int
 array_app_op (int op,
-	      SLtype a, VOID_STAR ap, unsigned int na,
+	      SLtype a, VOID_STAR ap, SLuindex_Type na,
 	      VOID_STAR bp)
 {
    SLang_Array_Type *at;
@@ -4785,14 +4802,14 @@ array_app_op (int op,
 
 /* Typecast array from a_type to b_type */
 int
-_pSLarray_typecast (SLtype a_type, VOID_STAR ap, unsigned int na,
-		   SLtype b_type, VOID_STAR bp,
-		   int is_implicit)
+_pSLarray_typecast (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
+		    SLtype b_type, VOID_STAR bp,
+		    int is_implicit)
 {
    SLang_Array_Type *at, *bt;
    SLang_Class_Type *b_cl;
    int no_init;
-   int (*t) (SLtype, VOID_STAR, unsigned int, SLtype, VOID_STAR);
+   int (*t) (SLtype, VOID_STAR, SLuindex_Type, SLtype, VOID_STAR);
 
    if (na != 1)
      {
@@ -4982,7 +4999,7 @@ array_datatype_deref (SLtype type)
    return -1;
 }
 
-static int array_length (SLtype type, VOID_STAR v, unsigned int *len)
+static int array_length (SLtype type, VOID_STAR v, SLuindex_Type *len)
 {
    SLang_Array_Type *at;
 

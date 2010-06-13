@@ -1,6 +1,6 @@
 /* -*- mode: C; mode: fold; -*- */
 /*
-Copyright (C) 2009 John E. Davis
+Copyright (C) 2009-2010 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -1124,7 +1124,7 @@ static void confstr_intrinsic (void)
 
 static int push_map (const Name_Map_Type *map)
 {
-   int num = 0;
+   SLindex_Type num = 0;
    const Name_Map_Type *m;
    SLang_Array_Type *at;
    char **names;
