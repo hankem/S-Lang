@@ -714,6 +714,28 @@ extern SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *, SLCONST char
 extern SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, SLFUTURE_CONST char *nsname);
 extern SLang_NameSpace_Type *_pSLns_create_namespace2 (SLFUTURE_CONST char *name, SLFUTURE_CONST char *nsname);
 
+/* The long-long constants functions need to be fixed in slang.h.  This will
+ * have to wait for a major version change.
+ */
+#ifdef HAVE_LONG_LONG
+typedef struct
+{
+   SLFUTURE_CONST char *name;
+   SLang_Name_Type *next;
+   char name_type;
+
+   SLtype data_type;
+   long long value;
+}
+_pSLang_LLConstant_Type;
+SL_EXTERN int _pSLns_add_llconstant_table (SLang_NameSpace_Type *, _pSLang_LLConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int _pSLadd_llconstant_table (_pSLang_LLConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int _pSLns_add_llconstant (SLang_NameSpace_Type *, SLFUTURE_CONST char *, SLtype, long long);
+# define _pMAKE_LLCONSTANT_T(n,val,T) \
+    {(n),NULL, SLANG_LLCONSTANT, T, (long long)(val)}
+# define _pSLANG_END_LLCONST_TABLE _pMAKE_LLCONSTANT_T(NULL,0,0)
+#endif
+
 extern int _pSLang_Trace;
 extern char SLCONST *_pSLang_current_function_name (void);
 

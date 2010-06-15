@@ -121,6 +121,11 @@ Changes since 2.2.2
     I also added SLang_push_array_index to the public API.  Also
     updated copyright year since a number of files changed.
 44. src/slarrfun.c: change 43 would not compile on 64 bit systems.
+45. src/slnspace.c: the apropos function was not returning float,
+    short, long, and long long constants.
+46. src/slarith.c: If LLONG_MAX is not defined, and sizeof(long long)
+    is 64 bits, then use the standard value.
+47. src/slang.c: long long constants were not working.
 
 {{{ Previous Versions
 

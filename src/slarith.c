@@ -1598,16 +1598,26 @@ static SLang_IConstant_Type IConst_Table [] =
 };
 
 #ifdef HAVE_LONG_LONG
-static SLang_LLConstant_Type LLConst_Table[] =
+# ifndef LLONG_MAX
+#  if (SIZEOF_LONG_LONG == 8)
+#   define LLONG_MAX 9223372036854775807LL
+/* C90 does not have positive constants-- only negated negative ones.  Hence,
+ * LLONG_MIN is -9223372036854775808LL, but 9223372036854775808LL is too big.
+ */
+#   define LLONG_MIN (-LLONG_MAX - 1LL)
+#   define ULLONG_MAX 18446744073709551615ULL
+#  endif
+# endif
+static _pSLang_LLConstant_Type LLConst_Table[] =
 {
 #if defined(LLONG_MIN) && defined(LLONG_MAX)
-   MAKE_LLCONSTANT("LLONG_MIN", LLONG_MIN),
-   MAKE_LLCONSTANT("LLONG_MAX", LLONG_MAX),
+   _pMAKE_LLCONSTANT_T("LLONG_MIN", LLONG_MIN, SLANG_LLONG_TYPE),
+   _pMAKE_LLCONSTANT_T("LLONG_MAX", LLONG_MAX, SLANG_LLONG_TYPE),
 #endif
 #if defined(ULLONG_MAX)
-   MAKE_LLCONSTANT_T("ULLONG_MAX", ULLONG_MAX, SLANG_ULLONG_TYPE),
+   _pMAKE_LLCONSTANT_T("ULLONG_MAX", ULLONG_MAX, SLANG_ULLONG_TYPE),
 #endif
-   SLANG_END_LLCONST_TABLE
+   _pSLANG_END_LLCONST_TABLE
 };
 #endif
 
@@ -1806,8 +1816,8 @@ int _pSLarith_register_types (void)
        || (-1 == SLadd_fconstant_table (FConst_Table, NULL))
        || (-1 == SLadd_dconstant_table (DConst_Table, NULL))
 #endif
-#if HAVE_LONG_LONG
-       || (-1 == SLadd_llconstant_table (LLConst_Table, NULL))
+#ifdef HAVE_LONG_LONG
+       || (-1 == _pSLadd_llconstant_table (LLConst_Table, NULL))
 #endif
        )
      return -1;

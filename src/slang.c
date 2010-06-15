@@ -125,7 +125,7 @@ typedef struct _pSLBlock_Type
 	SLang_FConstant_Type *fconst_blk;
 	SLang_DConstant_Type *dconst_blk;
 #ifdef HAVE_LONG_LONG
-	SLang_LLConstant_Type *llconst_blk;
+	_pSLang_LLConstant_Type *llconst_blk;
 #endif
 	_pSLang_Function_Type *nt_fun_blk;
 
@@ -5418,7 +5418,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 #endif
 #ifdef HAVE_LONG_LONG
 	   case SLANG_BC_LLCONST:
-	     SLclass_push_llong_obj (SLANG_LLONG_TYPE, addr->b.llconst_blk->ll);
+	     SLclass_push_llong_obj (addr->b.llconst_blk->data_type, addr->b.llconst_blk->value);
 	     break;
 #endif
 	   case SLANG_BC_PVARIABLE:
@@ -7331,6 +7331,20 @@ int SLns_add_lconstant (SLang_NameSpace_Type *ns, SLFUTURE_CONST char *name, SLt
    v->data_type = type;
    return 0;
 }
+
+#if HAVE_LONG_LONG
+int _pSLns_add_llconstant (SLang_NameSpace_Type *ns, SLFUTURE_CONST char *name, SLtype type, long long value)
+{
+   _pSLang_LLConstant_Type *v;
+
+   v = (_pSLang_LLConstant_Type *)add_xxx_helper (ns, name, SLANG_LLCONSTANT, sizeof (_pSLang_LLConstant_Type));
+   if (v == NULL)
+     return -1;
+   v->value = value;
+   v->data_type = type;
+   return 0;
+}
+#endif
 
 #if SLANG_HAS_FLOAT
 int SLns_add_dconstant (SLang_NameSpace_Type *ns, SLFUTURE_CONST char *name, double value)
@@ -10459,6 +10473,10 @@ int SLadd_llconstant_table (SLang_LLConstant_Type *tbl, SLFUTURE_CONST char *pp)
 {
    return add_generic_table (NULL, (SLang_Name_Type *) tbl, pp, sizeof (SLang_LLConstant_Type));
 }
+int _pSLadd_llconstant_table (_pSLang_LLConstant_Type *tbl, SLFUTURE_CONST char *pp)
+{
+   return add_generic_table (NULL, (SLang_Name_Type *) tbl, pp, sizeof (_pSLang_LLConstant_Type));
+}
 #endif
 
 /* ----------- */
@@ -10598,6 +10616,26 @@ int SLns_add_lconstant_table (SLang_NameSpace_Type *ns, SLang_LConstant_Type *tb
      }
    return 0;
 }
+
+#ifdef HAVE_LONG_LONG
+int _pSLns_add_llconstant_table (SLang_NameSpace_Type *ns, _pSLang_LLConstant_Type *tbl, SLFUTURE_CONST char *pp)
+{
+   if ((ns == NULL) || (ns == (Global_NameSpace)))
+     return add_generic_table (ns, (SLang_Name_Type *) tbl, pp, sizeof (_pSLang_LLConstant_Type));
+
+   if ((pp != NULL)
+       && (-1 == SLdefine_for_ifdef (pp)))
+     return -1;
+
+   while (tbl->name != NULL)
+     {
+	if (-1 == _pSLns_add_llconstant (ns, tbl->name, tbl->data_type, tbl->value))
+	  return -1;
+	tbl++;
+     }
+   return 0;
+}
+#endif
 
 #if SLANG_HAS_FLOAT
 int SLns_add_dconstant_table (SLang_NameSpace_Type *ns, SLang_DConstant_Type *tbl, SLFUTURE_CONST char *pp)

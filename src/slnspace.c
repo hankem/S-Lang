@@ -268,6 +268,10 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, SLFUTURE_CONST c
 		       
 		     case SLANG_ICONSTANT:
 		     case SLANG_DCONSTANT:
+		     case SLANG_FCONSTANT:
+		     case SLANG_LLCONSTANT:
+		     case SLANG_HCONSTANT:
+		     case SLANG_LCONSTANT:
 		     case SLANG_RVARIABLE:
 		     case SLANG_IVARIABLE:
 		       flags = 4;
