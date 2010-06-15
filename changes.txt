@@ -120,6 +120,7 @@ Changes since 2.2.2
     an int, but if that ever changes, these changes will be necessary.
     I also added SLang_push_array_index to the public API.  Also
     updated copyright year since a number of files changed.
+44. src/slarrfun.c: change 43 would not compile on 64 bit systems.
 
 {{{ Previous Versions
 

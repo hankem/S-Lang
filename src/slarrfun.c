@@ -1099,9 +1099,9 @@ static SLCONST SLarray_Contract_Type Array_Min_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) min_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) min_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) min_ulongs},
-#ifdef HAVE_LONG_LONG
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) min_llongs},
-     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) min_ullongs},   
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) min_ullongs},
 #endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) min_floats},
@@ -1126,7 +1126,7 @@ static SLCONST SLarray_Contract_Type Array_Max_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) max_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) max_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) max_ulongs},
-#ifdef HAVE_LONG_LONG
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) max_llongs},
      {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) max_ullongs},   
 #endif
@@ -1153,7 +1153,7 @@ static SLCONST SLarray_Contract_Type Array_Maxabs_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) max_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) maxabs_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) max_ulongs},
-#ifdef HAVE_LONG_LONG
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) maxabs_llongs},
      {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) max_ullongs},   
 #endif
@@ -1181,7 +1181,7 @@ static SLCONST SLarray_Contract_Type Array_Minabs_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_UINT_TYPE, (SLarray_Contract_Fun_Type *) min_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_LONG_TYPE, (SLarray_Contract_Fun_Type *) minabs_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) min_ulongs},
-#ifdef HAVE_LONG_LONG
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) minabs_llongs},
      {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) min_ullongs},
 #endif
@@ -1496,7 +1496,7 @@ static SLCONST SLarray_Contract_Type Array_Any_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_ulongs},
-#ifdef HAVE_LONG_LONG
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) any_llongs},
      {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) any_ullongs},   
 #endif
@@ -1524,7 +1524,7 @@ static SLCONST SLarray_Contract_Type Array_All_Funs [] =
      {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) all_uints},
      {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) all_longs},
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) all_ulongs},
-#ifdef HAVE_LONG_LONG
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) all_llongs},
      {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) all_ullongs},
 #endif
