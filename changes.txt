@@ -126,6 +126,8 @@ Changes since 2.2.2
 46. src/slarith.c: If LLONG_MAX is not defined, and sizeof(long long)
     is 64 bits, then use the standard value.
 47. src/slang.c: long long constants were not working.
+48. slsh/lib/process.sl: modes[i] was being set after i was bumped.
+    This caused modes[0] to be NULL.
 
 {{{ Previous Versions
 

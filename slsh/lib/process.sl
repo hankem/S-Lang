@@ -290,8 +290,8 @@ define new_process ()
      {
 	list_append (struct_fields,"fd$ifd"$);
 	list_append (struct_fields,"fp$ifd"$);
-	(child_fds[i], parent_fds[i]) = pipe (); i++;
 	modes[i] = "w";
+	(child_fds[i], parent_fds[i]) = pipe (); i++;
      }
 
    foreach ifd (write_ifds)
