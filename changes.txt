@@ -128,6 +128,10 @@ Changes since 2.2.2
 47. src/slang.c: long long constants were not working.
 48. slsh/lib/process.sl: modes[i] was being set after i was bumped.
     This caused modes[0] to be NULL.
+49. slsh/lib/slshrl.sl: If the first word is callable, and is followed
+    by a ',', then add parenthesis, i.e., "print,7" ==> "print(7);".
+    Note: this is a commandline convenience feature and has nothing to
+    do with the slang syntax.
 
 {{{ Previous Versions
 

@@ -52,6 +52,9 @@ private define generic_help ()
       "Most commands must end in a semi-colon.",
       "If a command begins with '!', then the command is passed to the shell.",
       "  Examples: !ls, !pwd, !cd foo, ...",
+      "Parenthesis are automatically added if the first word is a function and",
+      "is followed by a ','.  For example:",
+      "  plot, 1, 2;color=\"red\"  ==>  plot(1,2;color=\"red\");",
       "Special commands:",
       "  help <help-topic>",
       "  apropos <something>",
@@ -78,7 +81,7 @@ public define slsh_help ()
 	generic_help ();
 	return;
      }
-   
+
    variable name = ();
    variable help = slsh_get_doc_string (name);
    if (help != NULL)
@@ -166,6 +169,21 @@ public define slsh_interactive_massage_hook (input)
 
    if (ch != '.')
      {
+	% If the first non-word character is a comma, and the first
+	% word is callable, then wrap the rest of the arguments in
+	% parenthesis.
+	s = strtrim (strtrans (input, "\\w", ""));
+	if (s[0] == ',')
+	  {
+	     s0 = strtok (input, ", \t")[0];
+	     if (__is_callable(__get_reference(s0)))
+	       {
+		  (s,) = strreplace (input, ",", "(", 1);
+		  return strcat (s, ");");
+	       }
+	  }
+
+	s = strtok (input, " \t");
 	s = strtok (input, " \t()\";");
 	if (length (s) == 0)
 	  return input;
@@ -281,7 +299,7 @@ private define log_this ()
    variable args = __pop_args (_NARGS);
    if (Log_File_Fp == NULL)
      return;
-   
+
    if (-1 == fprintf (Log_File_Fp, __push_args(args)))
      {
 	vmessage ("Failed to write to log file-- logging stopped\n");
@@ -289,7 +307,7 @@ private define log_this ()
      }
 }
 
-	
+
 public define start_log ()
 {
    if (_NARGS)
@@ -316,7 +334,7 @@ public define save_input ()
 
    !if (_NARGS)
      Log_File;
-   
+
    file = ();
 
    if (Input_Line_List == NULL)
@@ -333,7 +351,7 @@ public define save_input ()
 	l = l.next;
      }
    vmessage ("Input saved to %s", file);
-}	
+}
 
 private define log_input (buf)
 {
@@ -372,5 +390,3 @@ public define slsh_interactive_before_hook ()
 	() = fprintf (stdout, "%S\n", v);
      }
 }
-
-   
