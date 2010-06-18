@@ -132,6 +132,8 @@ Changes since 2.2.2
     by a ',', then add parenthesis, i.e., "print,7" ==> "print(7);".
     Note: this is a commandline convenience feature and has nothing to
     do with the slang syntax.
+50. slsh/lib/rline/complete.sl: Attempt to complete structure field
+    names.
 
 {{{ Previous Versions
 
