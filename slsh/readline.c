@@ -105,11 +105,50 @@ static void sig_sigtstp (int sig)
    reset_tty ();
    kill(getpid(),SIGSTOP);
    init_tty ();
-   if (Active_Rline_Info != NULL) 
-     SLrline_redraw (Active_Rline_Info);
+   if (Active_Rline_Info != NULL)
+     {
+	SLrline_set_display_width (Active_Rline_Info, SLtt_Screen_Cols);
+	SLrline_redraw (Active_Rline_Info);
+     }
    SLsig_unblock_signals ();
 }
 # endif
+
+
+#ifdef SIGWINCH
+static int Want_Window_Size_Change = 0;
+static void sig_winch_handler (int sig)
+{
+   sig = errno;
+   Want_Window_Size_Change = 1;
+   SLsignal_intr (SIGWINCH, sig_winch_handler);
+   errno = sig;
+}
+
+static int screen_size_changed_hook (VOID_STAR cd_unused)
+{
+   (void) cd_unused;
+   if (Want_Window_Size_Change)
+     {
+	Want_Window_Size_Change = 0;
+	if (Active_Rline_Info != NULL)
+	  {
+	     SLtt_get_screen_size ();
+	     SLrline_set_display_width (Active_Rline_Info, SLtt_Screen_Cols);
+	  }
+     }
+   return 0;
+}
+#endif
+
+static int add_sigwinch_handlers (void)
+{
+#ifdef SIGWINCH
+   (void) SLang_add_interrupt_hook (screen_size_changed_hook, NULL);
+   (void) SLsignal_intr (SIGWINCH, sig_winch_handler);
+#endif
+   return 0;
+}
 
 # ifdef REAL_UNIX_SYSTEM
 /* This hook if a signal occurs while waiting for input. */
@@ -147,6 +186,9 @@ static void init_tty (void)
 # ifdef REAL_UNIX_SYSTEM
    SLang_getkey_intr_hook = getkey_intr_hook;
 # endif
+   (void) add_sigwinch_handlers ();
+
+   SLtt_get_screen_size ();
 
 # if SYSTEM_SUPPORTS_SIGNALS
    SLtty_set_suspend_state (1);
@@ -193,8 +235,9 @@ static int open_readline (char *name)
 #if USE_GNU_READLINE
    return 0;
 #else
+   unsigned int flags = SL_RLINE_BLINK_MATCH|SL_RLINE_USE_MULTILINE;
    close_readline ();
-   if (NULL == (Rline_Info = SLrline_open2 (name, SLtt_Screen_Cols, SL_RLINE_BLINK_MATCH)))
+   if (NULL == (Rline_Info = SLrline_open2 (name, SLtt_Screen_Cols, flags)))
      return -1;
    return 0;
 #endif
@@ -205,6 +248,7 @@ static void redisplay_dummy (void)
 {
 }
 #endif
+
 static char *read_input_line (SLang_RLine_Info_Type *rline, char *prompt, int noecho)
 {
    char *line;
@@ -279,6 +323,7 @@ static char *read_input_line (SLang_RLine_Info_Type *rline, char *prompt, int no
 #else
    SLtt_get_screen_size ();
    SLrline_set_display_width (rline, SLtt_Screen_Cols);
+   (void) add_sigwinch_handlers ();
    Active_Rline_Info = rline;
    (void) SLrline_set_echo (rline, (noecho == 0));
    line = SLrline_read_line (rline, prompt, NULL);

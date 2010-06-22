@@ -80,3 +80,8 @@
 
 #define SLANG_HAS_IEEE_FP	1
 
+#if !defined(IBMPC_SYSTEM)
+# define SLANG_HAS_MULTILINE_RLINE	1
+#else
+# define SLANG_HAS_MULTILINE_RLINE	0
+#endif

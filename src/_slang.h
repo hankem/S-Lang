@@ -816,6 +816,10 @@ extern void SLtt_deinit_keypad (void);
 extern int _pSLtt_get_bce_color_offset (void);
 #endif
 extern void (*_pSLtt_color_changed_hook)(void);
+extern int _pSLtt_init_cmdline_mode (void);
+extern void _pSLtt_cmdline_mode_reset (void);
+
+extern int _pSLsmg_init_smg_cmdline (void);
 
 extern unsigned char SLang_Input_Buffer [SL_MAX_INPUT_BUFFER_LEN];
 

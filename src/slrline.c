@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -56,7 +56,7 @@ struct _pSLrline_Type
 
    SLang_Key_Type last_key;	       /* last key executed by rl */
 
-   /* These two contain an image of what is on the display.  They are 
+   /* These two contain an image of what is on the display.  They are
     * used by the default display handling functions. (update_hook is NULL)
     */
    unsigned char upd_buf1[SLRL_DISPLAY_BUFFER_SIZE];
@@ -78,6 +78,10 @@ struct _pSLrline_Type
 
    int is_modified;
 
+   int quit;
+#define RLINE_QUIT_DONE  1
+#define RLINE_QUIT_ABORT 2
+
    /* tty variables */
    unsigned int (*getkey)(void);       /* getkey function -- required */
    void (*tt_goto_column)(int);
@@ -86,18 +90,21 @@ struct _pSLrline_Type
 		       SLFUTURE_CONST char *prompt, SLFUTURE_CONST char *buf, unsigned int len, unsigned int point,
 		       VOID_STAR client_data);
    VOID_STAR update_client_data;
+   void (*update_free_update_data_hook)(SLrline_Type *rli, VOID_STAR client_data);
+   void (*update_clear_hook)(SLrline_Type *rli, VOID_STAR client_data);
+   void (*update_preread_hook)(SLrline_Type *rli, VOID_STAR client_data);
+   void (*update_postread_hook)(SLrline_Type *rli, VOID_STAR client_data);
+   void (*update_display_width_changed_hook)(SLrline_Type *rli, int width, VOID_STAR client_data);
+
    /* This function is only called when blinking matches */
    int (*input_pending)(int);
-   
+
    SLang_Name_Type *completion_callback;
    SLang_Name_Type *list_completions_callback;
 };
 
-   
 static SLang_Name_Type *Default_Completion_Callback;
 static SLang_Name_Type *Default_List_Completions_Callback;
-
-int SLang_Rline_Quit;
 
 static unsigned char Char_Widths[256];
 static void position_cursor (SLrline_Type *, int);
@@ -132,14 +139,13 @@ static RL_History_Type *allocate_history (SLFUTURE_CONST char *str, int point)
 	SLfree ((char *)h);	       /* NULL ok */
 	return NULL;
      }
-   
+
    h->len = strlen (str);
    if ((point < 0) || ((unsigned int)point > h->len))
      point = h->len;
    h->point = point;
    return h;
 }
-
 
 static void rl_beep (void)
 {
@@ -159,12 +165,11 @@ static int check_space (SLrline_Type *This_RLI, unsigned int dn)
 
    if (NULL == (new_buf = (unsigned char *) SLrealloc ((char *)This_RLI->buf, new_len)))
      return -1;
-	
+
    This_RLI->buf_len = new_len;
    This_RLI->buf = new_buf;
    return 0;
 }
-
 
 /* editing functions */
 int SLrline_bol (SLrline_Type *This_RLI)
@@ -236,7 +241,7 @@ int SLrline_move (SLrline_Type *rli, int n)
 	  }
 	return 0;
      }
-   
+
    while (n && (rli->point != rli->len))
      {
 	(void) rl_right (rli);
@@ -244,7 +249,7 @@ int SLrline_move (SLrline_Type *rli, int n)
      }
    return 0;
 }
-	
+
 int SLrline_ins (SLrline_Type *This_RLI, SLFUTURE_CONST char *s, unsigned int n)
 {
    unsigned char *pmin;
@@ -271,7 +276,6 @@ int SLrline_ins (SLrline_Type *This_RLI, SLFUTURE_CONST char *s, unsigned int n)
    return n;
 }
 
-
 static int rl_self_insert (SLrline_Type *This_RLI)
 {
    char buf[8];
@@ -289,7 +293,7 @@ int SLrline_del (SLrline_Type *This_RLI, unsigned int n)
 
    p = This_RLI->buf + This_RLI->point;
    pmax = This_RLI->buf + This_RLI->len;
-   
+
    if (This_RLI->flags & SL_RLINE_UTF8_MODE)
      {
 	pn = SLutf8_skip_chars (p, pmax, n, NULL, ignore_combining);
@@ -322,7 +326,7 @@ static int rl_quote_insert (SLrline_Type *This_RLI)
    _pSLang_Error = 0;
    SLang_Last_Key_Char = (*This_RLI->getkey)();
    rl_self_insert (This_RLI);
-   if (_pSLang_Error == SL_USER_BREAK) 
+   if (_pSLang_Error == SL_USER_BREAK)
      {
 	SLKeyBoard_Quit = 0;
 	_pSLang_Error = 0;
@@ -387,12 +391,14 @@ static int rl_deleol (SLrline_Type *This_RLI)
    return 0;
 }
 
+#if 0
 static int rl_delete_line (SLrline_Type *This_RLI)
 {
    (void) SLrline_bol (This_RLI);
    rl_deleol (This_RLI);
    return 0;
 }
+#endif
 
 static int rl_enter (SLrline_Type *This_RLI)
 {
@@ -400,7 +406,7 @@ static int rl_enter (SLrline_Type *This_RLI)
      return -1;
 
    *(This_RLI->buf + This_RLI->len) = 0;
-   SLang_Rline_Quit = 1;
+   This_RLI->quit = RLINE_QUIT_DONE;
    return 0;
 }
 
@@ -440,7 +446,7 @@ static int rl_complete (SLrline_Type *rli)
 
    if (-1 == SLang_pop_int (&start_point))
      return -1;
-   
+
    if (start_point < 0)
      start_point = 0;
 
@@ -449,7 +455,7 @@ static int rl_complete (SLrline_Type *rli)
 
    strings = (char **) at->data;
    n = at->num_elements;
-   
+
    if (n == 0)
      {
 	SLang_free_array (at);
@@ -468,7 +474,7 @@ static int rl_complete (SLrline_Type *rli)
 	  }
 	(void) SLrline_redraw (rli);
      }
-	
+
    str0 = strings[0];
    nbytes = 0;
    while (0 != (ch0 = str0[nbytes]))
@@ -500,7 +506,7 @@ static int rl_complete (SLrline_Type *rli)
     *   foo       -->  fooSPACE
     *   foo/bar   -->  fooSPACE
     */
-   if ((n == 1) 
+   if ((n == 1)
        && nbytes && (str0[nbytes-1] != '/') && (str0[nbytes-1] != '\\'))
      {
 	char qch = ' ';
@@ -540,7 +546,7 @@ static SLuchar_Type *compute_char_width (SLuchar_Type *b, SLuchar_Type *bmax, in
 	if (wchp != NULL) *wchp = *b;
 	return b + 1;
      }
-   
+
    if (NULL == SLutf8_decode (b, bmax, &wch, NULL))
      {
 	/* Illegal byte sequence */
@@ -557,7 +563,7 @@ static SLuchar_Type *compute_char_width (SLuchar_Type *b, SLuchar_Type *bmax, in
      *wp = SLwchar_wcwidth (wch);
    else
      *wp = 2;			       /* ^X */
-   
+
    if (wchp != NULL) *wchp = wch;
    /* skip combining chars too */
    return SLutf8_skip_chars (b, bmax, 1, NULL, 1);
@@ -609,7 +615,7 @@ static void position_cursor (SLrline_Type *This_RLI, int col)
 	     p1 = compute_char_width (p, pmax, utf8_mode, &dlen, NULL, NULL);
 	     while (p < p1)
 	       putc((char) *p++, stdout);
-	       
+
 	     len += dlen;
 	  }
      }
@@ -643,7 +649,7 @@ static void erase_eol (SLrline_Type *rli)
 {
    int col = rli->curs_pos;
    int col_max = rli->last_nonblank_column;
-   
+
    while (col < col_max)
      {
 	putc(' ', stdout);
@@ -656,7 +662,7 @@ static void spit_out(SLrline_Type *rli, SLuchar_Type *p, SLuchar_Type *pmax, int
 {
    int utf8_mode = rli->flags & SL_RLINE_UTF8_MODE;
    position_cursor (rli, col);
-   while (p < pmax) 
+   while (p < pmax)
      {
 	SLuchar_Type *p1;
 	unsigned int dcol;
@@ -689,7 +695,7 @@ static void really_update (SLrline_Type *rli, int new_curs_position)
 
 	b1 = compute_char_width (b, bmax, utf8_mode, &blen, &bch, NULL);
 	p1 = compute_char_width (p, pmax, utf8_mode, &plen, &pch, NULL);
-	
+
 	if ((p1 != p) && ((b1-b) == (p1-p))
 	    && (bch == pch))
 	  {
@@ -698,7 +704,7 @@ static void really_update (SLrline_Type *rli, int new_curs_position)
 	     p = p1;
 	     continue;
 	  }
-	
+
 	spit_out (rli, p, pmax, col);
 
 	col = rli->curs_pos;
@@ -720,7 +726,7 @@ static void really_update (SLrline_Type *rli, int new_curs_position)
 }
 
 static SLuchar_Type *
-  compute_tabbed_char_width (SLuchar_Type *b, SLuchar_Type *bmax, 
+  compute_tabbed_char_width (SLuchar_Type *b, SLuchar_Type *bmax,
 			     int utf8_mode, int col, int tab_width,
 			     unsigned int *dlenp)
 {
@@ -746,7 +752,7 @@ static unsigned int compute_string_width (SLrline_Type *rli, SLuchar_Type *b, SL
 
    if (b == NULL)
      return 0;
-   
+
    len = 0;
    while (b < bmax)
      {
@@ -779,7 +785,7 @@ static void RLupdate (SLrline_Type *rli)
    edit_width = rli->edit_width-1;
 
    *(rli->buf + rli->len) = 0;
-   
+
    if (rli->update_hook != NULL)
      {
 	if (no_echo)
@@ -788,7 +794,6 @@ static void RLupdate (SLrline_Type *rli)
 	  (*rli->update_hook) (rli, rli->prompt, (char *)rli->buf, rli->len, rli->point, rli->update_client_data);
 	return;
      }
-
 
    /* expand characters for output buffer --- handle prompt first.
     * Do two passes --- first to find out where to begin upon horiz
@@ -857,7 +862,7 @@ static void RLupdate (SLrline_Type *rli)
 	     SLwchar_Type wch;
 	     int is_illegal;
 	     SLuchar_Type *b1;
-	     
+
 	     if (b == b_point)
 	       want_cursor_pos = len;
 
@@ -873,8 +878,8 @@ static void RLupdate (SLrline_Type *rli)
 
 	     b1 = compute_char_width (b, bmax, utf8_mode, &dlen, &wch, &is_illegal);
 	     if (len + dlen > edit_width)
-	       {		       
-		  /* The character is double width and a portion of it exceeds 
+	       {
+		  /* The character is double width and a portion of it exceeds
 		   * the edit width
 		   */
 		  break;
@@ -892,14 +897,14 @@ static void RLupdate (SLrline_Type *rli)
 		       if (p < pmax) *p++ = '^';
 		       if (p < pmax) *p++ = '?';
 		    }
-		  else while (b < b1) 
+		  else while (b < b1)
 		    {
 		       if (p < pmax) *p++ = *b++;
 		    }
 	       }
 	     else
 	       {
-		  if (p + 4 < pmax) 
+		  if (p + 4 < pmax)
 		    {
 		       sprintf ((char *)p, "<%02X>", *b);
 		       p += 4;
@@ -913,7 +918,7 @@ static void RLupdate (SLrline_Type *rli)
 	b = (unsigned char *) rli->buf;
 	bmax = b + strlen ((char *)b);
      }
-   
+
    if (want_cursor_pos == -1)
      want_cursor_pos = len;
 
@@ -939,7 +944,7 @@ void SLrline_redraw (SLrline_Type *rli)
      {
 	unsigned char *p;
 	unsigned char *pmax;
-   
+
 	p = rli->new_upd;
 	pmax = p + rli->edit_width;
 	while (p < pmax) *p++ = ' ';
@@ -1035,7 +1040,7 @@ static void free_last_key (SLrline_Type *rli)
 
    if (rli == NULL)
      return;
-   
+
    last_key = &rli->last_key;
    switch (last_key->type)
      {
@@ -1079,7 +1084,7 @@ static int save_last_key (SLrline_Type *rli, SLang_Key_Type *key)
 	break;
 
       case SLKEY_F_KEYSYM:
-	last_key->f.keysym = key->f.keysym; 
+	last_key->f.keysym = key->f.keysym;
 	break;
 
       case SLKEY_F_SLANG:
@@ -1128,12 +1133,12 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
      {
 	if (NULL == (prompt = SLmake_string (prompt)))
 	  return NULL;
-	
+
 	SLfree ((char *)rli->prompt);
 	rli->prompt = prompt;
      }
 
-   SLang_Rline_Quit = 0;
+   rli->quit = 0;
    p = rli->old_upd; pmax = p + rli->edit_width;
    while (p < pmax) *p++ = ' ';
 
@@ -1144,6 +1149,9 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 	*rli->buf = 0;
      }
    rli->state = RLI_LINE_IN_PROGRESS;
+
+   if (rli->update_preread_hook != NULL)
+     (*rli->update_preread_hook)(rli, rli->update_client_data);
 
    rli->curs_pos = rli->start_column = 0;
    rli->new_upd_len = rli->old_upd_len = 0;
@@ -1179,9 +1187,13 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 		  rli->buf[rli->len] = 0;
 		  rli->state = RLI_LINE_READ;
 		  *lenp = 0;
+
+		  if (rli->update_postread_hook != NULL)
+		    (*rli->update_postread_hook)(rli, rli->update_client_data);
+
 		  return NULL;	       /* EOF */
 	       }
-	     
+
 	     last_input_char = rli->eof_char;
 	  }
 
@@ -1190,11 +1202,11 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 	  {
 	     int (*func)(SLrline_Type *);
 	     func = (int (*)(SLrline_Type *)) key->f.f;
-	     
+
 	     (void) (*func)(rli);
 
 	     RLupdate (rli);
-	     
+
 	     if ((rli->flags & SL_RLINE_BLINK_MATCH)
 		 && (rli->input_pending != NULL))
 	       blink_match (rli);
@@ -1206,21 +1218,28 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 	  }
 	Active_Rline_Info = save_rli;
 
-	if ((SLang_Rline_Quit) || _pSLang_Error)
+	if (_pSLang_Error) rli->quit = RLINE_QUIT_ABORT;
+
+	if (rli->quit)
 	  {
-	     if (_pSLang_Error)
+	     if (rli->quit == RLINE_QUIT_ABORT)
 	       {
 		  rli->len = 0;
 	       }
 	     rli->buf[rli->len] = 0;
 	     rli->state = RLI_LINE_READ;
 	     *lenp = rli->len;
-	     
+
 	     free_history_item (rli->saved_line);
 	     rli->saved_line = NULL;
-	     
-	     if (_pSLang_Error)
-	       return NULL;
+
+	     if (rli->update_postread_hook != NULL)
+	       (*rli->update_postread_hook)(rli, rli->update_client_data);
+
+	     if (rli->quit == RLINE_QUIT_ABORT)
+	       {
+		  return NULL;
+	       }
 
 	     return SLmake_nstring ((char *)rli->buf, rli->len);
 	  }
@@ -1231,8 +1250,8 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 
 static int rl_abort (SLrline_Type *This_RLI)
 {
-   rl_delete_line (This_RLI);
-   return rl_enter (This_RLI);
+   This_RLI->quit = RLINE_QUIT_ABORT;
+   return 0;
 }
 
 /* TTY interface --- ANSI */
@@ -1264,7 +1283,6 @@ static int rl_redraw (SLrline_Type *This_RLI)
    SLrline_redraw (This_RLI);
    return 0;
 }
-
 
 static int rl_prev_line (SLrline_Type *This_RLI)
 {
@@ -1314,7 +1332,7 @@ static int rl_next_line (SLrline_Type *This_RLI)
 	int status = 0;
 
 	if (This_RLI->saved_line != NULL)
-	  {	
+	  {
 	     status = rl_select_line (This_RLI, This_RLI->saved_line);
 	     free_history_item (This_RLI->saved_line);
 	     This_RLI->saved_line = NULL;
@@ -1328,7 +1346,7 @@ static int rl_next_line (SLrline_Type *This_RLI)
 	This_RLI->is_modified = 0;
 	return status;
      }
-   
+
    return rl_select_line (This_RLI, next);
 }
 
@@ -1360,7 +1378,7 @@ void SLrline_close (SLrline_Type *rli)
 {
    if (rli == NULL)
      return;
-   
+
    if (rli->name != NULL)
      {
 	char hookname[1024];
@@ -1372,6 +1390,10 @@ void SLrline_close (SLrline_Type *rli)
 	Active_Rline_Info = arli;
 	SLang_free_slstring (rli->name);
      }
+
+   if ((rli->update_free_update_data_hook != NULL)
+       && (rli->update_client_data != NULL))
+     (*rli->update_free_update_data_hook)(rli, rli->update_client_data);
 
    free_last_key (rli);
    free_history (rli->root);
@@ -1415,7 +1437,7 @@ static int init_keymap (void)
 	if (ch == 256) break;
      }
 #endif				       /* NOT __DECC */
-   
+
    simple[0] = SLang_Abort_Char;
    SLkm_define_key (simple, (FVOID_STAR) rl_abort, km);
 #ifdef REAL_UNIX_SYSTEM
@@ -1424,7 +1446,7 @@ static int init_keymap (void)
    simple[0] = (char) 26;
 #endif
    SLkm_define_key (simple, (FVOID_STAR) rl_eof_insert, km);
-   
+
 #ifndef IBMPC_SYSTEM
    SLkm_define_key  ("^[[A", (FVOID_STAR) rl_prev_line, km);
    SLkm_define_key  ("^[[B", (FVOID_STAR) rl_next_line, km);
@@ -1442,7 +1464,7 @@ static int init_keymap (void)
    SLkm_define_key  ("^@S", (FVOID_STAR) rl_del, km);
    SLkm_define_key  ("^@O", (FVOID_STAR) SLrline_eol, km);
    SLkm_define_key  ("^@G", (FVOID_STAR) SLrline_bol, km);
-   
+
    SLkm_define_key  ("\xE0H", (FVOID_STAR) rl_prev_line, km);
    SLkm_define_key  ("\xE0P", (FVOID_STAR) rl_next_line, km);
    SLkm_define_key  ("\xE0M", (FVOID_STAR) rl_right, km);
@@ -1478,6 +1500,149 @@ static int init_keymap (void)
    return 0;
 }
 
+#if SLANG_HAS_MULTILINE_RLINE
+typedef struct
+{
+   int max_row;
+   int max_col;
+   int num_screen_cols;
+   int num_screen_rows;
+}
+RLine_SMG_Update_Type;
+
+static RLine_SMG_Update_Type *alloc_smg_update_data (void)
+{
+   return (RLine_SMG_Update_Type *)SLcalloc (1, sizeof(RLine_SMG_Update_Type));
+}
+
+static void free_smg_update_data (SLrline_Type *rli, VOID_STAR cd)
+{
+   (void) rli;
+   if (cd != NULL)
+     SLfree ((char *)cd);
+}
+
+static int check_window_size_and_redraw (SLrline_Type *rli, RLine_SMG_Update_Type *s)
+{
+   if ((s->num_screen_cols != SLtt_Screen_Cols)
+       || (s->num_screen_rows != SLtt_Screen_Rows))
+     {
+	SLsmg_reinit_smg ();
+	s->num_screen_cols = SLtt_Screen_Cols;
+	s->num_screen_rows = SLtt_Screen_Rows;
+	SLrline_redraw (rli);
+	return 1;
+     }
+   return 0;
+}
+
+static void rline_smg_update (SLrline_Type *rli, SLFUTURE_CONST char *prompt,
+			      SLFUTURE_CONST char *buf, unsigned int buflen,
+			      unsigned int point, VOID_STAR cd)
+{
+   int r0, c0, r1, c1;
+   RLine_SMG_Update_Type *s = (RLine_SMG_Update_Type *) cd;
+   (void) rli;
+
+   if (check_window_size_and_redraw (rli, s))
+     return;
+
+   SLsmg_gotorc (0, 0);
+   SLsmg_write_string (prompt);
+   r0 = SLsmg_get_row ();
+   c0 = SLsmg_get_column ();
+   SLsmg_write_nchars (buf, buflen);
+   r1 = SLsmg_get_row ();
+   c1 = SLsmg_get_column ();
+   if (r1 <= s->max_row)
+     {
+	int r = r1, c = c1;
+	while (r <= s->max_row)
+	  {
+	     SLsmg_gotorc (r, c);
+	     SLsmg_erase_eol ();
+	     c = 0;
+	     r++;
+	  }
+     }
+   s->max_row = r1;
+   s->max_col = c1;
+   SLsmg_gotorc (r0, c0);
+   SLsmg_write_nchars (buf, point);
+   SLsmg_refresh ();
+}
+
+static void rline_smg_preread (SLrline_Type *rli, VOID_STAR cd)
+{
+   RLine_SMG_Update_Type *s = (RLine_SMG_Update_Type *) cd;
+
+   (void) rli;
+   _pSLtt_cmdline_mode_reset ();
+   SLsmg_gotorc (0,0);
+   SLsmg_erase_eos ();
+   s->max_row = 0;
+   s->max_col = 0;
+   SLsmg_refresh ();
+}
+
+static void rline_smg_postread (SLrline_Type *rli, VOID_STAR cd)
+{
+   RLine_SMG_Update_Type *s = (RLine_SMG_Update_Type *) cd;
+
+   (void) rli;
+   SLsmg_gotorc (s->max_row, s->max_col);
+   SLsmg_refresh ();
+}
+
+static void rline_smg_clear (SLrline_Type *rli, VOID_STAR cd)
+{
+   RLine_SMG_Update_Type *s = (RLine_SMG_Update_Type *) cd;
+
+   (void) rli;
+   SLsmg_gotorc (0,0);
+   SLsmg_cls ();
+   s->max_row = 0;
+   s->max_col = 0;
+}
+
+static void rline_smg_display_width_changed (SLrline_Type *rli, int w, VOID_STAR cd)
+{
+   RLine_SMG_Update_Type *s = (RLine_SMG_Update_Type *) cd;
+   (void) w;
+
+   SLtt_get_screen_size ();
+   (void) check_window_size_and_redraw (rli, s);
+}
+
+static int try_smg_multiline_mode (SLrline_Type *rli)
+{
+   int status;
+   RLine_SMG_Update_Type *cd;
+
+   status = _pSLtt_init_cmdline_mode ();
+   if (status <= 0)
+     return status;
+
+   if (NULL == (cd = alloc_smg_update_data ()))
+     return -1;
+
+   (void) SLrline_set_update_hook (rli, rline_smg_update, cd);
+   rli->update_free_update_data_hook = free_smg_update_data;
+   rli->update_clear_hook = rline_smg_clear;
+   rli->update_preread_hook = rline_smg_preread;
+   rli->update_postread_hook = rline_smg_postread;
+   rli->update_display_width_changed_hook = rline_smg_display_width_changed;
+
+   cd->num_screen_cols = SLtt_Screen_Cols;
+   cd->num_screen_rows = SLtt_Screen_Rows;
+
+   if (-1 == _pSLsmg_init_smg_cmdline ())
+     return -1;
+
+   return 1;
+}
+#endif				       /* SLANG_HAS_MULTILINE_RLINE */
+
 SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
 {
    SLrline_Type *rli;
@@ -1487,7 +1652,7 @@ SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
 
    if (NULL == (rli = (SLrline_Type *)SLcalloc (1, sizeof (SLrline_Type))))
      return NULL;
-   
+
    if (width == 0)
      width = 80;
 
@@ -1505,7 +1670,7 @@ SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
 #else
    rli->eof_char = 26;
 #endif
-   
+
    rli->point = 0;
    rli->flags = flags;
    rli->edit_width = width;
@@ -1540,6 +1705,16 @@ SLrline_Type *SLrline_open (unsigned int width, unsigned int flags)
 	for (ch = 128; ch < 160; ch++) Char_Widths[ch] = 3;
 #endif
      }
+#if SLANG_HAS_MULTILINE_RLINE
+   if (flags & SL_RLINE_USE_MULTILINE)
+     {
+	if (-1 == try_smg_multiline_mode (rli))
+	  {
+	     SLrline_close (rli);
+	     return NULL;
+	  }
+     }
+#endif
    return rli;
 }
 
@@ -1583,20 +1758,19 @@ int SLrline_add_to_history (SLrline_Type *rli, SLFUTURE_CONST char *hist)
 
    if (rli->tail != NULL)
      rli->tail->next = h;
-   
+
    h->prev = rli->tail;
    rli->tail = h;
    h->next = NULL;
 
    return 0;
 }
-   
-  
+
 int SLrline_save_line (SLrline_Type *rli)
 {
    if (rli == NULL)
      return -1;
-   
+
    return SLrline_add_to_history (rli, (char *) rli->buf);
 }
 
@@ -1607,13 +1781,13 @@ SLkeymap_Type *SLrline_get_keymap (SLrline_Type *rli)
    return rli->keymap;
 }
 
-int SLrline_set_update_hook (SLrline_Type *rli, 
+int SLrline_set_update_hook (SLrline_Type *rli,
 			     void (*fun)(SLrline_Type *, SLFUTURE_CONST char *, SLFUTURE_CONST char *, unsigned int, unsigned int, VOID_STAR),
 			     VOID_STAR client_data)
 {
    if (rli == NULL)
      return -1;
-   
+
    rli->update_hook = fun;
    rli->update_client_data = client_data;
    return 0;
@@ -1638,7 +1812,7 @@ int SLrline_set_point (SLrline_Type *rli, unsigned int point)
 {
    if (rli == NULL)
      return -1;
-   
+
    if (rli->state == RLI_LINE_INVALID)
      return -1;
 
@@ -1661,7 +1835,7 @@ int SLrline_set_tab (SLrline_Type *rli, unsigned int tab)
 {
    if (rli == NULL)
      return -1;
-   
+
    rli->tab = tab;
    return 0;
 }
@@ -1691,20 +1865,20 @@ int SLrline_set_line (SLrline_Type *rli, SLFUTURE_CONST char *buf)
 
    if (buf == NULL)
      buf = "";
-   
+
    len = strlen (buf);
 
    buf = SLmake_string (buf);
    if (buf == NULL)
      return -1;
-   
+
    SLfree ((char *)rli->buf);
    rli->buf = (unsigned char *)buf;
    rli->buf_len = len;
 
    rli->point = len;
    rli->len = len;
-   
+
    rli->state = RLI_LINE_SET;
    return 0;
 }
@@ -1726,18 +1900,30 @@ int SLrline_get_echo (SLrline_Type *rli, int *statep)
 {
    if (rli == NULL)
      return -1;
-   
+
    *statep = (0 == (rli->flags & SL_RLINE_NO_ECHO));
    return 0;
 }
 
 int SLrline_set_display_width (SLrline_Type *rli, unsigned int w)
 {
+   unsigned int old_width;
+
    if (rli == NULL)
      return -1;
    if (w < 1)
      w = 80;
+
+   old_width = rli->edit_width;
    rli->edit_width = w;
+
+   if (rli->update_display_width_changed_hook != NULL)
+     (*rli->update_display_width_changed_hook) (rli, w, rli->update_client_data);
+   else
+     {
+	if (w != old_width)
+	  SLrline_redraw (rli);
+     }
    return 0;
 }
 
@@ -1755,7 +1941,7 @@ static void rline_del_intrinsic (int *np)
 
    if (Active_Rline_Info == NULL)
      return;
-   
+
    if (n < 0)
      {
 	(void) SLrline_move (Active_Rline_Info, n);
@@ -1773,14 +1959,13 @@ static SLkeymap_Type *get_keymap (void)
      kmap = SLrline_get_keymap (Active_Rline_Info);
    else
      kmap = RL_Keymap;
-   
+
    if (kmap != NULL)
      return kmap;
 
    _pSLang_verror (SL_APPLICATION_ERROR, "No keymap available for rline interface");
    return NULL;
 }
-
 
 static void rline_setkey_intrinsic (char *keyseq)
 {
@@ -1793,17 +1978,17 @@ static void rline_setkey_intrinsic (char *keyseq)
    if (SLang_peek_at_stack () == SLANG_REF_TYPE)
      {
 	SLang_Name_Type *nt;
-	
+
 	if (NULL == (nt = SLang_pop_function ()))
 	  return;
 
 	(void) SLkm_define_slkey (keyseq, nt, kmap);
 	return;
      }
-   
+
    if (-1 == SLang_pop_slstring (&str))
      return;
-   
+
    (void) SLang_define_key (keyseq, str, kmap);
    SLang_free_slstring (str);
 }
@@ -1811,7 +1996,7 @@ static void rline_setkey_intrinsic (char *keyseq)
 static void rline_unsetkey_intrinsic (char *keyseq)
 {
    SLkeymap_Type *kmap;
-   
+
    if (NULL != (kmap = get_keymap ()))
      SLang_undefine_key (keyseq, kmap);
 }
@@ -1820,7 +2005,7 @@ static int rline_get_point_intrinsic (void)
 {
    unsigned int p;
 
-   if ((Active_Rline_Info == NULL) 
+   if ((Active_Rline_Info == NULL)
        || (-1 == SLrline_get_point (Active_Rline_Info, &p)))
      return 0;
 
@@ -1834,7 +2019,7 @@ static void rline_set_point_intrinsic (int *pp)
 
    if (NULL == (rli = Active_Rline_Info))
      return;
-   
+
    p = *pp;
    if (p < 0)
      {
@@ -1845,7 +2030,7 @@ static void rline_set_point_intrinsic (int *pp)
 
    if ((unsigned int)p > rli->len)
      p = (int)rli->len;
-	
+
    (void) SLrline_set_point (rli, (unsigned int) p);
 }
 
@@ -1855,7 +2040,7 @@ static void rline_call_intrinsic (char *fun)
 
    if (Active_Rline_Info == NULL)
      return;
-   
+
    if (NULL == (f = (int (*)(SLrline_Type *)) (SLang_find_key_function(fun, Active_Rline_Info->keymap))))
      {
 	_pSLang_verror (SL_UndefinedName_Error, "rline internal function %s does not exist", fun);
@@ -1893,7 +2078,7 @@ static void rline_set_completion_callback (void)
 
    if (NULL == (nt = SLang_pop_function ()))
      return;
-   
+
    if (Active_Rline_Info == NULL)
      {
 	SLang_free_function (Default_Completion_Callback);
@@ -1910,7 +2095,7 @@ static void rline_set_list_completions_callback (void)
 
    if (NULL == (nt = SLang_pop_function ()))
      return;
-   
+
    if (Active_Rline_Info == NULL)
      {
 	SLang_free_function (Default_List_Completions_Callback);
@@ -1929,10 +2114,10 @@ static int rline_input_pending_intrinsic (int *tsecsp)
 
    if (Active_Rline_Info == NULL)
      return 0;
-   
+
    if (Active_Rline_Info->input_pending == NULL)
      return 1;
-   
+
    return Active_Rline_Info->input_pending (tsecs);
 }
 
@@ -1940,10 +2125,10 @@ static int rline_getkey_intrinsic (void)
 {
    if (Active_Rline_Info == NULL)
      return -1;
-   
+
    return (int) Active_Rline_Info->getkey ();
 }
-   
+
 static int rline_bolp_intrinsic (void)
 {
    if (Active_Rline_Info == NULL)
@@ -1971,13 +2156,13 @@ static void rline_get_history_intrinsic (void)
    RL_History_Type *h;
    char **data;
    SLang_Array_Type *at;
-   
+
    if (Active_Rline_Info == NULL)
      {
 	SLang_push_null ();
 	return;
      }
-   
+
    num = 0;
    h = Active_Rline_Info->root;
    while (h != NULL)
@@ -1999,7 +2184,7 @@ static void rline_get_history_intrinsic (void)
 	  }
 	h = h->next;
      }
-   
+
    (void) SLang_push_array (at, 1);
 }
 
@@ -2018,7 +2203,7 @@ static void rline_set_history_intrinsic (void)
 	SLang_free_array (at);
 	return;
      }
-   
+
    free_history (rli->root);
    rli->tail = rli->root = rli->last = NULL;
 
@@ -2035,7 +2220,7 @@ static void rline_set_history_intrinsic (void)
 static char *find_function_string (SLrline_Type *rli, FVOID_STAR f)
 {
    SLKeymap_Function_Type *fp;
-   
+
    if ((rli == NULL) || (rli->keymap == NULL))
      return NULL;
 
@@ -2058,7 +2243,7 @@ static void rline_get_last_key_function_intrinsic (void)
 	(void) SLang_push_null ();
 	return;
      }
-   
+
    last_key = &Active_Rline_Info->last_key;
    switch (last_key->type)
      {
@@ -2087,11 +2272,11 @@ static void rline_get_last_key_function_intrinsic (void)
       case SLKEY_F_KEYSYM:
 	(void) SLang_push_uint (last_key->f.keysym);
 	return;
-	
+
       default:
 	break;
      }
-   
+
    (void) SLang_push_null ();
 }
 
@@ -2138,7 +2323,7 @@ int SLrline_init (SLFUTURE_CONST char *appname, SLFUTURE_CONST char *user_initfi
      sys_initfile = SLRLINE_SYS_INIT_FILE;
    if (user_initfile == NULL)
      user_initfile = SLRLINE_USER_INIT_FILE;
-   
+
    if (appname == NULL)
      appname = "Unknown";
 
@@ -2153,7 +2338,10 @@ int SLrline_init (SLFUTURE_CONST char *appname, SLFUTURE_CONST char *user_initfi
 
    if (-1 == init_keymap ())
      return -1;
-
+#if SLANG_HAS_MULTILINE_RLINE
+   /* Initialize the terminal here to allow the user to use termcap sequences */
+   (void) SLtt_initialize (NULL);
+#endif
    if (user_initfile != NULL)
      {
 	file = SLpath_find_file_in_path (home_dir, user_initfile);

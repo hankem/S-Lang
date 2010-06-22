@@ -134,6 +134,8 @@ Changes since 2.2.2
     do with the slang syntax.
 50. slsh/lib/rline/complete.sl: Attempt to complete structure field
     names.
+51. src/slrline.c,slsmg.c,sldisply.c: Added support for multiline
+    readline.
 
 {{{ Previous Versions
 

@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include "slinclud.h"
 
@@ -63,9 +63,9 @@ int SLsmg_Backspace_Moves = 0;
  * ends at m.  Examples:  \e[3m --> set color 3.  \e[272m --> color=272.
  * Note: These escape sequences are NOT ANSI, though similar.  ANSI permits
  * sequences such as \e[32;44m to set the foreground to green/blue.  This interface
- * will support such sequences, _but_ in will map such squences to the sum of 
+ * will support such sequences, _but_ in will map such squences to the sum of
  * the colors: \e[32;44m --> color (32+44)=76.
- * 
+ *
  * In addition to 'm', ']' is also supported.
  */
 static int Embedded_Escape_Mode = 0;
@@ -79,8 +79,8 @@ int SLsmg_embedded_escape_mode (int mode)
 /* This function gets called with u pointing at what may be '['.  If it sucessfully
  * parses the escape sequence, *up and the color will be updated.
  */
-static int parse_embedded_escape (SLuchar_Type *u, SLuchar_Type *umax, 
-				  SLsmg_Color_Type default_color, 
+static int parse_embedded_escape (SLuchar_Type *u, SLuchar_Type *umax,
+				  SLsmg_Color_Type default_color,
 				  SLuchar_Type **up, SLsmg_Color_Type *colorp)
 {
    unsigned int val;
@@ -128,7 +128,7 @@ static void parse_embedded_set_color (SLuchar_Type *u, SLuchar_Type *umax,
      }
    if (color == default_color)
      return;
-   
+
 #ifdef REQUIRES_NON_BCE_SUPPORT
    color -= Bce_Color_Offset;
 #endif
@@ -141,7 +141,7 @@ static void parse_embedded_set_color (SLuchar_Type *u, SLuchar_Type *umax,
 static int *tt_Screen_Rows = NULL;
 static int *tt_Screen_Cols = NULL;
 static int *tt_unicode_ok;
-   
+
 static void (*tt_normal_video)(void);
 static void (*tt_goto_rc)(int, int);
 static void (*tt_cls) (void);
@@ -167,9 +167,12 @@ static int *tt_Has_Alt_Charset = NULL;
 static char **tt_Graphics_Char_Pairs = NULL;
 #endif
 
-static int Smg_Inited;
+static int Smg_Mode = 0;
+#define SMG_MODE_NONE		0
+#define SMG_MODE_FULLSCREEN	1
+#define SMG_MODE_CMDLINE	2
 
-/* This is necessary because the windoze run-time linker cannot perform 
+/* This is necessary because the windoze run-time linker cannot perform
  * relocations on its own.
  */
 static void init_tt_symbols (void)
@@ -177,7 +180,7 @@ static void init_tt_symbols (void)
    tt_Screen_Rows = &SLtt_Screen_Rows;
    tt_Screen_Cols = &SLtt_Screen_Cols;
    tt_unicode_ok = &_pSLtt_UTF8_Mode;
-   
+
    tt_normal_video = SLtt_normal_video;
    tt_goto_rc = SLtt_goto_rc;
    tt_cls = SLtt_cls;
@@ -275,7 +278,7 @@ static void init_acs (int mode)
 
    if (mode == ACS_MODE_AUTO)
      {
-	if (UTF8_Mode && 
+	if (UTF8_Mode &&
 	    (tt_unicode_ok != NULL) && (*tt_unicode_ok > 0))
 	  mode = ACS_MODE_UNICODE;
 	else
@@ -296,7 +299,7 @@ static void init_acs (int mode)
 	     acs++;
 	  }
 	break;
-	
+
       case ACS_MODE_TERMINFO:
 	if ((tt_Has_Alt_Charset != NULL)
 	    && *tt_Has_Alt_Charset
@@ -305,7 +308,7 @@ static void init_acs (int mode)
 	  {
 	     unsigned char *p = (unsigned char *) *tt_Graphics_Char_Pairs;
 	     unsigned char *pmax = p + strlen ((char *) p);
-	     
+
 	     while (p < pmax)
 	       {
 		  unsigned char ch = *p++;
@@ -354,7 +357,7 @@ static void clear_region (int row, int n, SLwchar_Type ch)
      row = 0;
 
    for (i = row; i < imax; i++)
-     {						  
+     {
 	blank_line (SL_Screen[i].neew, Screen_Cols, ch);
 	SL_Screen[i].flags |= TOUCHED;
      }
@@ -364,7 +367,7 @@ void SLsmg_erase_eol (void)
 {
    int r, c;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    c = This_Col - Start_Col;
    r = This_Row - Start_Row;
@@ -411,7 +414,7 @@ int SLsmg_get_column (void)
 
 void SLsmg_erase_eos (void)
 {
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    SLsmg_erase_eol ();
    clear_region (This_Row + 1, (int)Screen_Rows, 0x20);
@@ -472,7 +475,6 @@ static int point_visible (int col_too)
       col++; \
    } (void) 0
 
-
 #define ADD_TO_CHAR_CELL(wc) \
    { \
       if ((p < pmax) && (p->wchars[i] != wc)) \
@@ -497,7 +499,6 @@ static int point_visible (int col_too)
        } \
    else col++
 
-
 void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 {
    SLsmg_Char_Type *p, *pmax;
@@ -510,13 +511,15 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
    int last_was_double_width = 0;
    int alt_char_set_flag;
    unsigned int i;
+   int wrap_mode;
 #if SLSMG_HAS_EMBEDDED_ESCAPE
    SLsmg_Color_Type default_color;
 #endif
-   if (Smg_Inited == 0) return;
-
+   if (Smg_Mode == SMG_MODE_NONE) return;
    if (u >= umax)
      return;
+
+   wrap_mode = (Smg_Mode == SMG_MODE_CMDLINE);
 
    display_8bit = (unsigned char) SLsmg_Display_Eight_Bit;
    if (utf8_mode)
@@ -529,7 +532,7 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
    alt_char_set_flag = (color & SLSMG_ACS_MASK);
    if (Current_ACS_Mode == ACS_MODE_UNICODE)
      color = color & ~SLSMG_ACS_MASK;
-   
+
 #if SLSMG_HAS_EMBEDDED_ESCAPE
    default_color = color;	       /* used for ESC[m */
 #endif
@@ -552,7 +555,7 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	p += (col - start_col);
 	if ((p < pmax) && (p->nchars == 0))
 	  {
-	     /* It looks like we are about to overwrite the right side of a 
+	     /* It looks like we are about to overwrite the right side of a
 	      * double width character.  Let's see...
 	      */
 	     if (col > start_col)
@@ -567,11 +570,10 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	       }
 	  }
      }
-   
-   
+
    flags = SL_Screen[This_Row - Start_Row].flags;
    i = 0;
-   
+
    while (u < umax)
      {
 	SLwchar_Type wc;
@@ -581,49 +583,59 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	  {
 	     unsigned char ch;
 
-	     ch = (unsigned char) *u++;
+	     ch = (unsigned char) *u;
 
 	     if (alt_char_set_flag)
 	       {
 		  wc = ACS_Map[ch];
 		  ADD_CHAR_OR_BREAK(wc);
+		  u++;
 		  continue;
 	       }
 
 	     if ((ch >= (SLuchar_Type)0x20) && (ch < (SLuchar_Type)0x7F))
 	       {
 		  ADD_CHAR_OR_BREAK(ch);
+		  u++;
 		  continue;
 	       }
-	     
+
 	     if ((ch == '\t') && (SLsmg_Tab_Width > 0))
 	       {
+		  int bump_u = 0;
 		  do
 		    {
 		       if (col < start_col)
-			 col++;
+			 {
+			    col++;
+			    bump_u = 1;
+			 }
 		       else
 			 {
 			    ADD_CHAR_OR_BREAK(' ');
 			    NEXT_CHAR_CELL;
+			    bump_u = 1;
 			 }
 		    }
 		  while (col % SLsmg_Tab_Width);
+		  if (bump_u)
+		    u++;
 		  continue;
 	       }
-	     
+
 	     if ((ch == '\n')
 		 && (SLsmg_Newline_Behavior != SLSMG_NEWLINE_PRINTABLE))
 	       {
+		  u++;		       /* eat \n */
 		  newline_flag = 1;
 		  break;
 	       }
-	     
+
 	     if ((ch == 0x8) && SLsmg_Backspace_Moves)
 	       {
-		  if (col != 0) 
+		  if (col != 0)
 		    {
-		       if (i != 0) 
+		       if (i != 0)
 			 {
 			    NEXT_CHAR_CELL;
 			    col--;
@@ -632,6 +644,7 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 		       col--;
 		       p--;
 		    }
+		  u++;
 		  continue;
 	       }
 #if SLSMG_HAS_EMBEDDED_ESCAPE
@@ -639,6 +652,7 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	       {
 		  SLsmg_Color_Type next_color;
 
+		  u++;
 		  if (0 == parse_embedded_escape (u, umax, default_color, &u, &next_color))
 		    {
 		       if (i != 0)
@@ -646,9 +660,11 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 		       color = next_color;
 		       continue;
 		    }
+		  u--;
 	       }
 #endif
 	     ADD_CHAR_OR_BREAK('^');
+	     u++;
 	     if (ch == 127) ch = '?'; else ch = ch + '@';
 	     ADD_CHAR_OR_BREAK (ch);
 	     continue;
@@ -660,25 +676,32 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	  {
 	     unsigned int ii, jj;
 	     unsigned char hexbuf[8];
-	     
-	     if ((utf8_mode == 0) 
+
+	     if ((utf8_mode == 0)
 		 && display_8bit && (*u >= display_8bit))
 	       {
 		  ADD_CHAR_OR_BREAK(*u);
+		  u += nconsumed;
+		  continue;
 	       }
-	     else for (ii = 0; ii < nconsumed; ii++)
+
+	     for (ii = 0; ii < nconsumed; ii++)
 	       {
-		  sprintf ((char *)hexbuf, "<%02X>", u[ii]);
+		  sprintf ((char *)hexbuf, "<%02X>", *u);
 		  for (jj = 0; jj < 4; jj++)
 		    {
 		       ADD_CHAR_OR_BREAK (hexbuf[jj]);
 		    }
+		  if (jj == 0)
+		    break;
+		  u++;
 	       }
-	     u += nconsumed;
+	     if (ii != nconsumed)
+	       break;
+
 	     continue;
 	  }
 
-	u += nconsumed;
 	if (wc < (SLwchar_Type)display_8bit)
 	  {
 	     unsigned char hexbuf[8];
@@ -689,6 +712,9 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	       {
 		  ADD_CHAR_OR_BREAK (hexbuf[jj]);
 	       }
+	     if (jj == 0)
+	       break;
+	     u += nconsumed;
 	     continue;
 	  }
 
@@ -696,6 +722,7 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	if (width == 0)
 	  {
 	     /* Combining character--- must follow non-zero width char */
+	     u += nconsumed;
 	     if (i == 0)
 	       continue;
 	     if (i < SLSMG_MAX_CHARS_PER_CELL)
@@ -709,6 +736,7 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	  {
 	     if (col + 2 <= start_col)
 	       {
+		  u += nconsumed;
 		  col += 2;
 		  continue;
 	       }
@@ -716,13 +744,14 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	     if (col + 1 == start_col)
 	       {
 		  /* double width character is clipped at left part of screen.
-		   * So, display right edge as a space 
+		   * So, display right edge as a space
 		   */
+		  u += nconsumed;
 		  col++;	       /* left edge */
 		  ADD_CHAR_OR_BREAK('<');
 		  continue;
 	       }
-	     
+
 	     if (i != 0) 	       /* finish active cell */
 	       NEXT_CHAR_CELL;
 
@@ -737,17 +766,19 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	       {
 		  /* right side of character gets clipped */
 		  ADD_TO_CHAR_CELL('>');
+		  u += nconsumed;
 		  col++;
 		  break;
 	       }
 	     ADD_CHAR_OR_BREAK(wc);
 	     last_was_double_width = 1;
+	     u += nconsumed;
 	     continue;
 	  }
-
 	ADD_CHAR_OR_BREAK(wc);
+	u += nconsumed;
      }
-   
+
    if (i != 0)
      {
 	NEXT_CHAR_CELL;
@@ -770,7 +801,8 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 
    /* Why would u be NULL here?? */
 
-   if (SLsmg_Newline_Behavior == SLSMG_NEWLINE_IGNORED)
+   if ((SLsmg_Newline_Behavior == SLSMG_NEWLINE_IGNORED)
+       && (wrap_mode == 0))
      {
 #if SLSMG_HAS_EMBEDDED_ESCAPE
 	if (Embedded_Escape_Mode && (u != NULL))
@@ -779,7 +811,17 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 	return;
      }
 
-   if (newline_flag == 0)
+   if (u >= umax)
+     {
+	if (wrap_mode && (col >= max_col))
+	  {
+	     This_Col = 0;
+	     This_Row++;
+	  }
+	return;
+     }
+
+   if ((newline_flag == 0) && (wrap_mode == 0))
      {
 #if SLSMG_HAS_EMBEDDED_ESCAPE
 	SLuchar_Type *usave = u;
@@ -812,7 +854,6 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
    goto top;
 }
 
-
 void SLsmg_write_nchars (SLFUTURE_CONST char *str, unsigned int len)
 {
    SLsmg_write_chars ((unsigned char *) str, (unsigned char *)str + len);
@@ -820,10 +861,9 @@ void SLsmg_write_nchars (SLFUTURE_CONST char *str, unsigned int len)
 
 void SLsmg_write_string (SLFUTURE_CONST char *str)
 {
-   SLsmg_write_chars ((unsigned char *)str, 
+   SLsmg_write_chars ((unsigned char *)str,
 		      (unsigned char *)str + strlen (str));
 }
-
 
 void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
 				 unsigned int dr, unsigned int dc,
@@ -843,7 +883,7 @@ void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
 
    p = u;
    pmax = u + strlen ((char *)u);
-   
+
    dc = 0;
    while (1)
      {
@@ -901,7 +941,7 @@ void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
 	nconsumed = 1;
 	if ((utf8_mode == 0)
 	    || (NULL == SLutf8_decode (p, pmax, &wc, &nconsumed)))
-	  {	     
+	  {
 	     if ((utf8_mode == 0)
 		 && (display_8bit && (*p >= display_8bit)))
 	       {
@@ -926,7 +966,7 @@ void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
 	p += nconsumed;
 	continue;
 
-	write_chars_and_reset:	
+	write_chars_and_reset:
 	SLsmg_gotorc (r, c);
 	SLsmg_write_chars (u, p);
 	while ((int)dc < maxc)
@@ -947,7 +987,7 @@ void SLsmg_write_nstring (SLFUTURE_CONST char *str, unsigned int n)
    /* Avoid a problem if a user accidently passes a negative value */
    if ((int) n < 0)
      return;
-   
+
    SLsmg_write_wrapped_string ((unsigned char *)str, This_Row, This_Col, 1, n, 1);
 }
 
@@ -982,7 +1022,7 @@ static int Cls_Flag;
 void SLsmg_cls (void)
 {
    int tac;
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    tac = This_Alt_Char; This_Alt_Char = 0;
    SLsmg_set_color (0);
@@ -991,14 +1031,6 @@ void SLsmg_cls (void)
    SLsmg_set_color (0);
    Cls_Flag = 1;
 }
-#if 0
-static void do_copy (SLsmg_Char_Type *a, SLsmg_Char_Type *b)
-{
-   SLsmg_Char_Type *amax = a + Screen_Cols;
-
-   while (a < amax) *a++ = *b++;
-}
-#endif
 
 #ifndef IBMPC_SYSTEM
 int SLsmg_Scroll_Hash_Border = 0;
@@ -1100,7 +1132,7 @@ static int try_scroll_down (int rmin, int rmax)
 	(*tt_reset_scroll_region) ();
 	/* Now we have a hole in the screen.
 	 * Make the virtual screen look like it.
-	 * 
+	 *
 	 * Note that if the terminal does not support BCE, then we have
 	 * no idea what color the hole is.  So, for this case, we do not
 	 * want to add Bce_Color_Offset to This_Color since if Bce_Color_Offset
@@ -1327,8 +1359,8 @@ void SLsmg_refresh (void)
 #endif
    int r, c;
 
-   if (Smg_Inited == 0) return;
-   
+   if (Smg_Mode == SMG_MODE_NONE) return;
+
    if (Screen_Trashed)
      {
 	Cls_Flag = 1;
@@ -1364,7 +1396,7 @@ void SLsmg_refresh (void)
 	  {
 	     SLsmg_Color_Type color = This_Color;
 
-	     if (Cls_Flag == 0) 
+	     if (Cls_Flag == 0)
 	       {
 		  (*tt_goto_rc) (i, 0);
 		  (*tt_del_eol) ();
@@ -1385,12 +1417,11 @@ void SLsmg_refresh (void)
 #endif
      }
 
-
    r = This_Row - Start_Row;
    c = This_Col - Start_Col;
-   if (r < 0) 
+   if (r < 0)
      {
-	r = 0; 
+	r = 0;
 	c = 0;
      }
    else if (r >= (int)Screen_Rows)
@@ -1398,7 +1429,7 @@ void SLsmg_refresh (void)
 	r = (int)Screen_Rows;
 	c = (int)Screen_Cols-1;
      }
-   if (c < 0) 
+   if (c < 0)
      c = 0;
    else if (c >= (int)Screen_Cols)
      c = (int)Screen_Cols-1;
@@ -1436,7 +1467,7 @@ void SLsmg_touch_lines (int row, unsigned int n)
     * to force the display to be redrawn
     */
 
-   if (Smg_Inited == 0)
+   if (Smg_Mode == SMG_MODE_NONE)
      return;
 
    if (0 == compute_clip (row, (int) n, Start_Row, Start_Row + Screen_Rows, &r1, &r2))
@@ -1496,7 +1527,9 @@ int SLsmg_resume_smg (void)
 	return -1;
      }
 
-   Cls_Flag = 1;
+   if (Smg_Mode == SMG_MODE_FULLSCREEN)
+     Cls_Flag = 1;
+
    SLsmg_touch_screen ();
    SLsmg_refresh ();
 
@@ -1504,11 +1537,10 @@ int SLsmg_resume_smg (void)
    return 0;
 }
 
-   
 static void reset_smg (void)
 {
    unsigned int i;
-   if (Smg_Inited == 0)
+   if (Smg_Mode == SMG_MODE_NONE)
      return;
 
    for (i = 0; i < Screen_Rows; i++)
@@ -1518,21 +1550,20 @@ static void reset_smg (void)
 	SL_Screen[i].old = SL_Screen[i].neew = NULL;
      }
    This_Alt_Char = This_Color = 0;
-   Smg_Inited = 0;
+   Smg_Mode = SMG_MODE_NONE;
 }
 
-
-static int init_smg (void)
+static int init_smg (int mode)
 {
    unsigned int i, len;
    SLsmg_Char_Type *old, *neew;
 
-   Smg_Inited = 0;
+   Smg_Mode = SMG_MODE_NONE;
 
 #ifdef REQUIRES_NON_BCE_SUPPORT
    Bce_Color_Offset = _pSLtt_get_bce_color_offset ();
 #endif
-   
+
    Screen_Rows = *tt_Screen_Rows;
    if (Screen_Rows > SLTT_MAX_SCREEN_ROWS)
      Screen_Rows = SLTT_MAX_SCREEN_ROWS;
@@ -1543,8 +1574,10 @@ static int init_smg (void)
 
    This_Alt_Char = 0;
    SLsmg_set_color (0);
-   Cls_Flag = 1;
-   
+
+   if (Smg_Mode == SMG_MODE_FULLSCREEN)
+     Cls_Flag = 1;
+
    init_acs (ACS_MODE_AUTO);
 
    len = Screen_Cols + 3;
@@ -1566,15 +1599,16 @@ static int init_smg (void)
 	SL_Screen[i].new_hash = SL_Screen[i].old_hash =  Blank_Hash;
 #endif
      }
-   
+
    _pSLtt_color_changed_hook = SLsmg_touch_screen;
-   Screen_Trashed = 1;
-   Smg_Inited = 1;
+
+   if (mode == SMG_MODE_FULLSCREEN)
+     Screen_Trashed = 1;
+   Smg_Mode = mode;
    return 0;
 }
 
-
-int SLsmg_init_smg (void)
+static int init_smg_for_mode (int mode)
 {
    int ret;
 
@@ -1583,7 +1617,7 @@ int SLsmg_init_smg (void)
    if (tt_Screen_Rows == NULL)
      init_tt_symbols ();
 
-   if (Smg_Inited)
+   if (Smg_Mode != SMG_MODE_NONE)
      SLsmg_reset_smg ();
 
    if (UTF8_Mode == -1)
@@ -1594,33 +1628,44 @@ int SLsmg_init_smg (void)
 	UNBLOCK_SIGNALS;
 	return -1;
      }
-   
-   if (-1 == (ret = init_smg ()))
+
+   if (-1 == (ret = init_smg (mode)))
      (void) (*tt_reset_video)();
 
    UNBLOCK_SIGNALS;
    return ret;
 }
 
+int SLsmg_init_smg (void)
+{
+   return init_smg_for_mode (SMG_MODE_FULLSCREEN);
+}
+
+int _pSLsmg_init_smg_cmdline (void)
+{
+   return init_smg_for_mode (SMG_MODE_CMDLINE);
+}
+
 int SLsmg_reinit_smg (void)
 {
    int ret;
+   int mode;
 
-   if (Smg_Inited == 0)
+   if (SMG_MODE_NONE == (mode = Smg_Mode))
      return SLsmg_init_smg ();
 
    BLOCK_SIGNALS;
    reset_smg ();
-   ret = init_smg ();
+   ret = init_smg (mode);
    UNBLOCK_SIGNALS;
    return ret;
 }
 
 void SLsmg_reset_smg (void)
-{   
-   if (Smg_Inited == 0)
+{
+   if (Smg_Mode == SMG_MODE_NONE)
      return;
-   
+
    BLOCK_SIGNALS;
 
    reset_smg ();
@@ -1633,7 +1678,7 @@ void SLsmg_vprintf (SLFUTURE_CONST char *fmt, va_list ap)
 {
    char buf[1024];
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    (void) SLvsnprintf (buf, sizeof (buf), fmt, ap);
    SLsmg_write_string (buf);
@@ -1644,7 +1689,7 @@ void SLsmg_printf (SLFUTURE_CONST char *fmt, ...)
    va_list ap;
    SLFUTURE_CONST char *f;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    va_start(ap, fmt);
 
@@ -1664,7 +1709,7 @@ void SLsmg_set_screen_start (int *r, int *c)
 {
    int orow = Start_Row, oc = Start_Col;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    if (c == NULL) Start_Col = 0;
    else
@@ -1684,7 +1729,7 @@ void SLsmg_draw_object (int r, int c, SLwchar_Type object)
 {
    This_Row = r;  This_Col = c;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    if (point_visible (1))
      {
@@ -1704,7 +1749,7 @@ void SLsmg_draw_hline (unsigned int n)
    int final_col = This_Col + (int) n;
    int save_color;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    if ((This_Row < Start_Row) || (This_Row >= Start_Row + (int)Screen_Rows)
        || (0 == compute_clip (This_Col, n, Start_Col, Start_Col + (int)Screen_Cols,
@@ -1720,12 +1765,10 @@ void SLsmg_draw_hline (unsigned int n)
    This_Color |= SLSMG_ACS_MASK;
    This_Col = cmin;
 
-      
    if (hbuf[0] == 0)
      {
 	SLMEMSET ((char *) hbuf, SLSMG_HLINE_CHAR, 16);
      }
-
 
    while (n)
      {
@@ -1742,10 +1785,10 @@ void SLsmg_draw_vline (int n)
    int final_row = This_Row + n;
    int save_color;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
-   if (((c < Start_Col) || (c >= Start_Col + (int)Screen_Cols)) 
-       || (0 == compute_clip (This_Row, n, Start_Row, 
+   if (((c < Start_Col) || (c >= Start_Col + (int)Screen_Cols))
+       || (0 == compute_clip (This_Row, n, Start_Row,
 			      Start_Row + (int)Screen_Rows,
 			      &rmin, &rmax)))
      {
@@ -1768,7 +1811,7 @@ void SLsmg_draw_vline (int n)
 
 void SLsmg_draw_box (int r, int c, unsigned int dr, unsigned int dc)
 {
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    if (!dr || !dc) return;
    This_Row = r;  This_Col = c;
@@ -1794,7 +1837,7 @@ void SLsmg_fill_region (int r, int c, unsigned int dr, unsigned int dc, SLwchar_
    int dcmax, rmax;
    unsigned int wchlen;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    SLsmg_gotorc (r, c);
    r = This_Row; c = This_Col;
@@ -1808,7 +1851,7 @@ void SLsmg_fill_region (int r, int c, unsigned int dr, unsigned int dc, SLwchar_
    rmax = This_Row + (int)dr;
    if (rmax > (int)Screen_Rows) rmax = (int)Screen_Rows;
 
-   if ((wch < 0x80) 
+   if ((wch < 0x80)
        || (UTF8_Mode == 0))
      {
 	if (buf[0] != (unsigned char) wch)
@@ -1860,7 +1903,7 @@ SLsmg_set_color_in_region (int color, int r, int c, unsigned int dr, unsigned in
 {
    int cmax, rmax;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    c -= Start_Col;
    r -= Start_Row;
@@ -1963,7 +2006,7 @@ void SLsmg_write_color_chars (SLsmg_Char_Type *s, unsigned int len)
    char buf[32], *b, *bmax;
    int color, save_color;
 
-   if (Smg_Inited == 0) return;
+   if (Smg_Mode == SMG_MODE_NONE) return;
 
    smax = s + len;
    b = buf;
@@ -2037,21 +2080,21 @@ unsigned int SLsmg_strwidth (SLuchar_Type *u, SLuchar_Type *umax)
 		  col++;
 		  continue;
 	       }
-	     
+
 	     if ((ch == '\t') && (SLsmg_Tab_Width > 0))
 	       {
 		  if (col >= 0)
 		    col = (1 + col/SLsmg_Tab_Width) * SLsmg_Tab_Width;
 		  else
 		    col = ((col + 1)/SLsmg_Tab_Width) * SLsmg_Tab_Width;
-		  
+
 		  continue;
 	       }
 
 	     if ((ch == '\n')
 		 && (SLsmg_Newline_Behavior != SLSMG_NEWLINE_PRINTABLE))
 	       break;
-	     
+
 	     if ((ch == 0x8) && SLsmg_Backspace_Moves)
 	       {
 		  col--;
@@ -2068,11 +2111,11 @@ unsigned int SLsmg_strwidth (SLuchar_Type *u, SLuchar_Type *umax)
 	     col += 2;
 	     continue;
 	  }
-	
+
 	nconsumed = 1;
 	if ((utf8_mode == 0)
 	    || (NULL == SLutf8_decode (u, umax, &wc, &nconsumed)))
-	  {	     
+	  {
 	     if ((utf8_mode == 0)
 		 && (display_8bit && (*u >= display_8bit)))
 	       col++;
@@ -2090,14 +2133,14 @@ unsigned int SLsmg_strwidth (SLuchar_Type *u, SLuchar_Type *umax)
 	  }
 	col += SLwchar_wcwidth (wc);
      }
-   
+
    if (col < This_Col)
      return 0;
 
    return (unsigned int) (col - This_Col);
 }
 
-/* If the string u were written at the current positition, this function 
+/* If the string u were written at the current positition, this function
  * returns the number of bytes necessary to reach the specified width.
  */
 unsigned int SLsmg_strbytes (SLuchar_Type *u, SLuchar_Type *umax, unsigned int width)
@@ -2165,10 +2208,10 @@ unsigned int SLsmg_strbytes (SLuchar_Type *u, SLuchar_Type *umax, unsigned int w
 	else if (wc < (SLwchar_Type)display_8bit)
 	  col += 4;
 	else col += SLwchar_wcwidth (wc);
-	
+
 	if (col >= col_max)
 	  break;
-	
+
 	u += nconsumed;
      }
 
@@ -2179,7 +2222,7 @@ unsigned int SLsmg_read_raw (SLsmg_Char_Type *buf, unsigned int len)
 {
    unsigned int r, c;
 
-   if (Smg_Inited == 0) return 0;
+   if (Smg_Mode == SMG_MODE_NONE) return 0;
 
    if (0 == point_visible (1)) return 0;
 
@@ -2198,7 +2241,7 @@ unsigned int SLsmg_write_raw (SLsmg_Char_Type *buf, unsigned int len)
    unsigned int r, c;
    SLsmg_Char_Type *dest;
 
-   if (Smg_Inited == 0) return 0;
+   if (Smg_Mode == SMG_MODE_NONE) return 0;
 
    if (0 == point_visible (1)) return 0;
 
@@ -2220,7 +2263,7 @@ unsigned int SLsmg_write_raw (SLsmg_Char_Type *buf, unsigned int len)
 
 int SLsmg_char_at (SLsmg_Char_Type *cp)
 {
-   if (Smg_Inited == 0) return -1;
+   if (Smg_Mode == SMG_MODE_NONE) return -1;
 
    if (point_visible (1))
      {

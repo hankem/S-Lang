@@ -76,6 +76,16 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
+#define CROSS_COMPILE_FOR_VMS	0
+#ifdef VMS
+# define VMS_SYSTEM 1
+#else
+# if CROSS_COMPILE_FOR_VMS
+#  define VMS 1
+#  undef __unix__
+# endif
+#endif
+
 /* Colors:  These definitions are used for the display.  However, the
  * application only uses object handles which get mapped to this
  * internal representation.  The mapping is performed by the Color_Map
@@ -106,6 +116,9 @@ int SLtt_Newline_Ok = 0;
 int SLtt_Has_Alt_Charset = 0;
 int SLtt_Force_Keypad_Init = -1;
 
+static int Use_Relative_Cursor_Addressing = 0;
+static int Max_Relative_Cursor_r = 0;
+
 /* static int UTF8_Mode = -1; */
 
 void (*_pSLtt_color_changed_hook)(void);
@@ -117,6 +130,7 @@ static int Can_Background_Color_Erase = 1;
 int SLtt_Has_Status_Line = -1;	       /* hs */
 int SLang_TT_Write_FD = -1;
 
+static int TT_Is_Initialized = 0;
 static int Automatic_Margins;
 /* static int No_Move_In_Standout; */
 static int Worthless_Highlight;
@@ -192,8 +206,16 @@ static SLCONST char *Del_Char_Str; /* = "\033[P"; */   /* dc */
 static SLCONST char *Del_N_Lines_Str; /* = "\033[%dM"; */  /* DL */
 static SLCONST char *Add_N_Lines_Str; /* = "\033[%dL"; */  /* AL */
 static SLCONST char *Rev_Scroll_Str;
-static SLCONST char *Curs_Up_Str;
-static SLCONST char *Curs_F_Str;    /* RI termcap string */
+static SLCONST char *Curs_Up_Str;      /* "up" */
+static SLCONST char *Curs_UpN_Str;     /* "UP" */
+static SLCONST char *Curs_Dn_Str;      /* "do" */
+static SLCONST char *Curs_DnN_Str;     /* "DO" */
+static SLCONST char *Curs_Right_Str;    /* "nd" */
+static SLCONST char *Curs_RightN_Str;    /* "RI" */
+static SLCONST char *Curs_Left_Str;    /* "bc", "le" */
+static SLCONST char *Curs_LeftN_Str;    /* "LE" */
+/* static SLCONST char *Clear_EOS_Str; */   /* cd */
+
 static SLCONST char *Cursor_Visible_Str;    /* ve termcap string */
 static SLCONST char *Cursor_Invisible_Str;    /* vi termcap string */
 #if 0
@@ -204,23 +226,21 @@ static SLCONST char *Start_Alt_Chars_Str;  /* as */
 static SLCONST char *End_Alt_Chars_Str;   /* ae */
 static SLCONST char *Enable_Alt_Char_Set;  /* eA */
 
-static SLCONST char *Term_Init_Str;
+static SLCONST char *Start_Abs_Cursor_Addressing_Mode;
 static SLCONST char *Keypad_Init_Str;
-static SLCONST char *Term_Reset_Str;
+static SLCONST char *End_Abs_Cursor_Addressing_Mode;
 static SLCONST char *Keypad_Reset_Str;
 
 /* status line functions */
 static SLCONST char *Disable_Status_line_Str;  /* ds */
 static SLCONST char *Return_From_Status_Line_Str;   /* fs */
 static SLCONST char *Goto_Status_Line_Str;     /* ts */
-static int Num_Status_Line_Columns;    /* ws */
+/* static int Num_Status_Line_Columns; */   /* ws */
 /* static int Status_Line_Esc_Ok;	 */       /* es */
-
-/* static int Len_Curs_F_Str = 5; */
 
 /* cm string has %i%d since termcap numbers columns from 0 */
 /* char *CURS_POS_STR = "\033[%d;%df";  ansi-- hor and vert pos */
-static SLCONST char *Curs_Pos_Str; /* = "\033[%i%d;%dH";*/   /* cm termcap string */
+static SLCONST char *Abs_Curs_Pos_Str; /* = "\033[%i%d;%dH";*/   /* cm termcap string */
 
 /* scrolling region */
 static int Scroll_r1 = 0, Scroll_r2 = 23;
@@ -232,6 +252,8 @@ static SLtt_Char_Type Current_Fgbg = 0xFFFFFFFFU;
 static int Cursor_Set;		       /* 1 if cursor position known, 0
 					* if not.  -1 if only row is known
 					*/
+/* This is used only in relative-cursor-addressing mode */
+static SLsmg_Char_Type Display_Start_Chars[SLTT_MAX_SCREEN_ROWS];
 
 #define MAX_OUTPUT_BUFFER_SIZE 4096
 
@@ -680,6 +702,9 @@ static void tt_printf(SLCONST char *fmt, int x, int y)
 
 void SLtt_set_scroll_region (int r1, int r2)
 {
+   if (Use_Relative_Cursor_Addressing)
+     return;
+
    Scroll_r1 = r1;
    Scroll_r2 = r2;
    tt_printf (Scroll_R_Str, Scroll_r1, Scroll_r2);
@@ -700,6 +725,71 @@ int SLtt_set_cursor_visibility (int show)
    return 0;
 }
 
+static void cursor_motion (SLCONST char *s1, SLCONST char *sN, int n)
+{
+   if ((n == 1) && (s1 != NULL))
+     {
+	tt_write_string (s1);
+	return;
+     }
+
+   if (n <= 0)
+     return;
+
+   if (sN != NULL)
+     tt_printf (sN, n, 0);
+   else while (n > 0)
+     {
+	tt_write_string (s1);
+	n--;
+     }
+}
+
+
+static void goto_relative_rc (int r, int c)
+{
+   if (r < 0)
+     return;
+
+   if (Cursor_Set != 1)
+     {
+	/* Do not know where the cursor is.  At least get the column correct */
+	tt_write ("\r", 1);
+	Cursor_c = 0;
+	Cursor_Set = 1;		       /* pretend we know the row */
+     }
+
+   if (Cursor_r > r)
+     cursor_motion (Curs_Up_Str, Curs_UpN_Str, Cursor_r-r);
+   else if (Cursor_r < r)
+     {
+	tt_write ("\r", 1); Cursor_c = 0;
+	if (r > Max_Relative_Cursor_r)
+	  {
+	     cursor_motion (Curs_Dn_Str, Curs_DnN_Str, Max_Relative_Cursor_r-Cursor_r);
+	     Cursor_r = Max_Relative_Cursor_r;
+	     while (Cursor_r < r)
+	       {
+		  tt_write ("\n", 1);
+		  Cursor_r++;
+	       }
+	  }
+	else
+	  cursor_motion (Curs_Dn_Str, Curs_DnN_Str, r-Cursor_r);
+     }
+   Cursor_r = r;
+   if (r > Max_Relative_Cursor_r)
+     Max_Relative_Cursor_r = r;
+
+   if (Cursor_c > c)
+     cursor_motion (Curs_Left_Str, Curs_LeftN_Str, Cursor_c-c);
+   else if (Cursor_c < c)
+     cursor_motion (Curs_Right_Str, Curs_RightN_Str, c-Cursor_c);
+
+   Cursor_c = c;
+   Cursor_Set = 1;
+}
+
 /* the goto_rc function moves to row relative to scrolling region */
 void SLtt_goto_rc(int r, int c)
 {
@@ -710,13 +800,21 @@ void SLtt_goto_rc(int r, int c)
    if ((c < 0) || (r < 0))
      {
 	Cursor_Set = 0;
+	Cursor_c = 0;
+	Cursor_r = 0;
+	tt_write("\r", 1);
+	return;
+     }
+   if (Use_Relative_Cursor_Addressing)
+     {
+	goto_relative_rc (r, c);
 	return;
      }
 
-   /* if (No_Move_In_Standout && Current_Fgbg) SLtt_normal_video (); */
    r += Scroll_r1;
 
-   if ((Cursor_Set > 0) || ((Cursor_Set < 0) && !Automatic_Margins))
+   if ((Cursor_Set > 0)
+       || ((Cursor_Set < 0) && !Automatic_Margins))
      {
 	n = r - Cursor_r;
 	if ((n == -1) && (Cursor_Set > 0) && (Cursor_c == c)
@@ -765,7 +863,10 @@ void SLtt_goto_rc(int r, int c)
 	  }
      }
    if (s != NULL) tt_write_string(s);
-   else tt_printf(Curs_Pos_Str, r, c);
+   else
+     {
+	tt_printf(Abs_Curs_Pos_Str, r, c);
+     }
    Cursor_c = c; Cursor_r = r;
    Cursor_Set = 1;
 }
@@ -868,7 +969,15 @@ void SLtt_cls (void)
 
    SLtt_normal_video();
    SLtt_reset_scroll_region ();
+
    tt_write_string(Cls_Str);
+
+   if (Use_Relative_Cursor_Addressing)
+     {
+	int r, rmax = SLtt_Screen_Rows;
+	for (r = 0; r < rmax; r++)
+	  Display_Start_Chars[r].nchars = 0;
+     }
 }
 
 void SLtt_reverse_index (int n)
@@ -917,9 +1026,13 @@ static void write_string_with_care (SLCONST char *);
 
 static void del_eol (void)
 {
-#if 0
-   int c;
-#endif
+   if ((Cursor_c == 0)
+       && (Use_Relative_Cursor_Addressing)
+       && (Cursor_r < SLTT_MAX_SCREEN_ROWS))
+     {
+	Display_Start_Chars[Cursor_r].nchars = 0;
+     }
+
    if ((Del_Eol_Str != NULL)
        && (Can_Background_Color_Erase || ((Current_Fgbg & ~0xFF) == 0)))
      {
@@ -927,23 +1040,6 @@ static void del_eol (void)
 	return;
      }
 
-#if 0
-   c = Cursor_c;
-   
-   /* Avoid writing to the lower right corner.  If the terminal does not
-    * have Del_Eol_Str, then it probably does not have what it takes to play
-    * games with insert-mode to "push" the desired character into that corner.
-    */
-   if (Cursor_r + 1 < SLtt_Screen_Rows)
-     c++;
-
-   while (c < SLtt_Screen_Cols)
-     {
-	tt_write (" ", 1);
-	c++;
-     }
-   Cursor_c = (SLtt_Screen_Cols-1);
-#else
    while (Cursor_c < SLtt_Screen_Cols)
      {
 	write_string_with_care (" ");
@@ -951,7 +1047,6 @@ static void del_eol (void)
      }
    Cursor_c = SLtt_Screen_Cols - 1;
    Cursor_Set = 0;
-#endif
 }
 
 void SLtt_del_eol (void)
@@ -1548,6 +1643,16 @@ static void send_attr_str (SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
    p = out;
    pmax = p + (sizeof (out)-1);
 
+   if ((Cursor_c == 0)
+       && (Use_Relative_Cursor_Addressing)
+       && (Cursor_r < SLTT_MAX_SCREEN_ROWS))
+     {
+	if (s < smax)
+	  Display_Start_Chars[Cursor_r] = *s;
+	else
+	  Display_Start_Chars[Cursor_r].nchars = 0;
+     }
+
    dcursor_c = 0;
    while (s < smax)
      {
@@ -1610,7 +1715,7 @@ static void send_attr_str (SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
 		    }
 	       }
 	  }
-	
+
 	if ((wch < 0x80) && (nchars == 1))
 	  *p++ = (unsigned char) wch;
 	else if (_pSLtt_UTF8_Mode == 0)
@@ -1671,10 +1776,10 @@ static void forward_cursor (unsigned int n, int row)
 	write_string_with_care (buf);
 	Cursor_c += n;
      }
-   else if (Curs_F_Str != NULL)
+   else if (Curs_RightN_Str != NULL)
      {
 	Cursor_c += n;
-	n = tt_sprintf(buf, sizeof (buf), Curs_F_Str, (int) n, 0);
+	n = tt_sprintf(buf, sizeof (buf), Curs_RightN_Str, (int) n, 0);
 	tt_write(buf, n);
      }
    else SLtt_goto_rc (row, (int) (Cursor_c + n));
@@ -1737,14 +1842,14 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 
 	a = oldd+(len-1);
 	b = neww+(len-1);
-	
+
 	if (CHAR_EQS(a,b))
 	  insert_hack_char = NULL;
-	else 
+	else
 	  insert_hack_prev = &neww[len-2];
      }
 #endif
-     
+
    memset ((char *) &space_char_buf, 0, sizeof (SLsmg_Char_Type));
    space_char = &space_char_buf;
    space_char->nchars = 1;
@@ -1832,7 +1937,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 	    && SLtt_Use_Ansi_Colors)
 	  {
 	     SLtt_Char_Type fgbg;
-	     
+
 	     fgbg = get_brush_attr (COLOR_OF(pmax-1));
 	     if (0 == (fgbg & ATTR_MASK))
 	       space_char = pmax - 1;
@@ -2108,12 +2213,12 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 	  }
      }
 
-   if (q < qmax) 
+   if (q < qmax)
      {
 	SLtt_reverse_video (COLOR_OF(space_char));
 	del_eol ();
      }
-   
+
 #if SLTT_USE_INSERT_HACK
    else if (insert_hack_char != NULL)
      {
@@ -2126,7 +2231,39 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
      }
 #endif
 
-   if (Automatic_Margins && (Cursor_c + 1 >= SLtt_Screen_Cols)) Cursor_Set = 0;
+   if (Cursor_c >= SLtt_Screen_Cols)
+     {
+	if (Use_Relative_Cursor_Addressing)
+	  {
+	     /* Where is the cursor?  If we have automatic margins, then the
+	      * cursor _may_ be at the beginning of the next row.  But, it may
+	      * not if the terminal permits writing to the LR corner without
+	      * scrolling.  In relative-cursor-addressing mode, we do not know.
+	      *
+	      * The trick is to force the cursor to the next line if
+	      * it is at the end of the current line, or if it is at
+	      * the beginning of the next do nothing to change that line.
+	      * The only thing I can think of is to write the character that
+	      * is already there.
+	      */
+	     Cursor_c = 0;
+	     Cursor_r++;
+	     if (Cursor_r < SLTT_MAX_SCREEN_ROWS)
+	       {
+		  SLsmg_Char_Type *c = Display_Start_Chars + Cursor_r;
+		  if (c->nchars)
+		    send_attr_str (c, c+1);
+		  else
+		    tt_write (" ", 1);
+	       }
+	     else
+	       tt_write (" ", 1);
+	     tt_write ("\r", 1);
+	     Cursor_c =0;
+	  }
+	else if (Automatic_Margins)
+	  Cursor_Set = 0;
+     }
 }
 
 static void get_color_info (void)
@@ -2347,7 +2484,7 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
 	/* Apparantly, this cannot fail according to the man pages. */
 	SLang_TT_Write_FD = fileno (stdout);
      }
-   
+
    if (term == NULL)
      {
 	term = getenv ("TERM");
@@ -2358,7 +2495,7 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
    if (_pSLsecure_issetugid ()
        && ((term[0] == '.') || (NULL != strchr(term, '/'))))
      return -1;
-   
+
    Linux_Console = (!strncmp (term, "linux", 5)
 # ifdef linux
 		    || !strncmp(term, "con", 3)
@@ -2405,7 +2542,7 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
    Termcap_Initalized = 1;
 
    Cls_Str = tt_tgetstr ("cl");
-   Curs_Pos_Str = tt_tgetstr ("cm");
+   Abs_Curs_Pos_Str = tt_tgetstr ("cm");
 
    if ((NULL == (Ins_Mode_Str = tt_tgetstr("im")))
        || ( NULL == (Eins_Mode_Str = tt_tgetstr("ei")))
@@ -2413,7 +2550,28 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
      SLtt_Term_Cannot_Insert = 1;
 
    Visible_Bell_Str = tt_tgetstr ("vb");
+
    Curs_Up_Str = tt_tgetstr ("up");
+   Curs_UpN_Str = tt_tgetstr ("UP");
+
+   /* Avoid \n for moving down because we cannot rely upon the resulting column */
+   Curs_Dn_Str = tt_tgetstr ("do");
+   if ((Curs_Dn_Str != NULL) && (*Curs_Dn_Str == '\n'))
+     Curs_Dn_Str = NULL;
+
+   Curs_DnN_Str = tt_tgetstr ("DO");
+   Curs_Left_Str = tt_tgetstr ("le");
+   if (Curs_Left_Str == NULL)
+     {
+	Curs_Left_Str = tt_tgetstr ("bc");
+	if (Curs_Left_Str == NULL)
+	  Curs_Left_Str = "\b";
+     }
+   Curs_LeftN_Str = tt_tgetstr ("LE");
+   Curs_Right_Str = tt_tgetstr ("nd");
+   Curs_RightN_Str = tt_tgetstr ("RI");
+   /* Clear_EOS_Str = tt_tgetstr ("cd"); */
+
    Rev_Scroll_Str = tt_tgetstr("sr");
    Del_N_Lines_Str = tt_tgetstr("DL");
    Add_N_Lines_Str = tt_tgetstr("AL");
@@ -2421,8 +2579,8 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
    /* Actually these are used to initialize terminals that use cursor
     * addressing.  Hard to believe.
     */
-   Term_Init_Str = tt_tgetstr ("ti");
-   Term_Reset_Str = tt_tgetstr ("te");
+   Start_Abs_Cursor_Addressing_Mode = tt_tgetstr ("ti");
+   End_Abs_Cursor_Addressing_Mode = tt_tgetstr ("te");
 
    /* If I do this for vtxxx terminals, arrow keys start sending ESC O A,
     * which I do not want.  This is mainly for HP terminals.
@@ -2531,8 +2689,8 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
 	Return_From_Status_Line_Str = tt_tgetstr ("fs");
 	Goto_Status_Line_Str = tt_tgetstr ("ts");
 	/* Status_Line_Esc_Ok = TGETFLAG("es"); */
-	Num_Status_Line_Columns = tt_tgetnum ("ws");
-	if (Num_Status_Line_Columns < 0) Num_Status_Line_Columns = 0;
+	/* Num_Status_Line_Columns = tt_tgetnum ("ws"); */
+	/* if (Num_Status_Line_Columns < 0) Num_Status_Line_Columns = 0; */
      }
 
    if (NULL == (Norm_Vid_Str = tt_tgetstr("me")))
@@ -2542,16 +2700,6 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
 
    Cursor_Invisible_Str = tt_tgetstr("vi");
    Cursor_Visible_Str = tt_tgetstr("ve");
-
-   Curs_F_Str = tt_tgetstr("RI");
-
-# if 0
-   if (NULL != Curs_F_Str)
-     {
-	Len_Curs_F_Str = strlen(Curs_F_Str);
-     }
-   else Len_Curs_F_Str = strlen(Curs_Pos_Str);
-# endif
 
    Automatic_Margins = TGETFLAG ("am");
    /* No_Move_In_Standout = !TGETFLAG ("ms"); */
@@ -2619,14 +2767,14 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
 #endif
    get_color_info ();
 
-  
+   TT_Is_Initialized = 1;
+
    if ((Cls_Str == NULL)
-       || (Curs_Pos_Str == NULL))
+       || (Abs_Curs_Pos_Str == NULL))
      return -2;
 
    return 0;
 }
-
 #endif
 /* Unix */
 
@@ -2643,6 +2791,7 @@ void SLtt_enable_cursor_keys (void)
 int SLtt_initialize (char *term)
 {
    SLtt_get_terminfo ();
+   TT_Is_Initialized = 1;
    return 0;
 }
 
@@ -2653,7 +2802,7 @@ void SLtt_get_terminfo ()
    /* Apparantly, this cannot fail according to the man pages. */
    if (SLang_TT_Write_FD == -1)
      SLang_TT_Write_FD = fileno (stdout);
-   
+
    Can_Background_Color_Erase = 0;
 
    Color_Fg_Str = "\033[3%dm";
@@ -2689,9 +2838,17 @@ void SLtt_set_term_vtxxx(int *vt100)
    Del_Eol_Str = "\033[K";
    Del_Bol_Str = "\033[1K";
    Rev_Scroll_Str = "\033M";
-   Curs_F_Str = "\033[%dC";
-   /* Len_Curs_F_Str = 5; */
-   Curs_Pos_Str = "\033[%i%d;%dH";
+
+   Curs_Up_Str = "\033[A";
+   Curs_Dn_Str = "\033[B";
+   Curs_Right_Str = "\033[C";
+   Curs_Left_Str = "\033[D";
+   Curs_UpN_Str = "\033[%dA";
+   Curs_DnN_Str = "\033[%dB";
+   Curs_RightN_Str = "\033[%dC";
+   Curs_LeftN_Str = "\033[%dD";
+
+   Abs_Curs_Pos_Str = "\033[%i%d;%dH";
    if ((vt100 == NULL) || (*vt100 == 0))
      {
 	Ins_Mode_Str = "\033[4h";
@@ -2733,13 +2890,41 @@ int SLtt_init_video (void)
 {
    /*   send_string_to_term("\033[?6h"); */
    /* relative origin mode */
-   tt_write_string (Term_Init_Str);
+   if (Use_Relative_Cursor_Addressing == 0)
+     tt_write_string (Start_Abs_Cursor_Addressing_Mode);
    SLtt_init_keypad ();
    SLtt_reset_scroll_region();
    SLtt_end_insert();
    tt_write_string (Enable_Alt_Char_Set);
    Video_Initialized = 1;
    return 0;
+}
+
+int _pSLtt_init_cmdline_mode (void)
+{
+   if (TT_Is_Initialized == 0)
+     {
+	if (0 != SLtt_initialize (NULL))
+	  return -1;
+     }
+   /* We need to be able to use relative cursor addressing in this mode */
+   if (((Curs_UpN_Str == NULL) && (Curs_Up_Str == NULL))
+       || ((Curs_Dn_Str == NULL) && (Curs_DnN_Str == NULL))
+       || ((Curs_Right_Str == NULL) && (Curs_RightN_Str == NULL))
+       || ((Curs_Left_Str == NULL) && (Curs_LeftN_Str == NULL)))
+     return 0;
+
+   SLtt_Term_Cannot_Scroll = 1;
+   SLtt_Use_Ansi_Colors = 0;
+   Use_Relative_Cursor_Addressing = 1;
+   return 1;
+}
+
+void _pSLtt_cmdline_mode_reset (void)
+{
+   Cursor_Set = 0;
+   Cursor_r = Cursor_c = 0;
+   Max_Relative_Cursor_r = 0;
 }
 
 int SLtt_reset_video (void)
@@ -2765,7 +2950,9 @@ int SLtt_reset_video (void)
      }
    SLtt_erase_line ();
    SLtt_deinit_keypad ();
-   tt_write_string (Term_Reset_Str);
+
+   if (Use_Relative_Cursor_Addressing == 0)
+     tt_write_string (End_Abs_Cursor_Addressing_Mode);
 
    if (Mouse_Mode == 1)
      SLtt_set_mouse_mode (0, 1);
@@ -2825,7 +3012,7 @@ int SLtt_write_to_status_line (SLFUTURE_CONST char *s, int col)
 
 void SLtt_get_screen_size (void)
 {
-#ifdef VMS
+#ifdef VMS_SYSTEM
    int status, code;
    unsigned short chan;
    $DESCRIPTOR(dev_dsc, "SYS$INPUT:");
@@ -2850,7 +3037,7 @@ void SLtt_get_screen_size (void)
 
 #endif
 
-#ifdef VMS
+#ifdef VMS_SYSTEM
    status = sys$assign(&dev_dsc,&chan,0,0,0);
    if (status & 1)
      {
@@ -2899,7 +3086,7 @@ int _pSLtt_get_bce_color_offset (void)
 	else
 	  Bce_Color_Offset = 1;
      }
-   
+
    return Bce_Color_Offset;
 }
 #endif
