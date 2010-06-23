@@ -974,7 +974,9 @@ int _pSLregister_types (void)
        || (sizeof(int) != SIZEOF_INT)
        || (sizeof(long) != SIZEOF_LONG)
        || (sizeof(float) != SIZEOF_FLOAT)
-       || (sizeof(double) != SIZEOF_DOUBLE))
+       || (sizeof(double) != SIZEOF_DOUBLE)
+       || (sizeof(size_t) != SIZEOF_SIZE_T)
+       || (sizeof(off_t) != SIZEOF_OFF_T))
      SLang_exit_error ("S-Lang Library not built properly.  Fix SIZEOF_* in config.h and recompile");
 #endif
    if (-1 == _pSLclass_init ())

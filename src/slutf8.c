@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include "slinclud.h"
 #include <string.h>
@@ -45,7 +45,7 @@ static unsigned char Len_Map[256] =
 #define IS_ILLEGAL_UNICODE(w) \
    (((w >= 0xD800) && (w <= 0xDFFF)) || (w == 0xFFFE) || (w == 0xFFFF))
 
-_INLINE_ 
+_INLINE_
 static int is_invalid_or_overlong_utf8 (SLuchar_Type *u, unsigned int len)
 {
    unsigned int i;
@@ -58,7 +58,7 @@ static int is_invalid_or_overlong_utf8 (SLuchar_Type *u, unsigned int len)
 	  return 1;
      }
 
-   /* Illegal (overlong) sequences */  
+   /* Illegal (overlong) sequences */
    /*           1100000x (10xxxxxx) */
    /*           11100000 100xxxxx (10xxxxxx) */
    /*           11110000 1000xxxx (10xxxxxx 10xxxxxx) */
@@ -93,7 +93,7 @@ static int is_invalid_or_overlong_utf8 (SLuchar_Type *u, unsigned int len)
 }
 
 /* This function assumes that the necessary checks have been made to ensure
- * a valid UTF-8 encoded character is present. 
+ * a valid UTF-8 encoded character is present.
  */
 _INLINE_
 static SLwchar_Type fast_utf8_decode (SLuchar_Type *u, unsigned int len)
@@ -119,7 +119,7 @@ static SLwchar_Type fast_utf8_decode (SLuchar_Type *u, unsigned int len)
 unsigned char *SLutf8_skip_char (unsigned char *s, unsigned char *smax)
 {
    unsigned int len;
-   
+
    if (s >= smax)
      return s;
 
@@ -129,18 +129,18 @@ unsigned char *SLutf8_skip_char (unsigned char *s, unsigned char *smax)
 
    if (s + len > smax)
      return s+1;
-   
+
    if (is_invalid_or_overlong_utf8 (s, len))
      return s + 1;
-   
+
    return s + len;
 }
 
 SLuchar_Type *SLutf8_skip_chars (SLuchar_Type *s, SLuchar_Type *smax,
-				  unsigned int num, unsigned int *dnum,
-				  int ignore_combining)
+				 SLstrlen_Type num, SLstrlen_Type *dnum,
+				 int ignore_combining)
 {
-   unsigned int n;
+   SLstrlen_Type n;
 
    n = 0;
    while ((n < num) && (s < smax))
@@ -167,7 +167,7 @@ SLuchar_Type *SLutf8_skip_chars (SLuchar_Type *s, SLuchar_Type *smax,
 	     n++;
 	     continue;
 	  }
-	
+
 	if (ignore_combining)
 	  {
 	     SLwchar_Type w = fast_utf8_decode (s, len);
@@ -186,13 +186,13 @@ SLuchar_Type *SLutf8_skip_chars (SLuchar_Type *s, SLuchar_Type *smax,
 	while (s < smax)
 	  {
 	     SLwchar_Type w;
-	     unsigned int nconsumed;
+	     SLstrlen_Type nconsumed;
 	     if (NULL == SLutf8_decode (s, smax, &w, &nconsumed))
 	       break;
-	     
+
 	     if (0 != SLwchar_wcwidth (w))
 	       break;
-	     
+
 	     s += nconsumed;
 	  }
      }
@@ -202,12 +202,11 @@ SLuchar_Type *SLutf8_skip_chars (SLuchar_Type *s, SLuchar_Type *smax,
    return s;
 }
 
-
 SLuchar_Type *SLutf8_bskip_chars (SLuchar_Type *smin, SLuchar_Type *s,
-				   unsigned int num, unsigned int *dnum,
-				   int ignore_combining)
+				  SLstrlen_Type num, SLstrlen_Type *dnum,
+				  int ignore_combining)
 {
-   unsigned int n;
+   SLstrlen_Type n;
    SLuchar_Type *smax = s;
 
    n = 0;
@@ -224,9 +223,9 @@ SLuchar_Type *SLutf8_bskip_chars (SLuchar_Type *smin, SLuchar_Type *s,
 	     smax = s;
 	     continue;
 	  }
-	
+
 	dn = 0;
-	while ((s != smin) 
+	while ((s != smin)
 	       && (Len_Map[ch] == 0)
 	       && (dn < SLUTF8_MAX_MBLEN))
 	  {
@@ -259,8 +258,8 @@ SLuchar_Type *SLutf8_bskip_chars (SLuchar_Type *smin, SLuchar_Type *s,
 		  s = smax;
 		  continue;
 	       }
-	     
-	     if ((ignore_combining == 0) 
+
+	     if ((ignore_combining == 0)
 		 || (0 != SLwchar_wcwidth (w)))
 	       n++;
 
@@ -277,7 +276,7 @@ SLuchar_Type *SLutf8_bskip_char (SLuchar_Type *smin, SLuchar_Type *s)
 {
    if (s > smin)
      {
-	unsigned int dn;
+	SLstrlen_Type dn;
 
 	s--;
 	if (*s >= 0x80)
@@ -286,16 +285,15 @@ SLuchar_Type *SLutf8_bskip_char (SLuchar_Type *smin, SLuchar_Type *s)
    return s;
 }
 
-
 /* This function counts the number of wide characters in a UTF-8 encoded
  * string.  Each byte in an invalid sequence is counted as a single
  * character. If the string contains illegal values, the illegal byte
  * is counted as 1 character.
  */
-unsigned int SLutf8_strlen (SLuchar_Type *s, int ignore_combining)
+SLstrlen_Type SLutf8_strlen (SLuchar_Type *s, int ignore_combining)
 {
-   unsigned int count, len;
-   
+   SLstrlen_Type count, len;
+
    if (s == NULL)
      return 0;
 
@@ -304,14 +302,13 @@ unsigned int SLutf8_strlen (SLuchar_Type *s, int ignore_combining)
    return count;
 }
 
-
 /*
  * This function returns NULL if the input does not correspond to a valid
  * UTF-8 sequence, otherwise, it returns the position of the next character
  * in the sequence.
  */
 unsigned char *SLutf8_decode (unsigned char *u, unsigned char *umax,
-			      SLwchar_Type *wp, unsigned int *nconsumedp)
+			      SLwchar_Type *wp, SLstrlen_Type *nconsumedp)
 {
    unsigned int len;
    unsigned char ch;
@@ -331,7 +328,7 @@ unsigned char *SLutf8_decode (unsigned char *u, unsigned char *umax,
 	if (nconsumedp != NULL) *nconsumedp = 1;
 	return u+1;
      }
-   
+
    len = Len_Map[ch];
    if (len < 2)
      {
@@ -349,11 +346,11 @@ unsigned char *SLutf8_decode (unsigned char *u, unsigned char *umax,
      {
 	if (nconsumedp != NULL)
 	  *nconsumedp = 1;
-	
+
 	return NULL;
      }
 
-   if (nconsumedp != NULL) 
+   if (nconsumedp != NULL)
      *nconsumedp = len;
 
    *wp = w = fast_utf8_decode (u, len);
@@ -364,17 +361,16 @@ unsigned char *SLutf8_decode (unsigned char *u, unsigned char *umax,
    return u + len;
 }
 
-
-/* Encode the wide character returning a pointer to the end of the 
+/* Encode the wide character returning a pointer to the end of the
  * utf8 of the encoded multi-byte character.  This function will also encode
- * illegal unicode values.  It returns NULL if buflen is too small. 
+ * illegal unicode values.  It returns NULL if buflen is too small.
  * Otherwise, it returns a pointer at the end of the last encoded byte.
  * It does not null terminate the encoded string.
  */
-SLuchar_Type *SLutf8_encode (SLwchar_Type w, SLuchar_Type *u, unsigned int ulen)
+SLuchar_Type *SLutf8_encode (SLwchar_Type w, SLuchar_Type *u, SLstrlen_Type ulen)
 {
    SLuchar_Type *umax = u + ulen;
-   
+
    /*   U-00000000 - U-0000007F: 0xxxxxxx */
    if (w <= 0x7F)
      {
@@ -408,12 +404,12 @@ SLuchar_Type *SLutf8_encode (SLwchar_Type w, SLuchar_Type *u, unsigned int ulen)
    /*   U-00000800 - U-0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx */
    if (w <= 0xFFFF)
      {
-	if (u+2 >= umax) 
+	if (u+2 >= umax)
 	  return NULL;
 	*u++ = (w >> 12 ) | 0xE0;
 	goto finish_2;
      }
-   
+
    /*   U-00010000 - U-001FFFFF: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx */
    if (w <= 0x1FFFFF)
      {
@@ -431,7 +427,7 @@ SLuchar_Type *SLutf8_encode (SLwchar_Type w, SLuchar_Type *u, unsigned int ulen)
 	*u++ = (w >> 24) | 0xF8;
 	goto finish_4;
      }
-   
+
    /*   U-04000000 - U-7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx */
    if (w <= 0x7FFFFFFF)
      {
@@ -449,17 +445,17 @@ SLuchar_Type *SLutf8_encode (SLwchar_Type w, SLuchar_Type *u, unsigned int ulen)
    finish_3: *u++ = ((w >> 12) & 0x3F)|0x80;
    finish_2: *u++ = ((w >> 6) & 0x3F)|0x80;
              *u++ = (w & 0x3F)|0x80;
-   
+
    return u;
 }
 
-/* Like SLutf8_encode, but null terminates the result.  
+/* Like SLutf8_encode, but null terminates the result.
  * At least SLUTF8_MAX_MBLEN+1 bytes assumed.
  */
 SLuchar_Type *SLutf8_encode_null_terminate (SLwchar_Type w, SLuchar_Type *u)
 {
    SLuchar_Type *p;
-   
+
    p = SLutf8_encode (w, u, SLUTF8_MAX_MBLEN);
    if (p != NULL)
      *p = 0;
@@ -482,12 +478,12 @@ int SLutf8_decode_bytes (SLuchar_Type *u, SLuchar_Type *umax,
 	     *bmax++ = *u++;
 	     continue;
 	  }
-	
+
 	if (NULL == (u = SLutf8_decode (u, umax, &w, NULL)))
 	  return -1;		       /* FIXME: HANDLE ERROR */
-	
+
 	if (w > 0xFF)
-	  { 
+	  {
 #if 0
 	     sprintf (bmax, "<U+%04X>", w);
 	     bmax += strlen (bmax);
@@ -496,7 +492,7 @@ int SLutf8_decode_bytes (SLuchar_Type *u, SLuchar_Type *umax,
 	     /* FIXME: HANDLE ERROR */
 	     w = w & 0xFF;
 	  }
-	
+
 	*bmax++ = w;
      }
    *np = bmax - b;
@@ -505,12 +501,12 @@ int SLutf8_decode_bytes (SLuchar_Type *u, SLuchar_Type *umax,
 }
 
 /* UTF-8 Encode the bytes between b and bmax storing the results in the
- * buffer defined by u and umax, returning the position following the 
+ * buffer defined by u and umax, returning the position following the
  * last encoded character.  Upon return, *np is set to the number of bytes
  * sucessfully encoded.
  */
 SLuchar_Type *SLutf8_encode_bytes (unsigned char *b, unsigned char *bmax,
-				   SLuchar_Type *u, unsigned int ulen, 
+				   SLuchar_Type *u, unsigned int ulen,
 				   unsigned int *np)
 {
    unsigned char *bstart = b;
@@ -524,7 +520,7 @@ SLuchar_Type *SLutf8_encode_bytes (unsigned char *b, unsigned char *bmax,
 	  {
 	     if (u >= umax)
 	       break;
-	     
+
 	     *u++ = *b++;
 	     continue;
 	  }
@@ -551,7 +547,7 @@ static SLuchar_Type *xform_utf8 (SLuchar_Type *u, SLuchar_Type *umax,
 
    if (umax < u)
      return NULL;
-   
+
    len = 0;
    p = buf = NULL;
    malloced_len = 0;
@@ -560,13 +556,13 @@ static SLuchar_Type *xform_utf8 (SLuchar_Type *u, SLuchar_Type *umax,
      {
         SLwchar_Type w;
         SLuchar_Type *u1;
-        unsigned int nconsumed;
+        SLstrlen_Type nconsumed;
 
         if (malloced_len <= len + SLUTF8_MAX_MBLEN)
           {
              SLuchar_Type *newbuf;
              malloced_len += 1 + (umax - u) + SLUTF8_MAX_MBLEN;
-             
+
              newbuf = (SLuchar_Type *)SLrealloc ((char *)buf, malloced_len);
              if (newbuf == NULL)
                {
@@ -607,13 +603,13 @@ static SLuchar_Type *xform_utf8 (SLuchar_Type *u, SLuchar_Type *umax,
              len += p1 - p;
              p = p1;
           }
-        
+
         u = u1;
      }
 }
 
 /* Returned an uppercased version of an UTF-8 encoded string.  Illegal or
- * invalid sequences will be returned as-is.  This function returns 
+ * invalid sequences will be returned as-is.  This function returns
  * an SLstring.
  */
 SLuchar_Type *SLutf8_strup (SLuchar_Type *u, SLuchar_Type *umax)
@@ -622,7 +618,7 @@ SLuchar_Type *SLutf8_strup (SLuchar_Type *u, SLuchar_Type *umax)
 }
 
 /* Returned an lowercased version of an UTF-8 encoded string.  Illegal or
- * invalid sequences will be returned as-is.  This function returns 
+ * invalid sequences will be returned as-is.  This function returns
  * an SLstring.
  */
 SLuchar_Type *SLutf8_strlo (SLuchar_Type *u, SLuchar_Type *umax)
@@ -630,15 +626,15 @@ SLuchar_Type *SLutf8_strlo (SLuchar_Type *u, SLuchar_Type *umax)
    return xform_utf8 (u, umax, SLwchar_tolower);
 }
 
-int SLutf8_compare (SLuchar_Type *a, SLuchar_Type *amax, 
+int SLutf8_compare (SLuchar_Type *a, SLuchar_Type *amax,
                     SLuchar_Type *b, SLuchar_Type *bmax,
-                    unsigned int nchars,
+                    SLstrlen_Type nchars,
                     int cs)
 {
    while (nchars && (a < amax) && (b < bmax))
      {
         SLwchar_Type cha, chb;
-        unsigned int na, nb;
+        SLstrlen_Type na, nb;
         int aok, bok;
 
         if (*a < 0x80)
@@ -677,10 +673,10 @@ int SLutf8_compare (SLuchar_Type *a, SLuchar_Type *amax,
           return 1;
         else if (bok)
           return -1;
-        
+
         if (cha == chb)
           continue;
-        
+
         if (cha > chb)
           return 1;
 
@@ -692,24 +688,23 @@ int SLutf8_compare (SLuchar_Type *a, SLuchar_Type *amax,
 
    if ((a >= amax) && (b >= bmax))
      return 0;
-   
+
    if (b >= bmax)
      return 1;
-   
+
    return -1;
 }
 
-
 /* Returns an SLstring */
 SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
-				SLwchar_Type wch, unsigned int pos,
+				SLwchar_Type wch, SLstrlen_Type pos,
 				int ignore_combining)
 {
    SLuchar_Type *a, *a1, *b;
-   unsigned int dpos;
+   SLstrlen_Type dpos;
    SLuchar_Type buf[SLUTF8_MAX_MBLEN+1];
    SLstr_Type *c;
-   unsigned int n1, n2, n3, len;
+   SLstrlen_Type n1, n2, n3, len;
 
    a = SLutf8_skip_chars (u, umax, pos, &dpos, ignore_combining);
 
@@ -720,14 +715,14 @@ SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
      }
 
    a1 = SLutf8_skip_chars (a, umax, 1, NULL, ignore_combining);
-   
+
    b = SLutf8_encode (wch, buf, SLUTF8_MAX_MBLEN);
    if (b == NULL)
      {
 	_pSLang_verror (SL_UNICODE_ERROR, "Unable to encode wchar 0x%lX", (unsigned long)wch);
 	return NULL;
      }
-   
+
    n1 = (a-u);
    n2 = (b-buf);
    n3 = (umax-a1);
@@ -735,7 +730,7 @@ SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
    c = _pSLallocate_slstring (len);
    if (c == NULL)
      return NULL;
-   
+
    memcpy (c, (char *)u, n1);
    memcpy (c+n1, (char *)buf, n2);
    memcpy (c+n1+n2, (char *)a1, n3);
@@ -745,31 +740,28 @@ SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
    return _pSLcreate_via_alloced_slstring (c, len);
 }
 
-   
 /* utf8 buffer assumed to be at least SLUTF8_MAX_MBLEN+1 bytes.  Result will be
  * null terminated.   Returns position of NEXT character.
  * Analogous to: *p++
  */
 SLuchar_Type *SLutf8_extract_utf8_char (SLuchar_Type *u,
-					SLuchar_Type *umax, 
+					SLuchar_Type *umax,
 					SLuchar_Type *utf8)
 {
    SLuchar_Type *u1;
-   
+
    u1 = SLutf8_skip_char (u, umax);
    memcpy ((char *)utf8, u, u1-u);
    utf8[u1-u] = 0;
-   
+
    return u1;
 }
-   
-   
 
 /* These routines depend upon the value of the _pSLinterp_UTF8_Mode variable.
  * They also generate slang errors upon error.
  */
-SLuchar_Type *_pSLinterp_decode_wchar (SLuchar_Type *u, 
-				      SLuchar_Type *umax, 
+SLuchar_Type *_pSLinterp_decode_wchar (SLuchar_Type *u,
+				      SLuchar_Type *umax,
 				      SLwchar_Type *chp)
 {
    if (_pSLinterp_UTF8_Mode == 0)
@@ -781,7 +773,7 @@ SLuchar_Type *_pSLinterp_decode_wchar (SLuchar_Type *u,
 
    if (NULL == (u = SLutf8_decode (u, umax, chp, NULL)))
      _pSLang_verror (SL_INVALID_UTF8, "Invalid UTF-8 encoded string");
-   
+
    return u;
 }
 
@@ -815,7 +807,7 @@ int main (int argc, char **argv)
 {
    unsigned char *s, *smax;
    char **t;
-   char *ok_tests [] = 
+   char *ok_tests [] =
      {
 	"Ìüø",
 	  "ÓÄÄ",
@@ -824,7 +816,7 @@ int main (int argc, char **argv)
 	  "ÙêÄÄ",
 	  NULL
      };
-   char *long_tests [] = 
+   char *long_tests [] =
      {
 	"¿Ø",
 	  "‡ÄØ",
@@ -842,7 +834,7 @@ int main (int argc, char **argv)
 	while (s < smax)
 	  {
 	     SLwchar_Type w;
-	     
+
 	     if (NULL == (s = SLutf8_to_wc (s, smax, &w)))
 	       {
 		  fprintf (stderr, "SLutf8_to_wc failed\n");
@@ -852,7 +844,7 @@ int main (int argc, char **argv)
 	       break;
 	     fprintf (stdout, " 0x%X", w);
 	  }
-   
+
 	fprintf (stdout, "\n");
      }
    return 0;

@@ -136,6 +136,20 @@ Changes since 2.2.2
     names.
 51. src/slrline.c,slsmg.c,sldisply.c: Added support for multiline
     readline.
+52. configure,src/*.hin: Added autoconf support for size_t.
+53. src/slang.h,...: Added 'typedef unsigned in SLstrlen_Type' to
+    create migration path for size_t in place of unsigned int.
+54. src/slstrops.c: New intrinsics:
+
+      islower, isupper, isxdigit, isalnum, isalpha, iscntrl, isprint,
+      isgraph, ispunct, isblank, isspace, strskipchar, strbskipchar
+
+    The latter two functions play a role in the context of the
+    variable length UTF-8 encoding
+    encoding analogous to that of ch=*s++ and ch=*s-- in a fixed
+    encoding.
+55. slsh/lib/rline/editfuns.sl: Used functios in change #54 to implement
+    bskip_word and skip_word readline functions.
 
 {{{ Previous Versions
 

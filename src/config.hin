@@ -95,6 +95,7 @@
 #undef off_t
 #undef SIZEOF_OFF_T
 #undef size_t
+#undef SIZEOF_SIZE_T
 
 /* define if you have these. */
 #undef HAVE_ATEXIT

@@ -31,6 +31,8 @@ rline_setkey (&rline_kill_bol,		"^U");
 rline_setkey (&rline_kill_region,	"^W");
 rline_setkey (&rline_yank,		"^Y");
 rline_setkey ("trim",			"\e\\");
+rline_setkey (&rline_bskip_word,	"\eb");
+rline_setkey (&rline_skip_word,		"\ef");
 rline_setkey (&rline_copy_region,	"\ew");
 rline_setkey ("complete",		"\t");
 
@@ -53,7 +55,7 @@ rline_setkey ("left",			"^@K");
 rline_setkey ("del",			"^@S");
 rline_setkey ("eol",			"^@O");
 rline_setkey ("bol",			"^@G");
-   
+
 rline_setkey ("up",			"\xE0H");
 rline_setkey ("down",			"\xE0P");
 rline_setkey ("right",			"\xE0M");

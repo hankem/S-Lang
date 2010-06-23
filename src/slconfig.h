@@ -269,12 +269,12 @@ USA.
 /* #define gid_t int */
 /* #define off_t int */
 /* #define size_t unsigned int */
+#define SIZEOF_OFF_T	4
+#define SIZEOF_SIZE_T	4
 
 #undef HAVE_LONG_LONG
 
 #define HAVE_SETVBUF
-
-#define SIZEOF_OFF_T	4
 
 #if defined (__EMX__) || defined(__BORLANDC__) || defined(__IBMC__) || defined(_MSC_VER) || defined(__WATCOMC__)
 # define HAVE_IO_H

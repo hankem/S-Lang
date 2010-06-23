@@ -982,7 +982,7 @@ int SLcurses_waddnstr (SLcurses_Window_Type *w, char *str, int len)
    while (u < umax)
      {
 	SLwchar_Type ch;
-	unsigned int nconsumed;
+	SLstrlen_Type nconsumed;
 	int width = 1;
 
 	if (SLsmg_is_utf8_mode () && SLutf8_decode (u, umax, &ch, &nconsumed))

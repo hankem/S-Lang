@@ -694,5 +694,6 @@ SLANG2.2.1 {
 SLANG2.2.3 {
 	global:
 		SLang_push_array_index;
+		SLang_push_strlen_type;
+		SLang_pop_strlen_type;
 } SLANG2.2.1;
-

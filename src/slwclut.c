@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include "slinclud.h"
 #include <string.h>
@@ -43,7 +43,7 @@ void SLwchar_free_lut (SLwchar_Lut_Type *r)
 {
    if (r == NULL)
      return;
-   
+
    SLfree ((char *) r->chmin);
    SLfree ((char *) r->chmax);
 
@@ -53,11 +53,11 @@ void SLwchar_free_lut (SLwchar_Lut_Type *r)
 SLwchar_Lut_Type *SLwchar_create_lut (unsigned int num_entries)
 {
    SLwchar_Lut_Type *r;
-   
+
    r = (SLwchar_Lut_Type *)SLcalloc (sizeof (SLwchar_Lut_Type), 1);
    if (r == NULL)
      return NULL;
-   
+
    r->chmin = (SLwchar_Type *) SLmalloc (num_entries*sizeof(SLwchar_Type));
    r->chmax = (SLwchar_Type *) SLmalloc (num_entries*sizeof(SLwchar_Type));
    if ((r->chmin == NULL) || (r->chmax == NULL))
@@ -65,7 +65,7 @@ SLwchar_Lut_Type *SLwchar_create_lut (unsigned int num_entries)
         SLwchar_free_lut (r);
         return NULL;
      }
-   
+
    r->malloced_len = num_entries;
    r->utf8_mode = _pSLinterp_UTF8_Mode;
    return r;
@@ -79,7 +79,7 @@ int SLwchar_add_range_to_lut (SLwchar_Lut_Type *r, SLwchar_Type a, SLwchar_Type 
         a = b;
         b = tmp;
      }
-   
+
    if (b < 256)
      {
         unsigned char *lut = r->lut;
@@ -90,12 +90,12 @@ int SLwchar_add_range_to_lut (SLwchar_Lut_Type *r, SLwchar_Type a, SLwchar_Type 
           }
         return 0;
      }
-   
+
    if (a < 256)
      {
         if (-1 == SLwchar_add_range_to_lut (r, a, 255))
           return -1;
-        
+
         a = 256;
      }
 
@@ -112,16 +112,16 @@ int SLwchar_add_range_to_lut (SLwchar_Lut_Type *r, SLwchar_Type a, SLwchar_Type 
         chmax = (SLwchar_Type *) SLrealloc ((char *)r->chmax, malloced_len * sizeof (SLwchar_Type));
         if (chmax == NULL)
           return -1;
-        
+
         r->chmax = chmax;
         r->malloced_len = malloced_len;
      }
-   
+
    r->chmin[r->table_len] = a;
    r->chmax[r->table_len] = b;
-   
+
    r->table_len += 1;
-   
+
    return 0;
 }
 
@@ -147,7 +147,7 @@ static int wch_in_lut (SLwchar_Lut_Type *r, SLwchar_Type wch)
 
    if (wch < 256)
      return r->lut[wch];
-   
+
    if (r->char_class
        && (SL_CLASSIFICATION_LOOKUP(wch) & r->char_class))
      return 1;
@@ -170,7 +170,7 @@ int SLwchar_in_lut (SLwchar_Lut_Type *r, SLwchar_Type wch)
 {
    if (r == NULL)
      return -1;
-   
+
    return wch_in_lut (r, wch);
 }
 
@@ -191,11 +191,11 @@ SLuchar_Type *SLwchar_skip_range (SLwchar_Lut_Type *r, SLuchar_Type *p,
    while (p < pmax)
      {
         SLwchar_Type wch;
-        unsigned int dn;
+        SLstrlen_Type dn;
 
-        if ((*p < 0x80) 
+        if ((*p < 0x80)
 	    || (utf8_mode == 0))
-          {                               
+          {
              if ((int)lut[*p] == invert)
 	       return p;
 
@@ -242,7 +242,7 @@ SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *pmin,
 
    lut = r->lut;
    pmax = p;
-   
+
    invert = (invert != 0);
    utf8_mode = r->utf8_mode;
 
@@ -250,14 +250,14 @@ SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *pmin,
      {
 	SLuchar_Type *p0;
         SLwchar_Type wch;
-        unsigned int dn;
+        SLstrlen_Type dn;
 
 	p0 = p - 1;
         if ((*p0 < 0x80) || (utf8_mode == 0))
           {
              if ((int)lut[*p0] == invert)
 	       return p;
-	     
+
 	     p = p0;
 	     continue;
 	  }
@@ -268,7 +268,7 @@ SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *pmin,
           {
              if (invert)
                return p;
-             
+
              p = p0;
              continue;
           }
@@ -279,7 +279,7 @@ SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *pmin,
 	     p = p0;
 	     continue;
 	  }
-	
+
 	if (invert == wch_in_lut (r, wch))
 	  return p;
 
@@ -291,7 +291,7 @@ SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *pmin,
 
 /*
  * Special Range characters:
- * 
+ *
  * \w matches a unicode "word" character, taken to be alphanumeric.
  * \a alpha character, excluding digits
  * \s matches whitespace
@@ -302,11 +302,11 @@ SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *pmin,
 
 /* QUESTION: What is the encoding of the range?  Is it utf-8?  I suspect
  * it ought to be.  For example, a jed .sl file may use:
- * 
+ *
  *    skip_chars ("\\w\u{ADFF}-\u{AFFF}");
- * 
- * to skip words chars and chars in the range 0xADFF-0xAFFF.  By the time it 
- * gets here, the parser will have converted the wchars \u{ADFF} and \u{AFFF} 
+ *
+ * to skip words chars and chars in the range 0xADFF-0xAFFF.  By the time it
+ * gets here, the parser will have converted the wchars \u{ADFF} and \u{AFFF}
  * to their UTF-8 equivalents.  Hence the function needs to use SLutf8_decode
  * to get characters.
  */
@@ -354,7 +354,7 @@ static int is_posix_charclass (SLuchar_Type **up, SLuchar_Type *umax, SLwchar_Ty
 
    if (((u1+1) >= umax) || (u1[0] != ':') || (u1[1] != ']'))
      return 0;
-   
+
    len = u1 - u;
    p = Posix_Char_Class_Table;
    while (p->name != NULL)
@@ -372,8 +372,8 @@ static int is_posix_charclass (SLuchar_Type **up, SLuchar_Type *umax, SLwchar_Ty
    return -1;
 }
 
-static int get_lex_char (SLuchar_Type **up, SLuchar_Type *umax, 
-			 int allow_charclass, 
+static int get_lex_char (SLuchar_Type **up, SLuchar_Type *umax,
+			 int allow_charclass,
 			 SLwchar_Type *chp, SLwchar_Type *char_classp)
 {
    SLuchar_Type *u;
@@ -386,7 +386,7 @@ static int get_lex_char (SLuchar_Type **up, SLuchar_Type *umax,
 	*char_classp = 0;
 	return 0;
      }
-   
+
    if (NULL == (u = _pSLinterp_decode_wchar (u, umax, &ch)))
      return -1;
 
@@ -403,7 +403,7 @@ static int get_lex_char (SLuchar_Type **up, SLuchar_Type *umax,
 	     return status;
 	  }
      }
-	   
+
    if ((ch != '\\') || (allow_charclass == 0)
        || (u == umax)) /* Permit a single backslash as the last character */
      {
@@ -412,10 +412,10 @@ static int get_lex_char (SLuchar_Type **up, SLuchar_Type *umax,
 	*up = u;
 	return 0;
      }
-   
+
    /* Here, ch=='\\' and *u represents the next character. */
 
-   /* Allow \\ and \^ to represent \ and ^, resp.  Supporting \^ is useful 
+   /* Allow \\ and \^ to represent \ and ^, resp.  Supporting \^ is useful
     * in constructs such as "\\^x" since "^x" may mean anything but x, and not
     * '^' or 'x'.
     */
@@ -430,13 +430,13 @@ static int get_lex_char (SLuchar_Type **up, SLuchar_Type *umax,
 
    if (NULL == (u = _pSLinterp_decode_wchar (u, umax, &ch)))
      return -1;
-   
+
    *chp = *char_classp = ch;
    *up = u;
    return 0;
 }
 
-typedef struct 
+typedef struct
 {
 #define LEXICAL_CHAR_TYPE	1
 #define LEXICAL_RANGE_TYPE	2
@@ -478,21 +478,21 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	   case 'a':	       /* alpha */
 	     lex->e.char_class = SLCHARCLASS_ALPHA;
 	     break;
-	     
+
 	   case 'b':
 	     lex->e.char_class = SLCHARCLASS_BLANK;
 	     break;
-	     
+
 	   case 'c':
 	     lex->e.char_class = SLCHARCLASS_CNTRL;
 	     break;
-	     
+
 	   case 'd':	       /* digit */
 	     lex->lexical_type = LEXICAL_RANGE_TYPE;
 	     lex->e.range[0] = '0';
 	     lex->e.range[1] = '9';
 	     break;
-	     
+
 	   case 'g':
 	     lex->e.char_class = SLCHARCLASS_GRAPH;
 	     break;
@@ -500,23 +500,23 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	   case 'l':	       /* lowercase */
 	     lex->e.char_class = SLCHARCLASS_LOWER;
 	     break;
-	     
+
 	   case 'p':	       /* printable */
 	     lex->e.char_class = SLCHARCLASS_PRINT;
 	     break;
-	     
+
 	   case ',':	       /* punctuation */
 	     lex->e.char_class = SLCHARCLASS_PUNCT;
 	     break;
-	     
+
 	   case 's':	       /* whitespace */
 	     lex->e.char_class = SLCHARCLASS_SPACE;
 	     break;
-	     
+
 	   case 'u':	       /* uppercase */
 	     lex->e.char_class = SLCHARCLASS_UPPER;
 	     break;
-	     
+
 	   case 'x':
 	     lex->e.char_class = SLCHARCLASS_XDIGIT;
 	     break;
@@ -524,21 +524,21 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	   case 'w':	       /* alphanumeric */
 	     lex->e.char_class = SLCHARCLASS_ALPHA|SLCHARCLASS_XDIGIT;
 	     break;
-	     
+
 	   default:
 	     _pSLang_verror (SL_INVALID_PARM, "Invalid character class '%c'.", char_class);
 	     return NULL;
 	  }
 	return u;
      }
-   
+
    if ((*u != '-') || (allow_range == 0))
      {
 	lex->lexical_type = LEXICAL_CHAR_TYPE;
 	lex->e.wch = r0;
 	return u;
      }
-   
+
    u++;
    if (u == umax)
      {
@@ -551,7 +551,7 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 
    if (-1 == get_lex_char (&u, umax, allow_charclass, &r1, &char_class))
      return NULL;
-   
+
    if (char_class)
      {
 	_pSLang_verror (SL_INVALID_PARM, "Character class not allowed in a range");
@@ -563,13 +563,12 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	_pSLang_verror (SL_INVALID_PARM, "Unfinished range specification");
 	return NULL;
      }
-   
+
    lex->lexical_type = LEXICAL_RANGE_TYPE;
    lex->e.range[0] = r0;
    lex->e.range[1] = r1;
    return u;
 }
-
 
 SLwchar_Lut_Type *SLwchar_strtolut (SLuchar_Type *u,
 				    int allow_range, int allow_charclass)
@@ -588,7 +587,7 @@ SLwchar_Lut_Type *SLwchar_strtolut (SLuchar_Type *u,
      {
 	if (NULL == (u = get_lexical_element (u, umax, allow_range, allow_charclass, &lex)))
 	  goto return_error;
-	
+
 	switch (lex.lexical_type)
 	  {
 	   case LEXICAL_CHAR_TYPE:
@@ -600,7 +599,7 @@ SLwchar_Lut_Type *SLwchar_strtolut (SLuchar_Type *u,
 	     if (-1 == SLwchar_add_range_to_lut (r, lex.e.range[0], lex.e.range[1]))
 	       goto return_error;
 	     break;
-	     
+
 	   case LEXICAL_CLASS_TYPE:
 	     add_char_class (r, lex.e.char_class);
 	     break;
@@ -616,20 +615,20 @@ SLwchar_Lut_Type *SLwchar_strtolut (SLuchar_Type *u,
 /* This structure is used for mapping 1 character to another, and is used
  * by, e.g., strtrans.
  *
- * The most efficient implementation that I have come up with requires a 
+ * The most efficient implementation that I have come up with requires a
  * many-1 mapping between _constructs_ in the "from" list and the "to" list.
  * Here a _construct_ is a single character, range, or a character class.
  * The following mappings are legal:
- * 
+ *
  *    Character --> Character
  *    Range     --> Character
  *    Range     --> Equal length range
  *    Range	--> Class (upper or lower)
  *    Class     --> Character
  *    Class     --> Compatible Class
- * 
+ *
  * For inversion, the only mapping that makes sense is a many to one mapping.
- * For example, strtrans(str, "^A-Za-z", "x"), should replace any character 
+ * For example, strtrans(str, "^A-Za-z", "x"), should replace any character
  * that is not one of the ranges A-Z and a-z by x.
  */
 typedef struct Char_Map_Type
@@ -653,8 +652,7 @@ struct SLwchar_Map_Type
    Char_Map_Type *list;
 };
 
-
-static int map_char_to_char_method (Lexical_Element_Type *from, 
+static int map_char_to_char_method (Lexical_Element_Type *from,
 				    Lexical_Element_Type *to, int invert,
 				    SLwchar_Type in, SLwchar_Type *out)
 {
@@ -666,19 +664,19 @@ static int map_char_to_char_method (Lexical_Element_Type *from,
    return 1;
 }
 
-static int map_range_to_char_method (Lexical_Element_Type *from, 
+static int map_range_to_char_method (Lexical_Element_Type *from,
 				     Lexical_Element_Type *to, int invert,
 				     SLwchar_Type in, SLwchar_Type *out)
 {
    int ok = ((in >= from->e.range[0]) && (in <= from->e.range[1]));
    if (0 == (ok ^ invert))
      return 0;
-     
+
    *out = to->e.wch;
    return 1;
 }
 
-static int map_range_to_range_method (Lexical_Element_Type *from, 
+static int map_range_to_range_method (Lexical_Element_Type *from,
 				      Lexical_Element_Type *to, int invert,
 				      SLwchar_Type in, SLwchar_Type *out)
 {
@@ -690,7 +688,7 @@ static int map_range_to_range_method (Lexical_Element_Type *from,
    return 1;
 }
 
-static int map_range_to_class_method (Lexical_Element_Type *from, 
+static int map_range_to_class_method (Lexical_Element_Type *from,
 				      Lexical_Element_Type *to, int invert,
 				      SLwchar_Type in, SLwchar_Type *out)
 {
@@ -702,7 +700,7 @@ static int map_range_to_class_method (Lexical_Element_Type *from,
      *out = SLwchar_toupper (in);
    else if (to->e.char_class == SLCHARCLASS_LOWER)
      *out = SLwchar_tolower (in);
-   else 
+   else
      return 0;
 
    return 1;
@@ -720,21 +718,21 @@ static int is_of_class (int char_class, SLwchar_Type w)
 
       case SLCHARCLASS_UPPER:
 	return SLwchar_isupper (w);
-	
+
       case SLCHARCLASS_LOWER:
 	return SLwchar_islower (w);
-	
+
       case SLCHARCLASS_SPACE:
 	return SLwchar_isspace (w);
-	
+
       case SLCHARCLASS_ASCII:
 	return w < (SLwchar_Type)0x80;
      }
-   
+
    return 0;
 }
 
-static int map_class_to_char_method (Lexical_Element_Type *from, 
+static int map_class_to_char_method (Lexical_Element_Type *from,
 				     Lexical_Element_Type *to, int invert,
 				     SLwchar_Type in, SLwchar_Type *out)
 {
@@ -746,7 +744,7 @@ static int map_class_to_char_method (Lexical_Element_Type *from,
    return 1;
 }
 
-static int map_class_to_class_method (Lexical_Element_Type *from, 
+static int map_class_to_class_method (Lexical_Element_Type *from,
 				      Lexical_Element_Type *to, int invert,
 				      SLwchar_Type in, SLwchar_Type *out)
 {
@@ -758,13 +756,13 @@ static int map_class_to_class_method (Lexical_Element_Type *from,
      *out = SLwchar_toupper (in);
    else if (to->e.char_class == SLCHARCLASS_LOWER)
      *out = SLwchar_tolower (in);
-   else 
+   else
      return 0;
 
    return 1;
 }
 
-static void init_chmap (SLwchar_Type *chmap, SLwchar_Type wch, 
+static void init_chmap (SLwchar_Type *chmap, SLwchar_Type wch,
 			SLwchar_Type (*to_func)(SLwchar_Type))
 {
    unsigned int i;
@@ -782,7 +780,7 @@ static void init_chmap (SLwchar_Type *chmap, SLwchar_Type wch,
      }
 }
 
-static void get_range_values (Lexical_Element_Type *lex, 
+static void get_range_values (Lexical_Element_Type *lex,
 			      SLwchar_Type *chminp, SLwchar_Type *chmaxp,
 			      int *range_dirp)
 {
@@ -795,7 +793,7 @@ static void get_range_values (Lexical_Element_Type *lex,
 	SLwchar_Type tmp = chmin;
 	chmin = chmax;
 	chmax = tmp;
-	
+
 	lex->e.range[0] = chmax;
 	lex->e.range[1] = chmin;
 	*range_dirp = -1;
@@ -825,13 +823,13 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 
    switch (lex_from->lexical_type)
      {
-      default: 
+      default:
 	return -1;
 
       case LEXICAL_CHAR_TYPE:
 	if (lex_to->lexical_type != LEXICAL_CHAR_TYPE)
 	  return -1;
-	
+
 	wch = lex_to->e.wch;
 	if (invert && first_time)
 	  init_chmap (chmap, wch, NULL);
@@ -849,7 +847,7 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 	     list->map_function = NULL;
 	  }
 	break;
-	     
+
       case LEXICAL_RANGE_TYPE:
 	get_range_values (lex_from, &chmin, &chmax, &from_range_dir);
 
@@ -874,7 +872,7 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 	     else if (lex_to->e.char_class == SLCHARCLASS_LOWER)
 	       to_func = SLwchar_tolower;
 	     else return -1;
-	     
+
 	     if (invert && first_time)
 	       init_chmap (chmap, 0, to_func);
 
@@ -915,7 +913,7 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 	       }
 	     list->map_function = map_range_to_range_method;
 	     break;
-		  
+
 	   default:
 	     return -1;
 	  }
@@ -937,15 +935,15 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 	   case SLCHARCLASS_UPPER:
 	     is_func = SLwchar_isupper;
 	     break;
-	     
+
 	   case SLCHARCLASS_LOWER:
 	     is_func = SLwchar_islower;
 	     break;
-	     
+
 	   case SLCHARCLASS_SPACE:
 	     is_func = SLwchar_isspace;
 	     break;
-		  
+
 	   case SLCHARCLASS_ASCII:
 	     is_func = is_ascii;
 	     break;
@@ -993,7 +991,7 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 	       }
 	     list->map_function = map_class_to_char_method;
 	     break;
-		  
+
 	   case LEXICAL_CLASS_TYPE:
 	     switch (lex_to->e.char_class)
 	       {
@@ -1003,7 +1001,7 @@ static int check_char_mapping (SLwchar_Map_Type *map, Char_Map_Type *list, int f
 		case SLCHARCLASS_UPPER:
 		  to_func = SLwchar_toupper;
 		  break;
-		  
+
 		default:
 		  return -1;
 	       }
@@ -1035,10 +1033,10 @@ static void free_char_map_type (Char_Map_Type *m)
 void SLwchar_free_char_map (SLwchar_Map_Type *map)
 {
    Char_Map_Type *list;
-   
+
    if (map == NULL)
      return;
-   
+
    list = map->list;
    while (list != NULL)
      {
@@ -1073,7 +1071,7 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
    map = (SLwchar_Map_Type *)SLcalloc (1, sizeof (SLwchar_Map_Type));
    if (map == NULL)
      return NULL;
-   
+
    map->invert = invert;
 
    for (i = 0; i < 256; i++)
@@ -1091,7 +1089,7 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
 
 	if (NULL == (next = (Char_Map_Type *) SLcalloc (1, sizeof (Char_Map_Type))))
 	  goto return_error;
-	
+
 	if (list == NULL)
 	  map->list = next;
 	else
@@ -1100,7 +1098,7 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
 
 	if (NULL == (from = get_lexical_element (from, from_max, 1, 1, &list->from)))
 	  goto return_error;
-	
+
 	if (NULL == (next_to = get_lexical_element (to, to_max, 1, 1, &list->to)))
 	  goto return_error;
 
@@ -1118,7 +1116,7 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
 	     to = next_to;
 	  }
      }
-   
+
    list = map->list;
    prev = NULL;
    first_time = 1;
@@ -1139,7 +1137,7 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
 	       map->list = next;
 	     else
 	       prev->next = next;
-	     
+
 	     free_char_map_type (list);
 	  }
 	else prev = list;
@@ -1151,7 +1149,6 @@ SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *t
    SLwchar_free_char_map (map);
    return NULL;
 }
-
 
 static int apply_lexical_map (SLwchar_Map_Type *map, SLwchar_Type wc_in, SLwchar_Type *wc_out)
 {
@@ -1170,8 +1167,7 @@ static int apply_lexical_map (SLwchar_Map_Type *map, SLwchar_Type wc_in, SLwchar
      }
    return 0;
 }
-		  
-	     
+
 int SLwchar_apply_char_map (SLwchar_Map_Type *map, SLwchar_Type *input, SLwchar_Type *output, unsigned int num)
 {
    unsigned int i;
@@ -1179,9 +1175,9 @@ int SLwchar_apply_char_map (SLwchar_Map_Type *map, SLwchar_Type *input, SLwchar_
 
    if ((map == NULL) || (input == NULL) || (output == NULL))
      return -1;
-   
+
    chmap = map->chmap;
-   
+
    for (i = 0; i < num; i++)
      {
 	SLwchar_Type wc_in;
@@ -1191,11 +1187,11 @@ int SLwchar_apply_char_map (SLwchar_Map_Type *map, SLwchar_Type *input, SLwchar_
 	     output[i] = chmap[wc_in];
 	     continue;
 	  }
-	
+
 	if (0 == apply_lexical_map (map, wc_in, output + i))
 	  output[i] = wc_in;
      }
-   
+
    return 0;
 }
 
@@ -1235,14 +1231,14 @@ SLuchar_Type *SLuchar_apply_char_map (SLwchar_Map_Type *map, SLuchar_Type *str)
 	output = (SLuchar_Type *)SLmalloc (len+1);
 	if (output == NULL)
 	  return NULL;
-	
+
 	for (i = 0; i < len; i++)
 	  output[i] = chmap[str[i]];
-	
+
 	output[len] = 0;
 	return output;
      }
-   
+
    /* Hard way */
    len += SLUTF8_MAX_MBLEN;
    if (NULL == (output = (SLuchar_Type *)SLmalloc (len + 1)))
@@ -1270,11 +1266,11 @@ SLuchar_Type *SLuchar_apply_char_map (SLwchar_Map_Type *map, SLuchar_Type *str)
 	  {
 	     if (NULL == (str = _pSLinterp_decode_wchar (str, str_max, &w_in)))
 	       goto return_error;
-	     
+
 	     if (-1 == SLwchar_apply_char_map (map, &w_in, &w_out, 1))
 	       goto return_error;
 	  }
-	
+
 	if (outptr + SLUTF8_MAX_MBLEN >= output_max)
 	  {
 	     SLuchar_Type *tmp;
@@ -1291,9 +1287,9 @@ SLuchar_Type *SLuchar_apply_char_map (SLwchar_Map_Type *map, SLuchar_Type *str)
 	if (NULL == (outptr = _pSLinterp_encode_wchar (w_out, outptr, &encoded_len)))
 	  goto return_error;
      }
-   
+
    *outptr = 0;
-   
+
    return output;
 
    return_error:

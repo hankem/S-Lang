@@ -1614,7 +1614,7 @@ static void write_string_with_care (SLCONST char *str)
 	 }
        else
 	 {
-	    unsigned int nchars = SLutf8_strlen((SLuchar_Type *)str, 1);
+	    SLstrlen_Type nchars = SLutf8_strlen((SLuchar_Type *)str, 1);
 	    if (nchars + (unsigned int) Cursor_c >= (unsigned int) SLtt_Screen_Cols)
 	     {
 	       if (SLtt_Screen_Cols > Cursor_c)

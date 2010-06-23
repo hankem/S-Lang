@@ -368,7 +368,7 @@ static SLstr_Type *create_nstring (SLCONST char *s, unsigned int len, unsigned l
    return create_long_string (s, len, hash);
 }
 
-SLstr_Type *SLang_create_nslstring (SLFUTURE_CONST char *s, unsigned int len)
+SLstr_Type *SLang_create_nslstring (SLFUTURE_CONST char *s, SLstrlen_Type len)
 {
    unsigned long hash;
    if (s == NULL)

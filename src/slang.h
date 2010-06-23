@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20203
-#define SLANG_VERSION_STRING "pre2.2.3-51"
+#define SLANG_VERSION_STRING "pre2.2.3-55"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -274,10 +274,15 @@ SL_EXTERN int SLmemcmp (char *, char *, int);
 
 /* SLstrings */
 typedef char SLstr_Type;
+typedef unsigned int SLstrlen_Type;    /* Eventually this will become size_t */
+#define SLANG_STRLEN_TYPE SLANG_UINT_TYPE
+SL_EXTERN int SLang_pop_strlen_type (SLstrlen_Type *);
+SL_EXTERN int SLang_push_strlen_type (SLstrlen_Type);
+
 /* An SLstr_Type object must be treated as a constant and may only be freed
  * by the SLang_free_slstring function and nothing else.
  */
-SL_EXTERN SLstr_Type *SLang_create_nslstring (SLFUTURE_CONST char *, unsigned int);
+SL_EXTERN SLstr_Type *SLang_create_nslstring (SLFUTURE_CONST char *, SLstrlen_Type);
 SL_EXTERN SLstr_Type *SLang_create_slstring (SLFUTURE_CONST char *);
 SL_EXTERN void SLang_free_slstring (SLstr_Type *);    /* handles NULL */
 SL_EXTERN int SLang_pop_slstring (SLstr_Type **);   /* free with SLang_free_slstring */
@@ -344,10 +349,10 @@ SL_EXTERN int SLwchar_set_wcwidth_flags (int flags);
 SL_EXTERN SLuchar_Type *SLutf8_skip_char (SLuchar_Type *u, SLuchar_Type *umax);
 SL_EXTERN SLuchar_Type *SLutf8_bskip_char (SLuchar_Type *umin, SLuchar_Type *u);
 SL_EXTERN SLuchar_Type *SLutf8_skip_chars (SLuchar_Type *u, SLuchar_Type *umax,
-					unsigned int num, unsigned int *dnum,
+					SLstrlen_Type num, SLstrlen_Type *dnum,
 					int ignore_combining );
 SL_EXTERN SLuchar_Type *SLutf8_bskip_chars (SLuchar_Type *umin, SLuchar_Type *u,
-					  unsigned int num, unsigned int *dnum,
+					  SLstrlen_Type num, SLstrlen_Type *dnum,
 					 int ignore_combining);
 
 /* The SLutf8_strup/lo functions return slstrings -- free with SLang_free_slstring */
@@ -355,18 +360,18 @@ SL_EXTERN SLuchar_Type *SLutf8_strup (SLuchar_Type *u, SLuchar_Type *umax);
 SL_EXTERN SLuchar_Type *SLutf8_strlo (SLuchar_Type *u, SLuchar_Type *umax);
 
 SL_EXTERN SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
-				       SLwchar_Type wch, unsigned int pos,
+				       SLwchar_Type wch, SLstrlen_Type pos,
 				       int ignore_combining);
 
 
-SL_EXTERN unsigned int SLutf8_strlen (SLuchar_Type *s, int ignore_combining);
+SL_EXTERN SLstrlen_Type SLutf8_strlen (SLuchar_Type *s, int ignore_combining);
 SL_EXTERN SLuchar_Type *SLutf8_decode (SLuchar_Type *u, SLuchar_Type *umax,
-				     SLwchar_Type *w, unsigned int *nconsumedp);
-SL_EXTERN SLuchar_Type *SLutf8_encode (SLwchar_Type w, SLuchar_Type *u, unsigned int ulen);
+				     SLwchar_Type *w, SLstrlen_Type *nconsumedp);
+SL_EXTERN SLuchar_Type *SLutf8_encode (SLwchar_Type w, SLuchar_Type *u, SLstrlen_Type ulen);
 
 SL_EXTERN int SLutf8_compare (SLuchar_Type *a, SLuchar_Type *amax, 
-                           SLuchar_Type *b, SLuchar_Type *bmax,
-                           unsigned int nchars, int case_sensitive);
+			      SLuchar_Type *b, SLuchar_Type *bmax,
+			      SLstrlen_Type nchars, int case_sensitive);
 
 /* In these functions, buf is assumed to contain at least SLUTF8_MAX_MBLEN+1 
  * bytes 

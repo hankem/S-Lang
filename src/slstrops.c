@@ -18,7 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -59,7 +59,7 @@ USA.
 static SLwchar_Lut_Type *WhiteSpace_Lut;
 
 _INLINE_
-static SLwchar_Lut_Type *make_whitespace_lut (void)  
+static SLwchar_Lut_Type *make_whitespace_lut (void)
 {
    if (WhiteSpace_Lut != NULL)
      return WhiteSpace_Lut;
@@ -67,12 +67,11 @@ static SLwchar_Lut_Type *make_whitespace_lut (void)
    return WhiteSpace_Lut = SLwchar_strtolut ((SLuchar_Type *)"\\s", 1, 1);
 }
 
-
 /* Here, if white is NULL and lut is NULL, a standard whitespace lut will be created.
  */
-static unsigned int do_trim (SLuchar_Type **beg, int do_beg, 
-			     SLuchar_Type **end, int do_end, 
-			     SLuchar_Type *white, 
+static unsigned int do_trim (SLuchar_Type **beg, int do_beg,
+			     SLuchar_Type **end, int do_end,
+			     SLuchar_Type *white,
 			     SLwchar_Lut_Type *lut) /*{{{*/
 {
    unsigned int len;
@@ -107,7 +106,7 @@ static unsigned int do_trim (SLuchar_Type **beg, int do_beg,
 
    if (do_beg)
      a = SLwchar_skip_range (lut, a, b, ignore_combining, invert);
-	
+
    if (do_end)
      b = SLwchar_bskip_range (lut, a, b, ignore_combining, invert);
 
@@ -130,7 +129,7 @@ static int pop_3_malloced_strings (char **a, char **b, char **c)
    *a = *b = *c = NULL;
    if (-1 == SLpop_string (c))
      return -1;
-   
+
    if (-1 == SLpop_string (b))
      {
 	SLfree (*c);
@@ -145,7 +144,7 @@ static int pop_3_malloced_strings (char **a, char **b, char **c)
 	*b = *c = NULL;
 	return -1;
      }
-   
+
    return 0;
 }
 
@@ -225,7 +224,6 @@ static int _pSLang_push_nstring (char *a, unsigned int len)
    return -1;
 }
 
-
 static void strtrim_cmd_internal (char *str, int do_beg, int do_end)
 {
    SLuchar_Type *beg, *end, *white;
@@ -235,7 +233,7 @@ static void strtrim_cmd_internal (char *str, int do_beg, int do_end)
    /* Go through SLpop_string to get a private copy since it will be
     * modified.
     */
-   
+
    free_str = 0;
    if (SLang_Num_Function_Args == 2)
      {
@@ -248,13 +246,12 @@ static void strtrim_cmd_internal (char *str, int do_beg, int do_end)
 
    beg = (SLuchar_Type *)str;
    len = do_trim (&beg, do_beg, &end, do_end, white, NULL);
-   
+
    (void) _pSLang_push_nstring ((char *)beg, len);
    if (free_str)
      _pSLang_free_slstring (str);
 }
 
-   
 static void strtrim_cmd (char *str)
 {
    strtrim_cmd_internal (str, 1, 1);
@@ -269,7 +266,6 @@ static void strtrim_end_cmd (char *str)
 {
    strtrim_cmd_internal (str, 0, 1);
 }
-
 
 static void strcompress_cmd (char *str, char *white) /*{{{*/
 {
@@ -286,7 +282,7 @@ static void strcompress_cmd (char *str, char *white) /*{{{*/
    if (NULL == (s = _pSLinterp_decode_wchar ((SLuchar_Type *)white, (SLuchar_Type *)white_max,
 					    &pref_char)))
      return;
-   
+
    /* This cannot overflow since _pSLinterp_decode_wchar will not return an
     * offset of more than SLUTF8_MAX_BLEN bytes.
     */
@@ -306,7 +302,7 @@ static void strcompress_cmd (char *str, char *white) /*{{{*/
    while (1)
      {
 	SLuchar_Type *s1;
-	
+
 	s1 = SLwchar_skip_range (lut, s, end, ignore_combining, 1);
 	len += (s1 - s);
 	s = s1;
@@ -315,7 +311,7 @@ static void strcompress_cmd (char *str, char *white) /*{{{*/
 	  break;
 
 	len += pref_len;
-	
+
 	s = SLwchar_skip_range (lut, s, end, ignore_combining, 0);
      }
 
@@ -326,7 +322,7 @@ static void strcompress_cmd (char *str, char *white) /*{{{*/
 	SLfree (str);
 	return;
      }
-   
+
    s = (unsigned char *) c;
 
    while (1)
@@ -343,16 +339,16 @@ static void strcompress_cmd (char *str, char *white) /*{{{*/
 
 	if (beg == end)
 	  break;
-	
+
 	memcpy (s, pref_char_buf, pref_len);
 	s += pref_len;
 
 	beg = SLwchar_skip_range (lut, beg, end, ignore_combining, 0);
      }
    *s = 0;
-   
+
    SLwchar_free_lut (lut);
-   
+
    (void) _pSLpush_alloced_slstring (c, len);
 }
 
@@ -394,10 +390,10 @@ static int str_replace_cmd_1 (char *orig, char *match, char *rep, unsigned int m
    new_str = SLmalloc (new_len + 1);
    if (new_str == NULL)
      return -1;
-   
+
    s = orig;
    t = new_str;
-   
+
    for (num_replaces = 0; num_replaces < max_num_replaces; num_replaces++)
      {
 	char *next_s;
@@ -409,7 +405,7 @@ static int str_replace_cmd_1 (char *orig, char *match, char *rep, unsigned int m
 	t += len;
 	memcpy (t, rep, rep_len);
 	t += rep_len;
-	
+
 	s = next_s + match_len;
      }
    strcpy (t, s);		       /* will \0 terminate t */
@@ -423,7 +419,7 @@ static int str_replace_cmd_1 (char *orig, char *match, char *rep, unsigned int m
 static void reverse_string (char *a)
 {
    char *b;
-   
+
    b = a + strlen (a);
    while (b > a)
      {
@@ -437,7 +433,7 @@ static void reverse_string (char *a)
 }
 
 static void strreplace_cmd (void)
-{   
+{
    char *orig, *match, *rep;
    char *new_str;
    int max_num_replaces = -1;
@@ -495,8 +491,6 @@ static int str_replace_cmd (char *orig, char *match, char *rep)
    return ret;
 }
 
-	
-     
 static void strtok_cmd (char *str)
 {
    _pSLString_List_Type sl;
@@ -524,7 +518,7 @@ static void strtok_cmd (char *str)
 	  }
 	lut = SLwchar_strtolut (white, 1, 1);
      }
-   
+
    if ((lut == NULL)
        || (-1 == _pSLstring_list_init (&sl, 256, 1024)))
      goto the_return;
@@ -586,7 +580,7 @@ static void str_uncomment_string_cmd (char *str, char *b, char *e) /*{{{*/
    elen = _pSLstring_bytelen (e);
 
    if (((elen != blen) && (_pSLinterp_UTF8_Mode == 0))
-       || (_pSLinterp_UTF8_Mode 
+       || (_pSLinterp_UTF8_Mode
 	   && SLutf8_strlen ((SLuchar_Type*)b,ignore_combining) != SLutf8_strlen ((SLuchar_Type*)e,ignore_combining)))
      {
 	_pSLang_verror (SL_INVALID_PARM, "Comment delimiter length mismatch.");
@@ -627,7 +621,7 @@ static void str_uncomment_string_cmd (char *str, char *b, char *e) /*{{{*/
      }
 
    len = strlen (str);
-   
+
    if (NULL == (str = (char *) SLmake_nstring(str, len)))
      {
 	SLwchar_free_lut (lut);
@@ -647,7 +641,7 @@ static void str_uncomment_string_cmd (char *str, char *b, char *e) /*{{{*/
 	if (s == smax)
 	  break;
 
-	/* s is now at the position of the comment-start character.  
+	/* s is now at the position of the comment-start character.
 	 * Skip to the corresponding comment-end character.
 	 */
 	if (_pSLinterp_UTF8_Mode)
@@ -660,7 +654,7 @@ static void str_uncomment_string_cmd (char *str, char *b, char *e) /*{{{*/
 	  }
 
 	/* buf contains the comment-start character.  Find the corresponding
-	 * comment end via the etable constructed above.  The use of 
+	 * comment end via the etable constructed above.  The use of
 	 * strstr should not fail, unless there is an error in the algorithm.
 	 */
 	e1 = etable + (strstr (b, (char*)buf) - b) * (SLUTF8_MAX_MBLEN+1);
@@ -670,13 +664,13 @@ static void str_uncomment_string_cmd (char *str, char *b, char *e) /*{{{*/
 	  s1 += strlen ((char*)e1);
 	else
 	  s1 = smax;
-	
+
 	/* Delete characters between s and s1 */
 	s2 = s;
 	while (s1 < smax)
 	  *s2++ = *s1++;
 	*s2 = 0;
-	
+
 	smax = s2;
      }
    (void) SLang_push_malloced_string (str);   /* frees str */
@@ -699,7 +693,7 @@ static void str_quote_string_cmd (char *str, char *quotes, SLwchar_Type *slash_p
    int ignore_combining = 0;
 
    slash = *slash_ptr;
-   
+
    if (NULL == _pSLinterp_encode_wchar (slash, slash_utf8, &slash_len))
      return;
 
@@ -726,7 +720,7 @@ static void str_quote_string_cmd (char *str, char *quotes, SLwchar_Type *slash_p
 	s1 = SLwchar_skip_range (lut, s, smax, ignore_combining, 1);
 	if (s1 == smax)
 	  break;
-	
+
 	len += slash_len;
 	s = SKIP_CHAR(s1, smax);
      }
@@ -738,7 +732,6 @@ static void str_quote_string_cmd (char *str, char *quotes, SLwchar_Type *slash_p
 	return;
      }
 
-   
    s = (SLuchar_Type *) str; q1 = q;
    while (1)
      {
@@ -773,14 +766,14 @@ static void str_quote_string_cmd (char *str, char *quotes, SLwchar_Type *slash_p
 static int issubstr_cmd (char *a, char *b) /*{{{*/
 {
    char *c;
-   unsigned int n;
+   SLstrlen_Type n;
 
    if (NULL == (c = strstr(a, b)))
      return 0;
-   
+
    if (_pSLinterp_UTF8_Mode == 0)
      return 1 + (int) (c - a);
-   
+
    n = (unsigned int) (c - a);
    (void) SLutf8_skip_chars ((SLuchar_Type *)a, (SLuchar_Type *)c, n, &n, 0);
    return (int) (n+1);
@@ -799,12 +792,12 @@ static void subbytes_cmd (SLstr_Type *a, int *n_ptr, int *m_ptr) /*{{{*/
 
    lena = _pSLstring_bytelen (a);
 
-   if (n > lena) 
+   if (n > lena)
      n = lena;
 
    if (m < 0) m = lena;
    if (n + m > lena) m = lena - n;
-   
+
    (void) _pSLang_push_nstring (a + n, (unsigned int) m);
 }
 
@@ -816,7 +809,7 @@ static void substr_cmd (SLstr_Type *a, int *n_ptr, int *m_ptr) /*{{{*/
    int lena;
    int ignore_combining;
    char *a1;
-   
+
    if (_pSLinterp_UTF8_Mode == 0)
      {
 	subbytes_cmd (a, n_ptr, m_ptr);
@@ -829,7 +822,7 @@ static void substr_cmd (SLstr_Type *a, int *n_ptr, int *m_ptr) /*{{{*/
    m = *m_ptr;
 
    lena = SLutf8_strlen ((SLuchar_Type *)a, ignore_combining);
-	
+
    if (n > lena) n = lena + 1;
    if (n < 1)
      {
@@ -847,7 +840,7 @@ static void substr_cmd (SLstr_Type *a, int *n_ptr, int *m_ptr) /*{{{*/
 
    a1 = (char *)SLutf8_skip_chars ((SLuchar_Type *)a, (SLuchar_Type*)a + strlen(a),
 				  (unsigned int)m, NULL, ignore_combining);
-   
+
    (void) _pSLang_push_nstring (a, (unsigned int)(a1 - a));
 }
 
@@ -878,7 +871,6 @@ static void strbytesub_cmd (int *nptr, char *chp)
    SLang_push_malloced_string (a);
 }
 
-
 /* substitute char m at position n in string*/
 static void strsub_cmd (int *nptr, SLwchar_Type *mptr) /*{{{*/
 {
@@ -907,8 +899,8 @@ static void strsub_cmd (int *nptr, SLwchar_Type *mptr) /*{{{*/
    n--;
    if (_pSLinterp_UTF8_Mode)
      {
-	
-	SLstr_Type *b = SLutf8_subst_wchar ((SLuchar_Type *)a, 
+
+	SLstr_Type *b = SLutf8_subst_wchar ((SLuchar_Type *)a,
 					      (SLuchar_Type *)a + strlen (a),
 					      m, n, ignore_combining);
 	if (b != NULL)
@@ -917,7 +909,7 @@ static void strsub_cmd (int *nptr, SLwchar_Type *mptr) /*{{{*/
 	SLfree (a);
 	return;
      }
-   
+
    a[n] = (char) m;
 
    SLang_push_malloced_string (a);
@@ -940,7 +932,7 @@ static void strup_cmd(void) /*{{{*/
 	(void) _pSLang_push_slstring ((char *) a);   /* frees string */
 	return;
      }
-   
+
    a = (unsigned char *) str;
    while ((c = *a) != 0)
      {
@@ -954,16 +946,16 @@ static void strup_cmd(void) /*{{{*/
 
 /*}}}*/
 
-static int isdigit_cmd (void) /*{{{*/
+static int pop_wchar (SLwchar_Type *wchp)
 {
-   SLwchar_Type wch;
-
    if (SLang_peek_at_stack() == SLANG_STRING_TYPE)
      {
 	char *s;
+	SLwchar_Type wch;
+
 	if (-1 == SLang_pop_slstring (&s))
 	  return -1;
-	
+
 	if (_pSLinterp_UTF8_Mode)
 	  {
 	     if (NULL == SLutf8_decode ((unsigned char *)s, (unsigned char *)s+strlen(s), &wch, NULL))
@@ -972,17 +964,142 @@ static int isdigit_cmd (void) /*{{{*/
 	else wch = s[0];
 
 	_pSLang_free_slstring (s);
+	*wchp = wch;
+	return 0;
      }
-   else if (-1 == SLang_pop_wchar (&wch))
-     return -1;
 
-   if (_pSLinterp_UTF8_Mode)
-     return SLwchar_isdigit (wch);
-
-   return isdigit((unsigned char)wch);
+   return SLang_pop_wchar (wchp);
 }
 
-/*}}}*/
+#define ISXXX_INTRIN(name,isxxx) \
+   static int name (void) \
+   { \
+      SLwchar_Type wch; \
+      if (-1 == pop_wchar (&wch)) \
+	return -1; \
+      return (0 != isxxx (wch)); \
+   }
+ISXXX_INTRIN(islower_intrin, SLwchar_islower)
+ISXXX_INTRIN(isupper_intrin, SLwchar_isupper)
+ISXXX_INTRIN(isalpha_intrin, SLwchar_isalpha)
+ISXXX_INTRIN(isxdigit_intrin, SLwchar_isxdigit)
+ISXXX_INTRIN(isspace_intrin, SLwchar_isspace)
+ISXXX_INTRIN(isblank_intrin, SLwchar_isblank)
+ISXXX_INTRIN(iscntrl_intrin, SLwchar_iscntrl)
+ISXXX_INTRIN(isprint_intrin, SLwchar_isprint)
+ISXXX_INTRIN(isdigit_intrin, SLwchar_isdigit)
+ISXXX_INTRIN(isgraph_intrin, SLwchar_isgraph)
+ISXXX_INTRIN(isalnum_intrin, SLwchar_isalnum)
+ISXXX_INTRIN(ispunct_intrin, SLwchar_ispunct)
+
+static int pop_skipintrin_args (SLuchar_Type **strp, SLstrlen_Type *lenp, SLstrlen_Type *posp, int *skip_combp)
+{
+   char *str;
+   SLstrlen_Type len, pos;
+
+   *skip_combp = 1;
+   if (SLang_Num_Function_Args == 3)
+     {
+	if (-1 == SLang_pop_int (skip_combp))
+	  return -1;
+     }
+   if (-1 == SLang_pop_strlen_type (&pos))
+     return -1;
+   if (-1 == SLang_pop_slstring (&str))
+     return -1;
+   len = _pSLstring_bytelen (str);
+   if (pos > len)
+     {
+	SLang_verror (SL_Index_Error, "%s", "String index lies outside the string");
+	SLang_free_slstring (str);
+	return -1;
+     }
+   *strp = (SLuchar_Type *)str;
+   *lenp = len;
+   *posp = pos;
+   return 0;
+}
+   
+/* Usage: (wc, pos) = strskipchar (str, pos [,skip_comb]);
+ */
+static void strskipchar_intrin (void)
+{
+   SLuchar_Type *str, *str0, *str1, *strmax;
+   int skip_combining;
+   SLstrlen_Type pos, len;
+   SLwchar_Type wch;
+
+   if (-1 == pop_skipintrin_args (&str, &len, &pos, &skip_combining))
+     return;
+
+   str0 = str + pos;
+   strmax = str + len;
+   if (str0 == strmax)
+     {
+	(void) SLang_push_strlen_type (pos);
+	(void) SLang_push_uchar (0);
+	goto free_and_return;
+     }
+   if (_pSLinterp_UTF8_Mode == 0)
+     {
+	(void) SLang_push_strlen_type (pos+1);
+	(void) SLang_push_uchar (*str0);
+	goto free_and_return;
+     }
+   str1 = SLutf8_skip_chars (str0, strmax, 1, NULL, skip_combining);
+   pos = str1 - str;
+   (void) SLang_push_strlen_type (pos);
+
+   if (NULL == SLutf8_decode (str0, str1, &wch, NULL))
+     {
+	(void) SLang_push_integer (-(int)*str0);
+	goto free_and_return;
+     }
+   (void) SLang_push_wchar (wch);
+   /* drop */
+free_and_return:
+   SLang_free_slstring ((char *)str);
+}
+
+static void strbskipchar_intrin (void)
+{
+   SLuchar_Type *str, *str0, *str1;
+   int skip_combining;
+   SLstrlen_Type pos, len;
+   SLwchar_Type wch;
+
+   if (-1 == pop_skipintrin_args (&str, &len, &pos, &skip_combining))
+     return;
+
+   str0 = str + pos;
+   if (pos == 0)
+     {
+	(void) SLang_push_strlen_type (pos);
+	(void) SLang_push_uchar (0);
+	goto free_and_return;
+     }
+   if (_pSLinterp_UTF8_Mode == 0)
+     {
+	(void) SLang_push_strlen_type (pos-1);
+	(void) SLang_push_uchar (*str0);
+	goto free_and_return;
+     }
+   str1 = SLutf8_bskip_chars (str, str0, 1, NULL, skip_combining);
+   pos = str1 - str;
+   (void) SLang_push_strlen_type (pos);
+
+   if (NULL == SLutf8_decode (str1, str0, &wch, NULL))
+     {
+	(void) SLang_push_integer (-(int)*str1);
+	goto free_and_return;
+     }
+   (void) SLang_push_wchar (wch);
+   /* drop */
+free_and_return:
+   SLang_free_slstring ((char *)str);
+}
+
+
 static int toupper_cmd (SLwchar_Type *ch) /*{{{*/
 {
    if (_pSLinterp_UTF8_Mode)
@@ -1064,7 +1181,7 @@ static SLang_Array_Type *do_strchop (SLuchar_Type *str, SLwchar_Type delim, SLwc
    s1 = s0 = str;
 
    count = 1;			       /* at least 1 */
-   
+
    /* Count strings on first pass */
    while (1)
      {
@@ -1072,7 +1189,7 @@ static SLang_Array_Type *do_strchop (SLuchar_Type *str, SLwchar_Type delim, SLwc
 
 	/* Look for the delimiter or the quote */
 	s1 = SLwchar_skip_range (lut, s1, smax, ignore_combining, 1);
-	
+
 	if (s1 == smax)
 	  break;
 
@@ -1082,12 +1199,12 @@ static SLang_Array_Type *do_strchop (SLuchar_Type *str, SLwchar_Type delim, SLwc
 	     SLwchar_free_lut (lut);
 	     return NULL;
 	  }
-	
+
 	if ((wch == quote) && quote)
 	  {
 	     if (s1 == smax)
 	       break;
-	     
+
 	     s1 = SKIP_CHAR(s1, smax);
 	     continue;
 	  }
@@ -1124,12 +1241,12 @@ static SLang_Array_Type *do_strchop (SLuchar_Type *str, SLwchar_Type delim, SLwc
 
 	     if (NULL == (s1 = _pSLinterp_decode_wchar (s1, smax, &wch)))
 	       break;
-	
+
 	     if ((wch == quote) && quote)
 	       {
 		  if (s1 != smax)
 		    s1 = SKIP_CHAR (s1, smax);
-		  
+
 		  continue;
 	       }
 	     s1 = s1_save;
@@ -1148,11 +1265,11 @@ static SLang_Array_Type *do_strchop (SLuchar_Type *str, SLwchar_Type delim, SLwc
 	     SLwchar_free_lut (lut);
 	     return at;
 	  }
-	
+
 	s1 = SKIP_CHAR(s1, smax);      /* skip past delim */
 	s0 = s1;		       /* and reset */
      }
-   
+
    SLwchar_free_lut (lut);
    SLang_free_array (at);
    return NULL;
@@ -1204,7 +1321,7 @@ static int do_strncmp_cmd (SLstr_Type *a, SLstr_Type *b, int n, int skip_combini
 
    if (_pSLinterp_UTF8_Mode == 0)
      return strncmp(a, b, (unsigned int) n);
-   
+
    lena = _pSLstring_bytelen (a);
    lenb = _pSLstring_bytelen (b);
 
@@ -1215,7 +1332,7 @@ static int do_strncmp_cmd (SLstr_Type *a, SLstr_Type *b, int n, int skip_combini
    p = (char *)SLutf8_skip_chars ((SLuchar_Type *)b, (SLuchar_Type *)(b + lenb),
                           (unsigned int) n, NULL, skip_combining);
    nb = (unsigned int) (p - b);
-   
+
    if (na > nb)
      {
         cmp = strncmp (a, b, nb);
@@ -1223,15 +1340,15 @@ static int do_strncmp_cmd (SLstr_Type *a, SLstr_Type *b, int n, int skip_combini
           return (int) (unsigned char) a[nb];
         return cmp;
      }
-   
+
    if (na == nb)
      return strncmp (a, b, nb);
-   
+
    /* nb > na */
    cmp = strncmp (a, b, na);
    if (cmp == 0)
      return -(int)(unsigned char) b[na];
-   
+
    return cmp;
 }
 
@@ -1256,11 +1373,10 @@ static int do_strlen_combining (SLstr_Type *s, int ignore_combining) /*{{{*/
 {
    if (_pSLinterp_UTF8_Mode == 0)
      return (int) _pSLstring_bytelen (s);
-   
+
    return (int) SLutf8_strlen ((SLuchar_Type *)s, ignore_combining);
 }
 /*}}}*/
-
 
 static int strlen_cmd (SLstr_Type *s) /*{{{*/
 {
@@ -1278,7 +1394,6 @@ static int strbytelen_cmd (SLstr_Type *s)
 }
 
 /*}}}*/
-
 
 static char *SLdo_sprintf (char *fmt) /*{{{*/
 {
@@ -1357,7 +1472,6 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 		  ch = *p++;
 	       }
 	  }
-
 
 	/* width */
 	/* I have got to parse it myself so that I can see how big it needs
@@ -1506,7 +1620,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 		  use_string = 1;
 	       }
 	     break;
-	     
+
 	   case 'b':
 	     use_long = 0;
 	     guess_size = 1;
@@ -1605,7 +1719,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 #if SLANG_HAS_FLOAT
 	else if (use_double) sprintf(outp, dfmt, x);
 #endif
-	else if (use_long) 
+	else if (use_long)
 	  {
 #ifdef HAVE_LONG_LONG
 	     if (use_long > 1)
@@ -1657,7 +1771,7 @@ int _pSLstrops_do_sprintf_n (int n) /*{{{*/
 	SLfree (p);
 	return -1;
      }
-   
+
    return SLang_push_malloced_string (p);
 }
 
@@ -1764,14 +1878,14 @@ static void extract_element_cmd (char *list, int *nth_ptr, SLwchar_Type *delim_p
 	list += delim_len;
 	n--;
      }
-   
+
    list1 = strstr (list, (char *)delim_utf8);
    if (list1 == NULL)
      {
 	SLang_push_string (list);
 	return;
      }
-   
+
    (void) _pSLang_push_nstring (list, (unsigned int)(list1 - list));
 }
 
@@ -1795,7 +1909,7 @@ static int is_list_element_cmd (char *list, char *elem, SLwchar_Type *delim_ptr)
      {
 	unsigned int len;
 	char *list_end = strstr (list, (char *)delim_utf8);
-	
+
 	if (list_end == NULL)
 	  {
 	     if (0 == strcmp (list, elem))
@@ -1806,7 +1920,7 @@ static int is_list_element_cmd (char *list, char *elem, SLwchar_Type *delim_ptr)
 	if ((len == elem_len)
 	    && (0 == strncmp (list, elem, len)))
 	  return n + 1;
-	
+
 	list += len + delim_len;
 	n++;
      }
@@ -1823,19 +1937,19 @@ static int string_match_cmd (char *str, char *pat, int *nptr) /*{{{*/
    char *match;
    unsigned int len;
    unsigned int byte_offset;
-   
+
    if (Regexp != NULL)
      {
 	SLregexp_free (Regexp);
 	Regexp = NULL;
      }
-   
+
    byte_offset = (unsigned int) (*nptr - 1);
    len = strlen(str);
 
    if (byte_offset > len)
      return 0;
-   
+
    if (NULL == (Regexp = SLregexp_compile (pat, 0)))
      return -1;
    Regexp_Match_Byte_Offset = byte_offset;
@@ -1889,7 +2003,7 @@ static void string_matches_cmd (char *str, char *pat, int *nptr)
 	SLang_push_null ();
 	return;
      }
-   
+
    for (i = 0; i < 10; i++)
      {
 	if (-1 == SLregexp_nth_match (Regexp, i, offsets+i, lens+i))
@@ -1901,7 +2015,7 @@ static void string_matches_cmd (char *str, char *pat, int *nptr)
 
    if (NULL == (at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &num, 1)))
      return;
-   
+
    strs = (char **) at->data;
    for (i = 0; i < (unsigned int) num; i++)
      {
@@ -1916,7 +2030,7 @@ static void string_matches_cmd (char *str, char *pat, int *nptr)
 }
 
 /* UTF-8 ok */
-static char *create_delimited_string (char **list, unsigned int n, 
+static char *create_delimited_string (char **list, unsigned int n,
 				      char *delim)
 {
    unsigned int len, dlen;
@@ -1943,7 +2057,7 @@ static char *create_delimited_string (char **list, unsigned int n,
    *str = 0;
    s = str;
    i = 0;
-	
+
    while (num > 1)
      {
 	unsigned int len2;
@@ -1959,15 +2073,15 @@ static char *create_delimited_string (char **list, unsigned int n,
 	i++;
 	num--;
      }
-   
+
    if (num)
      {
 	while (list[i] == NULL)
 	  i++;
-	
+
 	strcpy (s, list[i]);
      }
-   
+
    return str;
 }
 
@@ -2014,7 +2128,7 @@ static void strjoin_cmd (char *delim)
 
    if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
      return;
-   
+
    str = create_delimited_string ((char **)at->data, at->num_elements, delim);
    SLang_free_array (at);
    (void) SLang_push_malloced_string (str);   /* NULL Ok */
@@ -2028,7 +2142,7 @@ static void str_delete_chars_cmd (SLuchar_Type *s, SLuchar_Type *d)
    int invert, ignore_combining = 0;
 
    /* Assume that the number of characters to be deleted is smaller then
-    * the number to be deleted.  In this case, it is better to skip past call 
+    * the number to be deleted.  In this case, it is better to skip past call
     * characters not in the set to be deleted.  Hence, we want to invert
     * the deletion set
     */
@@ -2058,7 +2172,7 @@ static void str_delete_chars_cmd (SLuchar_Type *s, SLuchar_Type *d)
 	t1 = SLwchar_skip_range (lut, t, tmax, ignore_combining, invert);
 	if (t1 == NULL)
 	  break;
-	
+
 	len = t1 - t;
 	if (len)
 	  {
@@ -2087,7 +2201,7 @@ static unsigned int count_char_occurances (char *str, SLwchar_Type *wchp)
    unsigned int wch_utf8_len;
    unsigned int n = 0;
    int is_byte;
-   
+
    if (wch < 0x80)
      is_byte = 1;
    else
@@ -2101,10 +2215,10 @@ static unsigned int count_char_occurances (char *str, SLwchar_Type *wchp)
 	       }
 	     is_byte = 1;
 	  }
-	else 
+	else
 	  is_byte = 0;
      }
-   
+
    if (is_byte)
      {
 	unsigned char byte = (unsigned char) wch;
@@ -2118,18 +2232,18 @@ static unsigned int count_char_occurances (char *str, SLwchar_Type *wchp)
 
    if (NULL == _pSLinterp_encode_wchar (wch, wch_utf8, &wch_utf8_len))
      return 0;
-   
+
    while (NULL != (str = strstr (str, (char *)wch_utf8)))
      {
 	n++;
 	str += wch_utf8_len;
      }
-   
+
    return n;
 }
 
 /*
- * Supporting UTF-8 here will be tricky.  The non-UTF-8 version supports 
+ * Supporting UTF-8 here will be tricky.  The non-UTF-8 version supports
  * constructs such as strtrans(s, "A-Z", "a-z") and strtrans(s,"^0-9", " ")
  * where the latter replaces anything but 0-9 with a space.  The UTF-8
  * generalization of the former is strtrans(s, "\\u", "\\l"), where all
@@ -2144,7 +2258,7 @@ static void strtrans_cmd (SLuchar_Type *s, SLuchar_Type *from, SLuchar_Type *to)
 	str_delete_chars_cmd (s, from);
 	return;
      }
-   
+
    if (NULL == (map = SLwchar_allocate_char_map (from, to)))
      return;
 
@@ -2206,7 +2320,7 @@ static void glob_to_regexp (char *glob)
 	     *p++ = ch;
 	     continue;
 	  }
-	
+
 	/* Otherwise ch = '[' */
 	if (*glob != 0)
 	  {
@@ -2225,7 +2339,7 @@ static void glob_to_regexp (char *glob)
 
 	     while (((ch = *g) != 0) && (ch != ']'))
 	       g++;
-	     
+
 	     if (ch == ']')
 	       {
 		  *p++ = '[';
@@ -2236,18 +2350,18 @@ static void glob_to_regexp (char *glob)
 		    }
 		  while (glob <= g)
 		    *p++ = *glob++;
-		  
+
 		  continue;
 	       }
 	  }
-	
+
 	/* failed to find the matching ']'.  So quote it */
 	*p++ = '\\';
 	*p++ = '[';
      }
    *p++ = '$';
    *p = 0;
-   
+
    (void) SLang_push_malloced_string (pat);   /* frees it too */
 }
 
@@ -2322,7 +2436,7 @@ static void skip_bytes_intrin (void)
      goto free_and_return;
 
    /* FIXME!! There should be a way of specifying this when making the lut */
-   utf8_mode = _pSLinterp_UTF8_Mode; _pSLinterp_UTF8_Mode = 0;   
+   utf8_mode = _pSLinterp_UTF8_Mode; _pSLinterp_UTF8_Mode = 0;
    invert = (chars[0] == '^');
    if (invert)
      lut = SLwchar_strtolut ((SLuchar_Type*)chars+1, 1, 1);
@@ -2336,7 +2450,7 @@ static void skip_bytes_intrin (void)
    SLwchar_free_lut (lut);
    if (strmax == NULL)
      goto free_and_return;
-   
+
    (void) SLang_push_integer ((int)((char *)strmax - str));
    /* drop */
 
@@ -2374,7 +2488,6 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_1("tolower", tolower_cmd, SLANG_INT_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_1("toupper", toupper_cmd, SLANG_INT_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_0("strup", strup_cmd, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("isdigit",  isdigit_cmd, SLANG_INT_TYPE),
    MAKE_INTRINSIC_S("strtrim", strtrim_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("strtrim_end", strtrim_end_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("strtrim_beg", strtrim_beg_cmd, SLANG_VOID_TYPE),
@@ -2393,6 +2506,20 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_S("glob_to_regexp", glob_to_regexp, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_2("count_char_occurances", count_char_occurances, SLANG_UINT_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_0("strskipbytes", skip_bytes_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("islower", islower_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isupper", isupper_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isalpha", isalpha_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isxdigit", isxdigit_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isspace", isspace_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isblank", isblank_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("iscntrl", iscntrl_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isprint", isprint_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isdigit", isdigit_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isgraph", isgraph_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isalnum", isalnum_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("ispunct", ispunct_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("strskipchar", strskipchar_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("strbskipchar", strbskipchar_intrin, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

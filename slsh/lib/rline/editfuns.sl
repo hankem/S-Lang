@@ -40,13 +40,64 @@ define rline_bdel ()
    rline_call ("bdel");
 }
 
+private define skip_non_word_chars (line, p)
+{
+   variable p1 = p, ch;
+   do
+     {
+	p = p1;
+	(p1, ch) = strskipchar (line, p, 1);
+     }
+   while (ch && not isalnum(ch));
+   return p;
+}
+
+private define skip_word_chars (line, p)
+{
+   variable p1 = p, ch;
+   do
+     {
+	p = p1;
+	(p1, ch) = strskipchar (line, p, 1);
+     }
+   while (isalnum(ch));
+   return p;
+}
+
+private define bskip_non_word_chars (line, p)
+{
+   variable p1 = p, ch;
+   do
+     {
+	p = p1;
+	(p1, ch) = strbskipchar (line, p, 1);
+     }
+   while (ch && not isalnum(ch));
+   return p;
+}
+
+private define bskip_word_chars (line, p)
+{
+   variable p1 = p, ch;
+   do
+     {
+	p = p1;
+	(p1, ch) = strbskipchar (line, p, 1);
+     }
+   while (isalnum(ch));
+   return p;
+}
 
 define rline_bskip_word ()
 {
+   variable line = rline_get_line (), p = rline_get_point ();
+   rline_set_point (bskip_word_chars (line, bskip_non_word_chars(line, p)));
 }
 
 define rline_skip_word ()
 {
+   variable line = rline_get_line (), p = rline_get_point ();
+   rline_set_point (skip_word_chars (line, skip_non_word_chars(line, p)));
 }
 
 
@@ -103,7 +154,7 @@ define rline_kill_region ()
    variable m, p;
    if (-1 == get_region (&m, &p))
      return;
-   
+
    copy_region_to_pastebuffer (m, p);
    rline_set_point (m);
    rline_del (p-m);

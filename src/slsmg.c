@@ -577,7 +577,8 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
    while (u < umax)
      {
 	SLwchar_Type wc;
-	unsigned int width, nconsumed;
+	unsigned int width;
+	SLstrlen_Type nconsumed;
 
      	if (*u < (SLuchar_Type) 0x80)		       /* ASCII */
 	  {
@@ -888,7 +889,7 @@ void SLsmg_write_wrapped_string (SLuchar_Type *u, int r, int c,
    while (1)
      {
 	SLwchar_Type wc;
-	unsigned int nconsumed;
+	SLstrlen_Type nconsumed;
 	unsigned char ch = *p;
 	unsigned int ddc;
 
@@ -2067,7 +2068,7 @@ unsigned int SLsmg_strwidth (SLuchar_Type *u, SLuchar_Type *umax)
    while (u < umax)
      {
 	SLuchar_Type ch;
-	unsigned int nconsumed;
+	SLstrlen_Type nconsumed;
 	SLwchar_Type wc;
 
 	ch = *u;
@@ -2165,7 +2166,7 @@ unsigned int SLsmg_strbytes (SLuchar_Type *u, SLuchar_Type *umax, unsigned int w
      {
 	SLuchar_Type ch;
 	SLwchar_Type wc;
-	unsigned int nconsumed = 1;
+        SLstrlen_Type nconsumed = 1;
 
 	ch = *u;
 	if (ch < 0x80)

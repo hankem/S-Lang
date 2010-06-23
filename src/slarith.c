@@ -794,6 +794,16 @@ int SLang_push_ulong_long (unsigned long long i)
 }
 #endif
 
+int SLang_pop_strlen_type (SLstrlen_Type *ip)
+{
+   return SLang_pop_uint (ip);
+}
+int SLang_push_strlen_type (SLstrlen_Type i)
+{
+   return SLang_push_uint (i);
+}
+
+
 _INLINE_
 int _pSLarith_typecast (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			SLtype b_type, VOID_STAR bp)

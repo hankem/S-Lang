@@ -35,10 +35,10 @@ int SLwchar_islower (SLwchar_Type ch)
 {
    if (MODE_VARIABLE)
      return SL_CLASSIFICATION_LOOKUP(ch) & SLCHARCLASS_LOWER;
-   
+
    if (ch < 256)
      return islower ((unsigned char) ch);
-     
+
    return 0;
 }
 
@@ -46,10 +46,10 @@ int SLwchar_isupper (SLwchar_Type ch)
 {
    if (MODE_VARIABLE)
      return SL_CLASSIFICATION_LOOKUP(ch) & SLCHARCLASS_UPPER;
-   
+
    if (ch < 256)
      return isupper ((unsigned char) ch);
-     
+
    return 0;
 }
 
@@ -57,10 +57,10 @@ int SLwchar_isalpha (SLwchar_Type ch)
 {
    if (MODE_VARIABLE)
      return SL_CLASSIFICATION_LOOKUP(ch) & SLCHARCLASS_ALPHA;
-   
+
    if (ch < 256)
      return isalpha ((unsigned char) ch);
-     
+
    return 0;
 }
 
@@ -68,7 +68,7 @@ int SLwchar_isxdigit (SLwchar_Type ch)
 {
    if (MODE_VARIABLE)
      return SL_CLASSIFICATION_LOOKUP(ch) & SLCHARCLASS_XDIGIT;
-   
+
    if (ch < 256)
      return isxdigit ((unsigned char) ch);
 
@@ -79,7 +79,7 @@ int SLwchar_isspace (SLwchar_Type ch)
 {
    if (MODE_VARIABLE)
      return SL_CLASSIFICATION_LOOKUP(ch) & SLCHARCLASS_SPACE;
-   
+
    if (ch < 256)
      return isspace ((unsigned char) ch);
 
@@ -90,7 +90,7 @@ int SLwchar_isblank (SLwchar_Type ch)
 {
    if (MODE_VARIABLE)
      return SL_CLASSIFICATION_LOOKUP(ch) & SLCHARCLASS_BLANK;
-   
+
    return (ch == ' ') || (ch == '\t');
 }
 
@@ -98,7 +98,7 @@ int SLwchar_iscntrl (SLwchar_Type ch)
 {
    if (MODE_VARIABLE)
      return SL_CLASSIFICATION_LOOKUP(ch) & SLCHARCLASS_CNTRL;
-   
+
    if (ch < 256)
      return iscntrl ((unsigned char) ch);
 
@@ -109,7 +109,7 @@ int SLwchar_isprint (SLwchar_Type ch)
 {
    if (MODE_VARIABLE)
      return SL_CLASSIFICATION_LOOKUP(ch) & SLCHARCLASS_PRINT;
-   
+
    if (ch < 256)
      return isprint ((unsigned char) ch);
 
