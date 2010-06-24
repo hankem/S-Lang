@@ -214,7 +214,7 @@ static SLCONST char *Curs_Right_Str;    /* "nd" */
 static SLCONST char *Curs_RightN_Str;    /* "RI" */
 static SLCONST char *Curs_Left_Str;    /* "bc", "le" */
 static SLCONST char *Curs_LeftN_Str;    /* "LE" */
-/* static SLCONST char *Clear_EOS_Str; */   /* cd */
+static SLCONST char *Clear_EOS_Str;   /* cd */
 
 static SLCONST char *Cursor_Visible_Str;    /* ve termcap string */
 static SLCONST char *Cursor_Invisible_Str;    /* vi termcap string */
@@ -953,7 +953,7 @@ void SLtt_delete_nlines (int nn)
      }
 }
 
-void SLtt_cls (void)
+static void cls_internal (SLCONST char *escseq, int rmin)
 {
    /* If the terminal is a color terminal but the user wants black and 
     * white, then make sure that the colors are reset.  This appears to be
@@ -970,14 +970,26 @@ void SLtt_cls (void)
    SLtt_normal_video();
    SLtt_reset_scroll_region ();
 
-   tt_write_string(Cls_Str);
+   tt_write_string(escseq);
 
    if (Use_Relative_Cursor_Addressing)
      {
 	int r, rmax = SLtt_Screen_Rows;
-	for (r = 0; r < rmax; r++)
+	for (r = rmin; r < rmax; r++)
 	  Display_Start_Chars[r].nchars = 0;
      }
+}
+
+void SLtt_cls (void)
+{
+   cls_internal (Cls_Str, 0);
+}
+
+static void _pSLtt_clear_eos (void)
+{
+   int rmin = Cursor_r;
+   if (Cursor_c > 0) rmin++;
+   cls_internal (Clear_EOS_Str, rmin);
 }
 
 void SLtt_reverse_index (int n)
@@ -2570,7 +2582,7 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
    Curs_LeftN_Str = tt_tgetstr ("LE");
    Curs_Right_Str = tt_tgetstr ("nd");
    Curs_RightN_Str = tt_tgetstr ("RI");
-   /* Clear_EOS_Str = tt_tgetstr ("cd"); */
+   Clear_EOS_Str = tt_tgetstr ("cd");
 
    Rev_Scroll_Str = tt_tgetstr("sr");
    Del_N_Lines_Str = tt_tgetstr("DL");
@@ -2925,6 +2937,8 @@ void _pSLtt_cmdline_mode_reset (void)
    Cursor_Set = 0;
    Cursor_r = Cursor_c = 0;
    Max_Relative_Cursor_r = 0;
+   tt_write ("\r", 1);
+   _pSLtt_clear_eos ();
 }
 
 int SLtt_reset_video (void)

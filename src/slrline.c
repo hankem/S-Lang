@@ -1547,6 +1547,9 @@ static void rline_smg_update (SLrline_Type *rli, SLFUTURE_CONST char *prompt,
    if (check_window_size_and_redraw (rli, s))
      return;
 
+   if ((*buf == 0) && (*prompt == 0))
+     _pSLtt_cmdline_mode_reset ();
+
    SLsmg_gotorc (0, 0);
    SLsmg_write_string (prompt);
    r0 = SLsmg_get_row ();
