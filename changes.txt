@@ -153,6 +153,8 @@ Changes since 2.2.2
 56. src/slstrops.c: Added isascii, and updated docs.
 57. src/sldisply.c: _pSLtt_cmdline_mode_reset will also clear to the
     end of the screen.
+58. mingw32 compilation problems: typo in src/slconfig.h;
+    src/slarrfun.c: missing '#ifdef HAVE_LONG_LONG'.
 
 {{{ Previous Versions
 

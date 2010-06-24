@@ -208,7 +208,7 @@ USA.
 
 #if defined(__MINGW32__)
 # define HAVE_UTIME
-# define HVE_UTIME_H
+# define HAVE_UTIME_H
 #endif
 #undef HAVE_UTIMES
 

@@ -380,9 +380,11 @@ static SLang_Array_Type *transpose (SLang_Array_Type *at)
 	   case SLANG_SHORT_TYPE:
 	   case SLANG_USHORT_TYPE:
 	     return transpose_shorts (at, bt);
+#ifdef HAVE_LONG_LONG
 	   case SLANG_LLONG_TYPE:
 	   case SLANG_ULLONG_TYPE:
 	     return transpose_llongs (at, bt);
+#endif
 	  }
      }
    else

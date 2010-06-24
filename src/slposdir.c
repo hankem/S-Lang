@@ -1140,7 +1140,7 @@ static SLang_Intrin_Fun_Type PosixDir_Name_Table [] =
 #if USE_LISTDIR_INTRINSIC
    MAKE_INTRINSIC("listdir", listdir_cmd_wrap, SLANG_VOID_TYPE, 0),
 #endif
-#if HAVE_UTIME
+#ifdef HAVE_UTIME
    MAKE_INTRINSIC_3("utime", utime_intrin, SLANG_INT_TYPE, SLANG_STRING_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE),
 #endif
    SLANG_END_INTRIN_FUN_TABLE
