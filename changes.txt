@@ -150,6 +150,7 @@ Changes since 2.2.2
     encoding.
 55. slsh/lib/rline/editfuns.sl: Used functios in change #54 to implement
     bskip_word and skip_word readline functions.
+56. src/slstrops.c: Added isascii, and updated docs.
 
 {{{ Previous Versions
 

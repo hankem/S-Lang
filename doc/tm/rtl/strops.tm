@@ -171,6 +171,30 @@
 \seealso{sprintf, string, sscanf, vmessage}
 \done
 
+\function{strbskipchar}
+\synopsis{Get an index to the previous character in a UTF-8 encoded string}
+\usage{(p1, wch) = strbskipchar (str, p0 [,skip_combining])}
+\description
+  This function moves backward from the 0-based byte-offset \exmp{p0}
+  in the string \exmp{str} to the previous character in the string.
+  It returns the byte-offset (\exmp{p1} of the previous character and
+  the decoded character value at that byte-offset.
+  
+  The optional third argument specifies the handling of
+  combining characters.  If it is non-zero, combining characters will
+  be ignored, otherwise a combining character will not be treated
+  differently from other characters.  The default is to ignore such
+  characters.
+  
+  If the byte-offset \exmp{p0} corresponds to the end of the string
+  (\exmp{p0=0}), then \exmp{(p0,0)} will be returned.  Otherwise if
+  the byte-offset specifies a value that lies outside the string, an
+  \exc{IndexError} exception will be thrown.  Finally, if the
+  byte-offset corresponds to an illegally coded character, the
+  character returned will be the negative byte-value at the position.
+\seealso{strskipchar, strskipbytes}
+\done
+
 \function{sprintf}
 \synopsis{Format objects into a string}
 \usage{String_Type sprintf (String fmt, ...)}
@@ -740,7 +764,62 @@
   
   See the documentation for the \ifun{strtrans} function for the
   format of the range parameter.
-\seealso{strtrans}
+\seealso{strskipchar, strbskipchar, strtrans}
+\done
+
+\function{strskipchar}
+\synopsis{Get an index to the next character in a UTF-8 encoded string}
+\usage{(p1, wch) = strskipchar (str, p0 [,skip_combining])}
+\description
+  This function decodes the character at the 0-based byte-offset \exmp{p0} in
+  the string \exmp{str}.  It returns the byte-offset (\exmp{p1} of the next
+  character in the string and the decoded character at byte-offset
+  \exmp{p0}. 
+  
+  The optional third argument specifies the handling of
+  combining characters.  If it is non-zero, combining characters will
+  be ignored, otherwise a combining character will not be treated
+  differently from other characters.  The default is to ignore such
+  characters.
+  
+  If the byte-offset \exmp{p0} corresponds to the end of the string,
+  then \exmp{(p0,0)} will be returned.  Otherwise if the byte-offset
+  specifies a value that lies outside the string, an \exc{IndexError}
+  exception will be thrown.  Finally, if the byte-offset corresponds
+  to an illegally coded character, the character returned will be the
+  negative byte-value at the position.
+\example
+  The following is an example of a function that skips alphanumeric
+  characters and returns the new byte-offset.
+#v+
+    private define skip_word_chars (line, p)
+    {
+       variable p1 = p, ch;
+       do
+         {
+            p = p1;
+            (p1, ch) = strskipchar (line, p, 1);
+          }
+       while (isalnum(ch));
+       return p;
+    }
+#v-
+\notes
+  In non-UTF-8 mode (\exmp{_slang_utf8_ok=0}), this function is
+  equivalent to:
+#v+
+     define strskipchar (s, p)
+     {
+        if ((p < 0) || (p > strlen(s)))
+          throw IndexError;
+        if (p == strlen(s))
+          return (p, s[p])
+        return (p+1, s[p]);
+     }
+#v-
+  It is important to understand that the above code relies upon
+  byte-semantics, which are invalid for multi-byte characters.
+\seealso{strbskipchar, strskipbytes}
 \done
 
 \function{strsub}

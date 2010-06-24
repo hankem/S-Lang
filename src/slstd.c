@@ -375,24 +375,55 @@ static int get_doc_string (char *file, char *topic)
    char *str;
    char ch;
 
+   topic_len = strlen (topic);
+   if (topic_len == 0)
+     return -1;
+
    if (NULL == (fp = fopen (file, "r")))
      return -1;
 
-   topic_len = strlen (topic);
-   ch = *topic;
-
    while (1)
      {
+	char *pos;
+
 	if (NULL == fgets (line, sizeof(line), fp))
 	  {
 	     fclose (fp);
 	     return -1;
 	  }
+	ch = *line;
+	if ((ch == ' ') || (ch == '\t') || (ch == '\n') || (ch == '-'))
+	  continue;
+	
+	pos = strstr (line, topic);
+	if (pos == NULL)
+	  continue;
+	
+	ch = pos[topic_len];
 
-	if ((ch == *line)
-	    && (0 == strncmp (line, topic, topic_len))
-	    && ((line[topic_len] == '\n') || (line [topic_len] == 0)
-		|| (line[topic_len] == ' ') || (line[topic_len] == '\t')))
+	/* Most common case */
+	if ((pos == line) 
+	    && ((ch == '\n') || (ch == 0) || (ch == ' ') || (ch == '\t') || (ch == ',')))
+	  break;
+	
+	pos = line;
+	while (NULL != (pos = strchr (pos, ',')))
+	  {
+	     /* Here *pos == ',' */
+	     if (NULL == (pos = strstr (pos+1, topic)))
+	       break;
+	     ch = pos[-1];
+	     if ((ch != ' ') && (ch != ',') && (ch != '\t'))
+	       {
+		  pos += topic_len;
+		  continue;
+	       }
+	     ch = pos[topic_len];
+	     if ((ch == '\n') || (ch == ',') 
+		 || (ch == ' ') || (ch == '\t') || (ch == 0))
+	       break;
+	  }
+	if (pos != NULL)
 	  break;
      }
 

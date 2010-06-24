@@ -7326,7 +7326,7 @@ fputs
          throw OpenError, "Unable to open $file"$;
        if ((-1 == fputs (s, fp))
            or (-1 == fclose (fp)))
-         throw WriteError, "Error writing to $file";
+         throw WriteError, "Error writing to $file"$;
     }
 
 
@@ -7860,6 +7860,38 @@ Sprintf
 
  SEE ALSO
   sprintf, string, sscanf, vmessage
+
+--------------------------------------------------------------
+
+strbskipchar
+
+ SYNOPSIS
+  Get an index to the previous character in a UTF-8 encoded string
+
+ USAGE
+  (p1, wch) = strbskipchar (str, p0 [,skip_combining])
+
+ DESCRIPTION
+  This function moves backward from the 0-based byte-offset `p0'
+  in the string `str' to the previous character in the string.
+  It returns the byte-offset (`p1' of the previous character and
+  the decoded character value at that byte-offset.
+
+  The optional third argument specifies the handling of
+  combining characters.  If it is non-zero, combining characters will
+  be ignored, otherwise a combining character will not be treated
+  differently from other characters.  The default is to ignore such
+  characters.
+
+  If the byte-offset `p0' corresponds to the end of the string
+  (`p0=0'), then `(p0,0)' will be returned.  Otherwise if
+  the byte-offset specifies a value that lies outside the string, an
+  `IndexError' exception will be thrown.  Finally, if the
+  byte-offset corresponds to an illegally coded character, the
+  character returned will be the negative byte-value at the position.
+
+ SEE ALSO
+  strskipchar, strskipbytes
 
 --------------------------------------------------------------
 
@@ -8617,7 +8649,72 @@ strskipbytes
   format of the range parameter.
 
  SEE ALSO
-  strtrans
+  strskipchar, strbskipchar, strtrans
+
+--------------------------------------------------------------
+
+strskipchar
+
+ SYNOPSIS
+  Get an index to the next character in a UTF-8 encoded string
+
+ USAGE
+  (p1, wch) = strskipchar (str, p0 [,skip_combining])
+
+ DESCRIPTION
+  This function decodes the character at the 0-based byte-offset `p0' in
+  the string `str'.  It returns the byte-offset (`p1' of the next
+  character in the string and the decoded character at byte-offset
+  `p0'.
+
+  The optional third argument specifies the handling of
+  combining characters.  If it is non-zero, combining characters will
+  be ignored, otherwise a combining character will not be treated
+  differently from other characters.  The default is to ignore such
+  characters.
+
+  If the byte-offset `p0' corresponds to the end of the string,
+  then `(p0,0)' will be returned.  Otherwise if the byte-offset
+  specifies a value that lies outside the string, an `IndexError'
+  exception will be thrown.  Finally, if the byte-offset corresponds
+  to an illegally coded character, the character returned will be the
+  negative byte-value at the position.
+
+ EXAMPLE
+  The following is an example of a function that skips alphanumeric
+  characters and returns the new byte-offset.
+
+    private define skip_word_chars (line, p)
+    {
+       variable p1 = p, ch;
+       do
+         {
+            p = p1;
+            (p1, ch) = strskipchar (line, p, 1);
+          }
+       while (isalnum(ch));
+       return p;
+    }
+
+
+ NOTES
+  In non-UTF-8 mode (`_slang_utf8_ok=0'), this function is
+  equivalent to:
+
+     define strskipchar (s, p)
+     {
+        if ((p < 0) || (p > strlen(s)))
+          throw IndexError;
+        if (p == strlen(s))
+          return (p, s[p])
+        return (p+1, s[p]);
+     }
+
+  It is important to understand that the above code relies upon
+  byte-semantics, which are invalid for multi-byte characters.
+
+ SEE ALSO
+  strbskipchar, strskipbytes
 
 --------------------------------------------------------------
 
@@ -9913,7 +10010,7 @@ int
   This function is equivalent to `typecast (s, Integer_Type)';
 
  SEE ALSO
-  typecast, double, integer, char, isdigit
+  typecast, double, integer, char, isdigit, isxdigit
 
 --------------------------------------------------------------
 
@@ -9942,33 +10039,51 @@ integer
 
 --------------------------------------------------------------
 
-isdigit
+isalnum, isalpha, isascii, isblank, iscntrl, isdigit, isgraph, islower, isprint, ispunct, isspace, isupper, isxdigit
 
  SYNOPSIS
-  Tests for a decimal digit character
+  Character classification functions
 
  USAGE
-  Integer_Type isdigit (s)
+  Char_Type isalnum(wch)
+  Char_Type isalpha(wch)
+  Char_Type isascii(wch)
+  Char_Type isblank(wch)
+  Char_Type iscntrl(wch)
+  Char_Type isdigit(wch)
+  Char_Type isgraph(wch)
+  Char_Type islower(wch)
+  Char_Type isprint(wch)
+  Char_Type ispunct(wch)
+  Char_Type isspace(wch)
+  Char_Type isupper(wch)
+  Char_Type isxdigit(wch)
 
  DESCRIPTION
-  This function returns a non-zero value if the character represented
-  by `s' is a digit; otherwise, it returns zero.  If `s' is
-  a string, the first character of `s' will be used for the test.
+  These functions return a non-zero value if the character given by
+  `wch' is a member of the character class represented by the
+  function, according to the table below.  Otherwise, 0 will be
+  returned to indicate that the character is not a member of the
+  class.  If the parameter `wch' is a string, then the first
+  character (not necessarily a byte) of the string will be used.
 
- EXAMPLE
-  A simple, user defined implementation of `isdigit' is
+   isalnum : alphanumeric character, equivalent to isalpha or isdigit
+   isalpha : alphabetic character
+   isascii : 7-bit unsigned ascii character
+   isblank : space or a tab
+   iscntrl : control character
+   isdigit : digit 0-9
+   isgraph : non-space printable character
+   islower : lower-case character
+   isprint : printable character, including a space
+   ispunct : non-alphanumeric graphic character
+   isspace : whitespace character (space, newline, tab, etc)
+   isupper : uppercase case character
+   isxdigit: hexadecimal digit character 0-9, a-f, A-F
 
-    define isdigit (x)
-    {
-       return ((x <= '9') and (x >= '0'));
-    }
-
-  However, the intrinsic function `isdigit' executes many times faster
-  than the representation defined above, and works properly when
-  `x' is a Unicode character.
 
  SEE ALSO
-  int, integer
+  strtrans
 
 --------------------------------------------------------------
 

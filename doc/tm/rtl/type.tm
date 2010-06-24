@@ -127,7 +127,7 @@
 #v-
 \notes
   This function is equivalent to \exmp{typecast (s, Integer_Type)};
-\seealso{typecast, double, integer, char, isdigit}
+\seealso{typecast, double, integer, char, isdigit, isxdigit}
 \done
 
 \function{integer}
@@ -145,25 +145,47 @@
 \seealso{typecast, _slang_guess_type, string, sprintf, char}
 \done
 
-\function{isdigit}
-\synopsis{Tests for a decimal digit character}
-\usage{Integer_Type isdigit (s)}
+\function{isalnum, isalpha, isascii, isblank, iscntrl, isdigit, isgraph, 
+islower, isprint, ispunct, isspace, isupper, isxdigit
+}
+\synopsis{Character classification functions}
+\usage{Char_Type isalnum(wch)
+  Char_Type isalpha(wch)
+  Char_Type isascii(wch)
+  Char_Type isblank(wch)
+  Char_Type iscntrl(wch)
+  Char_Type isdigit(wch)
+  Char_Type isgraph(wch)
+  Char_Type islower(wch)
+  Char_Type isprint(wch)
+  Char_Type ispunct(wch)
+  Char_Type isspace(wch)
+  Char_Type isupper(wch)
+  Char_Type isxdigit(wch)
+}
 \description
-  This function returns a non-zero value if the character represented
-  by \exmp{s} is a digit; otherwise, it returns zero.  If \exmp{s} is
-  a string, the first character of \exmp{s} will be used for the test.
-\example
-  A simple, user defined implementation of \ifun{isdigit} is
+  These functions return a non-zero value if the character given by
+  \exmp{wch} is a member of the character class represented by the
+  function, according to the table below.  Otherwise, 0 will be
+  returned to indicate that the character is not a member of the
+  class.  If the parameter \exmp{wch} is a string, then the first
+  character (not necessarily a byte) of the string will be used.
 #v+
-    define isdigit (x)
-    {
-       return ((x <= '9') and (x >= '0'));
-    }
+   isalnum : alphanumeric character, equivalent to isalpha or isdigit
+   isalpha : alphabetic character
+   isascii : 7-bit unsigned ascii character
+   isblank : space or a tab
+   iscntrl : control character
+   isdigit : digit 0-9
+   isgraph : non-space printable character
+   islower : lower-case character
+   isprint : printable character, including a space
+   ispunct : non-alphanumeric graphic character
+   isspace : whitespace character (space, newline, tab, etc)
+   isupper : uppercase case character
+   isxdigit: hexadecimal digit character 0-9, a-f, A-F
 #v-
-  However, the intrinsic function \ifun{isdigit} executes many times faster
-  than the representation defined above, and works properly when
-  \exmp{x} is a Unicode character.
-\seealso{int, integer}
+\seealso{strtrans}
 \done
 
 \function{_slang_guess_type}

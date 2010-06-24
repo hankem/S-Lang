@@ -991,6 +991,11 @@ ISXXX_INTRIN(isdigit_intrin, SLwchar_isdigit)
 ISXXX_INTRIN(isgraph_intrin, SLwchar_isgraph)
 ISXXX_INTRIN(isalnum_intrin, SLwchar_isalnum)
 ISXXX_INTRIN(ispunct_intrin, SLwchar_ispunct)
+static int isascii_fun (SLwchar_Type wch)
+{
+   return wch < 0x80;
+}
+ISXXX_INTRIN(isascii_intrin, isascii_fun)
 
 static int pop_skipintrin_args (SLuchar_Type **strp, SLstrlen_Type *lenp, SLstrlen_Type *posp, int *skip_combp)
 {
@@ -2518,6 +2523,7 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_0("isgraph", isgraph_intrin, SLANG_CHAR_TYPE),
    MAKE_INTRINSIC_0("isalnum", isalnum_intrin, SLANG_CHAR_TYPE),
    MAKE_INTRINSIC_0("ispunct", ispunct_intrin, SLANG_CHAR_TYPE),
+   MAKE_INTRINSIC_0("isascii", isascii_intrin, SLANG_CHAR_TYPE),
    MAKE_INTRINSIC_0("strskipchar", strskipchar_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("strbskipchar", strbskipchar_intrin, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
