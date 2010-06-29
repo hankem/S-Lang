@@ -155,6 +155,8 @@ Changes since 2.2.2
     end of the screen.
 58. mingw32 compilation problems: typo in src/slconfig.h;
     src/slarrfun.c: missing '#ifdef HAVE_LONG_LONG'.
+59. src/slsmg.c: Change #51 introduced a bug that manifests itself
+    when expanding a tab at the right edge of the display.
 
 {{{ Previous Versions
 

@@ -621,6 +621,9 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 		  while (col % SLsmg_Tab_Width);
 		  if (bump_u)
 		    u++;
+		  if (col >= max_col)
+		    break;
+
 		  continue;
 	       }
 
