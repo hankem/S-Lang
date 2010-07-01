@@ -157,6 +157,8 @@ Changes since 2.2.2
     src/slarrfun.c: missing '#ifdef HAVE_LONG_LONG'.
 59. src/slsmg.c: Change #51 introduced a bug that manifests itself
     when expanding a tab at the right edge of the display.
+60. src/slarrfunc.c: If contracting an empty array over all dimensions
+    to produce a scalar, clear the transfer buffer.
 
 {{{ Previous Versions
 

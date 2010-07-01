@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -55,7 +55,7 @@ static SLang_Array_Type *allocate_transposed_array (SLang_Array_Type *at)
 {
    SLang_Array_Type *bt;
    int no_init;
-   
+
    no_init = (0 == (at->flags & SLARR_DATA_VALUE_IS_POINTER));
    bt = SLang_create_array1 (at->data_type, 0, NULL, at->dims, 2, no_init);
    if (bt != NULL)
@@ -70,7 +70,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 {
    if (num)
      return 0;
-   
+
    _pSLang_verror (SL_INVALID_PARM, "%s: array is empty", fun);
    return -1;
 }
@@ -433,11 +433,11 @@ static int get_inner_product_parms (SLang_Array_Type *a, int *dp,
 {
    int num_dims;
    int d;
-   
+
    d = *dp;
-   
+
    num_dims = (int)a->num_dims;
-   if (num_dims == 0) 
+   if (num_dims == 0)
      {
 	_pSLang_verror (SL_INVALID_PARM, "Inner-product operation requires an array of at least 1 dimension.");
 	return -1;
@@ -461,14 +461,14 @@ static int get_inner_product_parms (SLang_Array_Type *a, int *dp,
 	*other = *loops;  /* a->num_elements / a->dims[0]; */
 	return 0;
      }
-   
+
    *other = a->dims[d];
    return 0;
 }
 
 /* This routines takes two arrays A_i..j and B_j..k and produces a third
  * via C_i..k = A_i..j B_j..k.
- * 
+ *
  * If A is a vector, and B is a 2-d matrix, then regard A as a 2-d matrix
  * with 1-column.
  */
@@ -476,7 +476,7 @@ static void do_inner_product (void)
 {
    SLang_Array_Type *a, *b, *c;
    void (*fun)(SLang_Array_Type *, SLang_Array_Type *, SLang_Array_Type *,
-	       unsigned int, unsigned int, unsigned int, unsigned int, 
+	       unsigned int, unsigned int, unsigned int, unsigned int,
 	       unsigned int);
    SLtype c_type;
    SLindex_Type dims[SLARRAY_MAX_DIMS];
@@ -488,10 +488,10 @@ static void do_inner_product (void)
 
    /* The result of a inner_product will be either a float, double, or
     * a complex number.
-    * 
+    *
     * If an integer array is used, it will be promoted to a float.
     */
-   
+
    switch (SLang_peek_at_stack1 ())
      {
       case SLANG_DOUBLE_TYPE:
@@ -528,13 +528,13 @@ static void do_inner_product (void)
 	status = SLang_pop_array_of_type (&a, SLANG_FLOAT_TYPE);
 	break;
      }
-   
+
    if (status == -1)
      {
 	SLang_free_array (b);
 	return;
      }
-   
+
    ai = -1;			       /* last index of a */
    bi = 0;			       /* first index of b */
    if ((-1 == get_inner_product_parms (a, &ai, &a_loops, &a_stride))
@@ -543,12 +543,12 @@ static void do_inner_product (void)
 	_pSLang_verror (SL_TYPE_MISMATCH, "Array dimensions are not compatible for inner-product");
 	goto free_and_return;
      }
-       
+
    a_num_dims = a->num_dims;
    b_num_dims = b->num_dims;
 
    /* Coerse a 1-d vector to 2-d */
-   if ((a_num_dims == 1) 
+   if ((a_num_dims == 1)
        && (b_num_dims == 2)
        && (a->num_elements))
      {
@@ -664,7 +664,7 @@ static void do_inner_product (void)
 #endif
 
 static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contraction,
-				  int dim_specified, int *use_this_dim, 
+				  int dim_specified, int *use_this_dim,
 				  VOID_STAR clientdata)
 {
    int k, use_all_dims;
@@ -734,7 +734,7 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
 	     _pSLang_verror (SL_TYPE_MISMATCH, "%s is not supported by this function", SLclass_get_datatype_name (from_type));
 	     return -1;
 	  }
-	
+
 	/* Found it. So, typecast it to appropriate type */
 	if (c->typecast_to_type == SLANG_VOID_TYPE)
 	  {
@@ -771,24 +771,31 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
 	old_dims[0] = (SLindex_Type)at->num_elements;
 	old_num_dims = 1;
      }
-   
+
    fcon = (SLarray_Contract_Fun_Type *) c->f;
    fmap = c->f;
 
-   if (use_contraction 
+   if (use_contraction
        && (use_all_dims || (old_num_dims == 1)))
      {
 	SLang_Class_Type *cl;
 	VOID_STAR buf;
 	int status = 0;
-	
+
 	cl = _pSLclass_get_class (new_data_type);
 	buf = cl->cl_transfer_buf;
+	if (at->num_elements == 0)
+	  {
+	     /* If there are no elements, the fcon may or may not
+	      * compute a value.  So, clear the buffer
+	      */
+	     memset ((char *)buf, 0, cl->cl_sizeof_type);
+	  }
 
 	if ((-1 == (*fcon) (at->data, 1, at->num_elements, buf))
 	    || (-1 == SLang_push_value (new_data_type, buf)))
 	  status = -1;
-	
+
 	SLang_free_array (at);
 	return status;
      }
@@ -797,14 +804,14 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
     * i_0*W_0 + i_1*W_1 + ... i_{N-1}*W{N-1}
     * where W_j = d_{j+1}d_{j+2}...d_{N-1}
     * and d_k is the number of elements of the kth dimension.
-    * 
+    *
     * For a specified value of k, we
     * So, summing over all elements in the kth dimension of the array
-    * means using the set of offsets given by 
-    *  
+    * means using the set of offsets given by
+    *
     *   i_k*W_k + sum(j!=k) i_j*W_j.
     *
-    * So, we want to loop of all dimensions except for the kth using an 
+    * So, we want to loop of all dimensions except for the kth using an
     * offset given by sum(j!=k)i_jW_j, and an increment W_k between elements.
     */
 
@@ -817,14 +824,14 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
 	wk *= old_dims[i];
      }
    wk = w[k];
-   
+
    /* Now set up the sub array */
    j = 0;
    for (i = 0; i < old_num_dims; i++)
      {
 	if (i == (unsigned int) k)
 	  continue;
-	
+
 	sub_dims[j] = old_dims[i];
 	w[j] = w[i];
 	tmp_dims[j] = 0;
@@ -849,7 +856,7 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
    new_sizeof_type = new_at->sizeof_type;
    dims_k = old_dims[k] * wk;
 
-   /* Skip this for cases such as sum(Double_Type[0,0], 1).  Otherwise, 
+   /* Skip this for cases such as sum(Double_Type[0,0], 1).  Otherwise,
     * (*fcon) will write to new_data, which has no length
     */
    if (new_at->num_elements) do
@@ -859,21 +866,21 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
 
 	for (i = 0; i < sub_num_dims; i++)
 	  offset += w[i] * tmp_dims[i];
-	
+
 	if (use_contraction)
 	  {
 	     status = (*fcon) ((VOID_STAR)(old_data + offset*old_sizeof_type), wk,
 			       dims_k, (VOID_STAR) new_data);
 	     new_data += new_sizeof_type;
 	  }
-	else 
+	else
 	  {
 	     status = (*fmap) (old_data_type, (VOID_STAR) (old_data + offset*old_sizeof_type),
 			       wk, dims_k,
 			       new_data_type, (VOID_STAR) (new_data + offset*new_sizeof_type),
 			       clientdata);
 	  }
-	
+
 	if (status == -1)
 	  {
 	     SLang_free_array (new_at);
@@ -887,13 +894,12 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
    return SLang_push_array (new_at, 1);
 }
 
-   
 int SLarray_map_array (SLCONST SLarray_Map_Type *m)
 {
    return map_or_contract_array (m, 0, 0, NULL, NULL);
 }
 
-int SLarray_map_array_1 (SLCONST SLarray_Map_Type *m, int *use_this_dim, 
+int SLarray_map_array_1 (SLCONST SLarray_Map_Type *m, int *use_this_dim,
 			 VOID_STAR clientdata)
 {
    return map_or_contract_array (m, 0, 1, use_this_dim, clientdata);
@@ -918,7 +924,7 @@ static int sum_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID_S
    while (z < zmax)
      {
 	double v, new_s;
-	
+
 	v = z[0];
 	new_s = sr + v;
 	sr_err += v - (new_s-sr);
@@ -958,7 +964,7 @@ static int sumsq_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID
    return 0;
 }
 
-static int cumsum_complex (SLtype xtype, VOID_STAR xp, unsigned int inc, 
+static int cumsum_complex (SLtype xtype, VOID_STAR xp, unsigned int inc,
 			   unsigned int num,
 			   SLtype ytype, VOID_STAR yp, VOID_STAR clientdata)
 {
@@ -1016,7 +1022,6 @@ static int prod_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID_
    s[1] = si;
    return 0;
 }
-
 
 #endif
 #if SLANG_HAS_FLOAT
@@ -1091,7 +1096,7 @@ static void array_prod (void)
 }
 #endif
 
-static SLCONST SLarray_Contract_Type Array_Min_Funs [] = 
+static SLCONST SLarray_Contract_Type Array_Min_Funs [] =
 {
      {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) min_chars},
      {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, (SLarray_Contract_Fun_Type *) min_uchars},
@@ -1111,8 +1116,8 @@ static SLCONST SLarray_Contract_Type Array_Min_Funs [] =
 #endif
      {0, 0, 0, NULL}
 };
-   
-static void 
+
+static void
 array_min (void)
 {
    (void) SLarray_contract_array (Array_Min_Funs);
@@ -1130,7 +1135,7 @@ static SLCONST SLarray_Contract_Type Array_Max_Funs [] =
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) max_ulongs},
 #if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) max_llongs},
-     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) max_ullongs},   
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) max_ullongs},
 #endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) max_floats},
@@ -1139,7 +1144,7 @@ static SLCONST SLarray_Contract_Type Array_Max_Funs [] =
      {0, 0, 0, NULL}
 };
 
-static void 
+static void
 array_max (void)
 {
    (void) SLarray_contract_array (Array_Max_Funs);
@@ -1157,7 +1162,7 @@ static SLCONST SLarray_Contract_Type Array_Maxabs_Funs [] =
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, (SLarray_Contract_Fun_Type *) max_ulongs},
 #if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) maxabs_llongs},
-     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) max_ullongs},   
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) max_ullongs},
 #endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, (SLarray_Contract_Fun_Type *) maxabs_floats},
@@ -1166,14 +1171,13 @@ static SLCONST SLarray_Contract_Type Array_Maxabs_Funs [] =
      {0, 0, 0, NULL}
 };
 
-static void 
+static void
 array_maxabs (void)
 {
    (void) SLarray_contract_array (Array_Maxabs_Funs);
 }
 
-
-static SLCONST SLarray_Contract_Type Array_Minabs_Funs [] = 
+static SLCONST SLarray_Contract_Type Array_Minabs_Funs [] =
 {
      {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) minabs_chars},
      {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, (SLarray_Contract_Fun_Type *) min_uchars},
@@ -1193,8 +1197,8 @@ static SLCONST SLarray_Contract_Type Array_Minabs_Funs [] =
 #endif
      {0, 0, 0, NULL}
 };
-   
-static void 
+
+static void
 array_minabs (void)
 {
    (void) SLarray_contract_array (Array_Minabs_Funs);
@@ -1230,14 +1234,14 @@ static int pop_writable_array (SLang_Array_Type **atp)
 
    if (-1 == SLang_pop_array (&at, 0))
      return -1;
-   
+
    if (at->flags & SLARR_DATA_VALUE_IS_READ_ONLY)
      {
 	SLang_set_error (SL_ReadOnly_Error);
 	SLang_free_array (at);
 	return -1;
      }
-   
+
    *atp = at;
    return 0;
 }
@@ -1274,7 +1278,6 @@ static int check_range_indices (int len, int *ip, int *jp)
    return 0;
 }
 
-   
 /* Usage: array_swap (a, i, j [,dim]);  (dim not yet supported) */
 static void array_swap (void)
 {
@@ -1295,11 +1298,11 @@ static void array_swap (void)
 	  return;
 	have_dim = 1;
      }
-   
+
    if ((-1 == SLang_pop_integer (&j))
        || (-1 == SLang_pop_integer (&i)))
      return;
-   
+
    if (i == j)
      return;			       /* leave array on stack */
 
@@ -1328,7 +1331,7 @@ static void array_swap (void)
      {
 	src = (unsigned char *)at->data + j*sizeof_type;
 	dst = (unsigned char *)at->data + i*sizeof_type;
-   
+
 	for (k = 0; k < sizeof_type; k++)
 	  {
 	     unsigned char tmp = src[k];
@@ -1342,9 +1345,9 @@ static void array_swap (void)
    _pSLang_verror (SL_NOT_IMPLEMENTED, "dim not implemented");
 #if 0
    /* Otherwise we have perform this swap:
-    * 
+    *
     *    A[*,..,i,*,...] <--> A[*,...,j,*...]
-    * 
+    *
     * Consider 2x2:
     *        a00 a01 a02 ...
     *   A =  a10 a11 a12 ...
@@ -1352,14 +1355,14 @@ static void array_swap (void)
     *         .
     *
     * Suppose we swap A[1,*] <--> A[2,*].  We want:
-    * 
+    *
     *        a00 a01 a02 ...
     *  A' =  a20 a21 a22 ...
     *        a10 a11 a12 ...
     *         .
-    * 
+    *
     * Similarly, swapping A[*,1] <--> A[*,2]:
-    * 
+    *
     *        a00 a02 a01 ...
     *   A =  a10 a12 a11 ...
     *        a20 a22 a21 ...
@@ -1377,10 +1380,10 @@ static void array_swap (void)
      }
    src_ptr = (unsigned char *)at->data + i * ofs;
    dst_ptr = (unsigned char *)at->data + j * ofs;
-   
+
    for (d = swap_dim; d < max_dims; d++)
      {
-	stride = 
+	stride =
 	  while (1)
 	    {
 	       int d;
@@ -1406,14 +1409,14 @@ static void array_swap (void)
 	       k = 0;
 	       while (k < dim)
 		 stride *= at->dims[k];
-	       
+
 	       k = dim + 1;
-	       
+
 	       src = (unsigned char *)at->data + j*sizeof_type;
 	       dst = (unsigned char *)at->data + i*sizeof_type;
 	    }
      }
-#endif	
+#endif
 }
 
 /* Usage: array_reverse (a, [,from, to] [,dim]) */
@@ -1429,7 +1432,7 @@ static void array_reverse (void)
    int nargs;
 
    SLang_Array_Type *at;
-   
+
    nargs = SLang_Num_Function_Args;
    if ((nargs == 2) || (nargs == 4))
      {
@@ -1449,7 +1452,6 @@ static void array_reverse (void)
      }
    if (from == to)
      return;			       /* leave array on stack */
-   
 
    if (-1 == pop_writable_array (&at))
      return;
@@ -1481,13 +1483,13 @@ static void array_reverse (void)
 	     src[k] = dst[k];
 	     dst[k] = tmp;
 	  }
-	
+
 	src += sizeof_type;
 	dst -= sizeof_type;
      }
    SLang_free_array (at);
 }
-     
+
 static SLCONST SLarray_Contract_Type Array_Any_Funs [] =
 {
      {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_chars},
@@ -1500,7 +1502,7 @@ static SLCONST SLarray_Contract_Type Array_Any_Funs [] =
      {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_ulongs},
 #if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
      {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, (SLarray_Contract_Fun_Type *) any_llongs},
-     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) any_ullongs},   
+     {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, (SLarray_Contract_Fun_Type *) any_ullongs},
 #endif
 #if SLANG_HAS_FLOAT
      {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) any_floats},
@@ -1509,12 +1511,11 @@ static SLCONST SLarray_Contract_Type Array_Any_Funs [] =
      {0, 0, 0, NULL}
 };
 
-static void 
+static void
 array_any (void)
 {
    (void) SLarray_contract_array (Array_Any_Funs);
 }
-
 
 static SLCONST SLarray_Contract_Type Array_All_Funs [] =
 {
@@ -1537,7 +1538,7 @@ static SLCONST SLarray_Contract_Type Array_All_Funs [] =
      {0, 0, 0, NULL}
 };
 
-static void 
+static void
 array_all (void)
 {
    (void) SLarray_contract_array (Array_All_Funs);
@@ -1574,7 +1575,7 @@ static SLang_Intrin_Fun_Type Array_Fun_Table [] =
    MAKE_INTRINSIC_0("minabs", array_minabs, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("any", array_any, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("all", array_all, SLANG_VOID_TYPE),
-   
+
    MAKE_INTRINSIC_0("__get_innerprod_block_size", get_innerprod_block_size, SLANG_INT_TYPE),
    MAKE_INTRINSIC_I("__set_innerprod_block_size", set_innerprod_block_size, SLANG_VOID_TYPE),
 
