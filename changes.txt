@@ -159,6 +159,8 @@ Changes since 2.2.2
     when expanding a tab at the right edge of the display.
 60. src/slarrfunc.c: If contracting an empty array over all dimensions
     to produce a scalar, clear the transfer buffer.
+61. src/slarrfun.c: If a scalar is passed to array_reverse, then do
+    nothing.
 
 {{{ Previous Versions
 

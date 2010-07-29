@@ -1450,8 +1450,13 @@ static void array_reverse (void)
 	    || (-1 == SLang_pop_integer (&from)))
 	  return;
      }
-   if (from == to)
-     return;			       /* leave array on stack */
+
+   if ((from == to)
+       || (SLang_peek_at_stack () != SLANG_ARRAY_TYPE))
+     {
+	(void) SLdo_pop ();	       /* do nothing */
+	return;
+     }
 
    if (-1 == pop_writable_array (&at))
      return;

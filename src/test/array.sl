@@ -1032,8 +1032,8 @@ private define test_2darray_reverse (a, i, j, dim)
      failed ("array_reverse 2d");
 }
 
-test_2darray_reverse (_reshape ([1:3*4], [3,4]), 0);
-test_2darray_reverse (_reshape ([1:3*4], [3,4]), 1);
+test_2darray_reverse (_reshape ([1:3*4], [3,4]), NULL, NULL, 0);
+test_2darray_reverse (_reshape ([1:3*4], [3,4]), NULL, NULL, 1);
 test_2darray_reverse (_reshape ([1:3*4], [3,4]), 1,2, 0);
 test_2darray_reverse (_reshape ([1:3*4], [3,4]), 1,3, 1);
 #endif

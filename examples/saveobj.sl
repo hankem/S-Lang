@@ -2,36 +2,36 @@
 % and then load those values back in another instance of the program.
 %
 % The following code defines two public functions:
-% 
+%
 %    save_object (FILE, obj, ...);
 %    (obj,...) = load_object (FILE);
 %
-% For example, 
+% For example,
 %     a = [1:20];
 %     b = 2.4;
 %     c = struct { d, e }; c.d = 2.7; c.e = "foobar";
 %     save_object ("foo.save", a, b, c);
-% 
+%
 % saves the values of the variables a, b, c to a file called "foo.save".
-% These values may be retrieved later, e.g., by another program instance 
+% These values may be retrieved later, e.g., by another program instance
 % via:
 %     (a,b,c) = load_object ("foo.save");
 %
 % Caveats:
-% 
+%
 % 1. Not all object types are supported.  The ones supported include:
-% 
+%
 %     All integer types (Int_Type, Char_Type, Long_Type, ...)
 %     Float_Type, Double_Type
 %     String_Type, BString_Type
 %     Null_Type
-% 
+%
 %    as well as the container classes of the above objects:
 %     Struct_Type, Array_Type
-%    
+%
 % 2. The algorithm for saving Struct_Type is recursive.  This allows one to
 %    save a linked-list of Struct_Type objects.  However, due to the recursive
-%    nature of the algorithm and the interpreter's finite stack size, such 
+%    nature of the algorithm and the interpreter's finite stack size, such
 %    linked-lists cannot be arbitrarily long.
 %
 % 3. Objects are saved in the native representation.  As such, the files are
@@ -74,9 +74,8 @@ private define create_cache ()
    delete_cache ();
 }
 
-
 % If the object does not need cached, return the object.
-% If the object needs cached but does not exist in the cache, cache it and 
+% If the object needs cached but does not exist in the cache, cache it and
 %   return it.
 % Otherwise, the object is in the cache, to return a _Save_Object_Cache_Type
 % representing the object.
@@ -138,8 +137,6 @@ private define get_type_id (type)
    return id;
 }
 
-   
-   
 private define write_not_implemented (fp, object)
 {
    () = fprintf (stderr, "write for object %S not implemented\n", typeof (object));
@@ -191,11 +188,10 @@ private define sizeof (t)
      {
 	verror ("sizeof (%S) not implemented", t);
      }
-   
+
    return size;
 }
-   
-	
+
 private define write_numbers (fp, a)
 {
    variable size = sizeof (_typeof (a));
@@ -225,14 +221,14 @@ private define start_header (fp, id)
    variable len = write_numbers (fp, id);
    variable pos = do_ftell (fp);
    len += write_numbers (fp, 0);	       %  temporary
-   
+
    variable h = struct
      {
 	pos, len
      };
    h.pos = pos;
    h.len = len;
-   
+
    return h;
 }
 
@@ -247,7 +243,7 @@ private define end_header (fp, h, num)
 private define id_to_datatype (id)
 {
    variable keys, values;
-   
+
    keys = assoc_get_keys (Type_Map);
    values = assoc_get_values (Type_Map);
    variable i = where (values == id);
@@ -284,7 +280,7 @@ private define write_array (fp, a)
    (dims, num_dims, data_type) = array_info (a);
    variable len;
    variable id = get_type_id (data_type);
-   
+
    len = write_numbers (fp, num_dims) + write_numbers (fp, dims)
      + write_numbers (fp, id);
 
@@ -296,12 +292,12 @@ private define write_array (fp, a)
 	     variable elem = ();
 	     len += write_object (fp, elem);
 	  }
-	
+
 	return len;
      }
 
    len += write_numbers (fp, a);
-   
+
    return len;
 }
 
@@ -344,13 +340,13 @@ private define write_struct (fp, a)
 	variable f = ();
 	len += write_object (fp, f);
      }
-   
+
    foreach (fields)
      {
 	f = ();
 	len += write_object (fp, get_struct_field (a, f));
      }
-   
+
    return len;
 }
 
@@ -376,7 +372,7 @@ private define read_struct (fp, type, nbytes)
 	i = ();
 	set_struct_field (s, fields[i], read_object (fp, NULL));
      }
-   
+
    return s;
 }
 
@@ -386,13 +382,11 @@ private define write_cached_object (fp, a)
    return write_numbers (fp, a.index);
 }
 
-
 private define read_cached_object (fp, type, nbytes)
 {
    variable index = read_numbers (fp, Int_Type, nbytes);
    return get_object_from_cache (index);
 }
-
 
 private define add_type (t, w, r, id)
 {
@@ -456,7 +450,7 @@ private define read_object (fp, statusp)
      {
 	if (statusp == NULL)
 	  verror ("No more objects in file");
-       
+
 	@statusp = 0;
 	return 0;
      }
@@ -481,12 +475,11 @@ private define read_object (fp, statusp)
    return v;
 }
 
-
 public define save_object ()
 {
    if (_NARGS < 2)
      usage ("save_object (file, obj1, ...)");
-   
+
    variable objs = __pop_args (_NARGS - 1);
    variable file = ();
 
@@ -505,12 +498,15 @@ public define save_object ()
    delete_cache ();
 }
 
-public define load_object (file)
+public define load_object ()
 {
+   if (_NARGS != 1)
+     usage ("(var1,...) = load_object (filename);");
+   variable file = ();
    variable fp = fopen (file, "r");
    if (fp == NULL)
      verror ("Unable to open %s: %s", file, errno_string (errno));
-   
+
    create_cache ();
    forever
      {
@@ -556,11 +552,11 @@ private define test_eqs (a, b)
 	  }
 	return 1;
      }
-   
+
    variable fa, fb;
    fa = get_struct_field_names (a);
    fb = get_struct_field_names (b);
-   
+
    !if (test_eqs (fa, fb))
      {
 	failed ("test_eqs: fa, fb");
@@ -594,13 +590,13 @@ private define test_save_object ()
    variable x0 = 1278;
    variable x1 = 2.3;
    variable x2 = "foo";
-   variable x3 = struct 
+   variable x3 = struct
      {
 	a, b, c, d
      };
    variable x4 = [1:10];
    variable x5 = ["a","b","c","d"];
-   
+
    x3.a = "foo";
    x3.b = PI;
    x3.c = [1:20];
@@ -609,11 +605,11 @@ private define test_save_object ()
    variable x6 = typecast ("foo", BString_Type);
    variable x7 = x6;
    save_object ("foo.sv", x0,x1,x2,x3,x4,x5,x6,x7);
-   
+
    variable y0,y1,y2,y3,y4,y5,y6,y7;
 
    (y0,y1,y2,y3,y4,y5,y6,y7) = load_object ("foo.sv");
-   
+
    !if (test_eqs (x0, y0))
      failed ("x0", x0, y0);
    !if (test_eqs (x1, y1))
@@ -633,7 +629,7 @@ private define test_save_object ()
      failed ("x5", x6, y6);
    !if (__is_same (y6,y7))
      failed ("__is_same(y6,y7)",y6,y7);
-   
+
    vmessage ("Regression Test Done");
 }
 
