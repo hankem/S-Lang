@@ -10458,6 +10458,11 @@ int SLadd_iconstant_table (SLang_IConstant_Type *tbl, SLFUTURE_CONST char *pp)
    return add_generic_table (NULL, (SLang_Name_Type *) tbl, pp, sizeof (SLang_IConstant_Type));
 }
 
+int SLadd_lconstant_table (SLang_LConstant_Type *tbl, SLFUTURE_CONST char *pp)
+{
+   return add_generic_table (NULL, (SLang_Name_Type *) tbl, pp, sizeof (SLang_LConstant_Type));
+}
+
 #if SLANG_HAS_FLOAT
 int SLadd_dconstant_table (SLang_DConstant_Type *tbl, SLFUTURE_CONST char *pp)
 {

@@ -1597,6 +1597,11 @@ static SLang_IConstant_Type IConst_Table [] =
 #if defined(UINT_MAX)
    MAKE_ICONSTANT_T("UINT_MAX", UINT_MAX, SLANG_UINT_TYPE),
 #endif
+   SLANG_END_ICONST_TABLE
+};
+
+static SLang_LConstant_Type LConst_Table [] =
+{
 #if defined(LONG_MIN) && defined(LONG_MAX)
    MAKE_LCONSTANT_T("LONG_MIN", LONG_MIN, _pSLANG_LONG_TYPE),
    MAKE_LCONSTANT_T("LONG_MAX", LONG_MAX, _pSLANG_LONG_TYPE),
@@ -1604,7 +1609,7 @@ static SLang_IConstant_Type IConst_Table [] =
 #if defined(ULONG_MAX)
    MAKE_LCONSTANT_T("ULONG_MAX", ULONG_MAX, _pSLANG_ULONG_TYPE),
 #endif
-   SLANG_END_ICONST_TABLE
+   SLANG_END_LCONST_TABLE
 };
 
 #ifdef HAVE_LONG_LONG
@@ -1822,6 +1827,7 @@ int _pSLarith_register_types (void)
      return -1;
 
    if ((-1 == SLadd_iconstant_table (IConst_Table, NULL))
+       || (-1 == SLadd_lconstant_table (LConst_Table, NULL))
 #if SLANG_HAS_FLOAT
        || (-1 == SLadd_fconstant_table (FConst_Table, NULL))
        || (-1 == SLadd_dconstant_table (DConst_Table, NULL))

@@ -817,7 +817,8 @@ void SLsmg_write_chars (unsigned char *u, unsigned char *umax)
 
    if (u >= umax)
      {
-	if (wrap_mode && (col >= max_col))
+	if ((wrap_mode && (col >= max_col))
+	    || newline_flag)
 	  {
 	     This_Col = 0;
 	     This_Row++;
@@ -1562,7 +1563,7 @@ static int init_smg (int mode)
    unsigned int i, len;
    SLsmg_Char_Type *old, *neew;
 
-   Smg_Mode = SMG_MODE_NONE;
+   Smg_Mode = mode;
 
 #ifdef REQUIRES_NON_BCE_SUPPORT
    Bce_Color_Offset = _pSLtt_get_bce_color_offset ();
@@ -1579,7 +1580,7 @@ static int init_smg (int mode)
    This_Alt_Char = 0;
    SLsmg_set_color (0);
 
-   if (Smg_Mode == SMG_MODE_FULLSCREEN)
+   if (mode == SMG_MODE_FULLSCREEN)
      Cls_Flag = 1;
 
    init_acs (ACS_MODE_AUTO);
@@ -1606,9 +1607,8 @@ static int init_smg (int mode)
 
    _pSLtt_color_changed_hook = SLsmg_touch_screen;
 
-   if (mode == SMG_MODE_FULLSCREEN)
+   if (Smg_Mode == SMG_MODE_FULLSCREEN)
      Screen_Trashed = 1;
-   Smg_Mode = mode;
    return 0;
 }
 

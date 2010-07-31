@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20203
-#define SLANG_VERSION_STRING "pre2.2.3-61"
+#define SLANG_VERSION_STRING "pre2.2.3-63"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -576,6 +576,7 @@ SL_EXTERN int SLadd_intrin_var_table (SLang_Intrin_Var_Type *, SLFUTURE_CONST ch
 SL_EXTERN int SLadd_app_unary_table (SLang_App_Unary_Type *, SLFUTURE_CONST char *);
 SL_EXTERN int SLadd_math_unary_table (SLang_Math_Unary_Type *, SLFUTURE_CONST char *);
 SL_EXTERN int SLadd_iconstant_table (SLang_IConstant_Type *, SLFUTURE_CONST char *);
+SL_EXTERN int SLadd_lconstant_table (SLang_LConstant_Type *, SLFUTURE_CONST char *pp);
 SL_EXTERN int SLadd_dconstant_table (SLang_DConstant_Type *, SLFUTURE_CONST char *);
 SL_EXTERN int SLadd_fconstant_table (SLang_FConstant_Type *, SLFUTURE_CONST char *);
 #ifdef HAVE_LONG_LONG
@@ -2263,7 +2264,7 @@ SL_EXTERN int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table,
 #define MAKE_ICONSTANT(n,val) MAKE_ICONSTANT_T(n,val,SLANG_INT_TYPE)
 
 #define MAKE_LCONSTANT_T(n,val,T) \
-    {(n),NULL, SLANG_LCONSTANT, T, (int)(val)}
+    {(n),NULL, SLANG_LCONSTANT, T, (long)(val)}
 #define MAKE_LCONSTANT(n,val) MAKE_LCONSTANT_T(n,val,SLANG_LONG_TYPE)
 
 #ifdef HAVE_LONG_LONG
@@ -2310,10 +2311,10 @@ SL_EXTERN int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table,
 #define SLANG_END_APP_UNARY_TABLE MAKE_APP_UNARY(NULL,0)
 #define SLANG_END_INTRIN_VAR_TABLE MAKE_VARIABLE(NULL,NULL,0,0)
 #define SLANG_END_ICONST_TABLE MAKE_ICONSTANT(NULL,0)
+#define SLANG_END_LCONST_TABLE MAKE_LCONSTANT(NULL,0)
 #define SLANG_END_LLCONST_TABLE MAKE_LLCONSTANT(NULL,0)
 #define SLANG_END_ISTRUCT_TABLE {NULL, 0, 0, 0}
 #define SLANG_END_CSTRUCT_TABLE {NULL, 0, 0, 0}
-   
 
 /*}}}*/
 

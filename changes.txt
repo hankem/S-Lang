@@ -161,7 +161,11 @@ Changes since 2.2.2
     to produce a scalar, clear the transfer buffer.
 61. src/slarrfun.c: If a scalar is passed to array_reverse, then do
     nothing.
-
+62. src/slarith.c: LONG_MIN/MAX values were placed in an integer
+    contant table instead of a long integer table.
+    SLadd_lconstant_table added to the interface.
+63. src/slsmg.c: Change 51 introduced a bug in SLsmg_write_chars when
+    SLsmg_Newline_Behavior != SLSMG_NEWLINE_IGNORED.
 {{{ Previous Versions
 
 Changes since 2.2.1

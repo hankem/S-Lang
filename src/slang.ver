@@ -696,4 +696,5 @@ SLANG2.2.3 {
 		SLang_push_array_index;
 		SLang_push_strlen_type;
 		SLang_pop_strlen_type;
+		SLadd_lconstant_table;
 } SLANG2.2.1;
