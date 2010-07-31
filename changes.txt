@@ -166,6 +166,8 @@ Changes since 2.2.2
     SLadd_lconstant_table added to the interface.
 63. src/slsmg.c: Change 51 introduced a bug in SLsmg_write_chars when
     SLsmg_Newline_Behavior != SLSMG_NEWLINE_IGNORED.
+64. autoconf/config.sub+config.guess updated.
+
 {{{ Previous Versions
 
 Changes since 2.2.1
