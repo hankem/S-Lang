@@ -8427,13 +8427,13 @@ strjoin
   Concatenate elements of a string array
 
  USAGE
-  String_Type strjoin (Array_Type a, String_Type delim)
+  String_Type strjoin (Array_Type a [, String_Type delim])
 
  DESCRIPTION
    The `strjoin' function operates on an array of strings by joining
-   successive elements together separated with a delimiter `delim'.
-   If `delim' is the empty string `""', then the result will
-   simply be the concatenation of the elements.
+   successive elements together separated with the optional delimiter
+   `delim'.  If `delim' is not specified, then empty string
+   `""' will be used resulting in a concatenation of the elements.
 
  EXAMPLE
    Suppose that

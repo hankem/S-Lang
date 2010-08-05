@@ -604,12 +604,12 @@
 
 \function{strjoin}
 \synopsis{Concatenate elements of a string array}
-\usage{String_Type strjoin (Array_Type a, String_Type delim)}
+\usage{String_Type strjoin (Array_Type a [, String_Type delim])}
 \description
    The \ifun{strjoin} function operates on an array of strings by joining
-   successive elements together separated with a delimiter \exmp{delim}.
-   If \exmp{delim} is the empty string \exmp{""}, then the result will
-   simply be the concatenation of the elements.
+   successive elements together separated with the optional delimiter
+   \exmp{delim}.  If \exmp{delim} is not specified, then empty string
+   \exmp{""} will be used resulting in a concatenation of the elements.
 \example
    Suppose that
 #v+

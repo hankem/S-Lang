@@ -167,6 +167,8 @@ Changes since 2.2.2
 63. src/slsmg.c: Change 51 introduced a bug in SLsmg_write_chars when
     SLsmg_Newline_Behavior != SLSMG_NEWLINE_IGNORED.
 64. autoconf/config.sub+config.guess updated.
+65. src/slstrops.c: If a delimiter is not passed to strjoin, assume
+    the empty string.
 
 {{{ Previous Versions
 

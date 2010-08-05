@@ -1,42 +1,42 @@
   A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  May 31, 2010
+  Aug 4, 2010
   ____________________________________________________________
 
 
-  11..  PPrreeffaaccee
+  1.  Preface
 
-  SS--LLaanngg is an interpreted language that was designed from the start to
+  S-Lang is an interpreted language that was designed from the start to
   be easily embedded into a program to provide it with a powerful
-  extension language. Examples of programs that use SS--LLaanngg as an
-  extension language include the jjeedd text editor and the ssllrrnn
-  newsreader. Although SS--LLaanngg does not exist as a separate application,
-  it is distributed with a quite capable program called ssllsshh (``slang-
-  shell'') that embeds the interpreter and allows one to execute SS--LLaanngg
-  scripts, or simply experiment with SS--LLaanngg at an interactive prompt.
+  extension language. Examples of programs that use S-Lang as an
+  extension language include the jed text editor and the slrn
+  newsreader. Although S-Lang does not exist as a separate application,
+  it is distributed with a quite capable program called slsh (``slang-
+  shell'') that embeds the interpreter and allows one to execute S-Lang
+  scripts, or simply experiment with S-Lang at an interactive prompt.
   Many of the the examples in this document are presented in the context
   of one of the above applications.
 
-  SS--LLaanngg is also a programmer's library that permits a programmer to
+  S-Lang is also a programmer's library that permits a programmer to
   develop sophisticated platform-independent software. In addition to
-  providing the SS--LLaanngg interpreter, the library provides facilities for
+  providing the S-Lang interpreter, the library provides facilities for
   screen management, keymaps, low-level terminal I/O, etc. However, this
   document is concerned only with the extension language and does not
-  address these other features of the SS--LLaanngg library. For information
+  address these other features of the S-Lang library. For information
   about the other components of the library, the reader is referred to
-  TThhee SS--LLaanngg Library Reference.
+  The S-Lang Library Reference.
 
-  11..11..  AA BBrriieeff HHiissttoorryy ooff SS--LLaanngg
+  1.1.  A Brief History of S-Lang
 
-  I first began working on SS--LLaanngg sometime during the fall of 1992.  At
-  that time I was writing a text editor (jjeedd), which I wanted to endow
+  I first began working on S-Lang sometime during the fall of 1992.  At
+  that time I was writing a text editor (jed), which I wanted to endow
   with a macro language. It occured to me that an application-
   independent language that could be embedded into the editor would
   prove more useful because I could envision embedding it into other
-  programs. As a result, SS--LLaanngg was born.
+  programs. As a result, S-Lang was born.
 
-  SS--LLaanngg was originally a stack language that supported a postscript-
-  like syntax. For that reason, I named it SS--LLaanngg, where the _S was
+  S-Lang was originally a stack language that supported a postscript-
+  like syntax. For that reason, I named it S-Lang, where the S was
   supposed to emphasize its stack-based nature. About a year later, I
   began to work on a preparser that would allow one unfamiliar with
   stack based languages to make use of a more traditional infix syntax.
@@ -44,9 +44,9 @@
   postscript-like features still remain, e.g., the `%' character is
   still used as a comment delimiter.
 
-  11..22..  AAcckknnoowwlleeddggeemmeennttss
+  1.2.  Acknowledgements
 
-  Since I first released SS--LLaanngg, I have received a lot feedback about
+  Since I first released S-Lang, I have received a lot feedback about
   the library and the language from many people. This has given me the
   opportunity and pleasure to interact with a number of people to make
   the library portable and easy to use. In particular, I would like to
@@ -64,7 +64,6 @@
 
   John Burnell for the OS/2 port of the video and keyboard routines. He
   also made value suggestions regarding the interpreter interface.
-
   Darrel Hankerson for cleaning up and unifying some of the code and the
   makefiles.
 
@@ -81,46 +80,46 @@
 
   I am also grateful to many other people who send in bug-reports, bug-
   fixes, little enhancements, and suggestions, and so on. Without such
-  community involvement, SS--LLaanngg would not be as well-tested and stable
+  community involvement, S-Lang would not be as well-tested and stable
   as it is. Finally, I would like to thank my wife for her support and
   understanding while I spent long weekend hours developing the library.
 
-  22..  IInnttrroodduuccttiioonn
+  2.  Introduction
 
-  SS--LLaanngg is a powerful interpreted language that may be embedded into an
+  S-Lang is a powerful interpreted language that may be embedded into an
   application to make the application extensible. This enables the
   application to be used in ways not envisioned by the programmer, thus
   providing the application with much more flexibility and power.
   Examples of applications that take advantage of the interpreter in
-  this way include the jjeedd editor and the ssllrrnn newsreader.
+  this way include the jed editor and the slrn newsreader.
 
-  22..11..  ssllsshh ---- TThhee SS--LLaanngg sshheellll
+  2.1.  slsh -- The S-Lang shell
 
-  The SS--LLaanngg distribution contains a standalone application called ssllsshh
-  that may be used for writing SS--LLaanngg scripts and full-blown SS--LLaanngg
-  based applications. For example, the author has used ssllsshh to create a
+  The S-Lang distribution contains a standalone application called slsh
+  that may be used for writing S-Lang scripts and full-blown S-Lang
+  based applications. For example, the author has used slsh to create a
   mediacenter for his home entertainment system that integrates internet
   radio and tv, podcasts, digital pictures and video, CDs, and so forth.
-  The use of ssllsshh in such non-interactive modes is discussed in the
+  The use of slsh in such non-interactive modes is discussed in the
   chapter on ``slsh''.
 
-  ssllsshh also may be used interactively and has full access to all
-  components of the SS--LLaanngg interpreter. With features such as
-  customizable command-line editing, history recall and completion, ssllsshh
+  slsh also may be used interactively and has full access to all
+  components of the S-Lang interpreter. With features such as
+  customizable command-line editing, history recall and completion, slsh
   is a convenient environment for learning and using the language. In
   fact, as you are reading this manual, it is recommended that you use
-  ssllsshh in its interactive mode as an aid to understanding the language.
+  slsh in its interactive mode as an aid to understanding the language.
 
-  While a standard SS--LLaanngg installation includes ssllsshh, some some binary
-  distributions package ssllsshh separately from the SS--LLaanngg library, and as
+  While a standard S-Lang installation includes slsh, some some binary
+  distributions package slsh separately from the S-Lang library, and as
   such must be installed separately. For example, on Debian Linux it can
   be installed via
 
            apt-get install slsh
 
-  When called without arguments, ssllsshh will start in interactive mode by
+  When called without arguments, slsh will start in interactive mode by
   issuing a (customizable) slsh> prompt and waits for input.  While most
-  of the time one would enter SS--LLaanngg statements at the prompt, ssllsshh also
+  of the time one would enter S-Lang statements at the prompt, slsh also
   accepts some other commands, most notably help:
 
           slsh> help
@@ -139,19 +138,19 @@
             quit;
 
   Although the language normally requires variables to be declared
-  before use, it is not necessary to do so when using ssllsshh
+  before use, it is not necessary to do so when using slsh
   interactively. For example, in this document you will see examples
   such as
 
            variable x = [1:10];
            variable y = sin (x^2);
 
-  At the ssllsshh command line, the use of the variable keyword in such
+  At the slsh command line, the use of the variable keyword in such
   statements is optional:
 
            slsh> x = [1:10]; y = sin(x^2);
 
-  As the above example suggests, one use of ssllsshh is as a sophisticated
+  As the above example suggests, one use of slsh is as a sophisticated
   calculator. For example,
 
            slsh> sin (1.24) + 3*cos (1.3*PI);
@@ -170,14 +169,14 @@
   data in the energy column into a histogram to create a spectrum. The
   expression involving where filters the data by accepting only those
   energy values whose status is set to 0. The fits and histogram modules
-  are not distributed with SS--LLaanngg but may be obtained separately-- see
+  are not distributed with S-Lang but may be obtained separately-- see
   http://www.jedsoft.org/slang/modules/ for links to them. For more
   information about modules, see the ``Modules'' chapter in this docu-
   ment.
 
-  For more information about using ssllsshh, see the chapter on ``slsh''.
+  For more information about using slsh, see the chapter on ``slsh''.
 
-  22..22..  LLaanngguuaaggee FFeeaattuurreess
+  2.2.  Language Features
 
   The language features both global and local variables, branching and
   looping constructs, user-defined functions, structures, datatypes, and
@@ -185,7 +184,7 @@
   concise array syntax rivals that of commercial array-based numerical
   computing environments.
 
-  22..33..  DDaattaa TTyyppeess aanndd OOppeerraattoorrss
+  2.3.  Data Types and Operators
 
   The language provides built-in support for string, integer (signed and
   unsigned long and short), double precision floating point, and double
@@ -196,7 +195,7 @@
   a ``reference'' type. The reference type provides much of the same
   flexibility as pointers in other languages. Finally, applications
   embedding the interpreter may also provide special application
-  specific types, such as the Mark_Type that the jjeedd editor provides.
+  specific types, such as the Mark_Type that the jed editor provides.
 
   The language provides standard arithmetic operations such as addition,
   subtraction, multiplication, and division. It also provides support
@@ -212,9 +211,9 @@
   This permits one to do vector operations without explicitly looping
   over the array indices.
 
-  22..44..  SSttaatteemmeennttss aanndd FFuunnccttiioonnss
+  2.4.  Statements and Functions
 
-  The SS--LLaanngg language supports several types of looping constructs and
+  The S-Lang language supports several types of looping constructs and
   conditional statements. The looping constructs include while,
   do...while, for, forever, loop, foreach, and _for. The conditional
   statements include if, if-then-else, and ifnot.
@@ -225,9 +224,9 @@
   function are always created on a stack allowing one to create
   recursive functions. Parameters to a function are always passed by
   value and never by reference. However, the language supports a
-  _r_e_f_e_r_e_n_c_e data type that allows one to simulate pass by reference.
+  reference data type that allows one to simulate pass by reference.
 
-  Unlike many interpreted languages, SS--LLaanngg allows functions to be
+  Unlike many interpreted languages, S-Lang allows functions to be
   dynamically loaded (function autoloading). It also provides constructs
   specifically designed for error handling and recovery as well as
   debugging aids (e.g., function tracebacks).
@@ -238,28 +237,28 @@
   stem from the C language and should be quite familiar to any one
   familiar with C.
 
-  22..55..  EErrrroorr HHaannddlliinngg
+  2.5.  Error Handling
 
-  The SS--LLaanngg language has a try/throw/catch/finally exception model
+  The S-Lang language has a try/throw/catch/finally exception model
   whose semantics are similar to that of other languages. Users may also
   extend the exception class hierarchy with user-defined exceptions. The
-  ERROR_BLOCK based exception model of SS--LLaanngg 1.x is still supported but
+  ERROR_BLOCK based exception model of S-Lang 1.x is still supported but
   deprecated.
 
-  22..66..  RRuunn--TTiimmee LLiibbrraarryy
+  2.6.  Run-Time Library
 
-  Functions that compose the SS--LLaanngg run-time library are called
-  _i_n_t_r_i_n_s_i_c_s. Examples of SS--LLaanngg intrinsic functions available to every
-  SS--LLaanngg application include string manipulation functions such as
-  strcat, strchop, and strcmp. The SS--LLaanngg library also provides
+  Functions that compose the S-Lang run-time library are called
+  intrinsics. Examples of S-Lang intrinsic functions available to every
+  S-Lang application include string manipulation functions such as
+  strcat, strchop, and strcmp. The S-Lang library also provides
   mathematical functions such as sin, cos, and tan; however, not all
   applications enable the use of these intrinsics. For example, to
-  conserve memory, the 16 bit version of the jjeedd editor does not provide
+  conserve memory, the 16 bit version of the jed editor does not provide
   support for any mathematics other than simple integer arithmetic,
   whereas other versions of the editor do support these functions.
 
   Most applications embedding the languages will also provide a set of
-  application specific intrinsic functions. For example, the jjeedd editor
+  application specific intrinsic functions. For example, the jed editor
   adds over 100 application specific intrinsic functions to the
   language. Consult your application specific documentation to see what
   additional intrinsics are supported.
@@ -267,19 +266,19 @@
   Operating systems that support dynamic linking allow a slang
   interpreter to dynamically link additional libraries of intrinsic
   functions and variables into the interpreter. Such loadable objects
-  are called mmoodduulleess. A separate chapter of this manual is devoted to
+  are called modules. A separate chapter of this manual is devoted to
   this important feature.
 
-  22..77..  IInnppuutt//OOuuttppuutt
+  2.7.  Input/Output
 
   The language supports C-like stdio input/output functions such as
   fopen, fgets, fputs, and fclose. In addition it provides two
   functions, message and error, for writing to the standard output
   device and standard error.  Specific applications may provide other
-  I/O mechanisms, e.g., the jjeedd editor supports I/O to files via the
+  I/O mechanisms, e.g., the jed editor supports I/O to files via the
   editor's buffers.
 
-  22..88..  OObbttaaiinniinngg mmoorree iinnffoorrmmaattiioonn aabboouutt SS--LLaanngg
+  2.8.  Obtaining more information about S-Lang
 
   Comprehensive information about the library may be obtained via the
   World Wide Web from http://www.jedsoft.org/slang/. In particular see
@@ -288,28 +287,28 @@
 
   Users with generic questions about the interpreter are encouraged to
   post questions to the Usenet newsgroup alt.lang.s-lang. More specific
-  questions relating to the use of SS--LLaanngg within some application may be
+  questions relating to the use of S-Lang within some application may be
   better answered in an application-specific forum.  For example, users
-  with questions about using SS--LLaanngg as embedded in the jjeedd editor are
-  more likely to be answered in the comp.editors newsgroup or on the jjeedd
-  mailing list. Similarly users with questions concerning ssllrrnn will find
+  with questions about using S-Lang as embedded in the jed editor are
+  more likely to be answered in the comp.editors newsgroup or on the jed
+  mailing list. Similarly users with questions concerning slrn will find
   news.software.readers to be a valuable source of information.
 
   Developers who have embedded the interpreter are encouraged to join
-  the SS--LLaanngg mailing list. To subscribe to the list or just browse the
+  the S-Lang mailing list. To subscribe to the list or just browse the
   archives, visit http://www.jedsoft.org/slang/mailinglists.html.
 
-  33..  OOvveerrvviieeww ooff tthhee LLaanngguuaaggee
+  3.  Overview of the Language
 
-  This purpose of this section is to give the reader a feel for the SS--
-  LLaanngg language, its syntax, and its capabilities. The information and
+  This purpose of this section is to give the reader a feel for the S-
+  Lang language, its syntax, and its capabilities. The information and
   examples presented in this section should be sufficient to provide the
   reader with the necessary background to understand the rest of the
   document.
 
-  33..11..  VVaarriiaabblleess aanndd FFuunnccttiioonnss
+  3.1.  Variables and Functions
 
-  SS--LLaanngg is different from many other interpreted languages in the sense
+  S-Lang is different from many other interpreted languages in the sense
   that all variables and functions must be declared before they can be
   used.
 
@@ -318,10 +317,10 @@
             variable x, y, z;
 
   declares three variables, x, y, and z. Note the semicolon at the end
-  of the statement. _A_l_l SS--LLaanngg statements must end in a semicolon.
+  of the statement. All S-Lang statements must end in a semicolon.
 
   Unlike compiled languages such as C, it is not necessary to specify
-  the data type of a SS--LLaanngg variable. The data type of a SS--LLaanngg variable
+  the data type of a S-Lang variable. The data type of a S-Lang variable
   is determined upon assignment. For example, after execution of the
   statements
 
@@ -355,7 +354,7 @@
 
   The parameter list consists of a comma separated list of variable
   names. It is not necessary to declare variables within a parameter
-  list; they are implicitly declared. However, all other _l_o_c_a_l variables
+  list; they are implicitly declared. However, all other local variables
   used in the function must be declared. If the function takes no
   parameters, then the parameter list must still be present, but empty:
 
@@ -366,20 +365,20 @@
 
   The last example is a function that takes no arguments and returns no
   value. Some languages such as PASCAL distinguish such objects from
-  functions that return values by calling these objects _p_r_o_c_e_d_u_r_e_s. How-
-  ever, SS--LLaanngg, like C, does not make such a distinction.
+  functions that return values by calling these objects procedures. How-
+  ever, S-Lang, like C, does not make such a distinction.
 
-  The language permits _r_e_c_u_r_s_i_v_e functions, i.e., functions that call
-  themselves. The way to do this in SS--LLaanngg is to first declare the
+  The language permits recursive functions, i.e., functions that call
+  themselves. The way to do this in S-Lang is to first declare the
   function using the form:
 
-       define _f_u_n_c_t_i_o_n_-_n_a_m_e ();
+       define function-name ();
 
   It is not necessary to declare a list of parameters when declaring a
   function in this way.
 
   Perhaps the most famous example of a recursive function is the
-  factorial function. Here is how to implement it using SS--LLaanngg:
+  factorial function. Here is how to implement it using S-Lang:
 
             define factorial ();   % declare it for recursion
 
@@ -389,13 +388,13 @@
                return n * factorial (n - 1);
             }
 
-  This example also shows how to mix comments with code. SS--LLaanngg uses the
+  This example also shows how to mix comments with code. S-Lang uses the
   `%' character to start a comment and all characters from the comment
   character to the end of the line are ignored.
 
-  33..22..  QQuuaalliiffiieerrss
+  3.2.  Qualifiers
 
-  SS--LLaanngg 2.1 introduced support for function qualifiers as a mechanism
+  S-Lang 2.1 introduced support for function qualifiers as a mechanism
   for passing additional information to a function. For example,
   consider a plotting application with a function
 
@@ -427,18 +426,18 @@
 
   would produce a blue ``dotted'' one.
 
-  33..33..  SSttrriinnggss
+  3.3.  Strings
 
   Perhaps the most appealing feature of any interpreted language is that
   it frees the user from the responsibility of memory management. This
-  is particularly evident when contrasting how SS--LLaanngg handles string
+  is particularly evident when contrasting how S-Lang handles string
   variables with a lower level language such as C. Consider a function
-  that concatenates three strings. An example in SS--LLaanngg is:
+  that concatenates three strings. An example in S-Lang is:
 
-       define concat_3_strings (a, b, c)
-       {
-          return strcat (a, b, c);
-       }
+            define concat_3_strings (a, b, c)
+            {
+               return strcat (a, b, c);
+            }
 
   This function uses the built-in strcat function for concatenating two
   or more strings. In C, the simplest such function would look like:
@@ -457,7 +456,7 @@
             }
 
   Even this C example is misleading since none of the issues of memory
-  management of the strings has been dealt with. The SS--LLaanngg language
+  management of the strings has been dealt with. The S-Lang language
   hides all these issues from the user.
 
   Binary operators have been defined to work with the string data type.
@@ -473,27 +472,27 @@
   See the section on ``Strings'' for more information about string vari-
   ables.
 
-  33..44..  RReeffeerreenncciinngg aanndd DDeerreeffeerreenncciinngg
+  3.4.  Referencing and Dereferencing
 
-  The unary prefix operator, &, may be used to create a _r_e_f_e_r_e_n_c_e to an
+  The unary prefix operator, &, may be used to create a reference to an
   object, which is similar to a pointer in other languages. References
   are commonly used as a mechanism to pass a function as an argument to
   another function as the following example illustrates:
 
-         define compute_functional_sum (funct)
-         {
-            variable i, s;
+              define compute_functional_sum (funct)
+              {
+                 variable i, s;
 
-            s = 0;
-            for (i = 0; i < 10; i++)
-             {
-                s += (@funct)(i);
-             }
-            return s;
-         }
+                 s = 0;
+                 for (i = 0; i < 10; i++)
+                  {
+                     s += (@funct)(i);
+                  }
+                 return s;
+              }
 
-         variable sin_sum = compute_functional_sum (&sin);
-         variable cos_sum = compute_functional_sum (&cos);
+              variable sin_sum = compute_functional_sum (&sin);
+              variable cos_sum = compute_functional_sum (&cos);
 
   Here, the function compute_functional_sum applies the function speci-
   fied by the parameter funct to the first 10 integers and returns the
@@ -501,7 +500,7 @@
   sin and cos functions may be used.
 
   Note the @ operator in the definition of compute_functional_sum. It is
-  known as the _d_e_r_e_f_e_r_e_n_c_e operator and is the inverse of the reference
+  known as the dereference operator and is the inverse of the reference
   operator.
 
   Another use of the reference operator is in the context of the fgets
@@ -530,14 +529,14 @@
   example involving fgets presented above provided an illustration of
   this. Another example is
 
-         define set_xyz (x, y, z)
-         {
-            @x = 1;
-            @y = 2;
-            @z = 3;
-         }
-         variable X, Y, Z;
-         set_xyz (&X, &Y, &Z);
+              define set_xyz (x, y, z)
+              {
+                 @x = 1;
+                 @y = 2;
+                 @z = 3;
+              }
+              variable X, Y, Z;
+              set_xyz (&X, &Y, &Z);
 
   which, after execution, results in X set to 1, Y set to 2, and Z set
   to 3. A C programmer will note the similarity of set_xyz to the fol-
@@ -550,9 +549,9 @@
                 *z = 3;
              }
 
-  33..55..  AArrrraayyss
+  3.5.  Arrays
 
-  The SS--LLaanngg language supports multi-dimensional arrays of all
+  The S-Lang language supports multi-dimensional arrays of all
   datatypes. For example, one can define arrays of references to
   functions as well as arrays of arrays. Here are a few examples of
   creating arrays:
@@ -566,9 +565,9 @@
   arranged in 10 rows and 3 columns and assigns the result to B. In the
   last example, an array of 5 integers is assigned to the variable C.
   However, in this case the elements of the array are initialized to the
-  values specified. This is known as an _i_n_l_i_n_e_-_a_r_r_a_y.
+  values specified. This is known as an inline-array.
 
-  SS--LLaanngg also supports something called a _r_a_n_g_e_-_a_r_r_a_y. An example of
+  S-Lang also supports something called a range-array. An example of
   such an array is
 
              variable C = [1:9:2];
@@ -600,9 +599,9 @@
   There are more concise ways of accomplishing the result of the
   previous example. These include:
 
-             A = [7, 7, 7, 7, 7, 7, 7, 7, 7, 7];
-             A = Int_Type [10];  A[[0:9]] = 7;
-             A = Int_Type [10];  A[*] = 7;
+        A = [7, 7, 7, 7, 7, 7, 7, 7, 7, 7];
+        A = Int_Type [10];  A[[0:9]] = 7;
+        A = Int_Type [10];  A[*] = 7;
 
   The second and third methods use an array of indices to index the
   array A. In the second, the range of indices has been explicitly spec-
@@ -610,7 +609,7 @@
   ``Arrays'' for more information about array indexing.
 
   Although the examples have pertained to integer arrays, the fact is
-  that SS--LLaanngg arrays can be of any type, e.g.,
+  that S-Lang arrays can be of any type, e.g.,
 
              A = Double_Type [10];
              B = Complex_Type [10];
@@ -647,9 +646,9 @@
                    Y[i] = 20 * sin (X[i]);
                  }
 
-  33..66..  LLiissttss
+  3.6.  Lists
 
-  A SS--LLaanngg list is like an array except that it may contain a
+  A S-Lang list is like an array except that it may contain a
   heterogeneous collection of data, e.g.,
 
             my_list = { 3, 2.9, "foo", &sin };
@@ -662,29 +661,29 @@
   require such a data structure may execute many times faster when a
   list is used instead of an array.
 
-  33..77..  SSttrruuccttuurreess aanndd UUsseerr--DDeeffiinneedd TTyyppeess
+  3.7.  Structures and User-Defined Types
 
-  A _s_t_r_u_c_t_u_r_e is similar to an array in the sense that it is a container
+  A structure is similar to an array in the sense that it is a container
   object. However, the elements of an array must all be of the same type
   (or of Any_Type), whereas a structure is heterogeneous. As an example,
   consider
 
-        variable person = struct
-        {
-           first_name, last_name, age
-        };
-        variable bill = @person;
-        bill.first_name = "Bill";
-        bill.last_name = "Clinton";
-        bill.age = 51;
+             variable person = struct
+             {
+                first_name, last_name, age
+             };
+             variable bill = @person;
+             bill.first_name = "Bill";
+             bill.last_name = "Clinton";
+             bill.age = 51;
 
   In this example a structure consisting of the three fields has been
-  created and assigned to the variable person. Then an _i_n_s_t_a_n_c_e of this
+  created and assigned to the variable person. Then an instance of this
   structure has been created using the dereference operator and assigned
   to bill. Finally, the individual fields of bill were initialized. This
-  is an example of an _a_n_o_n_y_m_o_u_s structure.
+  is an example of an anonymous structure.
 
-  Note: SS--LLaanngg versions 2.1 and higher permit assignment statements
+  Note: S-Lang versions 2.1 and higher permit assignment statements
   within the structure definition, e.g.,
 
              variable bill = struct
@@ -694,19 +693,19 @@
                 age = 51
              };
 
-  A _n_a_m_e_d structure is really a new data type and may be created using
+  A named structure is really a new data type and may be created using
   the typedef keyword:
 
-             typedef struct
-             {
-                first_name, last_name, age
-             }
-             Person_Type;
+        typedef struct
+        {
+           first_name, last_name, age
+        }
+        Person_Type;
 
-             variable bill = @Person_Type;
-             bill.first_name = "Bill";
-             bill.last_name = "Clinton";
-             bill.age = 51;
+        variable bill = @Person_Type;
+        bill.first_name = "Bill";
+        bill.last_name = "Clinton";
+        bill.age = 51;
 
   One advantage of creating a new type is that array elements of such
   types are automatically initialized to instances of the type. For
@@ -720,6 +719,7 @@
   first_name fields of the first two elements. In contrast, the form
   using an anonymous would require a separate step to instantiate the
   array elements:
+
              People = Struct_Type [100];
              People[0] = @person;
              People[0].first_name = "Bill";
@@ -747,11 +747,11 @@
   binary trees, etc. For more information about these and other features
   of structures, see the section on ``Linked Lists''.
 
-  33..88..  NNaammeessppaacceess
+  3.8.  Namespaces
 
   The language supports namespaces that may be used to control the scope
   and visibility of variables and functions. In addition to the global
-  or public namespace, each SS--LLaanngg source file or compilation unit has a
+  or public namespace, each S-Lang source file or compilation unit has a
   private or anonymous namespace associated with it. The private
   namespace may be used to define symbols that are local to the
   compilation unit and inaccessible from the outside. The language also
@@ -759,9 +759,9 @@
   permit access via the namespace operator. See the chapter on
   ``Namespaces'' for more information.
 
-  44..  DDaattaa TTyyppeess aanndd LLiitteerraall CCoonnssttaannttss
+  4.  Data Types and Literal Constants
 
-  The current implementation of the SS--LLaanngg language permits up to 65535
+  The current implementation of the S-Lang language permits up to 65535
   distinct data types, including predefined data types such as integer
   and floating point, as well as specialized application-specific data
   types. It is also possible to create new data types in the language
@@ -772,16 +772,16 @@
   the syntax of the constant. The following sections describe the syntax
   of literals of specific data types.
 
-  44..11..  PPrreeddeeffiinneedd DDaattaa TTyyppeess
+  4.1.  Predefined Data Types
 
-  The current version of SS--LLaanngg defines integer, floating point,
+  The current version of S-Lang defines integer, floating point,
   complex, and string types. It also defines special purpose data types
   such as Null_Type, DataType_Type, and Ref_Type. These types are
   discussed below.
 
-  44..11..11..  IInntteeggeerrss
+  4.1.1.  Integers
 
-  The SS--LLaanngg language supports both signed and unsigned characters,
+  The S-Lang language supports both signed and unsigned characters,
   short integer, long integer, and long long integer types. On most 32
   bit systems, there is no difference between an integer and a long
   integer; however, they may differ on 16 and 64 bit systems.  Generally
@@ -789,22 +789,22 @@
   with a range of -32767 to 32767. On a 32 bit system, plain integers
   range from -2147483648 to 2147483647.
 
-  An plain integer _l_i_t_e_r_a_l can be specified in one of several ways:
+  An plain integer literal can be specified in one of several ways:
 
-  +o  As a decimal (base 10) integer consisting of the characters 0
+  o  As a decimal (base 10) integer consisting of the characters 0
      through 9, e.g., 127. An integer specified this way cannot begin
-     with a leading 0. That is, 0127 is _n_o_t the same as 127.
+     with a leading 0. That is, 0127 is not the same as 127.
 
-  +o  Using hexadecimal (base 16) notation consisting of the characters 0
+  o  Using hexadecimal (base 16) notation consisting of the characters 0
      to 9 and A through F. The hexadecimal number must be preceded by
      the characters 0x. For example, 0x7F specifies an integer using
      hexadecimal notation and has the same value as decimal 127.
 
-  +o  In Octal notation using characters 0 through 7. The Octal number
+  o  In Octal notation using characters 0 through 7. The Octal number
      must begin with a leading 0. For example, 0177 and 127 represent
      the same integer.
 
-  +o  In Binary notation using characters 0 and 1 with the 0b prefix. For
+  o  In Binary notation using characters 0 and 1 with the 0b prefix. For
      example, 21 may be expressed in binary using 0b10101.
 
   Short, long, long long, and unsigned types may be specified by using
@@ -819,7 +819,7 @@
   will be determined by the ASCII value of the character in quotes. For
   example,
 
-                     i = '0';
+                i = '0';
 
   assigns to i the character 48 since the '0' character has an ASCII
   value of 48.
@@ -833,7 +833,7 @@
   Any integer may be preceded by a minus sign to indicate that it is a
   negative integer.
 
-  44..11..22..  FFllooaattiinngg PPooiinntt NNuummbbeerrss
+  4.1.2.  Floating Point Numbers
 
   Single and double precision floating point literals must contain
   either a decimal point or an exponent (or both). Here are examples of
@@ -841,7 +841,7 @@
 
                 12.    12.0    12e0   1.2e1   120e-1   .12e2   0.12e2
 
-  Note that 12 is _n_o_t a floating point number since it contains neither
+  Note that 12 is not a floating point number since it contains neither
   a decimal point nor an exponent. In fact, 12 is an integer.
 
   One may append the f character to the end of the number to indicate
@@ -850,14 +850,15 @@
 
                 12.f    12.0f    12e0f   1.2e1f   120e-1f   .12e2f   0.12e2f
 
-  44..11..33..  CCoommpplleexx NNuummbbeerrss
+  4.1.3.  Complex Numbers
 
   The language implements complex numbers as a pair of double precision
-  floating point numbers. The first number in the pair forms the _r_e_a_l
-  part, while the second number forms the _i_m_a_g_i_n_a_r_y part. That is, a
+  floating point numbers. The first number in the pair forms the real
+  part, while the second number forms the imaginary part. That is, a
   complex number may be regarded as the sum of a real number and an
   imaginary number.
-  Strictly speaking, the current implementation of the SS--LLaanngg does not
+
+  Strictly speaking, the current implementation of the S-Lang does not
   support generic complex literals. However, it does support imaginary
   literals permitting a more generic complex number with a non-zero real
   part to be constructed from the imaginary literal via addition of a
@@ -865,7 +866,6 @@
 
   An imaginary literal is specified in the same way as a floating point
   literal except that i or j is appended. For example,
-
                 12i    12.0i   12e0j
 
   all represent the same imaginary number.
@@ -881,7 +881,7 @@
   The intrinsic functions Real and Imag may be used to retrieve the real
   and imaginary parts of a complex number, respectively.
 
-  44..11..44..  SSttrriinnggss
+  4.1.4.  Strings
 
   A string literal must be enclosed in double quotes as in:
 
@@ -900,19 +900,19 @@
   possible to construct strings longer than this by string
   concatenation, e.g.,
 
-        "This is the first part of a long string"
-         + " and this is the second part"
+             "This is the first part of a long string"
+              + " and this is the second part"
 
-  SS--LLaanngg version 2.2 introduced support for multi-line string literals.
+  S-Lang version 2.2 introduced support for multi-line string literals.
   There are basic variants supported. The first makes use of the
   backslash at the end of a line to indicate that the string is
   continued onto the next line:
 
-             "This is a \
-             multi-line string. \
-             Note the presence of the \
-             backslash character at the end \
-             of each of the lines."
+        "This is a \
+        multi-line string. \
+        Note the presence of the \
+        backslash character at the end \
+        of each of the lines."
 
   The second form of multiline string is delimited by the backquote
   character (`) and does not require backslashes:
@@ -949,7 +949,7 @@
               \x{h..h}  --  the Unicode character U+h..h  [modal]
 
   In the above table, h represents one of the HEXADECIMAL characters
-  from the set _[_0_-_9_A_-_F_a_-_f_]. It is important to understand the distinc-
+  from the set [0-9A-Fa-f]. It is important to understand the distinc-
   tion between the \x{h..h} and \u{h..h} forms. When using in a string,
   the \u form always expands to the corresponding UTF-8 sequence regard-
   less of the UTF-8 mode. In contrast, when in non-UTF-8 mode, the \x
@@ -972,28 +972,28 @@
               `This is the first line
               and this is the second.`
 
-  44..11..44..11..  SSuuffffiixxeess
+  4.1.4.1.  Suffixes
 
   A string literal may be contain a suffix that specifies how the string
   is to be interpreted. The suffix may consist of one or more of the
   following characters:
 
-     RR  Backslash substitution will not be performed on the string.
+     R  Backslash substitution will not be performed on the string.
         This is the default when using back-quoted strings.
 
-     QQ  Backslash substitution will be performed on the string. This is
+     Q  Backslash substitution will be performed on the string. This is
         the default when using strings using the double-quote character.
 
-     BB  If this suffix is present, the string will be interpreted as a
+     B  If this suffix is present, the string will be interpreted as a
         binary string (BString_Type).
 
-     $$  Variable name substitution will be performed on the string.
+     $  Variable name substitution will be performed on the string.
 
   Not all combinations of the above controls characters are supported,
   nor make sense. For example, a string with the suffix QR will cause a
   parse-error because Q and R have opposing meanings.
 
-  44..11..44..11..11..  TThhee QQ aanndd RR ssuuffffiixxeess
+  4.1.4.1.1.  The Q and R suffixes
 
   These suffixes turn on and off backslash expansion. Unless the R
   suffix is present, all double-quoted string literals will have
@@ -1014,7 +1014,7 @@
   The only exception is that a backslash character is not permitted as
   the last character of a string with the R suffix. That is,
 
-            string = "This is illegal\"R;
+       string = "This is illegal\"R;
 
   is not permitted. Without this exception, a string such as
 
@@ -1022,7 +1022,7 @@
 
   would not be parsed properly.
 
-  44..11..44..11..22..  TThhee $$ ssuuffffiixx
+  4.1.4.1.2.  The $ suffix
 
   If the string contains the $ suffix, then variable name expansion will
   be performed upon names prefixed by a $ character occuring within the
@@ -1049,13 +1049,13 @@
 
   Consider the following example:
 
-       private variable bar = "two";
-       putenv ("MYHOME=/home/baz");
-       define funct (foo)
-       {
-         variable bar = 1;
-         message ("file: $MYHOME/foo: garage=$MYGARAGE,bar=$bar"$);
-       }
+            private variable bar = "two";
+            putenv ("MYHOME=/home/baz");
+            define funct (foo)
+            {
+              variable bar = 1;
+              message ("file: $MYHOME/foo: garage=$MYGARAGE,bar=$bar"$);
+            }
 
   When executed, this will produce the message:
 
@@ -1075,7 +1075,7 @@
 
   will produce the message "Hello World".
 
-  44..11..55..  NNuullll__TTyyppee
+  4.1.5.  Null_Type
 
   Objects of type Null_Type can have only one value: NULL. About the
   only thing that you can do with this data type is to assign it to
@@ -1087,16 +1087,16 @@
 
   As a trivial example of its use, consider
 
-        define add_numbers (a, b)
-        {
-           if (a == NULL) a = 0;
-           if (b == NULL) b = 0;
-           return a + b;
-        }
-        variable c = add_numbers (1, 2);
-        variable d = add_numbers (1, NULL);
-        variable e = add_numbers (1,);
-        variable f = add_numbers (,);
+             define add_numbers (a, b)
+             {
+                if (a == NULL) a = 0;
+                if (b == NULL) b = 0;
+                return a + b;
+             }
+             variable c = add_numbers (1, 2);
+             variable d = add_numbers (1, NULL);
+             variable e = add_numbers (1,);
+             variable f = add_numbers (,);
 
   It should be clear that after these statements have been executed, c
   will have a value of 3. It should also be clear that d will have a
@@ -1106,16 +1106,16 @@
   to NULL.  Hence, e and f will be set to 1 and 0, respectively.
 
   The Null_Type data type also plays an important role in the context of
-  _s_t_r_u_c_t_u_r_e_s.
+  structures.
 
-  44..11..66..  RReeff__TTyyppee
+  4.1.6.  Ref_Type
 
-  Objects of Ref_Type are created using the unary _r_e_f_e_r_e_n_c_e operator &.
-  Such objects may be _d_e_r_e_f_e_r_e_n_c_e_d using the dereference operator @. For
+  Objects of Ref_Type are created using the unary reference operator &.
+  Such objects may be dereferenced using the dereference operator @. For
   example,
 
-             sin_ref = &sin;
-             y = (@sin_ref) (1.0);
+        sin_ref = &sin;
+        y = (@sin_ref) (1.0);
 
   creates a reference to the sin function and assigns it to sin_ref. The
   second statement uses the dereference operator to call the function
@@ -1128,18 +1128,19 @@
   important type can be found in the section on ``Referencing
   Variables''.
 
-  44..11..77..  AArrrraayy__TTyyppee,, AAssssoocc__TTyyppee,, LLiisstt__TTyyppee,, aanndd SSttrruucctt__TTyyppee
+  4.1.7.  Array_Type, Assoc_Type, List_Type, and Struct_Type
 
   Variables of type Array_Type, Assoc_Type, List_Type, and Struct_Type
-  are known as _c_o_n_t_a_i_n_e_r _o_b_j_e_c_t_s. They are more complicated than the
+  are known as container objects. They are more complicated than the
   simple data types discussed so far and each obeys a special syntax.
   For these reasons they are discussed in a separate chapters.
 
-  44..11..88..  DDaattaaTTyyppee__TTyyppee TTyyppee
+  4.1.8.  DataType_Type Type
 
-  SS--LLaanngg defines a type called DataType_Type. Objects of this type have
+  S-Lang defines a type called DataType_Type. Objects of this type have
   values that are type names. For example, an integer is an object of
   type Integer_Type. The literals of DataType_Type include:
+
             Char_Type            (signed character)
             UChar_Type           (unsigned character)
             Short_Type           (short integer)
@@ -1170,7 +1171,7 @@
   typeof(Integer_Type) returns DataType_Type. One can use this function
   as in the following example:
 
-            if (Integer_Type == typeof (x)) message ("x is an integer");
+       if (Integer_Type == typeof (x)) message ("x is an integer");
 
   The literals of DataType_Type have other uses as well. One of the most
   common uses of these literals is to create arrays, e.g.,
@@ -1179,15 +1180,15 @@
 
   creates an array of 100 complex numbers and assigns it to x.
 
-  44..11..99..  BBoooolleeaann TTyyppee
+  4.1.9.  Boolean Type
 
-  Strictly speaking, SS--LLaanngg has no separate boolean type; rather it
+  Strictly speaking, S-Lang has no separate boolean type; rather it
   represents boolean values as Char_Type objects. In particular, boolean
   FALSE is equivalent to Char_Type 0, and TRUE as any non-zero Char_Type
   value. Since the exact value of TRUE is unspecified, it is unnecessary
-  and even pointless to define TRUE and FALSE literals in SS--LLaanngg.
+  and even pointless to define TRUE and FALSE literals in S-Lang.
 
-  44..22..  TTyyppeeccaassttiinngg:: CCoonnvveerrttiinngg ffrroomm oonnee TTyyppee ttoo AAnnootthheerr
+  4.2.  Typecasting: Converting from one Type to Another
 
   Occasionally, it is necessary to convert from one data type to
   another. For example, if you need to print an object as a string, it
@@ -1218,8 +1219,8 @@
   involving the conversion of an array of integers to an array of
   doubles could have been performed by multiplication by 1.0, i.e.,
 
-             x = [1:10];       % Array of integers
-             y = 1.0 * x;
+        x = [1:10];       % Array of integers
+        y = 1.0 * x;
 
   The string intrinsic function should be used whenever a string
   representation is needed. Using the typecast function for this purpose
@@ -1241,10 +1242,10 @@
   the display. If the string function was not used and the message func-
   tion was passed an integer, a type-mismatch error would have resulted.
 
-  55..  IIddeennttiiffiieerrss
+  5.  Identifiers
 
   The names given to variables, functions, and data types are called
-  _i_d_e_n_t_i_f_i_e_r_s. There are some restrictions upon the actual characters
+  identifiers. There are some restrictions upon the actual characters
   that make up an identifier. An identifier name must start with an
   alphabetic character ([A-Za-z]), an underscore character, or a dollar
   sign. The rest of the characters in the name can be any combination of
@@ -1282,7 +1283,7 @@
           USER_BLOCK1  USER_BLOCK2  USER_BLOCK3   USER_BLOCK4   using
           variable     while        xor
 
-  66..  VVaarriiaabblleess
+  6.  Variables
 
   As many of the preceding examples have shown, a variable must be
   declared before it can be used, otherwise an undefined name error will
@@ -1315,7 +1316,7 @@
   are legal variable declarations. This also provides a convenient way
   of initializing a variable.
 
-  Variables are classified as either _g_l_o_b_a_l or _l_o_c_a_l. A variable
+  Variables are classified as either global or local. A variable
   declared inside a function is said to be local and has no meaning
   outside the function. A variable is said to be global if it was
   declared outside a function. Global variables are further classified
@@ -1329,16 +1330,16 @@
 
              $0 $1 $2 $3 $4 $5 $6 $7 $8 $9
 
-  An _i_n_t_r_i_n_s_i_c variable is another type of global variable.  Such
+  An intrinsic variable is another type of global variable.  Such
   variables have a definite type which cannot be altered.  Variables of
   this type may also be defined to be read-only, or constant variables.
   An example of an intrinsic variable is PI which is a read-only double
   precision variable with a value of approximately
   3.14159265358979323846.
 
-  77..  OOppeerraattoorrss
+  7.  Operators
 
-  SS--LLaanngg supports a variety of operators that are grouped into three
+  S-Lang supports a variety of operators that are grouped into three
   classes: assignment operators, binary operators, and unary operators.
 
   An assignment operator is used to assign a value to a variable.  They
@@ -1366,9 +1367,9 @@
   and unary operators.  For example, while String_Type supports the +
   operator, it does not admit the * operator.
 
-  77..11..  UUnnaarryy OOppeerraattoorrss
+  7.1.  Unary Operators
 
-  The uunnaarryy operators operate only upon a single operand. They include:
+  The unary operators operate only upon a single operand. They include:
   not, ~, -, @, &, as well as the increment and decrement operators ++
   and --, respectively.
 
@@ -1386,17 +1387,17 @@
   Similarly, the increment (++) and decrement (--) operators will be
   discussed in the context of the assignment operator.
 
-  77..22..  BBiinnaarryy OOppeerraattoorrss
+  7.2.  Binary Operators
 
   The binary operators may be grouped according to several classes:
   arithmetic operators, relational operators, boolean operators, and
   bitwise operators.
 
-  77..22..11..  AArriitthhmmeettiicc OOppeerraattoorrss
+  7.2.1.  Arithmetic Operators
 
   The arithmetic operators include +, -, *, and /, which perform
   addition, subtraction, multiplication, and division, respectively. In
-  addition to these, SS--LLaanngg supports the mod operator, which divides two
+  addition to these, S-Lang supports the mod operator, which divides two
   numbers and produces the remainder, as as well as the power operator
   ^.
 
@@ -1409,11 +1410,11 @@
   converted to a float. In general, the promotion from one type to
   another is such that no information is lost, if possible. As an
   example, consider the expression 8/5 which indicates division of the
-  integer 8 by the integer 5.  The result will be the integer 1 and _n_o_t
+  integer 8 by the integer 5.  The result will be the integer 1 and not
   the floating point value 1.6. However, 8/5.0 will produce 1.6 because
   5.0 is a floating point number.
 
-  77..22..22..  RReellaattiioonnaall OOppeerraattoorrss
+  7.2.2.  Relational Operators
 
   The relational operators are >, >=, <, <=, ==, and !=. These perform
   the comparisons greater than, greater than or equal, less than, less
@@ -1422,7 +1423,7 @@
   for arrays the result will be an array of boolean values. The section
   on arrays will explain this is greater detail.
 
-  Note: For SS--LLaanngg versions 2.1 and higher, relational expressions such
+  Note: For S-Lang versions 2.1 and higher, relational expressions such
   as a<b<=c are defined in the mathematical sense, i.e.,
 
              ((a < b) and (b <= c))
@@ -1431,12 +1432,12 @@
 
              ((a < b) and (b <= c) and (c < d))
 
-  and so on. In previous versions of SS--LLaanngg, (a<b<c) meant (a<b)<c; how-
+  and so on. In previous versions of S-Lang, (a<b<c) meant (a<b)<c; how-
   ever this interpretation was not very useful.
 
-  77..22..33..  BBoooolleeaann OOppeerraattoorrss
+  7.2.3.  Boolean Operators
 
-  SS--LLaanngg supports four boolean binary operators: or, and, ||, and &&,
+  S-Lang supports four boolean binary operators: or, and, ||, and &&,
   which for most data types, return a boolean result. In particular, the
   or and || operators return a non-zero value (boolean TRUE) if either
   of their operands are non-zero, otherwise they produce zero (boolean
@@ -1447,7 +1448,7 @@
   perform the so-called boolean short-circuit evaluation. For example,
   consider the expression:
 
-             (x != 0) and (1/x > 10)
+        (x != 0) and (1/x > 10)
 
   Here, if x were to have a value of zero, a division by zero error
   would occur because even though x!=0 evaluates to zero, the and opera-
@@ -1465,9 +1466,9 @@
   in the section on arrays.
 
   Note: the short-circuiting operators && and || were first introduced
-  in SS--LLaanngg 2.1; they are not available in older versions.
+  in S-Lang 2.1; they are not available in older versions.
 
-  77..22..44..  BBiittwwiissee OOppeerraattoorrss
+  7.2.4.  Bitwise Operators
 
   The bitwise binary operators are currently defined for integer
   operands and are used for bit-level operations. Operators that fall in
@@ -1485,9 +1486,9 @@
   flip a bit.
 
   As an example of using & to perform tests on bits, consider the
-  following: The jjeedd text editor stores some of the information about a
+  following: The jed text editor stores some of the information about a
   buffer in a bitmapped integer variable. The value of this variable may
-  be retrieved using the jjeedd intrinsic function getbuf_info, which
+  be retrieved using the jed intrinsic function getbuf_info, which
   actually returns four quantities: the buffer flags, the name of the
   buffer, directory name, and file name. For the purposes of this
   section, only the buffer flags are of interest and can be retrieved
@@ -1527,10 +1528,10 @@
                return (flags & 2);
             }
 
-  to determine whether or not autosave has been turned on for the
-  buffer.
+  to determine whether or not autosave has been turned on for the buf-
+  fer.
 
-  The shl operator may be used to form the integer with only the _n_t_h bit
+  The shl operator may be used to form the integer with only the nth bit
   set. For example, 1 shl 6 produces an integer with all bits set to
   zero except the sixth bit, which is set to one. The following example
   exploits this fact:
@@ -1540,7 +1541,7 @@
                return flags & (1 shl nth);
             }
 
-  77..22..55..  TThhee NNaammeessppaaccee OOppeerraattoorr
+  7.2.5.  The Namespace Operator
 
   The operator -> is used to in conjunction with a namespace to access
   an object within the namespace. For example, if A is the name of a
@@ -1548,16 +1549,16 @@
   variable. Namespaces are discussed more fully in the chapter on
   ``Namespaces''.
 
-  77..22..66..  OOppeerraattoorr PPrreecceeddeennccee
+  7.2.6.  Operator Precedence
 
-  77..22..77..  BBiinnaarryy OOppeerraattoorrss aanndd FFuunnccttiioonnss RReettuurrnniinngg MMuullttiippllee VVaalluueess
+  7.2.7.  Binary Operators and Functions Returning Multiple Values
 
   Care must be exercised when using binary operators with an operand
   that returns multiple values. In fact, the current implementation of
-  the SS--LLaanngg language will produce incorrect results if both operands of
-  a binary expression return multiple values. _A_t _m_o_s_t_, _o_n_l_y _o_n_e _o_f
-  _o_p_e_r_a_n_d_s _o_f _a _b_i_n_a_r_y _e_x_p_r_e_s_s_i_o_n _c_a_n _r_e_t_u_r_n _m_u_l_t_i_p_l_e _v_a_l_u_e_s_, _a_n_d _t_h_a_t
-  _o_p_e_r_a_n_d _m_u_s_t _b_e _t_h_e _f_i_r_s_t _o_n_e_, _n_o_t _t_h_e _s_e_c_o_n_d_. For example,
+  the S-Lang language will produce incorrect results if both operands of
+  a binary expression return multiple values. At most, only one of
+  operands of a binary expression can return multiple values, and that
+  operand must be the first one, not the second. For example,
 
            define read_line (fp)
            {
@@ -1587,29 +1588,29 @@
   ues, it must occur as the left binary operand.  Putting it on the
   right as in
 
-          while (0 < read_line (fp))    % Incorrect
-            {
-               text = ();
-               % Do something with text
-               .
-               .
-            }
+               while (0 < read_line (fp))    % Incorrect
+                 {
+                    text = ();
+                    % Do something with text
+                    .
+                    .
+                 }
 
   violates the rule and will result in the wrong answer. For this rea-
   son, one should avoid using a function that returns muliple return
   values as a binary operand.
 
-  77..33..  MMiixxiinngg IInntteeggeerr aanndd FFllooaattiinngg PPooiinntt AArriitthhmmeettiicc
+  7.3.  Mixing Integer and Floating Point Arithmetic
 
   If a binary operation (+, -, * , /) is performed on two integers, the
   result is an integer. If at least one of the operands is a floating
   point value, the other will be converted to a floating point value,
   and a floating point result be produced. For example:
 
-             11 / 2           --> 5   (integer)
-             11 / 2.0         --> 5.5 (double)
-             11.0 / 2         --> 5.5 (double)
-             11.0 / 2.0       --> 5.5 (double)
+        11 / 2           --> 5   (integer)
+        11 / 2.0         --> 5.5 (double)
+        11.0 / 2         --> 5.5 (double)
+        11.0 / 2.0       --> 5.5 (double)
 
   Sometimes to achive the desired result, it is necessary to explicitly
   convert from one data type to another. For example, suppose that a and
@@ -1620,20 +1621,21 @@
 
              x = a/double(b);
 
-  77..44..  SShhoorrtt CCiirrccuuiitt BBoooolleeaann EEvvaalluuaattiioonn
+  7.4.  Short Circuit Boolean Evaluation
 
-  AAss ooff SS--LLaanngg version 2.1, use of the andelse and orelse have been
+  As of S-Lang version 2.1, use of the andelse and orelse have been
   deprecated in favor of the && and || short-circuiting operators.
 
-  The boolean operators or and and _a_r_e _n_o_t _s_h_o_r_t _c_i_r_c_u_i_t_e_d as they are
-  in some languages. SS--LLaanngg uses orelse and andelse expressions for
+  The boolean operators or and and are not short circuited as they are
+  in some languages. S-Lang uses orelse and andelse expressions for
   short circuit boolean evaluation.  However, these are not binary
   operators. Expressions of the form:
 
-       _e_x_p_r_-_1 and _e_x_p_r_-_2 and ... _e_x_p_r_-_n
+       expr-1 and expr-2 and ... expr-n
 
   can be replaced by the short circuited version using andelse:
-       andelse {_e_x_p_r_-_1} {_e_x_p_r_-_2} ... {_e_x_p_r_-_n}
+
+       andelse {expr-1} {expr-2} ... {expr-n}
 
   A similar syntax holds for the orelse operator. For example, consider
   the statement:
@@ -1650,9 +1652,9 @@
                  {x != 0}
                  {1 / x > 10})  do_something ();
 
-  88..  SSttaatteemmeennttss
+  8.  Statements
 
-  Loosely speaking, a _s_t_a_t_e_m_e_n_t is composed of _e_x_p_r_e_s_s_i_o_n_s that are
+  Loosely speaking, a statement is composed of expressions that are
   grouped according to the syntax or grammar of the language to express
   a complete computation. A semicolon is used to denote the end of a
   statement.
@@ -1665,26 +1667,26 @@
   assignment statements, conditional statements, and so forth. These are
   described in detail in the following sections.
 
-  88..11..  VVaarriiaabbllee DDeeccllaarraattiioonn SSttaatteemmeennttss
+  8.1.  Variable Declaration Statements
 
   Variable declarations were already discussed in the chapter on
   ``Variables''. For the sake of completeness, a variable declaration is
   a statement of the form
 
-       variable _v_a_r_i_a_b_l_e_-_d_e_c_l_a_r_a_t_i_o_n_-_l_i_s_t ;
+       variable variable-declaration-list ;
 
-  where the _v_a_r_i_a_b_l_e_-_d_e_c_l_a_r_a_t_i_o_n_-_l_i_s_t is a comma separated list of one
+  where the variable-declaration-list is a comma separated list of one
   or more variable names with optional initializations, e.g.,
 
             variable x, y = 2, z;
 
-  88..22..  AAssssiiggnnmmeenntt SSttaatteemmeennttss
+  8.2.  Assignment Statements
 
-  Perhaps the most well known form of statement is the _a_s_s_i_g_n_m_e_n_t
-  _s_t_a_t_e_m_e_n_t. Statements of this type consist of a left-hand side, an
+  Perhaps the most well known form of statement is the assignment
+  statement. Statements of this type consist of a left-hand side, an
   assignment operator, and a right-hand side. The left-hand side must be
   something to which an assignment can be performed. Such an object is
-  called an _l_v_a_l_u_e.
+  called an lvalue.
 
   The most common assignment operator is the simple assignment operator
   =. Examples of its use include
@@ -1694,12 +1696,12 @@
              x = 34 + 27/y + some_function (z);
              x = x + 3;
 
-  In addition to the simple assignment operator, SS--LLaanngg also supports
+  In addition to the simple assignment operator, S-Lang also supports
   the binary assignment operators:
 
             +=   -=   *=    /=   &=   |=
 
-  Internally, SS--LLaanngg transforms
+  Internally, S-Lang transforms
 
               a += b;
 
@@ -1720,7 +1722,7 @@
              a += b;                      % a will become "helloworld"
              c = b + a;                   % c will become "worldhelloworld"
 
-  Since adding or subtracting 1 from a variable is quite common, SS--LLaanngg
+  Since adding or subtracting 1 from a variable is quite common, S-Lang
   also supports the unary increment and decrement operators ++, and --,
   respectively. That is, for numeric data types,
 
@@ -1737,48 +1739,48 @@
   are also equivalent.
 
   Strictly speaking, ++ and -- are unary operators. When used as x++,
-  the ++ operator is said to be a _p_o_s_t_f_i_x_-_u_n_a_r_y operator. However, when
-  used as ++x it is said to be a _p_r_e_f_i_x_-_u_n_a_r_y operator. The current
+  the ++ operator is said to be a postfix-unary operator. However, when
+  used as ++x it is said to be a prefix-unary operator. The current
   implementation does not distinguish between the two forms, thus x++
-  and ++x are equivalent. The reason for this equivalence is _t_h_a_t
-  _a_s_s_i_g_n_m_e_n_t _e_x_p_r_e_s_s_i_o_n_s _d_o _n_o_t _r_e_t_u_r_n _a _v_a_l_u_e _i_n _t_h_e SS--LLaanngg language aass
-  tthheeyy ddoo iinn CC.. TThhuuss oonnee sshhoouulldd eexxeerrcciissee ccaarree aanndd nnoott ttrryy ttoo wwrriittee CC--
-  lliikkee ccooddee ssuucchh aass
+  and ++x are equivalent. The reason for this equivalence is that
+  assignment expressions do not return a value in the S-Lang language as
+  they do in C. Thus one should exercise care and not try to write C-
+  like code such as
 
         x = 10;
         while (--x) do_something (x);     % Ok in C, but not in S-Lang
 
-  The closest valid SS--LLaanngg form involves a _c_o_m_m_a_-_e_x_p_r_e_s_s_i_o_n:
+  The closest valid S-Lang form involves a comma-expression:
 
              x = 10;
              while (x--, x) do_something (x);  % Ok in S-Lang and in C
 
-  SS--LLaanngg also supports a _m_u_l_t_i_p_l_e_-_a_s_s_i_g_n_m_e_n_t statement. It is discussed
+  S-Lang also supports a multiple-assignment statement. It is discussed
   in detail in the section on ``Multiple Assignment Statement''.
 
-  88..33..  CCoonnddiittiioonnaall aanndd LLooooppiinngg SSttaatteemmeennttss
+  8.3.  Conditional and Looping Statements
 
-  SS--LLaanngg supports a wide variety of conditional and looping statements.
-  These constructs operate on statements grouped together in _b_l_o_c_k_s. A
-  block is a sequence of SS--LLaanngg statements enclosed in braces and may
+  S-Lang supports a wide variety of conditional and looping statements.
+  These constructs operate on statements grouped together in blocks. A
+  block is a sequence of S-Lang statements enclosed in braces and may
   contain other blocks. However, a block cannot include function
-  declarations. In the following, _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k refers to either a
-  single SS--LLaanngg statement or to a block of statements, and _i_n_t_e_g_e_r_-
-  _e_x_p_r_e_s_s_i_o_n is an integer-valued or boolean expression. _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+  declarations. In the following, statement-or-block refers to either a
+  single S-Lang statement or to a block of statements, and integer-
+  expression is an integer-valued or boolean expression. next-statement
   represents the statement following the form under discussion.
 
-  88..33..11..  CCoonnddiittiioonnaall FFoorrmmss
+  8.3.1.  Conditional Forms
 
-  88..33..11..11..  iiff
+  8.3.1.1.  if
 
   The simplest condition statement is the if statement. It follows the
   syntax
 
-       if (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+       if (integer-expression) statement-or-block next-statement
 
-  If _i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n evaluates to a non-zero (boolean TRUE) result,
-  then the statement or group of statements implied _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
-  will get executed. Otherwise, control will proceed to _n_e_x_t_-_s_t_a_t_e_m_e_n_t.
+  If integer-expression evaluates to a non-zero (boolean TRUE) result,
+  then the statement or group of statements implied statement-or-block
+  will get executed. Otherwise, control will proceed to next-statement.
 
   An example of the use of this type of conditional statement is
 
@@ -1791,18 +1793,17 @@
   This example illustrates two if statements where the second if state-
   ment is part of the block of statements that belong to the first.
 
-  88..33..11..22..  iiff--eellssee
+  8.3.1.2.  if-else
 
-  Another form of if statement is the _i_f_-_e_l_s_e statement.  It follows the
+  Another form of if statement is the if-else statement.  It follows the
   syntax:
+       if (integer-expression) statement-or-block-1 else statement-or-block-2
+       next-statement
 
-       if (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k_-_1 else _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k_-_2
-       _n_e_x_t_-_s_t_a_t_e_m_e_n_t
-
-  Here, if _e_x_p_r_e_s_s_i_o_n evaluates to a non-zero integer, _s_t_a_t_e_m_e_n_t_-_o_r_-
-  _b_l_o_c_k_-_1 will get executed and control will pass on to _n_e_x_t_-_s_t_a_t_e_m_e_n_t.
-  However, if _e_x_p_r_e_s_s_i_o_n evaluates to zero, _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k_-_2 will
-  get executed before continuing on to _n_e_x_t_-_s_t_a_t_e_m_e_n_t. A simple example
+  Here, if expression evaluates to a non-zero integer, statement-or-
+  block-1 will get executed and control will pass on to next-statement.
+  However, if expression evaluates to zero, statement-or-block-2 will
+  get executed before continuing on to next-statement. A simple example
   of this form is
 
             if (x > 0)
@@ -1818,7 +1819,7 @@
               if (street == "Calle Mayor") found = 1;
             else found = 0;
 
-  This example illustrates a problem that beginners have with _i_f_-_e_l_s_e
+  This example illustrates a problem that beginners have with if-else
   statements. Syntactically, this example is equivalent to
 
             if (city == "Boston")
@@ -1834,36 +1835,37 @@
   although the indentation indicates otherwise. It is important to
   understand the grammar and not be seduced by the indentation!
 
-  88..33..11..33..  iiffnnoott
+  8.3.1.3.  ifnot
 
   One often encounters if statements similar to
 
-       if (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n == 0) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
+       if (integer-expression == 0) statement-or-block
 
   or equivalently,
-       if (not(_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n)) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
+
+       if (not(integer-expression)) statement-or-block
 
   The ifnot statement was added to the language to simplify the handling
   of such statements. It obeys the syntax
 
-       ifnot (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
+  ifnot (integer-expression) statement-or-block
 
   and is functionally equivalent to
 
-       if (not (_e_x_p_r_e_s_s_i_o_n)) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
+       if (not (expression)) statement-or-block
 
   Note: The ifnot keyword was added in version 2.1 and is not supported
   by earlier versions. For compatibility with older code, the !if
   keyword can be used, although its use is deprecated in favor of ifnot.
 
-  88..33..11..44..  oorreellssee,, aannddeellssee
+  8.3.1.4.  orelse, andelse
 
-  AAss ooff SS--LLaanngg version 2.1, use of the andelse and orelse have been
+  As of S-Lang version 2.1, use of the andelse and orelse have been
   deprecated in favor of the && and || short-circuiting operators.
 
   The syntax for the orelse statement is:
 
-       orelse {_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n_-_1} ... {_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n_-_n}
+       orelse {integer-expression-1} ... {integer-expression-n}
 
   This causes each of the blocks to be executed in turn until one of
   them returns a non-zero integer value. The result of this statement is
@@ -1876,7 +1878,7 @@
 
   The syntax for the andelse statement is:
 
-       andelse {_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n_-_1} ... {_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n_-_n}
+       andelse {integer-expression-1} ... {integer-expression-n}
 
   Each of the blocks will be executed in turn until one of them returns
   a zero value. The result of this statement is the integer value
@@ -1886,15 +1888,15 @@
 
   evaluates to 0 since the third block will be the last to execute.
 
-  88..33..11..55..  sswwiittcchh
+  8.3.1.5.  switch
 
   The switch statement deviates from its C counterpart. The syntax is:
 
-            switch (x)
-              { ...  :  ...}
-                .
-                .
-              { ...  :  ...}
+                 switch (x)
+                   { ...  :  ...}
+                     .
+                     .
+                   { ...  :  ...}
 
   The `:' operator is a special symbol that in the context of the switch
   statement, causes the top item on the stack to be tested, and if it is
@@ -1903,7 +1905,7 @@
   block will be terminated and the process will be repeated for the next
   block. If a block contains no : operator, the entire block is executed
   and control will pass onto the next statement following the switch
-  statement.  Such a block is known as the _d_e_f_a_u_l_t case.
+  statement.  Such a block is known as the default case.
 
   As a simple example, consider the following:
 
@@ -1946,29 +1948,29 @@
   will fail because the == operation is not defined between strings and
   integers. The correct way to write this is to use the case keyword:
 
-             switch (x)
-               { case 1 or case "one" : message("Number is one.");}
-               { case 2 or case "two" : message("Number is two.");}
-               { case 3 or case "three" : message("Number is three.");}
-               { case 4 or case "four" : message("Number is four.");}
-               { case 5 or case "five" : message("Number is five.");}
-               { message ("Number is greater than five.");}
+        switch (x)
+          { case 1 or case "one" : message("Number is one.");}
+          { case 2 or case "two" : message("Number is two.");}
+          { case 3 or case "three" : message("Number is three.");}
+          { case 4 or case "four" : message("Number is four.");}
+          { case 5 or case "five" : message("Number is five.");}
+          { message ("Number is greater than five.");}
 
-  88..33..22..  LLooooppiinngg FFoorrmmss
+  8.3.2.  Looping Forms
 
   In this section, the various looping statements are discussed. Each of
   these statements support an optional then clause, which is discussed
   in a separate section below.
 
-  88..33..22..11..  wwhhiillee
+  8.3.2.1.  while
 
   The while statement follows the syntax
 
-       while (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-
-       _b_l_o_c_k ] _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+       while (integer-expression) statement-or-block [ then statement-or-
+       block ] next-statement
 
-  It simply causes _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k to get executed as long as _i_n_t_e_-
-  _g_e_r_-_e_x_p_r_e_s_s_i_o_n evaluates to a non-zero result. For example,
+  It simply causes statement-or-block to get executed as long as inte-
+  ger-expression evaluates to a non-zero result. For example,
 
              i = 10;
              while (i)
@@ -1995,27 +1997,27 @@
              i = 10;
              while (i--) newline ();
 
-  Keep in mind that expressions such as i-- do not return a value in SS--
-  LLaanngg as they do in C. The same effect can be achieved to use a comma
+  Keep in mind that expressions such as i-- do not return a value in S-
+  Lang as they do in C. The same effect can be achieved to use a comma
   to separate the expressions as as in
 
              i = 10;
              while (i, i--) newline ();
 
-  88..33..22..22..  ddoo......wwhhiillee
+  8.3.2.2.  do...while
 
   The do...while statement follows the syntax
 
-       do _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k while (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n); [ then _s_t_a_t_e_m_e_n_t_-_o_r_-
-       _b_l_o_c_k ]
+       do statement-or-block while (integer-expression); [ then statement-or-
+       block ]
 
   The main difference between this statement and the while statement is
-  that the do...while form performs the test involving _i_n_t_e_g_e_r_-_e_x_p_r_e_s_-
-  _s_i_o_n after each execution of _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k rather than before.
-  This guarantees that _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k will get executed at least
+  that the do...while form performs the test involving integer-expres-
+  sion after each execution of statement-or-block rather than before.
+  This guarantees that statement-or-block will get executed at least
   once.
 
-  A simple example from the jjeedd editor follows:
+  A simple example from the jed editor follows:
 
             bob ();      % Move to beginning of buffer
             do
@@ -2024,33 +2026,33 @@
               }
             while (down (1));
 
-  This will cause all lines in the buffer to get indented via the jjeedd
+  This will cause all lines in the buffer to get indented via the jed
   intrinsic function indent_line.
 
-  88..33..22..33..  ffoorr
+  8.3.2.3.  for
 
   Perhaps the most complex looping statement is the for statement;
   nevertheless, it is a favorite of many C programmers.  This statement
   obeys the syntax
 
-       for (_i_n_i_t_-_e_x_p_r_e_s_s_i_o_n; _i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n; _e_n_d_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-
-       _o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k ] _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+       for (init-expression; integer-expression; end-expression) statement-
+       or-block [ then statement-or-block ] next-statement
 
-  In addition to _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k, its specification requires three
-  other expressions. When executed, the for statement evaluates _i_n_i_t_-
-  _e_x_p_r_e_s_s_i_o_n, then it tests _i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n. If _i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n
-  evaluates to zero, control passes to _n_e_x_t_-_s_t_a_t_e_m_e_n_t. Otherwise, it
-  executes _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k as long as _i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n evaluates to
-  a non-zero result. After every execution of _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k, _e_n_d_-
-  _e_x_p_r_e_s_s_i_o_n will get evaluated.
+  In addition to statement-or-block, its specification requires three
+  other expressions. When executed, the for statement evaluates init-
+  expression, then it tests integer-expression. If integer-expression
+  evaluates to zero, control passes to next-statement. Otherwise, it
+  executes statement-or-block as long as integer-expression evaluates to
+  a non-zero result. After every execution of statement-or-block, end-
+  expression will get evaluated.
 
-  This statement is _a_l_m_o_s_t equivalent to
+  This statement is almost equivalent to
 
-       _i_n_i_t_-_e_x_p_r_e_s_s_i_o_n; while (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) { _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k _e_n_d_-
-       _e_x_p_r_e_s_s_i_o_n; }
+       init-expression; while (integer-expression) { statement-or-block end-
+       expression; }
 
   The reason that they are not fully equivalent involves what happens
-  when _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k contains a continue statement.
+  when statement-or-block contains a continue statement.
 
   Despite the apparent complexity of the for statement, it is very easy
   to use. As an example, consider
@@ -2060,17 +2062,17 @@
 
   which computes the sum of the first 10 integers.
 
-  88..33..22..44..  lloooopp
+  8.3.2.4.  loop
 
   The loop statement simply executes a block of code a fixed number of
   times. It follows the syntax
 
-       loop (_i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k
-       ] _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+       loop (integer-expression) statement-or-block [ then statement-or-block
+       ] next-statement
 
-  If the _i_n_t_e_g_e_r_-_e_x_p_r_e_s_s_i_o_n evaluates to a positive integer, _s_t_a_t_e_m_e_n_t_-
-  _o_r_-_b_l_o_c_k will get executed that many times.  Otherwise, control will
-  pass to _n_e_x_t_-_s_t_a_t_e_m_e_n_t.
+  If the integer-expression evaluates to a positive integer, statement-
+  or-block will get executed that many times.  Otherwise, control will
+  pass to next-statement.
 
   For example,
 
@@ -2078,22 +2080,22 @@
 
   will execute the newline function 10 times.
 
-  88..33..22..55..  __ffoorr
+  8.3.2.5.  _for
 
   Like loop, the _for statement simply executes a block of code a fixed
   number times. Unlike the loop statement, the _for loop is useful in
   situations where the loop index is needed. It obeys the syntax
 
-       _for _l_o_o_p_-_v_a_r_i_a_b_l_e (_f_i_r_s_t_-_v_a_l_u_e, _l_a_s_t_-_v_a_l_u_e, _i_n_c_r_e_m_e_n_t) _b_l_o_c_k [ then
-       _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k ] _n_e_x_t_-_s_t_a_t_e_m_e_n_t
+       _for loop-variable (first-value, last-value, increment) block [ then
+       statement-or-block ] next-statement
 
   Each time through the loop, the loop-variable will take on the succes-
   sive values dictated by the other parameters. The first time through,
-  the loop-variable will have the value of _f_i_r_s_t_-_v_a_l_u_e.  The second time
-  its value will be _f_i_r_s_t_-_v_a_l_u_e + _i_n_c_r_e_m_e_n_t, and so on. The loop will
-  terminate when the value of the loop index exceeds _l_a_s_t_-_v_a_l_u_e. The
-  current implementation requires the control parameters _f_i_r_s_t_-_v_a_l_u_e,
-  _l_a_s_t_-_v_a_l_u_e, and _i_n_c_r_e_m_e_n_t to be integer-valued expressions.
+  the loop-variable will have the value of first-value.  The second time
+  its value will be first-value + increment, and so on. The loop will
+  terminate when the value of the loop index exceeds last-value. The
+  current implementation requires the control parameters first-value,
+  last-value, and increment to be integer-valued expressions.
 
   For example, the _for statement may be used to compute the sum of the
   first ten integers:
@@ -2105,13 +2107,13 @@
   The execution speed of the _for loop is more than twice as fast as the
   more powerful for loop making it a better choice for many situations.
 
-  88..33..22..66..  ffoorreevveerr
+  8.3.2.6.  forever
 
   The forever statement is similar to the loop statement except that it
   loops forever, or until a break or a return statement is executed. It
   obeys the syntax
 
-       forever _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k ]
+       forever statement-or-block [ then statement-or-block ]
 
   A trivial example of this statement is
 
@@ -2123,7 +2125,7 @@
                  n--;
               }
 
-  88..33..22..77..  ffoorreeaacchh
+  8.3.2.7.  foreach
 
   The foreach statement is used to loop over one or more statements for
   every element of an object. Most often the object will be a container
@@ -2132,12 +2134,12 @@
 
   The simple type of foreach statement obeys the syntax
 
-       foreach _v_a_r (_o_b_j_e_c_t) _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k [ then _s_t_a_t_e_m_e_n_t_-_o_r_-_b_l_o_c_k ]
+       foreach var (object) statement-or-block [ then statement-or-block ]
 
-  Here _o_b_j_e_c_t can be an expression that evaluates to a value.  Each time
-  through the loop the variable _v_a_r will take on a value that depends
+  Here object can be an expression that evaluates to a value.  Each time
+  through the loop the variable var will take on a value that depends
   upon the data type of the object being processed. For container
-  objects, _v_a_r will take on values of successive members of the object.
+  objects, var will take on values of successive members of the object.
 
   A simple example is
 
@@ -2153,12 +2155,12 @@
   using form of the foreach statement. This more complex type of foreach
   statement follows the syntax
 
-       foreach _v_a_r ( _c_o_n_t_a_i_n_e_r_-_o_b_j_e_c_t ) using ( _c_o_n_t_r_o_l_-_l_i_s_t ) _s_t_a_t_e_m_e_n_t_-_o_r_-
-       _b_l_o_c_k
+       foreach var ( container-object ) using ( control-list ) statement-or-
+       block
 
-  The allowed values of _c_o_n_t_r_o_l_-_l_i_s_t will depend upon the type of con-
-  tainer object. For associative arrays (Assoc_Type), _c_o_n_t_r_o_l_-_l_i_s_t spec-
-  ifies whether _k_e_y_s, _v_a_l_u_e_s, or both are used. For example,
+  The allowed values of control-list will depend upon the type of
+  container object. For associative arrays (Assoc_Type), control-list
+  specifies whether keys, values, or both are used. For example,
 
             foreach k (a) using ("keys")
               {
@@ -2207,9 +2209,9 @@
   Consult the type-specific documentation for a discussion of the using
   control words, if any, appropriate for a given type.
 
-  88..33..33..  bbrreeaakk,, rreettuurrnn,, aanndd ccoonnttiinnuuee
+  8.3.3.  break, return, and continue
 
-  SS--LLaanngg also includes the non-local transfer statements return, break,
+  S-Lang also includes the non-local transfer statements return, break,
   and continue. The return statement causes control to return to the
   calling function while the break and continue statements are used in
   the context of loop structures. Consider:
@@ -2243,7 +2245,7 @@
   Finally, the continue statement will cause control to pass back to the
   start of the loop, skipping the statement s3 altogether.
 
-  88..33..44..  TThhee llooooppiinngg tthheenn ccllaauussee
+  8.3.4.  The looping then clause
 
   As mentioned above, all the looping statements support an optional
   then clause. The statements that comprise this clause get executed
@@ -2251,18 +2253,18 @@
   terminated via a break statement. As an example, consider the
   following:
 
-           count = 0;
-           max_tries = 20;
-           while (count < max_tries)
-             {
-                if (try_something ())
-                  break;
+      count = 0;
+      max_tries = 20;
+      while (count < max_tries)
+        {
+           if (try_something ())
+             break;
 
-                count++;
-                % Failed -- try again
-             }
-           if (count == 20)
-             throw RunTimeError, "try_something failed 20 times";
+           count++;
+           % Failed -- try again
+        }
+      if (count == 20)
+        throw RunTimeError, "try_something failed 20 times";
 
   Here, the code makes 20 attempts to perform some task (via the
   try_something function) and if not successful it will throw an excep-
@@ -2283,7 +2285,7 @@
   happens if the try_something function fails each time through the
   loop. However, if the try_something function succeeds, then the break
   statement will get executed causing the loop to abort prematurely,
-  which would result in the then clause _n_o_t getting executed.
+  which would result in the then clause not getting executed.
 
   The use of such a construct can also simplify code such as:
 
@@ -2303,16 +2305,16 @@
   possible or convenient. The duplication can be eliminated by using the
   then form of the loop statement:
 
-          loop (some_condition != 0)
+     loop (some_condition != 0)
+       {
+          foo_statements;
+          if (another_condition)
             {
-               foo_statements;
-               if (another_condition)
-                 {
-                   bar_statements;
-                   break;
-                 }
+              bar_statements;
+              break;
             }
-          then fizzle_statements;
+       }
+     then fizzle_statements;
 
   Here, the expression some_condition != 0 is going to result in either
   0 or 1, causing the code to execute 0 or 1 loops. Since the fiz-
@@ -2324,7 +2326,7 @@
   the loop is prematurely terminated, and that will occur when both
   some_condition and another_condition are non-zero.
 
-  99..  FFuunnccttiioonnss
+  9.  Functions
 
   There are essentially two classes of functions that may be called from
   the interpreter: intrinsic functions and slang functions.
@@ -2337,12 +2339,12 @@
   strcat, etc. Dynamically loaded modules such as the png and pcre
   modules add additional intrinsic functions.
 
-  The other type of function is written in SS--LLaanngg and is known simply as
-  a ``SS--LLaanngg function''. Such a function may be thought of as a group of
+  The other type of function is written in S-Lang and is known simply as
+  a ``S-Lang function''. Such a function may be thought of as a group of
   statements that work together to perform a computation.  The
   specification of such functions is the main subject of this chapter.
 
-  99..11..  DDeeccllaarriinngg FFuunnccttiioonnss
+  9.1.  Declaring Functions
 
   Like variables, functions must be declared before they can be used.
   The define keyword is used for this purpose. For example,
@@ -2357,29 +2359,28 @@
   cases, the function name is almost always followed by a parameter list
   and the body of the function:
 
-       define _f_u_n_c_t_i_o_n_-_n_a_m_e (_p_a_r_a_m_e_t_e_r_-_l_i_s_t) { _s_t_a_t_e_m_e_n_t_-_l_i_s_t }
+       define function-name (parameter-list) { statement-list }
 
-  The _f_u_n_c_t_i_o_n_-_n_a_m_e is an identifier and must conform to the naming
+  The function-name is an identifier and must conform to the naming
   scheme for identifiers discussed in the chapter on ``Identifiers''.
-  The _p_a_r_a_m_e_t_e_r_-_l_i_s_t is a comma-separated list of variable names that
+  The parameter-list is a comma-separated list of variable names that
   represent parameters passed to the function, and may be empty if no
-  parameters are to be passed. The variables in the _p_a_r_a_m_e_t_e_r_-_l_i_s_t are
+  parameters are to be passed. The variables in the parameter-list are
   implicitly declared, thus, there is no need to declare them via a
   variable declaration statement. In fact any attempt to do so will
   result in a syntax error.
 
   The body of the function is enclosed in braces and consists of zero or
-  more statements (_s_t_a_t_e_m_e_n_t_-_l_i_s_t). While there are no imposed limits
-  upon the number statements that may occur within a SS--LLaanngg function, it
+  more statements (statement-list). While there are no imposed limits
+  upon the number statements that may occur within a S-Lang function, it
   is considered poor programming practice if a function contains many
   statements. This notion stems from the belief that a function should
   have a simple, well-defined purpose.
 
-  99..22..  PPaarraammeetteerr PPaassssiinngg MMeecchhaanniissmm
+  9.2.  Parameter Passing Mechanism
 
   Parameters to a function are always passed by value and never by
   reference. To see what this means, consider
-
             define add_10 (a)
             {
                a = a + 10;
@@ -2390,12 +2391,12 @@
   Here a function add_10 has been defined, which when executed, adds 10
   to its parameter. A variable b has also been declared and initialized
   to zero before being passed to add_10. What will be the value of b
-  after the call to add_10? If SS--LLaanngg were a language that passed param-
+  after the call to add_10? If S-Lang were a language that passed param-
   eters by reference, the value of b would be changed to 10.  However,
-  SS--LLaanngg always passes by value, which means that b will retain its
+  S-Lang always passes by value, which means that b will retain its
   value during and after after the function call.
 
-  SS--LLaanngg does provide a mechanism for simulating pass by reference via
+  S-Lang does provide a mechanism for simulating pass by reference via
   the reference operator. This is described in greater detail in the
   next section.
 
@@ -2425,30 +2426,29 @@
   NULL for missing value. This means that the parser will convert the
   latter three statements in the above example to:
 
-       variable s = add_two_numbers (2, NULL);
-       variable s = add_two_numbers (NULL, 3);
-       variable s = add_two_numbers (NULL, NULL);
+            variable s = add_two_numbers (2, NULL);
+            variable s = add_two_numbers (NULL, 3);
+            variable s = add_two_numbers (NULL, NULL);
 
   It is important to note that this mechanism is available only for
   function calls that specify more than one parameter. That is,
-
             variable s = add_10 ();
 
-  is _n_o_t equivalent to add_10(NULL). The reason for this is simple: the
+  is not equivalent to add_10(NULL). The reason for this is simple: the
   parser can only tell whether or not NULL should be substituted by
   looking at the position of the comma character in the parameter list,
   and only function calls that indicate more than one parameter will use
   a comma. A mechanism for handling single parameter function calls is
   described later in this chapter.
 
-  99..33..  RReettuurrnniinngg VVaalluueess
+  9.3.  Returning Values
 
   The usual way to return values from a function is via the return
   statement. This statement has the simple syntax
 
-       return _e_x_p_r_e_s_s_i_o_n_-_l_i_s_t ;
+       return expression-list ;
 
-  where _e_x_p_r_e_s_s_i_o_n_-_l_i_s_t is a comma separated list of expressions.  If a
+  where expression-list is a comma separated list of expressions.  If a
   function does not return any values, the expression list will be
   empty. A simple example of a function that can return multiple values
   (two in this case) is:
@@ -2461,15 +2461,15 @@
                    return sum, diff;
                }
 
-  99..44..  MMuullttiippllee AAssssiiggnnmmeenntt SSttaatteemmeenntt
+  9.4.  Multiple Assignment Statement
 
   In the previous section an example of a function returning two values
   was given. That function can also be written somewhat simpler as:
 
-         define sum_and_diff (x, y)
-         {
-            return x + y, x - y;
-         }
+              define sum_and_diff (x, y)
+              {
+                 return x + y, x - y;
+              }
 
   This function may be called using
 
@@ -2509,21 +2509,21 @@
 
   causes the return value of the fputs function to be discarded.
 
-  It is possible to create functions that return a _v_a_r_i_a_b_l_e _n_u_m_b_e_r of
-  values instead of a _f_i_x_e_d _n_u_m_b_e_r. Although such functions are
+  It is possible to create functions that return a variable number of
+  values instead of a fixed number. Although such functions are
   discouraged, it is easy to cope with them. Usually, the value at the
   top of the stack will indicate the actual number of return values. For
   such functions, the multiple assignment statement cannot directly be
   used. To see how such functions can be dealt with, consider the
   following function:
 
-            define read_line (fp)
-            {
-               variable line;
-               if (-1 == fgets (&line, fp))
-                 return -1;
-               return (line, 0);
-            }
+       define read_line (fp)
+       {
+          variable line;
+          if (-1 == fgets (&line, fp))
+            return -1;
+          return (line, 0);
+       }
 
   This function returns either one or two values, depending upon the
   return value of fgets. Such a function may be handled using:
@@ -2536,13 +2536,13 @@
                   .
                }
 
-  In this example, the _l_a_s_t value returned by read_line is assigned to
+  In this example, the last value returned by read_line is assigned to
   status and then tested. If it is non-zero, the second return value is
   assigned to s. In particular note the empty set of parenthesis in the
   assignment to s. This simply indicates that whatever is on the top of
   the stack when the statement is executed will be assigned to s.
 
-  99..55..  RReeffeerreenncciinngg VVaarriiaabblleess
+  9.5.  Referencing Variables
 
   One can achieve the effect of passing by reference by using the
   reference (&) and dereference (@) operators. Consider again the add_10
@@ -2556,16 +2556,16 @@
             variable b = 0;
             add_10 (&b);
 
-  The expression &b creates a _r_e_f_e_r_e_n_c_e to the variable b and it is the
+  The expression &b creates a reference to the variable b and it is the
   reference that gets passed to add_10.  When the function add_10 is
   called, the value of the local variable a will be a reference to the
-  variable b. It is only by _d_e_r_e_f_e_r_e_n_c_i_n_g this value that b can be
+  variable b. It is only by dereferencing this value that b can be
   accessed and changed. So, the statement @a=@a+10 should be read as
   ``add 10 to the value of the object that a references and assign the
   result to the object that a references''.
 
-  The reader familiar with C will note the similarity between _r_e_f_e_r_e_n_c_e_s
-  in SS--LLaanngg and _p_o_i_n_t_e_r_s in C.
+  The reader familiar with C will note the similarity between references
+  in S-Lang and pointers in C.
 
   References are not limited to variables. A reference to a function may
   also be created and passed to other functions. As a simple example
@@ -2589,9 +2589,9 @@
   is called with the specified parameters by dereferencing f with the
   dereference operator.
 
-  99..66..  FFuunnccttiioonnss wwiitthh aa VVaarriiaabbllee NNuummbbeerr ooff AArrgguummeennttss
+  9.6.  Functions with a Variable Number of Arguments
 
-  SS--LLaanngg functions may be called with a variable number of arguments.  A
+  S-Lang functions may be called with a variable number of arguments.  A
   natural example of such functions is the strcat function, which takes
   one or more string arguments and returns the concatenated result. An
   example of different sort is the strtrim function which moves both
@@ -2604,10 +2604,10 @@
   whitespace. The strtrim function exemplifies a class of variadic
   functions where the additional arguments are used to pass optional
   information to the function. Another more flexible and powerful way of
-  passing optional information is through the use of _q_u_a_l_i_f_i_e_r_s, which
+  passing optional information is through the use of qualifiers, which
   is the subject of the next section.
 
-  When a SS--LLaanngg function is called with parameters, those parameters are
+  When a S-Lang function is called with parameters, those parameters are
   placed on the run-time stack. The function accesses those parameters
   by removing them from the stack and assigning them to the variables in
   its parameter list. This details of this operation are for the most
@@ -2623,13 +2623,13 @@
 
   Consider the add_10 example presented earlier. This time it is written
 
-            define add_10 ()
-            {
-               variable x;
-               x = ();
-               return x + 10;
-            }
-            variable s = add_10 (12);  % ==> s = 22;
+       define add_10 ()
+       {
+          variable x;
+          x = ();
+          return x + 10;
+       }
+       variable s = add_10 (12);  % ==> s = 22;
 
   For the uninitiated, this example looks as if it is destined for dis-
   aster. The add_10 function appears to accept zero arguments, yet it
@@ -2672,28 +2672,28 @@
   function that accepts a variable number of arguments. Consider the
   function:
 
-           define average_n (n)
+      define average_n (n)
+      {
+         variable x, y;
+         variable s;
+
+         if (n == 1)
            {
-              variable x, y;
-              variable s;
+              x = ();
+              s = x;
+           }
+         else if (n == 2)
+           {
+              y = ();
+              x = ();
+              s = x + y;
+           }
+         else throw NotImplementedError;
 
-              if (n == 1)
-                {
-                   x = ();
-                   s = x;
-                }
-              else if (n == 2)
-                {
-                   y = ();
-                   x = ();
-                   s = x + y;
-                }
-              else throw NotImplementedError;
-
-              return s / n;
-          }
-          variable ave1 = average_n (3.0, 1);        % ==> 3.0
-          variable ave2 = average_n (3.0, 5.0, 2);   % ==> 4.0
+         return s / n;
+     }
+     variable ave1 = average_n (3.0, 1);        % ==> 3.0
+     variable ave2 = average_n (3.0, 5.0, 2);   % ==> 4.0
 
   Here, the last argument passed to average_n is an integer reflecting
   the number of quantities to be averaged. Although this example works
@@ -2739,12 +2739,12 @@
   will generate a UsageError exception along with a simple message indi-
   cating how to use the function.
 
-  99..77..  QQuuaalliiffiieerrss
+  9.7.  Qualifiers
 
   One way to pass optional information to a function is to do so using
   the variable arguments mechanism described in the previous section.
   However, a much more powerful mechanism is through the use of
-  _q_u_a_l_i_f_i_e_r_s, which were added in version 2.1.
+  qualifiers, which were added in version 2.1.
 
   To illustrate the use of qualifiers, consider a graphics application
   that defines a function called plot that plots a set of (x,y) values
@@ -2856,9 +2856,9 @@
   the fill qualifier would get passed to the draw_symbol function to
   specify the ``fill'' value to be used when creating the symbol.
 
-  99..88..  EExxiitt--BBlloocckkss
+  9.8.  Exit-Blocks
 
-  An _e_x_i_t_-_b_l_o_c_k is a set of statements that get executed when a
+  An exit-block is a set of statements that get executed when a
   functions returns. They are very useful for cleaning up when a
   function returns via an explicit call to return from deep within a
   function.
@@ -2866,9 +2866,9 @@
   An exit-block is created by using the EXIT_BLOCK keyword according to
   the syntax
 
-       EXIT_BLOCK { _s_t_a_t_e_m_e_n_t_-_l_i_s_t }
+       EXIT_BLOCK { statement-list }
 
-  where _s_t_a_t_e_m_e_n_t_-_l_i_s_t represents the list of statements that comprise
+  where statement-list represents the list of statements that comprise
   the exit-block. The following example illustrates the use of an exit-
   block:
 
@@ -2910,28 +2910,28 @@
   is possible to explicitly return from an exit-block, but nested exit-
   blocks are illegal.
 
-  99..99..  HHaannddlliinngg RReettuurrnn VVaalluueess ffrroomm aa FFuunnccttiioonn
+  9.9.  Handling Return Values from a Function
 
-  The most important rule to remember in calling a function is that _i_f
-  _t_h_e _f_u_n_c_t_i_o_n _r_e_t_u_r_n_s _a _v_a_l_u_e_, _t_h_e _c_a_l_l_e_r _m_u_s_t _d_o _s_o_m_e_t_h_i_n_g _w_i_t_h _i_t.
+  The most important rule to remember in calling a function is that if
+  the function returns a value, the caller must do something with it.
   While this might sound like a trivial statement it is the number one
   issue that trips-up novice users of the language.
 
-  To elaborate on this point further, consider the _f_p_u_t_s function, which
+  To elaborate on this point further, consider the fputs function, which
   writes a string to a file descriptor. This function can fail when,
   e.g., a disk is full, or the file is located on a network share and
   the network goes down, etc.
 
-  SS--LLaanngg supports two mechanisms that a function may use to report a
+  S-Lang supports two mechanisms that a function may use to report a
   failure: raising an exception, returning a status code. The latter
-  mechanism is used by the SS--LLaanngg fputs function. i.e., it returns a
+  mechanism is used by the S-Lang fputs function. i.e., it returns a
   value to indicate whether or not is was successful. Many users
   familiar with this function either seem to forget this fact, or assume
   that the function will succeed and not bother handling the return
   value. While some languages silently remove such values from the
-  stack, SS--LLaanngg regards the stack as a dynamic data structure that
-  programs can utilize. As a result, the value will be left on the SS--
-  LLaanngg stack and can cause problems later on.
+  stack, S-Lang regards the stack as a dynamic data structure that
+  programs can utilize. As a result, the value will be left on the S-
+  Lang stack and can cause problems later on.
 
   There are a number of correct ways of ``doing something'' with the
   return value from a function. Of course the recommended procedure is
@@ -2956,18 +2956,18 @@
 
             () = fputs ("good luck", fp);
 
-  The last form is a special case of the _m_u_l_t_i_p_l_e _a_s_s_i_g_n_m_e_n_t _s_t_a_t_e_m_e_n_t,
+  The last form is a special case of the multiple assignment statement,
   which was discussed earlier. Since this form is simpler than assigning
   the value to a dummy variable or explicitly calling the pop function,
   it is recommended over the other two mechanisms. Finally, this form
   has the redeeming feature that it presents a visual reminder that the
   function is returning a value that is not being used.
 
-  1100..  NNaammeessppaacceess
+  10.  Namespaces
 
   By default, all global variables and functions are defined in the
   global or public namespace. In addition to the global namespace, every
-  compilation unit (e.g., a file containing SS--LLaanngg code) has a private,
+  compilation unit (e.g., a file containing S-Lang code) has a private,
   or anonymous namespace. The private namespace is used when one wants
   to restrict the usage of one or more functions or variables to the
   compilation unit that defines them without worrying about objects with
@@ -2992,7 +2992,7 @@
            static variable X;
            static define foo () {...}
 
-  For this reason, such a namespace will be called the _s_t_a_t_i_c _n_a_m_e_s_p_a_c_e
+  For this reason, such a namespace will be called the static namespace
   associated with the compilation unit. Such objects may be accessed
   from outside the local compilation unit using the namespace operator
   -> in conjunction with the name of the namespace.
@@ -3074,23 +3074,23 @@
   public namespace. Previously set_z was put in the private namespace
   making both it and Z inaccessible.
 
-  1111..  AArrrraayyss
+  11.  Arrays
 
   An array is a container object that can contain many values of one
   data type. Arrays are very useful objects and are indispensable for
   certain types of programming. The purpose of this chapter is to
-  describe how arrays are defined and used in the SS--LLaanngg language.
+  describe how arrays are defined and used in the S-Lang language.
 
-  1111..11..  CCrreeaattiinngg AArrrraayyss
+  11.1.  Creating Arrays
 
-  The SS--LLaanngg language supports multi-dimensional arrays of all data
+  The S-Lang language supports multi-dimensional arrays of all data
   types. Since the Array_Type is a data type, one can even have arrays
-  of arrays. To create a multi-dimensional array of _S_o_m_e_T_y_p_e and assign
+  of arrays. To create a multi-dimensional array of SomeType and assign
   to some variable, use:
 
              a = SomeType [dim0, dim1, ..., dimN];
 
-  Here _d_i_m_0, _d_i_m_1, ... _d_i_m_N specify the size of the individual dimen-
+  Here dim0, dim1, ... dimN specify the size of the individual dimen-
   sions of the array. The current implementation permits arrays to con-
   tain as many as 7 dimensions. When a numeric array is created, all its
   elements are initialized to zero.  The initialization of other array
@@ -3109,7 +3109,7 @@
   creates a 30 element array of double precision numbers arranged in 10
   rows and 3 columns, and assigns it to b.
 
-  1111..11..11..  RRaannggee AArrrraayyss
+  11.1.1.  Range Arrays
 
   There is a more convenient syntax for creating and initializing 1-d
   arrays. For example, to create an array of ten integers whose elements
@@ -3119,12 +3119,12 @@
 
   Similarly,
 
-            b = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+       b = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
 
   specifies an array of ten doubles.
 
   An even more compact way of specifying a numeric array is to use a
-  _r_a_n_g_e_-_a_r_r_a_y. For example,
+  range-array. For example,
 
             a = [0:9];
 
@@ -3133,9 +3133,9 @@
 
             [first-value : last-value : increment]
 
-  where the _i_n_c_r_e_m_e_n_t is optional and defaults to 1. This creates an
-  array whose first element is _f_i_r_s_t_-_v_a_l_u_e and whose successive values
-  differ by _i_n_c_r_e_m_e_n_t. _l_a_s_t_-_v_a_l_u_e sets an upper limit upon the last
+  where the increment is optional and defaults to 1. This creates an
+  array whose first element is first-value and whose successive values
+  differ by increment. last-value sets an upper limit upon the last
   value of the array as described below.
 
   If the range array [a:b:c] is integer valued, then the interval
@@ -3175,15 +3175,15 @@
   Short_Type, rather it will produce an Int_Type array. However,
   [1h,2h,3h,4h,5h] will produce an array of Short_Type integers.
 
-  1111..11..22..  CCrreeaattiinngg aarrrraayyss vviiaa tthhee ddeerreeffeerreennccee ooppeerraattoorr
+  11.1.2.  Creating arrays via the dereference operator
 
   Another way to create an array is to apply the dereference operator @
   to the DataType_Type literal Array_Type. The actual syntax for this
   operation resembles a function call
 
-       variable a = @Array_Type (_d_a_t_a_-_t_y_p_e, _i_n_t_e_g_e_r_-_a_r_r_a_y);
+       variable a = @Array_Type (data-type, integer-array);
 
-  where _d_a_t_a_-_t_y_p_e is of type DataType_Type and _i_n_t_e_g_e_r_-_a_r_r_a_y is a 1-d
+  where data-type is of type DataType_Type and integer-array is a 1-d
   array of integers that specify the size of each dimension. For exam-
   ple,
 
@@ -3195,7 +3195,7 @@
   ticularly useful for creating arrays during run-time in situations
   where the data-type can vary.
 
-  1111..22..  RReesshhaappiinngg AArrrraayyss
+  11.2.  Reshaping Arrays
 
   It is sometimes useful to change the `shape' of an array using the
   reshape function. For example, a 1-d 10 element array may be reshaped
@@ -3203,11 +3203,11 @@
   restriction on the operation is that the arrays must be commensurate.
   The reshape function follows the syntax
 
-       reshape (_a_r_r_a_y_-_n_a_m_e, _i_n_t_e_g_e_r_-_a_r_r_a_y);
+       reshape (array-name, integer-array);
 
-  where _a_r_r_a_y_-_n_a_m_e specifies the array to be reshaped to the dimensions
+  where array-name specifies the array to be reshaped to the dimensions
   given by integer-array, a 1-dimensional array of integers. It is
-  important to note that this does _n_o_t create a new array, it simply
+  important to note that this does not create a new array, it simply
   reshapes the existing array. Thus,
 
             variable a = Double_Type [100];
@@ -3219,11 +3219,11 @@
   The _reshape function works like reshape except that it creates a new
   array instead of changing the shape of an existing array:
 
-       new_a = _reshape (a, [10,10]);
+            new_a = _reshape (a, [10,10]);
 
-  1111..33..  SSiimmppllee AArrrraayy IInnddeexxiinngg
+  11.3.  Simple Array Indexing
 
-  An individual element of an array may be referred to by its _i_n_d_e_x. For
+  An individual element of an array may be referred to by its index. For
   example, a[0] specifies the zeroth element of the one dimensional
   array a, and b[3,2] specifies the element in the third row and second
   column of the two dimensional array b. As in C, array indices are
@@ -3244,7 +3244,7 @@
 
             y = a[2] + 7;
 
-  Unlike other SS--LLaanngg variables which inherit a type upon assignment,
+  Unlike other S-Lang variables which inherit a type upon assignment,
   array elements already have a type and any attempt to assign a value
   with an incompatible type will result in a TypeMismatchError excep-
   tion. For example, it is illegal to assign a string value to an inte-
@@ -3260,9 +3260,9 @@
   (In practice, do not carry out sums this way--- use the sum function
   instead, which is much simpler and faster, i.e., s=sum(a)).
 
-  1111..44..  IInnddeexxiinngg MMuullttiippllee EElleemmeennttss wwiitthh RRaannggeess
+  11.4.  Indexing Multiple Elements with Ranges
 
-  Unlike many other languages, SS--LLaanngg permits arrays to be indexed by
+  Unlike many other languages, S-Lang permits arrays to be indexed by
   other integer arrays. Suppose that a is a 1-d array of 10 doubles. Now
   consider:
 
@@ -3302,23 +3302,23 @@
             a[[500:999]] = 1.0;
 
   It is important to note that the syntax requires the use of the double
-  square brackets, and in particular that a[[0:499]] is _n_o_t the same as
+  square brackets, and in particular that a[[0:499]] is not the same as
   a[0:499]. In fact, the latter will generate a syntax error.
 
   Index-arrays are not contrained to be one-dimensional arrays. Suppose
   that I represents a multidimensional index array, and that A is the
   array to be indexed. Then what does A[I] represent?  Its value will be
-  an array of the same type as A, but with the dimensionality of _I. For
+  an array of the same type as A, but with the dimensionality of I. For
   example,
 
-      a = 1.0*[1:10];
-      i = _reshape ([4,5,6,7,8,9], [2,3]);
+           a = 1.0*[1:10];
+           i = _reshape ([4,5,6,7,8,9], [2,3]);
 
   defines a to be a 10 element array of doubles, and i to be 2x3 array
   of integers. Then a[i] will be a 2x3 array of doubles with elements:
 
-           a[4]   a[5]   a[6]
-           a[7]   a[8]   a[9]
+      a[4]   a[5]   a[6]
+      a[7]   a[8]   a[9]
 
   Often, it is convenient to use a ``rubber'' range to specify indices.
   For example, a[[500:]] specifies all elements of a whose index is
@@ -3366,6 +3366,7 @@
 
   The most straightforward implementation of such a function uses an
   explicit loop:
+
              define array_trace (a, n)
              {
                 variable s = 0, i;
@@ -3412,14 +3413,13 @@
 
   Using this function, the trace function may be written more simply as
 
-       define array_trace (a)
-       {
-          return sum (a[diag_indices(a)]);
-       }
+            define array_trace (a)
+            {
+               return sum (a[diag_indices(a)]);
+            }
 
   Another example of this technique is a function that creates an n by n
   unit matrix:
-
              define unit_matrix (n)
              {
                 variable a = Int_Type[n, n];
@@ -3427,11 +3427,11 @@
                 return a;
              }
 
-  1111..55..  AArrrraayyss aanndd VVaarriiaabblleess
+  11.5.  Arrays and Variables
 
   When an array is created and assigned to a variable, the interpreter
   allocates the proper amount of space for the array, initializes it,
-  and then assigns to the variable a _r_e_f_e_r_e_n_c_e to the array. So, a
+  and then assigns to the variable a reference to the array. So, a
   variable that represents an array has a value that is really a
   reference to the array. This has several consequences, most good and
   some bad. It is believed that the advantages of this representation
@@ -3454,7 +3454,7 @@
              }
 
   where some_function is a function that generates a scalar value to
-  initialize the _i_t_h element. This function can be used in the following
+  initialize the ith element. This function can be used in the following
   way:
 
              variable X = Double_Type [100000];
@@ -3489,7 +3489,7 @@
              a[0] = 7;
 
   In this example, a separate copy of a will be created and assigned to
-  b. It is very important to note that SS--LLaanngg never implicitly derefer-
+  b. It is very important to note that S-Lang never implicitly derefer-
   ences an object. So, one must explicitly use the dereference operator.
   This means that the elements of a dereferenced array are not them-
   selves dereferenced. For example, consider dereferencing an array of
@@ -3503,7 +3503,7 @@
   In this example, b[0] will be a reference to the array that a[0] ref-
   erences because a[0] was not explicitly dereferenced.
 
-  1111..66..  UUssiinngg AArrrraayyss iinn CCoommppuuttaattiioonnss
+  11.6.  Using Arrays in Computations
 
   Many functions and operations work transparently with arrays.  For
   example, if a and b are arrays, then the sum a + b is an array whose
@@ -3536,7 +3536,7 @@
   Moreover, it executes about 20 times faster than the version using an
   explicit loop.
 
-  SS--LLaanngg has a powerful built-in function called where. This function
+  S-Lang has a powerful built-in function called where. This function
   takes an array of boolean values and returns an array of indices that
   correspond to where the elements of the input array are non-zero. The
   utility of this simple operation cannot be overstated. For example,
@@ -3566,28 +3566,28 @@
   coefficients of the previous example that generated non-real
   solutions. Using an explicit for loop requires code such as:
 
-            nn = 0;
-            _for i (0, n-1, 1)
-              if (index_array [i]) nn++;
+       nn = 0;
+       _for i (0, n-1, 1)
+         if (index_array [i]) nn++;
 
-            tmp_a = Double_Type [nn];
-            tmp_b = Double_Type [nn];
-            tmp_c = Double_Type [nn];
+       tmp_a = Double_Type [nn];
+       tmp_b = Double_Type [nn];
+       tmp_c = Double_Type [nn];
 
-            j = 0;
-            _for i (0, n-1, 1)
+       j = 0;
+       _for i (0, n-1, 1)
+         {
+            if (index_array [i])
               {
-                 if (index_array [i])
-                   {
-                      tmp_a [j] = a[i];
-                      tmp_b [j] = b[i];
-                      tmp_c [j] = c[i];
-                      j++;
-                   }
+                 tmp_a [j] = a[i];
+                 tmp_b [j] = b[i];
+                 tmp_c [j] = c[i];
+                 j++;
               }
-            a = tmp_a;
-            b = tmp_b;
-            c = tmp_c;
+         }
+       a = tmp_a;
+       b = tmp_b;
+       c = tmp_c;
 
   Not only is this a lot of code, making it hard to digest, but it is
   also clumsy and error-prone. Using the where function, this task is
@@ -3613,12 +3613,12 @@
 
   The number of columns may be obtained in a similar manner:
 
-       define num_cols (a)
-       {
-          variable dims = array_shape (a);
-          if (length(dims) > 1) return dims[1];
-          return 1;
-       }
+            define num_cols (a)
+            {
+               variable dims = array_shape (a);
+               if (length(dims) > 1) return dims[1];
+               return 1;
+            }
 
   The array_shape function may also be used to create an array that has
   the same number of dimensions as another array:
@@ -3631,7 +3631,7 @@
   Finally, the array_info function may be used to get additional
   information about an array, such as its data type and size.
 
-  1111..77..  AArrrraayyss ooff AArrrraayyss:: AA CCaauuttiioonnaarryy NNoottee
+  11.7.  Arrays of Arrays: A Cautionary Note
 
   Sometimes it is desirable to create an array of arrays. For example,
 
@@ -3658,11 +3658,11 @@
   foremost an array, and it is that array that is assigned to the ele-
   ments of b.
 
-  1122..  AAssssoocciiaattiivvee AArrrraayyss
+  12.  Associative Arrays
 
   An associative array differs from an ordinary array in the sense that
   its size is not fixed and that it is indexed by a string, called the
-  _k_e_y. For example, consider:
+  key. For example, consider:
 
               A = Assoc_Type [Int_Type];
               A["alpha"] = 1;
@@ -3675,29 +3675,29 @@
   As the example suggests, an associative array may be created using one
   of the following forms:
 
-       Assoc_Type [_t_y_p_e] Assoc_Type [_t_y_p_e, _d_e_f_a_u_l_t_-_v_a_l_u_e] Assoc_Type []
+       Assoc_Type [type] Assoc_Type [type, default-value] Assoc_Type []
 
-  The last form returns an _u_n_-_t_y_p_e_d associative array capable of storing
+  The last form returns an un-typed associative array capable of storing
   values of any type.
 
-  The form involving a _d_e_f_a_u_l_t_-_v_a_l_u_e is useful for associating a default
+  The form involving a default-value is useful for associating a default
   value with non-existent array members. This feature is explained in
   more detail below.
 
   There are several functions that are specially designed to work with
   associative arrays. These include:
 
-  +o  assoc_get_keys, which returns an ordinary array of strings
+  o  assoc_get_keys, which returns an ordinary array of strings
      containing the keys of the array.
 
-  +o  assoc_get_values, which returns an ordinary array of the values of
+  o  assoc_get_values, which returns an ordinary array of the values of
      the associative array. If the associative array is un-typed, then
      an array of Any_Type objects will be returned.
 
-  +o  assoc_key_exists, which can be used to determine whether or not a
+  o  assoc_key_exists, which can be used to determine whether or not a
      key exists in the array.
 
-  +o  assoc_delete_key, which may be used to remove a key (and its value)
+  o  assoc_delete_key, which may be used to remove a key (and its value)
      from the array.
 
   To illustrate the use of an associative array, consider the problem of
@@ -3769,27 +3769,27 @@
 
         add_function ("bing", &bing);
 
-  1133..  SSttrruuccttuurreess aanndd UUsseerr--DDeeffiinneedd TTyyppeess
+  13.  Structures and User-Defined Types
 
-  A _s_t_r_u_c_t_u_r_e is a heterogeneous container object, i.e., it is an object
+  A structure is a heterogeneous container object, i.e., it is an object
   with elements whose values do not have to be of the same data type.
   The elements or fields of a structure are named, and one accesses a
   particular field of the structure via the field name. This should be
   contrasted with an array whose values are of the same type, and whose
   elements are accessed via array indices.
 
-  A _u_s_e_r_-_d_e_f_i_n_e_d data type is a structure with a fixed set of fields
+  A user-defined data type is a structure with a fixed set of fields
   defined by the user.
 
-  1133..11..  DDeeffiinniinngg aa SSttrruuccttuurree
+  13.1.  Defining a Structure
 
   The struct keyword is used to define a structure. The syntax for this
   operation is:
 
-       struct {_f_i_e_l_d_-_n_a_m_e_-_1, _f_i_e_l_d_-_n_a_m_e_-_2, ... _f_i_e_l_d_-_n_a_m_e_-_N};
+       struct {field-name-1, field-name-2, ... field-name-N};
 
-  This creates and returns a structure with _N fields whose names are
-  specified by _f_i_e_l_d_-_n_a_m_e_-_1, _f_i_e_l_d_-_n_a_m_e_-_2, ..., _f_i_e_l_d_-_n_a_m_e_-_N. When a
+  This creates and returns a structure with N fields whose names are
+  specified by field-name-1, field-name-2, ..., field-name-N. When a
   structure is created, the values of its fields are initialized to
   NULL.
 
@@ -3816,9 +3816,9 @@
 
             u = t;
 
-  _b_o_t_h t and u refer to the _s_a_m_e underlying structure, since only the
+  both t and u refer to the same underlying structure, since only the
   reference was copied by the assignment. To actually create a new copy
-  of the structure, use the _d_e_r_e_f_e_r_e_n_c_e operator, e.g.,
+  of the structure, use the dereference operator, e.g.,
 
             variable u = @t;
 
@@ -3833,7 +3833,7 @@
 
   will produce a structure u that references the same array as t.
 
-  1133..22..  AAcccceessssiinngg tthhee FFiieellddss ooff aa SSttrruuccttuurree
+  13.2.  Accessing the Fields of a Structure
 
   The dot (.) operator is used to specify the particular field of
   structure. If s is a structure and field_name is a field of the
@@ -3851,10 +3851,10 @@
 
   are all valid statements involving the fields of t.
 
-  1133..33..  LLiinnkkeedd LLiissttss
+  13.3.  Linked Lists
 
   One of the most important uses of structures is the creation of
-  _d_y_n_a_m_i_c data structures such as _l_i_n_k_e_d_-_l_i_s_t_s.  A linked-list is simply
+  dynamic data structures such as linked-lists.  A linked-list is simply
   a chain of structures that are linked together such that one structure
   in the chain is the value of a field of the previous structure in the
   chain. To be concrete, consider the structure discussed earlier:
@@ -3961,7 +3961,7 @@
   default.
 
   Now consider a function that sorts the list according to population.
-  To illustrate the technique, a _b_u_b_b_l_e_-_s_o_r_t will be used, not because
+  To illustrate the technique, a bubble-sort will be used, not because
   it is efficient (it is not), but because it is simple, intuitive, and
   provides another example of structure manipulation:
 
@@ -4006,10 +4006,10 @@
 
   It is important to appreciate the fact that the values of these vari-
   ables are references to structures, and that the comparison only com-
-  pares the references and _n_o_t the actual structures they reference. If
+  pares the references and not the actual structures they reference. If
   it were not for this, the algorithm would fail.
 
-  1133..44..  DDeeffiinniinngg NNeeww TTyyppeess
+  13.4.  Defining New Types
 
   A user-defined data type may be defined using the typedef keyword. In
   the current implementation, a user-defined data type is essentially a
@@ -4018,11 +4018,11 @@
   pair. We can define a data type called Population_Type to represent
   the same information:
 
-             typedef struct
-             {
-                city_name,
-                population
-             } Population_Type;
+        typedef struct
+        {
+           city_name,
+           population
+        } Population_Type;
 
   This data type can be used like all other data types. For example, an
   array of Population_Type types can be created,
@@ -4050,22 +4050,22 @@
   the binary and unary operations may be defined for them.  This idea is
   discussed in more detail below.
 
-  1133..55..  OOppeerraattoorr OOvveerrllooaaddiinngg
+  13.5.  Operator Overloading
 
   The binary and unary operators may be extended to user-defined types.
   To illustrate how this works, consider a data type that represents a
   vector in 3-space:
 
-      typedef struct { x, y, z } Vector_Type;
+           typedef struct { x, y, z } Vector_Type;
 
   and a function that instantiates such an object:
 
-           define vector_new (x, y, z)
-           {
-              variable v = @Vector_Type;
-              v.x = double(x); v.y = double(y); v.z = double(z);
-              return v;
-           }
+      define vector_new (x, y, z)
+      {
+         variable v = @Vector_Type;
+         v.x = double(x); v.y = double(y); v.z = double(z);
+         return v;
+      }
 
   This function may be used to define a function that adds two vectors
   together:
@@ -4096,17 +4096,17 @@
   The __add_binary function defines the result of a binary operation
   between two data types:
 
-       __add_binary (_o_p, _r_e_s_u_l_t_-_t_y_p_e, _f_u_n_c_t, _t_y_p_e_A,_t_y_p_e_B);
+       __add_binary (op, result-type, funct, typeA,typeB);
 
-  Here, _o_p is a string representing any one of the binary operators
-  ("+", "-", "*", "/", "==",...), and _f_u_n_c_t is reference to a function
-  that carries out the binary operation between objects of types _t_y_p_e_A
-  and _t_y_p_e_B to produce an object of type _r_e_s_u_l_t_-_t_y_p_e.
+  Here, op is a string representing any one of the binary operators
+  ("+", "-", "*", "/", "==",...), and funct is reference to a function
+  that carries out the binary operation between objects of types typeA
+  and typeB to produce an object of type result-type.
 
-  This function may be used to extend the + operator to _V_e_c_t_o_r___T_y_p_e
+  This function may be used to extend the + operator to Vector_Type
   objects:
 
-           __add_binary ("+", Vector_Type, &vector_add, Vector_Type, Vector_Type);
+      __add_binary ("+", Vector_Type, &vector_add, Vector_Type, Vector_Type);
 
   Similarly the subtraction and equality operators may be extended to
   Vector_Type via
@@ -4144,14 +4144,14 @@
   produce another vector. This can happen in two ways as reflected by
   the following functions:
 
-     define vector_scalar_mul (v, a)
-     {
-        return vector_new (a*v.x, a*v.y, a*v.z);
-     }
-     define scalar_vector_mul (a, v)
-     {
-        return vector_new (a*v.x, a*v.y, a*v.z);
-     }
+          define vector_scalar_mul (v, a)
+          {
+             return vector_new (a*v.x, a*v.y, a*v.z);
+          }
+          define scalar_vector_mul (a, v)
+          {
+             return vector_new (a*v.x, a*v.y, a*v.z);
+          }
 
   Here a represents the scalar, which can be any object that may be mul-
   tiplied by a Double_Type, e.g., Int_Type, Float_Type, etc. Instead of
@@ -4191,14 +4191,14 @@
   leads to more readable and maintainable code. For example, simply
   looking at
 
-     c = a + b;
+          c = a + b;
 
   in isolation one can easily overlook the fact that a function such as
   vector_add may be getting executed. Moreover, in cases where the
   action is ambiguous such as Vector_Type*Vector_Type it may not be
   clear what
 
-          c = a*b;
+     c = a*b;
 
   means unless one knows exactly what choice was made when extending the
   * operator to the types. For this reason it may be wise to leave Vec-
@@ -4227,7 +4227,7 @@
           }
           __add_string (Vector_Type, &vector_string);
 
-  1144..  LLiissttss
+  14.  Lists
 
   Sometimes it is desirable to utilize an object that has many of the
   properties of an array, but can also easily grow or shrink upon
@@ -4323,17 +4323,17 @@
 
            new_list = list_reverse (@list);
 
-  1155..  EErrrroorr HHaannddlliinngg
+  15.  Error Handling
 
   All non-trivial programs or scripts must be deal with the possibility
   of run-time errors. In fact, one sign of a seasoned programmer is that
   such a person pays particular attention to error handling. This
-  chapter presents some techniques for handling errors using SS--LLaanngg.
+  chapter presents some techniques for handling errors using S-Lang.
   First the traditional method of using return values to indicate errors
-  will be discussed. Then attention will turn to SS--LLaanngg's more powerful
+  will be discussed. Then attention will turn to S-Lang's more powerful
   exception handling mechanisms.
 
-  1155..11..  TTrraaddiittiioonnaall EErrrroorr HHaannddlliinngg
+  15.1.  Traditional Error Handling
 
   The simplist and perhaps most common mechanism for signaling a failure
   or error in a function is for the function to return an error code,
@@ -4426,14 +4426,13 @@
   semantics of a function change. The next section discusses another
   approach to error handling that tries to address these issues.
 
-  1155..22..  EErrrroorr HHaannddlliinngg tthhrroouugghh EExxcceeppttiioonnss
+  15.2.  Error Handling through Exceptions
 
-  This section describes SS--LLaanngg's exception model.  The idea is that
+  This section describes S-Lang's exception model.  The idea is that
   when a function encounters an error, instead of returning an error
-  code, it simply gives up and _t_h_r_o_w_s an exception. This idea will be
+  code, it simply gives up and throws an exception. This idea will be
   fleshed out in what follows.
-
-  1155..22..11..  IInnttrroodduuccttiioonn ttoo EExxcceeppttiioonnss
+  15.2.1.  Introduction to Exceptions
 
   Consider the write_to_file function used in the previous section but
   adapted to throw an exception:
@@ -4469,20 +4468,20 @@
   the previous caller on the call stack. This process will continue
   until the exception is either handled or until control reaches the
   top-level at which point the interpreter will terminate. This process
-  is known as _u_n_w_i_n_d_i_n_g of the call stack.
+  is known as unwinding of the call stack.
 
-  An simple exception handler may be created through the use of a _t_r_y_-
-  _c_a_t_c_h statement, such as
+  An simple exception handler may be created through the use of a try-
+  catch statement, such as
 
-       try
-        {
-          write_to_file ("/tmp/foo", "bar");
-        }
-       catch OpenError:
-        {
-           message ("*** Warning: failed to open /tmp/foo.");
-        }
-       next_statement;
+            try
+             {
+               write_to_file ("/tmp/foo", "bar");
+             }
+            catch OpenError:
+             {
+                message ("*** Warning: failed to open /tmp/foo.");
+             }
+            next_statement;
 
   The above code works as follows: First the statement (or statements)
   inside the try-block are executed. As long as no exception occurs,
@@ -4493,7 +4492,7 @@
   block, any remaining statements in the block will be skipped and
   control will pass to the ``catch'' portion of the exception handler.
   This may consist of one or more catch statements and an optional
-  _f_i_n_a_l_l_y statement. Each catch statement specifies a list of exceptions
+  finally statement. Each catch statement specifies a list of exceptions
   it will handle as well as the code that is to be excecuted when a
   matching exception is caught. If a matching catch statement is found
   for the exception, the exception will be cleared and the code
@@ -4546,7 +4545,6 @@
   still desirable for the file to be removed upon failure. In this
   scenario, next_statement should not get executed upon failure. This
   can be achieved as follows:
-
             try
              {
                write_to_file ("/tmp/foo", "bar");
@@ -4561,54 +4559,54 @@
   Here the exception handler for WriteError removes the file and then
   re-throws the exception.
 
-  1155..22..22..  OObbttaaiinniinngg iinnffoorrmmaattiioonn aabboouutt tthhee eexxcceeppttiioonn
+  15.2.2.  Obtaining information about the exception
 
   When an exception is generated, an exception object is thrown. The
   object is a structure containing the following fields:
 
-     eerrrroorr
+     error
         The exception error code (Int_Type).
 
-     ddeessccrr
+     descr
         A brief description of the error (String_Type).
 
-     ffiillee
+     file
         The filename containing the code that generated the exception
         (String_Type).
 
-     lliinnee
+     line
         The line number where the exception was thrown (Int_Type).
 
-     ffuunnccttiioonn
+     function
         The name of the currently executing function, or NULL if at top-
         level (String_Type).
 
-     mmeessssaaggee
+     message
         A text message that may provide more information about the
         exception (String_Type).
 
-     oobbjjeecctt
+     object
         A user-defined object.
 
   If it is desired to have information about the exception, then an
   alternative form of the try statement must be used:
 
-       try (e)
-       {
-          % try-block code
-       }
-       catch SomeException: { code ... }
+            try (e)
+            {
+               % try-block code
+            }
+            catch SomeException: { code ... }
 
   If an exception occurs while executing the code in the try-block, then
   the variable e will be assigned the value of the exception object. As
   a simple example, suppose that the file foo.sl consists of:
 
-            define invert_x (x)
-            {
-               if (x == 0)
-                 throw DivideByZeroError;
-               return 1/x;
-            }
+       define invert_x (x)
+       {
+          if (x == 0)
+            throw DivideByZeroError;
+          return 1/x;
+       }
 
   and that the code is called using
 
@@ -4636,52 +4634,52 @@
   specified when the exception was generated.  In order to throw an
   object, a more complex form of throw statement must be used:
 
-       throw _e_x_c_e_p_t_i_o_n_-_n_a_m_e [, _m_e_s_s_a_g_e [, _o_b_j_e_c_t ] ]
+       throw exception-name [, message [, object ] ]
 
   where the square brackets indicate optional parameters
 
   To illustrate this form, suppose that invert_x is modified to accept
   an array object:
 
-      private define invert_x(x)
-      {
-         variable i = where (x == 0);
-         if (length (i))
-           throw DivideByZeroError,
-                 "Array contains elements that are zero", i;
-         return 1/x;
-      }
+           private define invert_x(x)
+           {
+              variable i = where (x == 0);
+              if (length (i))
+                throw DivideByZeroError,
+                      "Array contains elements that are zero", i;
+              return 1/x;
+           }
 
   In this case, the message field of the exception object will contain
   the string "Array contains elements that are zero" and the object
   field will be set to the indices of the zero elements.
 
-  1155..22..33..  TThhee ffiinnaallllyy bblloocckk
+  15.2.3.  The finally block
 
   The full form of the try-catch statement obeys the following syntax:
 
-       try _[_(_o_p_t_-_e_)_] { _t_r_y_-_b_l_o_c_k_-_s_t_a_t_e_m_e_n_t_s } catch _E_x_c_e_p_t_i_o_n_-_L_i_s_t_-_1: {
-       _c_a_t_c_h_-_b_l_o_c_k_-_1_-_s_t_a_t_e_m_e_n_t_s } .  .  catch _E_x_c_e_p_t_i_o_n_-_L_i_s_t_-_N: { _c_a_t_c_h_-
-       _b_l_o_c_k_-_N_-_s_t_a_t_e_m_e_n_t_s } _[ finally { _f_i_n_a_l_l_y_-_b_l_o_c_k_-_s_t_a_t_e_m_e_n_t_s } _]
+       try [(opt-e)] { try-block-statements } catch Exception-List-1: {
+       catch-block-1-statements } .  .  catch Exception-List-N: { catch-
+       block-N-statements } [ finally { finally-block-statements } ]
 
   Here an exception-list is simply a list of exceptions such as:
 
            catch OSError, RunTimeError:
 
-  The last clause of a try-statement is the _f_i_n_a_l_l_y_-_b_l_o_c_k, which is
+  The last clause of a try-statement is the finally-block, which is
   optional and is introduced using the finally keyword. If the try-
   statement contains no catch-clauses, then it must specify a finally-
   clause, otherwise a syntax error will result.
 
   If the finally-clause is present, then its corresponding statements
-  will be executed rreeggaarrddlleessss ooff wwhheetthheerr aann eexxcceeppttiioonn ooccccuurrss. If an
+  will be executed regardless of whether an exception occurs. If an
   exception occurs while executing the statements in the try-block, then
   the finally-block will execute after the code in any of the catch-
   blocks. The finally-clause is useful for freeing any resources (file
   handles, etc) allocated by the try-block regardless of whether an
   exception has occurred.
 
-  1155..22..44..  CCrreeaattiinngg nneeww eexxcceeppttiioonnss:: tthhee EExxcceeppttiioonn HHiieerraarrcchhyy
+  15.2.4.  Creating new exceptions: the Exception Hierarchy
 
   The following table gives the class hierarchy for the built-in
   exceptions.
@@ -4735,11 +4733,11 @@
   The user may extend this tree with new exceptions using the
   new_exception function. This function takes three arguments:
 
-       new_exception (_e_x_c_e_p_t_i_o_n_-_n_a_m_e, _b_a_s_e_c_l_a_s_s, _d_e_s_c_r_i_p_t_i_o_n);
+       new_exception (exception-name, baseclass, description);
 
-  The _e_x_c_e_p_t_i_o_n_-_n_a_m_e is the name of the exception, _b_a_s_e_c_l_a_s_s represents
+  The exception-name is the name of the exception, baseclass represents
   the node in the exception hierarchy where it is to be placed, and
-  _d_e_s_c_r_i_p_t_i_o_n is a string that provides a brief description of the
+  description is a string that provides a brief description of the
   exception.
 
   For example, suppose that you are writing some code that processes
@@ -4754,24 +4752,24 @@
   on DataError, and code that catches the DataError exception will addi-
   tionally catch the EndianError exception.
 
-  1166..  LLooaaddiinngg FFiilleess:: eevvaallffiillee,, aauuttoollooaadd,, aanndd rreeqquuiirree
+  16.  Loading Files: evalfile, autoload, and require
 
-  1177..  MMoodduulleess
+  17.  Modules
 
-  1177..11..  IInnttrroodduuccttiioonn
+  17.1.  Introduction
 
   A module is a shared object that may be dynamically linked into the
   interpreter at run-time to provide the interpreter with additional
   intrinsic functions and variables. Several modules are distributed
-  with the stock version of the SS--LLaanngg library, including a pcre module
-  that allows the interpreter to make use of the _P_e_r_l _C_o_m_p_a_t_i_b_l_e _R_e_g_u_l_a_r
-  _E_x_p_r_e_s_s_i_o_n _l_i_b_r_a_r_y, a png module that allows the interpreter to easily
+  with the stock version of the S-Lang library, including a pcre module
+  that allows the interpreter to make use of the Perl Compatible Regular
+  Expression library, a png module that allows the interpreter to easily
   read and write PNG files, and a rand module for producing random
   numbers.  There are also a number of modules for the interpreter that
   are not distributed with the library. See
   http://www.jedsoft.org/slang/modules/ for links to some of those.
 
-  1177..22..  UUssiinngg MMoodduulleess
+  17.2.  Using Modules
 
   In order to make use of a module, it must first be ``imported'' into
   the interpreter. There are two ways to go about this. One is to use
@@ -4783,8 +4781,8 @@
   able to the interpreter using the active namespace.  However, this is
   not the preferred method for loading a module.
 
-  Module writers are encouraged to distribute a module with a file of SS--
-  LLaanngg code that performs the actual import of the module. Rather than a
+  Module writers are encouraged to distribute a module with a file of S-
+  Lang code that performs the actual import of the module. Rather than a
   user making direct use of the import function, the preferred method of
   loading the modules is to load that file instead. For example the pcre
   module is distributed with a file called pcre.sl that contains little
@@ -4801,7 +4799,7 @@
   example of this concept. The current version of the png module
   consists of a couple intrinsic functions (png_read and png_write)
   contained in the shared object (png-module.so), and a number of other
-  interpreted SS--LLaanngg functions defined in png.sl. Using the import
+  interpreted S-Lang functions defined in png.sl. Using the import
   statement to load the module would miss the latter set of functions.
 
   In some cases, the symbols in a module may conflict with symbols that
@@ -4823,10 +4821,10 @@
   This form requires that the module's symbols be accessed via the
   namespace qualifier "gsl->".
 
-  1188..  FFiillee IInnppuutt//OOuuttppuutt
+  18.  File Input/Output
 
-  SS--LLaanngg provides built-in support for two different I/O facilities.
-  The simplest interface is modeled upon the C language _s_t_d_i_o interface
+  S-Lang provides built-in support for two different I/O facilities.
+  The simplest interface is modeled upon the C language stdio interface
   and consists of functions such as fopen, fgets, etc. The other
   interface is modeled on a lower level POSIX interface consisting of
   functions such as open, read, etc. In addition to permitting more
@@ -4834,67 +4832,68 @@
   objects as well as disk files.
 
   For reading data formatted in text files, e.g., columns of numbers,
-  then do not overlook the high-level routines in the ssllsshh library. In
+  then do not overlook the high-level routines in the slsh library. In
   particular, the readascii function is quite flexible and can read data
   from text files that are formatted in a variety of ways.  For data
   stored in a standard binary format such as HDF or FITS, then the
   corresponding modules should be used.
 
-  1188..11..  IInnppuutt//OOuuttppuutt vviiaa ssttddiioo
+  18.1.  Input/Output via stdio
 
-  1188..11..11..  SSttddiioo OOvveerrvviieeww
+  18.1.1.  Stdio Overview
 
-  The _s_t_d_i_o interface consists of the following functions:
+  The stdio interface consists of the following functions:
 
-  +o  fopen: opens a file for reading or writing.
+  o  fopen: opens a file for reading or writing.
 
-  +o  fclose: closes a file opened by fopen.
+  o  fclose: closes a file opened by fopen.
 
-  +o  fgets: reads a line from a file.
+  o  fgets: reads a line from a file.
 
-  +o  fputs: writes text to a file.
+  o  fputs: writes text to a file.
 
-  +o  fprintf: writes formatted text to a file.
+  o  fprintf: writes formatted text to a file.
 
-  +o  fwrite: writes one of more objects to a file.
+  o  fwrite: writes one of more objects to a file.
 
-  +o  fread: reads a specified number of objects from a file.
+  o  fread: reads a specified number of objects from a file.
 
-  +o  fread_bytes: reads a specified number of bytes from a file and
+  o  fread_bytes: reads a specified number of bytes from a file and
      returns them as a string.
 
-  +o  feof: tests if a file pointer is at the end of the file.
+  o  feof: tests if a file pointer is at the end of the file.
 
-  +o  ferror: tests whether or not the stream associated with a file has
+  o  ferror: tests whether or not the stream associated with a file has
      an error.
 
-  +o  clearerr: clears the end-of-file and error indicators for a stream.
+  o  clearerr: clears the end-of-file and error indicators for a stream.
 
-  +o  fflush, forces all buffered data associated with a stream to be
+  o  fflush, forces all buffered data associated with a stream to be
      written out.
 
-  +o  ftell: queries the file position indicator a the stream.
+  o  ftell: queries the file position indicator a the stream.
 
-  +o  fseek: sets the position of a file position indicator of the
+  o  fseek: sets the position of a file position indicator of the
      stream.
 
-  +o  fgetslines: reads all the lines from a text file and returns them
+  o  fgetslines: reads all the lines from a text file and returns them
      as an array of strings.
 
   In addition, the interface supports the popen and pclose functions on
   systems where the corresponding C functions are available.
+
   Before reading or writing to a file, it must first be opened using the
   fopen function. The only exceptions to this rule involve use of the
   pre-opened streams: stdin, stdout, and stderr. fopen accepts two
   arguments: a file name and a string argument that indicates how the
   file is to be opened, e.g., for reading, writing, update, etc. It
   returns a File_Type stream object that is used as an argument to all
-  other functions of the _s_t_d_i_o interface. Upon failure, it returns NULL.
+  other functions of the stdio interface. Upon failure, it returns NULL.
   See the reference manual for more information about fopen.
 
-  1188..11..22..  SSttddiioo EExxaammpplleess
+  18.1.2.  Stdio Examples
 
-  In this section, some simple examples of the use of the _s_t_d_i_o
+  In this section, some simple examples of the use of the stdio
   interface is presented. It is important to realize that all the
   functions of the interface return something, and that return value
   must be handled in some way by the caller.
@@ -4938,8 +4937,9 @@
 
   The main difficulty with this approach is that it will not work for
   binary files, i.e., files that contain null characters. For such
-  files, the file should be opened in _b_i_n_a_r_y mode via
-             fp = fopen (file, "rb");
+  files, the file should be opened in binary mode via
+
+        fp = fopen (file, "rb");
 
   and then the data read using the fread function:
 
@@ -4998,9 +4998,9 @@
                return st.st_size;
             }
 
-  1188..22..  PPOOSSIIXX II//OO
+  18.2.  POSIX I/O
 
-  1188..33..  AAddvvaanncceedd II//OO tteecchhnniiqquueess
+  18.3.  Advanced I/O techniques
 
   The previous examples illustrate how to read and write objects of a
   single data-type from a file, e.g.,
@@ -5011,20 +5011,20 @@
   cessful. However, suppose that the binary data file consists of num-
   bers in a specified byte-order. How can one read such objects with the
   proper byte swapping? The answer is to use the fread_bytes function to
-  read the objects as a (binary) character string and then _u_n_p_a_c_k the
+  read the objects as a (binary) character string and then unpack the
   resulting string into the specified data type, or types. This process
   is facilitated using the pack and unpack functions.
 
   The pack function follows the syntax
 
-       BString_Type pack (_f_o_r_m_a_t_-_s_t_r_i_n_g, _i_t_e_m_-_l_i_s_t);
+       BString_Type pack (format-string, item-list);
 
-  and combines the objects in the _i_t_e_m_-_l_i_s_t according to _f_o_r_m_a_t_-_s_t_r_i_n_g
+  and combines the objects in the item-list according to format-string
   into a binary string and returns the result.  Likewise, the unpack
   function may be used to convert a binary string into separate data
   objects:
 
-       (_v_a_r_i_a_b_l_e_-_l_i_s_t) = unpack (_f_o_r_m_a_t_-_s_t_r_i_n_g, _b_i_n_a_r_y_-_s_t_r_i_n_g);
+       (variable-list) = unpack (format-string, binary-string);
 
   The format string consists of one or more data-type specification
   characters, and each may be followed by an optional decimal length
@@ -5092,7 +5092,7 @@
       x = unpack ("xxs4", "a b c\0d e f");  % ==> x = "b c\0"
       x = unpack ("xxS4", "a b c\0d e f");  % ==> x = "b c"
 
-  1188..33..11..  EExxaammppllee:: RReeaaddiinngg //vvaarr//lloogg//wwttmmpp
+  18.3.1.  Example: Reading /var/log/wtmp
 
   Consider the task of reading the Unix system file /var/log/utmp, which
   contains login records about who logged onto the system. This file
@@ -5185,22 +5185,22 @@
   all of the structure fields. Finally, last but not least, the return
   values from fprintf and fclose were handled by discarding them.
 
-  1199..  ssllsshh
+  19.  slsh
 
-  ssllsshh, also known as the S-Lang shell, is an application that is
-  included in the stock SS--LLaanngg distribution. As some binary
-  distributions include ssllsshh as a separate package it must be installed
+  slsh, also known as the S-Lang shell, is an application that is
+  included in the stock S-Lang distribution. As some binary
+  distributions include slsh as a separate package it must be installed
   separately, e.g.,
 
            apt-get install slsh
 
-  on Debian Linux systems. The use of ssllsshh in its interactive mode was
+  on Debian Linux systems. The use of slsh in its interactive mode was
   discussed briefly in the ``Introduction''. This chapter concentrates
-  on the use of ssllsshh for writing executable SS--LLaanngg scripts.
+  on the use of slsh for writing executable S-Lang scripts.
 
-  1199..11..  RRuunnnniinngg ssllsshh
+  19.1.  Running slsh
 
-  When run the --help command-line argument, ssllsshh displays a brief usage
+  When run the --help command-line argument, slsh displays a brief usage
   message:
 
           # slsh --help
@@ -5221,35 +5221,35 @@
 
           Default search path: /usr/local/share/slsh
 
-  When started with no arguments, ssllsshh will start in interactive mode
-  and take input from the terminal. As the usage message indicates ssllsshh
+  When started with no arguments, slsh will start in interactive mode
+  and take input from the terminal. As the usage message indicates slsh
   loads a personal initialization file called .slshrc (on non-Unix
   systems, this file is called slsh.rc). The contents of this file must
-  be valid SS--LLaanngg code, but are otherwise arbitrary.  One use of this
+  be valid S-Lang code, but are otherwise arbitrary.  One use of this
   file is to define commonly used functions and to setup personal search
   paths.
 
-  ssllsshh will run in non-interactive mode when started with a file (also
+  slsh will run in non-interactive mode when started with a file (also
   known as a ``script'') as its first (non-option) command-line
   argument. The rest of the arguments on the command line serve as
   arguments for the script. The next section deals with the use of the
   cmdopt routines for parsing those arguments.
 
-  ssllsshh will read the script and feed it to the SS--LLaanngg interpreter for
+  slsh will read the script and feed it to the S-Lang interpreter for
   execution. If the script defines a public function called slsh_main,
-  then ssllsshh will call it after the script has been loaded. In this
-  sense, slsh_main is analogous to main in CC or CC++++.
+  then slsh will call it after the script has been loaded. In this
+  sense, slsh_main is analogous to main in C or C++.
 
-  A typical ssllsshh script is be structured as
+  A typical slsh script is be structured as
 
-          #!/usr/bin/env slsh
-             .
-             .
-          define slsh_main ()
-          {
-             .
-             .
-          }
+     #!/usr/bin/env slsh
+        .
+        .
+     define slsh_main ()
+     {
+        .
+        .
+     }
 
   The first line of the script Unix-specific and should be familiar to
   Unix users. Typically, the code before slsh_main will load any
@@ -5257,20 +5257,20 @@
   the script.
 
   Although the use of slsh_main is not required, its use is strongly
-  urged for several reasons. In addition to lending uniformity to SS--LLaanngg
-  scripts, slsh_main is well supported by the SS--LLaanngg debugger (ssllddbb) and
-  the SS--LLaanngg profiler (ssllpprrooff), which look for slsh_main as a starting
+  urged for several reasons. In addition to lending uniformity to S-Lang
+  scripts, slsh_main is well supported by the S-Lang debugger (sldb) and
+  the S-Lang profiler (slprof), which look for slsh_main as a starting
   point for script execution.  Also as scripts necessarily do something
-  (otherwise they have no use), ssllsshh's -t command-line option may be
+  (otherwise they have no use), slsh's -t command-line option may be
   used to turn off the automatic execution of slsh_main. This allows the
   syntax of the entire script to be checked for errors instead of
   running it.
 
-  1199..22..  CCoommmmaanndd lliinnee pprroocceessssiinngg
+  19.2.  Command line processing
 
   The script's command-line arguments are availble to it via the __argc
   and __argv intrinsic variables. Any optional arguments represented by
-  these variables may be parsed using ssllsshh's ccmmddoopptt routines.
+  these variables may be parsed using slsh's cmdopt routines.
 
   As a useful illustration, consider the script that the author uses to
   rip tracks from CDs to OGG encoded files. The name of the script is
@@ -5357,9 +5357,9 @@
   for cmdopt_add:
            slsh> help cmdopt_add
 
-  2200..  DDeebbuuggggiinngg
+  20.  Debugging
 
-  There are several ways to debug a SS--LLaanngg script. When the interpreter
+  There are several ways to debug a S-Lang script. When the interpreter
   encounters an uncaught exception, it can generate a traceback report
   showing where the error occurred and the values of local variables in
   the function call stack frames at the time of the error. Often just
@@ -5369,7 +5369,7 @@
   the code to get some idea about what is going on, it may be simpler to
   use the interactive debugger.
 
-  2200..11..  TTrraacceebbaacckkss
+  20.1.  Tracebacks
 
   When the value of the _traceback variable is non-zero, the interpreter
   will generate a traceback report when it encounters an error. This
@@ -5377,8 +5377,8 @@
 
            _traceback = 1;
 
-  at the top of the suspect file. If the script is running in ssllsshh, then
-  invoking ssllsshh using the -g option will enable tracebacks:
+  at the top of the suspect file. If the script is running in slsh, then
+  invoking slsh using the -g option will enable tracebacks:
 
            slsh -g myscript.sl
 
@@ -5409,13 +5409,13 @@
   above example shows that a local variable called "not_found" had a
   Char_Type value of 1 at the time of the error.
 
-  2200..22..  UUssiinngg tthhee ssllddbb ddeebbuuggggeerr
+  20.2.  Using the sldb debugger
 
   The interpreter contains a number of hooks that support a debugger.
-  ssllddbb consists of a set of functions that use these hooks to implement
-  a simple debugger. Although written for ssllsshh, the debugger may be used
-  by other SS--LLaanngg interpreters that permit the loading of ssllsshh library
-  files. The examples presented here are given in the context of ssllsshh.
+  sldb consists of a set of functions that use these hooks to implement
+  a simple debugger. Although written for slsh, the debugger may be used
+  by other S-Lang interpreters that permit the loading of slsh library
+  files. The examples presented here are given in the context of slsh.
 
   In order to use the debugger, the code to to be debugged must be
   loaded with debugging info enabled. This can be in done several ways,
@@ -5445,24 +5445,24 @@
   file does not contain any executable statements, the debugger will not
   be activated until one of the functions in the file is executed.
 
-  As a concrete example, consider the following contrived ssllsshh script
+  As a concrete example, consider the following contrived slsh script
   called buggy.sl:
 
-      define divide (a, b, i)
-      {
-         return a[i] / b;
-      }
-      define slsh_main ()
-      {
-         variable x = [1:5];
-         variable y = x*x;
-         variable i;
-         _for i (0, length(x), 1)
+           define divide (a, b, i)
            {
-              variable z = divide (x, y, i);
-              () = fprintf (stdout, "%g/%g = %g", x[i], y[i], z);
+              return a[i] / b;
            }
-      }
+           define slsh_main ()
+           {
+              variable x = [1:5];
+              variable y = x*x;
+              variable i;
+              _for i (0, length(x), 1)
+                {
+                   variable z = divide (x, y, i);
+                   () = fprintf (stdout, "%g/%g = %g", x[i], y[i], z);
+                }
+           }
 
   Running this via
 
@@ -5473,7 +5473,7 @@
            Expecting Double_Type, found Array_Type
            ./buggy.sl:13:slsh_main:Type Mismatch
 
-  More information may be obtained by using ssllsshh's -g option to cause a
+  More information may be obtained by using slsh's -g option to cause a
   traceback report to be printed:
 
            slsh -g buggy.sl
@@ -5490,13 +5490,13 @@
   From this one can see that the problem is that z is an array and not a
   scalar as expected.
 
-  To run the program under debugger control, startup ssllsshh and load the
+  To run the program under debugger control, startup slsh and load the
   file using the sldb function:
 
            slsh> sldb ("./buggy.sl");
 
   Note the use of "./" in the filename. This may be necessary if the
-  file is not in the ssllsshh search path.
+  file is not in the slsh search path.
 
   The above command causes execution to stop with the following
   displayed:
@@ -5510,9 +5510,9 @@
   print the value of an expression or variable. Using it to display the
   value of x yields
 
-           (sldb) print x
-           Caught exception:Variable Uninitialized Error
-           (sldb)
+      (sldb) print x
+      Caught exception:Variable Uninitialized Error
+      (sldb)
 
   This is because x has not yet been assigned a value and will not be
   until line 9 has been executed. The next command may be used to exe-
@@ -5540,18 +5540,18 @@
   The list command may be used to get a list of the source code around
   the current line:
 
-      (sldb) list
-      5     return a[i] / b;
-      6  }
-      7  define slsh_main ()
-      8  {
-      9     variable x = [1:5];
-      10    variable y = x*x;
-      11    variable i;
-      12    _for i (0, length(x), 1)
-      13      {
-      14      variable z = divide (x, y, i);
-      15      () = fprintf (stdout, "%g/%g = %g", x[i], y[i], z);
+           (sldb) list
+           5     return a[i] / b;
+           6  }
+           7  define slsh_main ()
+           8  {
+           9     variable x = [1:5];
+           10    variable y = x*x;
+           11    variable i;
+           12    _for i (0, length(x), 1)
+           13      {
+           14      variable z = divide (x, y, i);
+           15      () = fprintf (stdout, "%g/%g = %g", x[i], y[i], z);
 
   The break function may be used to set a breakpoint. For example,
 
@@ -5634,32 +5634,32 @@
   to help isolate floating point exceptions. Consider the following
   example:
 
-       define solve_quadratic (a, b, c)
-       {
-          variable d = b^2 - 4.0*a*c;
-          variable x = -b + sqrt (d);
-          return x / (2.0*a);
-       }
-       define print_root (a, b, c)
-       {
-          vmessage ("%f %f %f %f\n", a, b, c, solve_quadratic (a,b,c));
-       }
-       print_root (1,2,3);
+            define solve_quadratic (a, b, c)
+            {
+               variable d = b^2 - 4.0*a*c;
+               variable x = -b + sqrt (d);
+               return x / (2.0*a);
+            }
+            define print_root (a, b, c)
+            {
+               vmessage ("%f %f %f %f\n", a, b, c, solve_quadratic (a,b,c));
+            }
+            print_root (1,2,3);
 
-  Running it via ssllsshh produces:
+  Running it via slsh produces:
 
            1.000000 2.000000 3.000000 nan
 
   Now run it in the debugger:
 
-            <top-level> at ./example.sl:12
-            11 print_root (1,2,3);
-            (sldb) watchfpu FE_INVALID
-            (sldb) cont
-            *** FPU exception bits set: FE_INVALID
-            Entering the debugger.
-            solve_quadratic at ./t.sl:4
-            4    variable x = -b + sqrt (d);
+       <top-level> at ./example.sl:12
+       11 print_root (1,2,3);
+       (sldb) watchfpu FE_INVALID
+       (sldb) cont
+       *** FPU exception bits set: FE_INVALID
+       Entering the debugger.
+       solve_quadratic at ./t.sl:4
+       4    variable x = -b + sqrt (d);
 
   This shows the the NaN was produced on line 4.
 
@@ -5677,12 +5677,12 @@
 
           (sldb) watchfpu FE_INVALID | FE_OVERFLOW
 
-  2211..  PPrrooffiilliinngg
+  21.  Profiling
 
-  2211..11..  IInnttrroodduuccttiioonn
+  21.1.  Introduction
 
-  This chapter deals with the subject of writing efficient SS--LLaanngg code,
-  and using the SS--LLaanngg profiler to isolate places in the code that could
+  This chapter deals with the subject of writing efficient S-Lang code,
+  and using the S-Lang profiler to isolate places in the code that could
   benefit from optimization.
 
   The most important consideration in writing efficient code is the
@@ -5702,13 +5702,13 @@
             a[word]++;
 
   Note the conciseness of the above code. It is important to appreciate
-  the fact that SS--LLaanngg is a byte-compiled interpreter that executes
+  the fact that S-Lang is a byte-compiled interpreter that executes
   statements much slower than that of a language that compiles to
   machine code. The overhead of the processing of byte-codes by the
   interpreter may be used to roughly justify the rule of thumb that the
   smaller the code is, the faster it will run.
 
-  When possible, always take advantage of SS--LLaanngg's powerful array
+  When possible, always take advantage of S-Lang's powerful array
   facilities. For example, consider the act of clipping an array by
   setting all values greater than 10 to 10. Rather than coding this as
 
@@ -5721,40 +5721,40 @@
            a[where(a>10)] = 10;
 
   Finally, do not overlook the specialized modules that are available
-  for SS--LLaanngg.
+  for S-Lang.
 
-  2211..22..  UUssiinngg tthhee pprrooffiilleerr
+  21.2.  Using the profiler
 
-  ssllpprrooff is an executable ssllsshh script that implements a standalone
-  profiler for ssllsshh scripts. The script is essentially a front-end for a
+  slprof is an executable slsh script that implements a standalone
+  profiler for slsh scripts. The script is essentially a front-end for a
   set of interpreter hooks defined in a file called profile.sl, which
-  may be used by any application embedding SS--LLaanngg. The use of the
-  profiler will first be demonstrated in the context of ssllpprrooff, and
-  after that follows a discussion of how to use profile.sl for other SS--
-  LLaanngg applications.
+  may be used by any application embedding S-Lang. The use of the
+  profiler will first be demonstrated in the context of slprof, and
+  after that follows a discussion of how to use profile.sl for other S-
+  Lang applications.
 
   (To be completed...)
 
-  2222..  RReegguullaarr EExxpprreessssiioonnss
+  22.  Regular Expressions
 
   The S-Lang library includes a regular expression (RE) package that may
   be used by an application embedding the library. The RE syntax should
   be familiar to anyone acquainted with regular expressions. In this
-  section the syntax of the SS--LLaanngg regular expressions is discussed.
+  section the syntax of the S-Lang regular expressions is discussed.
 
-  NOTE: At the moment, the SS--LLaanngg regular expressions do not support
-  UTF-8 encoded strings. The SS--LLaanngg library will most likely migrate to
+  NOTE: At the moment, the S-Lang regular expressions do not support
+  UTF-8 encoded strings. The S-Lang library will most likely migrate to
   the use of the PCRE regular expression library, deprecating the use of
-  the SS--LLaanngg REs in the process. For these reasons, the user is
+  the S-Lang REs in the process. For these reasons, the user is
   encouraged to make use of the pcre module if possible.
 
-  2222..11..  SS--LLaanngg RREE SSyynnttaaxx
+  22.1.  S-Lang RE Syntax
 
   A regular expression specifies a pattern to be matched against a
   string, and has the property that the contcatenation of two REs is
   also a RE.
 
-  The SS--LLaanngg library supports the following standard regular
+  The S-Lang library supports the following standard regular
   expressions:
 
           .                 match any character except newline
@@ -5790,28 +5790,28 @@
 
   A more complex pattern is
 
-    "\(\<[a-zA-Z]+\>\)[ ]+\1\>"
+         "\(\<[a-zA-Z]+\>\)[ ]+\1\>"
 
   which matches any word repeated consecutively. Note how the grouping
   operators \( and \) are used to define the text matched by the
   enclosed regular expression, and then subsequently referred to \1.
 
-  Finally, remember that when used in string literals either in the SS--
-  LLaanngg language or in the C language, care must be taken to "double-up"
+  Finally, remember that when used in string literals either in the S-
+  Lang language or in the C language, care must be taken to "double-up"
   the '\' character since both languages treat it as an escape
   character.
 
-  2222..22..  DDiiffffeerreenncceess bbeettwweeeenn SS--LLaanngg aanndd eeggrreepp RREEss
+  22.2.  Differences between S-Lang and egrep REs
 
-  There are several differences between SS--LLaanngg regular expressions and,
-  e.g., eeggrreepp regular expressions.
+  There are several differences between S-Lang regular expressions and,
+  e.g., egrep regular expressions.
 
-  The most notable difference is that the SS--LLaanngg regular expressions do
-  not support the OORR operator | in expressions. This means that "a|b" or
+  The most notable difference is that the S-Lang regular expressions do
+  not support the OR operator | in expressions. This means that "a|b" or
   "a\|b" do not have the meaning that they have in regular expression
   packages that support egrep-style expressions.
 
-  The other main difference is that while SS--LLaanngg regular expressions
+  The other main difference is that while S-Lang regular expressions
   support the grouping operators \( and \), they are only used as a
   means of specifying the text that is matched. That is, the expression
 
@@ -5821,34 +5821,34 @@
   enclosed by the \( and \) expressions. However, in the current imple-
   mentation, the grouping operators are not used to group regular
   expressions to form a single regular expression. Thus expression such
-  as "\(hello\)*" is _n_o_t a pattern to match zero or more occurrences of
-  "hello" as it is in e.g., eeggrreepp.
+  as "\(hello\)*" is not a pattern to match zero or more occurrences of
+  "hello" as it is in e.g., egrep.
 
-  One question that comes up from time to time is why doesn't SS--LLaanngg
+  One question that comes up from time to time is why doesn't S-Lang
   simply employ some posix-compatible regular expression library. The
   simple answer is that, at the time of this writing, none exists that
-  is available across all the platforms that the SS--LLaanngg library supports
+  is available across all the platforms that the S-Lang library supports
   (Unix, VMS, OS/2, win32, win16, BEOS, MSDOS, and QNX) and can be
   distributed under both the GNU licenses. It is particularly important
   that the library and the interpreter support a common set of regular
   expressions in a platform independent manner.
 
-  AA..  SS--LLaanngg 22 IInntteerrpprreetteerr NNEEWWSS
+  A.  S-Lang 2 Interpreter NEWS
 
   This chapter describes features that were added to various 2.0
   releases. For a much more complete and detailed list of changes, see
   the changes.txt file that is distributed with the library.
 
-  AA..11..  WWhhaatt''ss nneeww ffoorr SS--LLaanngg 22..22
+  A.1.  What's new for S-Lang 2.2
 
-  +o  The ternary expression was added:
+  o  The ternary expression was added:
 
             expression = condition ? val1 : val2
 
-  If _c_o_n_d_i_t_i_o_n is non-zero, then _e_x_p_r_e_s_s_i_o_n _= _v_a_l_1, otherwise _e_x_p_r_e_s_s_i_o_n
-  _= _v_a_l_2.
+  If condition is non-zero, then expression = val1, otherwise expression
+  = val2.
 
-  +o  The break and condition statements support an optional integer that
+  o  The break and condition statements support an optional integer that
      indicates how many loop levels the statement affects, e.g., the
      break statement in
 
@@ -5862,7 +5862,7 @@
 
   will cause both loops to be terminated.
 
-  +o  Multiline strings have been added:
+  o  Multiline strings have been added:
 
            "This is a \
            multiline \
@@ -5874,7 +5874,7 @@
            does not require
            a \ for continuation`
 
-  +o  List_Type objects may be indexed using an array of indices instead
+  o  List_Type objects may be indexed using an array of indices instead
      of just a single scalar index.
 
   The following intrinsic function were added in version 2.2:
@@ -5933,32 +5933,33 @@
         A module that implements interfaces to the POSIX sysconf,
         pathconf, and confstr functions.
 
-  The following library files and functions were add to ssllsshh:
+  The following library files and functions were add to slsh:
 
      process.sl
         The code in this file utilizes the fork module to implement the
         new_process function, which allows the caller to easily create
         and communicate with subprocesses and pipelines.
 
-  AA..22..  WWhhaatt''ss nneeww ffoorr SS--LLaanngg 22..11
+  A.2.  What's new for S-Lang 2.1
 
-  +o   Short circuiting boolean operators || and && have been added to
+  o   Short circuiting boolean operators || and && have been added to
      the languange. The use of orelse and andelse constructs are
      nolonger necessary nor encouraged.
-  +o  _Q_u_a_l_i_f_i_e_r_s have been added to the language as a convenient and
+
+  o  Qualifiers have been added to the language as a convenient and
      powerful mechanism to pass optional information to functions.
 
-  +o  Structure definitions allow embeded assignemnts, e.g,
+  o  Structure definitions allow embeded assignemnts, e.g,
 
            s = struct {foo = 3, bar = "hello" };
 
-  +o  Comparison expressions such as a<b<c are now interpretered as
+  o  Comparison expressions such as a<b<c are now interpretered as
      (a<b)and(b<c).
 
-  +o  The ifnot keyword was added as an alternative to !if. The use of
+  o  The ifnot keyword was added as an alternative to !if. The use of
      !if has been deprecated.
 
-  +o  Looping constructs now support a "then" clause that will get
+  o  Looping constructs now support a "then" clause that will get
      executed if the loop runs to completion, e.g.,
 
             loop (20)
@@ -5970,14 +5971,14 @@
 
   Note: then is now a reserved word.
 
-  +o  A floating point array of exactly N elements may be created using
+  o  A floating point array of exactly N elements may be created using
      the form [a:b:#N], where the elements are uniformly spaced and run
      from a to b, inclusive.
 
-  +o  References to array elements and structure fields are now
+  o  References to array elements and structure fields are now
      supported, e.g., &A[3], &s.foo.
 
-  +o  An exception may be rethrown by calling "throw" without any
+  o  An exception may be rethrown by calling "throw" without any
      arguments:
 
            try { something (); }
@@ -6015,7 +6016,7 @@
      onig
         A regular expression module using oniguruma RE library.
 
-  The following library files and functions were add to ssllsshh:
+  The following library files and functions were add to slsh:
 
      readascii
         A flexible and power ascii (as opposed to binary) data file
@@ -6025,40 +6026,41 @@
         A set of functions that vastly simplify the parsing of command
         line options.
 
-  Also a history and completion mechanism was added to the SS--LLaanngg
-  readline interface, and as a result, ssllsshh now supports history and
+  Also a history and completion mechanism was added to the S-Lang
+  readline interface, and as a result, slsh now supports history and
   command/file completion.
 
-  AA..33..  WWhhaatt''ss nneeww ffoorr SS--LLaanngg 22..00
+  A.3.  What's new for S-Lang 2.0
 
   Here is a brief list of some of the new features and improvements in
-  SS--LLaanngg 2.0.
+  S-Lang 2.0.
 
-  +o  ssllsshh, the generic SS--LLaanngg interpreter, now supports and interactive
+  o  slsh, the generic S-Lang interpreter, now supports and interactive
      command-line mode with readline support.
 
-  +o  Native support for Unicode via UTF-8 throughout the library.
+  o  Native support for Unicode via UTF-8 throughout the library.
 
-  +o  A List_Type object has been added to the language, e.g.,
+  o  A List_Type object has been added to the language, e.g.,
 
             x = {1, 2.7, "foo", [1:10]};
 
   will create a (heterogeneous) list of 4 elements.
 
-  +o  A much improved exception handling model.
+  o  A much improved exception handling model.
 
-  +o  Variable expansion within string literals:
+  o  Variable expansion within string literals:
 
            file = "$HOME/src/slang-$VERSION/"$;
 
-  +o  Operator overloading for user-defined types.  For example it is
+  o  Operator overloading for user-defined types.  For example it is
      possible to define a meaning to X+Y where X and Y are defined as
-           typedef struct { x, y, z } Vector;
-           define vector (x,y,z) { variable v = @Vector; v.x=x; v.y=y; v.z=z;}
-           X = vector (1,2,3);
-           Y = vector (4,5,6);
 
-  +o  Syntactic sugar for objected-oriented style method calls.  SS--LLaanngg 1
+      typedef struct { x, y, z } Vector;
+      define vector (x,y,z) { variable v = @Vector; v.x=x; v.y=y; v.z=z;}
+      X = vector (1,2,3);
+      Y = vector (4,5,6);
+
+  o  Syntactic sugar for objected-oriented style method calls.  S-Lang 1
      code such as
 
             (@s.method)(s, args);
@@ -6072,32 +6074,32 @@
 
             @s.method(args);
 
-  because it is not supported by SS--LLaanngg 2.
+  because it is not supported by S-Lang 2.
 
-  +o  More intrinsic functions including math functions such as hypot,
+  o  More intrinsic functions including math functions such as hypot,
      atan2, floor, ceil, round, isnan, isinf, and many more.
 
-  +o  Support for long long integers.
+  o  Support for long long integers.
 
            X = 18446744073709551615ULL;
 
-  +o  Large file support
+  o  Large file support
 
-  +o  Performance improvements. The SS--LLaanngg 2 interpreter is about 20
+  o  Performance improvements. The S-Lang 2 interpreter is about 20
      percent faster for many operations than the previous version.
 
-  +o  Better debugging support including an interactive debugger. See the
+  o  Better debugging support including an interactive debugger. See the
      section on ``Using the sldb debugger'' for more information.
 
   See the relevent chapters in in the manual for more information.
 
-  AA..44..  UUppggrraaddiinngg ttoo SS--LLaanngg 22
+  A.4.  Upgrading to S-Lang 2
 
-  For the most part SS--LLaanngg 2 is backwards-compatible with SS--LLaanngg 1.
+  For the most part S-Lang 2 is backwards-compatible with S-Lang 1.
   However there are a few important differences that need to be
   understood before upgrading to version 2.
 
-     ++++ aanndd ---- ooppeerraattoorrss iinn ffuunnccttiioonn ccaallllss
+     ++ and -- operators in function calls
         Previously the ++ and {--} operators were permitted in a
         function argument list, e.g.,
 
@@ -6107,7 +6109,7 @@
 
               x++; some_function (x);
 
-     AArrrraayy iinnddeexxiinngg ooff ssttrriinnggss
+     Array indexing of strings
         Array indexing of strings uses byte-semantics and not character-
         semantics. This distinction is important only if UTF-8 mode is
         in effect. If you use array indexing with functions that use
@@ -6125,11 +6127,11 @@
                i = is_substr (a, b);
                if (i) c = substr (a, 1, i-1);
 
-     AArrrraayy iinnddeexxiinngg wwiitthh nneeggaattiivvee iinntteeggeerr rraannggeess
+     Array indexing with negative integer ranges
         Previously the interpretation of a range array was context
         sensitive. In an indexing situation [0:-1] was used to index
         from the first through the last element of an array, but outside
-        this context, [0:-1] was an empty array. For SS--LLaanngg 22, the
+        this context, [0:-1] was an empty array. For S-Lang 2, the
         meaning of such arrays is always the same regardless of the
         context. Since by itself [0:-1] represents an empty array,
         indexing with such an array will also produce an empty array.
@@ -6156,7 +6158,7 @@
 
                  B = A[[-3:]];
 
-     DDeerreeffeerreenncciinngg ffuunnccttiioonn mmeemmbbeerrss ooff aa ssttrruuccttuurree
+     Dereferencing function members of a structure
         Support for the non-parenthesized form of function member
         dereferencing has been dropped. Code such as
 
@@ -6166,7 +6168,7 @@
 
                (@s.foo)(args);
 
-     The latter form will work in both SS--LLaanngg 1 and SS--LLaanngg 2.
+     The latter form will work in both S-Lang 1 and S-Lang 2.
 
      If your code passes the structure as the first argument of the
      method call, e.g.,
@@ -6177,10 +6179,10 @@
 
                s.foo (moreargs);
 
-     However, this _o_b_j_e_c_t_e_d_-_o_r_i_e_n_t_e_d form of method calling is not sup-
-     ported by SS--LLaanngg 1.
+     However, this objected-oriented form of method calling is not sup-
+     ported by S-Lang 1.
 
-     EERRRROORR__BBLLOOCCKKSS
+     ERROR_BLOCKS
         Exception handling via ERROR_BLOCKS is still supported but
         deprecated. If your code uses ERROR_BLOCKS it should be changed
         to use the new exception handling model. For example, code that
@@ -6269,24 +6271,24 @@
 
      should be changed to:
 
-            variable e;
-            try (e)
-              {
-                 do_something ();
-                   .
-                   .
-              }
-            catch RunTimeError:
-              {
-                 cleanup_after_error ();
-              }
-            finally:
-              {
-                 cleanup_after_error ();
-              }
+                 variable e;
+                 try (e)
+                   {
+                      do_something ();
+                        .
+                        .
+                   }
+                 catch RunTimeError:
+                   {
+                      cleanup_after_error ();
+                   }
+                 finally:
+                   {
+                      cleanup_after_error ();
+                   }
 
-     ffrreeaadd
-        When reading Char_Type and UChar_Type objects the SS--LLaanngg 1
+     fread
+        When reading Char_Type and UChar_Type objects the S-Lang 1
         version of fread returned a binary string (BString_Type if the
         number of characters read was greater than one, or a U/Char_Type
         if the number read was one. In other words, the resulting type
@@ -6294,7 +6296,7 @@
         the resulting type in advance. In contrast, when reading, e.g,
         Int_Type objects, fread returned an Int_Type when it read one
         integer, or an array of Int_Type if more than one was read.  For
-        SS--LLaanngg 2, the behavior of fread with respect to UChar_Type and
+        S-Lang 2, the behavior of fread with respect to UChar_Type and
         Char_Type types was changed to have the same semantics as the
         other data types.
 
@@ -6315,13 +6317,13 @@
 
      The above will work with both versions of the interpreter.
 
-     ssttrrttrraannss
+     strtrans
         The strtrans function has been changed to support Unicode. One
         ramification of this is that when mapping from one range of
         characters to another, the length of the ranges must now be
         equal.
 
-     ssttrr__ddeelleettee__cchhaarrss
+     str_delete_chars
         This function was changed to support unicode character classes.
         Code such as
 
@@ -6335,17 +6337,17 @@
 
      to achieve the latter.
 
-     ssuubbssttrr,, iiss__ssuubbssttrr,, ssttrrssuubb
+     substr, is_substr, strsub
         These functions use character-semantics and not byte-semantics.
         The distinction is important in UTF-8 mode. If you use array
         indexing in conjunction with these functions, then read on.
 
-  BB..  CCooppyyrriigghhtt
+  B.  Copyright
 
-  The SS--LLaanngg library is distributed under the terms of the GNU General
+  The S-Lang library is distributed under the terms of the GNU General
   Public License.
 
-  BB..11..  TThhee GGNNUU PPuubblliicc LLiicceennssee
+  B.1.  The GNU Public License
 
                           GNU GENERAL PUBLIC LICENSE
                               Version 2, June 1991
@@ -6443,24 +6445,24 @@
   such modifications or work under the terms of Section 1 above,
   provided that you also meet all of these conditions:
 
-      a) You must cause the modified files to carry prominent notices
-      stating that you changed the files and the date of any change.
+           a) You must cause the modified files to carry prominent notices
+           stating that you changed the files and the date of any change.
 
-      b) You must cause any work that you distribute or publish, that in
-      whole or in part contains or is derived from the Program or any
-      part thereof, to be licensed as a whole at no charge to all third
-      parties under the terms of this License.
+           b) You must cause any work that you distribute or publish, that in
+           whole or in part contains or is derived from the Program or any
+           part thereof, to be licensed as a whole at no charge to all third
+           parties under the terms of this License.
 
-      c) If the modified program normally reads commands interactively
-      when run, you must cause it, when started running for such
-      interactive use in the most ordinary way, to print or display an
-      announcement including an appropriate copyright notice and a
-      notice that there is no warranty (or else, saying that you provide
-      a warranty) and that users may redistribute the program under
-      these conditions, and telling the user how to view a copy of this
-      License.  (Exception: if the Program itself is interactive but
-      does not normally print such an announcement, your work based on
-      the Program is not required to print an announcement.)
+           c) If the modified program normally reads commands interactively
+           when run, you must cause it, when started running for such
+           interactive use in the most ordinary way, to print or display an
+           announcement including an appropriate copyright notice and a
+           notice that there is no warranty (or else, saying that you provide
+           a warranty) and that users may redistribute the program under
+           these conditions, and telling the user how to view a copy of this
+           License.  (Exception: if the Program itself is interactive but
+           does not normally print such an announcement, your work based on
+           the Program is not required to print an announcement.)
 
   These requirements apply to the modified work as a whole. If identifi-
   able sections of that work are not derived from the Program, and can
@@ -6631,6 +6633,7 @@
                             END OF TERMS AND CONDITIONS
 
   How to Apply These Terms to Your New Programs
+
   If you develop a new program, and you want it to be of the greatest
   possible use to the public, the best way to achieve this is to make it
   free software which everyone can redistribute and change under these
@@ -6641,22 +6644,22 @@
   convey the exclusion of warranty; and each file should have at least
   the "copyright" line and a pointer to where the full notice is found.
 
-           <one line to give the program's name and a brief idea of what it does.>
-           Copyright (C) 19yy  <name of author>
+      <one line to give the program's name and a brief idea of what it does.>
+      Copyright (C) 19yy  <name of author>
 
-           This program is free software; you can redistribute it and/or modify
-           it under the terms of the GNU General Public License as published by
-           the Free Software Foundation; either version 2 of the License, or
-           (at your option) any later version.
+      This program is free software; you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation; either version 2 of the License, or
+      (at your option) any later version.
 
-           This program is distributed in the hope that it will be useful,
-           but WITHOUT ANY WARRANTY; without even the implied warranty of
-           MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-           GNU General Public License for more details.
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
 
-           You should have received a copy of the GNU General Public License
-           along with this program; if not, write to the Free Software
-           Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+      You should have received a copy of the GNU General Public License
+      along with this program; if not, write to the Free Software
+      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
   Also add information on how to contact you by electronic and paper
   mail.
@@ -6690,45 +6693,45 @@
   tions with the library. If this is what you want to do, use the GNU
   Library General Public License instead of this License.
 
-  BB..22..  TThhee UUnniiccooddee IInncc.. CCooppyyrriigghhtt
+  B.2.  The Unicode Inc. Copyright
 
   This software makes use of the Unicode tables published by Unicode,
   Inc under the following terms:
 
-            COPYRIGHT AND PERMISSION NOTICE
+       COPYRIGHT AND PERMISSION NOTICE
 
-            Copyright (c) 1991-2009 Unicode, Inc. All rights reserved. Distributed
-            under the Terms of Use in http://www.unicode.org/copyright.html.
+       Copyright (c) 1991-2009 Unicode, Inc. All rights reserved. Distributed
+       under the Terms of Use in http://www.unicode.org/copyright.html.
 
-            Permission is hereby granted, free of charge, to any person
-            obtaining a copy of the Unicode data files and any associated
-            documentation (the "Data Files") or Unicode software and any
-            associated documentation (the "Software") to deal in the Data Files
-            or Software without restriction, including without limitation the
-            rights to use, copy, modify, merge, publish, distribute, and/or sell
-            copies of the Data Files or Software, and to permit persons to whom
-            the Data Files or Software are furnished to do so, provided that (a)
-            the above copyright notice(s) and this permission notice appear with
-            all copies of the Data Files or Software, (b) both the above
-            copyright notice(s) and this permission notice appear in associated
-            documentation, and (c) there is clear notice in each modified Data
-            File or in the Software as well as in the documentation associated
-            with the Data File(s) or Software that the data or software has been
-            modified.
+       Permission is hereby granted, free of charge, to any person
+       obtaining a copy of the Unicode data files and any associated
+       documentation (the "Data Files") or Unicode software and any
+       associated documentation (the "Software") to deal in the Data Files
+       or Software without restriction, including without limitation the
+       rights to use, copy, modify, merge, publish, distribute, and/or sell
+       copies of the Data Files or Software, and to permit persons to whom
+       the Data Files or Software are furnished to do so, provided that (a)
+       the above copyright notice(s) and this permission notice appear with
+       all copies of the Data Files or Software, (b) both the above
+       copyright notice(s) and this permission notice appear in associated
+       documentation, and (c) there is clear notice in each modified Data
+       File or in the Software as well as in the documentation associated
+       with the Data File(s) or Software that the data or software has been
+       modified.
 
-            THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY
-            OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-            WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-            NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE
-            COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR
-            ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY
-            DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
-            WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
-            ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
-            OF THE DATA FILES OR SOFTWARE.
+       THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY
+       OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+       WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+       NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE
+       COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR
+       ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY
+       DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+       WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+       ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+       OF THE DATA FILES OR SOFTWARE.
 
-            Except as contained in this notice, the name of a copyright holder
-            shall not be used in advertising or otherwise to promote the sale,
-            use or other dealings in these Data Files or Software without prior
-            written authorization of the copyright holder.
+       Except as contained in this notice, the name of a copyright holder
+       shall not be used in advertising or otherwise to promote the sale,
+       use or other dealings in these Data Files or Software without prior
+       written authorization of the copyright holder.
 

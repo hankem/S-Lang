@@ -2126,16 +2126,33 @@ static void create_delimited_string_cmd (int *nptr)
 }
 
 /* UTF-8 ok */
-static void strjoin_cmd (char *delim)
+static void strjoin_cmd (void)
 {
    SLang_Array_Type *at;
    char *str;
+   char *delim;
+   int free_delim;
+
+   if (SLang_Num_Function_Args == 1)
+     {
+	free_delim = 0;
+	delim = "";
+     }
+   else
+     {
+	if (-1 == SLang_pop_slstring (&delim))
+	  return;
+	free_delim = 1;
+     }
 
    if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
      return;
 
    str = create_delimited_string ((char **)at->data, at->num_elements, delim);
    SLang_free_array (at);
+   if (free_delim)
+     SLang_free_slstring (delim);
+
    (void) SLang_push_malloced_string (str);   /* NULL Ok */
 }
 
@@ -2505,7 +2522,7 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_SSS("str_uncomment_string", str_uncomment_string_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_II("define_case", define_case_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("strtok", strtok_cmd, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_S("strjoin", strjoin_cmd, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("strjoin", strjoin_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_SSS("strtrans", strtrans_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_SS("str_delete_chars", str_delete_chars_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("glob_to_regexp", glob_to_regexp, SLANG_VOID_TYPE),
