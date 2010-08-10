@@ -43,7 +43,7 @@ define test_generic (func, ret_type, parms, exp_mean, exp_variance,
 	variable exp_stddev = sqrt(exp_variance);
 	variable mean_lo = exp_mean - 3*exp_stddev*w;
 	variable mean_hi = exp_mean + 3*exp_stddev*w;
-	
+
 	ifnot (mean_lo <= mean <= mean_hi)
 	  () = fprintf (stderr, "${func}'s mean ${mean} outside the expected range: ${mean_lo} - ${mean_hi}\n"$);
 
@@ -98,7 +98,7 @@ define test_rand_gamma ()
 	foreach ([1, 2, 4, 16])
 	  {
 	     variable k = ();
-	     test_generic (&rand_gamma, Double_Type, {k, theta}, 
+	     test_generic (&rand_gamma, Double_Type, {k, theta},
 			   k*theta, k*theta^2,
 			   0, _Inf, CLOSED_LOWER);
 	  }
@@ -151,17 +151,16 @@ define test_rand_geometric ()
      {
 	test_generic (&rand_geometric, UInt_Type, {p},
 		      1/p, (1-p)/p^2, 1, _Inf, CLOSED_LOWER);
-     }   
+     }
 }
 
 define test_rand_flat ()
 {
    variable x0 = 2-0.5, x1 = 2+0.5;
    test_generic (&rand_flat, Double_Type, {x0, x1},
-		 0.5*(x0+x1), (x1-x0)^2/12.0, 
+		 0.5*(x0+x1), (x1-x0)^2/12.0,
 		 x0, x1, CLOSED_LOWER);
 }
-
 
 define test_rand_fdist ()
 {
@@ -210,7 +209,7 @@ define test_rand_int ()
 {
    variable x0 = 1, x1 = 10;
    test_generic (&rand_int, Int_Type, {x0, x1},
-		 0.5*(x0+x1), ((x1-x0+1)^2-1)/12.0, x0, x1, 
+		 0.5*(x0+x1), ((x1-x0+1)^2-1)/12.0, x0, x1,
 		 CLOSED_LOWER|CLOSED_UPPER);
 }
 
@@ -229,18 +228,18 @@ private define test_rand ()
    variable r = rand_new ();
    srand (r, 12345);
    srand (12345);
-   
+
    variable expected_values =
-     [746892674, 935820662, 3317285904, 3160065947, 888929593, 316432806, 
-      3891177748, 66504584, 827237220, 2731412032, 105892519, 1105593792, 
-      4257164826, 2953826281, 477842505, 3161051103, 654741546, 2422625584, 
-      3232900523, 2360188805, 70104872, 2440288176, 1468162482, 3428658486, 
-      1893960569, 3842583023, 4119673423, 2214061288, 1769001282, 3996933411, 
-      3342430755, 201679192, 431385446, 2648942401, 2718561501, 1689889009, 
-      403183793, 662574206, 2167963286, 2166423399, 112978312, 3881586706, 
-      2111007051, 2589350153, 3519959692, 838415425, 1148338613, 1576844827, 
-      1939688263, 1896225294, 2843247453, 179614524, 594767376, 4056452573, 
-      2301108737, 844660562, 1079103954, 3239244907, 3213734172, 3924276547
+     [746892674U, 935820662U, 3317285904U, 3160065947U, 888929593U, 316432806U,
+      3891177748U, 66504584U, 827237220U, 2731412032U, 105892519U, 1105593792U,
+      4257164826U, 2953826281U, 477842505U, 3161051103U, 654741546U, 2422625584U,
+      3232900523U, 2360188805U, 70104872U, 2440288176U, 1468162482U, 3428658486U,
+      1893960569U, 3842583023U, 4119673423U, 2214061288U, 1769001282U, 3996933411U,
+      3342430755U, 201679192U, 431385446U, 2648942401U, 2718561501U, 1689889009U,
+      403183793U, 662574206U, 2167963286U, 2166423399U, 112978312U, 3881586706U,
+      2111007051U, 2589350153U, 3519959692U, 838415425U, 1148338613U, 1576844827U,
+      1939688263U, 1896225294U, 2843247453U, 179614524U, 594767376U, 4056452573U,
+      2301108737U, 844660562U, 1079103954U, 3239244907U, 3213734172U, 3924276547U
      ];
    variable a = rand (expected_values);
    variable b = rand (r, a);
@@ -279,17 +278,16 @@ private define sample_and_check_array (rt, a, n)
      b = rand_sample (a, n);
    else
      b = rand_sample (rt, a, n);
-   
+
    check_sampled_array (rt, a, b, n);
 }
-
 
 define test_rand_sample ()
 {
    variable a0 = [1:20];
    variable a1 = _reshape ([1:20*30], [20, 30]);
    variable a2 = _reshape ([1:20*30*4], [20, 30, 4]);
-   
+
    variable dims, a, b, n, b0, b1, b2;
    variable rt = rand_new ();
    foreach n ([5, 1, 20, 0])

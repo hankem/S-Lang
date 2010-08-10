@@ -169,6 +169,8 @@ Changes since 2.2.2
 64. autoconf/config.sub+config.guess updated.
 65. src/slstrops.c: If a delimiter is not passed to strjoin, assume
     the empty string.
+66. modules/test/test_rand.sl: Some integer constants changed to
+    unsigned values.
 
 {{{ Previous Versions
 
