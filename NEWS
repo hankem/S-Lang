@@ -1,14 +1,13 @@
-NEWS for version 2.2                                               -*-text-*-
+NEWS for version 2.2.x                                             -*-text-*-
 
 Interpreter Enhancements
 ========================
 
+   1.  The ternary expression was added:
 
-   1.  The ternary expression was added:  
-   
            expression = condition ? val1 : val2
 
-       If condition is non-zero, then expression = val1, 
+       If condition is non-zero, then expression = val1,
         otherwise expression = val2
 
    2.  The break and condition statements support an optional integer
@@ -22,74 +21,100 @@ Interpreter Enhancements
 		        break 2;
 		    }
 	     }
-	
+
        will cause both loops to be terminated.
-       
+
    3.  Multiline strings have been added:
-   
+
            "This is a \
 	    multiline \
 	    string"
-	    
+
            `This is
 	    another multiline
-	    string that 
-	    does not require 
+	    string that
+	    does not require
 	    a \ for continuation`
 
     4.  List_Type objects may be indexed using an array of indices
         instead of just a single scalar index.
-	    
+
+    5.  (v2.2.3) Binary literal integers of the form 0bxx...x are supported.
+        Here, x is 0 or 1.  The printf "%B" format specifier was added
+	to format integers as binary.
+
+    6.  (v2.2.3) The dereference operator (@) may be used in a structure
+        definition to include the fields from the dereferenced
+	structure, e.g.,
+
+	  space = struct {x, y, z};
+	  spacetime = struct {@space, t};
 
 Modules
 =======
- 
+
    1.  zlib: A module that wraps the popular z compression library.
 
    2.  fork: A module that wraps the fork, exec*, and waitpid functions.
-   
+
          slsh/lib/process.sl utilizes this module to allow an
 	 application to easily create subprocesses and pipelines.
 
    3.  sysconf: Module that implements interfaces to the posix
        sysconf, pathconf, etc. functions.
-	   
 
 Intrinsic Functions
 ===================
 
    The following intrinsic functions have been added for 2.2:
-   
-      sumsq           
+
+      sumsq
           equivalent to sum(x*x)
 
-      expm1           
+      expm1
           More accurate version of exp(x)-1 for x near 0.
 
-      log1p           
+      log1p
           More accurate version of log(1+x) for x near 0
 
-      list_to_array   
+      list_to_array
           Creates an array from a list.
 
       string_matches
           A convenient alternative to string_match and string_match_nth
 	  functions.
-		       
-      _close          
+
+      strskipbytes (v2.2.3)
+          Skip a range of bytes in a byte string.
+
+      is_substrbytes (v2.2.3)
+          Like is_substr except this works with binary strings
+	  containing embedded null characters.
+
+      strskipchar, strbskipchar (v2.2.3)
+         Analogous to C ch=*p++ and ch=*p-- for UTF-8 encoded strings.
+
+      _close
           Close an integer descriptor
-      _fileno        
+      _fileno
           Returns the descriptor as an integer
 
-      dup2, getsid, killpg, getpriority/setpriority:
+      dup2, getsid, killpg, getpriority/setpriority
           Wraps the corresponding system functions.
-	  
+
+      utime (v2.2.3)
+          Change a file's last access and modification time.
+
       ldexp, frexp:
-          If x == a*2^b, where 0.5<=a<1.0 then (a,b)=frexp(x), 
+          If x == a*2^b, where 0.5<=a<1.0 then (a,b)=frexp(x),
 	  and x=ldexp(a,b).
 
+      islower, isupper, isxdigit, isalnum, isalpha, iscntrl, isprint,
+      isgraph, ispunct, isblank, isspace (v2.2.3):
+          Character classification functions.
+
    The following functions have been enhanced:
-      
+
       hypot
           If given a single array argument, it returns the equivalent
 	  of sqrt(sum(X*X)).
@@ -98,11 +123,31 @@ Intrinsic Functions
           The calling interface to this function was changed and
 	  support added for arrays.
 
+      strreplace (v2.2.3)
+          New usage designed to facilitate the most common case where
+	  one wants to replace all the substrings.
+
+slsh
+====
+      slang readline enhancements:
+         New functions:
+	   rline_up/down_hist
+	      Behaves similar to zsh up/down-line-or-search functions (v2.2.3).
+
+	   rline_call_editor
+           rline_edit_history
+	   rline_edit_line
+	      Call external editor for line/history editing. (v2.2.3)
+
+         Structure field completion. (v2.2.3)
+
+         Instead of scrolling horizontally when editing a line,
+	 attempt to wrap the line. (v2.2.3)
+
 Misc
 ====
 
    Unicode tables updated to version 5.1.
-
 
 =x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x
 
@@ -124,17 +169,17 @@ Syntax enhancements:
 --------------------
 
    1.  Short circuiting boolean operators:
-   
+
            if ((x == y) || (y == 3) && (x != 4)) ...
 
        (orelse and andelse are deprecated)
-       
+
    2.  Structure definitions allow embdedded assignment expressions:
-   
+
            s = struct {x = 3, name="foo", a = [1:10]};
 
    3.  Qualifiers (aka "keywords") added to the language:
-   
+
            save_file ("foo.c"; overwrite=1);
 	   plot_points ([1:10], sin([1:10]); color="red", style="solid");
 
@@ -142,30 +187,30 @@ Syntax enhancements:
        (a<b)and(b<c).
 
    4.  New keywords: ifnot, then
-   
+
        ifnot may be used instead of !if, which has been deprecated.
        For "then" see the next item.
 
    5.  Looping constructs support a "then" clause that will get
        executed if the loop runs to completion, e.g.,
-       
+
            loop (20)
 	    {
 	       if (this ())
 	         break;  % The then clause will NOT get executed
 	    }
 	   then do_that ();
-	   
+
    6.  A floating point array of exactly N elements may be created
        using the form [a:b:#N], where the elements are uniformly
        spaced and run from a to b, inclusive.
-       
+
    7.  References to array elements and structure fields are
        supported, e.g., &A[3], &s.foo.
-       
+
    8.  An exception may be rethrown by calling "throw" without any
        arguments:
-       
+
            try { something (); }
 	   catch AnyError: { do_this (); throw; }
 
@@ -187,12 +232,11 @@ New Intrinsic Functions:
 
    minabs(x), maxabs(x):
               Equivalent to min(abs(x)) and max(abs(x))
-	      
+
    getpgrp,setgid, getpgid:
               Get and set the process group (Unix)
    setsid  :
               Create a new session
-
 
 API News
 ========
@@ -223,26 +267,25 @@ API News
   The SLang_Traceback variable is now interpreted as a bitmapped
   integer providing greater flexibility and control over traceback
   messages.
-  
+
   SLerr_throw was added to permit applications to mimic the semantics
   of the `throw' statement.
-  
+
   SLang_verror_va was added to support calling the error routines with
   a va_list argument.
-
 
 slsh enhancements
 =================
 
   When configured to use slang's readline routines, new features
   include filename completion and persistent history.
-  
+
   The profiler was rewritten to be much more friendly, flexible, and
   more accurate.
-  
+
   struct_filter and struct_combine defined in structfuns.sl have been
   made more flxible.  See their documentation for more information.
-  
+
   A new function called readascii may be used for reading
   non-binary (or so-called "ascii") data files.
 
@@ -250,7 +293,7 @@ New modules
 ===========
 
   The following modules have been added:
-   
+
       iconv:  Performs character-set conversion using the iconv library.
       onig:   A regular expression module using oniguruma RE library.
       rand:   A random number module

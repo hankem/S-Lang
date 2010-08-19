@@ -59,24 +59,24 @@ Changes since 2.2.2
      $TERMINFO, $HOME/.terminfo, /usr/local/{etc,share,lib}/terminfo,
      /etc/terminfo, ...
 31. src/slparse.c: Change #6 triggered an invalid parse error for
-    statements involving foreach-using such as: 
-    
+    statements involving foreach-using such as:
+
        foreach x (y) using ("bar") (@foo)();
 
 32. src/slstrops.c: Added an alternative interface to strreplace that
     facilitates the most common case where one wants to replace all
     substrings.  The function now supports
-    
+
         new = strreplace (a, b, c);
-    
+
     in addition to the older usage:
-    
+
         (new,m) = strreplace (a, b, c, n);
 
 33. src/sltoken.c,...: Added support for binary integer literals of
     the form 0b010101.  Integers may be formatted as unsigned binary using the
     %B format specifier, e.g.,
-    
+
         sprintf ("%B", 5)      ==> "101"
 	sprintf ("%#B", 5)     ==> "0b101"
 	sprintf ("%#8B", 5)    ==> "   0b101"
@@ -97,7 +97,7 @@ Changes since 2.2.2
 39. src/slparse.c: Added a syntax enhancement to structs and
     qualifiers to allow the fields of structure-valued expressions to
     be used to define the structure.  For example:
-    
+
        space = struct {x, y, z};
        spacetime = struct {@space, t};
 
@@ -171,6 +171,8 @@ Changes since 2.2.2
     the empty string.
 66. modules/test/test_rand.sl: Some integer constants changed to
     unsigned values.
+67. src/slstruct.c: tweak code to remove a false uninitialized
+    variable warning.
 
 {{{ Previous Versions
 
@@ -246,7 +248,7 @@ Changes since 2.1.4
 	 string".
 
          `This is another
-	 multiline 
+	 multiline
 	 string.`
 
     Note that the backquoted does not require a backslash at the end
@@ -747,12 +749,12 @@ Changes since 2.0.7
    interface.
 2. src/slarray.c: An optional reference argument may be passed to the
    where function to get the complement indices.  That is:
-   
-       i = where (foo, &j);
-   
-   is equivalent to 
 
-       i = where (foo); 
+       i = where (foo, &j);
+
+   is equivalent to
+
+       i = where (foo);
        j = where (not foo);
 
 3. src/slexcept.c: SLerr_throw added to allow applications to mimic
@@ -779,7 +781,7 @@ Changes since 2.0.7
 12. src/slang.c: Small memory leak involving method calls plugged.
 13. src/slparse.c,slang.c,slstruct.c: Added support for embedded
     assignments in structure definitions, e.g.,
-    
+
         X = struct { a = 4, b = 3, c = sin(PI/4)};
 
 14. src/slang.c,slparse.c,slstruct.c: Added support for
@@ -805,18 +807,18 @@ Changes since 2.0.7
     both:
            loop (N)
 	     {
-	        if (foo) 
+	        if (foo)
 		  break; % execute the else block if present
 	     }
-	   then 
-	     { 
+	   then
+	     {
 	        % This block executes if the loop ran to completion
 	     }
 	   else
 	     {
 	        % This block executes if the loop was broken prematurely
 	     }
-	     
+
     *** NOTE: This change broke backward-compatibility.  For this
     reason, support for the else clause was dropped".  See #48 below.
 
@@ -831,7 +833,7 @@ Changes since 2.0.7
     changed to have its mathematical meaning, namely ((a<b)and(b<c)).
     Before, (a<b<c) was interpreted as (a<b)<c.  Also, == and != now
     have the same precedence level as <,<=,>,>= to permit, e.g.,
-    (a==b<c).  Note that (a<b<....<c<d) is also defined as 
+    (a==b<c).  Note that (a<b<....<c<d) is also defined as
     ((a<b)and(b<...<c)and(c<d).
 22. src/slarray.c: New intrinsic: wherenot(x), which means where(not x).
 23. src/slarray.c,slparse.c: [a:b:#n] may be used to specify a
@@ -891,7 +893,7 @@ Changes since 2.0.7
 48. src/slparse.c: The "loop-else" feature added in change #17 was
     dropped because the change was not backwards compatible, changing
     the meaning of connstructs such as
-    
+
            if (some_condition)
 	     loop (N) {...}
 	   else
@@ -1060,7 +1062,7 @@ Changes since 2.0.6
 
       * The various mkfiles/makefile.all now include a clean: target
       * The top-level mkfiles directory now includes 3 new files:
-  
+
   	   A build.sh script, which auto-generates the Makefiles
 	   (using mkmake) and commences a build, similar to the
 	   build.bat script which was already there (and which I
@@ -1200,7 +1202,7 @@ Changes since 2.0.5
    beebe at math, utah, edu).
 7. src/sltime.c: times function was returning a structure containing
    incorrect values (cstawarz at head, cfa, harvard, edu).
-8. src/sldisply.c: Writing a multi-byte character to the lower-right corner 
+8. src/sldisply.c: Writing a multi-byte character to the lower-right corner
    of terminals with automatic margins was not working (Vladimir
    Nadvornik nadvornik at suse, cz).
 9. src/slwclut.c: Allow \\^ in character set specifications to
@@ -1314,14 +1316,14 @@ Changes since 2.0.3
 Changes since 2.0.2
 1. src/slang.c: Optimization of multiple assignment statements involving
    binary operators was generating bad byte-code causing a run-time
-   error.  In order to see this effect, code such as 
-   
+   error.  In order to see this effect, code such as
+
         w = 3*t+s;
         x = 2*z+1;
 	y = z*z;
-	
+
    would have to be written as a as multiple assignment statement:
-   
+
         (w,x,y) = (3*t+s, 2*z+1, z*z);
 
 2. src/sltypes.c: Added SLang_push_function to complement
@@ -1436,7 +1438,7 @@ Changes since 2.0.0 pre-release 7
     namespace is not current one, then make sure an anonymous
     namespace is being used.
 21. src/slang.c, slboseos.c: Experimental support for a debugger.  New
-    functions: 
+    functions:
        _set_frame_variable
        _get_frame_variable
        _get_frame_depth
@@ -1460,7 +1462,6 @@ Changes since 2.0.0 pre-release 7
 29. slsh/lib/print.sl: The "print" defined by this file may be used to
     print arrays, structures, lists, etc.  It is also used by sldb's
     pprint command.
-
 
 Changes since 2.0.0 pre-release 6
 1. The _traceback variable was being ignored.  As a result, error
@@ -1487,7 +1488,7 @@ Changes since 2.0.0 pre-release 5
 2. src/: OS/2 specific patches.
 3. src/mkfiles/makefile.all: Added some ranlib commands for the mingw32,
    cygwin, and EMX compilers.
-4. */mkfiles/makefile.all:  Add TOOL_PREFIX variable to support 
+4. */mkfiles/makefile.all:  Add TOOL_PREFIX variable to support
    cross-compilation.
 5. slsh/slsh.c: win32 specific changes to get path to slsh.rc via
    the GetModuleFileName function (DINO SANGOI (SANGOID at lloydadriatico, it)).
@@ -1504,7 +1505,7 @@ Changes since 2.0.0 pre-release 5
     reverse function.
 12. src/slpack.c: Add support for long long and 64 bit types.  Also
     'z' specifier added as an alternative to 's'.
-13. src/slstdio.c: Previously, fread(&v,Char_Type,n,fp) would 
+13. src/slstdio.c: Previously, fread(&v,Char_Type,n,fp) would
     assign a BString_Type object to v if n>1 or Char_Type if n==1.
     Now, for consistency it returns Char_Type[n] for n > 1.  To get
     the value as a binary string, use fread_bytes.  This change is not
@@ -1550,10 +1551,10 @@ Changes since 2.0.0 pre-release 5
     current color will be switched to the value of x.  If x is omitted
     (ESC[m) then the color will be set to the color active at the time
     of the function call.
-    
+
        SLsmg_set_color (1);
        SLsmg_write_string ("This is a \033[123mnew\033[m feature");
-    
+
     is equivalent to:
 
        SLsmg_set_color (1);
@@ -1562,9 +1563,9 @@ Changes since 2.0.0 pre-release 5
        SLsmg_write_string ("new");
        SLsmg_set_color (1);
        SLsmg_write_string (" feature");
-    
-    By default, this feature is turned off but may be turned on via 
-    
+
+    By default, this feature is turned off but may be turned on via
+
         SLsmg_embedded_escape_mode (1);
 
     Although this special color-changing-byte-sequence looks like an
@@ -1599,7 +1600,7 @@ Changes since 2.0.0 pre-release 4
 8. slsh: A man page for slsh (Rafael Laboissiere, rafael at debian, org).
 9. src/slwclut.c: No provision was allowed for backslashes in ranges
    that also permitted character classes.
-10. slsh/mkfiles/makefile.all: New file for non-unix systems. 
+10. slsh/mkfiles/makefile.all: New file for non-unix systems.
     (DINO SANGOI (SANGOID at lloydadriatico, it)).
 
 Changes since 2.0.0 pre-release 3
@@ -1629,10 +1630,9 @@ Changes since 2.0.0 pre-release 3
 13. src/slang.c: The autoload function may be used to load a file into
     a namespace. (Based upon an idea from Jörg Sommer (joerg at alea,
     gnuu, de)
-14. src/slstring.c: New hash function (from Bob Jenkins-- see 
+14. src/slstring.c: New hash function (from Bob Jenkins-- see
     See http://burtleburtle.net/bob/hash/evahash.html)
 15. src/slassoc.c: rewritten to use double hashing.
-
 
 Changes since 2.0.0 pre-release 2
 1. autoconf/aclocal.m4: "if [...]" replaced by "if test ..." (Lloyd
@@ -1643,7 +1643,7 @@ Changes since 2.0.0 pre-release 2
    jpeg-encoded images.
 4. src/slstd.c: Added _slang_install_prefix intrinsic variable.
 5. src/slboseos.c: New file.  This file allows to define callback
-   functions that will be called at the beginning (BOS) and end (EOS) of 
+   functions that will be called at the beginning (BOS) and end (EOS) of
    every statement executed by the interpreter.
 6. slsh/lib/stkcheck,sl: The code in this file makes use of the new
    BOS/EOS hooks to display lines in a source file that leave
@@ -1790,7 +1790,7 @@ Changes since 1.4.8
 5. src/slospath.c: Several users have requested that I add the ability
    to define a load path and use that path when loading interpreter
    files.  To this end, several new functions were added to the API:
-   
+
        char *SLpath_get_load_path (void);
        int SLpath_set_load_path (char *path);
          /* Get and Set the path to be searched for files */
@@ -1799,13 +1799,13 @@ Changes since 1.4.8
          /* Get and set the character delimiter for search paths */
        int SLang_load_file_verbose (int verbose);
          /* if non-zero, display file loading messages */
-   
+
    New intrinsics include:
 
        set_slang_load_path
        get_slang_load_path
        path_get_delimiter
-       
+
    These functions, nor the intrinsics have an effect on applications
    that use SLang_load_file_hook or SLns_load_file_hook for loading
    files.  The change should be transparant to applications that use
@@ -1813,7 +1813,7 @@ Changes since 1.4.8
    attempts to load a file with no extension, e.g., "foo", but the
    file does not exist, then the interpreter will try to load the more
    recent of "foo.sl" and "foo.slc".
-   
+
    See src/slsh.c for how the functions may be used.
 
 6. slsh/slsh.c: Updated to use the new search path code outlined
@@ -1840,14 +1840,14 @@ Changes since 1.4.7
    dburke at head-cfa.cfa.harvard.edu.
 3. src/slang.c: peephole optimizations of 1.4.7 were conflicting with __tmp
    optimizations.  This was causing something as simple as
-   
-       define f() 
-       { 
-          variable a = [1.0:10.0:1]; 
+
+       define f()
+       {
+          variable a = [1.0:10.0:1];
 	  variable b = a * 0.0;
 	  return a;
        }
-   
+
     to fail.
 4. src/slarray.c Allow ranges to index higher dimensional array.
 5. slsh/slsh.c: Updated to allow a user specified search path.  See
@@ -1939,9 +1939,9 @@ Changes since 1.4.5
     table to be added twice.
 20. src/slarray.c: Added _isnull intrinsic for checking for NULL values of
     array elements.  This is useful since something like
-    "where(a==NULL)" does not check the individual elements, whereas 
+    "where(a==NULL)" does not check the individual elements, whereas
     "where(_isnull(a))" does.
-21. src/sldisply.c: typo involving the initialization of Del_Eol_Str 
+21. src/sldisply.c: typo involving the initialization of Del_Eol_Str
     for terminals that do not have such capability.
     (Pavel Roskin <proski at gnu.org>)
 
@@ -1983,7 +1983,7 @@ Changes since 1.4.4
 18. The library may now be compiled under CYGWIN using the same
     procedure as under Unix.
 19. src/slkeypad.c: Some xterm-specific escape sequences added by
-    Denis Zaitsev <zzz at cd-club.ru>. 
+    Denis Zaitsev <zzz at cd-club.ru>.
 
 Changes since 1.4.3
 1.  Fixed a bug that shows up on 64 bit BigEndian machines--- it
@@ -2004,10 +2004,10 @@ Changes since 1.4.2
 4.  src/slarray.c: A statement such as [1:-1][[1:-1]] = [1:-1]; was
     causing a core dump.
 5.  src/sldisply.c: (Unix/VMS) SLsmg/SLtt routines will write using the file
-    descriptor SLang_TT_Write_FD, which, by default, is initialized to 
+    descriptor SLang_TT_Write_FD, which, by default, is initialized to
     fileno(stdout).
-6.  src/slposio.c: New C API functions: 
-       SLfile_get_fd returns the file descriptor associated with the 
+6.  src/slposio.c: New C API functions:
+       SLfile_get_fd returns the file descriptor associated with the
          SLFile object.
        SLfile_dup_fd: duplicate an SLFile object
 7.  src/slposio.c: New intrinsics: dup_fd (dup a file descriptor)
@@ -2058,7 +2058,7 @@ Changes since 1.4.1
 8.  sldisply.c: Assume that Eterm and rxvt are xterm-like (Michael
     Jennings <mej at valinux.com>).
 9.  sldostty.c: mouse support added by Gisle Vanem <giva at bgnett.no>.
-10. slsearch.c: avoid infinite loop if search string has no length.    
+10. slsearch.c: avoid infinite loop if search string has no length.
 11. SCO elf support added by Mike Hopkirk <hops at sco.com>.
 12. slregexp.c: regexp \d+ was not working properly
 13. keyhash.c: typos involving USER_BLOCK keywords corrected.
@@ -2173,7 +2173,7 @@ Changes since 1.3.8
    stat' does not provide.  In particular, under win32, this field
    contains the file attributes, e.g., whether or not a file is
    hidden.
-6. Appropriate typecasts added to avoid warnings on systems that do not 
+6. Appropriate typecasts added to avoid warnings on systems that do not
    support `void *'.
 7. Characters in the range 128-255 are allowed in identifiers.
 8. Correction to the documentation for SLang_init_tty (Ricard Sierra
@@ -2183,7 +2183,7 @@ Changes since 1.3.8
 11. Speed improvement of binary operations involving arrays,
     particularly when used in conjunction with the __tmp function.
 12. traceback messages include the filename containing the function
-13. File local intrinsic variable `_auto_declare' added.  If non-zero, 
+13. File local intrinsic variable `_auto_declare' added.  If non-zero,
     any undefined global variable will be given static scope.
 14. __uninitialize intrinsic function added.
 15. listdir was returning NULL on empty directories.  It has been
@@ -2248,7 +2248,7 @@ Changes since 1.3.6
 11. _reshape intrinsic function added.  Unlike `reshape', this
     function creates a new array and returns it.
 12. Array indexing via characters works again, e.g., A['a'].
-   
+
 Changes since 1.2.2
 0. New assignment operators: *= /= &= |=
    The addition of these operators meant that some of the internal
@@ -2256,13 +2256,13 @@ Changes since 1.2.2
    problems with byte-compiled or preprocessed .sl files.  As far as I
    know, only the JED editors uses this feature.  So, after upgrading
    the library, and before running JED, do the equivalent of
-   
+
         rm $JED_ROOT/lib/*.slc
 
    That is, delete the byte-compiled .slc files.
 
-1. Now the language supports `!if ... else' statements.  
-2. New intrinsics: 
+1. Now the language supports `!if ... else' statements.
+2. New intrinsics:
 
        __is_initialized:  This may be used to see whether or
           not a variable is initialized, e.g, __is_initialized (&variable);
@@ -2289,7 +2289,7 @@ Changes since 1.2.2
 
        SLang_IConstant_Type
        SLang_DConstant_Type
-       
+
    These are useful for defining symbolic constants.  See slmath.c and
    slfile.c for examples of their use.
 
@@ -2297,7 +2297,7 @@ Changes since 1.2.2
    This `function' takes a single argument, a variable, and returns
    the value of the variable, and then undefines the variable.  For
    example,
-   
+
         variable x = 3;
 	variable y;
 	y = __tmp(x);
@@ -2314,21 +2314,21 @@ Changes since 1.2.2
     arrays will exist.  However,
 
         x = 3*__tmp(x)^2 + 2;
-    
+
     results in only one array at the time of the assignment, because
     the original array associated with `x' will have been deleted.  This
     function is a pseudo-function because a syntax error results if
     used like
-    
+
         __tmp (sin(x));
 
 9.  New low-level push/pop functions that are designed specifically
     for use in constructing the push/pop methods of application
     defined data types.  These functions have names of the form:
-    
+
         SLclass_push_*_obj
         SLclass_pop_*_obj
-	
+
     where * represents int, long, char, short, ptr, double, float.
     See sltypes.c to see how they are used by, e.g., SLANG_INT_TYPE.
 
@@ -2336,18 +2336,18 @@ Changes since 1.2.2
     examples.  To enable this, use
 
         SLang_init_module
-	
+
     in you application.  Modules will be searched in the following order
-    
+
         1.  Along the path specified by the `set_import_module_path'
 	    function, or by the C functiion SLang_set_module_load_path.
-	2.  Along the path given by the SLANG_MODULE_PATH environment 
+	2.  Along the path given by the SLANG_MODULE_PATH environment
 	    variable.
 	3.  Along a system dependent path, e.g., LD_LIBRARY_PATH
         4.  In the current directory.
 
     New interpreter intrinsics include:
-    
+
         import (String_Type MODULE_NAME);
 	set_import_module_path (String_Type PATH);
 	String_Type get_import_module_path ();
@@ -2367,7 +2367,7 @@ Changes since 1.2.2
        SLANG_ULONG_TYPE       ULong_Type
        SLANG_FLOAT_TYPE       Float_Type
        SLANG_DOUBLE_TYPE      Double_Type
-       
+
     For example, `Long_Type[10]' creates an array of 10 longs.
 
 12. New intrinsic: set_struct_field.  See function reference for more
@@ -2375,7 +2375,7 @@ Changes since 1.2.2
 
 ----- snapshot slang1.3_981030 made available -----
 
-13. Type synonyms added: 
+13. Type synonyms added:
 
         Int16_Type, UInt16_Type   (16 bit (un)signed integer)
         Int32_Type, UInt32_Type   (32 bit (un)signed integer)
@@ -2396,7 +2396,7 @@ Changes since 1.2.2
     default, there is no way of getting at that function or variable
     from outside the the file.  However, the private namespace may be
     given a name via the `implements' function:
-    
+
          implements ("A");
 
     Then the private variables and functions of the namespace A may be
@@ -2404,26 +2404,26 @@ Changes since 1.2.2
     global namespace is called `Global'.  For example, the intrinsic
     function `message' is defined in the global namespace.  One may
     use either of the following forms to access it:
-    
+
          message ("hello");
 	 Global->message ("hello");
 
 ----- snapshot slang1.3_981104 made available -----
 
-16. New intrinsics: 
+16. New intrinsics:
 
         strtok  (See documentation)
 	length  (Get the length of an object)
 
 17. New data type added: Any_Type.  An array of such a type is capable
     of holding any object, e.g.,
-    
+
          a = Any_Type [3];
 	 a[0] = 1; a[1] = "string"; a[2] = (1 + 2i);
-	 
+
     Dereferencing an Any_Type object returns the actual object.  That
     is, @a[1] produces "string".
-    
+
 18. Associative arrays added.  See documentation.
 19. New `foreach' statement.  See the section on `foreach' in
     doc/text/slang.txt as well as the examples in examples/assoc.sl
@@ -2454,7 +2454,7 @@ Changes since 1.2.2
 27. If x is a string, then x[[a:b]] produces a string composed of the
     characters x[a], ... x[b].
 
-29. New intrinsics: 
+29. New intrinsics:
 
        listdir:  This returns the filenames in a specified
                  directory as an array of strings.
@@ -2463,7 +2463,7 @@ Changes since 1.2.2
     fashion.  In particular, SLang_init_slfile and SLang_init_slunix
     are obsolete (though still available) and applications should call
     a combination of the new functions:
-    
+
           SLang_init_stdio()   /* fgets, fopen, ... */
           SLang_init_posix_process () /* getpid, kill, ... */
           SLang_init_posix_dir () /* mkdir, stat, ... */
@@ -2511,13 +2511,13 @@ Changes since 1.2.2
 
 40. `public' made a keyword to for symmetry with `private' and
     `static', e.g.,
-      
+
          public define a_public_function ();
 	 public variable a_public_variable;
-	 
+
 41. semantics of `implements' modified such that the default variable
     and function declarations are `static', i.e.,
-    
+
         define xxx ();  % ==> public function
 	implements ("foo");
 	define yyy ();  % ==> static function
@@ -2552,7 +2552,7 @@ Changes since 1.2.2
     of the 2d array.
 
 49. New intrinsics to convert bstrings <--> arrays:
-  
+
         bstring_to_array
 	array_to_bstring
 
@@ -2600,13 +2600,13 @@ Changes since 1.2.2
 
 62. It is now possible to evaluate S-Lang expressions with the
     S-Lang preprocessor e.g.,
-      
+
         #ifeval (_slang_version > 9900) || (x == 1)
 
 63. sl-feat.h: Patch from Jörg Strohmayer <j_s at gmx.de> to define
     _SLANG_MAP_VTXX_8BIT=1 for AMIGA.
 
-64. New intrinsics: 
+64. New intrinsics:
       strjoin.  This joins elements of a string array.
       localtime, gmtime
 
@@ -2644,7 +2644,7 @@ Changes since 1.0.3 beta
 #define SLSMG_NEWLINE_SCROLLS	2      /* moves but scrolls at bottom of screen */
 #define SLSMG_NEWLINE_PRINTABLE	3      /* prints as ^J */
 
-1. Added patches from Joao Luis Fonseca <joaolf at centroin.com.br> 
+1. Added patches from Joao Luis Fonseca <joaolf at centroin.com.br>
    to src/mkfiles/makefile.all and a necessary OS/2 specific
    declaration to slvideo.c.  I also added the Watcom patches from
    Bill McCarthy <WJMc at pobox.com> to makefile.all.
@@ -2669,11 +2669,11 @@ Changes since 1.0.3 beta
 8. QNX specific tweak to slfile.c from Pavanas Abludo Incusus
    <pavanas at ccia.com>.
 
-9. Fixed a problem where, e.g., 
+9. Fixed a problem where, e.g.,
 
         x = Double_Type [7,8,9];
 	y = x[0,[:],[:]];
-   
+
    returned y = Double_Type[8*9] instead of the more intuitive result
    Double_Type[8,9];
 
@@ -2687,7 +2687,7 @@ Changes since 1.0.3 beta
 12. OS2 ICC patches from Eddie Penninkhof <eddie.penninkhof at tip.nl>.
 13. Grammar tweaked to make the pow (^) operator postfix-unary.  This
     makes more sense mathematically so that:
-    
+
         a^b^c ==> a^(b^c);
 	-(a)^b ==> -(a^b);
 
@@ -2716,10 +2716,10 @@ Changes since 1.0.2 beta
    well.  See INSTALL.pc and src/mkfiles/README for more information.
    Do NOT use the configure script under these environments.
 7. A new IBMPC_SYSTEM function added that affects WIN32, MSDOS, and
-   OS/2 systems: 
-     
+   OS/2 systems:
+
          SLang_getkey_map_to_ansi (int enable);
-	 
+
    If `enable' is non-zero, arrow and function keys will be mapped to
    the ansi equivalents.
 8. The WIN32 terminal support has been modified to be more consistent with
@@ -2733,7 +2733,6 @@ Changes since 1.0.2 beta
 10. demo/smgtest.c has been enhanced.
 11. Some cleanup performed to src/slprepr.c
 12. WIN32 and WIN16 preprocessing symbols are defined when appropriate.
-
 
 Changes since 1.0.1 beta
 1. More VMS patches.  Thanks Andy.
@@ -2750,7 +2749,7 @@ Changes since 0.99-38
 2. Make sure slang.h does not defined REAL_UNIX_SYSTEM on OS/2.
 3. New search paths for termin directories include $HOME/.terminfo and
    /usr/share/terminfo.
-4. SLsystem function added.  This is a replacement for `system'.  It 
+4. SLsystem function added.  This is a replacement for `system'.  It
    implements POSIX semantics for POSIX systems.  Although Linux
    claims to be a POSIX system, it's `system' routine is broken.
 5. color names color0 ... color7, brightcolor0, ... brightcolor7
@@ -2768,7 +2767,6 @@ Changes since 0.99-37
 7. Compilation error under QNX fixed.
 9. Small change involving SLang_flush_input.
 
-
 Changes since 0.99-36
 1. Oops fixed a bug in alternate character set handling when
    SLtt_Use_Blink_For_ACS is set.  This bug only affected DOSEMU.
@@ -2779,9 +2777,9 @@ Changes since 0.99-36
    set the default color will be sent.  Be careful, not all terminals
    support this feature.  If your terminal supports it, e.g., rxvt,
    then using
-   
+
         setenv COLORFGBG default
-     
+
    is a good choice.
 
 Changes since 0.99-35
@@ -2790,9 +2788,9 @@ Changes since 0.99-35
 3. New demos: keypad, smgtest, pager
 4. The environment variable COLORFGBG may be used to specify default
    foreground background colors, e.g., in csh use:
-   
+
         setenv COLORFGBG   "white;black"
-	
+
    to specify white on black as the default colors.  This also means
    that a color name of NULL or the empty string "" will get mapped to
    the default color.
@@ -2817,11 +2815,11 @@ Changes since 0.99-34
 
 2. If SL_RLINE_NO_ECHO bit is set in the readline structure, the
    user response will not be echoed.
-   
+
 3. If terminal is xterm, the TERMCAP environment variable will be
    ignored.  This change was necessary because of the braindead
    TERMCAP setting created by the latest version xterm.
-   
+
 4. Some of the keymap routines were re-coded.  Now it is possible to
    have lowercase characters as part of the prefix character sequence.
 
@@ -2842,7 +2840,7 @@ Changes since 0.99-33
    that they belong there and it is unlikely that they are used by
    others.  I made them avalable in the file src/jdmacros.h for anyone
    whose code depends on them.
-   
+
 3. The functions jed_mem??? have been renamed to SLmem???.
 
 4. New intrinsic: _obj_type returns type information about object on top
@@ -2859,17 +2857,17 @@ Changes since 0.99-31
    some wrapper functions.
 2. Changed <config.h> to "config.h" in all source files.
 3. If system lacks terminfo directories, it is compiled with termcap
-   support.  This generalizes and replaces the test for NeXT.   
+   support.  This generalizes and replaces the test for NeXT.
 4. New functions for slang/src/sldisply.c:
 
     void SLtt_get_screen_size (void);
     SLtt_Char_Type SLtt_get_color_object (int);
     void SLtt_set_color_fgbg (int, SLtt_Char_Type, SLtt_Char_Type);
-    
+
    The first function attempts to deduce the correct values of
    SLtt_Screen_Rows and SLtt_Screen_Cols.  This function is called by
    sltt_get_terminfo.
-   
+
    New constants such as SLSMG_COLOR_BLACK, SLSMG_COLOR_RED, ... have been
    added to slang.h to facilitate the use of SLtt_set_color_fgbg.
 
@@ -2879,7 +2877,7 @@ Changes since 0.99-31
 Changes since 0.99.30
 
 1. Small bug fixed that affects 64 bit machines with a certain byte
-   ordering.   
+   ordering.
 2. slutty.c: _POSIX_VDISABLE is used if defined.
 
 Changes since 0.99.29
@@ -2891,8 +2889,8 @@ Changes since 0.99.29
    replaced by `SLkm_define_key'.  See src/slrline.c for the use of this new
    interface.  For a short time, the old interface will be available if the
    preprocessor symbol `SLKEYMAP_OBSOLETE' is defined when slang is compiled.
-   See jed and slrn source for more examples.  
-   
+   See jed and slrn source for more examples.
+
 1. SLang_getkey now reads from /dev/tty (unix).
 2. If the first argument to SLang_init_tty is -1, the current value of the
    interrupt character will not be changed (unix).
@@ -2905,10 +2903,10 @@ Changes since 0.99.27
 1.  More changes to the configure script
 2.  It looks like hpterm support is in place.  This terminal has a glitch
     that prevents efficient screen updating.
-3.  New SLsmg function: 
-     
+3.  New SLsmg function:
+
      void SLsmg_write_color_chars (unsigned short *s, unsigned int len)
-     
+
     This function may be used to write a string of characters with
     attributes.
 
@@ -2923,14 +2921,14 @@ Changes since 0.99.25
      SLsmg_Newline_Moves
      SLsmg_Backspace_Moves
     These variables control the interpretation of newline and backspace
-    characters in smg.     
+    characters in smg.
 
 Changes since 0.99.24
 1.  SLSMG_RTEE_CHAR, etc... added to OS/2 part of slang.h
 2.  Small fix for aix-term
 
 Changes since 0.99.23
-0.  The makefile for unix has been completely re-written. 
+0.  The makefile for unix has been completely re-written.
 1.  Some problems dealing with certain color terminals have been resolved.
 2.  `g' generic type added to SLcmd.
 
@@ -2938,10 +2936,10 @@ Changes since 0.99.22
 0.  The Macro `VOID' has been removed.  The whole point of this macro was to
     mimick `void *' declarations for compilers that did not support such a
     construct.  Instead of `VOID *', slang.h now defines `VOID_STAR' and all
-    `VOID *' declarations have been renamed to `VOID_STAR'.  
-    
-    If you use the VOID macro in your application, you have two choices: 
-    
+    `VOID *' declarations have been renamed to `VOID_STAR'.
+
+    If you use the VOID macro in your application, you have two choices:
+
        1.  Rename all occurances of VOID * to VOID_STAR
        2.  Add: #define VOID void somewhere appropriate.
 
@@ -2959,8 +2957,8 @@ Changes since 0.99.20
     even if there is no termcap/terminfo entry for it.
 
 Changes since 0.99.19
-1.  User definable types must now have object identification numbers larger 
-    than 127.  The lower limit used to be 100 but this comflicts with many 
+1.  User definable types must now have object identification numbers larger
+    than 127.  The lower limit used to be 100 but this comflicts with many
     applications (as well as slang itself) using lower case letters as the
     object number, e.g., create_array ('s', 10, 1); which creates an array
     of 10 strings (object number 's' = 115).
@@ -2983,11 +2981,11 @@ Changes since 0.99.19
      SLUNIX      : If unix system calls are available
      SLFILES     : Stdio functions available
      FLOAT_TYPE  : Floating point version
-     
+
 Changes since 0.99.18
 1.  New intrinsic function: strcompress.  This collapses a string by removing
     repeated characters.  For example,
-    
+
            define collapse (f)
 	   {
 	      while (str_replace (f, " ", ",")) f = ();
@@ -2995,10 +2993,10 @@ Changes since 0.99.18
 	   }
 
            collapse (",  ,a b c ,,,d e,f  ");
-      
+
     returns: "a,b,c,d,e,f"
-    
-2.  QNX support added.  
+
+2.  QNX support added.
 3.  New Functions (unix only): SLtt_tgetstr, SLtt_tgetnum, SLtt_tgetflag.
 4.  Fixed parsing of Octal and Hex numbers so that incorrect values are
     flagged as errors.  Also, both lower and uppercase values may be used in
@@ -3012,26 +3010,26 @@ Changes since 0.99.17
 1.  I have added limited termcap support although slang is still a terminfo
     based system.  The support is provided via the TERMCAP environment
     variable.  If this variable exists and contains a termcap entry for which
-    there is no reference to another entry (via tc field), it will be used 
-    to setup the terminal.   If the TERMCAP variable does not exist, or it 
+    there is no reference to another entry (via tc field), it will be used
+    to setup the terminal.   If the TERMCAP variable does not exist, or it
     refers to a file, terminfo is used instead.  This is not really a
     limitation since one can set this variable in a way that slang likes by
     using `tset -s'.
-    
+
     The motivation for this support is two-fold:
        a. Slang programs can now run inside the screen program which sets
           the TERMCAP variable appropriately.
        b. A user can now correct defective termcap entries (e.g., for Linux),
-          and have those corrections made available to slang via the `tset' 
+          and have those corrections made available to slang via the `tset'
 	  command, e.g., by putting something analogous to:
-	     
+
 	       setenv TERMCAP /corrected/termcap/file/absolute/path/name
 	       eval `tset -s terminal-name`
-	       
+
 	  in the .login file.
        c. This also means that I can distribute corrected termcap entries for
           common terminals.
-	  
+
 Changes since 0.99.16
 1.  Inadequate terminfo entries for `linux' terminal are compensated for.
 2.  Terminals with the ``Magic cookie glitch'' are flagged as having an
@@ -3047,15 +3045,15 @@ changes since 0.99.14
 3.  Code ready for ELF
 changes since 0.99.13
 1.  SLtt_Has_Alt_Charset variable added to xterm.c.  This is motivated by the
-    sad, pathetic fact that although some termcap/terminfo databases suggest 
+    sad, pathetic fact that although some termcap/terminfo databases suggest
     that the terminal can do line drawing characters, the terminal cannot.
 2.  SLsmg_write_nstring function added.  This function may be used to write
     only n characters of a string padding wit hblanks if necessary.
-3.  If the environment variable COLORTERM exist, SLtt_get_terminfo will set 
+3.  If the environment variable COLORTERM exist, SLtt_get_terminfo will set
     SLtt_Use_Ansi_Colors to 1.
 4.  Sltt_set_cursor_visibility function added.  If passed a zero integer value,
     the cursor is hidden; otherwise, it is made visible.
-    
+
 changes since 0.99.12
 1.  SLsmg now uses the `te' and `ti' termcap entries if present.  Apparantly
     some terminals need to be put in cursor addressing mode.  This also has
@@ -3064,16 +3062,16 @@ changes since 0.99.12
 2.  For some types of code, slang is 20% faster!  This is especially
     noticeable for branching constructs inside tight loops or recursive
     functions.
-    
+
 changes since 0.99.10
 1. New version control added:
-    
+
     A new preprocessor symbol was added: SLANG_VERSION
-    This is a 6 digit integer of the form: abcdef 
+    This is a 6 digit integer of the form: abcdef
     This corresponds to version number ab.cd.ef.  So for version 0.99.11:
     #define SLANG_VERSION 9911
-    
-    In addition, the intrinsic variable `SLang_Version' was changed from a 
+
+    In addition, the intrinsic variable `SLang_Version' was changed from a
     string to an integer that has the value SLANG_VERSION.  This also implies
     that the interpreter variable _slang_version is now an integer.
 
@@ -3088,13 +3086,13 @@ changes since 0.99.9
    syntax of the slang programming language and cslang.tex which describes
    the C interface to the library.  The latter document is far from complete
    but it is a start.
-   
+
 3. A new variable declaration keyword has beed added: global_variable
    This keyword is useful for declaring global variables from within
    functions.  Such a feature simplifies some scripts.
-   
+
 4. The SLsmg line drawing functions are now in place.
-   
+
 changes since 0.99.8
 1. \d may now be used in regular expressions to specify a digit.  In addition,
    \e specifies an escape character.  So for example, `\e\[\d;\dH' matches
@@ -3103,7 +3101,7 @@ changes since 0.99.8
    fixed.
 3. When compiled with -DSLANG_TERMINFO will use terminfo.  This means that
    there is no need to link to termcap.
-   
+
 changes since 0.99.7
 1. New function added to the readline package:
      int SLang_rline_insert (char *s);
@@ -3116,13 +3114,12 @@ changes since 0.99.6
    prefix.  For example, the macro LANG_IVARIABLE has been renamed to
    SLANG_IVARIABLE.  If you have used one of these macros, please make the
    change.
-   
+
 2. Application defined types.  See demo/complex.c for an example that
    defines complex numbers and overloads the binary and unary operators to
    work with them.
-   
-changes since 0.99.5
 
+changes since 0.99.5
 
 1. New interface for application defined objects.  Functions include:
 
@@ -3130,23 +3127,22 @@ changes since 0.99.5
    extern void SLang_free_user_object (SLuser_Object_Type *);
    extern void SLang_push_user_object (SLuser_Object_Type *);
    extern SLuser_Object_Type *SLang_create_user_object (unsigned char type);
-				
 
   This means that S-Lang scripts do not have to worry about freeing
   structures, arrays, etc...  A consequence of this fact is that the
   intrinsic function `free_array' has been removed.  See examples of this
   exciting new feature in slang/demo.
-  
+
 2. Better documentation and examples.  See slang/doc/*.* as well as examples
    in slang/demo.
-  
+
 3. Memory allocation macros have changed from MALLOC to SLMALLOC, etc...
    Applications are encouraged to use these rather than `malloc' because by
    compiling your application AND the slang library with the -DMALLOC_DEBUG
    will link in code that checks if you have corrupted memory, freed
    something twice, etc...  Use the function `SLmalloc_dump_statistics' for
    a report of memory consumption by your program.
-   
+
 changes since 0.99.4
 1. cleaned up the source some and I changed the names of the hooks
    user_whatever to `SLang_User_Whatever'.  This makes them more consistent
@@ -3164,7 +3160,7 @@ changes since 0.99.2
 * keymap support
 * files restructured so that programs can link, say, the readline library
    and not get the whole interpreter linked in.
-   
+
 changes since 0.99.1
 *  obscure bug in regular expression fixed
 *  optimizing performed for 10% speed increase in speed for some language
@@ -3173,67 +3169,66 @@ changes since 0.99.1
 changes since 0.99.0
 *  semantics of the `switch' statement changed to be more C-like with the
    addition of the `case' keyword.  For example, one can write:
-   
+
         switch (ch)
-	{ case 'A':  
+	{ case 'A':
 	    something ();
 	}
-	{ 
-	  case 'B':  
+	{
+	  case 'B':
 	    something_else ();
 	}
-	{ case 3.14: 
+	{ case 3.14:
 	    print ("Almost PI");
 	}
-	{ case "hello":  
+	{ case "hello":
 	    print ("hi");
 	}
-   
+
    Note that one may mix data types without the possibility of a type
-   mismatch error. 
-   
+   mismatch error.
+
 changes since 0.98:
 *  matrix package added.  Currently only matrix multiplication and addition
    is supported.  More functions will be added (determinants, inverse, etc..)
-   This support is provided by the `init_SLmatrix ()' call.  This support 
+   This support is provided by the `init_SLmatrix ()' call.  This support
    provides the following S-Lang intrinsics:
-   
+
          matrix_multiply, matrix_add
-	  
-   
+
 *  New S-Lang core intrinsic:
 
          copy_array  :  copys the contents of one array to another
 
 changes since 0.97:
- 
-*  Double precision floating point supported.  
+
+*  Double precision floating point supported.
    Use the -DFLOAT_TYPE -DUSE_DOUBLE compiler flags to enable this.
    Note that S-Lang does not support single precision and double precision
    floating point number SIMULTANEOUSLY.  You must choose one or the other
    and stick with it!
-   
+
 *  Byte compiling is now more than simple preprocessing.  This results in
    about a 20% decrease in loading time.  This also means that if you
    rebuild your application, you MUST re-bytecompile.
-   
+
 *  New syntax added:  Consider a function f that returns multiple values.
    Then to assign these values to, say var_1, and var_2, simply write:
-   
+
        (var_1, var_2) = f ();
-       
-    This is an alternative to:  
-    
+
+    This is an alternative to:
+
         f (); =var_2; =var_1;
-	
+
 Changes since 0.96:
 
   It is now possible to use short circuit boolean evaluation of logical
   expressions is the `orelse' and `andelse' constructs.  Previously, these
   constructs were only available at the infix level.  The new syntax looks
   like (example taken from JED's rmail.sl):
-  
-     if (orelse 
+
+     if (orelse
 	 {re_bsearch("^\\CFrom:.*<\\(.+\\)>");}
 	 {re_bsearch("^\\CReply-To: *\\([^ ]+\\) *");}
 	 {re_bsearch("^\\CFrom:.*<\\(.+\\)>");}
@@ -3243,21 +3238,20 @@ Changes since 0.96:
      {
 	from = rmail_complex_get_from(from);
      }
-     
 
   Modified some of the array code to use handles to arrays instead of actual
   arrays.  This adds alot more protection for the use of arrays.  The
   downside is that there is a limit on the number of active arrays.  This
   limit has been set to a default value ot 256.  An ``active'' array is an
   array that has been created but not freed.
-  
+
   Fixed a parse error that occurred when an `if' statement imediately follow
   the `:' in a switch statement.
-  
+
   putenv intrinsic added.
 
   EXIT_BLOCK:  if an exit block is declared, it is called just before the
-               function returns to its caller. 
+               function returns to its caller.
 
 It is now possible to perform assignments in variable declaration
 statements, e.g.,
@@ -3268,19 +3262,19 @@ Condition compilation of S-Lang source possible.  See .sl files in the jed
 distribution.
 
 A bug which prevent assignment to a global C floating point variable was
-fixed. 
+fixed.
 
 Changes to `calc':
 
    `apropos' function added to calc.sl.  For example, `apropos("str")'
       creates a list of all intrinsic functions that contain the substring
       "str"  (strcmp, strcat, etc...)
-      
+
     Command line arguments are now loaded as S-Lang source files.  This makes
       it possible to create a Unix executable such as:
-      
+
          #! /usr/local/bin/calc
-	 
+
 	 define hello_world () { print ("hello world"); }
 	 loop (10) hello_world ();
 	 quit ();

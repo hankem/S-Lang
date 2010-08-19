@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -67,7 +67,7 @@ static void free_struct (_pSLang_Struct_Type *s)
 	     s->num_refs -= 1;
 	     return;
 	  }
-	
+
 	SLang_free_function (s->destroy_method);
      }
 
@@ -302,7 +302,7 @@ int SLstruct_create_struct (unsigned int nfields,
 			    VOID_STAR *field_values)
 {
    _pSLang_Struct_Type *s;
-   
+
    if (NULL == (s = create_struct (nfields, field_names, field_types, field_values)))
      return -1;
 
@@ -350,7 +350,7 @@ static _pSLang_Struct_Type *struct_from_struct_fields (int nfields)
 	  {
 	     if (name != f[i].name)
 	       continue;
-	     
+
 	     _pSLang_verror (SL_DuplicateDefinition_Error,
 			   "Field %s used more than once in the struct",
 			   name);
@@ -385,21 +385,21 @@ static int pop_to_struct_field (_pSLang_Struct_Type *s, SLCONST char *name)
 {
    _pSLstruct_Field_Type *f;
    SLang_Object_Type obj;
-   
+
    if ((NULL == (f = pop_field (s, name, find_field)))
        || (-1 == SLang_pop (&obj)))
      return -1;
 
    SLang_free_object (&f->obj);
    f->obj = obj;
-   
+
    return 0;
 }
 
 /* Take the fields of b and use those to replace the field atname of a */
 static int merge_struct_fields (SLCONST char *atname, _pSLang_Struct_Type *a, _pSLang_Struct_Type *b)
 {
-   unsigned int i, j, nb;
+   unsigned int i, j;
    char **new_names;
    _pSLstruct_Field_Type *f, *fmax, *new_fields;
    _pSLstruct_Field_Type *atfield;
@@ -417,7 +417,7 @@ static int merge_struct_fields (SLCONST char *atname, _pSLang_Struct_Type *a, _p
 
    if (b != NULL)
      {
-	nb = b->nfields;
+	unsigned int nb = b->nfields;
 	new_names = (char **)SLmalloc (nb * sizeof (char *));
 	if (new_names == NULL)
 	  return -1;
@@ -466,11 +466,11 @@ static int merge_struct_fields (SLCONST char *atname, _pSLang_Struct_Type *a, _p
    if (b != NULL)
      {
 	f = b->fields;
-	fmax = f + nb;
+	fmax = f + b->nfields;
 	while (f < fmax)
 	  {
 	     _pSLstruct_Field_Type *fa;
-	
+
 	     /* Cannot fail by construction */
 	     fa = find_field_in_fields (new_fields, new_num, f->name);
 
@@ -487,7 +487,7 @@ static int merge_struct_fields (SLCONST char *atname, _pSLang_Struct_Type *a, _p
    a->fields = new_fields;
    a->nfields = new_num;
    return 0;
-   
+
 return_error:
 
    free_fields (new_fields, new_num);
@@ -534,7 +534,7 @@ int _pSLstruct_define_struct2 (void)
      return -1;
 
    /* On stack: nameN, valN, ...., name1, val1 .... */
-   if (nassigns 
+   if (nassigns
        && (-1 == SLreverse_stack (2*nassigns)))
      goto return_error;
    while (nassigns > 0)
@@ -562,9 +562,9 @@ int _pSLstruct_define_struct2 (void)
 
    if (0 == SLang_push_struct (s))
      return 0;
-   
+
 return_error:
-   
+
    SLang_free_struct (s);
    return -1;
 }
@@ -798,7 +798,6 @@ static int struct_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 
 /*}}}*/
 
-
 /* Operator Overloading Functions */
 static int push_struct_of_type (SLtype type, _pSLang_Struct_Type *s);
 
@@ -830,7 +829,7 @@ typedef struct _Typecast_Info_Type
    struct _Typecast_Info_Type *next;
 }
 Typecast_Info_Type;
-  
+
 typedef struct _Struct_Info_Type
 {
    SLtype type;
@@ -858,23 +857,23 @@ static Unary_Op_Info_Type *find_unary_info (int, SLtype);
 static int allocate_struct_info (SLtype type)
 {
    Struct_Info_Type *si;
-   
+
    si = (Struct_Info_Type *)SLmalloc (sizeof (Struct_Info_Type));
    if (si == NULL)
      return -1;
-   
+
    memset ((char *) si, 0, sizeof (Struct_Info_Type));
    si->type = type;
    si->next = Struct_Info_List;
    Struct_Info_List = si;
-   
+
    return 0;
 }
 
 static Struct_Info_Type *find_struct_info (SLtype type, int do_error)
 {
    Struct_Info_Type *s, *prev = NULL;
-   
+
    s = Struct_Info_List;
    while (s != NULL)
      {
@@ -894,16 +893,15 @@ static Struct_Info_Type *find_struct_info (SLtype type, int do_error)
 	s = next;
      }
    if (do_error)
-     _pSLang_verror (SL_TYPE_MISMATCH, 
+     _pSLang_verror (SL_TYPE_MISMATCH,
 		   "%s is not a user-defined type", SLclass_get_datatype_name (type));
    return NULL;
 }
 
-   
 static int struct_unary_result (int op, SLtype t, SLtype *result)
 {
    Unary_Op_Info_Type *ui;
-   
+
    if (NULL == (ui = find_unary_info (op, t)))
      return 0;
 
@@ -917,12 +915,12 @@ static int struct_unary_result (int op, SLtype t, SLtype *result)
 static int check_struct_array (SLtype t, SLang_Struct_Type **sp, unsigned int n)
 {
    unsigned int i;
-   
+
    for (i = 0; i < n; i++)
      {
 	if (sp[i] == NULL)
 	  {
-	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED, "%s[%u] not initialized for binary/unary operation", 
+	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED, "%s[%u] not initialized for binary/unary operation",
 			   SLclass_get_datatype_name(t), i);
 	     return -1;
 	  }
@@ -941,18 +939,18 @@ static int struct_unary (int op, SLtype a_type, VOID_STAR ap, SLuindex_Type na,
    SLang_Class_Type *bcl;
    int (*apop) (SLtype, VOID_STAR);
    unsigned int binc;
-   
+
    if (NULL == (ui = find_unary_info (op, a_type)))
      {
 	_pSLang_verror (SL_INTERNAL_ERROR, "unary-op not supported");
 	return -1;
      }
-   
+
    sa = (SLang_Struct_Type **) ap;
 
    if (-1 == check_struct_array (a_type, sa, na))
      return -1;
-   
+
    function = ui->unary_function;
    bcl = ui->result_cl;
    result_type = bcl->cl_data_type;
@@ -967,12 +965,12 @@ static int struct_unary (int op, SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 	    || (-1 == SLexecute_function (function))
 	    || (-1 == (*apop)(result_type, bp)))
 	  goto return_error;
-	  
+
 	bp = (VOID_STAR) ((char *)bp + binc);
      }
-   
+
    return 1;
-   
+
    return_error:
    while (i > 0)
      {
@@ -1032,7 +1030,6 @@ static int any_binary_this_result (int op, SLtype a, SLtype b, SLtype *result)
    return 1;
 }
 
-
 static int do_struct_binary (SLang_Name_Type *function,
 			     SLang_Class_Type *cla, VOID_STAR ap, unsigned int na,
 			     SLang_Class_Type *clb, VOID_STAR bp, unsigned int nb,
@@ -1073,9 +1070,9 @@ static int do_struct_binary (SLang_Name_Type *function,
 	bp = (VOID_STAR) ((char *)bp + binc);
 	cp = (VOID_STAR) ((char *)cp + cinc);
      }
-   
+
    return 1;
-   
+
    return_error:
    while (i > 0)
      {
@@ -1087,7 +1084,7 @@ static int do_struct_binary (SLang_Name_Type *function,
    return -1;
 }
 
-static int this_binary_any (int op, 
+static int this_binary_any (int op,
 			     SLtype a, VOID_STAR ap, SLuindex_Type na,
 			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
 			     VOID_STAR cp)
@@ -1099,15 +1096,14 @@ static int this_binary_any (int op,
 	_pSLang_verror (SL_INTERNAL_ERROR, "binary-op not supported");
 	return -1;
      }
-   
+
    return do_struct_binary (bi->this_binary_void,
 			    _pSLclass_get_class (a), ap, na,
 			    _pSLclass_get_class (b), bp, nb,
 			    bi->result_this_any_cl, cp);
 }
 
-
-static int any_binary_this (int op, 
+static int any_binary_this (int op,
 			     SLtype a, VOID_STAR ap, SLuindex_Type na,
 			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
 			     VOID_STAR cp)
@@ -1119,14 +1115,14 @@ static int any_binary_this (int op,
 	_pSLang_verror (SL_INTERNAL_ERROR, "binary-op not supported");
 	return -1;
      }
-   
+
    return do_struct_binary (bi->any_binary_this,
 			    _pSLclass_get_class (a), ap, na,
 			    _pSLclass_get_class (b), bp, nb,
 			    bi->result_any_this_cl, cp);
 }
 
-static int this_binary_this (int op, 
+static int this_binary_this (int op,
 			     SLtype a, VOID_STAR ap, SLuindex_Type na,
 			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
 			     VOID_STAR cp)
@@ -1138,7 +1134,7 @@ static int this_binary_this (int op,
 	_pSLang_verror (SL_INTERNAL_ERROR, "binary-op not supported");
 	return -1;
      }
-   
+
    return do_struct_binary (bi->this_binary_this,
 			    _pSLclass_get_class (a), ap, na,
 			    _pSLclass_get_class (b), bp, nb,
@@ -1174,14 +1170,13 @@ static int register_binary_ops (Struct_Info_Type *si, SLtype t)
    return 0;
 }
 
-
 static Unary_Op_Info_Type *find_unary_info (int op, SLtype t)
 {
    Struct_Info_Type *si;
 
    if (NULL == (si = find_struct_info (t, 1)))
      return NULL;
-   
+
    if (-1 == register_unary_ops (si, t))
      return NULL;
 
@@ -1199,11 +1194,11 @@ static Unary_Op_Info_Type *find_unary_info (int op, SLtype t)
    op -= SLANG_UNARY_OP_MIN;
    if ((op >= NUM_UNARY_OPS) || (op < 0))
      {
-	_pSLang_verror (SL_INTERNAL_ERROR, 
+	_pSLang_verror (SL_INTERNAL_ERROR,
 		      "struct_unary_op: op-code out of range");
 	return NULL;
      }
-   
+
   return si->ui + op;
 }
 
@@ -1213,7 +1208,7 @@ static Binary_Op_Info_Type *find_binary_info (int op, SLtype t)
 
    if (NULL == (si = find_struct_info (t, 1)))
      return NULL;
-   
+
    if (-1 == register_binary_ops (si, t))
      return NULL;
 
@@ -1231,17 +1226,16 @@ static Binary_Op_Info_Type *find_binary_info (int op, SLtype t)
    op -= SLANG_BINARY_OP_MIN;
    if ((op >= NUM_BINARY_OPS) || (op < 0))
      {
-	_pSLang_verror (SL_INTERNAL_ERROR, 
+	_pSLang_verror (SL_INTERNAL_ERROR,
 		      "struct_binary_op: op-code out of range");
 	return NULL;
      }
-   
+
   return si->bi + op;
 }
 
-
 static int add_binary_op (char *op,
-			  SLtype result_type, SLang_Name_Type *nt, 
+			  SLtype result_type, SLang_Name_Type *nt,
 			  SLtype a_type, SLtype b_type)
 {
    Binary_Op_Info_Type *bi;
@@ -1255,14 +1249,14 @@ static int add_binary_op (char *op,
      bi = find_binary_info (opcode, b_type);
    else
      bi = find_binary_info (opcode, a_type);
-   
-   if (bi == NULL) 
+
+   if (bi == NULL)
      return -1;
 
    cl = _pSLclass_get_class (result_type);
 
    if (a_type != SLANG_ANY_TYPE)
-     {	
+     {
 	if (b_type == SLANG_ANY_TYPE)
 	  {
 	     if (bi->this_binary_void != NULL)
@@ -1277,7 +1271,7 @@ static int add_binary_op (char *op,
 	bi->result_this_this_cl = cl;
 	return 0;
      }
-   
+
    if (bi->any_binary_this != NULL)
      SLang_free_function (bi->any_binary_this);
    bi->any_binary_this = nt;
@@ -1299,7 +1293,7 @@ static int add_unary_op (char *op,
 
    if (ui->unary_function != NULL)
      SLang_free_function (ui->unary_function);
-   
+
    ui->unary_function = nt;
    ui->result_cl = _pSLclass_get_class (result_type);
    return 0;
@@ -1314,17 +1308,17 @@ static void add_unary_op_intrin (void)
    if ((-1 == SLang_pop_datatype (&type))
        || (NULL == (nt = SLang_pop_function ())))
      return;
-   
+
    if ((-1 == SLang_pop_datatype (&result_type))
        || (-1 == SLang_pop_slstring (&op)))
      {
 	SLang_free_function (nt);
 	return;
      }
-   
+
    if (-1 == add_unary_op (op, result_type, nt, type))
      SLang_free_function (nt);
-   
+
    SLang_free_slstring (op);
 }
 
@@ -1338,14 +1332,14 @@ static void add_binary_op_intrin (void)
        || (-1 == SLang_pop_datatype (&a_type))
        || (NULL == (nt = SLang_pop_function ())))
      return;
-   
+
    if ((-1 == SLang_pop_datatype (&result_type))
        || (-1 == SLang_pop_slstring (&op)))
      {
 	SLang_free_function (nt);
 	return;
      }
-   
+
    if (-1 == add_binary_op (op, result_type, nt, a_type, b_type))
      SLang_free_function (nt);
 
@@ -1359,7 +1353,7 @@ static void add_destroy_method (void)
 
    if (NULL == (f = SLang_pop_function ()))
      return;
-   
+
    if (SLang_peek_at_stack () == SLANG_DATATYPE_TYPE)
      {
 	SLtype type;
@@ -1371,13 +1365,13 @@ static void add_destroy_method (void)
 	     SLang_free_function (f);
 	     return;
 	  }
-	
+
 	if (si->destroy_method != NULL)
 	  SLang_free_function (si->destroy_method);
 	si->destroy_method = f;
 	return;
      }
-   
+
    if (-1 == SLang_pop_struct (&s))
      {
 	SLang_free_function (f);
@@ -1395,13 +1389,13 @@ static void add_string_method (SLtype *typep, SLang_Ref_Type *ref)
    Struct_Info_Type *si;
    SLang_Name_Type *f;
    SLtype type = *typep;
-   
+
    if (NULL == (f = SLang_get_fun_from_ref (ref)))
      return;
 
    if (NULL == (si = find_struct_info (type, 1)))
      return;
-   
+
    if (si->string_method != NULL)
      SLang_free_function (si->string_method);
 
@@ -1411,10 +1405,10 @@ static void add_string_method (SLtype *typep, SLang_Ref_Type *ref)
 static int aget_method (SLtype type, unsigned int num_indices)
 {
    Struct_Info_Type *si;
-   
+
    if (NULL == (si = find_struct_info (type, 1)))
      return -1;
-   
+
    if (si->aget_method == NULL)
      {
 	SLang_verror (SL_Internal_Error, "aget method called but is NULL");
@@ -1425,17 +1419,17 @@ static int aget_method (SLtype type, unsigned int num_indices)
        || (-1 == SLang_end_arg_list ())
        || (-1 == SLexecute_function (si->aget_method)))
      return -1;
-   
+
    return 0;
 }
 
 static int aput_method (SLtype type, unsigned int num_indices)
 {
    Struct_Info_Type *si;
-   
+
    if (NULL == (si = find_struct_info (type, 1)))
      return -1;
-   
+
    if (si->aput_method == NULL)
      {
 	SLang_verror (SL_Internal_Error, "aput method called but is NULL");
@@ -1449,7 +1443,6 @@ static int aput_method (SLtype type, unsigned int num_indices)
 
    return 0;
 }
-
 
 static void add_aget_method (SLtype *typep, SLang_Ref_Type *ref)
 {
@@ -1466,7 +1459,7 @@ static void add_aget_method (SLtype *typep, SLang_Ref_Type *ref)
 
    if (NULL == (si = find_struct_info (type, 1)))
      return;
-   
+
    if (si->aget_method != NULL)
      SLang_free_function (si->aget_method);
 
@@ -1489,7 +1482,7 @@ static void add_aput_method (SLtype *typep, SLang_Ref_Type *ref)
 
    if (NULL == (si = find_struct_info (type, 1)))
      return;
-   
+
    if (si->aput_method != NULL)
      SLang_free_function (si->aput_method);
 
@@ -1501,7 +1494,7 @@ static Typecast_Info_Type *find_typecast (Struct_Info_Type *si, SLtype to)
 {
    Typecast_Info_Type *ti = si->ti;
 
-   while (ti != NULL) 
+   while (ti != NULL)
      {
 	if (ti->totype == to)
 	  return ti;
@@ -1524,14 +1517,14 @@ static int typecast_method (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 
    if (NULL == (si = find_struct_info (a_type, 1)))
      return -1;
-   
+
    if ((NULL == (ti = find_typecast (si, b_type)))
        || (NULL == (f = ti->typecast_fun)))
      {
 	_pSLang_verror (SL_TYPE_MISMATCH, "Typecast method not found");
 	return -1;
      }
-   
+
    acl = _pSLclass_get_class (a_type);
    bcl = _pSLclass_get_class (b_type);
    apush = acl->cl_apush;
@@ -1551,10 +1544,10 @@ static int typecast_method (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 	ap = (VOID_STAR) ((char *)ap + ainc);
 	bp = (VOID_STAR) ((char *)bp + binc);
      }
-   
+
    return 1;
 }
-   
+
 static void add_typecast_method (SLtype *fromtype, SLtype *totype, SLang_Ref_Type *ref)
 {
    Struct_Info_Type *si;
@@ -1567,7 +1560,7 @@ static void add_typecast_method (SLtype *fromtype, SLtype *totype, SLang_Ref_Typ
 
    if (NULL == (si = find_struct_info (from, 1)))
      return;
-   
+
    if (NULL != (ti = find_typecast (si, to)))
      {
 	if (ti->typecast_fun != NULL)
@@ -1686,7 +1679,6 @@ static int struct_typecast
    return 1;
 }
 
-
 static char *string_method (SLtype type, VOID_STAR p)
 {
    SLang_Struct_Type *s;
@@ -1704,7 +1696,7 @@ static char *string_method (SLtype type, VOID_STAR p)
 	(void) SLsnprintf (buf, sizeof(buf), "%s with %d fields", SLclass_get_datatype_name (type), s->nfields);
 	return SLmake_string (buf);
      }
-   
+
    if ((-1 == SLang_start_arg_list ())
        || (-1 == SLang_push_struct (s))
        || (-1 == SLang_end_arg_list ())
@@ -1713,7 +1705,7 @@ static char *string_method (SLtype type, VOID_STAR p)
 
    if (-1 == SLpop_string (&str))
      return NULL;
-   
+
    return str;
 }
 
@@ -1727,24 +1719,24 @@ static int struct_eqs_method (SLtype a_type, VOID_STAR ap, SLtype b_type, VOID_S
    b = *(SLang_Struct_Type **) bp;
 
    /* Suppose typedef struct {x}T;  a = @T; b = typecast (a, Struct_Type);
-    * Then a_type != b_type BUT ap == bp.  So compare pointers after types 
+    * Then a_type != b_type BUT ap == bp.  So compare pointers after types
     */
-   if ((a_type != b_type) 
+   if ((a_type != b_type)
        || (a->nfields != b->nfields))
      return 0;
 
    if (a == b)
      return 1;
-   
+
    nfields = a->nfields;
    afields = a->fields;
-   
+
    for (i = 0; i < nfields; i++)
      {
 	if (NULL == find_field (b, afields[i].name))
 	  return 0;
      }
-   
+
    for (i = 0; i < nfields; i++)
      {
 	int status;
@@ -1755,14 +1747,14 @@ static int struct_eqs_method (SLtype a_type, VOID_STAR ap, SLtype b_type, VOID_S
 	if (status <= 0)
 	  return status;
      }
-   
+
    return 1;
 }
 
 static int struct_acopy (SLtype unused, VOID_STAR src_sptr, VOID_STAR dest_sptr)
 {
    _pSLang_Struct_Type *s;
-   
+
    (void) unused;
    s = *(_pSLang_Struct_Type **)src_sptr;
    s->num_refs++;
@@ -1862,11 +1854,10 @@ struct_datatype_deref (SLtype stype)
 
    if (-1 == SLang_push_int (SLang_Num_Function_Args))
      return -1;
-   
+
    return _pSLstruct_define_struct ();
 }
 
-  
 static int register_struct (void)
 {
    SLang_Class_Type *cl;
@@ -2053,7 +2044,6 @@ static int is_struct_type (void)
    return status;
 }
 
-
 static int is_struct_type1 (void)
 {
    SLang_Object_Type obj;
@@ -2073,7 +2063,6 @@ static int is_struct_type1 (void)
    SLang_free_object (&obj);
    return status;
 }
-
 
 static SLang_Intrin_Fun_Type Struct_Table [] =
 {
@@ -2222,7 +2211,7 @@ static void free_cstruct_field (SLang_CStruct_Field_Type *cfield, VOID_STAR cs)
 {
    SLang_Class_Type *cl;
 
-   if ((cfield->read_only == 0) 
+   if ((cfield->read_only == 0)
        && (NULL != (cl = _pSLclass_get_class (cfield->type))))
      _pSLarray_free_array_elements (cl, (VOID_STAR)((char*)cs + cfield->offset), 1);
 }
@@ -2266,7 +2255,7 @@ int SLang_pop_cstruct (VOID_STAR cs, SLang_CStruct_Field_Type *cfields)
 	     if ((NULL == (f = pop_field (s, field_name, find_field_via_strcmp)))
 		 || (-1 == _pSLpush_slang_obj (&f->obj)))
 	       goto return_error;
-	
+
 	     if (cfield->type == SLANG_ARRAY_TYPE)
 	       {
 		  if (-1 == SLang_pop_array ((SLang_Array_Type **)addr, 1))
@@ -2276,7 +2265,7 @@ int SLang_pop_cstruct (VOID_STAR cs, SLang_CStruct_Field_Type *cfields)
 		      || (-1 == (*cl->cl_apop)(cfield->type, addr)))
 	       goto return_error;
 	  }
-	
+
 	cfield++;
      }
 
@@ -2314,7 +2303,7 @@ static _pSLang_Struct_Type *create_cstruct (VOID_STAR cs, SLang_CStruct_Field_Ty
 	_pSLang_verror (SL_APPLICATION_ERROR, "C structure has no fields");
 	return NULL;
      }
-   
+
    s = NULL;
    field_types = NULL;
    field_values = NULL;
@@ -2341,17 +2330,17 @@ static _pSLang_Struct_Type *create_cstruct (VOID_STAR cs, SLang_CStruct_Field_Ty
 
    return s;
 }
-   
+
 int SLang_push_cstruct (VOID_STAR cs, SLang_CStruct_Field_Type *cfields)
 {
    _pSLang_Struct_Type *s;
-   
+
    if (NULL == (s = create_cstruct (cs, cfields)))
      return -1;
-   
+
    if (0 == SLang_push_struct (s))
      return 0;
-   
+
    SLang_free_struct (s);
    return -1;
 }
