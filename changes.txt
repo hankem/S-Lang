@@ -173,6 +173,8 @@ Changes since 2.2.2
     unsigned values.
 67. src/slstruct.c: tweak code to remove a false uninitialized
     variable warning.
+68. src/slarray.c: fix NULL pointer deref from invalid binary
+    operation Array_Type[N]+[1:N].
 
 {{{ Previous Versions
 
