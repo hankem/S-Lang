@@ -175,6 +175,8 @@ Changes since 2.2.2
     variable warning.
 68. src/slarray.c: fix NULL pointer deref from invalid binary
     operation Array_Type[N]+[1:N].
+69. src/slang.c: '>' instead of '<' should have been used in in the
+    try/catch code when decrementing the frame pointer.
 
 {{{ Previous Versions
 

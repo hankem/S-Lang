@@ -4017,7 +4017,7 @@ static int do_try_internal (SLBlock_Type *ev_block, SLBlock_Type *final)
      {
 	(void) _pSL_decrement_frame_pointer ();
      }
-   while (frame_depth > Frame_Pointer_Depth)
+   while (frame_depth < Frame_Pointer_Depth)
      {
 	end_arg_list ();
      }
