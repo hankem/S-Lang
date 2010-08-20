@@ -154,11 +154,16 @@ private define fun2 (x, y)
 
 private define fun1 (x, y)
 {
+   if (_NARGS != 2)
+     failed ("_NARGS=%d instead of 2 in fun1", _NARGS);
    return fun2 (x, y;; __qualifiers ());
 }
 
-private define qualifiers_as_func ()
+private define qualifiers_as_func (x,y,z)
 {
+   if (_NARGS != 3)
+     failed ("_NARGS=%d instead of 3 in qualifiers_as_func", _NARGS);
+
    return __qualifiers ();
 }
 
@@ -167,25 +172,71 @@ private define test_mixed_qualifiers ()
    variable x, y, x0, y0, x1, y1;
    x0 = 1, y0 = 2; x1 = "one", y1="two";
 
-   (x,y) = fun1 (x0, y0; @qualifiers_as_func());
+   (x,y) = fun1 (x0, y0; @qualifiers_as_func(1,2,3));
    if ((x0 != x)||(y0!=y))
      failed ("mixed qualifiers NULL");
 
-   (x,y) = fun1 (x0, y0; @qualifiers_as_func(;x=x1));
+   (x,y) = fun1 (x0, y0; @qualifiers_as_func(1,2,3;x=x1));
    if ((x != x1)||(y0!=y))
      failed ("mixed qualifiers ;x=x1");
 
-   (x,y) = fun1 (x0, y0; x=x0, @qualifiers_as_func(;x=x1));
+   (x,y) = fun1 (x0, y0; x=x0, @qualifiers_as_func(1,2,3 ;x=x1));
    if ((x != x1)||(y0!=y))
      failed ("mixed qualifiers ;x=x0,x=x1");
-   (x,y) = fun1 (x0, y0; y=y0, @qualifiers_as_func(;x=x1), x=x0);
+   (x,y) = fun1 (x0, y0; y=y0, @qualifiers_as_func(1,2,3;x=x1), x=x0);
    if ((x != x0)||(y0!=y))
      failed ("mixed qualifiers ;x=x1,x=x0");
-   (x,y) = fun1 (x0, y0; @qualifiers_as_func(;x=x1,y=y1), x=y1);
+   (x,y) = fun1 (x0, y0; @qualifiers_as_func(1,2,3;x=x1,y=y1), x=y1);
    if ((x != y1)||(y1!=y))
      failed ("mixed qualifiers ;x=x1,y=y0,x=y1");
 }
 test_mixed_qualifiers ();
+
+
+private define fun1_method (obj)
+{
+   if (_NARGS != 1)
+     {
+	failed ("_NARGS=%d instead of 1 in fun1_method", _NARGS);
+     }
+
+   return fun1 (obj.x, obj.y ;; __qualifiers);
+}
+
+private define new_object ()
+{
+   return struct
+     {
+	method=&fun1_method,
+	x=qualifier("x"),
+	y=qualifier("y"),
+     };
+}
+
+private define test_qualifiers_in_methods ()
+{
+   variable x0 = 1, y0 = 2, x, y;
+   variable obj = new_object (;x=x0, y=y0);
+   (x,y) = obj.method ();
+   if ((x != x0) || (y != y0))
+     failed ("passing object qualifiers");
+
+   x0 = 3; y0 = 4;
+   (x,y) = obj.method (;x=3,y=4);
+   if ((x != x0) || (y != y0))
+     failed ("obj.method qualifiers");
+
+   x0 = 5; y0 = 6;
+   (x,y) = new_object (;x=x0,y=y0).method ();
+   if ((x != x0) || (y != y0))
+     failed ("new_object.method default qualifiers");
+
+   x0 = 7; y0 = 8;
+   (x,y) = new_object (;x=x0).method (;y=y0);
+   if ((x != x0) || (y != y0))
+     failed ("new_object.method default and specified qualifiers");
+}
+test_qualifiers_in_methods ();
 
 print ("Ok\n");
 

@@ -555,6 +555,12 @@ static int token_list_element_exchange (unsigned int pos1, unsigned int pos2)
        || (pos2 >= len))
      return -1;
 
+   if (pos1 > pos2)
+     {
+	SLang_verror (SL_INTERNAL_ERROR, "pos1<pos2 in token_list_element_exchange");
+	return -1;
+     }
+
    /* This may not be the most efficient algorithm but the number to swap
     * is most-likely going to be small, e.g, 3
     * The algorithm is to rotate the list.  The particular rotation
@@ -673,7 +679,7 @@ static void variable_list (_pSLang_Token_Type *, unsigned char);
 static void struct_declaration (_pSLang_Token_Type *, int);
 static void define_function_args (_pSLang_Token_Type *);
 static void typedef_definition (_pSLang_Token_Type *);
-static void function_args_expression (_pSLang_Token_Type *, int, int, int);
+static void function_args_expression (_pSLang_Token_Type *, int, int, int, unsigned int *);
 static void expression (_pSLang_Token_Type *);
 static void expression_with_commas (_pSLang_Token_Type *, int);
 static void simple_expression (_pSLang_Token_Type *);
@@ -1556,7 +1562,7 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 	     goto free_return;
 	  }
 	get_token (ctok);
-	function_args_expression (ctok, 0, 0, 0);
+	function_args_expression (ctok, 0, 0, 0, NULL);
      }
    append_token_of_type (EARG_TOKEN);
    
@@ -2863,7 +2869,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 		  last_token->type = _DEREF_FUNCALL_TOKEN;
 		  append_token_of_type (ARG_TOKEN);
 		  (void) get_token (ctok);
-		  function_args_expression (ctok, 0, 1, 1);
+		  function_args_expression (ctok, 0, 1, 1, NULL);
 		  /* Now we have: ... @ __args ...
 		   * and we want: ... __args ... @
 		   */
@@ -2874,7 +2880,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	     
 	     if (CPAREN_TOKEN != get_token (ctok))
 	       {
-		  function_args_expression (ctok, 1, 1, 1);
+		  function_args_expression (ctok, 1, 1, 1, NULL);
 		  token_list_element_exchange (start_pos, end_pos);
 	       }
 	     else get_token (ctok);
@@ -2895,14 +2901,48 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 #ifdef DOT_METHOD_CALL_TOKEN
 	     if (ctok->type == OPAREN_TOKEN)
 	       {
+		  unsigned int qual_pos, meth_pos, x_pos, y_pos;
+		  /* This case is a bit tricky for expressions such as:
+		   *   foo(x;q1).bar(y;q2)
+		   *                ^
+		   * Here, '^' denotes the parse point.  The token list looks
+		   * roughly like:
+		   *    __arg x q1 __earg foo bar .
+		   */
 		  if (NULL == (last_token = get_last_token ()))
 		    return;
 		  last_token->type = DOT_METHOD_CALL_TOKEN;
-		  end_pos = Token_List->len;
+		  x_pos = start_pos;
+		  y_pos = Token_List->len;
+		  meth_pos = y_pos-1;
 		  append_token_of_type (ARG_TOKEN);
 		  get_token (ctok);
-		  function_args_expression (ctok, 0, 1, 1);
-		  token_list_element_exchange (start_pos, end_pos);
+		  function_args_expression (ctok, 0, 1, 1, &qual_pos);
+		  if (_pSLang_Error)
+		    break;
+		  end_pos = Token_List->len;
+		  /* At this point, the token list looks like:
+		   *   __arg x q1 __earg foo methcall(bar) __arg y q2
+		   * x^                    m^            y^      q^
+		   * where ^ denotes the meth, x, y, and qual positions.
+		   * We want to rearrange this to be:
+		   *   __arg y __arg x q1 __earg foo q2 methcall(bar)
+		   * Do it in 3 stages:
+		   */
+		  token_list_element_exchange (x_pos, y_pos);
+		  /*   __arg y q2 __arg x q1 __earg foo methcall(bar)
+		   * y^      q^ x^                    m^
+		   */
+		  qual_pos = start_pos + (qual_pos-y_pos);
+		  meth_pos = meth_pos + (end_pos-y_pos);
+		  x_pos = start_pos + (end_pos-y_pos);
+		  token_list_element_exchange (qual_pos, x_pos);
+		  /*   __arg y __arg x q1 __earg foo methcall(bar) q2
+		   * y^      x^                    m^            q^
+		   */
+		  meth_pos = meth_pos - (x_pos - qual_pos);
+		  qual_pos = qual_pos + (end_pos-x_pos);
+		  token_list_element_exchange (meth_pos, qual_pos);
 	       }
 #endif
 	     break;
@@ -2940,11 +2980,13 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 }
 
 /* This function is used for more than function arguments */
-static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_args, int handle_qualifiers, 
-				      int is_function)
+static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_args, int handle_qualifiers,
+				      int is_function,
+				      unsigned int *qual_posp)
 {
    unsigned char last_type, this_type;
-   
+   int has_qualifiers = 0;
+
    if (handle_num_args) append_token_of_type (ARG_TOKEN);
 
    last_type = (ctok->type == COMMA_TOKEN) ? COMMA_TOKEN : 0;
@@ -2964,7 +3006,12 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 	   case CPAREN_TOKEN:
 	     if (last_type == COMMA_TOKEN)
 	       append_token_of_type (_NULL_TOKEN);
+
 	     if (handle_num_args) append_token_of_type (EARG_TOKEN);
+
+	     if ((qual_posp != NULL) && (has_qualifiers == 0))
+	       *qual_posp = Token_List->len;
+
 	     get_token (ctok);
 	     if (is_function && (ctok->type == OPAREN_TOKEN))
 	       _pSLparse_error (SL_SYNTAX_ERROR, "A '(' is not permitted here", ctok, 0);
@@ -2975,6 +3022,11 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 	       {
 		  if (last_type == COMMA_TOKEN)
 		    append_token_of_type (_NULL_TOKEN);
+
+		  if (qual_posp != NULL)
+		    *qual_posp = Token_List->len;
+
+		  has_qualifiers = 1;
 
 		  if (SEMICOLON_TOKEN == get_token (ctok))
 		    {
@@ -2994,7 +3046,7 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 		  break;
 	       }
 	     /* drop */
-		  
+
 	   default:
 	     simple_expression (ctok);
 	     if ((ctok->type != COMMA_TOKEN)

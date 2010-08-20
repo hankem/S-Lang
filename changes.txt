@@ -177,6 +177,8 @@ Changes since 2.2.2
     operation Array_Type[N]+[1:N].
 69. src/slang.c: '>' instead of '<' should have been used in in the
     try/catch code when decrementing the frame pointer.
+70. src/slparse.c: Method qualifiers were getting lost when called
+    from the constructor, e.g., new_object(arg1;qual1).method(arg;qual2)
 
 {{{ Previous Versions
 
