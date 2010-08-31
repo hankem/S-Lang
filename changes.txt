@@ -179,6 +179,9 @@ Changes since 2.2.2
     try/catch code when decrementing the frame pointer.
 70. src/slparse.c: Method qualifiers were getting lost when called
     from the constructor, e.g., new_object(arg1;qual1).method(arg;qual2)
+71. src/sltoken.c: preprocessor statements #if, #ifeval, and #ifexists
+    will use the (non-anonymous) namespace of the file containing the
+    statements.
 
 {{{ Previous Versions
 

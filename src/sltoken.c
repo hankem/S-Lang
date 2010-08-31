@@ -1447,9 +1447,13 @@ static int prep_exists_function (SLprep_Type *pt, SLFUTURE_CONST char *line)
 	     line++;
 	  }
 	*b = 0;
-
+#if 0
 	if (SLang_is_defined (buf))
 	  return 1;
+#else
+	if (NULL != _pSLlocate_name (buf))
+	  return 1;
+#endif
      }
 
    return 0;
@@ -1472,7 +1476,12 @@ static int prep_eval_expr (SLprep_Type *pt, SLFUTURE_CONST char *expr)
 
    compile = _pSLcompile_ptr;
    _pSLcompile_ptr = _pSLcompile;
-   if ((0 != SLang_load_string (expr1))
+   if (
+#if 0
+       (0 != SLang_load_string (expr1))
+#else
+       (0 != SLns_load_string (expr1, _pSLang_cur_namespace_intrinsic ()))
+#endif
        || (-1 == SLang_pop_integer (&ret)))
      ret = -1;
    else

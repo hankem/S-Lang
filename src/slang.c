@@ -10698,7 +10698,7 @@ SLang_Array_Type *_pSLang_apropos (SLFUTURE_CONST char *namespace_name, SLFUTURE
    return _pSLnspace_apropos (ns, pat, what);
 }
 
-/* An anonymous namespace in one in which the private a static objects share 
+/* An anonymous namespace in one in which the private and static objects share 
  * the same namespace.  This function causes a new namespace to be created or
  * an existing one used, and where the static objects will be placed.  The
  * private objects will continue using the private namespace.
