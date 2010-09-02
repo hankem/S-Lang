@@ -7130,7 +7130,7 @@ static SLang_Name_Type *
    return NULL;
 }
 
-static SLang_Name_Type *locate_hashed_name (SLCONST char *name, unsigned long hash)
+static SLang_Name_Type *locate_hashed_name (SLCONST char *name, unsigned long hash, int err_on_bad_ns)
 {
    SLang_Name_Type *t;
 
@@ -7143,13 +7143,13 @@ static SLang_Name_Type *locate_hashed_name (SLCONST char *name, unsigned long ha
 
    t = find_global_hashed_name (name, hash, This_Private_NameSpace, This_Static_NameSpace, Global_NameSpace, 0);
    if (t == NULL)
-     t = locate_namespace_encoded_name (name, 1);
+     t = locate_namespace_encoded_name (name, err_on_bad_ns);
    return t;
 }
 
 SLang_Name_Type *_pSLlocate_name (SLCONST char *name)
 {
-   return locate_hashed_name (name, _pSLcompute_string_hash (name));
+   return locate_hashed_name (name, _pSLcompute_string_hash (name), 0);
 }
 
 SLang_Name_Type *_pSLlocate_global_name (SLCONST char *name)
@@ -8837,7 +8837,7 @@ static void compile_hashed_identifier (SLCONST char *name, unsigned long hash, _
    SLang_Name_Type *entry;
    _pSLang_BC_Type name_type;
 
-   entry = locate_hashed_name (name, hash);
+   entry = locate_hashed_name (name, hash, 1);
 
    if (entry == NULL)
      {
@@ -8876,7 +8876,7 @@ static void compile_tmp_variable (SLCONST char *name, unsigned long hash)
    SLang_Name_Type *entry;
    unsigned char name_type;
 
-   if (NULL == (entry = locate_hashed_name (name, hash)))
+   if (NULL == (entry = locate_hashed_name (name, hash, 1)))
      {
 	_pSLang_verror (SL_UNDEFINED_NAME, "%s is undefined", name);
 	return;
@@ -9046,7 +9046,7 @@ static SLang_Name_Type *locate_hashed_name_autodeclare (SLFUTURE_CONST char *nam
 {
    SLang_Name_Type *v;
 
-   v = locate_hashed_name (name, hash);
+   v = locate_hashed_name (name, hash, 1);
 
    if (v != NULL)
      return v;
@@ -9070,7 +9070,7 @@ static SLang_Name_Type *locate_hashed_name_autodeclare (SLFUTURE_CONST char *nam
      return NULL;
 
    if ((-1 == add_global_variable (name, SLANG_GVARIABLE, hash, This_Static_NameSpace))
-       || (NULL == (v = locate_hashed_name (name, hash))))
+       || (NULL == (v = locate_hashed_name (name, hash, 1))))
      return NULL;
    
    return v;
@@ -9132,7 +9132,7 @@ static void compile_deref_assign (char *name, unsigned long hash)
 {
    SLang_Name_Type *v;
 
-   v = locate_hashed_name (name, hash);
+   v = locate_hashed_name (name, hash, 1);
 
    if (v == NULL)
      {

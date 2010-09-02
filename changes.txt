@@ -182,6 +182,8 @@ Changes since 2.2.2
 71. src/sltoken.c: preprocessor statements #if, #ifeval, and #ifexists
     will use the (non-anonymous) namespace of the file containing the
     statements.
+72. src/slang.c: _pSLlocate_name return NULL instead of an exception
+    if the name contains a non-existent namespace.
 
 {{{ Previous Versions
 
