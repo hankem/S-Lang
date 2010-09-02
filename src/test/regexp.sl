@@ -31,7 +31,7 @@ static define test_globbing (glob, re)
 {
    variable pat = glob_to_regexp (glob);
    if (re != pat)
-     failed ("glob_to_regexp (%s) produced %s, expected %s", 
+     failed ("glob_to_regexp (%s) produced %s, expected %s",
 	     glob, pat, re);
 }
 

@@ -44,8 +44,8 @@
 /* Add support for color terminals that cannot do background color erases
  * Such terminals are poorly designed and are slowly disappearing but they
  * are still quite common.  For example, screen is one of them!
- * 
- * This is experimental.  In particular, it is not known to work if 
+ *
+ * This is experimental.  In particular, it is not known to work if
  * KANJI suupport is enabled.
  */
 #if !defined(IBMPC_SYSTEM)
@@ -60,16 +60,16 @@
  * support bce but many terminfo systems do not support it.
  */
 #define SLTT_XTERM_ALWAYS_BCE		0
-  
+
 /*
- * NOTE: Kanji is not supported by slang-2.  Consider using a UTF-8 aware 
+ * NOTE: Kanji is not supported by slang-2.  Consider using a UTF-8 aware
  * terminal.  Setting this variable will have no effect.
  */
 #define SLANG_HAS_KANJI_SUPPORT		0
 
 #define SLANG_HAS_SIGNALS		1
 
-/* Enable this if you want beginning-of-statement and end-of-statement 
+/* Enable this if you want beginning-of-statement and end-of-statement
  * callbacks.  This allows the creation of profilers, stack-checkers, etc.
  * SLANG_HAS_DEBUG_CODE must be enabled for this to work.
  */

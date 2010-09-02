@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -133,7 +133,7 @@ char *SLpath_pathname_sans_extname (SLFUTURE_CONST char *file)
    return (char *) file;
 }
 
-/* If path looks like: A/B/C/D/whatever, it returns A/B/C/D as a malloced 
+/* If path looks like: A/B/C/D/whatever, it returns A/B/C/D as a malloced
  * string.
  */
 char *SLpath_dirname (SLFUTURE_CONST char *file)
@@ -164,16 +164,16 @@ char *SLpath_dirname (SLFUTURE_CONST char *file)
 	  }
 #endif
      }
-   
+
    if (b == file)
      return SLmake_string (THIS_DIR_STRING);
-   
+
    return SLmake_nstring (file, (unsigned int) (b - file));
 }
 
 /* Note: VMS filenames also contain version numbers.  The caller will have
  * to deal with that.
- * 
+ *
  * The extension includes the '.'.  If no extension is present, "" is returned.
  */
 char *SLpath_extname (SLFUTURE_CONST char *file)
@@ -190,7 +190,7 @@ char *SLpath_extname (SLFUTURE_CONST char *file)
 	if (*b == '.')
 	  return b;
      }
-   
+
    if (*b == '.')
      return b;
 
@@ -240,14 +240,14 @@ static char *vms_fixup_filename (char *file)
 {
    char *bracket, *slash, *last_slash;
    /* Convert slashes in filenames such as:
-    *  1.  drive:[dir.dir]a/b.c   --> drive[dir.dir.a]b.c 
+    *  1.  drive:[dir.dir]a/b.c   --> drive[dir.dir.a]b.c
     *  2.  drive:/a/b/c.d         --> drive:[a.b]c.d
     *  3.  drive:a/b/c.d          --> drive:[a.b]c.d
     *  4.  drive:/a.c             --> drive:a.c  ???
     *  5.  drive:[dir.dir]/a/b    --> drive:a/b
     * Since the input pointer is malloced, and the length is preserved for the
     * first 2 cases, the conversion may be performed in-place.
-    * 
+    *
     * FIXME: case 5 is not handled
     */
    /* First case */
@@ -299,7 +299,7 @@ static char *vms_fixup_filename (char *file)
 	SLfree (file);
 	file = new_file;
      }
-   
+
    /* Case 2: drive:/a/b/c.d         --> drive:[a.b]c.d */
    *slash++ = '[';
    last_slash = NULL;
@@ -430,7 +430,7 @@ static int is_relatively_absolute (SLFUTURE_CONST char *file)
      return -1;
    if (SLpath_is_absolute_path (file))
      return 1;
-   
+
 #if defined(VMS)
    return (*file == '[');
 #else
@@ -451,7 +451,7 @@ char *SLpath_find_file_in_path (SLFUTURE_CONST char *path, SLFUTURE_CONST char *
    if ((path == NULL) || (*path == 0)
        || (name == NULL) || (*name == 0))
      return NULL;
-   
+
    if (is_relatively_absolute (name))
      {
 	if (0 == SLpath_file_exists (name))
@@ -466,7 +466,7 @@ char *SLpath_find_file_in_path (SLFUTURE_CONST char *path, SLFUTURE_CONST char *
 	  return NULL;
 	return SLpath_dircat (THIS_DIR_STRING, name);
      }
-   
+
    max_path_len = 0;
    this_path_len = 0;
    p = path;
@@ -522,7 +522,7 @@ int SLpath_set_delimiter (int d)
    char ch = (char) d;
    if (ch == 0)
      return -1;
-   
+
    Path_Delimiter = ch;
    return 0;
 }

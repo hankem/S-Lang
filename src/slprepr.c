@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 /*--------------------------------*-C-*---------------------------------*
@@ -135,7 +135,6 @@ USA.
 int (*SLprep_exists_hook) (SLFUTURE_CONST char *, char);	/* in "slang.h" */
 int (*_pSLprep_eval_hook) (SLFUTURE_CONST char *);		/* in "_slang.h" */
 
-
 struct _pSLprep_Type
 {
    int this_level;
@@ -150,7 +149,7 @@ struct _pSLprep_Type
 #define SLPREP_USER_FLAGS_MASK	0x00FF
 #define SLPREP_STOP_READING	0x0100
 #define SLPREP_EMBEDDED_TEXT	0x0200
-   
+
    int (*exists_hook) (SLprep_Type *, SLFUTURE_CONST char *);
    int (*eval_hook) (SLprep_Type *, SLFUTURE_CONST char *);
 };
@@ -174,12 +173,12 @@ void SLprep_delete (SLprep_Type *pt)
 {
    if (pt == NULL)
      return;
-   
+
    /* NULLs ok */
    SLang_free_slstring ((char *)pt->comment_start);
    SLang_free_slstring ((char *)pt->comment_stop);
    SLang_free_slstring ((char *)pt->prefix);
-   
+
    SLfree ((char *) pt);
 }
 
@@ -190,7 +189,7 @@ int SLprep_set_comment (SLprep_Type *pt, SLFUTURE_CONST char *start, SLFUTURE_CO
 
    if (NULL == (start = SLang_create_slstring (start)))
      return -1;
-   
+
    if (stop == NULL)
      stop = "";
 
@@ -208,7 +207,7 @@ int SLprep_set_comment (SLprep_Type *pt, SLFUTURE_CONST char *start, SLFUTURE_CO
    if (pt->comment_stop != NULL)
      SLang_free_slstring ((char *) pt->comment_stop);
    pt->comment_stop = stop;
-   
+
    return 0;
 }
 
@@ -216,10 +215,10 @@ int SLprep_set_prefix (SLprep_Type *pt, SLFUTURE_CONST char *prefix)
 {
    if ((pt == NULL) || (prefix == NULL))
      return -1;
-   
+
    if (NULL == (prefix = SLang_create_slstring (prefix)))
      return -1;
-   
+
    if (pt->prefix != NULL)
      SLang_free_slstring ((char *) pt->prefix);
    pt->prefix = prefix;
@@ -231,10 +230,10 @@ int SLprep_set_prefix (SLprep_Type *pt, SLFUTURE_CONST char *prefix)
 SLprep_Type *SLprep_new (void)
 {
    SLprep_Type *pt;
-   
+
    if (NULL == (pt = (SLprep_Type *)SLcalloc (1, sizeof (SLprep_Type))))
      return NULL;
-   
+
    if (-1 == SLprep_set_comment (pt, "%", ""))
      {
 	SLprep_delete (pt);
@@ -357,7 +356,7 @@ static int is_any_defined (SLprep_Type *pt, SLCONST char *buf)	/*{{{*/
    SLCONST char *sys;
    unsigned int i;
    char comment;
-   
+
    /* FIXME: priority: low.  This needs adapted to multi-char comments */
    comment = pt->comment_start[0];
    while (1)
@@ -370,7 +369,7 @@ static int is_any_defined (SLprep_Type *pt, SLCONST char *buf)	/*{{{*/
 
 	if ((ch == '\n') || (ch == 0) || (ch == comment))
 	  return 0;
-	
+
 	i = 0;
 	while (NULL != (sys = _pSLdefines [i++]))
 	  {
@@ -388,7 +387,7 @@ static int is_any_defined (SLprep_Type *pt, SLCONST char *buf)	/*{{{*/
 		      || (ch1 == ' ') || (ch1 == '\t')
 		      || (ch == comment))
 		    return 1;
-		  
+
 	       }
 	  }
 
@@ -427,8 +426,8 @@ static int is_env_defined (SLprep_Type *pt, SLCONST char *buf)	/*{{{*/
    char comment = pt->comment_start[0];
 
    /* FIXME: priority: low.  This needs adapted to multi-char comments */
-   if (((unsigned char)*buf <= ' ') 
-       || (*buf == comment)) 
+   if (((unsigned char)*buf <= ' ')
+       || (*buf == comment))
      return 0;	/* no token */
 
    if (NULL == (buf = (char *) tokenize ((unsigned char *) buf,
@@ -480,7 +479,7 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
 	if ((level != exec_level) || (flags & SLPREP_EMBEDDED_TEXT))
 	  return 0;
 
-	if (*buf == '\n') 
+	if (*buf == '\n')
 	  return (0 != (flags & SLPREP_BLANK_LINES_OK));
 
 	if ((*buf == pt->comment_start[0])
@@ -489,7 +488,7 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
 
 	return 1;
      }
-   
+
    buf += pt->prefix_len;
 
    /*
@@ -501,7 +500,7 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
 
    /* Allow whitespace as in '#  ifdef'  */
    while ((*buf == ' ') || (*buf == '\t')) buf++;
-   
+
    /*
     * quick and dirty coding for '#<TAG>' and '#</TAG>'
     * only bothers to differentiate between '#<' and '#</'
@@ -511,28 +510,27 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
      {
 	buf++;
 	if (*buf == '/') 	/* likely a '#</TAG>' */
-	  pt->flags &= ~SLPREP_EMBEDDED_TEXT;	
+	  pt->flags &= ~SLPREP_EMBEDDED_TEXT;
 	else			/* likely a '#<TAG>' */
 	  pt->flags |= SLPREP_EMBEDDED_TEXT;
-	
-	return 0;	    
+
+	return 0;
      }
-   
+
    if (pt->flags & SLPREP_EMBEDDED_TEXT)
      return 0;		/* embedded text - ignore everything */
-   
-   
+
    if ((*buf < 'a') || (*buf > 'z'))	/* something weird */
      return (level == exec_level);
-   
+
    if ( !strncmp(buf, "stop", 4) )
      {
 	if (level == exec_level)	/* signal stop if we're in scope */
 	  pt->flags |= SLPREP_STOP_READING;
 	return 0;	/* swallow this tag */
      }
-   
-   if (!strncmp(buf, "endif", 5)) 
+
+   if (!strncmp(buf, "endif", 5))
      {
 	if (level == exec_level)
 	  {
@@ -543,11 +541,11 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
 	if (level < prev_exec_level) prev_exec_level = level;
 	goto done;
      }
-   
+
    if ((buf[0] == 'e') && (buf[1] == 'l'))  /* else, elifdef, ... */
      {
 	if ((level == exec_level + 1)
-	    && (prev_exec_level != level)) 
+	    && (prev_exec_level != level))
 	  {
 	     /* We are in position to execute */
 	     buf += 2;
@@ -557,48 +555,48 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
 		  exec_level = level;
 		  goto done;
 	       }
-	     
+
 	     /*
 	      * drop through to 'if' testing.
 	      * First set variable to value appropriate for 'if' testing.
 	      */
 	     level--;		       /* now == to exec level */
-	  } 
+	  }
 	else
 	  {
-	     if (level == exec_level) 
+	     if (level == exec_level)
 	       {
 		  exec_level--;
 	       }
 	     goto done;
 	  }
      }
-   
-   if ((buf[0] == 'i') && (buf[1] == 'f')) 
+
+   if ((buf[0] == 'i') && (buf[1] == 'f'))
      {
 	int test  = 0;			/* fallback value */
 	int truth = 1;
 	buf += 2;
-	
-	if (level != exec_level) 
+
+	if (level != exec_level)
 	  {
 	     level++;
 	     goto done;			/* Not interested */
 	  }
 	level++;
-	
-	if (buf[0] == 'n') 
+
+	if (buf[0] == 'n')
 	  {
 	     truth = !truth;
 	     buf++;
 	  }
-	
+
 	/* for 'ifdef' and 'ifndef' we are done */
 	if (!strncmp (buf, "def", 3))
 	  {
 	     test = is_any_defined(pt, buf + 3);
-	  } 
-	else 
+	  }
+	else
 	  {
 	     /*
 	      * the '#ifn' construction cannot have whitespace or '!'
@@ -609,17 +607,17 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
 	       {
 		  /* Allow some whitespace */
 		  while ((*buf == ' ') || (*buf == '\t')) buf++;
-		  
-		  if (*buf == '!') 
+
+		  if (*buf == '!')
 		    {
-		       /* the 'if !' form */	
+		       /* the 'if !' form */
 		       truth = !truth;
 		       buf++;
 		       while ((*buf == ' ') || (*buf == '\t')) buf++;
 		    }
 	       }
-	     
-	     if (*buf == '$') 
+
+	     if (*buf == '$')
 	       test = is_env_defined (pt, buf + 1);
 	     else if ((*buf == '(')
 		      && (pt->eval_hook != NULL))
@@ -635,7 +633,7 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
 	     else if (strncmp (buf, "false", 5))
 	       return 1;	/* unknown - let it bomb */
 	  }
-	
+
 	if (truth == test) prev_exec_level = exec_level = level;
      }
    else
@@ -644,7 +642,7 @@ int SLprep_line_ok (SLFUTURE_CONST char *buf, SLprep_Type *pt)	/*{{{*/
      }
 
    done:
-   
+
    if (exec_level < 0) return 1;	/* bad level - let it bomb */
 
    pt->this_level      = level;
@@ -666,7 +664,7 @@ int main (int argc, char *argv[])
    SLdefine_for_ifdef ("UNIX");
 
    /* super cheap getopts */
-   for (i = 1; i < argc; i++) 
+   for (i = 1; i < argc; i++)
      {
 	char *p = argv[i];
 	if (*p++ != '-') break;
@@ -677,7 +675,7 @@ int main (int argc, char *argv[])
 	     SLdefine_for_ifdef (p + 1);
 	     continue;
 	  }
-	
+
 	while (*p) {
 	   switch (*p) {
 	    case 'B': pt.flags |= (SLPREP_BLANK_LINES_OK);	break;
@@ -691,13 +689,13 @@ int main (int argc, char *argv[])
 	   p++;
 	}
      }
-   
+
    while (NULL != fgets (buf, sizeof (buf) - 1, stdin))
      {
 	if (SLprep_line_ok (buf, &pt))
 	  fputs (buf, stdout);
      }
-   
+
    SLprep_close_prep (&pt);
    return 0;
 }

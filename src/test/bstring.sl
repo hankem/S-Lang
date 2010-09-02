@@ -9,7 +9,7 @@ define test ()
    if (typeof (a) != BString_Type) failed ("typeof");
 
    if (bstrlen (a) != 8) failed ("bstrlen");
-   
+
    if ((a[[0:7:2]] != "\000\000\000\000")
        or (a[[1:7:2]] != "ABCD")) failed ("array indexing");
 
@@ -19,7 +19,7 @@ define test ()
    if (a[[8:]] != "XYZ") failed ("+= op");
 
    a = "XYZ" + a;
-   if (a == "XYZ") failed ("== op");   
+   if (a == "XYZ") failed ("== op");
    if (strcmp (a, "XYZ")) failed ("failed strcmp");
 
    a = "XYZ"B;
@@ -44,7 +44,7 @@ define test ()
 	if (any (a != b))
 	  failed ("Adding array of bstrings");
      }
-   
+
    loop (1000)
      {
 	a = "\000A\000B\000C\000D";

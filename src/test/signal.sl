@@ -88,20 +88,20 @@ static define test_sigprocmask ()
    sigprocmask (SIG_SETMASK, SIGHUP, &origmask);
    sigprocmask (SIG_BLOCK, SIGINT, &oldmask);
 
-   if (orelse 
+   if (orelse
        {length (oldmask) != 1}
        {oldmask[0] != SIGHUP})
      failed ("sigprocmask: expected to see SIGHUP in the mask");
-   
+
    sigprocmask (SIG_UNBLOCK, SIGHUP, &oldmask);
-   if (orelse 
+   if (orelse
        {length (oldmask) != 2}
        {(0 == length (where (oldmask == SIGHUP)))}
        {(0 == length (where (oldmask == SIGINT)))})
      failed ("sigprocmask: expected to see SIGINT and SIGHUP in the mask");
 
    sigprocmask (SIG_SETMASK, origmask, &oldmask);
-   if (orelse 
+   if (orelse
        {length (oldmask) != 1}
        {oldmask[0] != SIGINT})
      failed ("sigprocmask: expected to see SIGINT in the mask");
@@ -110,7 +110,7 @@ static define test_sigprocmask ()
 test_signal (SIGHUP, &handle_hup);
 test_sigalarm ();
 test_sigsuspend ();
-test_sigprocmask ();   
+test_sigprocmask ();
 
 print ("Ok\n");
 

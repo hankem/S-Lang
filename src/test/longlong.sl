@@ -36,8 +36,6 @@ static define test_div (a, b, c)
 	     a, typeof(a), b, typeof(b), c, typeof(c));
 }
 
-
-
 test_add (1LL, 2LL, 3LL);
 test_add (1LL, 2ULL, 3ULL);
 test_add (1ULL, 2ULL, 3ULL);
@@ -88,7 +86,6 @@ test_sprintf ("FFFF", "%llX", 0xFFFFULL);
 test_sprintf ("FFFF", "%llX", 0xFFFF);
 test_sprintf ("1234", "%llu", 1234);
 test_sprintf ("1234", "%llu", 1234L);
-
 
 print ("Ok\n");
 

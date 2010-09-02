@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -28,19 +28,19 @@ USA.
 # undef upcase
 #endif
 
-/* The Boyer-Moore search algorthm is used below under the following 
+/* The Boyer-Moore search algorthm is used below under the following
  * conditions:
- * 
+ *
  *    1.  The search is case-sensitive.
  *    3.  UTF-8 mode is not active.
  *    2.  The search key contains only of single byte characters.
  *    4.  The multi-byte characters in the key are case-less.
  *
- * Otherwise, the search is case-insensitive and the key consists of 
+ * Otherwise, the search is case-insensitive and the key consists of
  * multi-byte characters.  In this case, a modified BM algorithm is used
  * _if_ each character in the key is composed of multi-byte characters that
  * have upper and lower case versions of the same length.
- * 
+ *
  * Otherwise, the search search will be performed in a brute-force manner.
  */
 
@@ -77,7 +77,6 @@ struct _pSLsearch_Type
    s;
 };
 
-
 /* Simple BM search--- case-sensitive, or case-less, or no UTF-8, or 7-bit ascii */
 static SLuchar_Type *
   bm_search_forward (SLsearch_Type *st, SLuchar_Type *beg, SLuchar_Type *end)
@@ -92,13 +91,13 @@ static SLuchar_Type *
 
    bm = &st->s.bm;
    key_len = bm->key_len;
-   
+
    st->match_len = 0;
 
    if ((key_len > (unsigned int) (end - beg))
        || (key_len == 0))
      return NULL;
-   
+
    case_fold = st->flags & SLSEARCH_CASELESS;
    key = bm->key;
    skip_table = bm->fskip_table;
@@ -116,8 +115,8 @@ static SLuchar_Type *
           {
              ch = *beg;
              dbeg = skip_table[ch];
-             if ((dbeg < key_len) 
-                 && ((ch == char1) 
+             if ((dbeg < key_len)
+                 && ((ch == char1)
                      || (case_fold && (char1 == UPPER_CASE(ch)))))
                break;
              beg += dbeg;
@@ -166,7 +165,7 @@ static SLuchar_Type *
        || (start < beg)
        || (start >= end))
      return NULL;
-	
+
    case_fold = st->flags & SLSEARCH_CASELESS;
    key = bm->key;
    skip_table = bm->bskip_table;
@@ -184,7 +183,7 @@ static SLuchar_Type *
 	   {
               ch = *start;
 
-              if ((ch == char1) 
+              if ((ch == char1)
                   || (case_fold && (char1 == UPPER_CASE(ch))))
                 break;
 
@@ -201,7 +200,7 @@ static SLuchar_Type *
                       || (key[j] != UPPER_CASE(ch))))
                 break;
 	   }
-	 if (j == key_len) 
+	 if (j == key_len)
            {
               st->match_len = key_len;
               return start;
@@ -210,7 +209,7 @@ static SLuchar_Type *
       }
 }
 
-static SLuchar_Type *bm_search (SLsearch_Type *st, 
+static SLuchar_Type *bm_search (SLsearch_Type *st,
                                 SLuchar_Type *pmin, SLuchar_Type *p, SLuchar_Type *pmax,
                                 int dir)
 {
@@ -225,7 +224,7 @@ static SLuchar_Type *
   looking_at_bf (SLuchar_Type *pmin, SLuchar_Type *pmax,
                  SLuchar_Type **lower_chars, unsigned int nlower_chars,
                  SLuchar_Type **upper_chars, unsigned int nupper_chars)
-                 
+
 {
    unsigned int n;
 
@@ -235,7 +234,7 @@ static SLuchar_Type *
         SLuchar_Type *up, *lo, *p;
         up = upper_chars[n];
         lo = lower_chars[n];
-             
+
         n++;
 
         p = pmin;
@@ -246,13 +245,13 @@ static SLuchar_Type *
              up++;
              p++;
           }
-        
+
         if (*up == 0)
           {
              pmin = p;
              continue;
           }
-             
+
         p = pmin;
         while ((p < pmax)
                && (*lo == *p)
@@ -306,16 +305,16 @@ static SLuchar_Type *
                }
              p = pmin + bf_st->match_len;
           }
-        else 
+        else
           {
              while (pmin < pmax)
                {
                   if ((*pmin == chup) || (*pmin == chlo))
                     break;
-                  
+
                   pmin++;
                }
-             
+
              if (pmin >= pmax)
                {
                   st->match_len = 0;
@@ -324,7 +323,7 @@ static SLuchar_Type *
 
              p = pmin;
           }
-        
+
         p = looking_at_bf (p, pmax, lower_chars, nlower_chars,
                            upper_chars, nupper_chars);
 
@@ -356,7 +355,7 @@ static SLuchar_Type *
 
    chup = upper_chars[0][0];
    chlo = lower_chars[0][0];
-   
+
    while (1)
      {
         SLuchar_Type *p;
@@ -370,7 +369,7 @@ static SLuchar_Type *
                }
              p = start + bf_st->match_len;
           }
-        else 
+        else
           {
              /* start--; */
              while (start >= pmin)
@@ -379,16 +378,16 @@ static SLuchar_Type *
                     break;
                   start--;
                }
-        
+
              if (start < pmin)
                {
                   st->match_len = 0;
                   return NULL;
                }
-        
+
              p = start;
           }
-        
+
         p = looking_at_bf (p, pmax, lower_chars, nlower_chars,
                            upper_chars, nupper_chars);
 
@@ -403,7 +402,7 @@ static SLuchar_Type *
 }
 
 static SLuchar_Type *
-  bf_search (SLsearch_Type *st, 
+  bf_search (SLsearch_Type *st,
              SLuchar_Type *pmin, SLuchar_Type *p, SLuchar_Type *pmax,
              int dir)
 {
@@ -418,7 +417,7 @@ SLuchar_Type *SLsearch_forward (SLsearch_Type *st,
 {
    if (st == NULL)
      return NULL;
-   
+
    return st->search_fun (st, pmin, pmin, pmax, 1);
 }
 
@@ -427,10 +426,10 @@ SLuchar_Type *SLsearch_backward (SLsearch_Type *st, SLuchar_Type *pmin,
 {
    if (st == NULL)
      return NULL;
-   
-   /* For the backward search, the first character of the string 
+
+   /* For the backward search, the first character of the string
     * is assumed satisfy pmin <= BEG < p
-    * and end satisfies pmin < END <= pmax 
+    * and end satisfies pmin < END <= pmax
     */
    return st->search_fun (st, pmin, p-1, pmax, -1);
 }
@@ -447,7 +446,7 @@ static void init_skip_table (SLuchar_Type *key, unsigned int key_len,
 
    if (dir < 0)
      key += (key_len-1);
-   
+
    /* For a case-insensitive search, the key here will be uppercased */
    flags = flags & SLSEARCH_CASELESS;
    i = 0;
@@ -488,12 +487,11 @@ static void bf_free (SLsearch_Type *st)
      }
 }
 
-
 unsigned int SLsearch_match_len (SLsearch_Type *st)
 {
    if (st == NULL)
      return 0;
-   
+
    return st->match_len;
 }
 
@@ -501,7 +499,7 @@ void SLsearch_delete (SLsearch_Type *st)
 {
    if (st == NULL)
      return;
-   
+
    (*st->free_fun) (st);
    SLfree ((char *)st);
 }
@@ -539,7 +537,7 @@ static SLsearch_Type *bm_open_search (SLuchar_Type *key, int flags)
 	else st->s.bm.key = NULL;
      }
    else st->s.bm.key = (SLuchar_Type*) SLang_create_slstring ((char *)key);
-   
+
    if (st->s.bm.key == NULL)
      {
         SLsearch_delete (st);
@@ -572,10 +570,9 @@ static int is_bm_ok (SLuchar_Type *key, unsigned int len, SLuchar_Type **non_asc
 
         key++;
      }
-   
+
    return 1;
 }
-
 
 static SLuchar_Type **make_string_array (SLuchar_Type *u, unsigned int len, unsigned int *nump)
 {
@@ -587,10 +584,10 @@ static SLuchar_Type **make_string_array (SLuchar_Type *u, unsigned int len, unsi
    num = SLutf8_strlen (u, ignore_combining);
    if (num == 0)
      return NULL;                      /* should not happen */
-   
+
    if (NULL == (a = (SLuchar_Type **) SLcalloc (sizeof (SLuchar_Type *), num)))
      return NULL;
-   
+
    umax = u + len;
    for (i = 0; i < num; i++)
      {
@@ -601,7 +598,7 @@ static SLuchar_Type **make_string_array (SLuchar_Type *u, unsigned int len, unsi
      }
    *nump = num;
    return a;
-   
+
    return_error:
    for (i = 0; i < num; i++)
      SLang_free_slstring ((char *) a[i]);
@@ -609,14 +606,13 @@ static SLuchar_Type **make_string_array (SLuchar_Type *u, unsigned int len, unsi
    return NULL;
 }
 
-   
 SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
 {
    SLsearch_Type *st, *bf_st;
    SLuchar_Type *key_upper, *key_lower, *non_ascii;
    unsigned int len, upper_len, lower_len;
 
-   if (Case_Tables_Ok == 0) 
+   if (Case_Tables_Ok == 0)
      SLang_init_case_tables ();
 
    if (key == NULL)
@@ -640,7 +636,7 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
         SLang_free_slstring ((char *)key_upper);
         return st;
      }
-   
+
    /* Tricky part */
 
    if (NULL == (key_lower = SLutf8_strlo (key, key + len)))
@@ -661,10 +657,10 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
         SLang_free_slstring ((char *)key_lower);
         return st;
      }
-   
+
    /* Now Perform a brute-force search. */
-   
-   /* If the first few characters of the search string are ascii, then 
+
+   /* If the first few characters of the search string are ascii, then
     * use BM for that portion
     */
    bf_st = NULL;
@@ -681,7 +677,7 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
              SLang_free_slstring ((char *)key_lower);
              return NULL;
           }
-        
+
         key1 = (SLuchar_Type *) SLang_create_slstring ((char *)non_ascii);
         non_ascii = key_lower + (non_ascii - key_upper);
         SLang_free_slstring ((char *)key_upper);
@@ -690,7 +686,7 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
         key1 = (SLuchar_Type *)SLang_create_slstring ((char *)non_ascii);
         SLang_free_slstring ((char *)key_lower);
         key_lower = key1;
-        
+
         if ((key_lower == NULL) || (key_upper == NULL))
           {
              SLang_free_slstring ((char *)key_upper);
@@ -701,7 +697,7 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
         upper_len = strlen ((char *)key_upper);
         lower_len = strlen ((char *)key_lower);
      }
-   
+
    st = (SLsearch_Type *)SLcalloc (sizeof (SLsearch_Type), 1);
    if (st == NULL)
      goto return_error;
@@ -710,18 +706,17 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
    st->search_fun = bf_search;
 
    st->s.bf.st = bf_st;  bf_st = NULL;
-   
+
    if (NULL == (st->s.bf.lower_chars = make_string_array (key_lower, lower_len, &st->s.bf.nlower_chars)))
      goto return_error;
-   
+
    if (NULL == (st->s.bf.upper_chars = make_string_array (key_upper, upper_len, &st->s.bf.nupper_chars)))
      goto return_error;
-   
+
    SLang_free_slstring ((char *)key_upper);
    SLang_free_slstring ((char *)key_lower);
    return st;
 
-   
    return_error:
    SLsearch_delete (st);
    SLsearch_delete (bf_st);
@@ -735,7 +730,7 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
  */
 unsigned char _pSLChg_LCase_Lut[256] = {0};
 unsigned char _pSLChg_UCase_Lut[256] = {0};
-    
+
 void SLang_define_case (int *u, int *l)
 {
    unsigned char up = (unsigned char) *u, dn = (unsigned char) *l;

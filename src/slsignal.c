@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -60,7 +60,7 @@ SLSig_Fun_Type *SLsignal (int sig, SLSig_Fun_Type *f)
 # ifdef SA_RESTART
    new_sa.sa_flags |= SA_RESTART;
 # endif
-   
+
    while (-1 == sigaction (sig, &new_sa, &old_sa))
      {
 #ifdef EINTR
@@ -357,7 +357,6 @@ int SLsystem_intr (SLFUTURE_CONST char *cmd)
 }
 
 #endif
-
 
 #if 0
 #include <windows.h>

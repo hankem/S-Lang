@@ -31,7 +31,6 @@ AC_ARG_WITH(pkgconfigdir,
   [pkgconfigdir='${libdir}/pkgconfig'])
 AC_SUBST(pkgconfigdir)
 
-
 dnl # Terminfo binary format
 AC_ARG_WITH(terminfo,
    [  --with-terminfo=xxx  Terminfo layout: default, hpux11, osf1r5, aix4, uwin ],
@@ -108,12 +107,11 @@ AC_TYPE_UID_T
 dnl# AC_TYPE_OFF_T
 
 AC_MSG_CHECKING([for socklen_t])
-AC_EGREP_HEADER(socklen_t, sys/socket.h, 
+AC_EGREP_HEADER(socklen_t, sys/socket.h,
                 AC_MSG_RESULT([yes]),
                 AC_MSG_RESULT([no])
                    AC_DEFINE(socklen_t,int,
                              [ Define to 'int' if not in <sys/socket.h>]))
-
 
 AC_HEADER_DIRENT
 
@@ -208,7 +206,7 @@ missingmodules=""
 extramodules=""
 JD_CHECK_FOR_LIBRARY(pcre)
 if test $jd_with_pcre_library = yes
-then 
+then
   PCRE_MODULE="pcre-module.so"
   AC_DEFINE(HAVE_PCRE_H)
   extramodules="$extramodules pcre"
@@ -220,7 +218,7 @@ AC_SUBST(PCRE_MODULE)
 
 JD_CHECK_FOR_LIBRARY(onig,oniguruma.h)
 if test $jd_with_onig_library = yes
-then 
+then
   ONIG_MODULE="onig-module.so"
   AC_DEFINE(HAVE_ONIGURUMA_H)
   extramodules="$extramodules oniguruma"
@@ -232,19 +230,19 @@ AC_SUBST(ONIG_MODULE)
 
 JD_CHECK_FOR_LIBRARY(png)
 if test $jd_with_png_library = yes
-then 
+then
   PNG_MODULE="png-module.so"
   AC_DEFINE(HAVE_PNG_H)
   extramodules="$extramodules png"
 else
   PNG_MODULE=""
-  missingmodules="$missingmodules png"  
+  missingmodules="$missingmodules png"
 fi
 AC_SUBST(PNG_MODULE)
 
 JD_CHECK_FOR_LIBRARY(z,zlib.h)
 if test $jd_with_z_library = yes
-then 
+then
   ZLIB_MODULE="zlib-module.so"
   AC_DEFINE(HAVE_ZLIB_H)
   extramodules="$extramodules z"
@@ -259,7 +257,7 @@ m4_include([./iconv.m4])
 ICONV_MODULE=""
 JD_CHECK_FOR_LIBRARY(iconv)
 if test $jd_with_iconv_library = yes
-then 
+then
   ICONV_MODULE="iconv-module.so"
   AC_DEFINE(HAVE_ICONV_H)
   ICONV_LIB="$ICONV_LIB -liconv"
@@ -271,7 +269,7 @@ else
     ICONV_MODULE="iconv-module.so"
     extramodules="$extramodules iconv"
     if test "X$am_cv_lib_iconv" = Xyes
-    then 
+    then
        ICONV_LIB=$LIBICONV
        ICONV_INC=""
     fi

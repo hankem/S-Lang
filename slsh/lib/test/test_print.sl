@@ -11,14 +11,14 @@ define slsh_main ()
    variable fp = fopen (file, "r");
    () = fread_bytes (&file_x, 2*strlen (ref_x), fp);
    () = fclose (fp);
-   
+
    fp = fopen (file, "wb");
    print (x, fp);
    () = fclose (fp);
    fp = fopen (file, "r");
    () = fread_bytes (&fp_x, 2*strlen (ref_x), fp);
    () = fclose (fp);
-   
+
    () = remove (file);
    if ((ref_x != file_x) || (ref_x != fp_x))
      {
@@ -27,7 +27,3 @@ define slsh_main ()
      }
 }
 
-	
-   
-   
-   

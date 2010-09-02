@@ -1,5 +1,5 @@
 % This example provides an implementation of Conway's famous game of life.
-% It uses the SMG module from the modules directory.  Make sure you 
+% It uses the SMG module from the modules directory.  Make sure you
 % build it first.
 
 import ("smg");
@@ -24,10 +24,10 @@ private define make_left (n)
 {
    variable a;
 
-   a = Int_Type [n]; 
+   a = Int_Type [n];
    a[0] = n-1;
    a[[1:]] = [0:n-2];
-   
+
    return a;
 }
 
@@ -35,13 +35,12 @@ private define make_right(n)
 {
    variable a;
 
-   a = Int_Type [n]; 
+   a = Int_Type [n];
    a[[0:n-2]] = [1:n-1];
    a[-1] = 0;
-   
+
    return a;
 }
-
 
 private define life_init (nr, nc)
 {
@@ -84,7 +83,7 @@ define life_print (a, old_a)
 {
    variable dims, i, j;
    (dims,,) = array_info (a);
-   
+
    a = @a;
    a[where (a)] = 1;
    a[where (a and (old_a == 0))] = 2;
@@ -111,9 +110,9 @@ define life_print (a, old_a)
 define life (nr, nc)
 {
    variable a, left, right, up, down, new_a;
-    
+
    (new_a, up, down, left, right) = life_init (nr, nc);
-   
+
    a = new_a;
    do
      {
@@ -128,4 +127,3 @@ smg_init_smg ();
 
 life (Smg_Screen_Rows, Smg_Screen_Cols);
 
-   

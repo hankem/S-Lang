@@ -13,7 +13,7 @@ static define eqs (a, b)
    len = length (a);
    if (len != length (b))
      return 0;
-   
+
    len == length (where (a == b));
 }
 
@@ -56,7 +56,6 @@ _for (0, length(B)-1, 1)
      failed ("@typecast(A,Any_Type)");
 }
 
-  
 print ("Ok\n");
 
 exit (0);

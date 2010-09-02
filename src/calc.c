@@ -43,7 +43,6 @@ static void exit_calc (int *status)
    exit (*status);
 }
 
-
 /* Now here is a table that provides the link between the above functions and
    the S-Lang interpreter */
 static SLang_Intrin_Fun_Type Calc_Intrinsics [] =
@@ -62,7 +61,7 @@ typedef struct
 }
 My_Struct_Type;
 
-static My_Struct_Type My_Struct = 
+static My_Struct_Type My_Struct =
 {
    -41,
    NULL,
@@ -78,7 +77,6 @@ static SLang_IStruct_Field_Type My_Struct_Field_Table [] =
    MAKE_ISTRUCT_FIELD(My_Struct_Type, d_value, "d", SLANG_DOUBLE_TYPE, 0),
    SLANG_END_ISTRUCT_TABLE
 };
-
 
 static int add_my_struct_type (void)
 {

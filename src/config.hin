@@ -4,7 +4,6 @@
 #ifndef SL_CONFIG_H
 #define SL_CONFIG_H
 
-
 /* Files used by the slang-readline interface.  The interface first tries
  * to read SLRLINE_USER_INIT_FILE from $HOME, and if that does not exist, it
  * will read SLRLINE_SYS_INIT_FILE from the interpreter's load path.
@@ -128,7 +127,7 @@
 #undef HAVE_GETEUID
 #undef HAVE_GETUID
 
-#undef HAVE_SETGID 
+#undef HAVE_SETGID
 #undef HAVE_SETUID
 
 #undef HAVE_GETPGID
@@ -234,7 +233,7 @@
 # ifndef _ALL_SOURCE
 #  define _ALL_SOURCE
 # endif
-/* This may generate warnings but the fact is that without it, xlc will 
+/* This may generate warnings but the fact is that without it, xlc will
  * INCORRECTLY inline many str* functions. */
 # undef __STR__
 #endif

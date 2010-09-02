@@ -33,16 +33,12 @@ statement:
 	 expression ;
 	 expression :
 
-
-
 statement-list:
 	 statement
 	 statement-list statement
 
-
 compound-statement:
 	 { statement-list }
-
 
 variable-list:
 	variable-decl
@@ -51,7 +47,6 @@ variable-list:
 variable-decl:
 	identifier
 	identifier = simple-expression
-
 
 struct-declaration:
 	struct { struct-field-list };
@@ -78,7 +73,6 @@ expression:
 	 simple_expression
 	 simple-expression , expression
       <none>
-
 
 % Note: simple-expression groups operators OP1 at same level.  The
 % actual implementation will not do this.

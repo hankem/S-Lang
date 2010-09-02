@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -72,7 +72,7 @@ int _pSLpush_alloced_slstring (char *s, unsigned int len)
 {
    if (NULL == (s = _pSLcreate_via_alloced_slstring (s, len)))
      return -1;
-   
+
    return _pSLang_push_slstring (s);
 }
 
@@ -96,7 +96,6 @@ int _pSLang_dup_and_push_slstring (SLCONST char *s)
 
    return _pSLang_push_slstring ((char *) s);
 }
-
 
 /* This function _always_ frees the malloced string */
 int SLang_push_malloced_string (char *c) /*{{{*/
@@ -188,7 +187,7 @@ string_string_bin_op (int op,
 
    a = (char **) ap;
    b = (char **) bp;
-   
+
    if ((op != SLANG_NE) && (op != SLANG_EQ))
      for (n = 0; n < n_max; n++)
        {
@@ -313,7 +312,7 @@ static int string_cmp (SLtype unused, VOID_STAR ap, VOID_STAR bp, int *c)
 {
    char *a, *b;
    (void) unused;
-   
+
    a = *(char **) ap;
    b = *(char **) bp;
    if (a != b)
@@ -376,7 +375,7 @@ SLang_Array_Type *_pSLstrings_to_array (char **strs, unsigned int n)
 	     data[i] = NULL;
 	     continue;
 	  }
-	
+
 	if (NULL == (data[i] = SLang_create_slstring (strs[i])))
 	  {
 	     SLang_free_array (at);
@@ -392,7 +391,7 @@ static SLang_Array_Type *string_list_to_array (_pSLString_List_Type *p, int dele
    SLindex_Type inum;
    SLang_Array_Type *at;
    char **buf;
-   
+
    buf = p->buf;
    num = p->num;
 
@@ -401,7 +400,7 @@ static SLang_Array_Type *string_list_to_array (_pSLString_List_Type *p, int dele
 
    inum = (SLindex_Type) num;
    if (num == 0) num++;		       /* so realloc succeeds */
-   
+
    /* Since the list is to be deleted, we can steal the buffer */
    if ((num != p->max_num)
        && (NULL == (buf = (char **)SLrealloc ((char *) buf, sizeof (char *) * num))))
@@ -411,7 +410,7 @@ static SLang_Array_Type *string_list_to_array (_pSLString_List_Type *p, int dele
      }
    p->max_num = num;
    p->buf = buf;
-   
+
    if (NULL == (at = SLang_create_array (SLANG_STRING_TYPE, 0, (VOID_STAR) buf, &inum, 1)))
      {
 	_pSLstring_list_delete (p);
@@ -434,19 +433,18 @@ int _pSLstring_list_push (_pSLString_List_Type *p, int delete_list)
 	  _pSLstring_list_delete (p);
 	return ret;
      }
-   
+
    if (NULL == (at = string_list_to_array (p, delete_list)))
      return -1;
 
    return SLang_push_array (at, 1);
 }
 
-
 int _pSLstring_list_init (_pSLString_List_Type *p, unsigned int max_num, unsigned int delta_num)
 {
    if (NULL == (p->buf = (char **) SLmalloc (max_num * sizeof (char *))))
      return -1;
-   
+
    p->max_num = max_num;
    p->num = 0;
    p->delta_num = delta_num;
@@ -469,7 +467,7 @@ int _pSLstring_list_append (_pSLString_List_Type *p, char *s)
 	p->buf = b;
 	p->max_num = max_num;
      }
-   
+
    p->buf[p->num] = s;
    p->num++;
    return 0;
@@ -510,11 +508,11 @@ void _pSLstring_list_delete (_pSLString_List_Type *p)
 _pSLString_List_Type *_pSLstring_list_new (unsigned int max_num, unsigned int delta_num)
 {
    _pSLString_List_Type *p;
-   
+
    p = (_pSLString_List_Type *)SLmalloc (sizeof (_pSLString_List_Type));
    if (p == NULL)
      return NULL;
-   
+
    if (-1 == _pSLstring_list_init (p, max_num, delta_num))
      {
 	SLfree ((char *) p);
@@ -523,7 +521,6 @@ _pSLString_List_Type *_pSLstring_list_new (unsigned int max_num, unsigned int de
    p->is_malloced = 1;
    return p;
 }
-   
 
 /* Ref type */
 
@@ -550,7 +547,7 @@ void SLang_free_ref (SLang_Ref_Type *ref)
 {
    if (ref == NULL)
      return;
-   
+
    if (ref->num_refs > 1)
      {
 	ref->num_refs--;
@@ -566,7 +563,7 @@ void SLang_free_ref (SLang_Ref_Type *ref)
 SLang_Ref_Type *_pSLang_new_ref (unsigned int sizeof_data)
 {
    SLang_Ref_Type *ref;
-   
+
    if (NULL == (ref = (SLang_Ref_Type *)SLcalloc (1, sizeof (SLang_Ref_Type))))
      return NULL;
    if (NULL == (ref->data = (VOID_STAR)SLcalloc (1, sizeof_data)))
@@ -603,22 +600,22 @@ int SLang_assign_to_ref (SLang_Ref_Type *ref, SLtype type, VOID_STAR v)
 {
    SLang_Object_Type *stkptr;
    SLang_Class_Type *cl;
-   
+
    cl = _pSLclass_get_class (type);
 
    /* Use apush since this function is passing ``array'' bytes rather than the
     * address of the data.  I need to somehow make this more consistent.  To
     * see what I mean, consider:
-    * 
+    *
     *    double z[2];
     *    char *s = "silly";
     *    char bytes[10];  BAD--- Don't do this
     *    int i;
-    * 
+    *
     *    SLang_assign_to_ref (ref, SLANG_INT_TYPE,    &i);
     *    SLang_assign_to_ref (ref, SLANG_STRING_TYPE, &s);
     *    SLang_assign_to_ref (ref, SLANG_COMPLEX_TYPE, z);
-    * 
+    *
     * That is, all external routines that take a VOID_STAR argument need to
     * be documented such that how the function should be called with the
     * various class_types.
@@ -688,7 +685,7 @@ int SLang_push_function (SLang_Name_Type *nt)
 {
    return _pSLang_push_nt_as_ref (nt);
 }
-   
+
 SLang_Name_Type *SLang_pop_function (void)
 {
    SLang_Ref_Type *ref;
@@ -697,10 +694,10 @@ SLang_Name_Type *SLang_pop_function (void)
    if (SLang_peek_at_stack () == SLANG_STRING_TYPE)
      {
 	char *name;
-	
+
 	if (-1 == SLang_pop_slstring (&name))
 	  return NULL;
-	
+
 	if (NULL == (f = SLang_get_function (name)))
 	  {
 	     _pSLang_verror (SL_UNDEFINED_NAME, "Function %s does not exist", name);
@@ -810,7 +807,7 @@ int _pSLanytype_typecast (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
    (void) b_type;
 
    any = (SLang_Any_Type **) bp;
-   
+
    cl = _pSLclass_get_class (a_type);
    sizeof_type = cl->cl_sizeof_type;
 
@@ -916,9 +913,9 @@ static int anytype_dereference (SLtype unused, VOID_STAR ptr)
 /* This function performs a deref since we may want the symmetry
  *  a = Any_Type[1];  a[x] = "foo"; bar = a[x]; ==> bar == "foo"
  * That is, we do not want bar to be an Any_Type.
- * 
+ *
  * Unfortunately, this does not work because of the use of the transfer
- * buffer by both slarray.c and sltypecast.c.  I can work around that 
+ * buffer by both slarray.c and sltypecast.c.  I can work around that
  * but I am not sure that I like typeof(Any_Type[0]) != Any_Type.
  */
 static int anytype_apush (SLtype type, VOID_STAR ptr)
@@ -991,8 +988,8 @@ int _pSLregister_types (void)
    if (-1 == SLclass_register_class (cl, SLANG_UNDEFINED_TYPE, sizeof (int),
 				     SLANG_CLASS_TYPE_SCALAR))
      return -1;
-   /* Make Void_Type a synonym for Undefined_Type.  Note that this does 
-    * not mean that Void_Type represents SLANG_VOID_TYPE.  Void_Type is 
+   /* Make Void_Type a synonym for Undefined_Type.  Note that this does
+    * not mean that Void_Type represents SLANG_VOID_TYPE.  Void_Type is
     * used by array_map to indicate no array is to be created.
     */
    if (-1 == SLclass_create_synonym ("Void_Type", SLANG_UNDEFINED_TYPE))

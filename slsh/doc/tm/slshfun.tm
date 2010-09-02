@@ -1,5 +1,5 @@
 #% -*- mode: tm; mode: fold;  -*-
-#%{{{Macros 
+#%{{{Macros
 
 #i linuxdoc.tm
 #i local.tm

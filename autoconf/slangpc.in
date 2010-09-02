@@ -3,7 +3,7 @@ exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include
 
-Name: slang 
+Name: slang
 Description: S-Lang programming library and interpreter
 URL: http://www.jedsoft.org/slang/
 Version: @slang_version@

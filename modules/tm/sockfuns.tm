@@ -1,4 +1,3 @@
-
 \function{socket}
 \synopsis{Create a communications socket}
 \usage{FD_Type socket (domain, type, protocol)}
@@ -17,13 +16,13 @@
   The \exmp{protocol} parameter specifies the protocol to be used.
   Normally only one protocol is support for a particular domain.  For
   such cases, 0 should be passed for the \exmp{protocol} parameter.
-  
+
   If successful, the \ifun{socket} function will return a
   file-descriptor that may be used with the \ifun{read} and
   \ifun{write} function, or passed to other socket related functions.
   Upon error, a \ivar{SocketError} exception will be thrown and
   \ivar{errno} set accordingly.
-  
+
   When finished with the socket, it should be passed to the
   \ifun{close} function.
 \example
@@ -32,7 +31,7 @@
 #v+
      try {
         s = socket (PF_INET, SOCK_STREAM, 0);
-     } 
+     }
      catch SocketError: {
         () = fprintf (stderr, "socket failed: %s", errno_string(errno));
         exit (1);
@@ -52,7 +51,7 @@
   (PF_UNIX), then a single string giving a filename must be passed as
   the address-argument.  Sockets in the internet domain (PF_INET) take two
   address arguments: a hostname and a port.
-  
+
   Upon failure, the function may throw a \ivar{SocketError} exception and set
   \ivar{errno}, or throw a \ivar{SocketHError} and set \ivar{h_error}.
   It should be noted that \ivar{SocketHError} is a subclass of
@@ -64,7 +63,7 @@
      try {
         s = socket (PF_INET, SOCK_STREAM, 0);
         connect (s, "some.host.com", 32100);
-     } 
+     }
      catch SocketHError: {...}
      catch SocketError: {...}
 #v-
@@ -80,7 +79,7 @@
   domain-specific manner.  For Unix domain sockets, the address is the
   name of a file.  For sockets in the internet domain, the address is
   given by a hostname and port number.
-  
+
   Upon failure, the function will throw a \ivar{SocketError} or
   \ivar{SocketHError} exception.
 \example
@@ -108,7 +107,7 @@
   socket and returns a new socket that may be used to communicate with
   the remote end.  It can optionally return the address of the remote
   end through reference arguments.
-  
+
   Upon error, \ifun{accept} will throw a \ivar{SocketError} exception.
 \example
   The following example accepts a remote connection on \ivar{PF_INET}

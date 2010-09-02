@@ -56,12 +56,12 @@ define print_array (a)
 	p (a);
 	return;
      }
-   
+
    nr = dims [0];
    nc = 0;
    if (num_dims == 2)
      nc = dims[1];
-   
+
    _for (0, nr - 1, 1)
      {
 	i = ();
@@ -84,7 +84,7 @@ define read_file (file)
    variable line, len;
    variable root, tail, s;
    variable fp;
-   
+
    fp = fopen (file, "r");
    if (fp == NULL)
      error ("unable to open file");
@@ -96,12 +96,12 @@ define read_file (file)
 	s = struct { next, value };
 	s.value = line;
 	s.next = NULL;
-	
+
 	if (root == NULL)
 	  root = s;
 	else
 	  tail.next = s;
-	
+
 	tail = s;
      }
    () = fclose (fp);
@@ -111,7 +111,7 @@ define read_file (file)
 define list_len (list)
 {
    variable len = 0;
-   
+
    foreach (list) using ("next")
      {
 	() = ();
@@ -120,11 +120,6 @@ define list_len (list)
    return len;
 }
 
-	     
-	
-
-
-
 % calc.sl--- Init file for calc.  This file must be placed in the default
 %  directory for calc and is automatically loaded when calc runs.
 %
@@ -132,19 +127,19 @@ define list_len (list)
 %
 % Here is a function which computes the root of the equation y = f(x) using
 % Newtons method.  The usage is:
-%  
+%
 %   root = newton(s, &f);
 %
 % where s is a seed value and f is the function whose root is sought.
 %
-% For example, consider the function my_fun(x) = x^2 - 2 with solution 
+% For example, consider the function my_fun(x) = x^2 - 2 with solution
 % x = sqrt(2).  This function may be expressed in S-Lang as:
 %
 % define my_func(x)
 % {
 %   return (x * x - 2);
 % }
-%    
+%
 % To solve the equation my_fun(x) = 0 using the newton routine below, use
 %
 %     newton(5.0, &myfun);
@@ -152,19 +147,18 @@ define list_len (list)
 % Here, I have randomly chosen 5.0 as an initial guess.   In addition,
 % I have used the '&' operator to pass the function 'myfun' to the routine.
 
-
-% Newton's method requires the derivative of a function.  Here is such a 
+% Newton's method requires the derivative of a function.  Here is such a
 % function called by newton.  Given f(x), it returns df/dx at the point x.
 %
 % Its usage is:
-%  
+%
 %    derivative(x, &f);
 
 define derivative(x, f)
 {
    variable dx;
    dx = 1.0e-4;        % small number
-  
+
    return ((@f(x + dx) - @f(x - dx))/(2 * dx));
 }
 
@@ -173,10 +167,10 @@ define derivative(x, f)
 define newton(x, f)
 {
    variable err, max, dx;
-   
+
    err = 1.0e-6;
    max = 1000;
-   
+
    while (max)
      {
 	--max;
@@ -185,18 +179,16 @@ define newton(x, f)
 	  {
 	     return(x);
 	  }
-	
+
 	x -= dx;
-     } 
-   
+     }
+
    message ("\7Root not found.  Try another seed!");
    return(x);
 }
 
-   
-   
 %% This is a standard benchmark for interpreters.  It is a heavily
-%% recursive routine that returns the nth Fibonacci number.  
+%% recursive routine that returns the nth Fibonacci number.
 %% It is defined recursively as:
 %%
 %%     f_0 = 0, f_1 = 1, .... , f_{n+1} = f_n + f_{n-1}, ...
@@ -204,17 +196,16 @@ define newton(x, f)
 %%     or {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...}
 %%
 
-define fib();               % required for recursion 
+define fib();               % required for recursion
 
 define fib(n)
 {
    !if (n) return(0);
    n--;
    !if (n) return(1);
-  
+
    return fib(n) + fib(n-1);
 }
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Two routines which illustrate the how to deal with files
@@ -224,20 +215,19 @@ define fib(n)
 define type_file(file)
 {
    variable fp, n, line;
-   
+
    fp = fopen(file, "r");
    if (fp == NULL)
      verror ("%s failed to open.", file);
-   
+
    while (-1 != fgets (&line, fp))
      {
 	() = fputs (line, stdout);
      }
-   
+
    if (-1 == fclose(fp))
      verror ("Error closing %s", file);
 }
-
 
 %
 %  Here is a function that prints the number of lines in a file
@@ -246,7 +236,7 @@ define type_file(file)
 define count_lines1 (file)
 {
    variable fp, lines, nchars, num_lines, st;
-   
+
    fp = fopen (file, "r");
    if (fp == NULL)
      verror ("count_lines1: unable to open %s", file);
@@ -254,7 +244,7 @@ define count_lines1 (file)
    st = stat_file (file);
    if (st == NULL)
      verror ("stat_file failed");
-   
+
    lines = fgetslines (fp);
    nchars = st.st_size;
 
@@ -265,22 +255,21 @@ define count_lines1 (file)
 	     file, nchars, num_lines);
 }
 
-   
 define count_lines(f)
 {
    variable fp, n, nchars, dn, line;
-   
+
    fp = fopen(f, "r");
    if (fp == NULL) error("Unable to open file!");
    n = 0; nchars = 0;
-   
+
    while (dn = fgets (&line, fp), dn != -1)
      {
 	++n;
 	nchars += dn;
      }
    () = fclose(fp);		       %/* ignore return value */
-   
+
    vmessage ("%s consists of %d characters and %d lines.\n",
 	     f, nchars, n);
 }
@@ -288,27 +277,26 @@ define count_lines(f)
 define count_lines2(f)
 {
    variable fp, n, nchars, dn, line;
-   
+
    fp = fopen(f, "r");
    if (fp == NULL) error("Unable to open file!");
    n = 0; nchars = 0;
-   
-   foreach (fp) 
+
+   foreach (fp)
      {
 	nchars += strlen ();
 	++n;
      }
    () = fclose(fp);		       %/* ignore return value */
-   
+
    vmessage ("%s consists of %d characters and %d lines.\n",
 	     f, nchars, n);
 }
 
-
 define count_lines3(f)
 {
    variable fp, n, nchars, dn, line;
-   
+
    fp = fopen(f, "r");
    if (fp == NULL) error("Unable to open file!");
    n = 0; nchars = 0;
@@ -322,11 +310,10 @@ define count_lines3(f)
 	nchars++;
      }
    () = fclose(fp);		       %/* ignore return value */
-   
+
    vmessage ("%s consists of %d characters and %d lines.\n",
 	     f, nchars, n);
 }
-
 
 % an apropos function
 define apropos (what)
@@ -340,8 +327,8 @@ define apropos (what)
 	() = printf ("No matches.\n");
 	return;
      }
-   
-   loop (n / 3) 
+
+   loop (n / 3)
      {
 	f1 = (); f2 = (); f3 = ();
 	() = printf ("%-26s %-26s %s\n", f1, f2, f3);
@@ -365,8 +352,6 @@ define calc_help ()
    p("\nExample: p (2.4 * E);    yields 6.52388.\n");
 }
 
-	     
-   
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-%    end of calc.sl     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    end of calc.sl
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

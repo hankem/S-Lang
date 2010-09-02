@@ -15,7 +15,7 @@ define count_primes (num)
    variable prime = 3;
    variable i = 0;
 
-   do 
+   do
      {
         count++;
 	%()=printf ("%S\n", prime);
@@ -25,12 +25,11 @@ define count_primes (num)
 	while (i++, nonprimes[i])
 	  ;
 	prime += 2 * (i - i_save);
-     } 
+     }
    while (i < size);
-   
+
    return count;
 }
-
 
 private variable Num;
 

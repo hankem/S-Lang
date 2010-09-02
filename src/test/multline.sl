@@ -23,7 +23,7 @@ define test_string (str)
 	failed ("%s --> %s", str, ml);
      }
 }
-   
+
 test_string ("1 This is\na multiline\nstring\n");
 
 eval(`
@@ -36,7 +36,7 @@ define test_string2 (str, ans)
      }
 }
 `);
-test_string2 (`2 This is\na multiline\nstring\n`, 
+test_string2 (`2 This is\na multiline\nstring\n`,
 	      "2 This is\\na multiline\\nstring\\n");
 test_string2 (`3 This is\\\na multiline\nstring\nX`Q,
 	      "3 This is\\\na multiline\nstring\nX");
@@ -51,7 +51,7 @@ define test_string3 (str, ans)\n\
      }\n\
 }\n\
 ");
-test_string3 (`2 This is\na multiline\nstring\n`, 
+test_string3 (`2 This is\na multiline\nstring\n`,
 	      "2 This is\\na multiline\\nstring\\n");
 test_string3 (`3 This is\\\na multiline\nstring\nX`Q,
 	      "3 This is\\\na multiline\nstring\nX");
@@ -59,7 +59,7 @@ variable FOO = "multiline";
 test_string3 (`4 This is\\\na ${FOO}\nstring\nX`Q$,
 	      "4 This is\\\na multiline\nstring\nX");
 test_string3 (`5 This is\na ${FOO}
-string\n`$, 
+string\n`$,
 	      "5 This is\\na multiline\nstring\\n");
 
 test_string3 (`6 This is

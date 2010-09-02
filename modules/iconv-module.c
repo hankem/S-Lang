@@ -31,18 +31,18 @@ static SLang_MMT_Type *allocate_iconv_type (iconv_t cd)
 {
    ICONV_Type *it;
    SLang_MMT_Type *mmt;
-   
+
    it = (ICONV_Type *) SLmalloc (sizeof (ICONV_Type));
    if (it == NULL)
      return NULL;
-   
+
    it->cd = cd;
-   
+
    if (NULL == (mmt = SLang_create_mmt (ICONV_Type_Id, (VOID_STAR) it)))
      {
 	free_iconv_type (it);
 	return NULL;
-     }   
+     }
    return mmt;
 }
 
@@ -52,7 +52,7 @@ static void _iconv_open(char *tocode, char *fromcode)
    SLang_MMT_Type *mmt;
 
    cd = iconv_open(tocode, fromcode);
-   if (cd == (iconv_t)(-1)) 
+   if (cd == (iconv_t)(-1))
      {
 	SLang_verror (SL_INTRINSIC_ERROR, "Error preparing iconv to convert from '%s' to '%s'.", fromcode, tocode);
 	return;
@@ -85,7 +85,7 @@ static void destroy_iconv (SLtype type, VOID_STAR f)
 {
    ICONV_Type *it;
    (void) type;
-   
+
    it = (ICONV_Type *) f;
    iconv_close(it->cd);
    free_iconv_type (it);
@@ -103,7 +103,7 @@ static void _iconv_reset_shift(ICONV_Type *it)
    char buf[SHIFT_BUF_LEN], *p = buf;
    SLang_BString_Type *bstr;
    size_t rc;
-   
+
    rc = iconv(it->cd, NULL, NULL, &p, &n);
    if ((rc == (size_t)(-1)) || (n > rc))
      {
@@ -114,11 +114,10 @@ static void _iconv_reset_shift(ICONV_Type *it)
    bstr = SLbstring_create((unsigned char *)buf, SHIFT_BUF_LEN-n);
    if (bstr == NULL)
      return;
-   
+
    (void) SLang_push_bstring(bstr);
    SLbstring_free (bstr);
 }
-
 
 static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
 {
@@ -137,9 +136,9 @@ static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
    bufn = outn = 2*inn + 2;
    if (NULL == (buf = SLmalloc(bufn)))
      return;
-   
+
    outstr = buf;
-   
+
    while (1)
      {
 	errno = 0;
@@ -147,14 +146,14 @@ static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
 	if (rc != (size_t)-1)
 	  break; /* ok! */
 
-	if (fail == inn) 
+	if (fail == inn)
 	  {
 	     SLang_verror (SL_Unknown_Error, "Unknown error in iconv");
 	     goto error;
 	  }
 
 	fail = inn;
-	switch (errno) 
+	switch (errno)
 	  {
 	   case EILSEQ:
 	     SLang_verror (SL_InvalidUTF8_Error, "Invalid multibyte sequence or unable to convert to the target encoding");
@@ -167,20 +166,20 @@ static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
 	     /* grrrr
 	      * At least on windows, libiconv returns with errno = 0
 	      * (or unmodified?) when there's no more roon on outstr
-	      * if so, fallback 
+	      * if so, fallback
 	      */
 	   case E2BIG:
 	       {
 		  char *p;
 		  int outdelta;
-		  
-		  outdelta = outstr - buf;		  
+
+		  outdelta = outstr - buf;
 		  outn += bufn;
 		  bufn += bufn;
 		  p = SLrealloc(buf, bufn);
 		  if (p == NULL)
 		    goto error;
-		  buf = p;		  
+		  buf = p;
 		  outstr = buf + outdelta;
 	       }
 	     break;
@@ -259,7 +258,6 @@ int init_iconv_module_ns (char *ns_name)
 
    return 0;
 }
-
 
 /* This function is optional */
 void deinit_iconv_module (void)

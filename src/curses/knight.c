@@ -130,7 +130,7 @@ static void help1(void)
     (void)waddstr(helpwin, "of legal moves.\n\n");
 
     (void)mvwaddstr(helpwin, NOTIFYY-INSTRY, 0,
-		    "Press `?' to go to keystroke help."); 
+		    "Press `?' to go to keystroke help.");
 }
 
 static void help2(void)
@@ -155,7 +155,7 @@ static void help2(void)
     (void)waddstr(helpwin, "center key.  You can quit with `x' or `q'.\n");
 
     (void)mvwaddstr(helpwin, NOTIFYY-INSTRY, 0,
-		    "Press `?' to go to game explanation"); 
+		    "Press `?' to go to game explanation");
 }
 
 static void play (void)
@@ -285,11 +285,11 @@ static void play (void)
 		       drawmove(trail,
 				history[movecount-1].y, history[movecount-1].x,
 				rw, col);
-		       history[movecount].y = rw; 
-		       history[movecount].x = col; 
+		       history[movecount].y = rw;
+		       history[movecount].x = col;
 		       movecount++;
 
-		       if (!chkmoves()) 
+		       if (!chkmoves())
 			   goto dropout;
 		   }
 		   else
@@ -399,7 +399,7 @@ static void dosquares (void)
     for (i = 1; i < BDEPTH; i++)
     {
 	move(BOARDY + i * 2 - 1, BOARDX);
-	waddch(boardwin, ACS_VLINE); 
+	waddch(boardwin, ACS_VLINE);
 	for (j = 0; j < BWIDTH; j++)
 	{
 	    waddch(boardwin, ' ');
@@ -408,7 +408,7 @@ static void dosquares (void)
 	    waddch(boardwin, ACS_VLINE);
 	}
 	move(BOARDY + i * 2, BOARDX);
-	waddch(boardwin, ACS_LTEE); 
+	waddch(boardwin, ACS_LTEE);
 	for (j = 0; j < BWIDTH - 1; j++)
 	{
 	    waddch(boardwin, ACS_HLINE);

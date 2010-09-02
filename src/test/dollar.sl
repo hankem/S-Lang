@@ -16,7 +16,7 @@ public define test_hello_world ()
    variable world = "world";
    if ("hello world" != "$This_is_static $world"$)
      failed ("hello world 1");
-   
+
    if ("$This_is_static $world"$ != _$("$This_is_static $world"))
      failed ("hello world 1a");
 
@@ -75,7 +75,7 @@ define test_special ()
 {
    variable n = _NARGS;
    _pop_n (_NARGS);
-   
+
    if ("$n"$ != "${_NARGS}"$)
      failed ("${_NARGS}");
 
@@ -100,11 +100,10 @@ $2 = "%$1${}%"$;
 if ($2 != "%Dollar-1%")
   failed ("%s, found \"%s\"","%$1${}%", $2);
 
-if (eval ("static variable foo=7;\"$1$This_is_static${foo}\"$") 
+if (eval ("static variable foo=7;\"$1$This_is_static${foo}\"$")
     != string ($1)+"7")
   failed ("eval");
 
 print ("Ok\n");
 exit (0);
-
 

@@ -6,7 +6,7 @@ if (__argc != 2)
    exit (1);
 }
 
-% The txt file looks ugly and the contents at the beginning are 
+% The txt file looks ugly and the contents at the beginning are
 % totally misleading.
 
 static define process_file (file)
@@ -80,7 +80,6 @@ static define process_file (file)
 	  }
 	else pop_mark (0);
      }
-
 
    save_buffer ();
 }

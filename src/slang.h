@@ -19,11 +19,11 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #define SLANG_VERSION 20203
-#define SLANG_VERSION_STRING "pre2.2.3-72"
+#define SLANG_VERSION_STRING "pre2.2.3-73"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -54,7 +54,7 @@ USA.
 #  define __unix__ 1		       /* cough */
 # endif
 #endif
-  
+
 #if !defined(__GO32__)
 # ifdef __unix__
 #  define REAL_UNIX_SYSTEM
@@ -207,7 +207,7 @@ extern "C" {
 # define SLATTRIBUTE_(x)
 #endif
 #define SLATTRIBUTE_PRINTF(a,b) SLATTRIBUTE_((format(printf,a,b)))
-  
+
 #if defined (__cplusplus) || defined(__STDC__) || defined(IBMPC_SYSTEM)
 typedef void *VOID_STAR;
 #define SLCONST const
@@ -290,7 +290,6 @@ SL_EXTERN SLstr_Type *SLang_concat_slstrings (SLstr_Type *a, SLstr_Type *b);
 
 SL_EXTERN void SLstring_dump_stats (void);
 
-
 /*{{{ UTF-8 and Wide Char support */
 
 #if SLANG_SIZEOF_INT == 4
@@ -321,7 +320,7 @@ SL_EXTERN int SLsmg_utf8_enable (int);
 SL_EXTERN int SLsmg_is_utf8_mode (void);
 SL_EXTERN int SLinterp_utf8_enable (int);
 SL_EXTERN int SLinterp_is_utf8_mode (void);
-  
+
 SL_EXTERN SLwchar_Type SLwchar_toupper (SLwchar_Type);
 SL_EXTERN SLwchar_Type SLwchar_tolower (SLwchar_Type);
 
@@ -363,22 +362,20 @@ SL_EXTERN SLstr_Type *SLutf8_subst_wchar (SLuchar_Type *u, SLuchar_Type *umax,
 				       SLwchar_Type wch, SLstrlen_Type pos,
 				       int ignore_combining);
 
-
 SL_EXTERN SLstrlen_Type SLutf8_strlen (SLuchar_Type *s, int ignore_combining);
 SL_EXTERN SLuchar_Type *SLutf8_decode (SLuchar_Type *u, SLuchar_Type *umax,
 				     SLwchar_Type *w, SLstrlen_Type *nconsumedp);
 SL_EXTERN SLuchar_Type *SLutf8_encode (SLwchar_Type w, SLuchar_Type *u, SLstrlen_Type ulen);
 
-SL_EXTERN int SLutf8_compare (SLuchar_Type *a, SLuchar_Type *amax, 
+SL_EXTERN int SLutf8_compare (SLuchar_Type *a, SLuchar_Type *amax,
 			      SLuchar_Type *b, SLuchar_Type *bmax,
 			      SLstrlen_Type nchars, int case_sensitive);
 
-/* In these functions, buf is assumed to contain at least SLUTF8_MAX_MBLEN+1 
- * bytes 
+/* In these functions, buf is assumed to contain at least SLUTF8_MAX_MBLEN+1
+ * bytes
  */
 SL_EXTERN SLuchar_Type *SLutf8_extract_utf8_char (SLuchar_Type *u, SLuchar_Type *umax, SLuchar_Type *buf);
 SL_EXTERN SLuchar_Type *SLutf8_encode_null_terminate (SLwchar_Type w, SLuchar_Type *buf);
-
 
 typedef struct SLwchar_Lut_Type SLwchar_Lut_Type;
 SL_EXTERN SLwchar_Lut_Type *SLwchar_create_lut (unsigned int num_entries);
@@ -386,7 +383,7 @@ SL_EXTERN int SLwchar_add_range_to_lut (SLwchar_Lut_Type *r, SLwchar_Type a, SLw
 SL_EXTERN SLuchar_Type *SLwchar_skip_range (SLwchar_Lut_Type *r, SLuchar_Type *p,
 					 SLuchar_Type *pmax, int ignore_combining,
 					 int invert);
-SL_EXTERN SLwchar_Lut_Type *SLwchar_strtolut (SLuchar_Type *u, 
+SL_EXTERN SLwchar_Lut_Type *SLwchar_strtolut (SLuchar_Type *u,
 					   int allow_range, int allow_charclass);
 SL_EXTERN void SLwchar_free_lut (SLwchar_Lut_Type *r);
 SL_EXTERN SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *pmin,
@@ -395,7 +392,6 @@ SL_EXTERN SLuchar_Type *SLwchar_bskip_range (SLwchar_Lut_Type *r, SLuchar_Type *
 					  int invert);
 SL_EXTERN int SLwchar_in_lut (SLwchar_Lut_Type *r, SLwchar_Type wch);
 
-
 typedef struct SLwchar_Map_Type SLwchar_Map_Type;
 SL_EXTERN void SLwchar_free_char_map (SLwchar_Map_Type *map);
 SL_EXTERN SLwchar_Map_Type *SLwchar_allocate_char_map (SLuchar_Type *from, SLuchar_Type *to);
@@ -403,7 +399,6 @@ SL_EXTERN int SLwchar_apply_char_map (SLwchar_Map_Type *map, SLwchar_Type *input
 
 /* This function returns a malloced string */
 SLuchar_Type *SLuchar_apply_char_map (SLwchar_Map_Type *map, SLuchar_Type *str);
-
 
 /*}}}*/
 
@@ -584,7 +579,6 @@ SL_EXTERN int SLadd_llconstant_table (SLang_LLConstant_Type *, SLFUTURE_CONST ch
 #endif
 SL_EXTERN int SLadd_istruct_table (SLang_IStruct_Field_Type *, VOID_STAR, SLFUTURE_CONST char *);
 
-
 typedef struct _pSLang_NameSpace_Type SLang_NameSpace_Type;
 
 SL_EXTERN int SLns_add_intrin_fun_table (SLang_NameSpace_Type *, SLang_Intrin_Fun_Type *, SLFUTURE_CONST char *);
@@ -618,7 +612,7 @@ SL_EXTERN int (*SLns_Load_File_Hook) (SLFUTURE_CONST char *, SLFUTURE_CONST char
 
 #define SLANG_LOAD_FILE_VERBOSE		0x1
 #define SLANG_LOAD_MODULE_VERBOSE	0x2
-SL_EXTERN int SLang_load_file_verbose (int);    
+SL_EXTERN int SLang_load_file_verbose (int);
 /* Bitmapped value that controls loading messages */
 
 typedef struct SLang_Load_Type
@@ -654,14 +648,13 @@ typedef struct SLang_Load_Type
 SL_EXTERN SLang_Load_Type *SLallocate_load_type (SLFUTURE_CONST char *);
 SL_EXTERN void SLdeallocate_load_type (SLang_Load_Type *);
 SL_EXTERN SLang_Load_Type *SLns_allocate_load_type (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
-  
+
 /* Returns SLang_Error upon failure */
 SL_EXTERN int SLang_load_object (SLang_Load_Type *);
 SL_EXTERN int (*SLang_Load_File_Hook)(SLFUTURE_CONST char *);
 SL_EXTERN int (*SLang_Auto_Declare_Var_Hook) (SLFUTURE_CONST char *);
 
 SL_EXTERN int SLang_generate_debug_info (int);
-
 
 #if defined(ultrix) && !defined(__GNUC__)
 # ifndef NO_PROTOTYPES
@@ -761,7 +754,6 @@ SL_EXTERN int SLclass_set_foreach_functions (
  * at the specified address.
  */
 SL_EXTERN int SLclass_set_aelem_init_function (SLang_Class_Type *cl, int (*f)(SLtype, VOID_STAR));
-
 
 /* Typecast object on the stack to type p1.  p2 and p3 should be set to 1 */
 SL_EXTERN int SLclass_typecast (SLtype, int, int);
@@ -896,7 +888,7 @@ typedef struct _pSLang_Array_Type
 }
 SLang_Array_Type;
 
-extern int _pSLarray_convert_to_array (VOID_STAR cd, 
+extern int _pSLarray_convert_to_array (VOID_STAR cd,
 				       int (*get_type)(VOID_STAR, SLuindex_Type, SLtype *),
 				       int (*push)(VOID_STAR, SLuindex_Type),
 				       SLuindex_Type num_objects, SLtype type);
@@ -922,7 +914,7 @@ typedef struct
 SLarray_Contract_Type;
 SL_EXTERN int SLarray_contract_array (SLCONST SLarray_Contract_Type *);
 
-typedef int SLarray_Map_Fun_Type (SLtype xtype, VOID_STAR xp, 
+typedef int SLarray_Map_Fun_Type (SLtype xtype, VOID_STAR xp,
 				  unsigned int increment, unsigned int num,
 				  SLtype ytype, VOID_STAR yp, VOID_STAR clientdata);
 typedef struct
@@ -934,11 +926,10 @@ typedef struct
 }
 SLarray_Map_Type;
 
-SL_EXTERN int SLarray_map_array_1 (SLCONST SLarray_Map_Type *, 
-				int *use_this_dim, 
+SL_EXTERN int SLarray_map_array_1 (SLCONST SLarray_Map_Type *,
+				int *use_this_dim,
 				VOID_STAR clientdata);
 SL_EXTERN int SLarray_map_array (SLCONST SLarray_Map_Type *);
-
 
 /*}}}*/
 
@@ -1100,7 +1091,7 @@ SL_EXTERN int SLang_init_slmath (void);
 /* These functions are obsolete.  Use init_stdio, posix_process, etc. */
 SL_EXTERN int SLang_init_slfile (void);
 SL_EXTERN int SLang_init_slunix (void);
-  
+
 SL_EXTERN int SLang_init_slassoc (void);
 /* Assoc Arrays (Hashes) */
 
@@ -1184,9 +1175,9 @@ SL_EXTERN int SLang_pop_datatype (SLtype *);
 
 SL_EXTERN int SLang_push_malloced_string(char *);
 /* The normal SLang_push_string pushes an slstring.  This one converts
- * a normally malloced string to an slstring, and then frees the 
+ * a normally malloced string to an slstring, and then frees the
  * malloced string.  So, do NOT use the malloced string after calling
- * this routine because it will be freed!  The routine returns -1 upon 
+ * this routine because it will be freed!  The routine returns -1 upon
  * error, but the string will be freed.
  */
 
@@ -1245,10 +1236,8 @@ SL_EXTERN int SLang_assign_cstruct_to_ref (SLang_Ref_Type *, VOID_STAR, SLang_CS
 SL_EXTERN int SLexecute_function (SLang_Name_Type *);
 SL_EXTERN int SLang_execute_function(SLFUTURE_CONST char *);
 
-
 SL_EXTERN int SLang_end_arg_list (void);
 SL_EXTERN int SLang_start_arg_list (void);
-
 
 SL_EXTERN int SLang_add_intrinsic_array (SLFUTURE_CONST char *,   /* name */
 				      SLtype,   /* type */
@@ -1259,7 +1248,7 @@ SL_EXTERN int SLang_add_intrinsic_array (SLFUTURE_CONST char *,   /* name */
 SL_EXTERN int SLextract_list_element (SLFUTURE_CONST char *, unsigned int, char,
 				   char *, unsigned int);
 
-/* If utf8_encode is >1, then byte values > 127 will be utf8-encoded. 
+/* If utf8_encode is >1, then byte values > 127 will be utf8-encoded.
  * If the string is already in utf8 form, and utf8 is desired, then use with
  * utf8_encode set to 0.  A value of -1 implies use the value appropriate for
  * the current state of the interpreter.
@@ -1349,8 +1338,8 @@ SL_EXTERN SLFUTURE_CONST char *SLang_get_name_from_fileptr (SLang_MMT_Type *);
 
 SL_EXTERN int SLang_get_fileptr (SLang_MMT_Type *, FILE **);
 /* This function may be used to obtain the FILE* object associated with an MMT.
- * It returns 0 if no-errors were encountered, and -1 otherwise.  
- * If FILE* object has been closed, this function will return 0 and set the FILE* 
+ * It returns 0 if no-errors were encountered, and -1 otherwise.
+ * If FILE* object has been closed, this function will return 0 and set the FILE*
  * parameter to NULL.
  */
 
@@ -1501,7 +1490,6 @@ SL_EXTERN SLkeymap_Type *SLKeyMap_List_Root;   /* linked list of keymaps */
 
 /* backward compat */
 typedef SLkeymap_Type SLKeyMap_List_Type;
-
 
 SL_EXTERN char *SLang_process_keystring(SLFUTURE_CONST char *);
 
@@ -1733,9 +1721,9 @@ SL_EXTERN int SLprep_set_flags (SLprep_Type *, unsigned int flags);
 
 SL_EXTERN int SLprep_set_comment (SLprep_Type *, SLFUTURE_CONST char *, SLFUTURE_CONST char *);
 SL_EXTERN int SLprep_set_prefix (SLprep_Type *, SLFUTURE_CONST char *);
-SL_EXTERN int SLprep_set_exists_hook (SLprep_Type *, 
+SL_EXTERN int SLprep_set_exists_hook (SLprep_Type *,
 				   int (*)(SLprep_Type *, SLFUTURE_CONST char *));
-SL_EXTERN int SLprep_set_eval_hook (SLprep_Type *, 
+SL_EXTERN int SLprep_set_eval_hook (SLprep_Type *,
 				 int (*)(SLprep_Type *, SLFUTURE_CONST char *));
 
 SL_EXTERN int SLdefine_for_ifdef (SLFUTURE_CONST char *);
@@ -1746,7 +1734,7 @@ SL_EXTERN int SLdefine_for_ifdef (SLFUTURE_CONST char *);
 
 /*{{{ SLsmg Screen Management Functions */
 
-SL_EXTERN void SLsmg_fill_region (int, int, unsigned int, unsigned int, 
+SL_EXTERN void SLsmg_fill_region (int, int, unsigned int, unsigned int,
 			       SLwchar_Type);
 SL_EXTERN void SLsmg_set_char_set (int);
 #ifndef IBMPC_SYSTEM
@@ -1970,7 +1958,7 @@ SL_EXTERN int SLkp_init (void);
 SL_EXTERN void SLkp_set_getkey_function (int (*)(void));
 
 /* This function uses SLang_getkey and assumes that what ever initialization
- * is required for SLang_getkey has been performed.  If you do not want 
+ * is required for SLang_getkey has been performed.  If you do not want
  * SLang_getkey to be used, then specify another function via
  * SLkp_set_getkey_function.
  */
@@ -2102,7 +2090,6 @@ SL_EXTERN int SLang_get_int_size (SLtype);
 #define SLANG_ARRAY_TYPE	(0x2D)
 #define SLANG_LIST_TYPE		(0x2E)
 
-
 #define SLANG_MIN_UNUSED_TYPE	(0x30)
 
 /* Compatibility */
@@ -2175,14 +2162,14 @@ SL_EXTERN int SLadd_intrinsic_function (SLFUTURE_CONST char *, FVOID_STAR, SLtyp
 SL_EXTERN int SLns_add_intrinsic_variable (SLang_NameSpace_Type *, SLFUTURE_CONST char *, VOID_STAR, SLtype, int);
 SL_EXTERN int SLns_add_intrinsic_function (SLang_NameSpace_Type *, SLFUTURE_CONST char *, FVOID_STAR, SLtype, unsigned int,...);
 
-/* These functions are used to patch intrinsic tables that make use of 
+/* These functions are used to patch intrinsic tables that make use of
  * dynamically allocated types whose type id is determined at
- * run-time.  The second version is useful for the most common case of a 
+ * run-time.  The second version is useful for the most common case of a
  * single mapping.
  */
-SL_EXTERN int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table, 
+SL_EXTERN int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table,
 					 SLtype *from_types, SLtype *to_types, unsigned int num);
-SL_EXTERN int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table, 
+SL_EXTERN int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table,
 					  SLtype from_type, SLtype to_type);
 
 #define MAKE_INTRINSIC_N(n,f,out,in,a1,a2,a3,a4,a5,a6,a7) \
@@ -2385,7 +2372,6 @@ SL_EXTERN SLsearch_Type *SLsearch_new (SLuchar_Type *u, int search_flags);
 
 SL_EXTERN void SLsearch_delete (SLsearch_Type *);
 
-
 SL_EXTERN SLuchar_Type *SLsearch_forward (SLsearch_Type *st,
                                         SLuchar_Type *pmin, SLuchar_Type *pmax);
 SL_EXTERN SLuchar_Type *SLsearch_backward (SLsearch_Type *st,
@@ -2407,9 +2393,9 @@ SL_EXTERN int SLpath_get_delimiter (void);
 SL_EXTERN int SLpath_set_delimiter (int);
 
 /* search path for loading .sl files */
-SL_EXTERN int SLpath_set_load_path (SLFUTURE_CONST char *);   
+SL_EXTERN int SLpath_set_load_path (SLFUTURE_CONST char *);
 /* search path for loading .sl files --- returns slstring */
-SL_EXTERN char *SLpath_get_load_path (void);   
+SL_EXTERN char *SLpath_get_load_path (void);
 
 /* These return malloced strings--- NOT slstrings */
 SL_EXTERN char *SLpath_dircat (SLFUTURE_CONST char *, SLFUTURE_CONST char *);

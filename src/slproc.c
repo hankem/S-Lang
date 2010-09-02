@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #ifndef _XOPEN_SOURCE
@@ -30,7 +30,7 @@ USA.
 #ifndef __EXTENSIONS__
 # define __EXTENSIONS__
 #endif
-  
+
 #include "slinclud.h"
 
 #ifdef HAVE_IO_H
@@ -191,7 +191,7 @@ static int setuid_cmd (int *uid)
 static int setsid_cmd (void)
 {
    pid_t pid = setsid ();
-   
+
    if (pid == (pid_t)-1)
      _pSLerrno_errno = errno;
    return pid;
@@ -322,7 +322,7 @@ static SLang_IConstant_Type Const_Table [] =
 int SLang_init_posix_process (void)
 {
    if ((-1 == SLadd_intrin_fun_table (Process_Name_Table, "__POSIX_PROCESS__"))
-       || (-1 == SLadd_iconstant_table (Const_Table, NULL))	
+       || (-1 == SLadd_iconstant_table (Const_Table, NULL))
        || (-1 == _pSLerrno_init ()))
      return -1;
 

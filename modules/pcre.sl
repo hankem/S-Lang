@@ -21,11 +21,11 @@ Qualifiers:\n\
 	variable compile_options = qualifier ("options", 0);
 	re = pcre_compile (re, options);
      }
-   
+
    variable n = pcre_exec (re, str, pos, options);
    if (n == 0)
      return NULL;
-   
+
    variable matches = String_Type[n];
    _for (0, n-1, 1)
      {
@@ -34,7 +34,6 @@ Qualifiers:\n\
      }
    return matches;
 }
-   
 
 $1 = path_concat (path_dirname (__FILE__), "help/pcrefuns.hlp");
 if (NULL != stat_file ($1))

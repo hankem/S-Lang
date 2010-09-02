@@ -10,17 +10,17 @@ must provide support for dynamic linking.
 When a slang script contains a line such as
 
   import ("NAME");
-  
+
 or
 
   import ("NAME", "NAMESPACE");
-  
+
 the interpreter will request that the operating system dynamically
 link to a shared object called NAME-module.so.  In order for such
 linking to take place, the OS must be able to find the module.  The
 search for the module takes place as follows:
 
-   First a search takes place along the set of paths returned by the 
+   First a search takes place along the set of paths returned by the
    `get_import_module_path' function.  If not found, a search is
    performed along the paths given by the `SLANG_MODULE_PATH'
    environment variable.  Then the search will take place in the path
@@ -57,16 +57,16 @@ of the SLns_* functions to load intrinsics into the namespace.
   that should execute no more than once does so only once.  See, e.g.,
   the "register_pcre_type" function in pcre-module.c for an explicit
   example.
-  
+
   Module writers are encouraged to supply a script called NAME.sl that
   looks like:
-  
+
      import ("NAME");
      % Optional code...
      provide ("NAME");
 
   Then a user would be able to load the module by using, e.g.,
-  
+
      require ("NAME");
 
 *************

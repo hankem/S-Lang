@@ -8,13 +8,13 @@
     s.field = s.field[i];
 #v-
   on each array field of the structure.  Scalar fields will not be modified.
-  
+
   The \exmp{dim} qualifier may be used to filter on a specific array
   dimension.  For example, consider the structure
 #v+
     s = struct { a = Int_Type[10], b = Int_Type[10,20] };
 #v-
-  Then 
+  Then
 #v+
     struct_filter (s, i; dim=0);
 #v-
@@ -44,7 +44,7 @@
   be given values that correspond to the fields of the input structures.  If
   more than one structure has the same field name, the value of the field will
   be given by the last structure.
-  
+
   If any of the input values is a string, or an array of strings, then
   it will be interpreted as a representing a structure with the
   corresponding field names.  This is a useful feature when one wants
@@ -61,7 +61,7 @@
 \usage{Int_Type struct_field_exists (Struct_Type s, String_Type f)}
 \description
  This function may be used to determine if a structure contains a field with
- a specfied name.  It returns 0 if the structure does not contain the field, 
+ a specfied name.  It returns 0 if the structure does not contain the field,
  or non-zero if it does.
 \seealso{get_struct_field_names}
 \done

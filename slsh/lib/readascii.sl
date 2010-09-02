@@ -21,7 +21,7 @@ define readascii ()
 {
    if (_NARGS < 2)
      {
-	usage ("nrows = %s (file, &a1,...; qualifiers);\nQualifiers:\n" 
+	usage ("nrows = %s (file, &a1,...; qualifiers);\nQualifiers:\n"
 	       + "nrows=int, ncols=int, format=string, skip=int, maxlines=int, delim=string\n"
 	       + "size=int, dsize=int, stop_on_mismatch, lastline=&var lastlinenum=&var\n"
 	       + "type=string, cols=array, comment=string, as_list\n",
@@ -60,11 +60,11 @@ define readascii ()
 	  throw UsageError, "The ncols qualifier is incompatible with more than one reference arg";
 	arg_refs = ();
      }
-   else 
+   else
      {
 	arg_refs = __pop_list (_NARGS-1);
 	ncols = length (arg_refs);
-     }   
+     }
    variable fp = ();
 
    if (want_columns != NULL)
@@ -111,12 +111,12 @@ define readascii ()
      nrows = -1;
    else if (nrows < 0)
      nrows = 0;
-   
+
    if (init_size == NULL)
      {
 	if ((nrows != NULL) && (nrows > 0))
 	  init_size = nrows;
-	else if (fp_is_array) 
+	else if (fp_is_array)
 	  init_size = maxlines;
 	else
 	  init_size = 0x8000;
@@ -176,7 +176,7 @@ define readascii ()
 
 	     continue;
 	  }
-	
+
 	if (is_list)
 	  {
 	     _for i (0, ncols-1, 1)
@@ -202,14 +202,14 @@ define readascii ()
 	       new_array_list[i][k] = array_list[i];
 	     array_list = new_array_list;
 	  }
-	
+
 	_for i (0, ncols-1, 1)
 	  array_list[i][nitems] = ref_buf[i];
 
 	nitems++;
      }
 
-   if (nitems) 
+   if (nitems)
      {
 	if ((is_list == 0) && (max_allocated != nitems))
 	  {
@@ -223,8 +223,8 @@ define readascii ()
 	else _for i (0, ncols-1, 1)
 	  @arg_refs[i] = array_list[i];
      }
-   
-   if (linep != NULL) 
+
+   if (linep != NULL)
      @linep = line;
    if (linenump != NULL)
      @linenump = nlines;

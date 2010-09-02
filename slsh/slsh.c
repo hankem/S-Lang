@@ -56,7 +56,7 @@ static char *Slsh_Version = "0.8.5-0";
 /* # define DEFAULT_LIBRARY_PATH "/usr/local/share/slsh:/usr/local/lib/slsh:/usr/share/slsh:/usr/lib/slsh"; */
 # define DEFAULT_CONF_PATH "/usr/local/etc:/usr/local/etc/slsh:/etc:/etc/slsh";
 # define USER_SLSHRC ".slshrc"
-#else 
+#else
 # define DEFAULT_CONF_PATH NULL
 # define USER_SLSHRC "slsh.rc"
 #endif
@@ -124,7 +124,6 @@ static char *Slsh_Version = "0.8.5-0";
 # endif
 #endif
 
-   
 #ifndef S_IRUSR
 # define S_IRUSR	0400
 #endif
@@ -209,22 +208,20 @@ static void c_exit (int status)
 static void exit_intrin (void)
 {
    int status;
-   
+
    if (SLang_Num_Function_Args == 0)
      status = 0;
    else if (-1 == SLang_pop_int (&status))
      return;
-   
+
    c_exit (status);
 }
-
-
 
 static void stat_mode_to_string (void)
 {
    int mode, opts;
    char mode_string[12];
-   
+
    opts = 0;
    if (SLang_Num_Function_Args == 2)
      {
@@ -235,7 +232,6 @@ static void stat_mode_to_string (void)
    if (-1 == SLang_pop_integer (&mode))
      return;
 
-
    if (S_ISREG(mode)) mode_string[0] = '-';
    else if (S_ISDIR(mode)) mode_string[0] = 'd';
    else if (S_ISLNK(mode)) mode_string[0] = 'l';
@@ -243,7 +239,7 @@ static void stat_mode_to_string (void)
    else if (S_ISFIFO(mode)) mode_string[0] = 'p';
    else if (S_ISSOCK(mode)) mode_string[0] = 's';
    else if (S_ISBLK(mode)) mode_string[0] = 'b';
-   
+
    if (mode & S_IRUSR) mode_string[1] = 'r'; else mode_string[1] = '-';
    if (mode & S_IWUSR) mode_string[2] = 'w'; else mode_string[2] = '-';
    if (mode & S_IXUSR) mode_string[3] = 'x'; else mode_string[3] = '-';
@@ -268,20 +264,19 @@ static void stat_mode_to_string (void)
    if (mode & S_IXOTH) mode_string[9] = 'x'; else mode_string[9] = '-';
    if (mode & S_ISVTX) mode_string[9] = 't';
 #endif
-   
+
    mode_string[10] = 0;
    (void) SLang_push_string (mode_string);
 }
 
-
 #ifdef __WIN32__
 
-/* Root/ 
+/* Root/
  * 	bin/
- * 		slsh.exe 
- * 	slsh/ 
- * 		slsh.rc 
- * 		autoload.sl 
+ * 		slsh.exe
+ * 	slsh/
+ * 		slsh.rc
+ * 		autoload.sl
  * 		( ... )
  */
 static char *get_win32_root (void)
@@ -290,7 +285,7 @@ static char *get_win32_root (void)
 
    if (*base_path == 0)
      {
-	if (GetModuleFileName(NULL, base_path, MAX_PATH-10) > 0) 
+	if (GetModuleFileName(NULL, base_path, MAX_PATH-10) > 0)
 	  {
 	     /* drop file name */
 	     char *p = strrchr(base_path, '\\');
@@ -306,7 +301,7 @@ static char *get_win32_root (void)
 	       }
 	  }
      }
-   
+
    return base_path;
 }
 #endif
@@ -335,7 +330,6 @@ static int try_to_load_file (char *path, char *file, char *ns)
    return -1;
 }
 
-
 static int load_startup_file (int is_interactive)
 {
    char *dir;
@@ -362,7 +356,7 @@ static int load_startup_file (int is_interactive)
 #ifdef __WIN32__
 	if (NULL == (dir = get_win32_root ()))
 	  dir = DEFAULT_CONF_PATH;
-#else	
+#else
 	dir = DEFAULT_CONF_PATH;
 #endif
      }
@@ -370,16 +364,15 @@ static int load_startup_file (int is_interactive)
    if (-1 == (status = try_to_load_file (dir, SLSHRC_FILE, NULL)))
      return -1;
 
-   if ((status == 0) 
+   if ((status == 0)
        && (Verbose_Loading || is_interactive))
      {
 	SLang_vmessage ("*** Installation Problem?  Unable to find the %s config file.",
 			SLSHRC_FILE);
      }
-     
+
    return 0;
 }
-
 
 #if 0
 static int is_script (char *file)
@@ -459,7 +452,7 @@ Usage: slsh [OPTIONS] [-|file [args...]]\n\
    libpath = SLpath_get_load_path ();
    fprintf (stderr, "Default search path: %s\n", (libpath == NULL) ? "" : libpath);
    SLang_free_slstring (libpath);
-   
+
    exit (1);
 }
 
@@ -480,7 +473,7 @@ static int output_copyright (void)
    fprintf (stdout, "Copyright (C) 2005-2010 John E. Davis <jed@jedsoft.org>\r\n");
    fprintf (stdout, "This is free software with ABSOLUTELY NO WARRANTY.\r\n");
    fprintf (stdout, "\n");
-   
+
    return 0;
 }
 
@@ -533,7 +526,7 @@ int main (int argc, char **argv)
      {
 	char *slshdir;
 	char buffer[MAX_PATH] = "";
-	
+
 	slshdir = get_win32_root();
 	if (slshdir != NULL)
 	  strcpy(buffer, slshdir);
@@ -601,7 +594,7 @@ int main (int argc, char **argv)
 	     argv++;
 	     continue;
 	  }
-	
+
 	if (0 == strcmp (arg, "-v"))
 	  {
 	     (void) SLang_load_file_verbose (3);
@@ -610,7 +603,7 @@ int main (int argc, char **argv)
 	     argv++;
 	     continue;
 	  }
-	
+
 	if (0 == strcmp (arg, "--no-readline"))
 	  {
 	     use_readline = 0;
@@ -628,7 +621,7 @@ int main (int argc, char **argv)
 	     argv += 2;
 	     continue;
 	  }
-	
+
 	if (0 == strncmp (arg, "-D", 2))
 	  {
 	     char *prep = arg + 2;
@@ -656,7 +649,7 @@ int main (int argc, char **argv)
 	       usage ();
 	     file = NULL;
 	  }
-	
+
 	argc--;
 	argv++;
      }

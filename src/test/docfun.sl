@@ -15,9 +15,9 @@ define test_doc_funs ()
      failed ("add_doc_file after get_doc_files");
    if (new[-1] != new_file)
      failed ("add_doc_file after get_doc_files: new file not found");
-   
+
    old = get_doc_files ();
-   
+
    variable list = String_Type[0];
    foreach (["1", "2", "3"])
      {

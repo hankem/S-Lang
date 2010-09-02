@@ -7,7 +7,6 @@ private define vmessage_method ()
    () = fflush (stdout);
 }
 
-  
 private define open_file_at_linenum (file, linenum)
 {
    if (path_extname (file) == ".slc")
@@ -77,7 +76,7 @@ private define read_input_method (prompt, default_cmd)
 	  break;
 
 	line = strtrim (line, "\t \n");
-	if (line == "") 
+	if (line == "")
 	  {
 	     if (default_cmd != NULL)
 	       return default_cmd;

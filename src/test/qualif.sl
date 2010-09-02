@@ -26,12 +26,12 @@ private define call_qualifier_function (f, args, q)
    Qual_Struct = q;
 
    loop (10) () = __qualifiers (;foo="bar");
-   variable args_expr 
-     = strjoin (array_map (String_Type, &sprintf, 
+   variable args_expr
+     = strjoin (array_map (String_Type, &sprintf,
 			   "Arg_List[%d]", [0:length(args)-1]), ",");
    variable fields = get_struct_field_names (q);
-   variable q_expr 
-     = strjoin (array_map (String_Type, &sprintf, 
+   variable q_expr
+     = strjoin (array_map (String_Type, &sprintf,
 			   "%s=Qual_Struct.%s", fields, fields), ",");
 
    variable expr = sprintf ("%s (%s ; %s);", f, args_expr, q_expr);
@@ -62,7 +62,7 @@ private define test_qualifiers (args, q)
 
 test_qualifiers ({1, 2, 3}, struct {a=1, b=3, c="foo"});
 test_qualifiers ({1, 2, test_qualifiers ({1,2}, struct{c=&cos})},
-		 struct {a=1, b=3, c="foo"} 
+		 struct {a=1, b=3, c="foo"}
 		 ; foo=1, bar=length ([1:10];baz=3));
 
 private define test_qualifiers ()
@@ -95,7 +95,7 @@ private define fun1 (x, y)
 private define test_qualifier ()
 {
    variable x, y, x0, y0, x1, y1;
-   
+
    x0 = 1; y0 = 2; x1 = "one"; y1 = "two";
 
    (x, y) = fun1 (x0, y0; x=x1, y=y1);
@@ -191,7 +191,6 @@ private define test_mixed_qualifiers ()
      failed ("mixed qualifiers ;x=x1,y=y0,x=y1");
 }
 test_mixed_qualifiers ();
-
 
 private define fun1_method (obj)
 {

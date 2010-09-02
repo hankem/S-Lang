@@ -70,7 +70,7 @@ private define new_pager_print (cmd)
    signal (SIGPIPE, SIG_IGN, &Sigpipe_Handler);
 # endif
    variable fp = popen (cmd, "w");
-   
+
    try
      {
 	if (fp == NULL)
@@ -97,7 +97,7 @@ private define new_file_print (filename)
    variable fp = fopen (filename, "w");
    if (fp == NULL)
      throw OpenError, "Unable to open $filename for writing."$;
-   
+
    variable p = new_fp_print (fp);
    p.close = &fp_close_method;
    p.clientdata = filename;
@@ -258,7 +258,7 @@ private define print_array (a, device)
 
 define print ()
 {
-   variable usage_string 
+   variable usage_string
      =  ("print (OBJ [,&str|File_Type|Filename]);\n"
 	 + "Qualifiers: pager[=pgm], nopager\n");
 
@@ -334,7 +334,7 @@ define print ()
 
    if (use_pager)
      device = new_pager_print (pager_pgm);
-   
+
    if (device == NULL)
      device = new_fp_print (stdout);
 
@@ -355,7 +355,7 @@ define print ()
 	  x = struct_to_string (x, 0);
 	else
 	  x = generic_to_string (x);
-   
+
 	if (-1 != device.puts (x))
 	  {
 	     () = device.puts ("\n");

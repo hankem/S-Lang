@@ -11,11 +11,11 @@ static int AGET_FROM_INDEX_ARRAY_FUN (GENERIC_TYPE *src_data, SLindex_Type num_e
 	SLarray_Range_Array_Type *r = (SLarray_Range_Array_Type *)ind_at->data;
 	SLindex_Type idx = r->first_index, delta = r->delta;
 	SLindex_Type j, jmax = (SLindex_Type) ind_at->num_elements;
-	
+
 	if (jmax == 0)
 	  return 0;
 
-	if ((idx >= 0) 
+	if ((idx >= 0)
 	    && ((idx + delta * (jmax-1)) >= 0)
 	    && ((idx + delta * (jmax-1)) < num_elements))
 	  {
@@ -30,7 +30,7 @@ static int AGET_FROM_INDEX_ARRAY_FUN (GENERIC_TYPE *src_data, SLindex_Type num_e
 	for (j = 0; j < jmax; j++)
 	  {
 	     SLindex_Type i = idx;
-	     if (i < 0) 
+	     if (i < 0)
 	       {
 		  i += num_elements;
 		  if (i < 0)
@@ -55,7 +55,7 @@ static int AGET_FROM_INDEX_ARRAY_FUN (GENERIC_TYPE *src_data, SLindex_Type num_e
      {
 	SLindex_Type i = *indices;
 
-	if (i < 0) 
+	if (i < 0)
 	  {
 	     i += num_elements;
 	     if (i < 0)
@@ -86,11 +86,11 @@ static int APUT_FROM_INDEX_ARRAY_FUN (char *src_data, SLuindex_Type data_increme
 	SLarray_Range_Array_Type *r = (SLarray_Range_Array_Type *)ind_at->data;
 	SLindex_Type idx = r->first_index, delta = r->delta;
 	SLindex_Type j, jmax = (SLindex_Type) ind_at->num_elements;
-	
+
 	if (jmax == 0)
 	  return 0;
 
-	if ((idx >= 0) 
+	if ((idx >= 0)
 	    && ((idx + delta * (jmax-1)) >= 0)
 	    && ((idx + delta * (jmax-1)) < num_elements))
 	  {
@@ -106,7 +106,7 @@ static int APUT_FROM_INDEX_ARRAY_FUN (char *src_data, SLuindex_Type data_increme
 	for (j = 0; j < jmax; j++)
 	  {
 	     SLindex_Type i = idx;
-	     if (i < 0) 
+	     if (i < 0)
 	       {
 		  i += num_elements;
 		  if (i < 0)
@@ -131,8 +131,8 @@ static int APUT_FROM_INDEX_ARRAY_FUN (char *src_data, SLuindex_Type data_increme
    while (indices < indices_max)
      {
 	SLindex_Type i = *indices;
-	     
-	if (i < 0) 
+
+	if (i < 0)
 	  {
 	     i += num_elements;
 	     if (i < 0)
@@ -151,5 +151,5 @@ static int APUT_FROM_INDEX_ARRAY_FUN (char *src_data, SLuindex_Type data_increme
 }
 # undef APUT_FROM_INDEX_ARRAY_FUN
 #endif
-  
+
 #undef GENERIC_TYPE

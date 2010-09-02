@@ -18,7 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -57,7 +57,7 @@ void _pSLns_deallocate_namespace (SLang_NameSpace_Type *ns)
 
    if (ns == NULL)
      return;
-   
+
    SLang_free_slstring ((char *) ns->name);
 
    table = ns->table;
@@ -105,7 +105,7 @@ SLang_NameSpace_Type *_pSLns_allocate_namespace (SLFUTURE_CONST char *name, unsi
    ns->name = name;
    ns->table = nt;
    ns->table_size = size;
-   
+
    return ns;
 }
 
@@ -132,8 +132,8 @@ SLang_NameSpace_Type *_pSLns_new_namespace (SLFUTURE_CONST char *name, unsigned 
    return table_list;
 }
 
-/* Find the private namespace associated with the object (file, etc) given by 
- * `name', and whose private namespace is given by `namespace_name'.  If 
+/* Find the private namespace associated with the object (file, etc) given by
+ * `name', and whose private namespace is given by `namespace_name'.  If
  * `namespace_name' is NULL, then it is anonymous.
  */
 SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, SLFUTURE_CONST char *namespace_name)
@@ -143,7 +143,7 @@ SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, S
    if ((namespace_name != NULL)
        && (*namespace_name == 0))
      namespace_name = NULL;
-     
+
    ns = Namespace_Tables;
    while (ns != NULL)
      {
@@ -172,7 +172,7 @@ SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, S
 
 	ns = ns->next;
      }
-   
+
    if (NULL == (ns = _pSLns_new_namespace (name, SLSTATIC_HASH_TABLE_SIZE)))
      return ns;
 
@@ -191,14 +191,14 @@ SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, S
 int _pSLns_set_namespace_name (SLang_NameSpace_Type *t, SLFUTURE_CONST char *name)
 {
    SLang_NameSpace_Type *t1;
-   
+
    t1 = _pSLns_find_namespace (name);
    if (t == t1)
      return 0;			       /* already has this name */
 
    if (t1 == NULL)
      t1 = t;
-   
+
    if ((t != t1) || (*name == 0))
      {
 	_pSLang_verror (SL_Namespace_Error, "Namespace \"%s\" already exists",
@@ -218,7 +218,7 @@ int _pSLns_set_namespace_name (SLang_NameSpace_Type *t, SLFUTURE_CONST char *nam
 
    SLang_free_slstring ((char *) t->namespace_name);   /* NULL ok */
    t->namespace_name = name;
-   
+
    return 0;
 }
 
@@ -231,7 +231,7 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, SLFUTURE_CONST c
    unsigned int i;
    SLRegexp_Type *reg;
    unsigned int two;
-   
+
    at = NULL;
 
    if ((ns == NULL)
@@ -250,7 +250,7 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, SLFUTURE_CONST c
    while (two != 0)
      {
 	two--;
-	
+
 	num_matches = 0;
 	for (i = 0; i < table_size; i++)
 	  {
@@ -265,7 +265,7 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, SLFUTURE_CONST c
 		     case SLANG_GVARIABLE:
 		       flags = 8;
 		       break;
-		       
+
 		     case SLANG_ICONSTANT:
 		     case SLANG_DCONSTANT:
 		     case SLANG_FCONSTANT:
@@ -284,16 +284,16 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, SLFUTURE_CONST c
 		     case SLANG_ARITH_BINARY:
 		       flags = 1;
 		       break;
-		       
+
 		     case SLANG_FUNCTION:
 		       flags = 2;
 		       break;
-		       
+
 		     default:
 		       flags = 0;
 		       break;
 		    }
-		  
+
 		  if ((flags & what)
 		      && (NULL != SLregexp_match (reg, name, strlen (name))))
 		    {
@@ -307,7 +307,7 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, SLFUTURE_CONST c
 		  t = t->next;
 	       }
 	  }
-	
+
 	if (at == NULL)
 	  {
 	     at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &num_matches, 1);
@@ -319,7 +319,7 @@ SLang_Array_Type *_pSLnspace_apropos (SLang_NameSpace_Type *ns, SLFUTURE_CONST c
    if (reg != NULL)
      SLregexp_free (reg);
    return at;
-   
+
    return_error:
    SLregexp_free (reg);
    SLang_free_array (at);
@@ -336,7 +336,7 @@ SLang_NameSpace_Type *_pSLns_create_namespace2 (SLFUTURE_CONST char *name, SLFUT
    ns = _pSLns_find_namespace (namespace_name);
    if (ns != NULL)
      return ns;
-   
+
    if (NULL == (ns = _pSLns_new_namespace (name, SLSTATIC_HASH_TABLE_SIZE)))
      return NULL;
 
@@ -354,7 +354,6 @@ SLang_NameSpace_Type *SLns_create_namespace (SLFUTURE_CONST char *namespace_name
    return _pSLns_create_namespace2 (NULL, namespace_name);
 }
 
-
 void SLns_delete_namespace (SLang_NameSpace_Type *ns)
 {
    /* FIXME: remove symbols from the namespace */
@@ -366,7 +365,7 @@ void SLns_delete_namespace (SLang_NameSpace_Type *ns)
    else
      {
 	SLang_NameSpace_Type *prev = Namespace_Tables;
-	while (prev != NULL) 
+	while (prev != NULL)
 	  {
 	     if (prev->next != ns)
 	       {
@@ -386,7 +385,7 @@ SLang_Array_Type *_pSLns_list_namespaces (void)
    SLang_NameSpace_Type *table_list;
    SLang_Array_Type *at;
    SLindex_Type num, i;
-   
+
    num = 0;
    table_list = Namespace_Tables;
    while (table_list != NULL)
@@ -401,7 +400,7 @@ SLang_Array_Type *_pSLns_list_namespaces (void)
 
    table_list = Namespace_Tables;
    i = 0;
-   while ((table_list != NULL) 
+   while ((table_list != NULL)
 	  && (i < num))
      {
 	if (table_list->namespace_name != NULL)
@@ -440,7 +439,6 @@ SLang_Name_Type *
    return t;
 }
 
-
 /* It is up to the caller to make sure that the name is not already in the table */
 int _pSLns_add_hashed_name (SLang_NameSpace_Type *ns, SLang_Name_Type *nt, unsigned long hash)
 {
@@ -462,8 +460,7 @@ SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt)
 
    name = nt->name;
    hash = _pSLcompute_string_hash (name);
-   
-   
+
    ns = Namespace_Tables;
    while (ns != NULL)
      {
@@ -472,7 +469,7 @@ SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt)
 	  {
 	     if (t == nt)
 	       return ns;
-	     
+
 	     t = t->next;
 	  }
 	ns = ns->next;
@@ -485,5 +482,4 @@ SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *ns, SLCONST char *nam
 {
    return _pSLns_locate_hashed_name (ns, name, _pSLcompute_string_hash (name));
 }
-
 

@@ -65,4 +65,3 @@ rline_setkey ("eol",			"\xE0O");
 rline_setkey ("bol",			"\xE0G");
 #endif
 
-

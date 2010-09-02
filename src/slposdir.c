@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -168,7 +168,7 @@ static SLang_CStruct_Field_Type Stat_Struct [] =
 static int push_stat_struct (struct stat *st, int opt_attrs)
 {
    Stat_Type s;
-   
+
    s.st = *st;
    s.st_opt_attrs = opt_attrs;
    return SLang_push_cstruct ((VOID_STAR) &s, Stat_Struct);
@@ -188,7 +188,7 @@ static void stat_cmd (char *file)
 	file = SLmake_nstring (file, len-1);
 	if (file == NULL)
 	  return;
-	
+
 	is_malloced = 1;
      }
 #endif
@@ -207,12 +207,12 @@ static void stat_cmd (char *file)
 
 	push_stat_struct (&st, opt_attrs);
      }
-   else 
+   else
      {
 	_pSLerrno_errno = errno;
 	SLang_push_null ();
      }
-   
+
 #if defined(__MSDOS__) || defined(__WIN32__)
    if (is_malloced)
      SLfree (file);
@@ -240,7 +240,7 @@ static void lstat_cmd (char *file)
 #else
    opt_attrs = 0;
 #endif
-   
+
    push_stat_struct (&st, opt_attrs);
 #else
    stat_cmd (file);
@@ -269,7 +269,7 @@ static int utime_intrin (char *file, double *t0p, double *t1p)
    u.modtime = (time_t) t1;
    ret = utime (file, &u);
 # endif
-   
+
    if (ret == -1)
      _pSLerrno_errno = errno;
 
@@ -411,7 +411,7 @@ static int symlink_cmd (char *oldpath, char *newpath)
 static int hardlink_cmd (char *oldpath, char *newpath)
 {
    int s;
-   
+
    while (-1 == (s = link (oldpath, newpath)))
      {
 	if (is_interrupt (errno))
@@ -547,7 +547,6 @@ static char *vms_convert_dirspec_to_vms_dir (char *str)
      version = str + len;
    /* version points to the version of the input string */
 
-   
    if (NULL == (s = SLmalloc (len + 8)))/* allow extra space to work with */
      return NULL;
 
@@ -555,7 +554,7 @@ static char *vms_convert_dirspec_to_vms_dir (char *str)
    strncpy (s, str, len);
    s[len] = 0;
    str = s;
-   
+
    /* Lowercase the whole thing */
    while (*s != 0)
      {
@@ -573,11 +572,11 @@ static char *vms_convert_dirspec_to_vms_dir (char *str)
      }
 
    /* Check for one of two possibilities:
-    * 
+    *
     *     dev:[x]   --> dev:x
     *     dev:[a.x] --> dev:[a]x
     */
-   
+
    if (NULL == (dot = strchr (str, '.')))
      {
 	/* First possibility */
@@ -591,13 +590,13 @@ static char *vms_convert_dirspec_to_vms_dir (char *str)
 	*s = 0;
 	goto add_dir_version;
      }
-   
+
    while (NULL != (s = strchr (dot + 1, '.')))
      dot = s;
-   
+
    *dot = ']';
    s = str + (len - 1);
-   
+
    /* Drop */
 
    add_dir_version:
@@ -614,10 +613,10 @@ static int rmdir_cmd (char *s)
 
    if (NULL == (s = vms_convert_dirspec_to_vms_dir (s)))
      return -1;
-   
+
    status = remove_cmd (s);
    SLfree (s);
-   
+
    return status;
 
 #else
@@ -678,7 +677,7 @@ static int mkdir_cmd (void)
    int ret;
    char *dir;
    int mode = 0777;
-   
+
    if (SLang_Num_Function_Args != 1)
      {
 	if (-1 == SLang_pop_integer (&mode))
@@ -710,7 +709,7 @@ static int mkdir_cmd (void)
 	_pSLerrno_errno = errno;
 	break;
      }
-   
+
    SLang_free_slstring (dir);
    return ret;
 }
@@ -775,7 +774,6 @@ static int build_dirlist (char *file, char *opt, char ***listp, unsigned int *nu
 # else
    rc = DosQueryPathInfo(file, FIL_STANDARD, &status, sizeof(FILESTATUS3));
 # endif
-
 
 # ifdef __WIN32__
    if (status == (DWORD)-1)
@@ -852,7 +850,7 @@ static int build_dirlist (char *file, char *opt, char ***listp, unsigned int *nu
 	     return -1;
 	  }
      }
-# endif   
+# endif
    else while (1)
      {
 	/* Do not include hidden files in the list.  Also, do not
@@ -1017,7 +1015,7 @@ static void listdir_cmd (char *dir, char *opt)
 	SLang_push_null ();
 	return;
      }
-   /* If max_num_files == 0, then num_files == 0 and list == NULL.  
+   /* If max_num_files == 0, then num_files == 0 and list == NULL.
     * The realloc step below will malloc list for us.
     */
    if (num_files + 1 < max_num_files)
@@ -1091,12 +1089,12 @@ static int umask_cmd (int *u)
 static int access_cmd (char *path, int *modep)
 {
    int mode = *modep & (R_OK|W_OK|X_OK|F_OK);
-   
+
    while (-1 == access (path, mode))
      {
 	if (is_interrupt (errno))
 	  continue;
-	
+
 	_pSLerrno_errno = errno;
 	return -1;
      }

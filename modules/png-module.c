@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "config.h"
@@ -76,7 +76,7 @@ static void byte_swap16 (unsigned char *p, unsigned char *t, unsigned int n)
 
 /*{{{ Png_Type */
 
-typedef struct 
+typedef struct
 {
    FILE *fp;
    int mode;			       /* 'r' or 'w' */
@@ -125,7 +125,6 @@ static Png_Type *alloc_png_type (int mode)
    return p;
 }
 
-
 /*}}}*/
 
 static png_byte **allocate_image_pointers (png_uint_32 height, png_byte *data, png_uint_32 rowbytes, int flip)
@@ -169,7 +168,7 @@ static Png_Type *open_png_file (char *file)
 {
    png_byte header[8];
    Png_Type *p;
-   
+
    if (NULL == (p = alloc_png_type ('r')))
      return NULL;
 
@@ -181,7 +180,7 @@ static Png_Type *open_png_file (char *file)
 	free_png_type (p);
 	return NULL;
      }
-   
+
    if (NULL == (p->png = png_create_read_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)))
      {
 	SLang_verror (SL_Open_Error, "Unable to read png structure from %s", file);
@@ -195,7 +194,7 @@ static Png_Type *open_png_file (char *file)
 	free_png_type (p);
 	return NULL;
      }
-   
+
    return p;
 }
 
@@ -276,7 +275,7 @@ static SLang_Array_Type *read_image_internal (char *file, int flip, int *color_t
 
    if (NULL == (p = open_png_file (file)))
      return NULL;
-   
+
    png = p->png;
    if (setjmp (png_jmpbuf (png)))
      {
@@ -286,7 +285,7 @@ static SLang_Array_Type *read_image_internal (char *file, int flip, int *color_t
 	SLang_verror (SL_Read_Error, "Error encountered during I/O to %s", file);
 	return NULL;
      }
-   
+
    png_init_io (png, p->fp);
    png_set_sig_bytes (png, 8);
    info = p->info;
@@ -308,12 +307,12 @@ static SLang_Array_Type *read_image_internal (char *file, int flip, int *color_t
       case PNG_COLOR_TYPE_GRAY_ALPHA:
 	/* png_set_gray_to_rgb (png); */
 	break;
-	
+
       case PNG_COLOR_TYPE_PALETTE:
 	png_set_palette_to_rgb (png);
 	break;
      }
-   
+
    if (png_get_valid(png, info, PNG_INFO_tRNS))
      png_set_tRNS_to_alpha(png);
 
@@ -388,7 +387,7 @@ static SLang_Array_Type *read_image_internal (char *file, int flip, int *color_t
      }
    free_png_type (p);
    free_image_pointers (image_pointers);
-   if (fixup_array_fun != NULL) 
+   if (fixup_array_fun != NULL)
      (*fixup_array_fun) (at);
    return at;
 }
@@ -409,7 +408,7 @@ static void read_image (int flipped)
 	file = NULL;
 	goto free_return;
      }
-   
+
    if (NULL == (at = read_image_internal (file, flipped, &color_type)))
      goto free_return;
 
@@ -440,7 +439,7 @@ static void write_gray_to_gray (png_struct *png, png_byte *data, SLindex_Type nu
 static void write_gray_to_gray_alpha (png_struct *png, png_byte *data, SLindex_Type num_cols, png_byte *tmpbuf)
 {
    SLindex_Type i, j;
-   
+
    j = 0;
    for (i = 0; i < num_cols; i++)
      {
@@ -469,7 +468,7 @@ static void write_gray_alpha_to_gray (png_struct *png, png_byte *data, SLindex_T
 static void write_gray_alpha_to_gray_alpha (png_struct *png, png_byte *data, SLindex_Type num_cols, png_byte *tmpbuf)
 {
    if (Is_Little_Endian == 0)
-     {     
+     {
 	png_write_row (png, data);
 	return;
      }
@@ -527,7 +526,6 @@ static void write_rgb_to_rgb (png_struct *png, png_byte *data, SLindex_Type num_
      }
    png_write_row (png, tmpbuf);
 }
-
 
 static int write_array (png_struct *png, png_byte **image_pointers, SLindex_Type num_rows, SLindex_Type num_cols,
 			void (*write_row_func) (png_struct *, png_byte *, SLindex_Type, png_byte *),
@@ -625,7 +623,7 @@ static int write_image_internal (char *file, SLang_Array_Type *at,
    p->fp = NULL;
    /* drop */
    return_error:
-   if (tmpbuf != NULL) 
+   if (tmpbuf != NULL)
      SLfree ((char *) tmpbuf);
    free_image_pointers (image_pointers);
    if (p != NULL)
@@ -633,7 +631,6 @@ static int write_image_internal (char *file, SLang_Array_Type *at,
 
    return status;
 }
-
 
 static void write_image (int flip)
 {
@@ -653,14 +650,14 @@ static void write_image (int flip)
 
    if (-1 == SLang_pop_array (&at, 0))
      return;
-   
+
    if (at->num_dims != 2)
      {
 	SLang_verror (SL_InvalidParm_Error, "Expecting a 2-d array");
 	SLang_free_array (at);
 	return;
      }
-   
+
    switch (SLang_get_int_size (at->data_type))
      {
       case -8:
@@ -707,7 +704,7 @@ static void write_image (int flip)
 	SLang_free_array (at);
 	return;
      }
-     
+
    if (-1 == SLang_pop_slstring (&file))
      {
 	SLang_free_array (at);
@@ -718,7 +715,6 @@ static void write_image (int flip)
    SLang_free_array (at);
 }
 
-       
 static void read_intrin (void)
 {
    read_image (0);

@@ -37,7 +37,7 @@ define check_global_local ()
      failed ("global + local");
    if (1 + 11 != 12)
      failed ("int + int");
-   
+
    variable y = 3;
    x = 37; x = x + 3;
    if (x != 40)
@@ -237,7 +237,7 @@ define test_typecast ()
 {
    variable args = __pop_args (_NARGS-1);
    variable y = ();
-   
+
    if (y != typecast (__push_args (args)))
      failed ("typecast");
 }
@@ -254,7 +254,7 @@ define check_hypot (a, b, c)
      failed ("Wrong return type for hypot");
    if (0 == _eqs(c, cc))
      failed ("hypot: expected %S, got %S", c, cc);
-   
+
    if (length (a) != length(b))
      return;
 
@@ -329,11 +329,11 @@ static define check_atox (fun, str, val)
 {
    ifnot (__is_same (val, (@fun)(str)))
      failed ("%S", fun);
-   
+
    variable a = String_Type[1024];
    a[*] = str;
    variable b = (@fun) (a);
-   if ((typeof (b) != Array_Type) 
+   if ((typeof (b) != Array_Type)
        || (_typeof(b) != typeof (val)))
      failed ("%S did not return array of type %S", fun, typeof(val));
    if (any(b != val))
@@ -391,7 +391,7 @@ private define sl_feqs (a, b, relerr, abserr)
    if (abs(a-b) <= abserr)
      return 1;
    if (abs(a) > abs(b)) (b,a)=(a,b);
-   
+
    return (abs((b-a)/b) <= relerr);
 }
 
@@ -403,14 +403,14 @@ define test_feqs (a, b, relerr, abserr)
      d = d[0];
    if (not _eqs(c,d))
      failed ("feqs(4 args) did not return expected result");
-   
+
    c = feqs (a, b, relerr);
    d = array_map (Char_Type, &sl_feqs, a, b, relerr, 0.0);
    if (typeof (c) != Array_Type)
      d = d[0];
    if (not _eqs(c, d))
      failed ("feqs(3 args) did not return expected result");
-   
+
    a = typecast (a, Double_Type);
    b = typecast (b, Float_Type);
    c = feqs (a, b, relerr);
@@ -443,7 +443,7 @@ private define test_feqs1 (a, b, c, d)
 {
    test_feqs (a, b, c, d);
 
-   if ((typeof (a) == Array_Type) 
+   if ((typeof (a) == Array_Type)
        && (typeof (b) == Array_Type))
      {
 	variable i, n = length (a);
@@ -455,7 +455,6 @@ private define test_feqs1 (a, b, c, d)
      }
 }
 
-	     
 foreach (10.0^[-12:20])
 {
    $1 = ();

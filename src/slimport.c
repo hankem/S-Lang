@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -93,7 +93,7 @@ static void free_handle_type (Handle_Type *h)
 {
    if (h == NULL)
      return;
-   
+
    SLang_free_slstring (h->module_name);
    free_namespace_list (h->ns_list);
    SLfree ((char *)h);
@@ -147,7 +147,7 @@ static int check_api_version (char *file, int api_version)
 {
    if (api_version/10000 == SLANG_VERSION/10000)
      return 0;
-   
+
    _pSLang_verror (SL_Import_Error, "Module %s is incompatible with this version of S-Lang",
 		 file);
    return -1;
@@ -161,7 +161,7 @@ static FVOID_STAR do_dlsym (VOID_STAR handle, SLFUTURE_CONST char *file, int che
    SLsnprintf (symbol, sizeof(symbol), fmt, module);
    if (NULL != (s = (FVOID_STAR) dlsym (handle, symbol)))
      return s;
-   
+
    if (check_error)
      {
 	SLCONST char *err;
@@ -257,7 +257,7 @@ static Handle_Type *dynamic_link_module (SLFUTURE_CONST char *module)
 
 	_pSLang_verror (SL_Import_Error,
 		      "Error linking to %s: %s", save_file, err);
-	
+
 	if (save_err != NULL)
 	  SLfree (save_err);
 	if (pathfile != NULL)
@@ -309,7 +309,7 @@ static int import_module (SLFUTURE_CONST char *module, SLFUTURE_CONST char *ns)
 
    if (ns == NULL)
      ns = _pSLang_cur_namespace_intrinsic ();
-   
+
    if (*ns == 0)
      ns = "Global";
 
@@ -324,10 +324,10 @@ static int import_module (SLFUTURE_CONST char *module, SLFUTURE_CONST char *ns)
 	  return 0;		       /* already linked to this ns */
 	ns_list = ns_list->next;
      }
-   
+
    if (NULL == (ns_list = (Namespace_List_Type *)SLmalloc (sizeof (Namespace_List_Type))))
      return -1;
-   
+
    if (NULL == (ns_list->ns = SLang_create_slstring (ns)))
      {
 	SLfree ((char *)ns_list);
@@ -338,7 +338,7 @@ static int import_module (SLFUTURE_CONST char *module, SLFUTURE_CONST char *ns)
 
    if (-1 == (h->ns_init_fun (ns)))
      return -1;
-   
+
    return 0;
 }
 
@@ -350,15 +350,15 @@ static void import_module_intrin (void)
    if (SLang_Num_Function_Args == 2)
      {
 	if (-1 == SLang_pop_slstring (&ns))
-	  return;	
+	  return;
      }
-   
+
    if (-1 == SLang_pop_slstring (&module))
      {
 	SLang_free_slstring (ns);      /* NULL ok */
 	return;
      }
-   
+
    (void) import_module (module, ns);
    SLang_free_slstring (module);
    SLang_free_slstring (ns);	       /* NULL ok */

@@ -15,7 +15,7 @@ SLANG_LIB = $(SLANG_INCLUDE)/$(ARCH)objs#     location of libslang.a
 #---------------------------------------------------------------------------
 # Other libraries
 #---------------------------------------------------------------------------
-TCAPLIB = @TERMCAP@ @DYNAMIC_LINK_LIB@ 
+TCAPLIB = @TERMCAP@ @DYNAMIC_LINK_LIB@
 #TCAPLIB = -ltermcap
 
 #----------------------------------------------------------------------------

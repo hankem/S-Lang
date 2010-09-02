@@ -34,7 +34,7 @@ If are linking against a dll version of slang,
 add a 'DLL' parameter to mkmake:
 
    mkmake WIN32 VC DLL < makefile.all > Makefile
-   
+
 (right now this is known to work only with Visual Studio).
 
 Each section must define the following macros:
@@ -124,7 +124,7 @@ TARGET_DEPS =
 RM = del
 COPY = copy
 #}}}
-! endif 
+! endif
 #}}}
 !endif
 !ifdef WIN16 #{{{
@@ -152,7 +152,7 @@ COMPILE_DEPS =
 RM = del
 COPY = copy
 #}}}
-! endif 
+! endif
 #}}}
 !endif
 !ifdef WIN32 #{{{
@@ -226,7 +226,7 @@ DEFS = -DSLSH_CONF_DIR='"$(SLSH_CONF_DIR)"' -DSLSH_PATH='"$(SLSH_LIB_DIR)"'
 COMPILE_CMD = $(CC) -c $(CFLAGS) $(DEFS) -I$(SLANGINC) -o #
 SLSH_CONF_DIR = /etc
 SLSH_LIB_DIR = /usr/share/slsh
-COMPILE_DEPS = 
+COMPILE_DEPS =
 RM = rm
 COPY = cp
 #}}}

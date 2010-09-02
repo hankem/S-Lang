@@ -1,4 +1,3 @@
-
 \function{SLkm_define_key}
 \synopsis{Define a key in a keymap}
 \usage{int SLkm_define_key (char *seq, FVOID_STAR f, SLKeyMap_List_Type *km)}
@@ -10,8 +9,6 @@
 \seealso{SLkm_define_keysym, SLang_define_key}
 \done
 
-
-
 \function{SLang_define_key}
 \synopsis{Define a key in a keymap}
 \usage{int SLang_define_key(char *seq, char *fun, SLKeyMap_List_Type *km)}
@@ -21,7 +18,6 @@
   \var{km}.
 \seealso{SLkm_define_keysym, SLkm_define_key}
 \done
-
 
 \function{SLkm_define_keysym}
 \synopsis{Define a keysym in a keymap}
@@ -66,7 +62,6 @@
 \seealso{SLang_define_key, SLkm_define_keysym}
 \done
 
-
 \function{SLang_do_key}
 \synopsis{Read a keysequence and return its keymap entry}
 \usage{SLang_Key_Type *SLang_do_key (kml, getkey)}
@@ -79,7 +74,7 @@
   specified by the \var{getkey} function pointer and uses the
   key sequence to return the appropriate entry in the keymap specified
   by \var{kml}.
-  
+
   \var{SLang_do_key} returns \var{NULL} if the key sequence is not
   defined by the keymap, otherwise it returns a pointer to an object
   of type \var{SLang_Key_Type}, which is defined in \exmp{slang.h} as
@@ -114,7 +109,6 @@ SLang_Key_Type;
 \seealso{SLkm_define_keysym, SLkm_define_key}
 \done
 
-
 \function{SLang_find_key_function}
 \synopsis{Obtain a function pointer associated with a keymap}
 \usage{FVOID_STAR SLang_find_key_function (fname, km);}
@@ -131,7 +125,6 @@ SLang_Key_Type;
   \var{NULL}.
 \seealso{SLang_create_keymap, SLang_find_keymap}
 \done
-
 
 \function{SLang_find_keymap}
 \synopsis{Find a keymap}
@@ -154,8 +147,8 @@ SLang_Key_Type;
   1).  In addition, if the key sequence contains constructs such as
   \exmp{^(XX)}, where \exmp{XX} represents a two-character termcap
   specifier, the termcap escape sequence will be looked up and
-  substituted.   
-  
+  substituted.
+
   Upon success, \var{SLang_process_keystring} returns a raw
   key-sequence whose first character represents the total length of
   the key-sequence, including the length specifier itself.  It returns

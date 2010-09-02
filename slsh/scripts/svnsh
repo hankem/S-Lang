@@ -1,10 +1,10 @@
 #!/usr/bin/env slsh
 % This is a simple shell that allows one to interact with an SVN repository
 % in a shell-like manner.
-% 
-% The location of the repository may be specified either on the 
+%
+% The location of the repository may be specified either on the
 % command line or via the SVN_REPOS environment variable, e.g.,
-% 
+%
 %     svnsh $HOME/var/svn/repos
 %
 % Use it at your own risk!
@@ -42,7 +42,7 @@ private define expand_path (path)
 	  }
 	if (sdir == ".")
 	  continue;
-	
+
 	dir = strcat (dir, "/", sdir);
      }
    return dir;
@@ -146,7 +146,7 @@ private define _svn_ls (argv)
 	file = expand_path (file);
 	if (file == NULL)
 	  continue;
-	
+
 	_svn_execute ("ls %s %s", opts, file);
      }
 }
@@ -155,16 +155,16 @@ private define _svn_mv (argv)
 {
    variable opts, files;
    (opts, files) = get_opts (argv);
-   
+
    if (length (files) != 2)
      {
 	() = fprintf (stderr, "Usage: mv FROM TO\n");
 	return;
      }
-   
+
    variable from = expand_path (files[0]);
    variable to = expand_path (files[1]);
-   
+
    if ((from == NULL) or (to == NULL))
      {
 	() = fprintf (stderr, "*** mv failed\n");
@@ -242,7 +242,6 @@ private define _svn_local_help (argv)
      }
 }
 
-	
 Cmd_Table["ls"] = &_svn_ls;
 Cmd_Table["cd"] = &_svn_cd;
 Cmd_Table["cp"] = &_svn_cp;
@@ -258,7 +257,7 @@ Cmd_Table["?"] = &_svn_local_help;
 private define take_input ()
 {
    variable line;
-   forever 
+   forever
      {
 	try
 	  {
@@ -307,7 +306,7 @@ public define svn_set_repository (repos)
    Repository = repos;
    Repository_CWD = repos;
 }
-   
+
 public define slsh_main ()
 {
    variable repos;
@@ -328,7 +327,7 @@ public define slsh_main ()
 
    !if (is_substr (repos, "://"))
      repos = strcat ("file://", repos);
-   
+
    svn_set_repository (repos);
 
    slsh_readline_init ("SVNSH");

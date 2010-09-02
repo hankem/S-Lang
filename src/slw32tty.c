@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -61,14 +61,14 @@ int SLang_init_tty (int abort_char, int no_flow_control, int opost)
    (void) no_flow_control;
 
    SLKeyBoard_Quit = 0;
-   
+
    if (SLw32_Hstdin != INVALID_HANDLE_VALUE)
      return 0;
 
 #if 1
    /* stdin may have been redirected.  So try this */
-   SLw32_Hstdin = CreateFile ("CONIN$", GENERIC_READ|GENERIC_WRITE, 
-			       FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, 
+   SLw32_Hstdin = CreateFile ("CONIN$", GENERIC_READ|GENERIC_WRITE,
+			       FILE_SHARE_READ|FILE_SHARE_WRITE, NULL,
 			       OPEN_EXISTING, 0, NULL);
    if (SLw32_Hstdin == INVALID_HANDLE_VALUE)
      return -1;
@@ -82,7 +82,7 @@ int SLang_init_tty (int abort_char, int no_flow_control, int opost)
 	SLw32_Hstdin = INVALID_HANDLE_VALUE;
 	return -1;
      }
-   
+
    if (abort_char > 0)
      SLang_Abort_Char = abort_char;
 
@@ -135,7 +135,6 @@ static int process_mouse_event (MOUSE_EVENT_RECORD *m)
    buf[1] = '[';
    buf[2] = 'M';
 
-
    buf[4] = 1 + ' ' + m->dwMousePosition.X;
    buf[5] = 1 + ' ' + m->dwMousePosition.Y;
 
@@ -153,7 +152,7 @@ static int process_key_event (KEY_EVENT_RECORD *key)
    if (!key->bKeyDown) return 0;
    if (d & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED))
      key_state |= _pSLTT_KEY_ALT;
-   if (d & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) 
+   if (d & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED))
      key_state |= _pSLTT_KEY_CTRL;
    if (d & SHIFT_PRESSED)
      key_state |= _pSLTT_KEY_SHIFT;
@@ -230,7 +229,7 @@ static int process_key_event (KEY_EVENT_RECORD *key)
       case 0x58:		       /* F12 */
 	(void) _pSLpc_convert_scancode (scan, key_state, 0);
      }
-   
+
    c1 = key->uChar.AsciiChar;
    if (c1 != 0)
      {
@@ -242,7 +241,7 @@ static int process_key_event (KEY_EVENT_RECORD *key)
 	  }
 	if (c1 == SLang_Abort_Char)
 	  {
-	     if (SLang_Ignore_User_Abort == 0) 
+	     if (SLang_Ignore_User_Abort == 0)
 	       SLang_set_error (USER_BREAK);
 	     SLKeyBoard_Quit = 1;
 	  }
@@ -251,7 +250,6 @@ static int process_key_event (KEY_EVENT_RECORD *key)
      }
    return 0;
 }
-
 
 static void process_console_records(void)
 {
@@ -310,7 +308,7 @@ int _pSLsys_input_pending (int tsecs)
 	process_console_records ();
 	ms -= GetTickCount () - t;
      }
-   
+
    return SLang_Input_Buffer_Len;
 }
 
@@ -326,7 +324,7 @@ int _pSLsys_input_pending (int tsecs)
 \*----------------------------------------------------------------------*/
 unsigned int _pSLsys_getkey (void)
 {
-   /* Check the input buffer because _pSLsys_input_pending may have been 
+   /* Check the input buffer because _pSLsys_input_pending may have been
     * called prior to this to stuff the input buffer.
     */
    if (SLang_Input_Buffer_Len)
@@ -341,11 +339,11 @@ unsigned int _pSLsys_getkey (void)
 
 	if (SLKeyBoard_Quit)
 	  return SLang_Abort_Char;
-	
+
 	status = _pSLsys_input_pending (600);
 	if (status == -1)
 	  return SLANG_GETKEY_ERROR;
-	
+
 	if (status > 0)
 	  return SLang_getkey ();
      }

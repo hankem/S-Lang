@@ -1024,7 +1024,7 @@ static int pop_skipintrin_args (SLuchar_Type **strp, SLstrlen_Type *lenp, SLstrl
    *posp = pos;
    return 0;
 }
-   
+
 /* Usage: (wc, pos) = strskipchar (str, pos [,skip_comb]);
  */
 static void strskipchar_intrin (void)
@@ -1103,7 +1103,6 @@ static void strbskipchar_intrin (void)
 free_and_return:
    SLang_free_slstring ((char *)str);
 }
-
 
 static int toupper_cmd (SLwchar_Type *ch) /*{{{*/
 {

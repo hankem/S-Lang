@@ -21,9 +21,9 @@
   would be a precalc table for the 60 hand positions, so
   that the floating point stuff can be ditched. As I said,
   it was a 20 hackup minute job.]
-  
+
   COMING SOON: tfishtank. Be the envy of your mac-owning
-  colleagues.  
+  colleagues.
 */
 
 /* To compile: cc -o tclock tclock.c -lcurses -lm */
@@ -40,7 +40,6 @@ plot(int x,int y,char col)
 {
   mvaddch(y,x,(chtype)col);
 }
- 
 
 /* Draw a diagonal(arbitrary) line using Bresenham's alogrithm. */
 static void
@@ -51,10 +50,10 @@ dline(int from_x, int from_y, int x2, int y2, char ch)
 	int sx,sy;
 	int x,y;
 	int d;
-	
+
 	dx=x2-from_x;
 	dy=y2-from_y;
-	
+
 	ax=abs(dx*2);
 	ay=abs(dy*2);
 
@@ -63,42 +62,42 @@ dline(int from_x, int from_y, int x2, int y2, char ch)
 
 	x=from_x;
 	y=from_y;
-		
+
 	if(ax>ay)
 	{
 		d=ay-(ax/2);
-		
+
 		while(1)
 		{
 			plot(x,y,ch);
 			if(x==x2) return;
-			
+
 			if(d>=0)
 			{
 				y+=sy;
 				d-=ax;
 			}
 			x+=sx;
-			d+=ay;			
+			d+=ay;
 		}
 	}
 	else
 	{
 		d=ax-(ay/2);
-		
+
 		while(1)
 		{
 			plot(x,y,ch);
 			if(y==y2) return;
-			
+
 			if(d>=0)
 			{
 				x+=sx;
 				d-=ay;
 			}
 			y+=sy;
-			d+=ax;			
-		}	
+			d+=ax;
+		}
 	}
 }
 
@@ -114,7 +113,7 @@ main(int argc, char **argv)
 	time_t tim;
 	struct tm *t;
 	char szChar[10];
-	
+
 	initscr();
 	noecho();
 
@@ -151,11 +150,11 @@ main(int argc, char **argv)
 	    mangle=(t->tm_min)*(2*PI)/60.0;
 	    mdx=2.0*mradius*sin(mangle);
 	    mdy=mradius*cos(mangle);
-	    
+
 	    hangle=(hours)*(2.0*PI)/12.0;
 	    hdx=2.0*hradius*sin(hangle);
 	    hdy=hradius*cos(hangle);
-       
+
 	    sangle=(t->tm_sec%60)*(2.0*PI)/60.0;
 	    sdx=2.0*sradius*sin(sangle);
 	    sdy=sradius*cos(sangle);
@@ -165,12 +164,12 @@ main(int argc, char **argv)
 	    dline(cx,cy,cx+mdx,cy-mdy,'#');
 
 	    mvaddstr(23,0,ctime(&tim));
-	    
+
 	    refresh();
 	    plot(cx+sdx,cy-sdy,' ');
 	    dline(cx,cy,cx+hdx,cy-hdy,' ');
 	    dline(cx,cy,cx+mdx,cy-mdy,' ');
-	    
+
 	  }
 
 	return 0;

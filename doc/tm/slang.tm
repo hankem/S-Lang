@@ -49,16 +49,16 @@
  create a mediacenter for his home entertainment system that
  integrates internet radio and tv, podcasts, digital pictures and
  video, CDs, and so forth.  The use of \slsh in such non-interactive
- modes is discussed in \chapterref{slsh}.  
- 
+ modes is discussed in \chapterref{slsh}.
+
  \slsh also may be used interactively and has full access to all
  components of the \slang interpreter.  With features such as
  customizable command-line editing, history recall and completion,
  \slsh is a convenient environment for learning and using the
  language.  In fact, as you are reading this manual, it is recommended
  that you use \slsh in its interactive mode as an aid to understanding
- the language.  
- 
+ the language.
+
  While a standard \slang installation includes \slsh,
  some some binary distributions package \slsh separately from the
  \slang library, and as such must be installed separately.  For
@@ -102,7 +102,7 @@
 #v+
     slsh> x = [1:10]; y = sin(x^2);
 #v-
- 
+
  As the above example suggests, one use of \slsh is as a sophisticated
  calculator.  For example,
 #v+
@@ -227,7 +227,7 @@
    editor adds over 100 application specific intrinsic functions to
    the language.  Consult your application specific documentation to
    see what additional intrinsics are supported.
-   
+
    Operating systems that support dynamic linking allow a slang
    interpreter to dynamically link additional libraries of intrinsic
    functions and variables into the interpreter.  Such loadable
@@ -267,11 +267,11 @@
   the \slang mailing list.  To subscribe to the list or just browse
   the archives, visit
   \url{http://www.jedsoft.org/slang/mailinglists.html}.
-  
+
 #%}}}
 
 #%}}}
- 
+
 \chapter{Overview of the Language} #%{{{
 
  This purpose of this section is to give the reader a feel for the
@@ -346,7 +346,7 @@
    from functions that return values by calling these objects
    \em{procedures}.  However, \slang, like C, does not make such a
    distinction.
-   
+
    The language permits \em{recursive} functions, i.e., functions that
    call themselves.  The way to do this in \slang is to first declare
    the function using the form:
@@ -360,7 +360,7 @@
    function.  Here is how to implement it using \slang:
 #v+
      define factorial ();   % declare it for recursion
-     
+
      define factorial (n)
      {
         if (n < 2) return 1;
@@ -382,7 +382,7 @@
       {
          variable linestyle = qualifier ("linestyle", "solid");
          variable color = qualifier ("color", "black");
-         
+
          sys_set_color (color);
          sys_set_linestyle (linestyle);
          sys_plot (x,y);
@@ -473,7 +473,7 @@
            }
           return s;
        }
-       
+
        variable sin_sum = compute_functional_sum (&sin);
        variable cos_sum = compute_functional_sum (&cos);
 #v-
@@ -482,7 +482,7 @@
    10 integers and returns the sum.  The two statements
    following the function definition show how the \var{sin} and
    \var{cos} functions may be used.
-   
+
    Note the \var{@} operator in the definition of
    \exmp{compute_functional_sum}.  It is known as the \em{dereference}
    operator and is the inverse of the reference operator.
@@ -508,7 +508,7 @@
    In particular, a reference to the local variable \exmp{line} is
    passed to \var{fgets}, and upon return \exmp{line} will be set to
    the character string read by \var{fgets}.
-   
+
    Finally, references may be used as an alternative to multiple
    return values by passing information back via the parameter list.
    The example involving \var{fgets} presented above provided an
@@ -543,7 +543,7 @@
    functions as well as arrays of arrays.  Here are a few examples of
    creating arrays:
 #v+
-       variable A = Int_Type [10];  
+       variable A = Int_Type [10];
        variable B = Int_Type [10, 3];
        variable C = [1, 3, 5, 7, 9];
 #v-
@@ -554,7 +554,7 @@
    of 5 integers is assigned to the variable \exmp{C}.  However,
    in this case the elements of the array are initialized to the
    values specified.  This is known as an \em{inline-array}.
-   
+
    \slang also supports something called a \em{range-array}.  An
    example of such an array is
 #v+
@@ -572,10 +572,10 @@
       define init_array (a)
       {
          variable i, imax;
-         
+
          imax = length (a);
          for (i = 0; i < imax; i++)
-           { 
+           {
               a[i] = 7;
            }
       }
@@ -584,7 +584,7 @@
       init_array (A);
 #v-
    creates an array of 10 integers and initializes all its
-   elements to 7.  
+   elements to 7.
 
    There are more concise ways of accomplishing the result of the
    previous example.  These include:
@@ -639,7 +639,6 @@
           }
 #v-
 
-
 #%}}}
 
 \sect{Lists}
@@ -664,7 +663,7 @@
    the same type (or of \dtype{Any_Type}), whereas a structure is
    heterogeneous.  As an example, consider
 #v+
-      variable person = struct 
+      variable person = struct
       {
          first_name, last_name, age
       };
@@ -679,13 +678,13 @@
    dereference operator and assigned to \exmp{bill}.  Finally, the
    individual fields of \exmp{bill} were initialized.  This is an
    example of an \em{anonymous} structure.
-   
+
    Note: \slang versions 2.1 and higher permit assignment statements
    within the structure definition, e.g.,
 #v+
       variable bill = struct
       {
-         first_name = "Bill", 
+         first_name = "Bill",
          last_name = "Clinton",
          age = 51
       };
@@ -699,12 +698,12 @@
          first_name, last_name, age
       }
       Person_Type;
-      
+
       variable bill = @Person_Type;
       bill.first_name = "Bill";
       bill.last_name = "Clinton";
       bill.age = 51;
-#v-     
+#v-
    One advantage of creating a new type is that array elements of such
    types are automatically initialized to instances of the type.  For
    example,
@@ -724,7 +723,7 @@
       People[1] = @person;
       People[1].first_name = "Hillary";
 #v-
-   
+
    Another big advantage of a user-defined type is that the binary and
    unary operators may be overloaded onto such types.  This is
    explained in more detail below.
@@ -742,7 +741,7 @@
       }
       variable Bill = create_person ("Bill", "Clinton", 51);
 #v-
-   
+
    Other common uses of structures is the creation of linked lists,
    binary trees, etc.  For more information about these and other
    features of structures, see \sectref{Linked Lists}.
@@ -832,7 +831,7 @@
 #v-
    assigns to \exmp{i} the character 48 since the \exmp{'0'} character
    has an ASCII value of 48.
-   
+
    A ``wide'' character (unicode) may be specified using the form
    '\\x{y...y}' where \exmp{y...y} are hexadecimal digits.  For example,
 #v+
@@ -873,7 +872,7 @@
     forms the \em{real} part, while the second number forms the
     \em{imaginary} part.  That is, a complex number may be regarded as the
     sum of a real number and an imaginary number.
-    
+
     Strictly speaking, the current implementation of the \slang does
     not support generic complex literals.  However, it does support
     imaginary literals permitting a more generic complex number with a
@@ -942,7 +941,7 @@
        `This form does not
        require backslash characters.
        In fact, here the backslash
-       character \ has no special 
+       character \ has no special
        meaning (unless given the ``Q' suffix`
 #v-
     Note that if a backquote is to appear in such a string, then it
@@ -951,7 +950,7 @@
     Any character except a newline (ASCII 10) or the null character
     (ASCII 0) may appear explicitly in a string literal.  However,
     these characters may embedded implicitly using the mechanism
-    described below. 
+    described below.
 
     The backslash character is a special character and is used to
     include other special characters (such as a newline character) in
@@ -1026,7 +1025,7 @@
    \exmp{R} suffix is present, all double-quoted string literals will
    have backslash substitution performed.  By default, backslash
    expansion is turned off for backquoted strings.
-   
+
    Sometimes it is desirable to turn off backslash expansion for
    double-quoted strings.  For example, pathnames on an MSDOS or
    Windows system use the backslash character as a path separator. The
@@ -1103,7 +1102,6 @@
 
 #%}}}
 
-
 \sect1{Null_Type}
 
    Objects of type \dtype{Null_Type} can have only one value:
@@ -1136,7 +1134,7 @@
    variable associated with that parameter will be set to \var{NULL}.
    Hence, \exmp{e} and \exmp{f} will be set to 1 and 0,
    respectively.
-   
+
    The \dtype{Null_Type} data type also plays an important role in the
    context of \em{structures}.
 
@@ -1144,7 +1142,7 @@
    Objects of \dtype{Ref_Type} are created using the unary
    \em{reference} operator \var{&}.  Such objects may be
    \em{dereferenced} using the dereference operator \var{@}.  For
-   example, 
+   example,
 #v+
       sin_ref = &sin;
       y = (@sin_ref) (1.0);
@@ -1152,7 +1150,7 @@
    creates a reference to the \ifun{sin} function and assigns it to
    \exmp{sin_ref}.  The second statement uses the dereference operator
    to call the function that \exmp{sin_ref} references.
-   
+
    The \dtype{Ref_Type} is useful for passing functions as arguments to
    other functions, or for returning information from a function via
    its parameter list.  The dereference operator may also used to create
@@ -1160,7 +1158,7 @@
    of this important type can be found in \sectref{Referencing Variables}.
 
 \sect1{Array_Type, Assoc_Type, List_Type, and Struct_Type}
-   
+
    Variables of type \dtype{Array_Type}, \dtype{Assoc_Type},
    \dtype{List_Type}, and \dtype{Struct_Type} are known as
    \em{container objects}.  They are more complicated than the
@@ -1199,7 +1197,7 @@
 #v-
    as well as the names of any other types that an application
    defines.
-   
+
    The built-in function \var{typeof} returns the data type of
    its argument, i.e., a \dtype{DataType_Type}.  For instance
    \exmp{typeof(7)} returns \dtype{Integer_Type} and
@@ -1218,7 +1216,7 @@
 #%}}}
 
 \sect1{Boolean Type}
-   
+
    Strictly speaking, \slang has no separate boolean type; rather it
    represents boolean values as \dtype{Char_Type} objects.  In
    particular, boolean FALSE is equivalent to \dtype{Char_Type} 0,
@@ -1243,7 +1241,7 @@
    value 10 and \exmp{y} will have the double precision floating
    point value \exmp{10.0}.  If the object to be converted is an
    array, the \var{typecast} function will act upon all elements of
-   the array.  For example, 
+   the array.  For example,
 #v+
       x = [1:10];       % Array of integers
       y = typecast (x, Double_Type);
@@ -1321,13 +1319,13 @@
    The following identifiers are reserved by the language for use as
    keywords:
 #v+
-   and          andelse      break         case          catch 
+   and          andelse      break         case          catch
    continue     define       do            else          ERROR_BLOCK
-   exch         EXIT_BLOCK   finally       _for          for 
-   foreach      forever      !if           if            ifnot 
-   loop         mod          not           or            orelse 
-   pop          private      public        return        shl 
-   shr          static       struct        switch        __tmp 
+   exch         EXIT_BLOCK   finally       _for          for
+   foreach      forever      !if           if            ifnot
+   loop         mod          not           or            orelse
+   pop          private      public        return        shl
+   shr          static       struct        switch        __tmp
    then         throw        try           typedef       USER_BLOCK0
    USER_BLOCK1  USER_BLOCK2  USER_BLOCK3   USER_BLOCK4   using
    variable     while        xor
@@ -1391,7 +1389,7 @@
    constant variables.  An example of an intrinsic variable is
    \var{PI} which is a read-only double precision variable with a value
    of approximately \exmp{3.14159265358979323846}.
-   
+
 #%}}}
 
 \chapter{Operators} #%{{{
@@ -1416,13 +1414,13 @@
    Unary operators fall into one of two classes: postfix-unary or
    prefix-unary.  For example, in the expression \exmp{-x}, the minus
    sign is a prefix-unary operator.
-   
+
    All binary and unary operators may be defined for any supported
    data type.  For example, the arithmetic plus operator has been
    extended to the \dtype{String_Type} data type to permit
    concatenation between strings.  But just because it is possible to
    define the action of an operator upon a data type, it does not mean
-   that all data types support all the binary and unary operators. 
+   that all data types support all the binary and unary operators.
    For example, while \dtype{String_Type} supports the \var{+}
    operator, it does not admit the \var{*} operator.
 
@@ -1479,7 +1477,7 @@
    The result will be the integer 1 and \em{not} the floating
    point value \exmp{1.6}.  However, \exmp{8/5.0} will produce
    \exmp{1.6} because \exmp{5.0} is a floating point number.
-   
+
 #%  TODO: Add something about precedence.  Also explain that some
 #% types are always promoted to ints for arithmetic, e.g., Char+Char
 #% != Char
@@ -1495,7 +1493,7 @@
    the comparison will be a boolean value; however, for arrays the
    result will be an array of boolean values.  The section on arrays
    will explain this is greater detail.
-   
+
    Note: For \slang versions 2.1 and higher, relational expressions
    such as \exmp{a<b<=c} are defined in the mathematical sense, i.e.,
 #v+
@@ -1512,15 +1510,15 @@
 
 \sect1{Boolean Operators} #%{{{
 
-   \slang supports four boolean binary operators: \exmp{or}, 
+   \slang supports four boolean binary operators: \exmp{or},
    \exmp{and}, \exmp{||}, and \exmp{&&}, which for most data types,
    return a boolean result.  In particular, the \exmp{or} and
    \exmp{||} operators return a non-zero value (boolean TRUE) if
    either of their operands are non-zero, otherwise they produce zero
    (boolean FALSE).  The \exmp{and} and \exmp{&&} operators produce a
    non-zero value if and only if both their operands are non-zero,
-   otherwise they produce zero.  
-   
+   otherwise they produce zero.
+
    Unlike the operators \exmp{&&} and \exmp{||}, the \exmp{and} and
    \exmp{or} operators do not perform the so-called boolean
    short-circuit evaluation.  For example, consider the expression:
@@ -1542,7 +1540,7 @@
    operators is an array then a corresponding array of boolean values
    will result.  This is explained in more detail in the section on
    arrays.
-   
+
    Note: the short-circuiting operators \exmp{&&} and \exmp{||} were
    first introduced in \slang 2.1; they are not available in older
    versions.
@@ -1625,7 +1623,7 @@
         return flags & (1 shl nth);
      }
 #v-
-  
+
 #%}}}
 
 \sect1{The Namespace Operator}
@@ -1651,7 +1649,7 @@
     define read_line (fp)
     {
        variable line, status;
-       
+
        status = fgets (&line, fp);
        if (status == -1)
          return -1;
@@ -1787,7 +1785,7 @@
    an assignment operator, and a right-hand side.  The left-hand side
    must be something to which an assignment can be performed.  Such
    an object is called an \em{lvalue}.
-   
+
    The most common assignment operator is the simple assignment
    operator \var{=}.  Examples of its use include
 #v+
@@ -1810,8 +1808,8 @@
        a = a + b;
 #v-
    Likewise \exmp{a-=b} is transformed to \exmp{a=a-b}, \exmp{a*=b} is
-   transformed to \exmp{a=a*b}, and so on.  
-   
+   transformed to \exmp{a=a*b}, and so on.
+
    It is extremely important to realize that, in general, \exmp{a+b}
    is not equal to \exmp{b+a}.  For example if \exmp{a} and \exmp{b}
    are strings, then \exmp{a+b} will be the string resulting from the
@@ -1828,7 +1826,7 @@
    Since adding or subtracting 1 from a variable is quite
    common, \slang also supports the unary increment and decrement
    operators \exmp{++}, and \exmp{--}, respectively.  That is, for
-   numeric data types, 
+   numeric data types,
 #v+
        x = x + 1;
        x += 1;
@@ -1893,7 +1891,7 @@
 
    An example of the use of this type of conditional statement is
 #v+
-       if (x != 0) 
+       if (x != 0)
          {
             y = 1.0 / x;
             if (x > 0) z = log (x);
@@ -1917,16 +1915,16 @@
    \em{statement-or-block-2} will get executed before continuing on to
    \em{next-statement}.  A simple example of this form is
 #v+
-     if (x > 0) 
-       z = log (x); 
-     else 
+     if (x > 0)
+       z = log (x);
+     else
        throw DomainError, "x must be positive";
 #v-
    Consider the more complex example:
 #v+
      if (city == "Boston")
        if (street == "Beacon") found = 1;
-     else if (city == "Madrid") 
+     else if (city == "Madrid")
        if (street == "Calle Mayor") found = 1;
      else found = 0;
 #v-
@@ -2024,7 +2022,7 @@
    \var{:} operator, the entire block is executed and control will
    pass onto the next statement following the \kw{switch} statement.
    Such a block is known as the \em{default} case.
-   
+
    As a simple example, consider the following:
 #v+
       switch (x)
@@ -2094,20 +2092,20 @@
 \end{tscreen}
    It simply causes \em{statement-or-block} to get executed as long as
    \em{integer-expression} evaluates to a non-zero result.  For
-   example, 
+   example,
 #v+
-      i = 10; 
-      while (i) 
+      i = 10;
+      while (i)
         {
           i--;
           newline ();
         }
 #v-
    will cause the \exmp{newline} function to get called 10 times.
-   However, 
+   However,
 #v+
       i = -10;
-      while (i) 
+      while (i)
         {
           i--;
           newline ();
@@ -2133,7 +2131,7 @@
 \sect2{do...while}
    The \kw{do...while} statement follows the syntax
 \begin{tscreen}
-      do 
+      do
          \em{statement-or-block}
       while (\em{integer-expression});
       [ then \em{statement-or-block} ]
@@ -2143,7 +2141,7 @@
    involving \em{integer-expression} after each execution
    of \em{statement-or-block} rather than before.  This guarantees that
    \em{statement-or-block} will get executed at least once.
-   
+
    A simple example from the \jed editor follows:
 #v+
      bob ();      % Move to beginning of buffer
@@ -2161,7 +2159,7 @@
    statement; nevertheless, it is a favorite of many C programmers.
    This statement obeys the syntax
 \begin{tscreen}
-    for (\em{init-expression}; \em{integer-expression}; \em{end-expression}) 
+    for (\em{init-expression}; \em{integer-expression}; \em{end-expression})
       \em{statement-or-block}
     [ then \em{statement-or-block} ]
     \em{next-statement}
@@ -2174,8 +2172,8 @@
    \em{statement-or-block} as long as \em{integer-expression}
    evaluates to a non-zero result.  After every execution of
    \em{statement-or-block}, \em{end-expression} will get evaluated.
-   
-   This statement is \em{almost} equivalent to 
+
+   This statement is \em{almost} equivalent to
 \begin{tscreen}
     \em{init-expression};
     while (\em{integer-expression})
@@ -2186,7 +2184,7 @@
 \end{tscreen}
    The reason that they are not fully equivalent involves what happens
    when \em{statement-or-block} contains a \kw{continue} statement.
-   
+
    Despite the apparent complexity of the \kw{for} statement, it is
    very easy to use.  As an example, consider
 #v+
@@ -2206,7 +2204,7 @@
    If the \em{integer-expression} evaluates to a positive integer,
    \em{statement-or-block} will get executed that many times.
    Otherwise, control will pass to \em{next-statement}.
-   
+
    For example,
 #v+
       loop (10) newline ();
@@ -2296,7 +2294,7 @@
    \kw{using} form of the \kw{foreach} statement.  This more complex
    type of \kw{foreach} statement follows the syntax
 \begin{tscreen}
-     foreach \em{var} ( \em{container-object} ) using ( \em{control-list} ) 
+     foreach \em{var} ( \em{container-object} ) using ( \em{control-list} )
        \em{statement-or-block}
 \end{tscreen}
    The allowed values of \em{control-list} will depend upon the type
@@ -2304,14 +2302,14 @@
    \em{control-list} specifies whether \em{keys}, \em{values}, or both
    are used.  For example,
 #v+
-     foreach k (a) using ("keys") 
+     foreach k (a) using ("keys")
        {
            .
            .
        }
 #v-
    results in the keys of the associative array \exmp{a} being
-   successively assigned to \exmp{k}.  Similarly, 
+   successively assigned to \exmp{k}.  Similarly,
 #v+
      foreach v (a) using ("values")
        {
@@ -2392,11 +2390,10 @@
    cause control to pass back to the start of the loop, skipping the
    statement \exmp{s3} altogether.
 
-
 #%}}}
 
 \sect1{The looping then clause} #%{{{
-  
+
   As mentioned above, all the looping statements support an optional
   \kw{then} clause.  The statements that comprise this clause get
   executed only when the loop has run to completion and was not
@@ -2409,7 +2406,7 @@
       {
          if (try_something ())
            break;
-           
+
          count++;
          % Failed -- try again
       }
@@ -2478,9 +2475,8 @@
   \exmp{fizzle_statements} will not get executed only when the loop is
   prematurely terminated, and that will occur when both
   \exmp{some_condition} and \exmp{another_condition} are non-zero.
-  
-#%}}}
 
+#%}}}
 
 #%}}}
 
@@ -2489,7 +2485,7 @@
 \chapter{Functions} #%{{{
 
    There are essentially two classes of functions that may be called
-   from the interpreter: intrinsic functions and slang functions.  
+   from the interpreter: intrinsic functions and slang functions.
 
    An intrinsic function is one that is implemented in C or some other
    compiled language and is callable from the interpreter.  Nearly all
@@ -2515,7 +2511,7 @@
 #v-
    is sufficient to declare a function named \exmp{factorial}.  Unlike
    the \kw{variable} keyword used for declaring variables, the
-   \kw{define} keyword does not accept a list of names.  
+   \kw{define} keyword does not accept a list of names.
 
    Usually, the above form is used only for recursive functions.  In
    most cases, the function name is almost always followed by a
@@ -2534,7 +2530,7 @@
    \em{parameter-list} are implicitly declared, thus, there is no need
    to declare them via a variable declaration statement.  In fact any
    attempt to do so will result in a syntax error.
-   
+
    The body of the function is enclosed in braces and consists of zero
    or more statements (\em{statement-list}).  While there are no
    imposed limits upon the number statements that may occur within a
@@ -2542,7 +2538,6 @@
    function contains many statements. This notion stems from the
    belief that a function should have a simple, well-defined purpose.
 
-   
 #%}}}
 
 \sect{Parameter Passing Mechanism} #%{{{
@@ -2550,7 +2545,7 @@
    Parameters to a function are always passed by value and never by
    reference.  To see what this means, consider
 #v+
-     define add_10 (a) 
+     define add_10 (a)
      {
         a = a + 10;
      }
@@ -2565,7 +2560,7 @@
    by reference, the value of \exmp{b} would be changed to 10.
    However, \slang always passes by value, which means that \exmp{b}
    will retain its value during and after after the function call.
-   
+
    \slang does provide a mechanism for simulating pass by reference
    via the reference operator.  This is described in greater detail in
    the next section.
@@ -2664,7 +2659,7 @@
    Here \exmp{expression} is an arbitrary expression that leaves
    \exmp{n} items on the stack, and \exmp{var_k} represents an l-value
    object (permits assignment). The assignment statement removes
-   those values and assigns them to the specified variables.  
+   those values and assigns them to the specified variables.
    Usually, \exmp{expression} is a call to a function that returns
    multiple values, but it need not be.  For example,
 #v+
@@ -2673,20 +2668,20 @@
    produces results that are equivalent to the call to the
    \exmp{sum_and_diff} function.  Another common use of the multiple
    assignment statement is to swap values:
-#v+ 
+#v+
      (x,y) = (y,x);
      (a[i], a[j], a[k]) = (a[j], a[k], a[i]);
 #v-
 
    If an l-value is omitted from the list, then the corresponding
-   value will be removed fro the stack.  For example, 
+   value will be removed fro the stack.  For example,
 #v+
      (s, ) = sum_and_diff (9, 4);
 #v-
    assigns the sum of 9 and 4 to \exmp{s} and the
    difference (\exmp{9-4}) is removed from the stack.  Similarly,
 #v+
-     () = fputs ("good luck", fp); 
+     () = fputs ("good luck", fp);
 #v-
    causes the return value of the \ifun{fputs} function to be discarded.
 
@@ -2734,7 +2729,7 @@
    This time it is written as:
 #v+
      define add_10 (a)
-     {  
+     {
         @a = @a + 10;
      }
      variable b = 0;
@@ -2751,7 +2746,7 @@
    references''.
 
    The reader familiar with C will note the similarity between
-   \em{references} in \slang and \em{pointers} in C.  
+   \em{references} in \slang and \em{pointers} in C.
 
    References are not limited to variables.  A reference to a function
    may also be created and passed to other functions.  As a simple
@@ -2832,7 +2827,7 @@
   parameter 12.  Internally, 12 is pushed onto the stack
   and then the function called.  Now, consider the function
   \exmp{add_10} itself.  In it, \exmp{x} is a local variable.
-  The strange looking assignment `\exmp{x=()}' causes whatever is on 
+  The strange looking assignment `\exmp{x=()}' causes whatever is on
   the top of the stack to be assigned to \exmp{x}.  In other words, after
   this statement, the value of \exmp{x} will be 12, since
   12 is at the top of the stack.
@@ -2858,7 +2853,7 @@
        .
        .
     }
-#v- 
+#v-
   before further parsing.  (The \exmp{add_10} function, as defined above, is
   already in this form.)  With this knowledge in hand, one can write a
   function that accepts a variable number of arguments.  Consider the
@@ -2868,8 +2863,8 @@
     {
        variable x, y;
        variable s;
-       
-       if (n == 1) 
+
+       if (n == 1)
          {
             x = ();
             s = x;
@@ -2898,7 +2893,7 @@
    {
       variable s, x;
       s = 0;
-      loop (n) 
+      loop (n)
         {
            x = ();    % get next value from stack
            s += x;
@@ -2915,8 +2910,8 @@
    define average_n ()
    {
       variable x, s = 0;
-      
-      if (_NARGS == 0) 
+
+      if (_NARGS == 0)
         usage ("ave = average_n (x, ...);");
 
       loop (_NARGS)
@@ -2939,7 +2934,7 @@
   the variable arguments mechanism described in the previous section.
   However, a much more powerful mechanism is through the use of
   \em{qualifiers}, which were added in version 2.1.
-  
+
   To illustrate the use of qualifiers, consider a graphics application
   that defines a function called \exmp{plot} that plots a set of (x,y)
   values specified as 1-d arrays:
@@ -2992,7 +2987,7 @@
   \ifun{qualifier_exists} function:
 #v+
      define plot (x,y)
-     { 
+     {
          .
          .
        variable connect_points = qualifier_exists ("connect_points");
@@ -3055,7 +3050,6 @@
   function to specify the ``fill'' value to be used when creating
   the symbol.
 
-
 #%}}}
 
 \sect{Exit-Blocks} #%{{{
@@ -3064,9 +3058,9 @@
    functions returns.  They are very useful for cleaning up when a
    function returns via an explicit call to \var{return} from deep
    within a function.
-   
+
    An exit-block is created by using the \kw{EXIT_BLOCK} keyword
-   according to the syntax 
+   according to the syntax
 \begin{tscreen}
       EXIT_BLOCK { \em{statement-list} }
 \end{tscreen}
@@ -3098,7 +3092,7 @@
       define simple_demo (n)
       {
          EXIT_BLOCK { return 1; }
-         
+
          if (n != 1)
            {
               EXIT_BLOCK { return 2; }
@@ -3113,7 +3107,6 @@
    illustrates that it is possible to explicitly return from an
    exit-block, but nested exit-blocks are illegal.
 
-
 #%}}}
 
 \sect{Handling Return Values from a Function} #%{{{
@@ -3126,7 +3119,7 @@
    To elaborate on this point further, consider the \em{fputs}
    function, which writes a string to a file descriptor.  This
    function can fail when, e.g., a disk is full, or the file is
-   located on a network share and the network goes down, etc.  
+   located on a network share and the network goes down, etc.
 
    \slang supports two mechanisms that a function may use to report a
    failure: raising an exception, returning a status code.  The latter
@@ -3154,12 +3147,12 @@
    include assigning it to a dummy variable,
 #v+
      dummy = fputs ("good luck", fp);
-#v-   
+#v-
    or simply ``popping'' it from the stack:
 #v+
      fputs ("good luck", fp);  pop();
 #v-
-   The latter mechanism can also be written as 
+   The latter mechanism can also be written as
 #v+
      () = fputs ("good luck", fp);
 #v-
@@ -3169,7 +3162,7 @@
    explicitly calling the \ifun{pop} function, it is recommended over
    the other two mechanisms.  Finally, this form has the
    redeeming feature that it presents a visual reminder that the
-   function is returning a value that is not being used.   
+   function is returning a value that is not being used.
 
 #%}}}
 
@@ -3191,7 +3184,7 @@
   Objects are declared as belonging to the private namespace using
   the \kw{private} declaration keyword.  Similarly if a variable is
   declared using the \kw{public} qualifier, it will be placed in the
-  public namespace. For example, 
+  public namespace. For example,
 #v+
     private variable i;
     public variable j;
@@ -3211,7 +3204,7 @@
  namespace} associated with the compilation unit. Such objects may be
  accessed from outside the local compilation unit using the namespace
  operator \exmp{->} in conjunction with the name of the namespace.
- 
+
  Since it is possible for three namespaces (private, static, public)
  to be associated with a compilation unit, it is important to
  understand how names are resolved by the parser.  During the
@@ -3240,7 +3233,7 @@
  namespace.  Otherwise such symbols will be placed in the public
  namespace, and any symbols declared as \kw{static} will be placed in
  the private namespace.
- 
+
  To illustrate these concepts, consider the following example:
 #v+
    % foo.sl
@@ -3250,7 +3243,7 @@
    public define set_Y (y) { Y = y; }
    static define set_z (z) { Z = z; }
 #v-
- If \exmp{foo.sl} is loaded via 
+ If \exmp{foo.sl} is loaded via
 #v+
     () = evalfile ("foo.sl");
 #v-
@@ -3262,7 +3255,7 @@
  the \exmp{Z} variable from outside of \exmp{foo.sl} since both it and
  the function that accesses it (\exmp{set_z}) are placed in the
  private namespace.
- 
+
  On the other hand, suppose that the file is loaded using a namespace
  argument:
 #v+
@@ -3294,7 +3287,6 @@
   \exmp{set_z} was put in the private namespace making both it and
   \exmp{Z} inaccessible.
 
- 
 #%}}}
 
 \labeled_chapter{Arrays} #%{{{
@@ -3303,7 +3295,7 @@
    data type.  Arrays are very useful objects and are indispensable
    for certain types of programming.  The purpose of this chapter is
    to describe how arrays are defined and used in the \slang language.
-   
+
 \sect{Creating Arrays} #%{{{
 
    The \slang language supports multi-dimensional arrays of all data
@@ -3327,7 +3319,7 @@
 #v-
    which creates a one-dimensional array of 10 integers and
    assigns it to \var{a}.
-   Similarly, 
+   Similarly,
 #v+
      b = Double_Type [10, 3];
 #v-
@@ -3343,12 +3335,12 @@
 #v+
      a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 #v-
-   Similarly, 
+   Similarly,
 #v+
      b = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
 #v-
    specifies an array of ten doubles.
-   
+
    An even more compact way of specifying a numeric array is to use a
    \em{range-array}.  For example,
 #v+
@@ -3379,7 +3371,7 @@
    \math{c>=0}, and \math{b<x_k<=a} otherwise.  The number of elements
    in the array is one greater than the largest \math{k} that
    satisfies the open interval constraint.
-   
+
    In contrast, a range-array expressed in the form \exmp{[a:b:#n]}
    represents an array of exactly n elements running from \exmp{a} to
    \exmp{b} inclusive.  It is equivalent to
@@ -3438,7 +3430,7 @@
 \begin{tscreen}
        reshape (\em{array-name}, \em{integer-array});
 \end{tscreen}
-   where \em{array-name} specifies the array to be reshaped to 
+   where \em{array-name} specifies the array to be reshaped to
    the dimensions given by \var{integer-array}, a 1-dimensional array of
    integers.  It is important to note that this does \em{not} create a
    new array, it simply reshapes the existing array.  Thus,
@@ -3448,7 +3440,7 @@
 #v-
    turns \var{a} into a 10 by 10 array, as well as any
    other variables attached to the array.
-   
+
    The \ifun{_reshape} function works like \ifun{reshape} except that
    it creates a new array instead of changing the shape of an existing
    array:
@@ -3468,7 +3460,7 @@
    from 0.  Thus if \exmp{a} is a one-dimensional array of ten
    integers, the last element of the array is given by \exmp{a[9]}.
    Using \exmp{a[10]} would result in an \var{IndexError} exception.
-  
+
    A negative index may be used to index from the end of the array,
    with \exmp{a[-1]} referring to the last element of \exmp{a}.
    Similarly, \exmp{a[-2]} refers to the next to the last element, and
@@ -3577,8 +3569,8 @@
    elements.  As pointed out above, a negative index is used to index
    from the end of the array.  That is, \exmp{a[-1]} refers to the
    last element of \exmp{a}.  How should \exmp{a[[[0:-1]]} be
-   interpreted?  
-   
+   interpreted?
+
    In version 1 of the interpreter, when used in an
    array indexing context, a construct such as \exmp{[0:-1]} was taken
    to mean from the first element through the last.  While this might
@@ -3605,7 +3597,7 @@
    seventh column.  Finally, \var{a[[3:5],[6:12]]} specifies the
    3 by 7 region consisting of rows 3, 4,
    and 5, and columns 6 through 12 of \var{a}.
-   
+
    Before leaving this section, a few examples are presented to
    illustrate some of these points.
 
@@ -3613,7 +3605,7 @@
    frequently in linear algebra.  The trace of a 2d matrix is given by
    the sum of its diagonal elements.  Consider the creation of a
    function that computes the trace of such a matrix.
-   
+
    The most straightforward implementation of such a function uses an
    explicit loop:
 #v+
@@ -3641,13 +3633,13 @@
 
    The following example creates a 10 by 10 integer array, sets
    its diagonal elements to 5, and then computes the trace of
-   the array: 
+   the array:
 #v+
       a = Integer_Type [10, 10];
       a[[0:99:11]] = 5;
       the_trace = array_trace(a, 10);
 #v-
-   
+
    In the previous examples, the size of the array was passed as an
    additional argument.  This is unnecessary because the size may be
    obtained from array itself by using the \ifun{array_shape}
@@ -3756,7 +3748,7 @@
    dereferenced array are not themselves dereferenced.  For example,
    consider dereferencing an array of arrays, e.g.,
 #v+
-      a = Array_Type [2];  
+      a = Array_Type [2];
       a[0] = Double_Type [10];
       a[1] = Double_Type [10];
       b = @a;
@@ -3838,11 +3830,11 @@
      tmp_a = Double_Type [nn];
      tmp_b = Double_Type [nn];
      tmp_c = Double_Type [nn];
-     
+
      j = 0;
      _for i (0, n-1, 1)
        {
-          if (index_array [i]) 
+          if (index_array [i])
             {
                tmp_a [j] = a[i];
                tmp_b [j] = b[i];
@@ -3875,7 +3867,7 @@
      define num_rows (a)
      {
         return array_shape (a)[0];
-     }  
+     }
 #v-
    The number of columns may be obtained in a similar manner:
 #v+
@@ -3884,7 +3876,7 @@
         variable dims = array_shape (a);
         if (length(dims) > 1) return dims[1];
         return 1;
-     }     
+     }
 #v-
    The \ifun{array_shape} function may also be used to create an array
    that has the same number of dimensions as another array:
@@ -3928,7 +3920,7 @@
   even though \exmp{a[[2,1,0]]} is an array of arrays, it is
   first and foremost an array, and it is that array that is assigned
   to the elements of \exmp{b}.
-  
+
 #%}}}
 
 \chapter{Associative Arrays} #%{{{
@@ -3964,7 +3956,7 @@
 \begin{itemize}
 \item \var{assoc_get_keys}, which returns an ordinary array of strings
       containing the keys of the array.
-   
+
 \item \var{assoc_get_values}, which returns an ordinary array of the
       values of the associative array.  If the associative array is
       un-typed, then an array of \dtype{Any_Type} objects will be
@@ -4024,7 +4016,7 @@
       private define invalid_fun (arg) { throw InvalidParmError; }
       Fun_Map = Assoc_Type[Ref_Type, &invalid_fun];
       define add_function (name, fun)
-      { 
+      {
          Fun_Map[name] = fun;
       }
       add_function ("foo", &foo);
@@ -4048,7 +4040,6 @@
       add_function ("bing", &bing);
 #v-
 
-   
 #%}}}
 
 \chapter{Structures and User-Defined Types} #%{{{
@@ -4062,7 +4053,7 @@
 
    A \em{user-defined} data type is a structure with a fixed set of
    fields defined by the user.
-   
+
 \sect{Defining a Structure} #%{{{
 
    The \kw{struct} keyword is used to define a structure.  The syntax
@@ -4108,7 +4099,7 @@
    It create new structure whose field names are identical to the old
    and copies the field values to the new structure.  If any of the
    values are objects that are passed by reference, then only the
-   references will be copied.  In other words, 
+   references will be copied.  In other words,
 #v+
       t = struct{a};
       t.a = [1:10];
@@ -4161,7 +4152,7 @@
      {
         variable city_name, population, list_root, list_tail;
         variable next;
-        
+
         list_root = NULL;
         while (read_next_city (&city_name, &population))
           {
@@ -4192,7 +4183,7 @@
   This function may be used as follows:
 #v+
     Population_List = create_population_list ();
-    if (Population_List == NULL) 
+    if (Population_List == NULL)
       throw RunTimeError, "List is empty";
 #v-
   Other functions may be created that manipulate the list.  Here is one
@@ -4212,7 +4203,7 @@
        return largest.city_name;
     }
 
-    vmessage ("%s is the largest city in the list", 
+    vmessage ("%s is the largest city in the list",
                get_largest_city (Population_List));
 #v-
   The \exmp{get_largest_city} is a typical example of how one traverses
@@ -4235,12 +4226,12 @@
          }
        return largest.city_name;
     }
-#v-  
+#v-
   Here a \kw{foreach} loop has been used to walk the list via its
   \exmp{next} field.  If the field name linking the elements was not
   called \exmp{next}, then it would have been necessary to use the
   \kw{using} form of the \kw{foreach} statement.  For example, if the
-  field name implementing the linked list was \exmp{next_item}, then 
+  field name implementing the linked list was \exmp{next_item}, then
 #v+
      foreach item (list) using ("next_item")
        {
@@ -4254,7 +4245,7 @@
 
   Now consider a function that sorts the list according to population.
   To illustrate the technique, a \em{bubble-sort} will be used, not
-  because it is efficient (it is not), but because it is simple, 
+  because it is efficient (it is not), but because it is simple,
   intuitive, and provides another example of structure manipulation:
 #v+
     define sort_population_list (list)
@@ -4276,7 +4267,7 @@
                       next_node.next = node;
                       if (last_node != NULL)
                         last_node.next = next_node;
-                      
+
                       if (list == node) list = next_node;
                       node = next_node;
                       next_node = node.next;
@@ -4288,7 +4279,7 @@
               }
          }
        while (changed);
-       
+
        return list;
     }
 #v-
@@ -4297,11 +4288,11 @@
                       if (list == node) list = next_node;
 #v-
    It is important to appreciate the fact that the values of these
-   variables are references to structures, and that the 
+   variables are references to structures, and that the
    comparison only compares the references and \em{not} the actual
    structures they reference.  If it were not for this, the algorithm
    would fail.
-   
+
 #%}}}
 
 \sect{Defining New Types} #%{{{
@@ -4313,9 +4304,9 @@
    a city/population pair.  We can define a data type called
    \var{Population_Type} to represent the same information:
 #v+
-      typedef struct 
+      typedef struct
       {
-         city_name, 
+         city_name,
          population
       } Population_Type;
 #v-
@@ -4332,7 +4323,7 @@
    The new type \var{Population_Type} may also be used with the
    \var{typeof} function:
 #v+
-      if (Population_Type == typeof (a)) 
+      if (Population_Type == typeof (a))
         city = a.city_name;
 #v-
    The dereference \var{@} may be used to create an instance of the
@@ -4342,7 +4333,7 @@
      a.city_name = "Calcutta";
      a.population = 13000000;
 #v-
-   
+
    Another feature that user-defined types possess is that the action
    of the binary and unary operations may be defined for them.
    This idea is discussed in more detail below.
@@ -4392,7 +4383,7 @@
 #v+
    V4 = V1 + V2 + V3;
 #v-
- 
+
  The \ifun{__add_binary} function defines the result of a binary
  operation between two data types:
 \begin{tscreen}
@@ -4536,7 +4527,7 @@
 #%}}}
 
 \chapter{Lists} #%{{{
- 
+
  Sometimes it is desirable to utilize an object that has many of the
  properties of an array, but can also easily grow or shrink upon
  demand.  The \dtype{List_Type} object has such properties.
@@ -4565,11 +4556,11 @@
  Also as the case for arrays one may index from the end of the list
  using negative indices, e.g., \exmp{list[-1]} refers to the last
  element of the list.
- 
+
  The functions \ifun{list_insert} and \ifun{list_append} may be used
  to add items to a list.  In particular,
  \exmp{list_insert(list,obj,nth)} will insert the object \exmp{obj}
- into the list at the \exmp{nth} position.  Similarly, 
+ into the list at the \exmp{nth} position.  Similarly,
  \exmp{list_append(list,obj,nth)} will insert the object \exmp{obj}
  into the list right after \exmp{nth} position.  If
 #v+
@@ -4586,7 +4577,7 @@
 #v+
    {"hi", "there", "hello", 7, 3.14, "before", {&sin,&cos}, "after"}
 #v-
- 
+
  One might be tempted to use
 #v+
    list = {"hi", list};
@@ -4596,15 +4587,15 @@
 
  Items may be removed from a list via the \exmp{list_delete} function,
  which deletes the item from the specified position and shrinks the
- list.  In the context of the above example, 
+ list.  In the context of the above example,
 #v+
    list_delete (list, 2);
 #v-
- will shrink the list to 
+ will shrink the list to
 #v+
    {"hi", "there", 7, 3.14, "before", {&sin,&cos}, "after"}
 #v-
- 
+
  Another way of removing items from the list is to use the
  \ifun{list_pop} function.  The main difference between it and
  \ifun{list_delete} is that \ifun{list_pop} returns the deleted item.
@@ -4612,7 +4603,7 @@
 #v+
    item = list_pop (list, -2);
 #v-
- would reduce the list to 
+ would reduce the list to
 #v+
    {"hi", "there", 7, 3.14, "before", "after"}
 #v-
@@ -4620,7 +4611,7 @@
  parameter to \ifun{list_pop} is left unspecified, then the position
  will default to the zeroth, i.e., \exmp{list_pop(list)} is
  equaivalent to \exmp{list_pop(list,0)}.
- 
+
  To copy a list, use the dereference operator \var{@}:
 #v+
    new_list = @list;
@@ -4636,11 +4627,11 @@
 #v+
     new_list = list_reverse (@list);
 #v-
- 
+
 #%}}}
 
 \chapter{Error Handling} #%{{{
-   
+
    All non-trivial programs or scripts must be deal with the
    possibility of run-time errors.  In fact, one sign of a seasoned
    programmer is that such a person pays particular attention to error
@@ -4670,7 +4661,7 @@
   -1 upon failure.  It is up to the calling routine to check the
   return value of \exmp{write_to_file} and act accordingly.  For
   instance:
-#v+  
+#v+
      if (-1 == write_to_file ("/tmp/foo", "bar"))
        {
           () = fprintf (stderr, "Write failed\n");
@@ -4747,11 +4738,10 @@
   another approach to error handling that tries to address these
   issues.
 
-
 #%}}}
 
 \sect{Error Handling through Exceptions}
-  
+
   This section describes \slang's exception model.
   The idea is that when a function encounters an error,
   instead of returning an error code, it simply gives up and
@@ -4800,7 +4790,7 @@
   An simple exception handler may be created through the use of a
   \em{try-catch} statement, such as
 #v+
-     try 
+     try
       {
         write_to_file ("/tmp/foo", "bar");
       }
@@ -4813,7 +4803,7 @@
   The above code works as follows: First the statement (or statements)
   inside the try-block are executed.  As long as no exception occurs,
   once they have executed, control will pass on to \exmp{next_statement},
-  skipping the catch statement(s). 
+  skipping the catch statement(s).
 
   If an exception occurs while executing the statements in the
   try-block, any remaining statements in the block will be skipped and
@@ -4826,7 +4816,7 @@
   and the code associated with the catch statement will get executed.
   Control will then pass to \exmp{next_statement} (or first to the
   code in an optional \kw{finally} block).
-  
+
   Catch-statements are tested against the exception in the order that
   they appear.  Once a matching \kw{catch} statement is found, the
   search will terminate.  If no matching \kw{catch}-statement is
@@ -4847,7 +4837,7 @@
   be added for \exmp{WriteError} that removes the file:
 
 #v+
-     try 
+     try
       {
         write_to_file ("/tmp/foo", "bar");
       }
@@ -4875,7 +4865,7 @@
   scenario, \exmp{next_statement} should not get executed upon
   failure.  This can be achieved as follows:
 #v+
-     try 
+     try
       {
         write_to_file ("/tmp/foo", "bar");
       }
@@ -4974,7 +4964,7 @@
     {
        variable i = where (x == 0);
        if (length (i))
-         throw DivideByZeroError, 
+         throw DivideByZeroError,
                "Array contains elements that are zero", i;
        return 1/x;
     }
@@ -5066,7 +5056,7 @@
  \var{OSError} exception will catch \var{MallocError} but not
  \var{ParseError} since the latter is not a subclass of
  \var{OSError}.
- 
+
  The user may extend this tree with new exceptions using the
  \ifun{new_exception} function.  This function takes three arguments:
 \begin{tscreen}
@@ -5076,7 +5066,7 @@
  represents the node in the exception hierarchy where it is to be
  placed, and \em{description} is a string that provides a brief
  description of the exception.
- 
+
  For example, suppose that you are writing some code that processes
  numbers stored in a binary format.  In particular, assume that the
  format specifies that data be stored in a specific byte-order, e.g.,
@@ -5092,7 +5082,6 @@
 
 #%}}}
 
-
 #%}}}
 
 \chapter{Loading Files: evalfile, autoload, and require}
@@ -5107,12 +5096,12 @@
   \module{pcre} module that allows the interpreter to make use of the
   \em{Perl Compatible Regular Expression library}, a \module{png}
   module that allows the interpreter to easily read and write PNG
-  files, and a \module{rand} module for producing random numbers. 
+  files, and a \module{rand} module for producing random numbers.
   There are also a number of modules for the interpreter that are not
   distributed with the library.  See
   \url{http://www.jedsoft.org/slang/modules/} for links to some of
   those.
-  
+
 \sect{Using Modules}
 
   In order to make use of a module, it must first be ``imported'' into
@@ -5217,7 +5206,7 @@
 
 \item \ifun{ferror}: tests whether or not the stream
        associated with a file has an error.
-  
+
 \item \ifun{clearerr}: clears the end-of-file and error
        indicators for a stream.
 
@@ -5226,7 +5215,7 @@
 
 \item \ifun{ftell}: queries the file position indicator
        a the stream.
-       
+
 \item \ifun{fseek}: sets the position of a file
       position indicator of the stream.
 
@@ -5262,7 +5251,7 @@
     define count_lines_in_file (file)
     {
        variable fp, line, count;
-       
+
        fp = fopen (file, "r");    % Open the file for reading
        if (fp == NULL)
          throw OpenError, "$file failed to open"$;
@@ -5270,7 +5259,7 @@
        count = 0;
        while (-1 != fgets (&line, fp))
          count++;
-         
+
        () = fclose (fp);
        return count;
     }
@@ -5279,7 +5268,7 @@
  \ifun{fgets} returns, \var{line} will contain the line of text read in
  from the file.  Also note how the return value from \ifun{fclose} was
  handled (discarded in this case).
- 
+
  Although the preceding example closed the file via \ifun{fclose},
  there is no need to explicitly close a file because the interpreter will
  automatically close a file when it is no longer referenced.  Since
@@ -5338,7 +5327,7 @@
  lines as they are read in, use the \exmp{"wsline"} form, e.g.,
 #v+
      foreach line (fp) using ("wsline")
-      {  
+      {
           .
           .
       }
@@ -5353,7 +5342,7 @@
      define count_chars_in_file (file)
      {
         variable st;
-        
+
         st = stat_file (file);
         if (st == NULL)
           throw IOError, "stat_file failed";
@@ -5512,7 +5501,7 @@
   write the code:
 #v+
     variable format, size, fp, buf;
-    
+
     typedef struct
     {
        ut_type, ut_pid, ut_line, ut_id,
@@ -5524,12 +5513,11 @@
 
     define print_utmp (u)
     {
-       
+
       () = fprintf (stdout, "%-16s %-12s %-16s %s\n",
                     u.ut_user, u.ut_line, u.ut_host, ctime (u.ut_time));
     }
 
-       
    fp = fopen ("/var/log/utmp", "rb");
    if (fp == NULL)
      throw OpenError, "Unable to open utmp file";
@@ -5614,7 +5602,7 @@
  \sfun{slsh_main}, then \slsh will call it after the script has been
  loaded.  In this sense, \exmp{slsh_main} is analogous to \exmp{main}
  in \bf{C} or \bf{C++}.
- 
+
  A typical \slsh script is be structured as
 #v+
    #!/usr/bin/env slsh
@@ -5630,7 +5618,7 @@
  Unix users.   Typically, the code before \sfun{slsh_main} will load
  any required modules or packages, and define other functions to be
  used by the script.
- 
+
  Although the use of \sfun{slsh_main} is not required, its use is
  strongly urged for several reasons.  In addition to lending
  uniformity to \slang scripts, \sfun{slsh_main} is well supported by
@@ -5663,7 +5651,7 @@
     --no-normalize         Skip normalizing stage
     --no-encode            Don't encode to ogg
     --albuminfo PERFORMER/TITLE
-                           Use PERFORMER/TITLE if audio.cddb is absent   
+                           Use PERFORMER/TITLE if audio.cddb is absent
 #v-
  As the message shows, some of the options require an argument while
  others do not.  The cd2ogg.sl script looks like:
@@ -5693,7 +5681,7 @@
       variable no_rip = 0;
       variable no_normalize = 0;
       variable no_encode = 0;
-                    
+
       variable opts = cmdopt_new ();
       opts.add ("help", &exit_usage);
       opts.add ("device", &CD_Device; type="str");
@@ -5702,7 +5690,7 @@
       opts.add ("genre", &genre; type="str");
       opts.add ("albuminfo", &parse_album_info; type="str");
       opts.add ("no-normalize", &no_normalize);
-      opts.add ("no-encode", &no_encode);       
+      opts.add ("no-encode", &no_encode);
       variable i = opts.process (__argv, 1);
       if (i + 1 != __argc)
         exit_usage ();
@@ -5793,7 +5781,7 @@
  of the error.
 
 \labeled_sect{Using the sldb debugger}
- 
+
  The interpreter contains a number of hooks that support a debugger.
  \sldb consists of a set of functions that use these hooks to implement
  a simple debugger.  Although written for \slsh, the debugger may be
@@ -5814,7 +5802,7 @@
 #v-
  When called without an argument, \sfun{sldb} will prompt for input.
  This can be useful for setting or removing breakpoints.
- 
+
  Another mechanism to access the debugger is to put
 #v+
    require ("sldb");
@@ -5853,7 +5841,7 @@
 #v+
     slsh buggy.sl
 #v-
- yields 
+ yields
 #v+
     Expecting Double_Type, found Array_Type
     ./buggy.sl:13:slsh_main:Type Mismatch
@@ -5874,7 +5862,7 @@
 #v-
  From this one can see that the problem is that \exmp{z} is an array
  and not a scalar as expected.
- 
+
  To run the program under debugger control, startup \slsh and load the
  file using the \sfun{sldb} function:
 #v+
@@ -5882,7 +5870,7 @@
 #v-
  Note the use of \exmp{"./"} in the filename.  This may be necessary
  if the file is not in the \slsh search path.
- 
+
  The above command causes execution to stop with the following displayed:
 #v+
     slsh_main at ./buggy.sl:9
@@ -5894,7 +5882,7 @@
  used to print the value of an expression or variable.  Using it to
  display the value of \exmp{x} yields
 #v+
-    (sldb) print x       
+    (sldb) print x
     Caught exception:Variable Uninitialized Error
     (sldb)
 #v-
@@ -5902,7 +5890,7 @@
  not be until line 9 has been executed.  The \exmp{next} command may
  be used to execute the current line and stop at the next one:
 #v+
-    (sldb) next       
+    (sldb) next
     10    variable y = x*x;
     (sldb)
 #v-
@@ -5920,7 +5908,7 @@
     1
     (sldb) print x[-1]
     5
-    (sldb) 
+    (sldb)
 #v-
 
   The \var{list} command may be used to get a list of the source code
@@ -5941,16 +5929,16 @@
 #v-
 
   The \exmp{break} function may be used to set a breakpoint.  For
-  example, 
+  example,
 #v+
     (sldb) break 15
     breakpoint #1 set at ./buggy.sl:15
 #v-
   will set a break point at the line 15 of the current file.
-  
+
   The \exmp{cont} command may be used to continue execution until the
   next break point:
-#v+ 
+#v+
     (sldb) cont
     Breakpoint 1, slsh_main
         at ./buggy.sl:15
@@ -5969,7 +5957,7 @@
     1
     (sldb) print y[i]
     1
-    (sldb) print z   
+    (sldb) print z
     Integer_Type[5]
 #v-
   This shows that the problem was caused by \exmp{z} being an array and not a
@@ -6053,7 +6041,7 @@
      4    variable x = -b + sqrt (d);
 #v-
   This shows the the \exmp{NaN} was produced on line 4.
-  
+
   The \exmp{watchfpu} command may be used to watch for the occurrence
   of any combination of the following exceptions
 #v+
@@ -6101,7 +6089,7 @@ the fact that \slang is a byte-compiled interpreter that executes
 statements much slower than that of a language that compiles to
 machine code.  The overhead of the processing of byte-codes by the
 interpreter may be used to roughly justify the rule of thumb that the
-smaller the code is, the faster it will run.  
+smaller the code is, the faster it will run.
 
 When possible, always take advantage of \slang's powerful array
 facilities.  For example, consider the act of clipping an array by

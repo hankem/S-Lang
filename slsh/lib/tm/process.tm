@@ -14,26 +14,26 @@
   by the \sfun{new_process} function.  The specific file descriptors
   are dictated via the \exmp{read}, \exmp{write}, and \exmp{dupN}
   qualifiers, as described in detail below.
-  
+
   The function returns a structure containing zero or more fields of the form
   \exmp{fdN} where \exmp{N} is an integer derived from the qualifiers,
   e.g., \exmp{fd0} and \exmp{fd1} correspond to the child's stdin and
   stdout, respectively.  The structure also contains fields of the
   form \exmp{fpN} whose values are stdio \dtype{File_Type} objects
   obtained using \exmp{fdopen} with the correponding \exmp{fdN} value.
-  
+
   Other important fields include \exmp{pid} whose value is
   the process-id of the newly created process.
-  
+
   The status of the process may be checked or collected using the
   \sfun{wait} method.  It is very important to call this method to
-  avoid the creation of zombie processes. 
+  avoid the creation of zombie processes.
 
 \qualifiers
   The following qualifiers are supported:
 #v+
-   read=fds 
-#v-   
+   read=fds
+#v-
     fds is a list of integer file descriptors that are open for read
     access in the subprocess, and may be written to by the calling
     process using the fdN or fpN fields of the structure.
@@ -45,7 +45,7 @@
     process using the fdN or fpN fields of the structure.
 #v+
    stdin=filename
-   stdout=filename 
+   stdout=filename
    stderr=filename
 #v-
     These qualifiers allow the stdin, stdout, and stderr file
@@ -54,13 +54,13 @@
     \exmp{dir} qualifier.
 #v+
    fdN=string
-#v- 
+#v-
     This qualifier will cause the integer file descriptor N to be open
     in the subprocess and redirected to the filename represented by
     the string, which is interpreted relative to the value of the \exmp{dir}
     qualifier.  The access mode is dictated by the first few
     characters of the string as described in more detail below.
-#v+ 
+#v+
    stdin=File_Type|FD_Type
    stdout=File_Type|FD_Type
    stderr=File_Type|FD_Type
@@ -72,7 +72,7 @@
      This form of the qualifier may be used to setup pipelines.
 #v+
    dupN=int
-#v-  
+#v-
      The file descriptor corresponding to the integer N in the
      subprocess is created by duping the descriptor given by the
      integer value of the qualifier.  For example, dup2=1 would cause
@@ -111,12 +111,12 @@
   \ifun{waitpid} function.  The most common is the WNOHANG option,
   which will cause the \exmp{.wait} method to return immediately if
   the process has not exited.
-  
+
   If an error occurs, the function will return NULL and set
   \ivar{errno} accordingly.  Otherwise it will return a \exmp{waitpid}
   structure.  See the documentation for \exmp{waitpid} for more
   information.
-  
+
 \example
   In the following examples, \exmp{pgm} represents the program to be
   invoked in the subprocess.  For simplicity, no addition arguments are

@@ -24,7 +24,7 @@
 #v-
 
   An optional parameter may be used to specify a default value for
-  array elements.  For example, 
+  array elements.  For example,
 #v+
    A = Assoc_Type[Int_Type, -1];
 #v-
@@ -61,7 +61,7 @@
 \synopsis{A list object}
 \description
   An object of type \var{List_Type} represents a list, which is
-  defined as an ordered heterogeneous collection of objects.  
+  defined as an ordered heterogeneous collection of objects.
   A list may be created using, e.g.,
 #v+
     empty_list = {};
@@ -82,10 +82,10 @@
   the first item on the list given by an index of 0.  The
   \ifun{length} function may be used to obtain the number of elements
   in the list.
-  
+
   A copy of the list may be created using the @ operator, e.g.,
   \exmp{copy = @list}.
-  
+
   The \kw{foreach} statement may be used with a \dtype{List_Type}
   object to loop over its elements:
 #v+
@@ -100,12 +100,12 @@
   An object of type \var{String_Type} represents a string of bytes or
   characters, which in general have different semantics depending upon
   the UTF-8 mode.
-  
+
   The string obeys byte-semantics when indexed as an
   array.  That is, \exmp{S[0]} will return the first byte of the
   string \exmp{S}.  For character semantics, the nth character in the
   string may be obtained using \ivar{substr} function.
-  
+
   The \kw{foreach} statement may be used with a \dtype{String_Type}
   object \exmp{S} to loop over its bytes:
 #v+
@@ -120,10 +120,10 @@
   produce the same sequence.  Otherwise, the string will be decoded
   to generate the (wide) character sequence.  If the string contains
   an invalid UTF-8 encoded character, successive bytes of the invalid
-  sequence will be returned as negative integers.  For example, 
+  sequence will be returned as negative integers.  For example,
   \exmp{"a\\xAB\\x{AB}"} specifies a string composed of the character
   \exmp{a}, a byte \exmp{0xAB}, and the character \exmp{0xAB}.  In
-  this case, 
+  this case,
 #v+
      foreach c ("a\xAB\x{AB}") {...}
 #v-
@@ -146,7 +146,7 @@
      if (s12.f1 == 4) s.f1++;
 #v-
   By default, all fields will be initialized to \NULL.
-  
+
   A structure may also be created using the dereference operator (@):
 #v+
     s = @Struct_Type ("f1", "f2", ..., "fN");

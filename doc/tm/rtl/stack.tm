@@ -33,11 +33,11 @@
   This function, together with the companion function
   \ifun{__push_args}, is useful for creating a function that takes a
   variable number of arguments, as well as passing the arguments of
-  one function to another function. 
-  
+  one function to another function.
+
   \ifun{__pop_args} removes the specified number of values from the
   stack and returns them as an array of structures of the corresponding
-  length.  Each structure in the array consists of a single 
+  length.  Each structure in the array consists of a single
   field called \exmp{value}, which represents the value of the
   argument.
 \example
@@ -48,7 +48,7 @@
     {
        variable i;
        variable args = __pop_args (_NARGS);
-   
+
        for (i = 0; i < _NARGS; i++)
          {
             () = fputs (string (args[i].value), stdout);
@@ -67,7 +67,7 @@
     {
       !if (_NARGS) return 1;
       variable a;
-   
+
       a = __pop_args (_NARGS);
       return @Array_Type (Integer_Type, [__push_args (a)]) + 1;
     }

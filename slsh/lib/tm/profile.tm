@@ -1,4 +1,3 @@
-
 \function{profile_on}
 \synopsis{Enable code generation to support profiling hooks}
 \usage{profile_on ( [line_by_line] )}
@@ -7,13 +6,12 @@
   call hooks that are used to profile code.  The \exmp{profile_on}
   function does not establish those hooks, rather it causes code to be
   generated to support such hooks.
-  
+
   With no optional argument, only code to support function call hooks
   will be generated.  To enable support for line-by-line profile
   hooks, a value of 1 should be passed to this function.
 \seealso{profile_off, profile_begin, profile_end, profile_calibrate, profile_report}}
 \done
-
 
 \function{profile_off}
 \synopsis{Turn off code generation for profiling hooks}
@@ -23,7 +21,6 @@
   hooks.
 \seealso{profile_on, profile_begin, profile_end, profile_calibrate, profile_report}}
 \done
-
 
 \function{profile_begin}
 \synopsis{Establish profiling hooks and reset the profiler}
@@ -37,7 +34,6 @@
 \seealso{profile_end, profile_on, profile_off, profile_calibrate, profile_report}}
 \done
 
-
 \function{profile_end}
 \synopsis{Remove profiling hooks and turn off profiler code generation}
 \usage{profile_end ()}
@@ -47,7 +43,6 @@
   place.
 \seealso{profile_begin, profile_on, profile_off, profile_calibrate, profile_report}
 \done
-
 
 \function{profile_calibrate}
 \synopsis{Calibrate the profiler}
@@ -66,7 +61,6 @@
  calibration will be and the longer the calibration process will take.
 \seealso{profile_begin, profile_end, profile_on, profile_off, profile_report}
 \done
-
 
 \function{profile_report}
 \synopsis{Generate the profile report}

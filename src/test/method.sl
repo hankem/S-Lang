@@ -24,7 +24,7 @@ static define method_1 (s,pi)
 {
    if ((_NARGS != 2) and (s != S))
      failed ("method_1");
-   
+
    if (pi != PI)
      failed ("method_1");
 }
@@ -36,7 +36,7 @@ static define method_2 (s,null,pi)
 {
    if ((_NARGS != 3) and (s != S) and (null != NULL))
      failed ("method_2");
-   
+
    if (pi != PI)
      failed ("method_2");
 }
@@ -53,7 +53,7 @@ static define method_g (t, a)
 {
    if ((_NARGS != 2) and (t != T))
      failed ("method_g");
-   
+
    return a;
 }
 T.g = &method_g;
@@ -76,8 +76,6 @@ S.f[0] = T;
 if (PI != S.f[0].g (PI))
   failed ("s.f[0].g PI");
 
-
-  
 print ("Ok\n");
 
 exit (0);

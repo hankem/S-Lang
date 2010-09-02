@@ -10,7 +10,7 @@ static define debug ()
 {
    variable depth = 0;
    variable info;
-   
+
    do
      {
 	depth++;
@@ -27,7 +27,7 @@ static define fun2()
    if (_get_frame_depth () != 4)
      failed ("fun2 not at depth 4");
    variable foo = "zero";
-   
+
    variable frame_info = _get_frame_info (0);
    if (length (frame_info.locals) != 2)
      failed ("length of frame_info");
@@ -58,7 +58,7 @@ static define fun0()
    variable fun0_1 = "one";
    variable fun0_2 = "two";
    variable fun0_3 = "three";
-   
+
    fun1 ();
    if (fun0_3 != 3)
      failed ("to set fun0_3");

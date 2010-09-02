@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -220,13 +220,13 @@ static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
 	sprintf (numbuf, "%lld", tok->v.llong_val);
 	s = numbuf;
 	break;
-	
+
       case ULLONG_TOKEN:
 	sprintf (numbuf, "%llu", tok->v.ullong_val);
 	s = numbuf;
 	break;
 #endif
-	
+
       case OBRACKET_TOKEN: s = "["; break;
       case CBRACKET_TOKEN: s = "]"; break;
       case OPAREN_TOKEN: s = "("; break;
@@ -246,7 +246,7 @@ static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
 
       case ARRAY_TOKEN: s = "["; break;
       case DOT_TOKEN: s = "."; break;
-	
+
       case MULTI_STRING_TOKEN:
 	if (tok->v.multistring_val != NULL)
 	  {
@@ -309,7 +309,6 @@ void _pSLparse_error (int errcode, SLCONST char *str, _pSLang_Token_Type *tok, i
 
    (void) _pSLerr_set_line_info (file, line, NULL);
 }
-
 
 #define ALPHA_CHAR 	1
 #define DIGIT_CHAR	2
@@ -397,7 +396,7 @@ static SLCONST unsigned char Char_Type_Table[256][2] =
  { ALPHA_CHAR, 0 },	/* z */	    { SEP_CHAR, OBRACE_TOKEN },	/* { */
  { OP_CHAR, OFS_BOR },	/* | */	    { SEP_CHAR, CBRACE_TOKEN },	/* } */
  { OP_CHAR, OFS_BNOT },	/* ~ */	    { BAD_CHAR, 0 },	/* 0x7f */
-   
+
  { ALPHA_CHAR, 0 },	/* € */	    { ALPHA_CHAR, 0 },	/*  */
  { ALPHA_CHAR, 0 },	/* ‚ */	    { ALPHA_CHAR, 0 },	/* ƒ */
  { ALPHA_CHAR, 0 },	/* „ */	    { ALPHA_CHAR, 0 },	/* … */
@@ -467,7 +466,7 @@ static SLCONST unsigned char Char_Type_Table[256][2] =
 int _pSLcheck_identifier_syntax (SLCONST char *name)
 {
    unsigned char *p;
-   
+
    p = (unsigned char *) name;
    if (ALPHA_CHAR == Char_Type_Table[*p][0]) while (1)
      {
@@ -484,8 +483,8 @@ int _pSLcheck_identifier_syntax (SLCONST char *name)
 	     break;
 	  }
      }
-   
-   _pSLang_verror (SL_SYNTAX_ERROR, 
+
+   _pSLang_verror (SL_SYNTAX_ERROR,
 		 "Identifier or structure field name '%s' contains an illegal character", name);
    return -1;
 }
@@ -606,7 +605,7 @@ static int get_number_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned
 	       tok_flags = SLTOKEN_IS_HEX;
 	     else if ((ch == 'b') || (ch == 'B'))
 	       tok_flags = SLTOKEN_IS_BINARY;
-	     else 
+	     else
 	       break;
 
 	     do
@@ -786,7 +785,6 @@ static int get_op_token (_pSLang_Token_Type *tok, char ch)
    return type;
 }
 
-
 /* s and t may point to the same buffer --- even for unicode.  This
  * is because a wchar is denoted by (greater than) 4 characters \x{...}, which
  * will expand to at most 6 bytes when UTF-8 encoded.  That is:
@@ -797,13 +795,13 @@ static int get_op_token (_pSLang_Token_Type *tok, char ch)
  * \x{FFFFF} expands to 4 bytes
  * \x{FFFFFF} expands to 5 bytes
  * \x{7FFFFFF} expands to 6 bytes
- * 
+ *
  * Also, consider octal, decimal, and hex forms:
- * 
+ *
  *    \200   (0x80)
  *    \d128
  *    \x80
- * 
+ *
  * In all these cases, the escaped form uses 4 bytes.  Hence, these forms also
  * may be converted to UTF-8.
  */
@@ -826,7 +824,7 @@ static int expand_escaped_string (register char *s,
 	SLwchar_Type wch;
 	char *s1;
 	ch = *t++;
-	
+
 	if (ch != '\\')
 	  {
 	     if (ch == 0) is_binary = 1;
@@ -852,7 +850,7 @@ static int expand_escaped_string (register char *s,
 	  {
 	     if (wch == 0)
 	       is_binary = 1;
-	     
+
 	     *s++ = (char) wch;
 	     continue;
 	  }
@@ -877,7 +875,7 @@ static int expand_escaped_string (register char *s,
 #define STRING_SUFFIX_B		1
 #define STRING_SUFFIX_Q		2
 #define STRING_SUFFIX_R		4
-#define STRING_SUFFIX_S		8	
+#define STRING_SUFFIX_S		8
 static int get_string_suffix (int *suffixp)
 {
    int suffix = 0;
@@ -922,7 +920,7 @@ static int get_string_suffix (int *suffixp)
 }
 
 static int process_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
-				 unsigned char *s, unsigned int len, 
+				 unsigned char *s, unsigned int len,
 				 int has_backslash)
 {
    SLwchar_Type wch;
@@ -991,7 +989,7 @@ static int process_string_token (_pSLang_Token_Type *tok, unsigned char quote_ch
    return (tok->type = UCHAR_TOKEN);
 }
 
-static int read_string_token (unsigned char quote_char, 
+static int read_string_token (unsigned char quote_char,
 			      unsigned char *s, unsigned int maxlen,
 			      int is_multiline_raw,
 			      int *has_backslashp,
@@ -1007,7 +1005,7 @@ static int read_string_token (unsigned char quote_char,
 
 	if (ch == 0)
 	  ch = '\n';
-	
+
 	if (ch == '\n')
 	  {
 	     if (is_multiline_raw)
@@ -1045,7 +1043,7 @@ static int read_string_token (unsigned char quote_char,
 		  has_bs = 1;
 		  continue;
 	       }
-	     
+
 	     ch = prep_get_char ();
 	     if ((ch == '\n') || (ch == 0))
 	       {
@@ -1060,7 +1058,7 @@ static int read_string_token (unsigned char quote_char,
 	       }
 	     continue;
 	  }
-	
+
 	s[len++] = ch;
      }
 
@@ -1076,14 +1074,13 @@ static int read_string_token (unsigned char quote_char,
    return is_continued;
 }
 
-
 static _pSLtoken_String_List_Type *alloc_string_list_type (unsigned char *buf, unsigned int len)
 {
    _pSLtoken_String_List_Type *l;
 
    if (NULL == (l = (_pSLtoken_String_List_Type *) SLmalloc (sizeof (_pSLtoken_String_List_Type) + len)))
      return NULL;
-   
+
    l->next = NULL;
    l->len = len;
    memcpy ((char *) l->buf, (char *)buf, len);
@@ -1103,11 +1100,11 @@ static void free_string_list (_pSLtoken_String_List_Type *l)
 static void free_multistring_token_val (_pSLang_Token_Type *tok)
 {
    _pSLang_Multiline_String_Type *m;
-   
+
    m = tok->v.multistring_val;
    if (m == NULL)
      return;
-   
+
    if ((m->type == STRING_TOKEN) || (m->type == STRING_DOLLAR_TOKEN))
      {
 	_pSLfree_hashed_string (m->v.s_val, m->len, m->hash);
@@ -1200,7 +1197,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
    int is_binary;
    _pSLtok_Type type;
 
-   status = read_string_token (quote_char, s, SL_MAX_TOKEN_LEN-1, 
+   status = read_string_token (quote_char, s, SL_MAX_TOKEN_LEN-1,
 			       is_multiline_raw, &has_backslash, &len);
 
    if (status == -1)
@@ -1219,7 +1216,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
    do
      {
 	int has_bs;
-	
+
 	if (-1 == next_input_line ())
 	  {
 	     _pSLparse_error (SL_SYNTAX_ERROR, "Multiline string literal is unterminated", NULL, 0);
@@ -1228,7 +1225,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
 
 	status = read_string_token (quote_char, s, SL_MAX_TOKEN_LEN-1,
 				    is_multiline_raw, &has_bs, &len);
-	
+
 	if ((status == -1)
 	    || (NULL == (tail->next = alloc_string_list_type (s, len))))
 	  goto return_error;
@@ -1244,7 +1241,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
      goto return_error;
 
    /* A multiline raw string is raw unless an explicit Q suffix was given */
-   if (is_multiline_raw 
+   if (is_multiline_raw
        && (0 == (suffix & STRING_SUFFIX_Q)))
      suffix |= STRING_SUFFIX_R;
 
@@ -1258,8 +1255,8 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
 	while (tail != NULL)
 	  {
 	     int ib;
-	     
-	     ib = expand_escaped_string (tail->buf, tail->buf, 
+
+	     ib = expand_escaped_string (tail->buf, tail->buf,
 					 tail->buf+tail->len, &tail->len, is_binary);
 
 	     is_binary = is_binary || ib;
@@ -1291,7 +1288,7 @@ static int get_string_token (_pSLang_Token_Type *tok, unsigned char quote_char,
 
 return_error:
 
-   if (root != NULL) 
+   if (root != NULL)
      free_string_list (root);
 
    LLT->parse_level -= 1;
@@ -1428,7 +1425,7 @@ static int prep_exists_function (SLprep_Type *pt, SLFUTURE_CONST char *line)
 
    (void) pt;
    bmax = buf + (sizeof (buf) - 1);
-   
+
    comment = (unsigned char)'%';
    while (1)
      {
@@ -1492,7 +1489,6 @@ static int prep_eval_expr (SLprep_Type *pt, SLFUTURE_CONST char *expr)
    return ret;
 }
 
-
 int SLang_load_object (SLang_Load_Type *x)
 {
    SLprep_Type *this_pp;
@@ -1547,10 +1543,10 @@ int SLang_load_object (SLang_Load_Type *x)
 #if 0
    /* Instead of setting this variable to 0, let it keep its current value.
     * Suppose that the following evalfiles take place:
-    *  
+    *
     *  A -> B1  --> C1  --> D1
     *    -> B2  --> C1  --> D2
-    * 
+    *
     * and that B1 sets _boseos_info to 1.  Then C1 and D1 will get this value
     * but B2 will not, since it will get rest to 0 when the routine has finished
     * loading B1.
@@ -1609,7 +1605,7 @@ SLang_Load_Type *SLns_allocate_load_type (SLFUTURE_CONST char *name, SLFUTURE_CO
 	SLfree ((char *) x);
 	return NULL;
      }
-   
+
    if (namespace_name != NULL)
      {
 	if (NULL == (x->namespace_name = SLang_create_slstring (namespace_name)))
@@ -1779,11 +1775,11 @@ int SLns_load_file (SLFUTURE_CONST char *f, SLFUTURE_CONST char *ns_name)
    if (SLns_Load_File_Hook != NULL)
      return (*SLns_Load_File_Hook) (f, ns_name);
 
-   if (f == NULL) 
+   if (f == NULL)
      name = SLang_create_slstring ("<stdin>");
    else
      name = _pSLpath_find_file (f, 1);
-	
+
    if (name == NULL)
      return -1;
 
@@ -1800,7 +1796,7 @@ int SLns_load_file (SLFUTURE_CONST char *f, SLFUTURE_CONST char *ns_name)
 	fp = fopen (name, "r");
 	if (_pSLang_Load_File_Verbose & SLANG_LOAD_FILE_VERBOSE)
 	  {
-	     if ((ns_name != NULL) 
+	     if ((ns_name != NULL)
 		 && (*ns_name != 0) && (0 != strcmp (ns_name, "Global")))
 	       SLang_vmessage ("Loading %s [ns:%s]", name, ns_name);
 	     else
@@ -1965,7 +1961,7 @@ static int compile_byte_compiled_multistring (char *buf)
 	     SLang_verror (SL_INVALID_DATA_ERROR, "Unexpected object (0x%X) encountered in stream", (int)this_type);
 	     goto return_error;
 	  }
-	
+
 	if ((last_type != type) && (type != 0))
 	  {
 	     SLang_verror (SL_INVALID_DATA_ERROR, "Unexpected object (0x%X) encountered in stream", (int)this_type);
@@ -1998,7 +1994,6 @@ return_error:
    if (root != NULL) free_string_list (root);
    return -1;
 }
-
 
 void _pSLcompile_byte_compiled (void)
 {
@@ -2131,7 +2126,7 @@ void _pSLcompile_byte_compiled (void)
 	   default:
 	     break;
 	  }
-	
+
 	if (type == 0)
 	  continue;
 
@@ -2235,7 +2230,7 @@ static int bytecomp_write_data (SLCONST char *buf, unsigned int len)
    return 0;
 }
 
-static int byte_compile_multiline_token (_pSLang_Token_Type *tok, 
+static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
 					 unsigned char *buf, unsigned char *buf_max)
 {
    _pSLtoken_String_List_Type *root;
@@ -2253,21 +2248,21 @@ static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
 	type = STRING_TOKEN;
 	esc_type = ESC_STRING_TOKEN;
 	break;
-	
+
       case BSTRING_TOKEN:
 	type = esc_type = ESC_BSTRING_TOKEN;
 	break;
-	
+
       case STRING_DOLLAR_TOKEN:
 	type = STRING_DOLLAR_TOKEN;
 	esc_type = ESC_STRING_DOLLAR_TOKEN;
 	break;
-	
+
       default:
 	SLang_verror (SL_Internal_Error, "Unsupported multline token: 0x%X", tok->type);
 	return -1;
      }
-   
+
    buf[0] = tok->type;
    buf[1] = 0;
    if (-1 == bytecomp_write_data ((char *)buf, 1))
@@ -2283,7 +2278,7 @@ static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
 	if (-1 == escape_string ((unsigned char *)root->buf, (unsigned char *)root->buf + root->len,
 				 (unsigned char *)b3, buf_max, &is_escaped))
 	  return -1;
-	
+
 	if (is_escaped)
 	  buf[0] = esc_type;
 	else
@@ -2296,7 +2291,7 @@ static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
 
 	if (-1 == bytecomp_write_data ((char *) buf, len))
 	  return -1;
-	
+
 	root = root->next;
      }
 
@@ -2304,7 +2299,7 @@ static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
    buf[1] = 0;
    if (-1 == bytecomp_write_data ((char *)buf, 1))
      return -1;
-   
+
    return 0;
 }
 
@@ -2346,7 +2341,7 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
       case LLONG_TOKEN:
 	sprintf (b3, "%lld", tok->v.llong_val);
 	break;
-	
+
       case ULLONG_TOKEN:
 	sprintf (b3, "%llu", tok->v.ullong_val);
 	break;
@@ -2384,7 +2379,7 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
 	    return;
 
 	if (is_escaped)
-	  buf[0] = ((tok->type == STRING_TOKEN) 
+	  buf[0] = ((tok->type == STRING_TOKEN)
 		    ? ESC_STRING_TOKEN : ESC_STRING_DOLLAR_TOKEN);
 	break;
 
@@ -2427,7 +2422,7 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
       case _STRUCT_FIELD_REF_TOKEN:
 	strcpy (b3, tok->v.s_val);
 	break;
-	
+
       case BREAK_N_TOKEN:
       case CONT_N_TOKEN:
 	sprintf (b3, "%ld", tok->v.long_val);

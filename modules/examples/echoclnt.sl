@@ -4,7 +4,7 @@ private define perform_echo (s)
 {
    if (-1 == write (s, "Hello"))
      () = fprintf (stderr, "client: write failed: %s\n", errno_string (errno));
-   
+
    variable buf;
    if (-1 == read (s, &buf, 1024))
      () = fprintf (stderr, "client: read failed %s\n", errno_string (errno));

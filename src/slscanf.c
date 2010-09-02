@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -31,7 +31,7 @@ USA.
 static void init_map (unsigned char map[256], int base)
 {
    memset ((char *) map, 0xFF, 256);
-   
+
    map['0'] = 0;   map['1'] = 1;   map['2'] = 2;   map['3'] = 3;
    map['4'] = 4;   map['5'] = 5;   map['6'] = 6;   map['7'] = 7;
    if (base == 8)
@@ -60,7 +60,6 @@ static SLFUTURE_CONST char *get_sign (SLFUTURE_CONST char *s, SLFUTURE_CONST cha
      }
    return s;
 }
-
 
 static int parse_long (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, long *np,
 		       long base, unsigned char map[256])
@@ -92,7 +91,6 @@ static int parse_long (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, long
 
    return 1;
 }
-
 
 static int parse_int (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, int *np,
 		      long base, unsigned char map[256])
@@ -135,7 +133,7 @@ static int parse_ushort (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, un
 }
 
 #if SLANG_HAS_FLOAT
-/* 
+/*
  * In an ideal world, strtod would be the correct function to use.  However,
  * there may be problems relying on this function because some systems do
  * not support and some that do get it wrong.  So, I will handle the parsing
@@ -189,7 +187,7 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 
 				 if (ch == ')')
 				   s0 = s;
-				 
+
 				 break;
 			      }
 			 }
@@ -219,7 +217,6 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 	return 0;
      }
 
-   
    /* Prepare the buffer that will be passed to strtod */
    /* Allow the exponent to be 5 significant digits: E+xxxxx\0 */
    bmax = buf + (sizeof (buf) - 8);
@@ -241,14 +238,14 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 
 	if (value == 0xFF)
 	  break;
-	
+
 	if (b < bmax)
 	  *b++ = *s;
-	
+
 	expon++;
 	s++;
      }
-   
+
    if ((s < smax) && (*s == '.'))
      {
 	s++;
@@ -267,7 +264,7 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 
 	     if (value == 0xFF)
 	       break;
-	     
+
 	     if (b < bmax)
 	       *b++ = *s;
 	     s++;
@@ -312,14 +309,14 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 	     expon += e;
 	  }
      }
-   
+
    if (expon != 0)
      sprintf (b, "e%d", expon);
    else
      *b = 0;
-   
+
    *sp = s;
-   
+
    /* fprintf (stdout, "buf='%s'\n", buf); */
 #ifdef HAVE_STRTOD
    *d = sign * strtod (buf, NULL);
@@ -344,7 +341,7 @@ static int parse_float (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, flo
 static int parse_string (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, char **str)
 {
    SLFUTURE_CONST char *s, *s0;
-   
+
    s0 = s = *sp;
    while (s < smax)
      {
@@ -354,7 +351,7 @@ static int parse_string (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, ch
      }
    if (NULL == (*str = SLang_create_nslstring (s0, (unsigned int) (s - s0))))
      return -1;
-   
+
    *sp = s;
    return 1;
 }
@@ -362,11 +359,11 @@ static int parse_string (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, ch
 static int parse_bstring (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, char **str)
 {
    SLFUTURE_CONST char *s;
-   
+
    s = *sp;
    if (NULL == (*str = SLang_create_nslstring (s, (unsigned int) (smax - s))))
      return -1;
-   
+
    *sp = smax;
    return 1;
 }
@@ -413,21 +410,20 @@ static int parse_range (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, SLF
    if (NULL == (range = SLmake_nstring (s0, (unsigned int) (f - s0))))
      return -1;
    *fp = f + 1;			       /* skip ] */
-   
+
    SLmake_lut (map, (unsigned char *) range, reverse);
    SLfree (range);
 
    s0 = s = *sp;
    while ((s < smax) && map [(unsigned char) *s])
      s++;
-   
+
    if (NULL == (*str = SLang_create_nslstring (s0, (unsigned int) (s - s0))))
      return -1;
-   
+
    *sp = s;
    return 1;
 }
-
 
 /* FIXME: This function does not handle LONG_LONG */
 int _pSLang_sscanf (void)
@@ -444,7 +440,7 @@ int _pSLang_sscanf (void)
 	_pSLang_verror (SL_INVALID_PARM, "Int_Type sscanf (str, format, ...)");
 	return -1;
      }
-   
+
    num_refs = (unsigned int) SLang_Num_Function_Args;
    if (-1 == SLreverse_stack (num_refs))
      return -1;
@@ -458,7 +454,7 @@ int _pSLang_sscanf (void)
 	SLang_free_slstring (input_string);
 	return -1;
      }
-   
+
    f = format;
    s = input_string;
    input_string_max = input_string + strlen (input_string);
@@ -505,7 +501,7 @@ int _pSLang_sscanf (void)
 	     s = s1;
 	     continue;
 	  }
-	
+
 	if ((chf != '%')
 	    || ((chf = *f++) == '%'))
 	  {
@@ -527,7 +523,7 @@ int _pSLang_sscanf (void)
 	     no_assign = 1;
 	     chf = *f++;
 	  }
-	
+
 	/* Width */
 	has_width = isdigit (chf);
 	if (has_width)
@@ -544,7 +540,7 @@ int _pSLang_sscanf (void)
 	     is_short = 1;
 	     chf = *f++;
 	     break;
-	     
+
 	   case 'L':		       /* not implemented */
 	   case 'l':
 	     is_long = 1;
@@ -567,7 +563,7 @@ int _pSLang_sscanf (void)
 	       width = (unsigned int) (input_string_max - s);
 	     smax = s + width;
 	  }
-	     
+
 	/* Now the format descriptor */
 
 	map = map10;
@@ -598,7 +594,6 @@ int _pSLang_sscanf (void)
 		  status = parse_int (&s, smax, &obj.v.int_val, base, map);
 	       }
 	     break;
-	     
 
 	   case 'U':
 	     is_long = 1;
@@ -634,7 +629,7 @@ int _pSLang_sscanf (void)
 	       }
 	     else chf = 'o';
 	     goto try_again;
-	     
+
 	   case 'O':
 	     is_long = 1;
 	   case 'o':
@@ -642,7 +637,7 @@ int _pSLang_sscanf (void)
 	     base = 8;
 	     chf = 'd';
 	     goto try_again;
-	     
+
 	   case 'X':
 	     is_long = 1;
 	   case 'x':
@@ -674,12 +669,12 @@ int _pSLang_sscanf (void)
 	     status = -1;
 #endif
 	     break;
-		  
+
 	   case 's':
 	     obj.o_data_type = SLANG_STRING_TYPE;
 	     status = parse_string (&s, smax, &obj.v.s_val);
 	     break;
-	     
+
 	   case 'c':
 	     if (has_width == 0)
 	       {
@@ -691,24 +686,24 @@ int _pSLang_sscanf (void)
 	     obj.o_data_type = SLANG_STRING_TYPE;
 	     status = parse_bstring (&s, smax, &obj.v.s_val);
 	     break;
-	     
+
 	   case '[':
 	     obj.o_data_type = SLANG_STRING_TYPE;
 	     status = parse_range (&s, smax, &f, &obj.v.s_val);
 	     break;
-	     
+
 	   case 'n':
 	     obj.o_data_type = SLANG_UINT_TYPE;
 	     obj.v.uint_val = (unsigned int) (s - input_string);
 	     status = 1;
 	     break;
-	     
+
 	   default:
 	     status = -1;
 	     _pSLang_verror (SL_NOT_IMPLEMENTED, "format specifier '%c' is not supported", chf);
 	     break;
 	  }
-	
+
 	if (status == 0)
 	  break;
 
@@ -726,14 +721,14 @@ int _pSLang_sscanf (void)
 	     SLang_free_object (&obj);
 	     goto return_error;
 	  }
-	
+
 	if (-1 == SLang_push (&obj))
 	  {
 	     SLang_free_object (&obj);
 	     SLang_free_ref (ref);
 	     goto return_error;
 	  }
-	
+
 	if (-1 == _pSLang_deref_assign (ref))
 	  {
 	     SLang_free_ref (ref);
@@ -747,7 +742,7 @@ int _pSLang_sscanf (void)
 
    if (-1 == SLdo_pop_n (num_refs))
      goto return_error;
-   
+
    SLang_free_slstring (format);
    SLang_free_slstring (input_string);
    return num;
@@ -759,7 +754,6 @@ int _pSLang_sscanf (void)
    return -1;
 }
 
-   
 # if SLANG_HAS_FLOAT
 
 #ifndef HAVE_STDLIB_H
@@ -787,7 +781,7 @@ double _pSLang_atof (SLFUTURE_CONST char *s)
 #endif
 	return 0.0;
      }
-   if (errno) 
+   if (errno)
      _pSLerrno_errno = errno;
    return x;
 }

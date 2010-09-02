@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -177,7 +177,6 @@ static SLCONST int RGB_to_BGR[] =
 {
      0, 4, 2, 6, 1, 5, 3, 7
 };
-
 
 static SLCONST char *Color_Fg_Str = "\033[3%dm";
 static SLCONST char *Color_Bg_Str = "\033[4%dm";
@@ -745,7 +744,6 @@ static void cursor_motion (SLCONST char *s1, SLCONST char *sN, int n)
      }
 }
 
-
 static void goto_relative_rc (int r, int c)
 {
    if (r < 0)
@@ -955,7 +953,7 @@ void SLtt_delete_nlines (int nn)
 
 static void cls_internal (SLCONST char *escseq, int rmin)
 {
-   /* If the terminal is a color terminal but the user wants black and 
+   /* If the terminal is a color terminal but the user wants black and
     * white, then make sure that the colors are reset.  This appears to be
     * necessary.
     */
@@ -1132,8 +1130,7 @@ static int initialize_brushes (void)
    Brushes_Initialized = 1;
    return 0;
 }
-   
-   
+
 static Brush_Info_Type *get_brush_info (SLsmg_Color_Type color)
 {
    if (Brushes_Initialized == 0)
@@ -1150,13 +1147,13 @@ static Brush_Info_Type *get_brush_info (SLsmg_Color_Type color)
 static SLtt_Char_Type get_brush_attr (SLsmg_Color_Type color)
 {
    Brush_Info_Type *b;
-   
+
    if (NULL == (b = get_brush_info (color)))
      return (SLtt_Char_Type)-1;
-   
+
    if (SLtt_Use_Ansi_Colors)
      return b->fgbg;
-   
+
    return b->mono;
 }
 
@@ -1172,7 +1169,7 @@ int SLtt_set_mono (int obj, SLFUTURE_CONST char *what, SLtt_Char_Type mask)
    (void) what;
    if (NULL == (b = get_brush_info (obj)))
      return -1;
-   
+
    b->mono = mask & ATTR_MASK;
    return 0;
 }
@@ -1269,7 +1266,7 @@ static int Color_0_Modified = 0;
 int SLtt_set_color_object (int obj, SLtt_Char_Type attr)
 {
    Brush_Info_Type *b;
-   
+
    if (NULL == (b = get_brush_info (obj)))
      return -1;
 
@@ -1278,7 +1275,7 @@ int SLtt_set_color_object (int obj, SLtt_Char_Type attr)
 
    if (_pSLtt_color_changed_hook != NULL)
      (*_pSLtt_color_changed_hook)();
-   
+
    return 0;
 }
 
@@ -1290,7 +1287,7 @@ SLtt_Char_Type SLtt_get_color_object (int obj)
 int SLtt_add_color_attribute (int obj, SLtt_Char_Type attr)
 {
    Brush_Info_Type *b;
-   
+
    if (NULL == (b = get_brush_info (obj)))
      return -1;
 
@@ -1299,7 +1296,7 @@ int SLtt_add_color_attribute (int obj, SLtt_Char_Type attr)
    if (obj == 0) Color_0_Modified = 1;
    if (_pSLtt_color_changed_hook != NULL)
      (*_pSLtt_color_changed_hook)();
-   
+
    return 0;
 }
 
@@ -1361,7 +1358,7 @@ static int parse_color_digit_name (SLCONST char *color, SLtt_Char_Type *f)
 	  break;
 	if ((ch > '9') || (ch < '0'))
 	  return -1;
-	
+
 	if (i > 0xFFFFFFFFU / 10)
 	  return -1;
 	j = (i *= 10);
@@ -1424,7 +1421,7 @@ static int tt_set_color (int obj, SLCONST char *what, SLCONST char *fg, SLCONST 
    SLtt_Char_Type fgbg;
 
    (void) what;
-   
+
    if (-1 == make_color_fgbg (fg, bg, &fgbg))
      return -1;
 
@@ -1435,7 +1432,6 @@ int SLtt_set_color (int obj, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg,
 {
    return tt_set_color (obj, what, fg, bg);
 }
-
 
 int SLtt_set_color_fgbg (int obj, SLtt_Char_Type f, SLtt_Char_Type b)
 {
@@ -1500,7 +1496,7 @@ static void write_attributes (SLtt_Char_Type fgbg)
 	fg0 = (int) GET_FG(fgbg);
 	bg0 = (int) GET_BG(fgbg);
 
-	if (unknown_attributes 
+	if (unknown_attributes
 	    || (fg0 != (int)GET_FG(Current_Fgbg)))
 	  {
 	     if (fg0 == SLSMG_COLOR_DEFAULT)
@@ -1574,14 +1570,14 @@ static int bce_colors_eq (SLsmg_Color_Type ca, SLsmg_Color_Type cb, int just_bg)
 
    ba = get_brush_info (ca);
    bb = get_brush_info (cb);
-   
+
    if (SLtt_Use_Ansi_Colors == 0)
      return ba->mono == bb->mono;
 
    if (Bce_Color_Offset)
      {
 	/* If either are color 0, then we do not know what that means since the
-	 * terminal does not support BCE 
+	 * terminal does not support BCE
 	 */
 	if ((ca == 0) || (cb == 0))
 	  return 0;
@@ -1611,7 +1607,7 @@ static void write_string_with_care (SLCONST char *str)
    len = strlen (str);
    if (Automatic_Margins && (Cursor_r + 1 == SLtt_Screen_Rows))
      {
-	if (_pSLtt_UTF8_Mode == 0) 
+	if (_pSLtt_UTF8_Mode == 0)
 	 {
 	   if (len + (unsigned int) Cursor_c >= (unsigned int) SLtt_Screen_Cols)
 	     {
@@ -1620,7 +1616,7 @@ static void write_string_with_care (SLCONST char *str)
 	        */
 	        if (SLtt_Screen_Cols > Cursor_c)
 	          len = SLtt_Screen_Cols - Cursor_c - 1;
-	        else 
+	        else
 	          len = 0;
 	     }
 	 }
@@ -1637,7 +1633,7 @@ static void write_string_with_care (SLCONST char *str)
 		    len = p - str;
 		 }
 	       else
-		  len = 0; 
+		  len = 0;
 	     }
 	 }
      }
@@ -1762,7 +1758,6 @@ static void forward_cursor (unsigned int n, int row)
 {
    char buf [1024];
 
-
    /* if (Current_Fgbg & ~0xFF) */
    /*   { */
    /* 	unsigned int num = 0; */
@@ -1774,8 +1769,7 @@ static void forward_cursor (unsigned int n, int row)
    /* 	Cursor_c += n; */
    /* 	return; */
    /*   } */
-   
-	
+
    if (n <= 4)
      {
 	SLtt_normal_video ();
@@ -1797,8 +1791,7 @@ static void forward_cursor (unsigned int n, int row)
    else SLtt_goto_rc (row, (int) (Cursor_c + n));
 }
 
-
-/* FIXME!!  If the terminal does not support color, then this route has 
+/* FIXME!!  If the terminal does not support color, then this route has
  * problems of color object 0 has been assigned some monochrome attribute
  * such as reverse video.  In such a case, space_char=' ' is not a simple
  * space character as is assumed below.
@@ -1939,10 +1932,10 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
    if (((pmax-1)->wchars[0]==' ') && ((pmax-1)->nchars==1))
      {
 	/* If we get here, then we can erase to the end of the line to create
-	 * the final space.  However, this will only work _if_ erasing will 
+	 * the final space.  However, this will only work _if_ erasing will
 	 * get us the correct color.  If the terminal supports BCE, then this
 	 * is easy.  If it does not, then we can only perform this operation
-	 * if the color is known via something like COLORFGBG.  For now, 
+	 * if the color is known via something like COLORFGBG.  For now,
 	 * I just will not perform the optimization for such terminals.
 	 */
 	if (Can_Background_Color_Erase
@@ -2013,12 +2006,12 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 		  while ((p1 < pmax) && (CHAR_EQS_SPACE (p1)))
 		    p1++;
 	       }
-	     
+
 	     /* Is this optimization worth it?  Assume Del_Bol_Str is ESC [ 1 K
-	      * It costs 4 chars + the space needed to properly position the 
+	      * It costs 4 chars + the space needed to properly position the
 	      * cursor, e.g., ESC [ 10;10H. So, it costs at least 13 characters.
 	      */
-	     if ((p1 > neww + 13) 
+	     if ((p1 > neww + 13)
 		 && (p1 >= p)
 		 /* Avoid erasing from the end of the line */
 		 && ((p1 != pmax) || (pmax < neww + len)))
@@ -2040,8 +2033,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 #ifdef HP_GLITCH_CODE
      }
 #endif
-   
-   
+
    /* loop using overwrite then skip algorithm until done */
    while (1)
      {
@@ -2114,7 +2106,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 	       }
 #endif
 
-	     if (CHAR_EQS(q, p)) 
+	     if (CHAR_EQS(q, p))
 	       {
 		  /* Could be the second half of a double width character */
 		  if (p->nchars || q->nchars)
@@ -2128,7 +2120,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 	if (buf != buffer) send_attr_str (buffer, buf);
 	buf = buffer;
 
-	if (n_spaces 
+	if (n_spaces
 	    && ((p < pmax) 	       /* erase to eol will achieve this effect*/
 		|| (!CHAR_EQS_SPACE(space_char))))/* unless space_char is not a simple space */
 	  {
@@ -2138,7 +2130,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 	 * of a possible match of new and old.  If this is the case, skip
 	 * some more.
 	 */
-	
+
 	/* Note that from here on, the buffer will contain matched characters */
 #if !SLANG_HAS_KANJI_SUPPORT
 	while ((p < pmax) && CHAR_EQS(p, q))
@@ -2203,11 +2195,11 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 	  }
      }
 
-   /* At this point we have reached the end of the new string with the 
+   /* At this point we have reached the end of the new string with the
     * exception of space_chars hanging off the end of it, but we may not have
     * reached the end of the old string if they did not match.
     */
-   
+
    /* Here the buffer will consist only of characters that have matched */
    if (buf != buffer)
      {
@@ -2332,7 +2324,7 @@ static char *fixup_tgetstr (char *what)
 {
    register char *w, *w1;
    char *wsave;
-   
+
    if (what == NULL)
      return NULL;
 
@@ -2345,7 +2337,7 @@ static char *fixup_tgetstr (char *what)
    while ((*what == '.') ||
 	  ((*what >= '0') && (*what <= '9'))) what++;
    if (*what == '*') what++;
-   
+
    /* lose terminfo padding--- looks like $<...> */
    w = what;
    while (*w) if ((*w++ == '$') && (*w == '<'))
@@ -2373,7 +2365,7 @@ static char *tt_tgetstr (SLCONST char *cap)
 #endif
    if (Termcap_Initalized == 0)
      return NULL;
-   
+
 #ifdef USE_TERMCAP
    /* tmp_area = &Termcap_String_Buf; */
    area = area_buf;
@@ -2401,7 +2393,7 @@ The integrity of this program has been violated.\n");
 	/* It looks like tgetstr placed the object in the buffer and
 	 * returned a pointer to that buffer.  So, we have to make a
 	 * copy of it.
-	 * 
+	 *
 	 * Yes, this introduces a leak...
 	 */
 	s = SLmake_string (s);
@@ -2730,8 +2722,8 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
      SLtt_Has_Alt_Charset = 0;
 
    Reset_Color_String = tt_tgetstr ("op");
-   
-   /* Apparantly the difference between "AF" and "Sf" is that AF uses RGB, 
+
+   /* Apparantly the difference between "AF" and "Sf" is that AF uses RGB,
     * but Sf uses BGR.
     */
    Color_Fg_Str = tt_tgetstr ("AF"); /* ANSI setaf */

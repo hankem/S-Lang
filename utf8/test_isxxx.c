@@ -21,7 +21,7 @@ int main (int argc, char **argv)
    VARIABLE(xdigit);
    VARIABLE(cntrl);
    VARIABLE(punct);
-   
+
    if (NULL == (locale = setlocale (LC_ALL, "en_US.UTF-8")))
      {
 	fprintf (stderr, "setlocale failed\n");
@@ -37,7 +37,7 @@ int main (int argc, char **argv)
    if ((0 == isw##xxx(i)) != (0 == SLwchar_is##xxx(i))) \
        fprintf (stdout, "Failed " #xxx "(0x%X) : 0x%X != 0x%X\n", \
 		   i, isw##xxx(i), SLwchar_is##xxx(i))
-	
+
 	if (towupper (i) != SLwchar_toupper (i))
 	  fprintf (stdout, "towupper (0x%X) failed 0x%X vs 0x%lX\n",
 		   i, towupper(i), SLwchar_toupper(i));
@@ -63,10 +63,9 @@ int main (int argc, char **argv)
 	TEST(xdigit);
 	TEST(digit);
      }
-   
+
 #define PRINT(xxx) \
    fprintf (stdout, #xxx ": %7u %7u\n", sys_##xxx, sl_##xxx)
-
 
    PRINT(lower);
    PRINT(alpha);

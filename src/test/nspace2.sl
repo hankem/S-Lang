@@ -1,12 +1,12 @@
 #ifexists This_Namespace
-if (This_Namespace == "NS3") 
+if (This_Namespace == "NS3")
   {
      if (current_namespace () != "NS3")
        {
 	  failed ("evalfile in NS3");
        }
   }
-else 
+else
   implements (This_Namespace);
 %vmessage ("Loading ...");
 % From this point on, define and variable defaults to static
@@ -21,7 +21,7 @@ _debug_info = 1; () = evalfile ("inc.sl");
 
 testing_feature ("more NameSpace routines");
 This_Namespace = "NS1";
-loop (3) 
+loop (3)
   () = evalfile (__FILE__);
 This_Namespace = "NS2";
 () = evalfile (__FILE__);

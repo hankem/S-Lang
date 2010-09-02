@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "config.h"
@@ -83,7 +83,7 @@ static int check_zerror (int e)
       case Z_VERSION_ERROR:
 	SLang_verror (ZLib_Error, "Z library version mismatch error");
 	break;
-	
+
       case Z_NEED_DICT:		       /* not handled by this module */
 	SLang_verror (ZLib_Error, "Z library dictionary error");
 	break;
@@ -117,7 +117,7 @@ static int check_inflate_object (ZLib_Type *zp)
    return 0;
 }
 
-static int init_deflate_object (ZLib_Type *z, 
+static int init_deflate_object (ZLib_Type *z,
 				int level, int method, int windowbits,
 				int memlevel, int strategy)
 {
@@ -179,9 +179,9 @@ static int run_deflate (ZLib_Type *z, int flush,
      {
 	unsigned int total;
 	int ret;
-	
+
 	ret = deflate (zs, flush);
-	     
+
 	if (ret != Z_BUF_ERROR)
 	  {
 	     if (-1 == check_zerror (ret))
@@ -191,9 +191,9 @@ static int run_deflate (ZLib_Type *z, int flush,
 	total = buflen - zs->avail_out;
 
 	if (/* done -- flush == Z_FINISH */
-	    (ret == Z_STREAM_END)      
+	    (ret == Z_STREAM_END)
 	    /* Done with current input */
-	    || ((zs->avail_in == 0) && (zs->avail_out != 0)) 
+	    || ((zs->avail_in == 0) && (zs->avail_out != 0))
 	   )
 	  {
 	     if (total != buflen)
@@ -278,14 +278,13 @@ static void deflate_flush_intrin (ZLib_Type *z, int *flush)
 
    if (-1 == run_deflate (z, *flush, (unsigned char *)"", 0, &buf, &len))
      return;
-   
+
    if (NULL == (bstr = SLbstring_create_malloced (buf, len, 1)))
      return;
-   
+
    (void) SLang_push_bstring (bstr);
    SLbstring_free (bstr);
 }
-
 
 static void free_deflate_object (ZLib_Type *z)
 {
@@ -309,7 +308,7 @@ static void deflate_new_intrin (int *level, int *method, int *wbits,
 	SLfree ((char *) z);
 	return;
      }
-   
+
    if (NULL == (mmt = SLang_create_mmt (ZLib_Type_Id, (VOID_STAR) z)))
      {
 	free_deflate_object (z);
@@ -318,7 +317,7 @@ static void deflate_new_intrin (int *level, int *method, int *wbits,
 
    if (0 == SLang_push_mmt (mmt))
      return;
-   
+
    SLang_free_mmt (mmt);
 }
 
@@ -340,7 +339,7 @@ static int run_inflate (ZLib_Type *z, int flush,
 	zs->zalloc = Z_NULL;
 	zs->zfree = Z_NULL;
 	zs->opaque = Z_NULL;
-	
+
 	if (-1 == check_zerror (inflateInit2 (zs, z->windowbits)))
 	  {
 	     inflateEnd (zs);
@@ -375,9 +374,9 @@ static int run_inflate (ZLib_Type *z, int flush,
 	total = buflen - zs->avail_out;
 
 	if (/* done -- flush == Z_FINISH */
-	    (ret == Z_STREAM_END)      
+	    (ret == Z_STREAM_END)
 	    /* Done with current input */
-	    || ((zs->avail_in == 0) && (zs->avail_out != 0)) 
+	    || ((zs->avail_in == 0) && (zs->avail_out != 0))
 	   )
 	  {
 	     if (total != buflen)
@@ -476,7 +475,7 @@ static void inflate_new_intrin (int *windowbits)
 
    if (0 == SLang_push_mmt (mmt))
      return;
-   
+
    SLang_free_mmt (mmt);
 }
 
@@ -500,14 +499,13 @@ static void inflate_flush_intrin (ZLib_Type *z, int *flush)
 
    if (-1 == run_inflate (z, *flush, (unsigned char *)"", 0, &buf, &len))
      return;
-   
+
    if (NULL == (bstr = SLbstring_create_malloced (buf, len, 1)))
      return;
-   
+
    (void) SLang_push_bstring (bstr);
    SLbstring_free (bstr);
 }
-
 
 static void free_inflate_object (ZLib_Type *z)
 {
@@ -571,7 +569,7 @@ static SLang_IConstant_Type Module_IConstants [] =
    MAKE_ICONSTANT("ZLIB_SYNC_FLUSH", Z_SYNC_FLUSH),
    MAKE_ICONSTANT("ZLIB_FULL_FLUSH", Z_FULL_FLUSH),
    MAKE_ICONSTANT("ZLIB_FINISH", Z_FINISH),
-   
+
    MAKE_ICONSTANT("ZLIB_FILTERED", Z_FILTERED),
    MAKE_ICONSTANT("ZLIB_HUFFMAN_ONLY", Z_HUFFMAN_ONLY),
 #ifdef Z_RLE
@@ -581,7 +579,7 @@ static SLang_IConstant_Type Module_IConstants [] =
    MAKE_ICONSTANT("ZLIB_FIXED", Z_FIXED),
 #endif
    MAKE_ICONSTANT("ZLIB_DEFAULT_STRATEGY", Z_DEFAULT_STRATEGY),
-   
+
    MAKE_ICONSTANT("ZLIB_DEFLATED", Z_DEFLATED),
    SLANG_END_ICONST_TABLE
 };
@@ -599,14 +597,14 @@ static int register_classes (void)
    (void) SLclass_set_destroy_function (cl, destroy_zlib_type);
 
    if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE,
-				     sizeof (ZLib_Type), 
+				     sizeof (ZLib_Type),
 				     SLANG_CLASS_TYPE_MMT))
      return -1;
 
    ZLib_Type_Id = SLclass_get_class_id (cl);
    if (-1 == SLclass_patch_intrin_fun_table1 (Module_Intrinsics, DUMMY_ZLIB_TYPE, ZLib_Type_Id))
      return -1;
-   
+
    return 0;
 }
 

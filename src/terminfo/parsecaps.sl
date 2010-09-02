@@ -34,22 +34,22 @@ define read_caps_file (file)
      };
 
    variable fmt = "%s %s %s %s %s %s %s %[^\n]";
-   () = readascii (lines, &s.name, &s.ti_cap, &s.type, &s.tc_cap, 
+   () = readascii (lines, &s.name, &s.ti_cap, &s.type, &s.tc_cap,
 		   &s.keyname, &s.keyval, &s.flags, &s.desc;
 		   format=fmt, comment="#");
-   
+
    return s;
 }
 
 private define write_table (fp, s, type, tblname)
 {
-   
+
    variable i = where (s.type == type);
    variable cap = s.tc_cap[i];
    variable comment = s.desc[i];
    variable ofs = [0:length(cap)-1];
    i = array_sort (cap); cap = cap[i]; comment = comment[i]; ofs = ofs[i];
-   
+
    () = fprintf (fp, "static Tgetstr_Map_Type %s[] = \n{\n", tblname);
    _for i (0, length (cap)-1, 1)
      {

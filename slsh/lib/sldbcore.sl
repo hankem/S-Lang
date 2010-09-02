@@ -1,7 +1,7 @@
 %
 % This file implements the core a simple debugger.  It needs to be wrapped
 % by routines that implement the Debugger_Methods.
-% 
+%
 % Public functions:
 %   sldb_methods()
 %   sldb_stop ();
@@ -33,7 +33,7 @@ private define output ()
    (@Debugger_Methods.vmessage)(__push_args(args));
 }
 
-private define quit_method () 
+private define quit_method ()
 {
    output ("Program exiting\n");
    exit (0);
@@ -135,7 +135,7 @@ private define break_cmd (cmd, args, file, line)
 	  {
 	  }
      }
-   
+
    () = sldb_set_breakpoint (bp);
    return 0;
 }
@@ -149,7 +149,7 @@ private define display_file_and_line (file, linemin, linemax)
      linemin = 1;
    if (linemax < linemin)
      linemax = linemin;
-   
+
    (@Debugger_Methods.list)(file, linemin, linemax);
 }
 
@@ -197,7 +197,7 @@ private define delete_cmd (cmd, args, file, line)
 
    variable keys = assoc_get_keys (Breakpoints);
    variable vals = assoc_get_values (Breakpoints);
-   
+
    foreach (eval (sprintf ("[%s]", args)))
      {
 	bp = ();
@@ -274,7 +274,7 @@ private define print_expr (print_fun, expr)
 	() = eval_in_frame (Current_Frame, expr, 0, print_fun);
 	return;
      }
-   
+
    % Create a dummy function and call it with the values of the local-vars
    % The idea is that variables that are initialized will be arguments, and
    % others will just be locals
@@ -304,7 +304,7 @@ private define print_expr (print_fun, expr)
 
    variable fmt = "private define %s (%s) { %s %s; }";
    variable dummy = "__debugger_print_function";
-   variable fun = sprintf (fmt, dummy, strjoin (inited_vars, ","), 
+   variable fun = sprintf (fmt, dummy, strjoin (inited_vars, ","),
 			   uninited_vars, expr);
    () = eval_in_frame (Current_Frame, fun, 0, print_fun);
 
@@ -344,7 +344,7 @@ private define list_cmd (cmd, args, file, line)
 	line_min = integer (args);
 	line_max = line_min + 10;
      }
-	
+
    display_file_and_line (file, line_min, line_max);
    Last_List_Line = line_max;
    return 0;
@@ -475,7 +475,6 @@ private define help_cmd (cmd, args, file, line)
 }
 Cmd_Table["help"] = &help_cmd;
 
-
 private define sigint_handler (sig)
 {
    Debugger_Step = STEP_STEP;
@@ -510,7 +509,7 @@ private define debugger_input_loop ()
    variable max_frame = Max_Current_Frame;
    %Last_Cmd_Line = NULL;
    %Last_Cmd = NULL;
-   forever 
+   forever
      {
 	variable e;
 	try (e)
@@ -537,7 +536,7 @@ private define debugger_input_loop ()
 		  cmdline = (@Debugger_Methods.read_input)(prompt, Last_Cmd_Line);
 		  if (cmdline == NULL)
 		    throw ReadError, "NULL input returned";
-		       
+
 		  cmdline = strtrim (cmdline);
 		  variable tokens = strtok (cmdline, " \t");
 		  if (length (tokens))
@@ -659,7 +658,7 @@ private define bos_handler (file, line)
    do_debug (file, line, bp);
 }
 
-% end of statement handler: tracks the recursion depth, 
+% end of statement handler: tracks the recursion depth,
 % to be able to step over function calls (using 'Next' Command)
 private define eos_handler()
 {
@@ -722,7 +721,6 @@ private define eof_handler ()
      }
 }
 
-
 private define debug_hook (file, line)
 {
    %variable file = e.file, line = e.line;
@@ -749,7 +747,7 @@ define sldb_enable ()
    _boseos_info = 3;
 }
 
-% Usage Forms: 
+% Usage Forms:
 %   sldb ();
 %   sldb (file);
 %   sldb (file, ns);
@@ -771,7 +769,7 @@ define sldb ()
 #iffalse
    variable ns = current_namespace ();
    if (_NARGS == 2)
-     
+
      ns = ();
    variable file = ();
 

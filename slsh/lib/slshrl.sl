@@ -307,7 +307,6 @@ private define log_this ()
      }
 }
 
-
 public define start_log ()
 {
    if (_NARGS)

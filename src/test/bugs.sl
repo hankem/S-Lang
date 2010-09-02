@@ -101,7 +101,7 @@ if ("bar" != (@A[1])())
   vmessage ("Dereferencing a array element bug");
 
 A = Struct_Type[2];
-static variable S = struct 
+static variable S = struct
 {
    addr
 };
@@ -124,9 +124,9 @@ catch NotImplementedError:
 static define test_xxx (xxx)
 {
    variable x=0, y=0;
-   loop (3) 
+   loop (3)
      {
-	x++; 
+	x++;
 	try eval(sprintf ("if (1) %s;", xxx));
 	catch SyntaxError;
 	y++;

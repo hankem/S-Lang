@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -116,9 +116,9 @@ static SLCONST unsigned char *do_nth_match (Re_Context_Type *ctx, int n, SLCONST
 }
 
 /* returns pointer to the end of regexp or NULL */
-static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx, 
+static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 						 SLCONST unsigned char *str, SLCONST unsigned char *estr,
-						 unsigned char *regexp, 
+						 unsigned char *regexp,
 						 int cs)
 {
    register unsigned char p, p1;
@@ -456,7 +456,7 @@ fixup_beg_end_matches (Re_Context_Type *ctx, SLRegexp_Type *r,
      }
 }
 
-static void init_re_context (Re_Context_Type *ctx, SLRegexp_Type *reg, 
+static void init_re_context (Re_Context_Type *ctx, SLRegexp_Type *reg,
 			     SLCONST unsigned char *str, unsigned int len)
 {
    memset ((char *) ctx, 0, sizeof (Re_Context_Type));
@@ -623,8 +623,8 @@ static int regexp_compile (SLRegexp_Type *reg)
 
    if (cs != reg->case_sensitive)
      {
-	if (cs) *buf++ = YES_CASE; 
-	else *buf++ = NO_CASE; 
+	if (cs) *buf++ = YES_CASE;
+	else *buf++ = NO_CASE;
      }
 
    *buf = 0;
@@ -928,7 +928,7 @@ SLRegexp_Type *SLregexp_compile (SLFUTURE_CONST char *pattern, unsigned int flag
    reg = (SLRegexp_Type *)SLcalloc (1, sizeof (SLRegexp_Type));
    if (reg == NULL)
      return NULL;
-   
+
    if (NULL == (reg->buf = (unsigned char *)SLmalloc (1024)))
      {
 	SLfree ((char *) reg);
@@ -943,7 +943,7 @@ SLRegexp_Type *SLregexp_compile (SLFUTURE_CONST char *pattern, unsigned int flag
 	SLregexp_free (reg);
 	return NULL;
      }
-   
+
    return reg;
 }
 
@@ -995,7 +995,7 @@ int SLregexp_nth_match (SLRegexp_Type *reg, unsigned int nth,
      }
    if (reg->beg_matches[nth] < 0)
      return -1;
-   
+
    if (ofsp != NULL)
      *ofsp = (unsigned int) reg->beg_matches[nth];
    if (lenp != NULL)
@@ -1007,13 +1007,13 @@ int SLregexp_nth_match (SLRegexp_Type *reg, unsigned int nth,
 int SLregexp_get_hints (SLRegexp_Type *reg, unsigned int *hintsp)
 {
    unsigned int hints = 0;
-   
+
    if (reg == NULL)
      return -1;
-   
+
    if (reg->osearch) hints |= SLREGEXP_HINT_OSEARCH;
    if (reg->must_match_bol) hints |= SLREGEXP_HINT_BOL;
-   
+
    *hintsp = hints;
    return 0;
 }

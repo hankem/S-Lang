@@ -1,4 +1,3 @@
-
 \function{SLsearch_new}
 \synopsis{Create an SLsearch_Type object}
 \usage{SLsearch_Type *SLsearch_new (SLuchar_Type *key, int search_flags)}
@@ -8,15 +7,15 @@
  functions in the SLsearch interface.  The first argument \exmp{key}
  is a pointer to a null terminated string that specifies the character
  string to be searched.  This character string may not contain any
- embedded null characters.  
- 
+ embedded null characters.
+
  The second argument \exmp{search_flags} is used to specify how the
  search is to be performed.  It is a bit-mapped integer whose value is
  constructed by the bitwise-or of zero or more of the following:
 #v+
    SLSEARCH_CASELESS
      The search shall be performed in a case-insensitive manner.
-     
+
    SLSEARCH_UTF8
      Both the search string and the text to be searched is UTF-8
      encoded.
@@ -28,7 +27,6 @@
 \seealso{SLsearch_delete, SLsearch_forward, SLsearch_backward}
 \done
 
-
 \function{SLsearch_delete}
 \synopsis{Free the memory associated with a SLsearch_Type object}
 \usage{SLsearch_delete (SLsearch_Type *)}
@@ -38,7 +36,6 @@
   function.  Failure to do so will result in a memory leak.
 \seealso{SLsearch_new, SLsearch_forward, SLsearch_backward}
 \done
-
 
 \function{SLsearch_forward}
 \synopsis{Search forward in a buffer}
@@ -55,16 +52,15 @@
   be examined.  The first parameter \exmp{st}, obtained by a prior call to
   \exmp{SLsearch_new}, specifies the object to found.
   be found from a previous call to \exmp{SLsearch_new}.
-  
+
   If the object was found, the pointer to the beginning of it will be
   returned.  Otherwise, \cfun{SLsearch_forward} will return \NULL.
   The length of the object may be obtained via the
   \cfun{SLsearch_match_len} function.
 \notes
-  This function uses the Boyer-Moore search algorithm when possible.  
+  This function uses the Boyer-Moore search algorithm when possible.
 \seealso{SLsearch_new, SLsearch_backward, SLsearch_delete, SLsearch_match_len}
 \done
-
 
 \function{SLsearch_backward}
 \synopsis{Search backward in a buffer}
@@ -87,7 +83,7 @@
   \cfun{SLsearch_match_len} function.
 \notes
   This function uses the Boyer-Moore search algorithm when possible.
-  
+
   It is possible for the end of match to appear after the point where
   the search began (\exmp{pstart}).
 \seealso{SLsearch_new, SLsearch_forward, SLsearch_delete, SLsearch_match_len}

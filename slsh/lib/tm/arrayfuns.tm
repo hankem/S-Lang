@@ -13,7 +13,7 @@
 \description
  The \sfun{shift} function shifts the elements of an array by a specified amount
  and returns the result.  If \exmp{n} is positive, the ith element of the array
- will be shifted to the position \exmp{i-n} of the array.  Elements for 
+ will be shifted to the position \exmp{i-n} of the array.  Elements for
  which \exmp{i-n} is less than 0 will be moved to the end of the array.
 \example
 #v+

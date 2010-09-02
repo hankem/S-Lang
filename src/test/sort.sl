@@ -7,8 +7,8 @@ private define test_simple_sort (n, dir)
    variable cmp_op = (dir > 0) ? &_op_lt : &_op_gt;
    variable ishift = [[1:n-1], 0];
    variable x, dx, bad;
-   
-   foreach ([Int_Type, Float_Type, Double_Type, 
+
+   foreach ([Int_Type, Float_Type, Double_Type,
 	     Short_Type, Char_Type, Long_Type,
 	     UInt_Type, UChar_Type, ULong_Type,
 #ifexists LLong_Type
@@ -32,7 +32,7 @@ private define test_simple_sort (n, dir)
 	     dx[-1] = 0;
 	     if (any((@cmp_op)(dx, 0)))
 	       failed ("simple sort already sorted: %S", type);
-	
+
 	     % Reversed
 	     array_reverse (x);
 	     x = x[array_sort (x; dir=dir)];
@@ -113,7 +113,7 @@ private define test_sort (x, n, ans)
    a = a[array_sort (a, &cmp_fun;; __qualifiers)];
    ifnot (_eqs (a, ans))
      failed ("array_sort(double x, &cmp_fun)");
-   
+
    variable s = struct {a};
    s.a = 1.0*x;
    i = array_sort(s, &opaque_sort_func, n;; __qualifiers);
@@ -153,11 +153,10 @@ private define test_stability (method)
    j = array_sort (a; dir=1, method=method);
    ifnot (_eqs (j, i))
      failed ("[%s]: ascend sort was not stable", method);
-   
+
 }
 test_stability ("qsort");
 test_stability ("msort");
-
 
 print ("Ok\n");
 

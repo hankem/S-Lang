@@ -2,7 +2,7 @@ _debug_info = 1; () = evalfile ("inc.sl");
 
 testing_feature ("structures");
 
-variable S = struct 
+variable S = struct
 {
    a, b, c
 };
@@ -45,7 +45,7 @@ if ((T.c != "three") or (T.a != 1) or (T.b != 2))
 T.a++;
 T.a += 3;
 T.a -= 20;
-if (T.a != -15) 
+if (T.a != -15)
   failed ("structure arithmetic");
 
 #ifexists Complex_Type
@@ -58,7 +58,7 @@ if (T.a != 0)
 T.c = S;
 S.a = T;
 
-if (T != T.c.a)  
+if (T != T.c.a)
   failed ("Unable to create a circular list");
 
 if (0 == _eqs (T, T.c.a))
@@ -83,8 +83,8 @@ T.a = [1:10]*1;
 T.a *= 2;
 ifnot (_eqs(T.a, 2*[1:10]))
   failed ("T.a *= 2 for an array");
-	  
-typedef struct 
+
+typedef struct
 {
    TT_x, TT_y
 }
@@ -95,7 +95,6 @@ S = @T;
 if (0 == _eqs (T,S))
   failed ("_eqs(T,S) for type TT");
 
-  
 if (typeof (T) != TT)
   failed ("typeof(T)");
 if (0 == is_struct_type (T))
@@ -130,7 +129,6 @@ private define print_struct(s)
 	vmessage ("S.%s = %S", f, get_struct_field (s, f));
      }
 }
-
 
 #ifexists Complex_Type
 S.z = 1+2i;
@@ -192,11 +190,11 @@ test_foreach_using_with_null (NULL);
 
 define return_struct_fun (c)
 {
-   variable s = struct 
+   variable s = struct
      {
 	X
      };
-   variable t = struct 
+   variable t = struct
      {
 	c
      };
@@ -214,7 +212,7 @@ if ((@$1)(PI).X[2].c != PI)
 
 % Test operator overloading
 
-typedef struct 
+typedef struct
 {
    x, y, z
 }
@@ -328,7 +326,7 @@ private define vector_to_list (v)
 }
 private define is_vector_eq_to_list (v, l)
 {
-   return ((length (l) == 3) 
+   return ((length (l) == 3)
 	   && (l[0] == v.x) && (l[1] == v.y) && (l[2] == v.z));
 }
 __add_typecast (Vector_Type, List_Type, &vector_to_list);
@@ -371,7 +369,7 @@ private define test_typecast (to, eqsfun)
    variable l = typecast (v, to);
    ifnot ((@eqsfun) (v, l))
      failed ("simple vector not equal to %S", to);
-   v = [vector(4,5,6), 
+   v = [vector(4,5,6),
 		 vector (7,8,9),
 		 vector (1i,2i,3i)];
    l = typecast (v, to);
@@ -439,7 +437,7 @@ private define test_duplicate_fields (fields, isok)
    try
      {
 	() = eval ("struct {$fields}"$);
-	if (0 == isok) 
+	if (0 == isok)
 	  failed ("Created a struct with duplicate fields");
      }
    catch DuplicateDefinitionError;
@@ -456,7 +454,6 @@ test_duplicate_fields ("a, a, b", 0);
 test_duplicate_fields ("a, b, c, b, e", 0);
 test_duplicate_fields ("a, b, c, b, e, a", 0);
 test_duplicate_fields ("a, b, c, d, e, e", 0);
-
 
 private define test_struct_with_assign (exprs)
 {
@@ -480,7 +477,7 @@ private define test_struct_with_assign (exprs)
 	s1_expr = strcat (s1_expr, field, ",\n");
      }
    s1_expr = strcat (s1_expr, "};");
-   
+
    variable s1 = eval (s1_expr);
    if (not _eqs (s0, s1))
      failed ("structures are not equal: %s", s1_expr);
@@ -501,7 +498,7 @@ test_struct_with_assign (["struct{a,b}", NULL]);
 test_struct_with_assign (["1+2j", NULL]);
 #endif
 test_struct_with_assign (["\"string\""]);
-   
+
 define test_struct_refs ()
 {
    variable s = struct {foo, bar};
@@ -509,11 +506,11 @@ define test_struct_refs ()
    @f = 7;
    if (s.bar != 7)
      failed ("ref to s.bar via f");
-   
+
    @(&s.bar) = 3;
    if (s.bar != 3)
      failed ("@(&s.bar)");
-   
+
    @&s.bar = "foo";
    if (s.bar != "foo")
      failed ("@&s.bar");
@@ -523,7 +520,7 @@ test_struct_refs ();
 private define test_internal_struct_type ()
 {
    variable t;
-   
+
    loop (100)
      {
 	t = new_test_type ();
@@ -540,10 +537,10 @@ private define test_it (p)
    loop (10)
      {
 	variable userdata = struct{items};
-   
+
 	p.any = @userdata;
 	p.any.items = {};
-   
+
 	p.any = @userdata;
 	variable x = @userdata;
 	p.any = x;

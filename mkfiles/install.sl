@@ -7,7 +7,7 @@ private define convert_path (path)
 {
    return strtrans (path, "/", "\\");
 }
-   
+
 private define mkdir_p (dir);
 private define mkdir_p (dir)
 {
@@ -19,7 +19,7 @@ private define mkdir_p (dir)
 	if ((-1 == mkdir_p (parent))
 	    || (-1 == mkdir (dir)))
 	  {
-	     () = fprintf (stderr, "Failed to create %s: %s\n", 
+	     () = fprintf (stderr, "Failed to create %s: %s\n",
 			   dir, errno_string ());
 	     exit (1);
 	  }
@@ -37,7 +37,7 @@ private define install_file (file, dir)
    () = fprintf (stdout, "Installing %s in %s\n", file, dir);
    dir = convert_path (dir);
    file = convert_path (file);
-   
+
    run_cmd ("copy $file $dir"$);
 }
 
@@ -84,7 +84,7 @@ private define install_slsh (prefix, confdir, objdir)
    dir = "$prefix/share/slsh"$;
    () = mkdir_p (dir);
    install_files ("slsh/lib/*.sl", dir);
-   
+
    dir = "$prefix/share/slsh/help"$;
    () = mkdir_p (dir);
    install_files ("slsh/lib/help/*.hlp", dir);
@@ -101,12 +101,11 @@ private define install_slsh (prefix, confdir, objdir)
    () = mkdir_p (dir);
    dir = "$prefix/share/slsh/local-packages/help"$;
    () = mkdir_p (dir);
-   
+
    dir = "$confdir"$;
    () = mkdir_p (dir);
    install_file ("slsh/etc/slsh.rc", dir);
 }
-
 
 private define install_modules (prefix)
 {
@@ -117,7 +116,7 @@ private define install_modules (prefix)
    dir = "$prefix/share/slsh"$;
    () = mkdir_p (dir);
    install_files ("modules/*.sl", dir);
-   
+
    dir = "$prefix/share/slsh/cmaps"$;
    () = mkdir_p (dir);
    install_files ("modules/cmaps/*", dir);
@@ -133,7 +132,7 @@ private define exit_usage ()
 {
    variable fp = stderr;
    () = fprintf (fp, "Usage: %s [options] install\n", __argv[0]);
-   variable opts = 
+   variable opts =
      [
       "Options:\n",
       " -v|--version               Print version\n",
@@ -149,7 +148,6 @@ private define exit_usage ()
    exit (1);
 }
 
-	  
 define slsh_main ()
 {
    variable c = cmdopt_new ();
@@ -173,12 +171,12 @@ define slsh_main ()
    () = fprintf (stdout, "Using destdir=%s, prefix=%s\n", destdir, prefix);
 
    variable root = strcat (destdir, prefix);
-   
+
    variable confdir = "/etc";
    if (prefix != "/usr")
      confdir = path_concat (prefix, "etc");
    confdir = strcat (destdir, confdir);
-   
+
    variable objdir = "gw32objs";
    install_libslang (root, objdir);
    install_slang_doc (root);

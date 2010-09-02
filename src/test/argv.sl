@@ -10,7 +10,7 @@ define play_games_width_argv ()
 	failed ("__argc read-only test");
      }
    catch ReadOnlyError;
-   
+
    try
      {
 	eval ("__argv = [\"a\", \"b\"];");
@@ -24,7 +24,7 @@ define play_games_width_argv ()
 	  eval ("__argv[0] = \"a\";");
      }
    catch ReadOnlyError: failed ("__argv[0] is read-only");
-   
+
    loop (20)
      {
 	variable x = __argv;
@@ -42,7 +42,7 @@ define test_argv (argv)
      failed ("__argv does not have the expected length, found %d", length(__argv));
    if (not _eqs (__argv, argv))
      failed ("__argv did not have the expected value");
-   
+
    play_games_width_argv ();
 }
 test_argv (String_Type[0]);

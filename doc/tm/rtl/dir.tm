@@ -1,4 +1,3 @@
-
 \function{access}
 \synopsis{Check to see if a file is accessible}
 \usage{Int_Type access (String_Type pathname, Int_Type mode)}
@@ -138,7 +137,7 @@
      {
         if (0 == mkdir (dir)) return;
         if (errno == EEXIST) return;
-        throw IOError, 
+        throw IOError,
            sprintf ("mkdir %s failed: %s", dir, errno_string (errno));
      }
 #v-
@@ -214,7 +213,7 @@
     st_ctime
 #v-
   See the C library documentation of \cfun{stat} for a discussion of the
-  meanings of these fields. 
+  meanings of these fields.
 \example
   The following example shows how the \ifun{stat_file} function may be
   used to get the size of a file:
@@ -223,7 +222,7 @@
      {
         variable st;
         st = stat_file(file);
-        if (st == NULL) 
+        if (st == NULL)
           throw IOError, "Unable to stat $file"$;
         return st.st_size;
      }
@@ -272,7 +271,7 @@
   The \ifun{stat_mode_to_string} function returns a 10 characters string
   that indicates the type and permissions of a file as represented by
   the \var{st_mode} parameter.  The returned string consists of the following
-  characters: 
+  characters:
 #v+
      "s"      (socket)
      "p"      (fifo)
@@ -307,7 +306,6 @@
   not all file systems support the concept of a symbolic link.
 \seealso{readlink, hardlink}
 \done
-
 
 \function{utime}
 \synopsis{Change a file's last access and modification times}

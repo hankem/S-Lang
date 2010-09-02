@@ -1,4 +1,3 @@
-
 \function{SLang_init_tty}
 \synopsis{Initialize the terminal keyboard interface}
 \usage{int SLang_init_tty (int intr_ch, int no_flow_ctrl, int opost)}
@@ -7,17 +6,17 @@
   input.  If the first parameter \var{intr_ch} is in the range 0-255,
   it will be used as the interrupt character, e.g., under Unix this
   character will generate a \var{SIGINT} signal.  Otherwise, if it is
-  \exmp{-1}, the interrupt character will be left unchanged.  
+  \exmp{-1}, the interrupt character will be left unchanged.
 
   If the second parameter \var{no_flow_ctrl} is non-zero, flow control
   (\var{XON}/\var{XOFF}) processing will be
-  enabled.  
-  
+  enabled.
+
   If the last parmeter \var{opost} is non-zero, output processing by the
   terminal will be enabled.  If one intends to use this function in
   conjunction with the \slang screen management routines
   (\var{SLsmg}), this paramete shold be set to zero.
-  
+
   \var{SLang_init_tty} returns zero upon success, or \-1 upon error.
 \notes
   Terminal I/O is a complex subject.  The \slang interface presents a
@@ -27,7 +26,7 @@
   and the generation of other signals via the keyboard is disabled.
   However, generation of the job control signal \var{SIGTSTP} is possible
   via the \var{SLtty_set_suspend_state} function.
-  
+
   Under Unix, the integer variable \var{SLang_TT_Read_FD} is used to
   specify the input descriptor for the terminal.  If
   \var{SLang_TT_Read_FD} represents a terminal device as determined
@@ -38,14 +37,13 @@
   used.  So, if you prefer to use \var{stdin} for input, then set
   \var{SLang_TT_Read_FD} to \exmp{fileno(stdin)} \em{before} calling
   \var{SLang_init_tty}.
-  
+
   If the variable \var{SLang_TT_Baud_Rate} is zero when this function
   is called, the function will attempt to determine the baud rate by
   querying the terminal driver and set \var{SLang_TT_Baud_Rate} to
-  that value.  
+  that value.
 \seealso{SLang_reset_tty, SLang_getkey, SLtty_set_suspend_state}
 \done
-
 
 \function{SLang_reset_tty}
 \synopsis{Reset the terminal}
@@ -56,7 +54,6 @@
 \seealso{SLang_init_tty}
 \done
 
-
 \function{SLtty_set_suspend_state}
 \synopsis{Enable or disable keyboard suspension}
 \usage{void SLtty_set_suspend_state (int s)}
@@ -65,7 +62,7 @@
   disable keyboard generation of the \var{SIGTSTP} job control signal.
   If \var{s} is non-zero, generation of this signal via the terminal
   interface will be enabled, otherwise it will be disabled.
-  
+
   This function should only be called after the terminal driver has be
   initialized via \var{SLang_init_tty}.  The \var{SLang_init_tty}
   always disables the generation of \var{SIGTSTP} via the keyboard.
@@ -102,7 +99,6 @@
 \seealso{SLang_ungetkey, SLang_getkey}
 \done
 
-
 \function{SLang_buffer_keystring}
 \synopsis{Append a keystring to the input buffer}
 \usage{int SLang_buffer_keystring (unsigned char *b, unsigned int len)}
@@ -119,7 +115,6 @@
   of the input buffer.
 \seealso{SLang_getkey, SLang_ungetkey, SLang_ungetkey_string}
 \done
-
 
 \function{SLang_ungetkey}
 \synopsis{Push a character back onto the input buffer}
@@ -139,7 +134,6 @@
 \seealso{SLang_getkey, SLang_ungetkey_string}
 \done
 
-
 \function{SLang_flush_input}
 \synopsis{Discard all keyboard input waiting to be read}
 \usage{void SLang_flush_input (void)}
@@ -148,7 +142,6 @@
   read by the \var{SLang_getkey} function.
 \seealso{SLang_getkey}
 \done
-
 
 \function{SLang_input_pending}
 \synopsis{Check to see if input is pending}
@@ -165,7 +158,6 @@
   Not all systems support millisecond resolution.
 \seealso{SLang_getkey}
 \done
-
 
 \function{SLang_set_abort_signal}
 \synopsis{Set the signal to trap SIGINT}

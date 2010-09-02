@@ -64,7 +64,7 @@
 \usage{int SLwchar_isblank (SLwchar_Type wc)}
 \description
   \cfun{SLwchar_isblank} returns a non-zero value if the Unicode
-  character is a blank one (space or tab), otherwise it returns 0.  
+  character is a blank one (space or tab), otherwise it returns 0.
 \notes
   If the library is not in UTF-8 mode, then the current locale will be
   used.

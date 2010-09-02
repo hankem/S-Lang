@@ -41,7 +41,7 @@ if (bol_fsearch ("\\chapter{Preface}"))
 
    if (bol_bsearch ("\\tableofcontents"))
      delete_line ();
-   
+
    pop_spot ();
    if (bol_bsearch ("\\maketitle"))
      insert ("\\pagenumbering{roman}\n");
@@ -57,7 +57,7 @@ static define fixup_urldefs ()
 	variable line = line_as_string ();
 	bol ();
 	insert ("\\ifpdf\n");
-	
+
 	deln (7); insert ("\\newcommand");
 	push_mark ();
 	()=ffind ("}");
@@ -92,7 +92,7 @@ static define remove_repeated_urls ()
 	() = ffind ("}");
 	!if (looking_at ("} {\\tt "))
 	  {
-	     pop_mark(0); 
+	     pop_mark(0);
 	     continue;
 	  }
 	name = bufsubstr ();
@@ -127,5 +127,4 @@ fixup_urldefs ();
 remove_repeated_urls ();
 save_buffer ();
 quit_jed ();
-
 

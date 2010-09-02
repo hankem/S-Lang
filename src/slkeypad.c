@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -79,7 +79,7 @@ int SLkp_init (void)
    SLkm_define_keysym ("^@\x4f", SL_KEY_END, Keymap_List );
    SLkm_define_keysym ("^@\x52", SL_KEY_IC, Keymap_List );
    SLkm_define_keysym ("^@\x53", SL_KEY_DELETE, Keymap_List );
-   
+
    SLkm_define_keysym ("\xE0\x48", SL_KEY_UP, Keymap_List );
    SLkm_define_keysym ("\xE0\x50", SL_KEY_DOWN, Keymap_List );
    SLkm_define_keysym ("\xE0\x4d", SL_KEY_RIGHT, Keymap_List );

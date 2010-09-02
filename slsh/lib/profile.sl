@@ -8,7 +8,7 @@ _bofeof_info=0;
 % For lines
 private variable Profile_Info_Type = struct
 {
-   name,			       % (bos/eof)  
+   name,			       % (bos/eof)
    num_called,			       % (bos/bof) num times line called
    num_s_triggered,		       % (eof/eof) num child statements
    num_f_triggered,		       % (eof/eof) num functions triggered
@@ -32,7 +32,7 @@ private define convert_profile_info_to_array (p)
 {
    variable keys = assoc_get_keys (p);
    variable i, n = length (p);
-   
+
    % Filter out the bad entries
    _for i (0, n-1, 1)
      {
@@ -102,7 +102,7 @@ private variable Line_Stack_Type = struct
    self_f_counter,
    self_time,
    cum_time,
-};   
+};
 private variable Line_Stack;
 
 private variable L_Info;
@@ -178,7 +178,7 @@ private define bos_handler (file, line)
    BOS_Depth = BOS_Stack_Depth;
 
    Num_Statement_Counts++;
-   
+
    file = sprintf ("%s:%d", file, line);
    variable l = L_Info_Table[file];
    if (l == Null_Struct)
@@ -191,8 +191,8 @@ private define bos_handler (file, line)
    L_F_Counter = Num_Fun_Calls;
    L_Self_Time = 0.0;
    L_Cum_Time = 0.0;
-   
-#ifexists __DEBUG_PROFILE_ 
+
+#ifexists __DEBUG_PROFILE_
    vmessage ("BOS: (%d, %d) %S", BOS_Depth, BOS_Stack_Depth, file);
 #endif
    Tstart = toc ();
@@ -219,13 +219,12 @@ private define eos_handler ()
    L_Info.self_time += L_Self_Time;
    L_Info.cum_time += L_Cum_Time;
 
-   
-#ifexists __DEBUG_PROFILE_ 
+#ifexists __DEBUG_PROFILE_
    vmessage ("EOS: (%d,%d) %S", BOS_Depth, BOS_Stack_Depth, L_Info.name);
 #endif
 
    % This is necessary if a BOF/EOF sequence follows to avoid another
-   % push/pop of this object since 
+   % push/pop of this object since
    if (Last_Was_BOS_EOS == -1)
      L_Info = Dummy_L_Info;
 
@@ -237,7 +236,7 @@ private define bof_handler (fun, file)
 {
    variable dt = toc () - Tstart;
    Num_Fun_Calls++;
-   
+
 #ifexists __DEBUG_PROFILE_
    %vmessage ("# bof pushing (%d,%d)", BOS_Depth,BOS_Stack_Depth);
 #endif
@@ -268,7 +267,7 @@ private define bof_handler (fun, file)
    F_Self_Time = 0.0;
    F_Self_S = 0;
 
-#ifexists __DEBUG_PROFILE_ 
+#ifexists __DEBUG_PROFILE_
    vmessage ("BOF: (%d,%d) %S", BOS_Depth, BOS_Stack_Depth, file);
 #endif
    Tstart = toc ();
@@ -293,7 +292,7 @@ private define eof_handler ()
    % Add on time spent in the function to this line's value
    L_Cum_Time += F_Cum_Time;
 
-#ifexists __DEBUG_PROFILE_ 
+#ifexists __DEBUG_PROFILE_
    vmessage ("EOF: (%d,%d) %S", BOS_Depth, BOS_Stack_Depth, F_Info.name);
 #endif
 
@@ -312,7 +311,7 @@ private define eof_handler ()
    Tstart = toc();
 }
 
-% In function-only mode, lines are not profiled.  The self-time of the 
+% In function-only mode, lines are not profiled.  The self-time of the
 % function is its cumulative time minus the cumulative times of the
 % functions that it directly calls.  The F_Self_Time variable will
 % track those.
@@ -320,7 +319,7 @@ private define f_bof_handler (fun, file)
 {
    variable dt = toc () - Tstart;
    Num_Fun_Calls++;
-   
+
    variable f = @Function_Stack_Type;
    f.f_info = F_Info;
    f.f_counter = F_F_Counter;
@@ -369,7 +368,7 @@ define profile_on ()
    if (_NARGS)
      {
 	variable arg = ();
-	if (arg) 
+	if (arg)
 	  _boseos_info = 3;
      }
 }
@@ -446,13 +445,13 @@ define profile_end ()
 %  If the execution of a statememt causes M other statements to
 %  execute and N function calls, then the amount of profiler overhead
 %  is given by
-%  
+%
 %     N*dF + M*dS
 %
 %  where dF is the amount of overhead per function call for running
 %  the bof/eof-handlers, and dS is the overhead per statement in
 %  running the bos/eos-handlers.
-%  
+%
 %  The timers used to measure the amount of time spent in a function
 %  or statement are stopped when a handler is called, and started
 %  again when the handler returns.  This introduces systematic error
@@ -460,15 +459,15 @@ define profile_end ()
 %  bos/eos handlers and dt_F systematic error from the bof/eof handlers.
 %  Then the observed time as given by the interval times is related to
 %  the "true" time t via
-%  
+%
 %     t_obs = t + N*dt_F + M*dt_S + dt_S
-%  
+%
 %  The self-time of the statement t_self is determined through an
 %  interval timer that stops when a function is called, and starts
 %  again after the function returns.  If the statement makes N_self
 %  direct function calls, then t_self is related to its observed
 %  self-time t_self_obs by
-%  
+%
 %     t_self_obs = t_self + N_self*dt_F + dt_S
 %
 %  The self-time of a function is the sum of the self-times of the
@@ -476,16 +475,16 @@ define profile_end ()
 %  Suppose the function executes M_self statements that in turn
 %  directly call a total of N_self functions.  Then, for functions it
 %  follows that:
-%  
+%
 %     t_self_obs_f = t_self_f + N_self*dt_F + M_self*dt_S + dt_F
-%  
+%
 %  where the last term accounts for the overhead of the bof/eof
 %  handler for the function itself.
-%  
+%
 %  ----------------------------------------------------------------
 %
 %  The values dF, dS, dt_S, and dt_F can be determined as follows:
-%  
+%
 %  With no handlers in place, t can be accurately measured and can be
 %  considered t be a known quantity.  Suppose the statement has no
 %  function calls and let that statement be executed a very large
@@ -497,21 +496,21 @@ define profile_end ()
 %  The total measured or observed time t_obs, as given by the
 %  profiler's starting and stopping of the clock upon each execution
 %  will be given by
-%  
+%
 %     t_obs = B*(t+dt_S)      ===> dt_S = (t_obs - B*t)/B
 %
 %  If the statement is just a function call to a function that does
 %  nothing, then
-%  
+%
 %     t_elapsed = B*(t + dS + dF)
-%  
+%
 %  Using the prior determination of dS, we obtain
-%  
+%
 %     dF = t_elapsed/B - t - dS
-% 
+%
 %  For just a single function call with no arguments, the self-time is
 %  defined to be 0.  So:
-%    
+%
 %     t_self_obs = 0 + 1*dt_F + dt_S  ==> dt_F = t_self_obs-dt_S
 %
 private variable Overhead_Per_Statement = 0.0;   %  dS
@@ -524,7 +523,7 @@ profile_off ();
 private define cal_nop_0 ();
 private define cal_f_0 (n)
 {
-   loop (n) 
+   loop (n)
      {
 	cal_nop_0(); cal_nop_0(); cal_nop_0(); cal_nop_0(); cal_nop_0();
 	cal_nop_0(); cal_nop_0(); cal_nop_0(); cal_nop_0(); cal_nop_0();
@@ -535,7 +534,7 @@ private define cal_f_0 (n)
 
 private define cal_s_0 (n)
 {
-   loop (n) 
+   loop (n)
      {
 	() = 1;	() = 1;	() = 1;	() = 1; () = 1;
 	() = 1;	() = 1;	() = 1;	() = 1; () = 1;
@@ -549,7 +548,7 @@ profile_on (1);
 private define cal_nop_1 ();
 private define cal_f_1 (n)
 {
-   loop (n) 
+   loop (n)
      {
 	cal_nop_1(); cal_nop_1(); cal_nop_1(); cal_nop_1(); cal_nop_1();
 	cal_nop_1(); cal_nop_1(); cal_nop_1(); cal_nop_1(); cal_nop_1();
@@ -559,7 +558,7 @@ private define cal_f_1 (n)
 }
 private define cal_s_1 (n)
 {
-   loop (n) 
+   loop (n)
      {
 	() = 1;	() = 1;	() = 1;	() = 1; () = 1;
 	() = 1;	() = 1;	() = 1;	() = 1; () = 1;
@@ -603,7 +602,7 @@ define profile_calibrate ()
    variable t_obs = sum(s.cum_time);
    Error_Per_Statement = (t_obs - t_expected)/num;
    Overhead_Per_Statement = (t_elapsed-t_expected)/num;
-   
+
    % Now calibrate the function call overhead
    tic();
    cal_f_0(n0);
@@ -615,7 +614,7 @@ define profile_calibrate ()
    cal_f_1 (n1);
    t_elapsed = toc ();
    profile_end ();
-   
+
    %variable f = convert_func_info_to_array ();
    s = convert_profile_info_to_array (L_Info_Table);
    num = sum (s.num_called);
@@ -646,7 +645,7 @@ private define profile_report_lines (fp, s)
    variable num_f_triggered = s.num_f_triggered[i];
    variable name = s.name[i];
 
-#iffalse   
+#iffalse
    variable total_counts = sum(num_called);
    variable total_calls = sum(num_self_f);
    () = fprintf (fp, "#Number of profiled statements executed: %g\n", total_counts);
@@ -661,11 +660,11 @@ private define profile_report_lines (fp, s)
 #endif
 
    () = fprintf (fp, "#ncalls      ms/call totalselfms     totalsecs  Fcalls   Scalls File:line\n");
-   %                  1234567 1234567890AB 1234567890AB 1234567890AB 1234567  1234567 
+   %                  1234567 1234567890AB 1234567890AB 1234567890AB 1234567  1234567
    _for i (0, length(rates)-1, 1)
      {
 	() = fprintf (fp, "%7d %12.5f %12.5f %12.5f %7d %7d %s\n",
-		      num_called[i], rates[i]*1e3, self_time[i]*1e3, 
+		      num_called[i], rates[i]*1e3, self_time[i]*1e3,
 		      cum_time[i], num_f_triggered[i], num_s_triggered[i], name[i]);
      }
 }
@@ -744,5 +743,5 @@ define profile_report (file)
    ifnot (_eqs (fp,file))
      () = fclose (fp);
 }
-	
+
 provide ("profile");

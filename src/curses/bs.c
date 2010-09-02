@@ -1,4 +1,4 @@
-/* 
+/*
  * bs.c - original author: Bruce Holloway
  *		salvo option by: Chuck A DeGaul
  * with improved user interface, autoconfiguration and code cleanup
@@ -262,7 +262,7 @@ static void intro(void)
 #ifdef NCURSES_MOUSE_VERSION
     (void) mousemask(BUTTON1_CLICKED, (mmask_t *)NULL);
 #endif /* NCURSES_MOUSE_VERSION*/
-}		    
+}
 
 /* VARARGS1 */
 static void prompt(int n, char *f, char *s)
@@ -459,7 +459,7 @@ static void initgame(void)
 	    placeship(PLAYER, ss, TRUE);
 	    error((char *)NULL);
 	    ss->placed = TRUE;
-	}	    
+	}
 	else if (c == 'R')
 	{
 	    prompt(1, "Placing the rest of your fleet at random...", "");
@@ -471,7 +471,7 @@ static void initgame(void)
 		    ss->placed = TRUE;
 		}
 	    error((char *)NULL);
-	}	    
+	}
 	else if (strchr("hjkl8462", c))
 	{
 	    ss->x = curx;
@@ -483,7 +483,7 @@ static void initgame(void)
 	    case 'j': case '2': ss->dir = S; break;
 	    case 'h': case '4': ss->dir = W; break;
 	    case 'l': case '6': ss->dir = E; break;
-	    }	    
+	    }
 
 	    if (checkplace(PLAYER, ss, TRUE))
 	    {
@@ -751,7 +751,7 @@ static ship_t *hitship(int x, int y)
 			for (i = -1; i <= ss->length; ++i)
 			{
 			    int x1, y1;
-			    
+
 			    x1 = bx + i * xincr[ss->dir];
 			    y1 = by + i * yincr[ss->dir];
 			    if (ONBOARD(x1, y1))
@@ -878,7 +878,6 @@ static int sgetc(char *s)
 	    }
 	}
 }
-
 
 static void randomfire(int *px, int *py)
 /* random-fire routine -- implements simple diagonal-striping strategy */
@@ -1236,7 +1235,7 @@ int main(int argc, char *argv[])
 				i = 0;
 			}
 		    }
-		} 
+		}
 	    }
 	    else
 	    	while(turn ? cputurn() : plyturn())

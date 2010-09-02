@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #ifndef _GNU_SOURCE
@@ -83,12 +83,11 @@ void SLmake_lut (unsigned char *lut, unsigned char *range, unsigned char reverse
      }
 }
 
-
 char *_pSLskip_whitespace (SLCONST char *s)
 {
    while (isspace (*s))
      s++;
-   
+
    return (char *) s;
 }
 
@@ -214,7 +213,7 @@ char *_pSLexpand_escaped_char(char *p, char *pmax, SLwchar_Type *ch, int *isunic
 
    *ch = num;
    return p;
-   
+
 malformed_error:
    _pSLang_verror (SL_SYNTAX_ERROR, "Malformed escaped character.");
    return NULL;
@@ -240,7 +239,7 @@ int SLexpand_escaped_string (char *s, char *t, char *tmax, int utf8_encode)
 	     *s++ = ch;
 	     continue;
 	  }
-	
+
 	if (NULL == (t = _pSLexpand_escaped_char (t, tmax, &wch, &isunicode)))
 	  {
 	     *s = 0;
@@ -307,7 +306,7 @@ int SLvsnprintf (char *buf, unsigned int buflen, SLFUTURE_CONST char *fmt, va_li
    int status;
 
    status = vsnprintf(buf, buflen, fmt, ap);
-   if ((unsigned int)status >= buflen) 
+   if ((unsigned int)status >= buflen)
      status = -1;
    return status;
 #else
@@ -406,7 +405,6 @@ int SLang_add_cleanup_function (void (*f)(void))
    return 0;
 }
 
-
 int SLang_guess_type (SLFUTURE_CONST char *t)
 {
    SLCONST char *p;
@@ -433,7 +431,7 @@ int SLang_guess_type (SLFUTURE_CONST char *t)
 	if (p == t + 1)
 	  {
 	     if (*p == 'x')
-	       {		  
+	       {
 		  modifier |= MODIFIER_HEX;
 		  p++;
 		  while (ch = *p,
@@ -503,7 +501,7 @@ int SLang_guess_type (SLFUTURE_CONST char *t)
 	   default:
 	     return SLANG_STRING_TYPE;
 	  }
-	     
+
 	if (modifier)
 	  return SLANG_STRING_TYPE;
 #if SLANG_HAS_FLOAT
@@ -587,7 +585,7 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 		  return -1;
 	       }
 	  }
-	else 
+	else
 	  {
 	     base = 8;
 	     num_processed++;
@@ -647,7 +645,7 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 	   case 'd':
 	   case 'e':
 	   case 'f':
-	     if (base != 16) 
+	     if (base != 16)
 	       {
 		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in a binary, octal, or decimal number");
 		  return -1;
@@ -710,7 +708,6 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 	else base = 8;
      }
 
-   
    value = 0;
    max_value_before_overflow = ULLONG_MAX/base;
    max_ch1_before_overflow = ULLONG_MAX - base*max_value_before_overflow;
@@ -760,7 +757,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 	   case 'd':
 	   case 'e':
 	   case 'f':
-	     if (base != 16) 
+	     if (base != 16)
 	       {
 		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits may appear in a binary, octal, or decimal number");
 		  return -1;
@@ -783,7 +780,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
    return 0;
 }
 #endif				       /* HAVE_LONG_LONG */
-   
+
 /* Note: These routines do not check integer overflow.  I would use the C
  * library functions atol and atoul but some implementations check overflow
  * and some do not.  The following implementations provide a consistent
@@ -793,7 +790,7 @@ static unsigned char *get_sign (SLCONST unsigned char *s, int *signp)
 {
    s = (unsigned char *) _pSLskip_whitespace ((char *)s);
 
-   if (*s == '-') 
+   if (*s == '-')
      {
 	*signp = -1;
 	s++;

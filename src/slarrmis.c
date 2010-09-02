@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -45,7 +45,7 @@ int SLang_set_array_element (SLang_Array_Type *at, SLindex_Type *indices, VOID_S
        || (indices == NULL)
        || (data == NULL))
      return -1;
-   
+
    return _pSLarray_aput_transfer_elem (at, indices, data, at->sizeof_type,
 				       at->flags & SLARR_DATA_VALUE_IS_POINTER);
 }

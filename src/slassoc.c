@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -70,7 +70,6 @@ static int HASH_AGAIN (SLCONST char *str, unsigned long hash, unsigned int table
    return h;
 }
 
-
 static _pSLAssoc_Array_Element_Type *
 find_element (SLang_Assoc_Array_Type *a, char *str, unsigned long hash)
 {
@@ -83,7 +82,7 @@ find_element (SLang_Assoc_Array_Type *a, char *str, unsigned long hash)
    e = a->elements + i;
    if (e->key == str)
      return e;
-   
+
    if (e->key == NULL)
      return NULL;
 
@@ -95,7 +94,7 @@ find_element (SLang_Assoc_Array_Type *a, char *str, unsigned long hash)
 	i -= c;
 	if (i < 0)
 	  i += table_len;
-	
+
 	e = elements + i;
 	if (e->key == str)
 	  return e;
@@ -122,7 +121,7 @@ find_empty_element (_pSLAssoc_Array_Element_Type *elements, unsigned int table_l
 	i -= c;
 	if (i < 0)
 	  i += table_len;
-	
+
 	e = elements + i;
 	if ((e->key == NULL) || (e->key == Deleted_Key))
 	  return e;
@@ -137,7 +136,7 @@ static int resize_table (SLang_Assoc_Array_Type *a)
 
    num_occupied = a->num_occupied - a->num_deleted;
    new_table_len = a->table_len;
-   
+
    if (num_occupied == 0)
      num_occupied = (MIN_TABLE_SIZE >> 1);
 
@@ -158,14 +157,14 @@ static int resize_table (SLang_Assoc_Array_Type *a)
 	     return -1;
 	  }
      }
-   
+
    new_es = (_pSLAssoc_Array_Element_Type *)SLcalloc (new_table_len, sizeof (_pSLAssoc_Array_Element_Type));
    if (new_es == NULL)
      return -1;
    if (NULL != (old_es = a->elements))
      {
 	_pSLAssoc_Array_Element_Type *new_e, *old_e, *old_emax;
-	
+
 	old_e = old_es;
 	old_emax = old_e + a->table_len;
 	while (old_e < old_emax)
@@ -177,7 +176,7 @@ static int resize_table (SLang_Assoc_Array_Type *a)
 		  old_e++;
 		  continue;
 	       }
-	     
+
 	     /* Cannot fail */
 	     new_e = find_empty_element (new_es, new_table_len, key, old_e->hash);
 	     *new_e = *old_e;
@@ -190,7 +189,7 @@ static int resize_table (SLang_Assoc_Array_Type *a)
    a->num_occupied -= a->num_deleted;
    a->num_deleted = 0;
    a->resize_num = 13*(new_table_len>>4);
-   
+
    return 0;
 }
 
@@ -202,7 +201,7 @@ static void delete_assoc_array (SLang_Assoc_Array_Type *a)
 #endif
 
    if (a == NULL) return;
-   
+
    e = a->elements;
    if (e != NULL)
      {
@@ -269,7 +268,6 @@ static SLang_Assoc_Array_Type *alloc_assoc_array (SLtype type, int has_default_v
    return a;
 }
 
-
 static _pSLAssoc_Array_Element_Type *store_object (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e, SLstr_Type *s, unsigned long hash, SLang_Object_Type *obj)
 {
    if ((e != NULL)
@@ -285,7 +283,7 @@ static _pSLAssoc_Array_Element_Type *store_object (SLang_Assoc_Array_Type *a, _p
 	if ((a->num_occupied == a->resize_num)
 	    && (-1 == resize_table (a)))
 	  return NULL;
-	
+
 	if (NULL == (e = find_empty_element (a->elements, a->table_len, s, hash)))
 	  return NULL;
 	if (e->key == Deleted_Key)
@@ -295,7 +293,7 @@ static _pSLAssoc_Array_Element_Type *store_object (SLang_Assoc_Array_Type *a, _p
 
 	if (NULL == (e->key = _pSLstring_dup_hashed_string (s, hash)))
 	  return NULL;
-	
+
 	e->hash = hash;
      }
    e->value = *obj;
@@ -368,7 +366,7 @@ int _pSLassoc_aget (SLtype type, unsigned int num_indices)
 			   "No such element in Assoc Array: %s", str);
 	     goto free_and_return;
 	  }
-	     
+
      }
    else obj = &e->value;
 
@@ -378,7 +376,7 @@ int _pSLassoc_aget (SLtype type, unsigned int num_indices)
    else
 #endif
      ret = _pSLpush_slang_obj (obj);
-   
+
    free_and_return:
 
    _pSLang_free_slstring (str);
@@ -388,14 +386,14 @@ int _pSLassoc_aget (SLtype type, unsigned int num_indices)
 
 _INLINE_
 static _pSLAssoc_Array_Element_Type *
-  assoc_aput (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e, 
+  assoc_aput (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e,
 	      SLstr_Type *str, unsigned long hash)
 {
    SLang_Object_Type obj;
 
    if (-1 == SLang_pop (&obj))
      return NULL;
-   
+
    if ((obj.o_data_type != a->type)
 #if USE_NEW_ANYTYPE_CODE
        && (a->type != SLANG_ANY_TYPE)
@@ -455,13 +453,13 @@ int _pSLassoc_inc_value (unsigned int num_indices, int inc)
    e = find_element (a, str, hash);
 
    ret = -1;
-   
+
    if (e == NULL)
      {
 	if (a->flags & HAS_DEFAULT_VALUE)
 	  {
 	     if (-1 == _pSLpush_slang_obj (&a->default_value))
-	       goto free_and_return;	       
+	       goto free_and_return;
 	  }
 	else
 	  {
@@ -469,7 +467,7 @@ int _pSLassoc_inc_value (unsigned int num_indices, int inc)
 			   "No such element in Assoc Array: %s", str);
 	     goto free_and_return;
 	  }
-	
+
 	if (NULL == (e = assoc_aput (a, e, str, hash)))
 	  goto free_and_return;
      }
@@ -482,10 +480,10 @@ int _pSLassoc_inc_value (unsigned int num_indices, int inc)
 	objp->v.int_val += inc;
 	goto free_and_return;
      }
-	
+
    inc_obj.o_data_type = SLANG_INT_TYPE;
    inc_obj.v.int_val = inc;
-   
+
    if ((-1 == _pSLang_do_binary_ab (SLANG_PLUS, objp, &inc_obj))
        || (NULL == assoc_aput (a, e, str, hash)))
      goto free_and_return;
@@ -563,10 +561,10 @@ static void assoc_get_keys (SLang_Assoc_Array_Type *a)
      return;
 
    data = (char **)at->data;
-   
+
    e = a->elements;
    emax = e + a->table_len;
-   
+
    i = 0;
    while (e < emax)
      {
@@ -596,7 +594,7 @@ transfer_element (SLang_Class_Type *cl, VOID_STAR dest_data,
 	if ((-1 == _pSLpush_slang_obj (obj))
 	    || (-1 == SLang_pop_anytype (&any)))
 	  return -1;
-	
+
 	*(SLang_Any_Type **)dest_data = any;
 	return 0;
      }
@@ -644,7 +642,7 @@ static void assoc_get_values (SLang_Assoc_Array_Type *a)
 
    e = a->elements;
    emax = e + a->table_len;
-   
+
    while (e < emax)
      {
 	if ((e->key != NULL) && (e->key != Deleted_Key))
@@ -673,7 +671,7 @@ static void assoc_delete_key (SLang_Assoc_Array_Type *a, char *key)
    e = find_element (a, key, _pSLstring_get_hash (key));
    if (e == NULL)
      return;
-   
+
    _pSLang_free_slstring ((char *) e->key);
    SLang_free_object (&e->value);
    e->key = Deleted_Key;
@@ -803,10 +801,10 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
      {
 	if (e == emax)
 	  return 0;
-	
+
 	if ((e->key != NULL) && (e->key != Deleted_Key))
 	  break;
-	
+
 	e++;
      }
 
@@ -829,7 +827,7 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 	  if (-1 == _pSLpush_slang_obj (&e->value))
 	    return -1;
      }
-   
+
    /* keep going */
    return 1;
 }

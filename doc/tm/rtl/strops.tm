@@ -1,4 +1,3 @@
-
 \function{count_char_occurances}
 \synopsis{Count the number of occurrences of a character in a string}
 \usage{UInt_Type count_char_occurances (str, ch)}
@@ -142,7 +141,7 @@
 \notes
   This function regards the first character of a string to be given by
   a position value of 1.
-  
+
   The distinction between characters and bytes is significant in UTF-8
   mode.
 \seealso{substr, string_match, strreplace}
@@ -179,13 +178,13 @@
   in the string \exmp{str} to the previous character in the string.
   It returns the byte-offset (\exmp{p1} of the previous character and
   the decoded character value at that byte-offset.
-  
+
   The optional third argument specifies the handling of
   combining characters.  If it is non-zero, combining characters will
   be ignored, otherwise a combining character will not be treated
   differently from other characters.  The default is to ignore such
   characters.
-  
+
   If the byte-offset \exmp{p0} corresponds to the end of the string
   (\exmp{p0=0}), then \exmp{(p0,0)} will be returned.  Otherwise if
   the byte-offset specifies a value that lies outside the string, an
@@ -201,8 +200,8 @@
 \description
   The \ifun{sprintf} function formats a string from a variable number
   of arguments according to according to the format specification
-  string \exmp{fmt}. 
-  
+  string \exmp{fmt}.
+
   The format string is a C library \cfun{sprintf} style format
   descriptor.  Briefly, the format string may consist of ordinary
   characters (not including the \exmp{%} character), which are copied
@@ -217,7 +216,7 @@
   conversion specification character.  However, it may optionally be
   followed by flag characters, field width characters, and precision
   modifiers, as described below.
-  
+
   The character immediately following the \exmp{%} character may be
   one or more of the following flag characters:
 #v+
@@ -227,14 +226,14 @@
     +         Preceed a number by a plus or minus sign.
     (space)   Use a blank instead of a plus sign.
 #v-
-  
+
   The flag characters (if any) may be followed by an optional field
   width specification string represented by one or more digit
   characters.  If the size of the formatted object is less than the
   field width, it will be right-justified in the specified field
   width, unless the \exmp{-} flag was given, in which case it will be
   left justified.
-  
+
   If the next character in the control sequence is a period, then it
   introduces a precision specification sequence.  The precision is
   given by the digit characters following the period.  If none are
@@ -247,7 +246,7 @@
   of significant digits to appear.  Finally for the \exmp{s} and
   \exmp{S} conversions it specifies the maximum number of characters
   to be copied to the output string.
-  
+
   The next character in the sequence may be a modifier that controls
   the size of object to be formatted. It may consist of the following
   characters:
@@ -318,7 +317,7 @@
  format \exmp{fmt} and sets the variables whose references are given by
  \exmp{r1}, ..., \exmp{rN}.  The function returns the number of
  references assigned, or throws an exception upon error.
- 
+
  The format string \exmp{fmt} consists of ordinary characters and
  conversion specifiers.  A conversion specifier begins with the
  special character \exmp{%} and is described more fully below.  A white
@@ -332,8 +331,8 @@
  conversion will be performed but no assignment to a reference will be
  made.  The \exmp{width} specifier specifies the maximum field width to
  use for the conversion.  The \exmp{type} modifier is used to indicate
- the size of the object, e.g., a short integer, as follows. 
- 
+ the size of the object, e.g., a short integer, as follows.
+
  If \em{type} is given as the character \exmp{h}, then if the format
  conversion is for an integer (\exmp{dioux}), the object assigned will
  be a short integer.  If \em{type} is \exmp{l}, then the conversion
@@ -348,7 +347,7 @@
        D     Matches a long decimal integer (equiv to `ld')
        u     Matches an unsigned decimal integer
        U     Matches an unsigned long decimal integer (equiv to `lu')
-       i     Matches either a hexadecimal integer, decimal integer, or 
+       i     Matches either a hexadecimal integer, decimal integer, or
              octal integer.
        I     Equivalent to `li'.
        x     Matches a hexadecimal integer.
@@ -361,7 +360,7 @@
        n     Assigns the number of characters scanned so far.
        [...] Matches zero or more characters from the set of characters
              enclosed by the square brackets.  If '^' is given as the
-             first character, then the complement set is matched. 
+             first character, then the complement set is matched.
 #v-
 \example
  Suppose that \exmp{s} is \exmp{"Coffee: (3,4,12.4)"}.  Then
@@ -385,7 +384,7 @@
 \description
   This function returns the number of bytes in a string.  In UTF-8
   mode, this value is generally different from the number of
-  characters in a string.  For the latter information, the 
+  characters in a string.  For the latter information, the
   \ifun{strlen} or \ifun{strcharlen} functions should be used.
 \seealso{strlen, strcharlen, length}
 \done
@@ -408,7 +407,7 @@
 \synopsis{Concatenate strings}
 \usage{String_Type strcat (String_Type a_1, ...,  String_Type a_N)}
 \description
-   The \ifun{strcat} function concatenates its N string 
+   The \ifun{strcat} function concatenates its N string
    arguments \exmp{a_1}, ... \exmp{a_N} together and returns the result.
 \example
 #v+
@@ -447,13 +446,13 @@
    list of strings:
 #v+
      define sort_string_list (a)
-     { 
+     {
         variable i, b, c;
         b = strchop (a, ',', 0);
-        
+
         i = array_sort (b);
         b = b[i];   % rearrange
-        
+
         % Convert array back into comma separated form
         return strjoin (b, ",");
      }
@@ -521,14 +520,14 @@
   match regular expression specified by \exmp{pat}.  This function
   performs the match starting at byte-offset \exmp{pos} in the string
   \exmp{str} (numbered from 1).  This function returns the position in
-  bytes (numbered from 1) of the start of the match in \exmp{str}.  
+  bytes (numbered from 1) of the start of the match in \exmp{str}.
   The exact substring matched may be found using
   \ifun{string_match_nth}.
 \notes
   Positions in the string are specified using byte-offsets not
   character offsets. The value returned by this function is measured
   from the beginning of the string \exmp{str}.
-  
+
   The function is not yet UTF-8 aware.  If possible, consider using
   the \module{pcre} module for better, more sophisticated regular
   expressions.
@@ -553,7 +552,7 @@
 #v+
      variable matched, pos, len;
      matched = string_match("hello world", "\([a-z]+\) \([a-z]+\)"R, 1);
-     if (matched) 
+     if (matched)
        (pos, len) = string_match_nth(2);
 #v-
   This will set \exmp{matched} to 1 since a match will be found at the
@@ -585,7 +584,7 @@
   function.
 \example
 #v+
-    strs = string_matches ("p0.5keV_27deg.dat", 
+    strs = string_matches ("p0.5keV_27deg.dat",
                            "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R, 1);
     % ==> strs[0] = "p0.5keV_27deg.dat"
     %     strs[1] = "0.5"
@@ -701,7 +700,7 @@
 #v-
   will return zero since the first three characters match.
 \notes
-  This function uses character semantics.  
+  This function uses character semantics.
 \seealso{strcmp, strlen, strncharcmp, strnbytecmp}
 \done
 
@@ -720,7 +719,7 @@
   The \ifun{strreplace} function may be used to replace one or more
   occurrences of \exmp{b} in \exmp{a} with \exmp{c}.  This function
   supports two calling interfaces.
-  
+
   The first form may be used to replace a specified number of
   substrings.  If \exmp{max_n} is positive, then the first
   \exmp{max_n} occurrences of \exmp{b} in \exmp{a} will be replaced.
@@ -728,7 +727,7 @@
   \exmp{abs(max_n)} occurrences will be replaced. The function returns
   the resulting string and an integer indicating how many replacements
   were made.
-  
+
   The second calling form may be used to replace all occurances of
   \exmp{b} in \exmp{a} with \exmp{c}.  In this case, only the
   resulting string will be returned.
@@ -745,7 +744,6 @@
 \seealso{is_substr, strsub, strtrim, strtrans, str_delete_chars}
 \done
 
-
 \function{strskipbytes}
 \synopsis{Skip a range of bytes in a byte string}
 \usage{Int_Type strskipbytes (str, range [n0 [,nmax]])}
@@ -755,13 +753,13 @@
    Int_Type n0, nmax;
 #v-
 \description
-  This function skips over a range of bytes in a string \exmp{str}. 
+  This function skips over a range of bytes in a string \exmp{str}.
   The byte range to be skipped is specified by the \exmp{range}
   parameter.  Optional start (\exmp{n0}) and stop (\exmp{nmax})
   (0-based) parameters may be used to specifiy the part of the input
   string to be processed.  The function returns a 0-based offset from
   the beginning of the string where processing stopped.
-  
+
   See the documentation for the \ifun{strtrans} function for the
   format of the range parameter.
 \seealso{strskipchar, strbskipchar, strtrans}
@@ -774,14 +772,14 @@
   This function decodes the character at the 0-based byte-offset \exmp{p0} in
   the string \exmp{str}.  It returns the byte-offset (\exmp{p1} of the next
   character in the string and the decoded character at byte-offset
-  \exmp{p0}. 
-  
+  \exmp{p0}.
+
   The optional third argument specifies the handling of
   combining characters.  If it is non-zero, combining characters will
   be ignored, otherwise a combining character will not be treated
   differently from other characters.  The default is to ignore such
   characters.
-  
+
   If the byte-offset \exmp{p0} corresponds to the end of the string,
   then \exmp{(p0,0)} will be returned.  Otherwise if the byte-offset
   specifies a value that lies outside the string, an \exc{IndexError}
@@ -876,8 +874,8 @@
     \\ matches a backslash
     \^ matches a ^ character
 #v-
-  
-  If the second parameter is not present, then it defaults to 
+
+  If the second parameter is not present, then it defaults to
   \exmp{"\\s"}.
 \example
   The following example may be used to count the words in a text file:
@@ -885,10 +883,10 @@
     define count_words (file)
     {
        variable fp, line, count;
-       
+
        fp = fopen (file, "r");
        if (fp == NULL) return -1;
-       
+
        count = 0;
        while (-1 != fgets (&line, fp))
          {
@@ -914,7 +912,7 @@
   from the set \exmp{old_set} with the corresponding characters from
   \exmp{new_set} in the string \exmp{str}.  If \exmp{new_set} is empty,
   then the characters in \exmp{old_set} will be removed from \exmp{str}.
-  
+
   If \exmp{new_set} is not empty, then \exmp{old_set} and
   \exmp{new_set} must be commensurate.  Each set may consist of
   character ranges such as \exmp{A-Z} and character classes:
@@ -975,7 +973,7 @@
 \usage{String_Type strtrim_beg (String_Type s [,String_Type w])}
 \description
   The \ifun{strtrim_beg} function removes all leading whitespace
-  characters from the string \exmp{s} and returns the result.  
+  characters from the string \exmp{s} and returns the result.
   The optional second parameter specifies the set of whitespace
   characters.  See the documentation for the \ifun{strtrim} function
   form more information about the whitespace parameter.
@@ -1020,7 +1018,7 @@
 \description
   This function may be used to delete the set of characters specified
   by \exmp{del_set} from the string \exmp{str}.  The result is returned.
-  
+
   The set of characters to be deleted may include ranges such as
   \exmp{A-Z} and characters classes:
 #v+
@@ -1148,7 +1146,7 @@
   than the \ifun{substr} function.  In fact
   \exmp{substrbytes(s,i+1,-1)} is equivalent to
   \exmp{s[[i:]]}.
-  
+
   The function \ifun{substr} may be used if character semantics are
   desired.
 \seealso{substr, strbytelen}

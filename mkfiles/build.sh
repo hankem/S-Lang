@@ -11,9 +11,9 @@ if [ $# -eq 0 ] ; then
    exit 1
 fi
 
-echo 
+echo
 echo This script assumes you working from a CygWin/MinGW shell, with GNU make
-echo 
+echo
 
 echo - generating Makefile in src...
 src/mkfiles/mkmake $1 $2 $3 $4 $5 < src/mkfiles/makefile.all > src/Makefile

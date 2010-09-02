@@ -44,17 +44,17 @@ define png_get_colormap (name)
 {
    if (assoc_key_exists (Color_Maps, name))
      return Color_Maps[name];
-   
+
    variable mapfile = strcat (name, ".map");
    variable file = path_concat (Color_Map_Dir, mapfile);
    if (stat_file (file) == NULL)
      throw OpenError, "Unable to load colormap $mapfile"$;
-   
+
    () = evalfile (file, Png_Namespace);
 
    if (assoc_key_exists (Color_Maps, name))
      return Color_Maps[name];
-   
+
    throw DataError, "$file does not contain the $name color map"$;
 }
 
@@ -84,7 +84,7 @@ private define normalize_gray (gray, nlevels)
 {
    variable g0 = qualifier ("gmin");
    variable g1 = qualifier ("gmax");
-   
+
    if ((typeof (gray) == UChar_Type) && (nlevels == 256)
        && (g0 == NULL) && (g1 == NULL))
      return gray;
@@ -117,7 +117,7 @@ private define normalize_gray (gray, nlevels)
    variable bad_level = 0;
    if (any_is_bad)
      gray[where(is_bad)] = bad_level;
-   
+
    return gray;
 }
 

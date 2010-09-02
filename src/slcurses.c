@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 /* Support for UTF-8 combining characters added by Adrian Colley */
@@ -162,14 +162,14 @@ static int getkey_function (void)
 	if (Keyboard_Buffer_Stop == Keyboard_Buffer + sizeof (Keyboard_Buffer))
 	  Keyboard_Buffer_Stop = Keyboard_Buffer;
      }
-   
+
    return ch;
 }
 
 static int get_buffered_key (void)
 {
    int ch;
-   
+
    if (Keyboard_Buffer_Stop == Keyboard_Buffer_Start)
      return SLANG_GETKEY_ERROR;
 
@@ -183,7 +183,7 @@ static int get_buffered_key (void)
 static int get_keypad_key (void)
 {
    int ch;
-   
+
    if (Keyboard_Buffer_Stop != Keyboard_Buffer_Start)
      return get_buffered_key ();
 

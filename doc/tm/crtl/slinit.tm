@@ -6,7 +6,7 @@
   applications that use the \slang interpreter.  It initializes the
   interpreter, defines the built-in data types, and adds a set of core
   intrinsic functions.
-  
+
   The function returns \var{0} upon success, or \var{-1} upon failure.
 \seealso{SLang_init_slfile, SLang_init_slmath, SLang_init_slunix}
 \done
@@ -26,7 +26,6 @@
 \seealso{SLang_init_slang, SLang_init_slunix, SLang_init_slmath}
 \done
 
-
 \function{SLang_init_slmath}
 \synopsis{Initialize the interpreter math intrinsics}
 \usage{int SLang_init_slmath (void)}
@@ -41,7 +40,6 @@
   the preprocessor symbol \var{__SLMATH__} to the interpreter.
 \seealso{SLang_init_slang, SLang_init_slfile, SLang_init_slunix}
 \done
-
 
 \function{SLang_init_slunix}
 \synopsis{Make available some unix system calls to the interpreter}
@@ -58,5 +56,4 @@
   the preprocessor symbol \var{__SLUNIX__} to the interpreter.
 \seealso{SLang_init_slang, SLang_init_slfile, SLang_init_slmath}
 \done
-
 

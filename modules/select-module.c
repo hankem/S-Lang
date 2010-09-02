@@ -15,8 +15,8 @@
 
 SLANG_MODULE(select);
 
-static int pop_fd_set (SLang_Array_Type **ats, 
-		       fd_set **fd_set_p, fd_set *fd_set_buf, 
+static int pop_fd_set (SLang_Array_Type **ats,
+		       fd_set **fd_set_p, fd_set *fd_set_buf,
 		       int *max_n)
 {
    unsigned int num, i;
@@ -38,17 +38,17 @@ static int pop_fd_set (SLang_Array_Type **ats,
    *ats = at;
    num = at->num_elements;
    f = (SLFile_FD_Type **) at->data;
-   
+
    for (i = 0; i < num; i++)
      {
 	int fd;
-	
+
 	if (-1 == SLfile_get_fd (f[i], &fd))
 	  continue;
-	
+
 	if (fd > *max_n)
 	  *max_n = fd;
-	
+
 	FD_SET(fd, fd_set_buf);
      }
 
@@ -73,15 +73,15 @@ static SLang_Array_Type *do_fdisset (int nready, SLang_Array_Type *fds, fd_set *
 	for (i = 0; i < num; i++)
 	  {
 	     int fd;
-	
+
 	     if (-1 == SLfile_get_fd (f[i], &fd))
 	       continue;
-	
+
 	     if (FD_ISSET(fd, fdset))
 	       nready++;
 	  }
      }
-   
+
    ind_nready = (SLindex_Type) nready;
    at = SLang_create_array (SLANG_INT_TYPE, 0, NULL, &ind_nready, 1);
    if (at == NULL)
@@ -95,19 +95,19 @@ static SLang_Array_Type *do_fdisset (int nready, SLang_Array_Type *fds, fd_set *
 	for (i = 0; i < num; i++)
 	  {
 	     int fd;
-	
+
 	     if (-1 == SLfile_get_fd (f[i], &fd))
 	       continue;
-	
+
 	     if (FD_ISSET(fd, fdset))
 	       *indx++ = (int) i;
 	  }
      }
-   
+
    return at;
 }
 
-static int push_select_struct (int num, 
+static int push_select_struct (int num,
 			       SLang_Array_Type *at_read,
 			       SLang_Array_Type *at_write,
 			       SLang_Array_Type *at_except,
@@ -130,7 +130,7 @@ static int push_select_struct (int num,
    field_types[2] = SLANG_ARRAY_TYPE;
    field_types[3] = SLANG_ARRAY_TYPE;
    field_values[0] = &num;
-   
+
    if ((NULL == (iread = do_fdisset (num, at_read, readfs)))
        || (NULL == (iwrite = do_fdisset (num, at_write, writefds)))
        || (NULL == (iexcept = do_fdisset (num, at_except, exceptfds))))
@@ -139,7 +139,7 @@ static int push_select_struct (int num,
 	SLang_free_array (iwrite);
 	return -1;
      }
-   
+
    field_values[1] = &iread;
    field_values[2] = &iwrite;
    field_values[3] = &iexcept;
@@ -152,7 +152,6 @@ static int push_select_struct (int num,
    return status;
 }
 
-			       
 /* Usage: Struct_Type select (R[],W[],E[],TIME) */
 
 static void select_intrin (double *secsp)
@@ -205,14 +204,13 @@ static void select_intrin (double *secsp)
 	(void) SLerrno_set_errno (errno);
 	break;
      }
-   
+
    if (ret == -1)
      (void) SLang_push_null ();
    else
      (void) push_select_struct (ret, at_read, at_write, at_except,
 				readfs, writefds, exceptfds);
 
-   
    free_return:
    SLang_free_array (at_read);
    SLang_free_array (at_write);
@@ -224,7 +222,6 @@ static SLang_Intrin_Fun_Type Select_Intrinsics [] =
    MAKE_INTRINSIC_1("select", select_intrin, SLANG_VOID_TYPE, SLANG_DOUBLE_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
-   
 
 int init_select_module_ns (char *ns_name)
 {

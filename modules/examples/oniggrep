@@ -19,12 +19,12 @@ private variable Output_Format = 0;
 private define grep (file, p)
 {
    variable fp;
-   
+
    if (file == NULL)
      fp = stdin;
    else
      fp = fopen (file, "r");
-   
+
    if (fp == NULL)
      {
 	fprintf (stderr, "*** Unable to open %s\n", file);
@@ -54,7 +54,7 @@ private define grep (file, p)
 	       }
 	       {
 		case (MATCH|LINENUM):
-		  
+
 		  () = fprintf (stdout, "%d:", linenum);
 	       }
 	       {
@@ -70,7 +70,7 @@ private define grep (file, p)
 		case (FILENAME|MATCH):
 		  () = fprintf (stdout, "%s:", file);
 	       }
-	       
+
 	     do
 	       {
 		  i = onig_nth_match (p, 0);
@@ -122,7 +122,7 @@ define slsh_main ()
 	grep (NULL, reg);
 	return;
      }
-   
+
    variable files = __argv[[i:]];
 
    if (length(files) > 1)

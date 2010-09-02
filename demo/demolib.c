@@ -50,34 +50,32 @@ static void exit_error_hook (char *fmt, va_list ap)
 {
    SLang_reset_tty ();
    SLsmg_reset_smg ();
-   
+
    vfprintf (stderr, fmt, ap);
    fputc ('\n', stderr);
    exit (1);
 }
 
-   
-
 static int demolib_init_terminal (int tty, int smg)
 {
    SLang_Exit_Error_Hook = exit_error_hook;
-   
-   /* It is wise to block the occurance of display  related signals while we are 
-    * initializing. 
+
+   /* It is wise to block the occurance of display  related signals while we are
+    * initializing.
     */
    SLsig_block_signals ();
-   
+
    SLtt_get_terminfo ();
-   
+
    /* SLkp_init assumes that SLtt_get_terminfo has been called. */
    if (tty && (-1 == SLkp_init ()))
      {
 	SLsig_unblock_signals ();
 	return -1;
      }
-   
+
    init_signals ();
-   
+
    if (tty) SLang_init_tty (-1, 0, 1);
 #ifdef REAL_UNIX_SYSTEM
    if (tty) SLtty_set_suspend_state (1);
@@ -93,7 +91,6 @@ static int demolib_init_terminal (int tty, int smg)
 	  }
      }
 
-	
    SLsig_unblock_signals ();
 
    return 0;

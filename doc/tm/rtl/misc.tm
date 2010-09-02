@@ -18,12 +18,12 @@
 #v+
     X = 1;
 #v-
-  However, 
+  However,
 #v+
     _auto_declare = 1;   % declare variables as static.
     X = 1;
 #v-
-  is equivalent to 
+  is equivalent to
 #v+
     static variable X = 1;
 #v-
@@ -185,7 +185,7 @@
 \notes
   Since \ifun{message} is an intrinsic function, it is public and may
   not be redefined in the public namespace.
-  
+
   The \ifun{implements} function should rarely be used.  It is
   preferable to allow a static namespace to be associated with a
   compilation unit using, e.g., \exmp{evalfile}.
@@ -327,7 +327,7 @@
   returns the value of the variable, and then undefines the variable.
   The purpose of this pseudo-function is to free any memory
   associated with a variable if that variable is going to be
-  re-assigned. 
+  re-assigned.
 \example
 #v+
      x = 3;

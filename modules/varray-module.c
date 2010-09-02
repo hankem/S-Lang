@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include "config.h"
 
@@ -37,7 +37,6 @@ SLANG_MODULE(varray);
 # ifndef MAP_FAILED
 #  define MAP_FAILED	-1
 # endif
-
 
 typedef struct
 {
@@ -65,7 +64,6 @@ static void unmmap_array (SLang_Array_Type *at)
    at->client_data = NULL;
 }
 
-     
 static MMap_Type *mmap_file (char *file, off_t offset, size_t num_bytes)
 {
    FILE *fp;
@@ -81,14 +79,14 @@ static MMap_Type *mmap_file (char *file, off_t offset, size_t num_bytes)
 	return NULL;
      }
    fd = fileno (fp);
-   
+
    if (-1 == fstat (fd, &st))
      {
 	SLang_verror (SL_INTRINSIC_ERROR, "mmap_array: stat %s failed", file);
 	fclose (fp);
 	return NULL;
      }
-   
+
    if (NULL == (m = (MMap_Type *) SLmalloc (sizeof (MMap_Type))))
      {
 	fclose (fp);
@@ -108,7 +106,7 @@ static MMap_Type *mmap_file (char *file, off_t offset, size_t num_bytes)
    m->data = (VOID_STAR) ((char *)addr + offset);
 
    fclose (fp);
-   
+
    return m;
 }
 
@@ -153,10 +151,10 @@ static void mmap_array (void)
 
    num_dims = a_dims->num_elements;
    dims = (SLindex_Type *)a_dims->data;
-   
+
    if (-1 == SLang_pop_datatype (&type))
      goto return_error;
-   
+
    switch (type)
      {
       case SLANG_CHAR_TYPE:
@@ -178,7 +176,7 @@ static void mmap_array (void)
       case SLANG_ULONG_TYPE:
 	sizeof_type = sizeof (long);
 	break;
-	 
+
       case SLANG_FLOAT_TYPE:
 	sizeof_type = sizeof (float);
 	break;
@@ -190,12 +188,12 @@ static void mmap_array (void)
       case SLANG_COMPLEX_TYPE:
 	sizeof_type = 2 * sizeof (double);
 	break;
-	
+
       default:
 	SLang_verror (SL_NOT_IMPLEMENTED, "mmap_array: unsupported data type");
 	goto return_error;
      }
-   
+
    num_elements = 1;
    for (i = 0; i < num_dims; i++)
      {
@@ -204,14 +202,14 @@ static void mmap_array (void)
 	     SLang_verror (SL_INVALID_PARM, "mmap_array: dims array must be positive");
 	     goto return_error;
 	  }
-	
+
 	num_elements *= dims[i];
      }
    if (num_dims == 0)
      num_elements = 0;
 
    num_bytes = sizeof_type * num_elements;
-   
+
    if (-1 == pop_off_t (&offset))
      goto return_error;
 
@@ -228,7 +226,7 @@ static void mmap_array (void)
    a->client_data = (VOID_STAR) m;
 
    m = NULL;			       /* done with this */
-   
+
    (void) SLang_push_array (a, 1);
 
    /* drop */
@@ -240,7 +238,7 @@ static void mmap_array (void)
      SLang_free_array (a_dims);
    if (file != NULL)
      SLang_free_slstring (file);
-} 
+}
 #endif				       /* HAVE_MMAP */
 
 static SLang_Intrin_Fun_Type Module_Intrinsics [] =
@@ -251,11 +249,10 @@ static SLang_Intrin_Fun_Type Module_Intrinsics [] =
    SLANG_END_INTRIN_FUN_TABLE
 };
 
-
 int init_varray_module_ns (char *ns_name)
 {
    SLang_NameSpace_Type *ns;
-   
+
    if (NULL == (ns = SLns_create_namespace (ns_name)))
      return -1;
 

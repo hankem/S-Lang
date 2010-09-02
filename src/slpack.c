@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -293,7 +293,7 @@ static int parse_a_format (char **format, Format_Type *ft)
 	if (-1 == get_int_type_for_size (4, NULL, &ft->data_type))
 	  return -1;
 	break;
-	
+
 	/* 64 bit ints */
       case 'q':
 	ft->sizeof_type = 8;
@@ -605,7 +605,6 @@ static unsigned int get_unpadded_strlen (char *str, char pad, unsigned int len)
    return (unsigned int) (s - str);
 }
 
-
 void _pSLunpack (char *format, SLang_BString_Type *bs)
 {
    Format_Type ft;
@@ -679,7 +678,7 @@ void _pSLunpack (char *format, SLang_BString_Type *bs)
 	     b += num_bytes;
 	     continue;
 	  }
-	
+
 	/* string type: s, S, or Z */
 	if (ft.format_type == 's')
 	  len = ft.repeat;

@@ -20,11 +20,11 @@ static define test_strftime ()
 		    "%l", "%m", "%M", "%n", "%O", "%p", "%P", "%r", "%R",
 		    "%s", "%S", "%t", "%T", "%u", "%U", "%V", "%w", "%W",
 		    "%x", "%X", "%y", "%Y", "%z", "%+", "%%"];
-   
+
    % Test only a subset, since many systems do not support all the above
    fmts = ["%a", "%A", "%b", "%B", "%c", "%d",
-	   "%H", "%I", "%j", 
-	   "%m", "%M", "%p", 
+	   "%H", "%I", "%j",
+	   "%m", "%M", "%p",
 	   "%S", "%U", "%w", "%W",
 	   "%x", "%X", "%y", "%Y", "%z", "%%"];
 

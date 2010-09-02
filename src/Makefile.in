@@ -77,7 +77,7 @@ MKDIR		= mkdir
 #---------------------------------------------------------------------------
 THIS_LIB		= slang#
 DLL_IMPLIB_NAME		= @DLL_IMPLIB_NAME@
-OTHERSTUFF 		= 
+OTHERSTUFF 		=
 THIS_LIB_DEFINES	= -DSLANG
 ELF_MAJOR_VERSION	= @slang_major_version@#
 ELF_MINOR_VERSION	= @slang_minor_version@#

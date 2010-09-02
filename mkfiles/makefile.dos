@@ -1,6 +1,6 @@
 MAKE = nmake
 all:
-	cd src 
+	cd src
 	$(MAKE)
 	cd ../slsh
 	$(MAKE)
@@ -8,7 +8,7 @@ all:
 	$(MAKE)
 #
 clean:
-	cd src 
+	cd src
 	-$(MAKE) clean
 	cd ../slsh
 	-$(MAKE) clean

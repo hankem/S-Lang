@@ -109,7 +109,7 @@
      L = Integer_Type [length (S)];
      for (i = 0; i < length (S); i++) L[i] = strlen (S[i]);
 #v-
-  
+
   Now consider an example involving the \ifun{strcat} function:
 #v+
      files = ["slang", "slstring", "slarray"];
@@ -171,12 +171,12 @@
 \description
   The \ifun{array_sort} function may be used to sort an object and
   returns an integer index array that represents the result of the
-  sort as a permutation.  
-  
+  sort as a permutation.
+
   If a single parameter is passed, that parameter must be an array,
   which will be sorted into ascending order using a built-in type-specific
   comparison function.
-  
+
   If two parameters are passed (\exmp{obj} and \exmp{func}), then the
   first parameter must be the array to be sorted, and the second is a
   reference to the comparison function.  In this case, the comparison
@@ -205,7 +205,7 @@
   returns an integer array that represents the result of the sort. If
   the optional second parameter \exmp{f} is present, the function
   specified by \exmp{f} will be used to compare elements of \exmp{a};
-  otherwise, a built-in sorting function will be used.  
+  otherwise, a built-in sorting function will be used.
 
   The integer array returned by this function is simply an index array
   that indicates the order of the sorted object.  The input object
@@ -216,7 +216,7 @@
   qualifier may be used to specify the sort direction.  Specifically
   if \exmp{dir>=0}, the sort will be an ascending one, otherwise it
   will be descending.
-  
+
   The \exmp{method} qualifier may be used to select between the
   available sorting algorithms.  There are currently two algorithms
   supported: merge-sort and quick-sort.  Using \exmp{method="msort"}
@@ -233,7 +233,7 @@
 #v-
   Alternatively, one may use
 #v+
-     variable I = array_sort (A);     
+     variable I = array_sort (A);
 #v-
   to use the built-in comparison function.
 
@@ -250,17 +250,17 @@
   \ifun{array_sort} function:
 #v+
     private define cmp_function (s, i, j)
-    { 
+    {
        if (s[i] > s[j]) return 1;
        if (s[i] < s[j]) return -1;
        return 0;
     }
-    
+
     list = {};
     % fill list ....
     % now sort it
     i = array_sort (list, &cmp_function, length(list));
-    
+
     % Create a new sorted list
     list = list[i];
 #v-
@@ -521,7 +521,7 @@
 \notes
   Since \ifun{reshape} modifies the shape of an array, and arrays are
   treated as references, then all references to the array will
-  reference the new shape.  If this effect is unwanted, then use the 
+  reference the new shape.  If this effect is unwanted, then use the
   \ifun{_reshape} function instead.
 \seealso{_reshape, array_info, array_shape}
 \done
@@ -573,7 +573,7 @@
   If the input array is an integer type, then the resulting value will
   be a \dtype{Double_Type}.  If the input array is a \dtype{Float_Type},
   then the result will be a \dtype{Float_Type}.
-  
+
   For complex arrays, the sum will be over the squares of the moduli of
   the complex elements.
 \seealso{cumsum, sumsq, hypot, transpose, reshape}
@@ -633,7 +633,6 @@
   Support for the optional argument was added to version 2.1.0.
 \seealso{wherefirst, wherelast, wherenot, array_info, array_shape, _isnull}
 \done
-
 
 \function{wherenot}
 \synopsis{Get indices where a numeric array is 0}

@@ -9,7 +9,7 @@
 
 \begin{itemize}
 \item
-  The ternary expression was added:  
+  The ternary expression was added:
 #v+
      expression = condition ? val1 : val2
 #v-
@@ -40,8 +40,8 @@
 
     `This is
     another multiline
-    string that 
-    does not require 
+    string that
+    does not require
     a \ for continuation`
 #v-
 \item
@@ -89,7 +89,7 @@ The following modules were added to version 2.2:
 \begin{descrip}
 \tagexmp{zlib}
   A module that wraps the popular z compression library.
-\tagexmp{fork} 
+\tagexmp{fork}
   A module that wraps the \exmp{fork}, \exmp{exec*}, and
   \exmp{waitpid} functions.
 \tagexmp{sysconf}
@@ -108,7 +108,7 @@ The following library files and functions were add to \slsh:
 \sect{What's new for \slang 2.1}
 
 \begin{itemize}
-\item 
+\item
  Short circuiting boolean operators \exmp{||} and \exmp{&&}
  have been added to the languange.  The use of \exmp{orelse} and
  \exmp{andelse} constructs are nolonger necessary nor encouraged.
@@ -116,7 +116,7 @@ The following library files and functions were add to \slsh:
  \em{Qualifiers} have been added to the language as a convenient
  and powerful mechanism to pass optional information to functions.
 \item
- Structure definitions allow embeded assignemnts, e.g, 
+ Structure definitions allow embeded assignemnts, e.g,
 #v+
     s = struct {foo = 3, bar = "hello" };
 #v-
@@ -129,7 +129,7 @@ The following library files and functions were add to \slsh:
 \item
   Looping constructs now support a "then" clause that will get
   executed if the loop runs to completion, e.g.,
-#v+       
+#v+
      loop (20)
        {
           if (this ())
@@ -160,7 +160,7 @@ The following intrinsic function were added in version 2.1:
 \tagexmp{_$(str)}
   Evaluates strings with embedded "dollar" variables, e.g.,
   \exmp{_$("$TERM")}.
-\tagexmp{__push_list/__pop_list} 
+\tagexmp{__push_list/__pop_list}
   Push list items onto the stack
 \tagexmp{prod(x)}
   Computes the product of an array \exmp{a[0]*a[1]*...}
@@ -204,7 +204,7 @@ Here is a brief list of some of the new features and improvements in
 \item A \dtype{List_Type} object has been added to the language, e.g.,
 #v+
      x = {1, 2.7, "foo", [1:10]};
-#v-  
+#v-
   will create a (heterogeneous) list of 4 elements.
 \item A much improved exception handling model.
 \item Variable expansion within string literals:
@@ -221,11 +221,11 @@ Here is a brief list of some of the new features and improvements in
     Y = vector (4,5,6);
 #v-
 \item Syntactic sugar for objected-oriented style method calls.
- \slang 1 code such as 
+ \slang 1 code such as
 #v+
 
      (@s.method)(s, args);
-#v-  
+#v-
   may be written much more simply as
 #v+
      s.method(args);
@@ -309,7 +309,7 @@ See the relevent chapters in in the manual for more information.
     Code that use index-ranges with negative valued indices such as
 #v+
        B = A[[0:-2]];    % Get all but the last element of A
-#v- 
+#v-
     will have to be changed to use an array with an implied endpoint:
 #v+
        B = A[[:-2]];     % Get all but the last element of A
@@ -366,7 +366,7 @@ See the relevent chapters in in the manual for more information.
               .
               .
          }
-       catch RunTimeError: 
+       catch RunTimeError:
          {
             cleanup_after_error ();
             throw e.error, e.message;
@@ -400,7 +400,7 @@ See the relevent chapters in in the manual for more information.
  \ifun{_clear_error} function.  However, those semantics are flawed
  and fixing the problems associated with the use of
  \ifun{_clear_error} was one of the primary reasons for the new
- exception handling model.  The main problem with the 
+ exception handling model.  The main problem with the
  \ifun{_clear_error} method is that it causes execution to resume at the
  byte-code following the code that triggered the error.  As such,
  \ifun{_clear_error} defines no absolute resumption point.  In
@@ -421,7 +421,7 @@ See the relevent chapters in in the manual for more information.
               .
               .
          }
-       catch RunTimeError: 
+       catch RunTimeError:
          {
             cleanup_after_error ();
          }
@@ -444,7 +444,7 @@ See the relevent chapters in in the manual for more information.
               .
               .
          }
-       catch RunTimeError: 
+       catch RunTimeError:
          {
             cleanup_after_error ();
          }
@@ -489,20 +489,20 @@ See the relevent chapters in in the manual for more information.
    support Unicode.  One ramification of this is that when mapping
    from one range of characters to another, the length of the ranges
    must now be equal.
-   
+
   \tag{str_delete_chars}  This function was changed to support unicode
-  character classes.  Code such as 
+  character classes.  Code such as
 #v+
      y = str_delete_chars (x, "\\a");
 #v-
   is now implies the deletion of all alphabetic characters from
   \exmp{x}.  Previously it meant to delete the backslashes and
-  \exmp{a}s from from \exmp{x}.  Use 
+  \exmp{a}s from from \exmp{x}.  Use
 #v+
      y = str_delete_chars (x, "\\\\a");
 #v-
   to achieve the latter.
-  
+
   \tag{substr, is_substr, strsub}
   These functions use character-semantics and not byte-semantics.  The
   distinction is important in UTF-8 mode.  If you use array indexing

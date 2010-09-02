@@ -1,5 +1,5 @@
 #% -*- mode: tm; mode: fold;  -*-
-#%{{{Macros 
+#%{{{Macros
 
 #i linuxdoc.tm
 
@@ -33,9 +33,7 @@
 #d NULL <tt>NULL</tt>
 #d documentstyle book
 
-
 #d user-manual \bf{A Guide to the S-Lang Language}
-
 
 #%}}}
 
@@ -48,7 +46,7 @@
 
 \toc
 
-\chapter{Preface} 
+\chapter{Preface}
 This document describes the intrinsic functions that are available to
 any application that embeds the \slang interpreter.  In addition,
 \slsh defines a number of useful functions that are also available to

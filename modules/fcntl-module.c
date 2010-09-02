@@ -39,11 +39,11 @@ static int do_fcntl_2 (int fd, int cmd)
 static int do_fcntl_3_int (int fd, int cmd, int flags)
 {
    int ret;
-      
+
    while ((-1 == (ret = fcntl (fd, cmd, flags)))
 	  && (0 == check_and_set_errno (errno)))
      ;
-   
+
    return ret;
 }
 
@@ -54,7 +54,7 @@ static int pop_fd (int *fdp)
 
    if (SLang_peek_at_stack () == SLANG_INT_TYPE)
      return SLang_pop_int (fdp);
-   
+
    if (-1 == SLfile_pop_fd (&f))
      return -1;
 
@@ -83,7 +83,7 @@ static int fcntl_setfd (int *flags)
 }
 
 static int fcntl_getfl (void)
-{   
+{
    int fd;
 
    if (-1 == pop_fd (&fd))
@@ -129,7 +129,7 @@ static SLang_IConstant_Type Fcntl_Consts [] =
 int init_fcntl_module_ns (char *ns_name)
 {
    SLang_NameSpace_Type *ns;
-   
+
    ns = SLns_create_namespace (ns_name);
    if (ns == NULL)
      return -1;

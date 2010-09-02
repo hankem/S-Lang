@@ -8,16 +8,15 @@ static void usage (void)
    exit (1);
 }
 
-   
 int main (int argc, char **argv)
 {
    char buf[1024];
    int i;
    SLprep_Type *pt;
-   
+
    if (isatty (0))
      usage ();
-   
+
    if (NULL == (pt = SLprep_new ()))
      return 1;
 
@@ -31,7 +30,7 @@ int main (int argc, char **argv)
 
    for (i = 1; i < argc; i++)
      SLdefine_for_ifdef (argv[i]);
-   
+
    while (NULL != fgets (buf, sizeof (buf) - 1, stdin))
      {
 	if (SLprep_line_ok (buf, pt))
@@ -39,8 +38,8 @@ int main (int argc, char **argv)
 	     fputs (buf, stdout);
 	  }
      }
-   
+
    SLprep_delete (pt);
    return 0;
 }
-   
+

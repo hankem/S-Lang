@@ -8,7 +8,7 @@ define reverse (a)
    variable i = length (a);
    if (i <= 1)
      return a;
-   
+
    i--;
    __tmp(a)[[i:0:-1]];
 #endif
@@ -18,7 +18,7 @@ define shift (x, n)
 {
    variable len = length(x);
    variable i = [0:len-1];
-   
+
    % allow n to be negative and large
    n = len + n mod len;
    return x[(i + n)mod len];

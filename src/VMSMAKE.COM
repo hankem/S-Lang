@@ -62,7 +62,7 @@ FATAL: No C-compiler found - Can't build Slang on this system.
 $ goto The_exit
 $!
 $COMPILE:
-$! 
+$!
 $ close optf
 $ files = "slang,slparse,slmath,slstd,slarray,slregexp,slerr"
 $ files = files + ",slrline,slgetkey,slvmstty,slkeymap,sltoken,slcurses"

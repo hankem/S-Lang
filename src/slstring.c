@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -44,7 +44,7 @@ static char Single_Char_Strings [256 * 2];
 static SLstring_Type *SLS_Free_Store [MAX_FREE_STORE_LEN];
 
 # define NUM_CACHED_STRINGS 601
-typedef struct 
+typedef struct
 {
    SLstring_Type *sls;
    SLCONST char *str;
@@ -55,7 +55,6 @@ static Cached_String_Type Cached_Strings [NUM_CACHED_STRINGS];
 
 #define GET_CACHED_STRING(s) \
    (Cached_Strings + (unsigned int)(((unsigned long) (s)) % NUM_CACHED_STRINGS))
-
 
 _INLINE_
 static void cache_string (SLstring_Type *sls)
@@ -71,7 +70,7 @@ _INLINE_
 static void uncache_string (char *s)
 {
    Cached_String_Type *cs;
-   
+
    cs = GET_CACHED_STRING(s);
    if (cs->str == s)
      {
@@ -84,7 +83,7 @@ static void uncache_string (char *s)
 #if USE_NEW_HASH_CODE
 /* This hash algorithm comes from:
  *
- *   Bob Jenkins, 1996.  bob_jenkins@burtleburtle.net. 
+ *   Bob Jenkins, 1996.  bob_jenkins@burtleburtle.net.
  *   You may use this code any way you wish, private, educational, or commercial.  It's free.
  *   See http://burtleburtle.net/bob/hash/evahash.html
  */
@@ -110,7 +109,7 @@ unsigned long _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *
    register uint32 a,b,c;
    unsigned int length = (unsigned int)(smax - s);
    unsigned int len = length;
-   
+
    a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
    c = 0;
 
@@ -166,7 +165,7 @@ unsigned long _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *
 	h = sum + (h << 1);
 	sum += s[3];
 	h = sum + (h << 1);
-	
+
 	s += 4;
      }
 
@@ -250,7 +249,7 @@ static SLstring_Type *find_string (SLCONST char *s, unsigned int len, unsigned l
 
    do
      {
-	/* Note that we need to actually make sure that bytes[len] == 0. 
+	/* Note that we need to actually make sure that bytes[len] == 0.
 	 * In this case, it is not enough to just compare pointers.  In fact,
 	 * this is called from create_nstring, etc...  It is unlikely that the
 	 * pointer is a slstring
@@ -272,7 +271,7 @@ static SLstring_Type *allocate_sls (unsigned int len)
 {
    SLstring_Type *sls;
 #if SLANG_OPTIMIZE_FOR_SPEED
-   
+
    if ((len < MAX_FREE_STORE_LEN)
        && (NULL != (sls = SLS_Free_Store [len])))
      {
@@ -396,13 +395,13 @@ char *_pSLstring_dup_hashed_string (SLCONST char *s, unsigned long hash)
    unsigned int len;
 #if SLANG_OPTIMIZE_FOR_SPEED
    Cached_String_Type *cs;
-   
+
    if (s == NULL) return NULL;
    if (s[0] == 0)
      return create_short_string (s, 0);
    if (s[1] == 0)
      return create_short_string (s, 1);
-     
+
    cs = GET_CACHED_STRING(s);
    if (cs->str == s)
      {
@@ -428,7 +427,7 @@ SLCONST char *_pSLstring_dup_slstring (SLCONST char *s)
 #if SLANG_OPTIMIZE_FOR_SPEED
    Cached_String_Type *cs;
 #endif
-   
+
    if (s == NULL)
      return s;
 #if SLANG_OPTIMIZE_FOR_SPEED
@@ -441,7 +440,7 @@ SLCONST char *_pSLstring_dup_slstring (SLCONST char *s)
 #endif
    if ((s[0] == 0) || (s[1] == 0))
      return s;
-   
+
    sls = (SLstring_Type *) (s - offsetof(SLstring_Type,bytes[0]));
    sls->ref_count++;
 #if SLANG_OPTIMIZE_FOR_SPEED
@@ -564,7 +563,6 @@ void _pSLfree_hashed_string (char *s, unsigned int len, unsigned long hash)
    free_long_string (s, hash);
 }
 
-
 char *_pSLallocate_slstring (unsigned int len)
 {
    SLstring_Type *sls = allocate_sls (len);
@@ -578,24 +576,24 @@ char *_pSLallocate_slstring (unsigned int len)
 void _pSLunallocate_slstring (char *s, unsigned int len)
 {
    SLstring_Type *sls;
-   
+
    (void) len;
    if (s == NULL)
      return;
-   
+
    sls = (SLstring_Type *) (s - offsetof(SLstring_Type,bytes[0]));
    free_sls (sls);
 }
 
 /* frees s upon error */
 char *_pSLcreate_via_alloced_slstring (char *s, unsigned int len)
-{   
+{
    unsigned long hash;
    SLstring_Type *sls;
 
    if (s == NULL)
      return NULL;
-   
+
    if (len < 2)
      {
 	char *s1 = create_short_string (s, len);
@@ -619,7 +617,7 @@ char *_pSLcreate_via_alloced_slstring (char *s, unsigned int len)
 #endif
 	return s;
      }
-	
+
    sls = (SLstring_Type *) (s - offsetof(SLstring_Type,bytes[0]));
    sls->ref_count = 1;
    sls->hash = hash;
@@ -697,7 +695,7 @@ void _pSLang_free_slstring (SLstr_Type *s)
 	return;
      }
 #endif
-   
+
    if ((s[0] == 0) || (s[1] == 0))
      return;
 
@@ -719,7 +717,7 @@ unsigned long _pSLstring_get_hash (SLstr_Type *s)
      return _pSLstring_hash ((unsigned char*)s, (unsigned char *)s);
    if (s[1] == 0)
      return _pSLstring_hash ((unsigned char *)s, (unsigned char *)s+1);
-   
+
    sls = (SLstring_Type *) (s - offsetof(SLstring_Type,bytes[0]));
    return sls->hash;
 }

@@ -1,5 +1,5 @@
 % Command-line option parsing.
-% 
+%
 % Examples:
 %   (a,b,c values)
 %   -i -ja3 -b 4  ==> -i -j -a 3 -b 4
@@ -60,7 +60,7 @@ define cmdopt_add ()
    variable s = @CmdOpt_Type;
    s.callback_args = __pop_args (_NARGS-3);
    (opts, name, valuep) = ();
-   
+
    s.flags = 0;
    if (qualifier_exists ("append")) s.flags |= CMDOPT_APPEND_VALUE;
    if (qualifier_exists ("inc")) s.flags |= CMDOPT_INC_VALUE;
@@ -185,25 +185,25 @@ private define process_option (opts, opt, name, value)
 	(@opt.valuep)(__push_args(opt.callback_args));
 	return;
      }
-   
+
    if (opt.flags & CMDOPT_INC_VALUE)
      {
 	@opt.valuep += 1;
 	return;
      }
-   
+
    ifnot (opt.flags & (CMDOPT_BAND_VALUE|CMDOPT_BOR_VALUE))
      {
 	set_opt_value (opt, opt.default_value);
 	return;
      }
-   
+
    if (opt.flags & CMDOPT_BAND_VALUE)
      @opt.valuep &= opt.band_value;
 
    if (opt.flags & CMDOPT_BOR_VALUE)
      @opt.valuep |= opt.bor_value;
-   
+
 }
 
 private define find_opt (opts, name)
@@ -253,7 +253,7 @@ private define parse_arg (arg)
      return (arg, NULL);
    variable value = substr (arg, pos+1, -1);
    arg = substr (arg, 1, pos-1);
-   
+
    return arg, value;
 }
 
@@ -268,7 +268,7 @@ define cmdopt_process (opts, argv, istart)
 
 	if (arg == "--")
 	  return i+1;
-	
+
 	if (arg[0] != '-')
 	  return i;
 
@@ -324,7 +324,7 @@ define cmdopt_process (opts, argv, istart)
 	process_option (opts, opt, arg, value);
 	i++;
      }
-   
+
    return i;
 }
 
@@ -334,7 +334,7 @@ define cmdopt_new ()
    if (_NARGS == 1)
      error_routine = ();
 
-   variable s = struct 
+   variable s = struct
      {
 	usage_error = error_routine,
 	opt_list = {},

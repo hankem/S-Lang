@@ -36,7 +36,7 @@ private define check_file (file)
 	     inexample=0;
 	     continue;
 	  }
-	
+
 	if (0 == strncmp (line, "\example"R, 8))
 	  {
 	     inexample++;
@@ -54,8 +54,6 @@ private define check_file (file)
      }
 }
 
-		  
-	     
 define slsh_main ()
 {
    if (__argc < 1)

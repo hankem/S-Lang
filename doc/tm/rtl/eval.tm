@@ -68,10 +68,10 @@
 \description
   The \ifun{eval} function parses a string as S-Lang code and executes the
   result.  If called with the optional namespace argument, then the
-  string will be evaluated in the specified namespace.  If that 
+  string will be evaluated in the specified namespace.  If that
   namespace does not exist it will be created first.
 
-  This is a useful function in many contexts including those where 
+  This is a useful function in many contexts including those where
   it is necessary to dynamically generate function definitions.
 \example
 #v+
@@ -99,7 +99,7 @@
 #v+
     define load_file (file)
     {
-       try 
+       try
        {
          () = evalfile (file);
        }

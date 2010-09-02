@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -179,7 +179,7 @@ int SLang_init_tty(int abort_char, int dum2, int dum3)
    if (abort_char == -1) abort_char = 3;   /* ^C */
    SLang_Abort_Char = abort_char;
    SLKeyBoard_Quit = 0;
-   
+
   /*  set ^C off */
   signal (SIGINT, SIG_IGN);
   signal (SIGBREAK, SIG_IGN);

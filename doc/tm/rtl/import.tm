@@ -43,7 +43,7 @@
   The \ifun{set_import_module_path} may be used to set the search path
   for dynamically shared objects.  Such objects may be made accessible
   to the application via the \ifun{import} function.
-  
+
   The actual syntax for the specification of the set of paths will
   vary according to the operating system.  Under Unix, a colon
   character is used to separate paths in \exmp{path_list}.  For win32

@@ -39,7 +39,6 @@ static SLang_Array_Type *TRANSPOSE_2D_ARRAY (SLang_Array_Type *at, SLang_Array_T
 #undef TRANSPOSE_2D_ARRAY
 #endif
 
-
 #ifdef INNERPROD_FUNCTION
 
 static void INNERPROD_FUNCTION
@@ -159,7 +158,7 @@ static void INNERPROD_COMPLEX_A
    c = (double *) ct->data;
    b = (GENERIC_TYPE *) bt->data;
    a = (double *) at->data;
-   
+
    a_stride *= 2;
 
    while (a_loops--)
@@ -169,7 +168,7 @@ static void INNERPROD_COMPLEX_A
 
 	bb = b;
 	bb_loops = b_loops;
-	
+
 	while (bb_loops--)
 	  {
 	     double real_sum;
@@ -177,7 +176,7 @@ static void INNERPROD_COMPLEX_A
 	     unsigned int iloops;
 	     double *aa;
 	     GENERIC_TYPE *bbb;
-	     
+
 	     aa = a;
 	     bbb = bb;
 	     iloops = inner_loops;
@@ -214,7 +213,7 @@ static void INNERPROD_A_COMPLEX
    c = (double *) ct->data;
    b = (double *) bt->data;
    a = (GENERIC_TYPE *) at->data;
-   
+
    b_inc *= 2;
 
    while (a_loops--)
@@ -224,7 +223,7 @@ static void INNERPROD_A_COMPLEX
 
 	bb = b;
 	bb_loops = b_loops;
-	
+
 	while (bb_loops--)
 	  {
 	     double real_sum;
@@ -260,7 +259,6 @@ static void INNERPROD_A_COMPLEX
 #undef INNERPROD_COMPLEX_A
 #endif				       /* INNERPROD_COMPLEX_A */
 
-
 #ifdef INNERPROD_COMPLEX_COMPLEX
 static void INNERPROD_COMPLEX_COMPLEX
   (SLang_Array_Type *at, SLang_Array_Type *bt, SLang_Array_Type *ct,
@@ -275,7 +273,7 @@ static void INNERPROD_COMPLEX_COMPLEX
    c = (double *) ct->data;
    b = (double *) bt->data;
    a = (double *) at->data;
-   
+
    a_stride *= 2;
    b_inc *= 2;
 
@@ -286,7 +284,7 @@ static void INNERPROD_COMPLEX_COMPLEX
 
 	bb = b;
 	bb_loops = b_loops;
-	
+
 	while (bb_loops--)
 	  {
 	     double real_sum;
@@ -353,7 +351,7 @@ static int SUMSQ_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOI
 {
    GENERIC_TYPE *x, *xmax;
    double sum, sumerr;
-   
+
    sum = 0.0;
    sumerr = 0.0;
 
@@ -376,7 +374,7 @@ static int SUMSQ_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOI
 #undef SUM_RESULT_TYPE
 
 #ifdef MIN_FUNCTION
-static int 
+static int
 MIN_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 {
    unsigned int n, n0;
@@ -388,7 +386,7 @@ MIN_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 
 # ifdef IS_NAN_FUNCTION
    n0 = 0;
-   do 
+   do
      {
 	m = i[n0];
 	n0 += inc;
@@ -401,7 +399,7 @@ MIN_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 
    for (n = n0; n < num; n += inc)
      if (m > i[n]) m = i[n];
-   
+
    *(GENERIC_TYPE *)sp = m;
    return 0;
 }
@@ -409,7 +407,7 @@ MIN_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 #endif
 
 #ifdef MINABS_FUNCTION
-static int 
+static int
 MINABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 {
    unsigned int n, n0;
@@ -421,7 +419,7 @@ MINABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 
 # ifdef IS_NAN_FUNCTION
    n0 = 0;
-   do 
+   do
      {
 	m = ABS_FUNCTION(i[n0]);
 	n0 += inc;
@@ -434,7 +432,7 @@ MINABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 
    for (n = n0; n < num; n += inc)
      if (m > ABS_FUNCTION(i[n])) m = ABS_FUNCTION(i[n]);
-   
+
    *(GENERIC_TYPE *)sp = m;
    return 0;
 }
@@ -454,7 +452,7 @@ MAX_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
 
 # ifdef IS_NAN_FUNCTION
    n0 = 0;
-   do 
+   do
      {
 	m = i[n0];
 	n0 += inc;
@@ -464,10 +462,10 @@ MAX_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
    m = i[0];
    n0 = inc;
 # endif
-   
+
    for (n = n0; n < num; n += inc)
      if (m < i[n]) m = i[n];
-   
+
    *(GENERIC_TYPE *)s = m;
    return 0;
 }
@@ -487,7 +485,7 @@ MAXABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
 
 # ifdef IS_NAN_FUNCTION
    n0 = 0;
-   do 
+   do
      {
 	m = ABS_FUNCTION(i[n0]);
 	n0 += inc;
@@ -497,10 +495,10 @@ MAXABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
    m = ABS_FUNCTION(i[0]);
    n0 = inc;
 # endif
-   
+
    for (n = n0; n < num; n += inc)
      if (m < ABS_FUNCTION(i[n])) m = ABS_FUNCTION(i[n]);
-   
+
    *(GENERIC_TYPE *)s = m;
    return 0;
 }
@@ -553,7 +551,7 @@ ALL_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
 #ifdef IS_NAN_FUNCTION
 	/* I really do not want to call this for all numbers, nor do I know
 	 * what makes most sense.  Doing nothing means that all(_NaN) is 1.
-	 * Such an interpretation is consistent with using 
+	 * Such an interpretation is consistent with using
 	 *   length(x) == length(where (x))
 	 */
 #endif
@@ -567,8 +565,8 @@ ALL_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
 
 #ifdef CUMSUM_FUNCTION
 #ifdef SLANG_HAS_FLOAT
-static int 
-CUMSUM_FUNCTION (SLtype xtype, VOID_STAR xp, unsigned int inc, 
+static int
+CUMSUM_FUNCTION (SLtype xtype, VOID_STAR xp, unsigned int inc,
 		 unsigned int num,
 		 SLtype ytype, VOID_STAR yp, VOID_STAR clientdata)
 {
@@ -610,7 +608,7 @@ static int PROD_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID
 {
    GENERIC_TYPE *x, *xmax;
    double prod;
-   
+
    prod = 1.0;
 
    x = (GENERIC_TYPE *) xp;

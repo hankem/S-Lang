@@ -91,7 +91,6 @@
 \seealso{SLutf8_decode, SLutf8_strlen, SLutf8_skip_char}
 \done
 
-
 \function{SLutf8_encode}
 \synopsis{UTF-8 encode a character}
 \usage{SLuchar_Type *SLutf8_encode (w, u, ulen)}
@@ -114,7 +113,7 @@
 
  To guarantee that the buffer is large enough to hold the encoded
  bytes, its size should be at least \exmp{SLUTF8_MAX_BLEN} bytes.
- 
+
  The function will encode illegal Unicode characters, i.e., characters
  in the range 0xD800-0xFFFF (the UTF-16 surrogates) and 0xFFFE-0xFFFF.
 \seealso{SLutf8_decode, SLutf8_encode_bytes, SLutf8_encode_null_terminate}
@@ -174,7 +173,6 @@
 \seealso{SLutf8_encode}
 \done
 
-
 \function{SLutf8_strup}
 \synopsis{Uppercase a UTF-8 encoded string}
 \usage{SLuchar_Type *SLutf8_strup (SLuchar_Type *u, SLuchar_Type *umax)}
@@ -205,7 +203,7 @@
 \synopsis{Replace a character in a UTF-8 encoded string}
 \usage{SLstr_Type *SLutf8_subst_wchar (u, umax, wch, nth,ignore_combining)}
 #v+
-   SLuchar_Type *u, *umax;   
+   SLuchar_Type *u, *umax;
    SLwchar_Type wch;
    unsigned int nth;
    int ignore_combining;
@@ -245,7 +243,7 @@
  \exmp{b}.  At most \exmp{nchars} characters will be tested.  The
  parameters \exmp{amax} and \exmp{bmax} serve as upper boundaries of
  the strings \exmp{a} and \exmp{b}, resp.
- 
+
  If the value of the \exmp{case_sensitive} parameter is non-zero, then
  a case-sensitive comparison will be performed, otherwise characters
  will be compared in a case-insensitive manner.
@@ -269,7 +267,6 @@
 #% \seealso{}
 #% \done
 
-
 #% \function{SLutf8_encode_bytes}
 #% \synopsis{UTF-8 encode an byte-sequence}
 #% \usage{SLuchar_Type *SLutf8_encode_bytes (b, bmax, u, ulen, np)}
@@ -292,5 +289,4 @@
 #%   characters from an iso-latin-1 character set.
 #% \seealso{SLutf8_decode_bytes}
 #% \done
-
 

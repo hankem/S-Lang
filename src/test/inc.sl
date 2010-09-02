@@ -18,7 +18,6 @@ define testing_feature (f)
    () = fflush (stdout);
 }
 
-	
 new_exception ("TestError", AnyError, "Test Error");
 
 define failed ()
@@ -29,7 +28,6 @@ define failed ()
    throw TestError, sprintf ("Failed: %s [utf8=%d]\n", s, _slang_utf8_ok);
    exit (1);
 }
-
 
 private variable _Random_Seed = 123456789UL * _time ();
 define random ()

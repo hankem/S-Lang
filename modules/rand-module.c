@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include "config.h"
 
@@ -38,30 +38,30 @@ USA.
 
 /* The random number generator used here uses a combination of 3 generators.
  * One of the generators was derived from mzran13 published in
- * 
+ *
  *   G. Marsaglia and A. Zaman, ``Some portable very-long-period
  * 	random number generators'', Computers in Physics, Vol. 8,
  * 	No. 1, Jan/Feb 1994
- * 
+ *
  * However, the algorithm (mzran13) published there contained a few
  * typos and as written was not very good.  The subtract-with-carry
  * component of mzran13 adopted for the purposes of the generator in
  * this file has a period of 4x10^28.
- * 
+ *
  * The other two generators are described at
  * <http://www.helsbreth.org/random/rng_combo.html>.  Briefly, one is
  * a simple product generator, r_{k+2} = r_{k+1} r_k, and the other
  * is is a multiply with carry generator.  The period of this
  * combination exceeds 10^18.
- * 
+ *
  * The total period of the combined generators exceeds 10^46.
- * 
+ *
  * The generator was tested using dieharder-2.24.4, and the testing
  * indicates that it may perform a bit better than the Mersenne
  * twister mt19937_1999, which is thought to be a high-quality
  * generator.  The speed is about the same.
- * 
- * Note: mt19937_1999 is available to S-Lang users via the GSL module.  
+ *
+ * Note: mt19937_1999 is available to S-Lang users via the GSL module.
  */
 
 SLANG_MODULE(rand);
@@ -118,7 +118,7 @@ static void seed_random (Rand_Type *rt, unsigned long seeds[NUM_SEEDS])
    rt->y = (uint32) (s1/2 + SEED_Y);
    rt->z = (uint32) (2*s1+SEED_Z);
    rt->x += (rt->y > rt->z);
-    
+
    rt->cache_index = CACHE_SIZE;
 
    rt->cx = s2 * 8 + 3;
@@ -130,7 +130,7 @@ static void seed_random (Rand_Type *rt, unsigned long seeds[NUM_SEEDS])
 	count--;
 	(void) generate_uint32_random (rt);
      }
-   
+
    rt->one_available = 0;
    rt->g2 = 0.0;
 }
@@ -147,7 +147,7 @@ static uint32 generate_uint32_random (Rand_Type *rt)
    s1 = rt->x;
    s2 = rt->y;
    s3 = rt->z;
-	
+
    r = s0 = (s2-s1) - 18*(s2<=s1); s2 += (s2 <= s1);
    rt->x = s1 = (s3-s2) - 18*(s3<=s2); s3 += (s3 <= s2);
    rt->y = s2 = (s0-s3) - 18*(s0<=s3); s0 += (s0 <= s3);
@@ -161,7 +161,7 @@ static uint32 generate_uint32_random (Rand_Type *rt)
    s0 = s1*s2;
    s3 = 30903U*(s3 & 0xFFFFU) + (s3 >> 16);
    COMBINE(r,r,s0,s3);
-	
+
    s1 = s2*s0;
    s3 = 30903U*(s3 & 0xFFFFU) + (s3 >> 16);
    COMBINE(cache[1],rt->x,s1,s3);
@@ -192,18 +192,17 @@ static Rand_Type *create_random (unsigned long seeds[NUM_SEEDS])
    return rt;
 }
 
-
 /*}}}*/
 
 /*{{{ Flat distribution */
 
-static void generate_random_doubles (Rand_Type *rt, VOID_STAR ap, 
+static void generate_random_doubles (Rand_Type *rt, VOID_STAR ap,
 				     SLuindex_Type num, VOID_STAR parms)
 {
    double *a = (double *)ap;
    double *amax = a + num;
    uint32 *cache = rt->cache;
-   
+
    (void) parms;
 
    while (a < amax)
@@ -212,20 +211,20 @@ static void generate_random_doubles (Rand_Type *rt, VOID_STAR ap,
 
 	if (rt->cache_index < CACHE_SIZE)
 	  u = cache[rt->cache_index++];
-	else 
+	else
 	  u = generate_uint32_random (rt);
 
-	*a++ = u / 4294967296.0;	
+	*a++ = u / 4294967296.0;
      }
 }
 
-static void generate_random_open_doubles (Rand_Type *rt, VOID_STAR ap, 
+static void generate_random_open_doubles (Rand_Type *rt, VOID_STAR ap,
 					  SLuindex_Type num, VOID_STAR parms)
 {
    double *a = (double *)ap;
    double *amax = a + num;
    uint32 *cache = rt->cache;
-   
+
    (void) parms;
 
    while (a < amax)
@@ -234,17 +233,17 @@ static void generate_random_open_doubles (Rand_Type *rt, VOID_STAR ap,
 
 	if (rt->cache_index < CACHE_SIZE)
 	  u = cache[rt->cache_index++];
-	else 
+	else
 	  u = generate_uint32_random (rt);
 
 	if (u == 0)
 	  continue;
 
-	*a++ = u / 4294967296.0;	
+	*a++ = u / 4294967296.0;
      }
 }
 
-static void generate_random_uints (Rand_Type *rt, VOID_STAR ap, 
+static void generate_random_uints (Rand_Type *rt, VOID_STAR ap,
 				   SLuindex_Type num, VOID_STAR parms)
 {
    uint32 *a = (uint32 *)ap;
@@ -257,7 +256,7 @@ static void generate_random_uints (Rand_Type *rt, VOID_STAR ap,
      {
 	if (rt->cache_index < CACHE_SIZE)
 	  *a++ = cache[rt->cache_index++];
-	else 
+	else
 	  *a++ = generate_uint32_random (rt);
      }
 }
@@ -271,11 +270,11 @@ static double open_interval_random (Rand_Type *rt)
      {
 	if (rt->cache_index < CACHE_SIZE)
 	  u = rt->cache[rt->cache_index++];
-	else 
+	else
 	  u = generate_uint32_random (rt);
      }
    while (u == 0);
-   
+
    return u / 4294967296.0;
 }
 
@@ -285,12 +284,11 @@ static double uniform_random (Rand_Type *rt)
 
    if (rt->cache_index < CACHE_SIZE)
      u = rt->cache[rt->cache_index++];
-   else 
+   else
      u = generate_uint32_random (rt);
 
    return u / 4294967296.0;
 }
-
 
 /*}}}*/
 
@@ -311,26 +309,25 @@ static double gaussian_box_muller (Rand_Type *rt)
 	uint32 u;
 	if (rt->cache_index < CACHE_SIZE)
 	  u = rt->cache[rt->cache_index++];
-	else 
+	else
 	  u = generate_uint32_random (rt);
 
 	g1 = 2.0*(u/4294967296.0) - 1.0;
-	     
+
 	if (rt->cache_index < CACHE_SIZE)
 	  u = rt->cache[rt->cache_index++];
-	else 
+	else
 	  u = generate_uint32_random (rt);
 	g2 = 2.0*(u/4294967296.0) - 1.0;
 	g = g1*g1 + g2*g2;
      }
    while ((g >= 1.0) || (g == 0.0));
-   
+
    s = sqrt (-2.0 * log (g) / g);
    rt->g2 = g2 * s;
    rt->one_available = 1;
    return g1*s;
 }
-
 
 static void generate_gaussian_randoms (Rand_Type *rt, VOID_STAR ap,
 				       SLuindex_Type num, VOID_STAR parms)
@@ -350,12 +347,11 @@ static void generate_gaussian_randoms (Rand_Type *rt, VOID_STAR ap,
 	*a++ = sigma*gaussian_box_muller (rt);
 	if (a == amax)
 	  break;
-	
+
 	*a++ = sigma*rt->g2;
 	rt->one_available = 0;
      }
 }
-
 
 /*}}}*/
 
@@ -397,7 +393,7 @@ static double log_factorial (double x)
 }
 
 static unsigned int hoermann_ptrd_poisson
-  (Rand_Type *rt, double mu, double a, double b, double vr, 
+  (Rand_Type *rt, double mu, double a, double b, double vr,
       double alphainv, double lnmu, double smu)
 {
    while (1)
@@ -422,7 +418,7 @@ static unsigned int hoermann_ptrd_poisson
 	us = 0.5 - fabs(u);
 	if ((us < 0.013) && (v > us))
 	  continue;
-	
+
 	fk = floor((2.0*a/us + b)*u + mu + 0.445);
 	if (fk < 0.0)
 	  continue;
@@ -434,8 +430,8 @@ static unsigned int hoermann_ptrd_poisson
 	    && (log(v*smu) <= (fk+0.5)*log(mu/fk)-mu-LOG_SQRT_2PI+fk
 		- (1.0/12-1.0/(360.0*fk*fk))/fk))
 	  return (unsigned int)fk;
-	
-	if ((k <= 9) 
+
+	if ((k <= 9)
 	    && (log(v)<=fk*lnmu-mu-Log_Factorial_Table[k]))
 	  return k;
      }
@@ -450,7 +446,7 @@ static unsigned int knuth_poisson (Rand_Type *rt, double cutoff)
      {
 	if (rt->cache_index < CACHE_SIZE)
 	  x *= rt->cache[rt->cache_index++] / 4294967296.0;
-	else 
+	else
 	  x *= generate_uint32_random (rt) / 4294967296.0;
 	n++;
      }
@@ -490,13 +486,12 @@ static void generate_poisson_randoms (Rand_Type *rt, VOID_STAR ap,
      }
 }
 
-
 /*}}}*/
 
 /*{{{ Gamma Distribution */
 
 /* The gamma distribution is:
- * 
+ *
  *  f(x; k,theta)dx = x^{k-1} \frac{e^{-x/theta}}{\theta^k \Gamma(k)} dx
  *    where x>0, k,theta>0.
  * The marsaglia_tsang_gamma algorithm is for x>0, k>=1, theta=1:
@@ -508,7 +503,7 @@ static void generate_poisson_randoms (Rand_Type *rt, VOID_STAR ap,
  *  f(y;k)dy = (x/theta)^{k-1}\frac{e^{-x/theta}}{\Gamma(k)} dx / \theta
  *   = x^{k-1}\frac{e^{-x/theta}}{\theta^k\Gamma(k)} dx
  *   = f(x; k,theta)
- * 
+ *
  * Also the final note in the Marsaglia paper says that values for
  * k<1 may be obtained using X_k = X_{k+1}U^{1/k} where X is a random
  * value produced by the algorithm, and U is a uniform random number
@@ -517,7 +512,7 @@ static void generate_poisson_randoms (Rand_Type *rt, VOID_STAR ap,
  * Marsaglia, G. and Tsang, W. W. 2000a. A simple method for generating
  *  gamma variables.  ACM Transactions on Mathematical Software 26, 363–372.
  * <http://oldmill.uchicago.edu/~wilder/Code/random/Papers/Marsaglia_00_SMGGV.pdf>
- * 
+ *
  */
 static double marsaglia_tsang_gamma_internal (Rand_Type *rt, double c, double d)
 {
@@ -571,7 +566,7 @@ static double rand_gamma (Rand_Type *rt, double k, double theta)
    return theta * marsaglia_tsang_gamma_internal (rt, c, d);
 }
 
-static void generate_gamma_randoms (Rand_Type *rt, VOID_STAR ap, 
+static void generate_gamma_randoms (Rand_Type *rt, VOID_STAR ap,
 				    SLuindex_Type num, VOID_STAR parms)
 {
    double *x = (double *)ap;
@@ -611,7 +606,6 @@ static void generate_gamma_randoms (Rand_Type *rt, VOID_STAR ap,
      *x++ = theta * marsaglia_tsang_gamma_internal (rt, c, d);
 }
 
-
 /*}}}*/
 
 /*{{{ Beta Distribution */
@@ -622,17 +616,17 @@ static double knuth_beta (Rand_Type *rt, double alpha, double beta)
      return 0.0;
 
    beta = rand_gamma (rt, beta, 1.0);
-   
+
    return alpha/(alpha+beta);
 }
 
-static void generate_beta_randoms (Rand_Type *rt, VOID_STAR ap, 
+static void generate_beta_randoms (Rand_Type *rt, VOID_STAR ap,
 				   SLuindex_Type num, VOID_STAR parms)
 {
    double *x = (double *)ap;
    double *xmax = x + num;
    double alpha, beta;
-   
+
    alpha = ((double *)parms)[0];
    beta = ((double *)parms)[1];
 
@@ -715,8 +709,8 @@ typedef struct
    double p;
 }
 Binomial_Parms_Type;
-				 
-static void generate_binomial_randoms (Rand_Type *rt, VOID_STAR ap, 
+
+static void generate_binomial_randoms (Rand_Type *rt, VOID_STAR ap,
 				       SLuindex_Type num, VOID_STAR parms)
 {
    unsigned int *x = (unsigned int *)ap;
@@ -763,14 +757,14 @@ static void generate_binomial_randoms (Rand_Type *rt, VOID_STAR ap,
 	double f = qn;
 	double u = uniform_random (rt);
 	unsigned int k = 0;
-	unsigned kmax = (n > MAX_INV_BINOMIAL_CDF_LOOPS 
+	unsigned kmax = (n > MAX_INV_BINOMIAL_CDF_LOOPS
 			 ? MAX_INV_BINOMIAL_CDF_LOOPS : n);
-	
+
 	while (k <= kmax)
 	  {
 	     if (u < f)
 	       {
-		  if (swapped) 
+		  if (swapped)
 		    k = n - k;
 		  *x++ = k;
 		  break;
@@ -812,7 +806,7 @@ static void generate_geometric_randoms (Rand_Type *rt, VOID_STAR ap,
 
    if (a == 1.0)
      {
-	while (x < xmax) 
+	while (x < xmax)
 	  *x++ = 1;
 	return;
      }
@@ -836,14 +830,14 @@ static int pop_seeds (unsigned long seeds[NUM_SEEDS])
 
    if (-1 == SLang_pop_array_of_type (&at, SLANG_ULONG_TYPE))
      return -1;
-   
+
    if (at->num_elements == 0)
      {
 	SLang_verror (SL_InvalidParm_Error, "The seed array has no elements");
 	SLang_free_array (at);
 	return -1;
      }
-   
+
    s = (unsigned long *)at->data;
    i = 0;
    while (i < NUM_SEEDS)
@@ -893,7 +887,7 @@ static void new_rand_intrin (void) /*{{{*/
    if (0 == SLang_push_mmt (mmt))
      return;
 
-   SLang_free_mmt (mmt);   
+   SLang_free_mmt (mmt);
 }
 
 /*}}}*/
@@ -901,7 +895,7 @@ static void new_rand_intrin (void) /*{{{*/
 /*{{{ Utility Functions */
 
 static void destroy_rand_type (SLtype type, VOID_STAR vr)
-{	  
+{
    (void) type;
    free_random ((Rand_Type *) vr);
 }
@@ -913,7 +907,7 @@ static int pop_rand_type_and_dims (int argc, SLang_MMT_Type **mmtp,
    int type;
    SLang_MMT_Type *mmt;
    unsigned int i, imax;
-   
+
    *mmtp = NULL;
 
    switch (argc)
@@ -925,7 +919,7 @@ static int pop_rand_type_and_dims (int argc, SLang_MMT_Type **mmtp,
       case 0:
 	*is_scalarp = 1;
 	return 0;
-	
+
       case 1:
 	type = SLang_peek_at_stack ();
 	if (type == Rand_Type_Id)
@@ -937,7 +931,7 @@ static int pop_rand_type_and_dims (int argc, SLang_MMT_Type **mmtp,
 	     return 0;
  	  }
 	break;
-	
+
       case 2:
 	type = SLang_peek_at_stack ();
 	break;
@@ -968,7 +962,7 @@ static int pop_rand_type_and_dims (int argc, SLang_MMT_Type **mmtp,
      {
 	if (NULL == (mmt = SLang_pop_mmt (Rand_Type_Id)))
 	  return -1;
-	
+
 	*mmtp = mmt;
      }
    return 0;
@@ -995,7 +989,7 @@ static int do_xxxrand (int argc, SLtype type,
 	if (NULL == (rt = (Rand_Type *) SLang_object_from_mmt (mmt)))
 	  goto free_return;
      }
-   else 
+   else
      rt = Default_Rand;
 
    *is_scalar_p = is_scalar;
@@ -1018,7 +1012,7 @@ static int do_xxxrand (int argc, SLtype type,
    free_return:
    if (mmt != NULL)
      SLang_free_mmt (mmt);
-   
+
    return status;
 }
 
@@ -1029,7 +1023,7 @@ static int check_stack_args (int num_args, int num_parms, char *usage, int *narg
 {
    if ((num_args < num_parms) || (num_args > num_parms + 2))
      goto usage_error;
-   
+
    *nargsp = num_args - num_parms;
 
    if ((num_args == num_parms) || (num_parms == 0))
@@ -1046,12 +1040,11 @@ static int check_stack_args (int num_args, int num_parms, char *usage, int *narg
      return 0;		       /* rand_foo (r, parms...) */
 
    return SLroll_stack (num_parms + 1);
-   
+
 usage_error:
    SLang_verror (SL_Usage_Error, "Usage: %s", usage);
    return -1;
 }
-
 
 /*}}}*/
 
@@ -1064,8 +1057,8 @@ static void urand_intrin (void) /*{{{*/
 
    if (-1 == check_stack_args (SLang_Num_Function_Args, 0, usage, &nargs))
      return;
-       
-   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE, 
+
+   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE,
 			 generate_random_doubles, NULL, &is_scalar, &d))
      return;
 
@@ -1084,8 +1077,8 @@ static void urand_pos_intrin (void) /*{{{*/
 
    if (-1 == check_stack_args (SLang_Num_Function_Args, 0, usage, &nargs))
      return;
-       
-   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE, 
+
+   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE,
 			 generate_random_open_doubles, NULL, &is_scalar, &d))
      return;
 
@@ -1128,8 +1121,8 @@ static void rand_gauss_intrin (void) /*{{{*/
      return;
    sigma = fabs(sigma);
 
-   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE, 
-			 generate_gaussian_randoms, (VOID_STAR) &sigma, 
+   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE,
+			 generate_gaussian_randoms, (VOID_STAR) &sigma,
 			 &is_scalar, &d))
      return;
    if (is_scalar)
@@ -1159,8 +1152,8 @@ static void rand_beta_intrin (void) /*{{{*/
 	return;
      }
 
-   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE, 
-			 generate_beta_randoms, (VOID_STAR) parms, 
+   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE,
+			 generate_beta_randoms, (VOID_STAR) parms,
 			 &is_scalar, &d))
      return;
    if (is_scalar)
@@ -1182,10 +1175,10 @@ static void rand_cauchy_intrin (void) /*{{{*/
 
    if (-1 == SLang_pop_double (&a))
      return;
-   
+
    a = fabs(a);
 
-   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE, 
+   if (-1 == do_xxxrand (nargs, SLANG_DOUBLE_TYPE,
 			 generate_cauchy_randoms, (VOID_STAR) &a,
 			 &is_scalar, &d))
      return;
@@ -1208,7 +1201,7 @@ static void rand_geometric_intrin (void) /*{{{*/
 
    if (-1 == SLang_pop_double (&p))
      return;
-   
+
    if ((p < 0.0) || (p > 1.0))
      {
 	SLang_verror (SL_Domain_Error, "rand_geometric parameter must be beteen 0 and 1");
@@ -1238,15 +1231,15 @@ static void rand_poisson_intrin (void) /*{{{*/
 
    if (-1 == SLang_pop_double (&mu))
      return;
-   
+
    if (mu < 0.0)
      SLang_verror (SL_InvalidParm_Error, "The poisson rate must be non-negative");
-   
-   if (-1 == do_xxxrand (nargs, SLANG_UINT_TYPE, 
-			 generate_poisson_randoms, (VOID_STAR) &mu, 
+
+   if (-1 == do_xxxrand (nargs, SLANG_UINT_TYPE,
+			 generate_poisson_randoms, (VOID_STAR) &mu,
 			 &is_scalar, &p))
      return;
-   
+
    if (is_scalar)
      (void) SLang_push_uint (p);
 }
@@ -1266,7 +1259,7 @@ static void rand_gamma_intrin (void) /*{{{*/
    if ((-1 == SLang_pop_double (&theta))
        || (-1 == SLang_pop_double (&k)))
      return;
-   
+
    if ((theta <= 0) || (k <= 0))
      {
 	SLang_verror (SL_InvalidParm_Error, "rand_gamma assumes k,theta>0");
@@ -1279,7 +1272,7 @@ static void rand_gamma_intrin (void) /*{{{*/
 			 generate_gamma_randoms, (VOID_STAR) parms,
 			 &is_scalar, &p))
      return;
-   
+
    if (is_scalar)
      (void) SLang_push_double (p);
 }
@@ -1300,7 +1293,7 @@ static void rand_binomial_intrin (void) /*{{{*/
    if ((-1 == SLang_pop_int (&n))
        || (-1 == SLang_pop_double (&bp.p)))
      return;
-   
+
    if ((n < 0) || (bp.p < 0.0) || (bp.p > 1.0))
      {
 	SLang_verror (SL_InvalidParm_Error, "rand_binomial assumes 0<=p<=1 and n>=0");
@@ -1312,7 +1305,7 @@ static void rand_binomial_intrin (void) /*{{{*/
 			 generate_binomial_randoms, (VOID_STAR) &bp,
 			 &is_scalar, &u))
      return;
-   
+
    if (is_scalar)
      (void) SLang_push_uint (u);
 }
@@ -1359,7 +1352,7 @@ static void rand_permutation_intrin (void)
       default:
 	SLang_verror (SL_Usage_Error, "Usage: p = rand_permutation([Rand_Type,], n)");
 	return;
-	
+
       case 2:
       case 1:
 	if (-1 == SLang_pop_array_index (&n))
@@ -1368,21 +1361,21 @@ static void rand_permutation_intrin (void)
 	  {
 	     if (NULL == (mmt = SLang_pop_mmt (Rand_Type_Id)))
 	       return;
-	     
+
 	     if (NULL == (rt = (Rand_Type *) SLang_object_from_mmt (mmt)))
 	       goto free_return;
 	  }
      }
-   
+
    if (n < 0)
      {
 	SLang_verror (SL_InvalidParm_Error, "rand_permutation: expected n>=0");
 	goto free_return;
      }
-   
+
    if (NULL == (at = SLang_create_array (SLANG_INT_TYPE, 0, NULL, &n, 1)))
      goto free_return;
-   
+
    data = (int *) at->data;
    for (i = 0; i < n; i++)
      data[i] = i;
@@ -1391,14 +1384,14 @@ static void rand_permutation_intrin (void)
    while (n > 1)
      {
 	int k, p;
-	
+
 	k = (int) (n*uniform_random (rt));     /* 0 <= k < n */
 	n--;
 	p = data[n];
 	data[n] = data[k];
 	data[k] = p;
      }
-   
+
    (void) SLang_push_array (at, 0);
 
 free_return:
@@ -1423,11 +1416,10 @@ static SLang_Intrin_Fun_Type Module_Intrinsics [] =
    MAKE_INTRINSIC_0("rand_geometric", rand_geometric_intrin, SLANG_VOID_TYPE),
 
    MAKE_INTRINSIC_0("rand_permutation", rand_permutation_intrin, SLANG_VOID_TYPE),
-   
+
    MAKE_INTRINSIC_0("rand_new", new_rand_intrin, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
-
 
 int init_rand_module_ns (char *ns_name)
 {
@@ -1456,13 +1448,13 @@ int init_rand_module_ns (char *ns_name)
 	(void) SLclass_set_destroy_function (cl, destroy_rand_type);
 
 	if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE,
-					  sizeof (Rand_Type), 
+					  sizeof (Rand_Type),
 					  SLANG_CLASS_TYPE_MMT))
 	  return -1;
 
 	Rand_Type_Id = SLclass_get_class_id (cl);
      }
-   
+
    if (-1 == SLns_add_intrin_fun_table (ns, Module_Intrinsics, NULL))
      return -1;
 

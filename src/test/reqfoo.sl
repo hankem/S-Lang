@@ -6,4 +6,4 @@ static define reqfoo ();
 public define reqfoo_public ();
 
 provide ("reqfoo");
-  
+

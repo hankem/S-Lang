@@ -23,7 +23,7 @@ private define open_tmp_file (prefix, ext)
 	  break;
      }
    then dir = "";
-   
+
    variable fmt = path_concat (dir, "%s%X%d.%s");
    variable pid = getpid ();
    variable n = 0;
@@ -63,7 +63,7 @@ define rline_call_editor (lines, prefix, ext)
      {
 	() = remove (file);
      }
-   
+
    () = array_map (Int_Type, &fputs, lines+"\n", fp);
    () = fclose (fp);
 
@@ -72,7 +72,7 @@ define rline_call_editor (lines, prefix, ext)
      return NULL;
 
    variable mtime = st.st_mtime;
-  
+
    variable p = new_process ([editor, file]).wait();
    if ((p.exited == 0) || (p.exit_status != 0))
      return NULL;

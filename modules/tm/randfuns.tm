@@ -22,7 +22,6 @@
 \seealso{rand_new, rand_uniform}
 \done
 
-
 \function{rand_int}
 \synopsis{Generate random integers}
 \usage{X = rand_int ([Rand_Type g,] imin, imax [,num])}
@@ -33,7 +32,6 @@
 \seealso{rand_uniform, rand, rand_new}
 \done
 
-
 \function{rand_tdist}
 \synopsis{Generate random numbers from the Student t distribution}
 \usage{X = rand_tdist ([Rand_Type g,] nu [,num])}
@@ -43,7 +41,6 @@
  \optparm_text
 \seealso{rand_uniform, rand_new, rand_chisq, rand_fdist}
 \done
-
 
 \function{rand_fdist}
 \synopsis{Generate random numbers from the F distribution}
@@ -206,7 +203,6 @@
 \seealso{rand_uniform_pos, rand_int, rand_flat, rand_new}
 \done
 
-
 \function{srand}
 \synopsis{Seed the random number generator}
 \usage{srand ([Rand_Type g,] Array_Type seeds)}
@@ -276,7 +272,7 @@
  one or more arrays (\exmp{a1,...}).  The arrays must be consistent in
  the sense that they must have the same leading dimension, which is
  the one to be sampled.
- 
+
  The optional first argument may be used to specify a different
  instance of a random number generator.  Otherwise, the default
  generator will be used.
@@ -297,7 +293,6 @@
  will be preserved in the samples.
 \seealso{rand_permutation, rand_new}
 \done
-
 
 \function{rand_permutation}
 \synopsis{Generate a random permutation of integers}

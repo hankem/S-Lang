@@ -11,7 +11,7 @@ private define make_indices (num_dims, d, i)
 	  [:];
      }
 }
-	
+
 define struct_filter (s, i)
 {
    variable dim = qualifier ("dim");
@@ -35,10 +35,10 @@ define struct_filter (s, i)
 	variable d = dim;
 	if (d < 0)
 	  d += num_dims;
-	
+
 	if ((d < 0) || (d >= num_dims))
 	  continue;
-	
+
 	set_struct_field (s, field, value[make_indices(num_dims, d, i)]);
      }
    if (copy)
@@ -58,7 +58,7 @@ define struct_combine ()
 	  arg = get_struct_field_names (arg);
 	fields = [fields, arg];
      }
-   
+
    % Get just the unique names
    variable i, a = Assoc_Type[Int_Type];
    ifnot (length (fields))
@@ -83,7 +83,7 @@ define struct_combine ()
 }
 
 define struct_field_exists (s, field)
-{   
+{
    return length (where (field == get_struct_field_names (s)));
 }
 

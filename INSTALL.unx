@@ -1,7 +1,7 @@
 -*- text -*-
 
 Note: You are looking in the wrong place if you intend to compile a
-      Unix version using the MINGW32 or the DJGPP development 
+      Unix version using the MINGW32 or the DJGPP development
       environments.  As far as the S-Lang library is concerned, these
       do not constitute Unix environments.  Read INSTALL.pc.
 
@@ -76,7 +76,7 @@ static version of the library for this.
   ***Note: If you are installing the library for other users, be sure
            to set your umask value to 022 before running `make install`,
 	   i.e.,
-	   
+
 	      umask 022
 	      make install
 
@@ -88,7 +88,7 @@ static version of the library for this.
               ./configure --with-pcre=/opt/software --with-png=/opt/software
 
            This assumes that the header files and the libraries are in
-	   include/ and lib of /opt/software, resp.  If not, run 
+	   include/ and lib of /opt/software, resp.  If not, run
 
               ./configure --help
 
@@ -114,14 +114,14 @@ static version of the library for this.
 	       mkdir foo; cd foo; ../configure --srcdir=..; make
 
 	  then use (csh syntax)
-	    
+
 	       setenv ARCH foo; ./configure; make
-	  
+
           The reason that --srcdir is not supported is that it fails
-	  in the presence of symbolic links, e.g., 
-	  
+	  in the presence of symbolic links, e.g.,
+
 	       cd foo; cd ..
-	  
+
 	  does not bring you back where you started if foo is a
 	  symbolic link.
 
@@ -136,7 +136,7 @@ As mentioned above, simply running `make` will create a shared version
 of the library.  If your system does not support such libraries, or
 the build process fails to create a shared version of the library, you
 may want to install the static version:
-    
+
    make static
    make install-static
 

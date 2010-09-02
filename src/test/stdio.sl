@@ -1,6 +1,5 @@
 _debug_info = 1; () = evalfile ("inc.sl");
 
-
 testing_feature ("stdio routines");
 
 define fopen_tmp_file (fileptr, mode)
@@ -8,7 +7,7 @@ define fopen_tmp_file (fileptr, mode)
    variable n;
    variable file, fp;
    variable fmt;
-   
+
    @fileptr = NULL;
 
    fmt = "tmp-xxx.%03d";    % I need something that works on an 8+3 filesystem
@@ -20,7 +19,7 @@ define fopen_tmp_file (fileptr, mode)
 	file = sprintf (fmt, n);
 	if (NULL != stat_file (file))
 	  continue;
-	
+
 	fp = fopen (file, mode);
 	if (fp != NULL)
 	  {
@@ -39,10 +38,10 @@ define run_tests (some_text, read_fun, write_fun, length_fun)
 
    fp = fopen_tmp_file (&file, "wb");
 
-   if (-1 == @write_fun (some_text, fp)) 
+   if (-1 == @write_fun (some_text, fp))
      failed (string (write_fun));
-   
-   if (-1 == fclose (fp)) 
+
+   if (-1 == fclose (fp))
      failed ("fclose");
 
    fp = fopen (file, "rb");
@@ -50,9 +49,9 @@ define run_tests (some_text, read_fun, write_fun, length_fun)
 
    len = @length_fun (some_text);
    nbytes = @read_fun (&new_text, len, fp);
-   
+
    if ((nbytes != len)
-       or (some_text != new_text)) 
+       or (some_text != new_text))
      failed (string (read_fun));
 
    if (-1 != @read_fun (&new_text, 1, fp))
@@ -68,9 +67,8 @@ define run_tests (some_text, read_fun, write_fun, length_fun)
    nbytes = @read_fun (&new_text, len, fp);
 
    if ((nbytes != len)
-       or (some_text != new_text)) 
+       or (some_text != new_text))
      failed (string (read_fun) + " after fseek");
-   
 
    pos = ftell (fp);
    if (pos == -1) failed ("ftell at EOF");
@@ -78,7 +76,7 @@ define run_tests (some_text, read_fun, write_fun, length_fun)
    if (0 != fseek (fp, 0, SEEK_SET)) failed ("fseek");
    if (0 != ftell (fp)) failed ("ftell at BOF");
    if (0 != fseek (fp, pos, SEEK_CUR)) failed ("fseek to pos");
-   
+
    if (pos != ftell (fp)) failed ("ftell after fseek to pos");
 
    if (feof (fp) != 0) failed ("feof after fseek to EOF");
@@ -114,7 +112,7 @@ run_tests ("A\000BC\000\n\n\n", &do_fread, &fwrite, &bstrlen);
 define test_fread_fwrite (x)
 {
    variable fp, file, str, n, m, y, type, ch;
-   
+
    fp = fopen_tmp_file (&file, "w+b");
 
    type = _typeof(x);
@@ -127,19 +125,19 @@ define test_fread_fwrite (x)
 
    if (n != fwrite (x, fp))
      failed ("test_fread_fwrite: fwrite");
-   
+
    if (-1 == fseek (fp, 0, SEEK_SET))
      failed ("test_fread_fwrite: fseek");
-   
+
    if (n != fread (&y, type, n, fp))
      failed ("test_fread_fwrite: fread");
-   
+
    if (length (where (y != x)))
      failed ("test_fread_fwrite: fread failed to return: " + string(x));
 
    if (-1 == fseek (fp, 0, SEEK_SET))
      failed ("test_fread_fwrite: fseek");
-   
+
    if (type == UChar_Type)
      {
 	y = 0;
@@ -220,8 +218,7 @@ define test_read_write ()
    () = remove (file);
 }
 test_read_write();
-  
-print ("Ok\n");
 
+print ("Ok\n");
 
 exit (0);

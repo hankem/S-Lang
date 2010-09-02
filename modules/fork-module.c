@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "config.h"
@@ -57,7 +57,7 @@ typedef struct
 }
 Waitpid_Type;
 
-static SLang_CStruct_Field_Type Waitpid_Struct [] = 
+static SLang_CStruct_Field_Type Waitpid_Struct [] =
 {
    MAKE_CSTRUCT_FIELD(Waitpid_Type, pid, "pid", SLANG_INT_TYPE, 0),
    MAKE_CSTRUCT_FIELD(Waitpid_Type, exited, "exited", SLANG_INT_TYPE, 0),
@@ -68,7 +68,7 @@ static SLang_CStruct_Field_Type Waitpid_Struct [] =
    MAKE_CSTRUCT_FIELD(Waitpid_Type, continued, "continued", SLANG_INT_TYPE, 0),
    SLANG_END_CSTRUCT_TABLE
 };
-  
+
 static void waitpid_intrinsic (int *pid, int *options)
 {
    int status, ret;
@@ -114,7 +114,7 @@ static char **pop_argv (SLang_Array_Type **atp)
    char **argv;
    unsigned int i, num, argc;
    char **strp;
-   
+
    *atp = NULL;
 
    if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
@@ -154,16 +154,16 @@ static int call_what (int what, char *path, char **argv, char **envp)
 	   case CALL_EXECV:
 	     ret = execv (path, argv);
 	     break;
-	     
+
 	   case CALL_EXECVP:
 	     ret = execvp (path, argv);
 	     break;
-	     
+
 	   case CALL_EXECVE:
 	     ret = execve (path, argv, envp);
 	     break;
 	  }
-	
+
 	if (ret == 0)
 	  return 0;		       /* should never happen */
 
@@ -191,7 +191,7 @@ static int exec_what (int what, int has_envp)
 	if (NULL == (envp = pop_argv (&at_envp)))
 	  goto free_and_return;
      }
-     
+
    if (NULL == (argv = pop_argv (&at_argv)))
      goto free_and_return;
 
@@ -258,7 +258,7 @@ static void pipe_intrin (void)
 	SLang_verror (SL_OS_Error, "pipe failed: %s", SLerrno_strerror(errno));
 	return;
      }
-   
+
    f0 = SLfile_create_fd ("*pipe*", fds[0]);
    f1 = SLfile_create_fd ("*pipe*", fds[1]);
    if ((NULL != f0) && (NULL != f1))

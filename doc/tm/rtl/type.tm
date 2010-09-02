@@ -145,7 +145,7 @@
 \seealso{typecast, _slang_guess_type, string, sprintf, char}
 \done
 
-\function{isalnum, isalpha, isascii, isblank, iscntrl, isdigit, isgraph, 
+\function{isalnum, isalpha, isascii, isblank, iscntrl, isdigit, isgraph,
 islower, isprint, ispunct, isspace, isupper, isxdigit
 }
 \synopsis{Character classification functions}
@@ -281,10 +281,10 @@ islower, isprint, ispunct, isspace, isupper, isxdigit
   This function is similar to the \ifun{typeof} function except in the
   case of arrays.  If the object \exmp{x} is an array, then the data
   type of the array will be returned. Otherwise \ifun{_typeof} returns
-  the data type of \exmp{x}. 
+  the data type of \exmp{x}.
 \example
 #v+
-    if (Integer_Type == _typeof (x)) 
+    if (Integer_Type == _typeof (x))
       message ("x is an integer or an integer array");
 #v-
 \seealso{typeof, array_info, _slang_guess_type, typecast}

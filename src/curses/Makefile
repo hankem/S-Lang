@@ -5,14 +5,14 @@ M_LIB = -lm
 CURSES_H = ../curses.h
 
 EXECS = rain blue hanoi firework \
-     bs battle gdc tclock worm view 
+     bs battle gdc tclock worm view
 #knight newdemo testcurs xmas
 
 all: $(CURSES_H) $(EXECS)
 
 $(CURSES_H):
 	echo '#include <slcurses.h>' > $(CURSES_H)
- 
+
 view: view.c
 	$(COMPILE) $@.c -o $@ $(LFLAGS)
 bs: $(CURSES_H) bs.c

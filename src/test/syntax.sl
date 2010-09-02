@@ -10,7 +10,7 @@ private define check_version_string ()
    variable major = integer(v[0]);
    variable minor = integer(v[1]);
    variable micro = integer(v[2]);
-   
+
    v = ((major*100)+minor)*100 + micro;
    if (v != _slang_version)
      failed ("slang version %S does not match %S", _slang_version, _slang_version_string);
@@ -68,10 +68,9 @@ if (1)
 	{0}
 	{0}
 	{0}
-       ) 
+       )
      failed ("orelse");
 }
-
 
 !if (orelse
      {0}
@@ -160,14 +159,14 @@ check_args (1,2,2);
 check_args (nitems(3), nitems(5), 8);
 static variable X = [1:10];
 check_args (nitems (3), check_args(nitems(4), 4, 5), 3);
-   
+
 static define check_no_args ()
 {
    if (_NARGS != 0)
      failed ("check_no_args");
 }
 
-% This failed in previous versions because abs was not treated as a function 
+% This failed in previous versions because abs was not treated as a function
 % call.
 if (abs (1) > 0)
   check_no_args ();
@@ -185,7 +184,7 @@ check_tmp_optim ();
 define check_for ()
 {
    variable i;
-   
+
    variable s = 0;
    _for (0, 10, 1)
      {
@@ -196,7 +195,7 @@ define check_for ()
 
    _for i (0, 10, 1)
      s1 += i;
-   
+
    if ((s1 != s) or (s != 55))
      failed ("_for: s1=%S, s=%S", s1, s);
 }
@@ -206,7 +205,7 @@ check_for ();
 define check_foreach ()
 {
    variable i;
-   
+
    variable s = 0;
    foreach ([0:10])
      {
@@ -290,31 +289,31 @@ define test_ternary ()
    variable arg, ans;
    foreach arg (['A', 'B', 'C', 'D', 'Z'])
      {
-	ans = 
+	ans =
 	  arg == 'A' ? "A" :
 	  arg == 'B' ? "B" :
 	  arg == 'C' ? "C" :
 	  arg == 'D' ? "D" :
 	  "Z";
-   
+
 	if (ans[0] != arg)
 	  failed ("ternary expression");
      }
    foreach arg (['A', 'B', 'C', 'D', 'Z'])
      {
-	ans = 
+	ans =
 	  arg == 'A' - 1 + 1 ? "A" :
 	  arg == 'B' - 1 + 1 ? "B" :
 	  arg == 'C' - 1 + 1 ? "C" :
 	  arg == 'D' - 1 + 1 ? "D" :
 	  "Z";
-   
+
 	if (ans[0] != arg)
 	  failed ("ternary expression involving binary ops");
      }
    foreach arg (['A', 'B', 'C', 'D', 'Z'])
      {
-	ans = 
+	ans =
 	  arg == char('A')[0] - 1 + 1 ? "A" :
 	  arg == char('B')[0] - 1 + 1 ? "B" :
 	  arg == char('C')[0] - 1 + 1 ? "C" :
@@ -366,7 +365,7 @@ private define test_assignment_expressions ()
    (a)[1] += 10*(a)[1];
    if ((a[1] != -11)||(a[1]!=-11))
      failed ("lvalue parse problem: (a)[1] += 10*(a)[1]");
-   
+
    (a+a)[1] = -1;
 }
 test_assignment_expressions ();

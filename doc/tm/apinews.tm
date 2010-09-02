@@ -9,7 +9,7 @@
     SLrline
     SLprep
     slang interpreter modules
-#v- 
+#v-
  Detailed information about these changes is given below.  Other
  changes include:
 \begin{itemize}
@@ -29,7 +29,7 @@ See the relevant chapters in this manual for more information.
 #v+
       SLang_Error = foo;
       if (SLang_Error == bar) ...
-#v-   
+#v-
    to
 #v+
       SLang_set_error (foo);
@@ -104,8 +104,8 @@ See the relevant chapters in this manual for more information.
      SLregexp_match
      SLregexp_nth_match
      SLregexp_get_hints
-#v-  
-   
+#v-
+
    The plan is to migrate to the use of the PCRE regular expressions
    for version 2.2.  As such, you may find it convenient to adopt the
    PCRE library now instead of updating to the changed \slang API.
@@ -141,12 +141,12 @@ See the relevant chapters in this manual for more information.
 #v-
    If you currently use:
 #v+
-      SLPreprocess_Type pt; 
-      SLprep_open_prep (&pt); 
+      SLPreprocess_Type pt;
+      SLprep_open_prep (&pt);
          .
          .
       SLprep_close_prep (&pt);
-#v-   
+#v-
    Then change it to:
 #v+
       SLprep_Type *pt;
@@ -161,7 +161,7 @@ See the relevant chapters in this manual for more information.
 \begin{itemize}
 \item \cfun{SLang_pop_double} has been changed to be more like the other
   \cfun{SLang_pop_*} functions.  Now, it may be used as:
-#v+ 
+#v+
        double x;
        if (-1 == SLang_pop_double (&x))
          .

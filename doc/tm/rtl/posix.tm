@@ -51,7 +51,6 @@
 \seealso{getpid, getgid}
 \done
 
-
 \function{getpriority}
 \synopsis{Get a process's scheduling priority}
 \usage{result = getpriority (which, who)}
@@ -68,10 +67,10 @@
  the value returned corresponds to the highest priority of a process
  in the set.  A value of 0 may be used for who to denote the process
  id, process group id, or real user ID of the current process.
- 
+
  Upon success, the function returns the specified priority value.  If
  an error occurs, the function will return \NULL with \ivar{errno} set
- accordingly.  
+ accordingly.
 \notes
 \seealso{setpriority, getpid, getppid}
 \done
@@ -145,7 +144,7 @@
   process whose process-id is \exmp{pid}.  If \exmp{pid} is \0, then the
   current process-id will be used.  If \exmp{pgid} is \0, then the pid
   of the affected process will be used.
-  
+
   If successful 0 will be returned, otherwise the function will
   return \-1 and set \ivar{errno} accordingly.
 \notes
@@ -167,7 +166,7 @@
  \exmp{who} is interpreted as a user id.  A value of 0 may be used for
  who to denote the process id, process group id, or real user ID of
  the current process.
- 
+
  Upon sucess, the \ifun{setpriority} function returns 0.  If an error occurs,
  -1 is returned and errno will be set accordingly.
 \example

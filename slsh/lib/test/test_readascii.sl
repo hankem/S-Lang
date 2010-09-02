@@ -5,7 +5,7 @@ private define make_xyz_data (xmin, xmax, n)
    variable x = [xmin:xmax:#n];
    variable y = cos (x);
    variable z = sin (x);
-   
+
    return x, y, z;
 }
 
@@ -32,7 +32,7 @@ private define concat_lines ()
    variable args = __pop_list (_NARGS);
    if (typeof (args[0]) == Array_Type)
      return [__push_list(args)];
-   
+
    variable list = args[0];
    _for (1, _NARGS-1, 1)
      {
@@ -49,11 +49,10 @@ private define concat_lines ()
    return list;
 }
 
-
 private define run_test (make_lines_func)
 {
    variable xmin = 1.0, xmax = 5.0, n = 20;
-   
+
    variable x, y, z;
    (x, y, z) = make_xyz_data (xmin, xmax, n);
    variable delim = ",";
@@ -69,11 +68,11 @@ private define run_test (make_lines_func)
      throw RunTimeError, "lastlinenum=$lastlinenum instead of $n"$;
    if (any (fneqs(x, xa) or fneqs(y, ya) or fneqs(z, za)))
      throw RunTimeError, "Arrays have unequal values";
-   
+
    variable x1, y1, z1, n1 = 2;
    (x1, y1, z1) = make_xyz_data (xmax, 2*xmax, n1);
    lines = concat_lines (lines, "@\n", (@make_lines_func)(x1, y1, z1, delim));
-   
+
    na = readascii (lines, &xa, &ya, &za; delim=",", lastlinenum=&lastlinenum);
    if (n+n1 != na)
      throw RunTimeError, "readascii returned $na, not $n1 + $n2 as expected"$;
@@ -95,7 +94,7 @@ private define run_test (make_lines_func)
 
    lines = concat_lines (lines, "%%%%%%\n");
 
-   na = readascii (lines, &xa, &ya, &za; delim=",", 
+   na = readascii (lines, &xa, &ya, &za; delim=",",
 		   lastlinenum=&lastlinenum, lastline=&lastline,
 		   comment="@", stop_on_mismatch);
    if (n+n1 != na)
@@ -128,7 +127,7 @@ private define run_test (make_lines_func)
      throw RunTimeError, "lastlinenum=$lastlinenum instead of $n"$;
    if ((typeof (za) != List_Type) || (typeof (xa) != List_Type))
      throw RunTimeError, "Used as_list qualifier but did not get a list, got $za,$xa"$;
-   if (any (fneqs([x,x1], [__push_list(za)]) 
+   if (any (fneqs([x,x1], [__push_list(za)])
 	    or fneqs([z,z1], [__push_list(xa)] )))
      throw RunTimeError, "Arrays have unequal values";
    if (lastline != lines[-1])

@@ -13,14 +13,13 @@ private define warning ()
    () = fprintf (stderr, "***WARNING: %s\n", sprintf (__push_args (args)));
 }
 
-		 
 private define process_function (line, fp)
 {
    variable fname;
    variable lines;
 
    fname = strtrim (strtok (line, "{}")[1]);
-   
+
    lines = line;
 #iftrue
    foreach (fp)
@@ -43,7 +42,7 @@ private define process_function (line, fp)
 	warning ("Key %s already exists", fname);
 	return -1;
      }
-   
+
    Data[fname] = lines;
    return 0;
 }
@@ -68,7 +67,6 @@ private define read_file_contents (file)
 	() = fprintf (stderr, "Unable to open %s\n", file);
 	return -1;
      }
-   
 
    %while (-1 != fgets (&line, fp))
    foreach (fp)
@@ -78,15 +76,15 @@ private define read_file_contents (file)
 	  {
 	     if (-1 == process_function (line, fp))
 	       return -1;
-	     
+
 	     continue;
 	  }
-	
+
 	if (0 == strncmp (line, "\\variable{", 10))
 	  {
 	     if (-1 == process_variable (line, fp))
 	       return -1;
-	     
+
 	     continue;
 	  }
 
@@ -94,11 +92,11 @@ private define read_file_contents (file)
 	  {
 	     if (-1 == process_datatype (line, fp))
 	       return -1;
-	     
+
 	     continue;
 	  }
      }
-   
+
    () = fclose (fp);
    return 0;
 }
@@ -112,7 +110,7 @@ private define sort_keys (a, b)
      ret = strcmp (a, b);
    return ret;
 }
-   
+
 private define sort_and_write_file_elements (file)
 {
    variable fp;
@@ -129,7 +127,7 @@ private define sort_and_write_file_elements (file)
 
    keys = assoc_get_keys (Data);
    i = array_sort (keys, &sort_keys);
-   
+
    foreach (keys[i])
      {
 	variable k = ();
@@ -137,23 +135,22 @@ private define sort_and_write_file_elements (file)
 	() = fputs (Data[k], fp);
 	() = fputs ("\n", fp);
      }
-   
+
    () = fclose (fp);
-   
+
    return 0;
 }
-
 
 private define process_file (file)
 {
    init ();
-   
+
    () = fprintf (stdout, "Processing %s ...", file);
    () = fflush (stdout);
 
    if (-1 == read_file_contents (file))
      return -1;
-   
+
    if (-1 == sort_and_write_file_elements (file))
      return -1;
 

@@ -87,8 +87,8 @@
   packed or unpacked from the string.  When used with the \exmp{s},
   \exmp{S}, or \exmp{z} specifiers, it indicates the field width to be
   used.  If the length specifier is not present, the length defaults
-  to one.  
-  
+  to one.
+
   When packing, unlike the \exmp{s} specifier, the \exmp{z} specifier
   guarantees that at least one null byte will be written even if the
   field has to be truncated to do so.

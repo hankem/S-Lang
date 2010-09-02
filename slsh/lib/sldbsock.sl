@@ -1,13 +1,13 @@
 % This file implements a socket-based wrapper around sldbcore for
 % debugging a separate process.  Programs that wish to use this for
 % debugging should something like
-% 
+%
 %    autoload ("sldb", "sldbcore");
-% 
+%
 % in a startup file.  Then instead of using `require` or `evalfile` to
 % load a file, use sldb("name-of-file") to load the file to be
-% debugged.  Then in another window, run 
-% 
+% debugged.  Then in another window, run
+%
 %    sldb --pid <pid-of-process-to-be-debugged>
 %
 % Do not byte-compile this file.  It contains both the client and
@@ -48,7 +48,7 @@ private define do_write (fp, data)
    if ((bstrlen (data) != nbytes)
        or (-1 == fflush (fp)))
      throw WriteError;
-   
+
    debug_output ("** WROTE: %s\n", data);
 }
 
@@ -57,7 +57,7 @@ private define do_fgets (fp)
    variable buf;
    if (-1 == fgets (&buf, fp))
      throw ReadError;
-   
+
    debug_output ("** READ: %s\n", buf);
    return buf;
 }
@@ -92,7 +92,7 @@ private define receive_data (fp)
 	  {
 	     if (line == ".\n")
 	       break;
-	
+
 	     line = substr (line, 2, -1);
 	  }
 	data = strcat (data, line);
@@ -118,7 +118,7 @@ private define send_data (fp, data)
 	variable line = lines[i];
 	if (line[0] == '.')
 	  line = strcat (".", line, "\n");
-	else 
+	else
 	  line = strcat (line, "\n");
 
 	do_write (fp, line);
@@ -153,7 +153,6 @@ private define vmessage_method ()
    debug_output ("Leaving vmessage_method\r\n");
 }
 
-  
 private define open_file_at_linenum (file, linenum)
 {
    if (path_extname (file) == ".slc")
@@ -205,7 +204,7 @@ private define read_input_method (prompt, default_cmd)
 
 	if (status != OK_XFER_RECEIVED)
 	  throw IOError, "Expected OK_XFER_RECEIVED, got $status"$;
-   
+
 	variable input = receive_data (fp);
 	if (input == "\n")
 	  input = default_cmd;
@@ -231,7 +230,7 @@ private define initialize_server ()
 {
    if (Server_Socket_fd != NULL)
      return;
-   
+
    variable s = socket (PF_UNIX, SOCK_STREAM, 0);
    variable name = make_socket_name (getpid ());
    bind (s, name);
@@ -244,7 +243,7 @@ private define initialize_server ()
 
    vmessage_method ("Welcome to sldb");
 }
-     
+
 define sldb_initialize ()
 {
    initialize_server ();

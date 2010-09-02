@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -34,7 +34,7 @@ static void set_bos_eos_handlers (SLang_Name_Type *bos, SLang_Name_Type *eos)
    if (BOS_Callback_Handler != NULL)
      SLang_free_function (BOS_Callback_Handler);
    BOS_Callback_Handler = bos;
-   
+
    if (EOS_Callback_Handler != NULL)
      SLang_free_function (EOS_Callback_Handler);
    EOS_Callback_Handler = eos;
@@ -45,7 +45,7 @@ static void set_bof_eof_handlers (SLang_Name_Type *bof, SLang_Name_Type *eof)
    if (BOF_Callback_Handler != NULL)
      SLang_free_function (BOF_Callback_Handler);
    BOF_Callback_Handler = bof;
-   
+
    if (EOF_Callback_Handler != NULL)
      SLang_free_function (EOF_Callback_Handler);
    EOF_Callback_Handler = eof;
@@ -79,7 +79,7 @@ int _pSLcall_bos_handler (SLFUTURE_CONST char *file, int line)
 	status = -1;
      }
    Handler_Active--;
-   
+
    if (err)
      _pSLang_pop_error_context (status != 0);
 
@@ -188,7 +188,7 @@ static int pop_new_push_old (SLang_Name_Type **handler)
 	SLang_free_function (new_handler);
 	return -1;
      }
-   
+
    SLang_free_function (old_handler);
    *handler = new_handler;
    return 0;
@@ -214,7 +214,6 @@ static void set_eof_handler (void)
    (void) pop_new_push_old (&EOF_Callback_Handler);
 }
 
-
 #if SLANG_HAS_DEBUGGER_SUPPORT
 static SLang_Name_Type *Debug_Hook = NULL;
 static int Debug_Handler_Active = 0;
@@ -225,7 +224,6 @@ static void set_debug_hook (SLang_Name_Type *deb)
      SLang_free_function (Debug_Hook);
    Debug_Hook = deb;
 }
-
 
 /* int _pSLcall_debug_hook (char *file, int line, char *funct) */
 int _pSLcall_debug_hook (SLFUTURE_CONST char *file, int line)
@@ -280,7 +278,7 @@ static void set_frame_variable (void)
 
    if (-1 == SLang_pop_slstring (&name))
      return;
-   
+
    if (0 == SLang_pop_int (&depth))
      (void) _pSLang_set_frame_variable ((unsigned int) depth, name);
    SLang_free_slstring (name);
@@ -321,7 +319,7 @@ static void get_frame_info (int *depth)
    else
      field_types[i] = SLANG_STRING_TYPE;
    i++;
-   
+
    if (f.locals == NULL)
      {
 	field_types[i] = SLANG_NULL_TYPE;
@@ -331,7 +329,7 @@ static void get_frame_info (int *depth)
      {
 	if (NULL == (at = _pSLstrings_to_array (f.locals, f.nlocals)))
 	  return;
-	
+
 	field_values[i] = &at;
 	field_types[i] = SLANG_ARRAY_TYPE;
      }
@@ -343,7 +341,7 @@ static void get_frame_info (int *depth)
    else
      field_types[i] = SLANG_STRING_TYPE;
    i++;
-   
+
    (void) SLstruct_create_struct (NUM_INFO_FIELDS, field_names, field_types, field_values);
 
    if (at != NULL)
@@ -361,8 +359,8 @@ static void use_frame_namespace (int *depth)
 }
 
 #endif
-  
-static SLang_Intrin_Fun_Type Intrin_Funs [] = 
+
+static SLang_Intrin_Fun_Type Intrin_Funs [] =
 {
    MAKE_INTRINSIC_0("_set_bos_handler", set_bos_handler, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_set_eos_handler", set_eos_handler, SLANG_VOID_TYPE),

@@ -1,4 +1,3 @@
-
 _debug_info = 1; () = evalfile ("./inc.sl");
 
 testing_feature ("array functions");
@@ -13,7 +12,6 @@ if (_typeof($2) != Short_Type)
 if ((array_shape ($2)[0] != 3) or (array_shape($2)[1] != 4))
   failed ("typeof(X)[] failed to create an array of the proper shape");
 
-		  
 private define eqs (a, b)
 {
    return _eqs(a,b);
@@ -22,7 +20,7 @@ private define eqs (a, b)
    len = length (a);
    if (len != length (b))
      return 0;
-   
+
    len == length (where (a == b));
 #endif
 }
@@ -36,7 +34,6 @@ private define array_dims (a)
 
    return dims;
 }
-
 
 private define neqs (a, b)
 {
@@ -55,10 +52,10 @@ if ((dims[0] != 1)
 
 reshape (A, [2,3,4]);
 
-%   0  1  2  3 
+%   0  1  2  3
 %   4  5  6  7   = A[0,*,*]
 %   8  9 10 11
-% 
+%
 %  12 13 14 14
 %  16 17 18 19   = A[1,*,*]
 %  20 21 22 23
@@ -92,7 +89,6 @@ try
 }
 catch IndexError;
 
-					
 B = transpose (A);
 
 if ((B[0,0,0] != 0)
@@ -187,7 +183,6 @@ try
 }
 catch TypeMismatchError;
 
-
 % Indexing of 7d array
 if (31 != _reshape ([31], [1,1,1,1,1,1,1])[0,0,0,0,0,0,0])
   failed ("reshape of 7d array");
@@ -204,7 +199,7 @@ if (neqs(A,B))
   failed("A[*] 2");
 A = 3; if (typeof (A[*]) != Array_Type) failed ("typeof A[*]");
 
-% Check indexing with negative subscripts 
+% Check indexing with negative subscripts
 S = [0:10];
 if (S[-1] != 10) failed ("[-1]");
 #iffalse
@@ -231,8 +226,8 @@ if (length (S[[:-1]]) != length(S)) failed ("S[:-1]");
 if (neqs(S[[:-1]], S)) failed ("[0:-1]");
 if (neqs(S[[-1::-1]], [10:0:-1])) failed ("S[-1::-1]");
 if (neqs(S[[3:]], [3:10])) failed ([3:]);
-if (neqs(S[[-3:]], S[[8:10]])) failed ("[-3:]"); 
-if (neqs(S[[-3::-1]], S[[8:0:-1]])) failed ("[-3:]"); 
+if (neqs(S[[-3:]], S[[8:10]])) failed ("[-3:]");
+if (neqs(S[[-3::-1]], S[[8:0:-1]])) failed ("[-3:]");
 if (neqs(S[[:-3]], S[[0:8]])) failed ("[:-3]");
 if (neqs(S[[:3:-1]], S[[10:3:-1]])) failed ("[:-1]");
 if (neqs(S[[::-1]], S[[10:0:-1]])) failed ("[::-1]");
@@ -256,7 +251,7 @@ if (length (S) != 0) failed ("Int_Type[0]");
 if (neqs (S, S[[0:-1]])) failed ("Int_Type[0][[0:-1]]");
 
 S = bstring_to_array ("hello");
-if ((length (S) != 5) 
+if ((length (S) != 5)
     or (typeof (S) != Array_Type)) failed ("bstring_to_array");
 if ("hello" != array_to_bstring (S)) failed ("array_to_bstring");
 
@@ -367,7 +362,7 @@ private define test_tmp ()
 private define ones ()
 {
    variable a;
-   
+
    a = __pop_args (_NARGS);
    return @Array_Type (Integer_Type, [__push_args (a)]) + 1;
 }
@@ -380,7 +375,6 @@ if ((dims[0] != 5) or (dims[1] != 10))
 if (length (where (X != 1)))
   failed ("ones 1");
 
-
 define test_assignments (x, i, a)
 {
    variable y, z;
@@ -389,7 +383,7 @@ define test_assignments (x, i, a)
    y = @x; z = @x; y[i] -= a; z[i] = z[i] - a; check_result (y, z, "[]-=");
    y = @x; z = @x; y[i] /= a; z[i] = z[i] / a; check_result (y, z, "[]/=");
    y = @x; z = @x; y[i] *= a; z[i] = z[i] * a; check_result (y, z, "[]*=");
-   
+
    y = @x; z = @x; y[i]++; z[i] = z[i] + 1; check_result (y, z, "[]++");
    y = @x; z = @x; y[i]--; z[i] = z[i] - 1; check_result (y, z, "[]--");
 }
@@ -410,14 +404,14 @@ define test_semiopen (a, b, dx, n)
 
    if (length (aa) != n)
      failed ("test_semiopen (%S,%S,%S,%S): length==>%d", a, b, dx, n, length(aa));
-   
+
    if (n == 0)
      return;
-   
+
    first = aa[0];
    if (first != a)
      failed ("test_semiopen (%S,%S,%S,%S): first", a, b, dx, n);
-	
+
    last = a[-1];
    if (dx > 0)
      {
@@ -461,7 +455,7 @@ A[*] = "a";
 if ("aaaaaaaaaa" != strjoin (A, ""))
   failed ("A[*]");
 A[5] = NULL;
-if ((A[5] != NULL) 
+if ((A[5] != NULL)
     or ("aaaaaaaaa" != strjoin (A[[0,1,2,3,4,6,7,8,9]], "")))
   failed ("A[5] != NULL");
 
@@ -500,7 +494,7 @@ private define test_indexing_with_1_index ()
 	 a[5,5],a[6,6],a[7,7],a[8,8],a[9,9]];
    if (0 == _eqs (ai, a[i]))
      failed ("[a[0,0],...,a[9,9]] != a[i]");
-   
+
    reshape (a, [n*n]);
    i = -1;
    if ((a[-1] != a[i]) || (a[-1] != a[i+length(a)]))
@@ -524,7 +518,7 @@ private define compute_sum (a, n)
    variable b;
    variable i, j, k;
    variable dims;
-   
+
    (dims,,) = array_info (a);
    if (n == 0)
      {
@@ -565,7 +559,7 @@ private define compute_sum (a, n)
 	  }
 	return b;
      }
-   
+
    b = 0.0;
    for (i = 0; i < dims[0]; i++)
      {
@@ -589,7 +583,7 @@ define test_sum (a, n)
      s1 = sum(A);
    else
      s1 = sum(A,n);
-   
+
    s2 = compute_sum (A, n);
 
    if (neqs (s1, s2))
@@ -639,7 +633,7 @@ define test_eqs (what, a, b)
 {
    if (_typeof(a) != _typeof(b))
      failed ("%s: %S != %S", what, a, b);
-   
+
    if (neqs (a, b))
      failed ("%s: %S != %S", what, a, b);
 }
@@ -723,13 +717,12 @@ if ((_min(_NaN, 1) != 1) or (_min(1,_NaN) != 1))
 if ((_max(_NaN, 1) != 1) or (_max(1,_NaN) != 1))
   failed ("_max with NaN");
 
-  
 #ifexists cumsum
 private define do_cumsum (a)
 {
    variable b = 1.0 * a;
    variable i, s;
-   
+
    s = 0;
    _for (0, length(a)-1, 1)
      {
@@ -739,7 +732,7 @@ private define do_cumsum (a)
      }
    return b;
 }
-   
+
 private define test_cumsum (a, k, result_type)
 {
    variable b = 1.0 * a;
@@ -832,13 +825,12 @@ private define test_cumsum (a, k, result_type)
 	       }
 	  }
      }
-   
+
    if (neqs (b, bb))
      {
 	failed ("cumsum (%S, %d), expected %S, got %S", a, k, b, bb);
      }
 }
-
 
 A = Int_Type[10]; A[*] = 1;
 test_cumsum (A, -1, Double_Type);
@@ -937,7 +929,7 @@ if (neqs (A[-1,*], [81:100]))
 I = _reshape ([20,30,40,50], [2,2]);
 if (neqs (A[I], _reshape ([21,31,41,51],[2,2])))
   failed ("A[I] for [20,30;40,50]");
-#iffalse	  
+#iffalse
 if (length (A[[-1:0]]) != 0)
   failed ("A[[-1:0]]");
 #else
@@ -952,16 +944,16 @@ define test_example ()
    variable a = Integer_Type [10, 10];
    variable j;
    for (j = 0; j < 10; j++) a[j, j] = 5;
-   
+
    variable b = Integer_Type [10, 10];
    j = [[0:99:11]];
    b[j] = 5;
-   
+
    if (0 == _eqs (a, b))
      failed ("Example 1");
 }
 test_example ();
-   
+
 #ifexists array_swap
 private define test_array_swap (a, i, j)
 {
@@ -991,7 +983,7 @@ private define test_array_reverse (a, i, j)
      }
    else
      array_reverse (a, i, j);
-   
+
    b[[i:j]] = b[[j:i:-1]];
    if (0 == _eqs (a, b))
      failed ("array_reverse");
@@ -1023,7 +1015,7 @@ private define test_2darray_reverse (a, i, j, dim)
 	  array_reverse (a, i, j, dim);
      }
    catch NotImplementedError: return;
-   
+
    if (dim == 0)
      b[*, [i:j]] = b[*, [j:i:-1]];
    else
@@ -1044,10 +1036,10 @@ private define test_aget ()
    variable a, indices;
    indices = __pop_args (_NARGS-1);
    a = ();
-   
+
    if (__aget (a, __push_args(indices)) != a[__push_args(indices)])
      failed ("aget");
-   
+
    try
      {
 	__aget (a);
@@ -1073,7 +1065,7 @@ test_aget (A, 1,3,5);
 private define test_aput ()
 {
    variable a, x, indices;
-   
+
    % test_aput (val, a, indices);
    indices = __pop_args (_NARGS-2);
    (x,a) = ();
@@ -1081,7 +1073,7 @@ private define test_aput ()
    __aput (x, a, __push_args(indices));
    if (not _eqs (a[__push_args(indices)], x))
      failed ("aget");
-   
+
    try
      {
 	__aput (x, a);
@@ -1159,7 +1151,7 @@ try
 {
    () = [1:10:0];
    failed ("range array with 0 increment");
-   
+
 }
 catch InvalidParmError;
 
@@ -1182,7 +1174,7 @@ private define test_all_1 (astr, ans)
 
 private define test_any_or_all (fun, astr, ans)
 {
-   foreach ([Char_Type, UChar_Type, Short_Type, UShort_Type, 
+   foreach ([Char_Type, UChar_Type, Short_Type, UShort_Type,
 	     Int_Type, UInt_Type, Long_Type, ULong_Type])
      {
 	variable t = ();
@@ -1233,7 +1225,7 @@ define test_where_first_last (a)
    variable i = where (a);
    variable i0 = wherefirst (a);
    variable i1 = wherelast (a);
-   
+
    if (length (i) == 0)
      {
 	if ((i0 != NULL) or (i1 != NULL))
@@ -1244,15 +1236,15 @@ define test_where_first_last (a)
      failed ("wherefirst");
    if (i1 != i[-1])
      failed ("wherelast");
-   
+
    i0 = wherefirst (a, 0);
    i1 = wherelast (a, -1);
-   
+
    if (i0 != i[0])
      failed ("wherefirst 0");
    if (i1 != i[-1])
      failed ("wherelast -1");
-   
+
    i0 = wherefirst (a, i0);
    i1 = wherelast (a, i1);
    if (i0 != i[0])
@@ -1365,7 +1357,7 @@ private define test_where_2_args (a)
    i0 = where (a);
    j0 = wherenot(a);
    i1 = where (a, &j1);
-   
+
    if ((not eqs (i0, i1)) or (not eqs (j0, j1)))
      {
 	failed ("where_2_args");
@@ -1382,13 +1374,13 @@ test_where_2_args (([1:-1] mod 2)==2);
 private define test_arrayn (a, b, n)
 {
    variable a0;
-   
+
    if (n == 1)
      a0 = a;
    else
      a0 = a + ([0:n-1])*((b-a)/double(n-1));
    variable a1 = [a:b:#n];
-   
+
    if ((typeof (a) == Float_Type) && (_typeof(a1) != Float_Type))
      {
 	failed ("Expecting [%g:%g:#%g] to be Float_Type", a,b,n);
@@ -1402,7 +1394,7 @@ private define test_arrayn (a, b, n)
      }
 
    variable tol = 1e15;
-   
+
    tol = 1e-15;
    if (max (_diff(a1,a0)>tol*abs(a)))
      failed ("[$a:$b:$n] max_diff=%g"$, max(_diff(a1,a0)));
@@ -1425,7 +1417,7 @@ define test_array_refs ()
    @r = "foo";
    if (a[5,5] != "foo")
      failed ("&a[5,5]");
-   
+
    r = &a[[2,3],[4,5,6]];
    @r = ["1x", "2x", "3x", "4x", "5x","6x"];
    if ((a[2,4] != "1x") or (a[3,6] != "6x"))
@@ -1443,14 +1435,14 @@ define test_string_array()
    A[[0:n-1]] = "bar";
    ifnot (all (A == "bar"))
      failed ("A[[0:n-1]]=\"foo\"");
-   
+
    A[[0::2]] = "ebar";
    i = where (A=="ebar");
    if (length (i) != n/2)
      failed ("A[[0::2]]=ebar");
    if (any(i mod 2))
      failed ("A[[0::2]]=ebar (mod)");
-   
+
    variable B = String_Type[n,m];
    B[[0::2],*] = "foo";
    ifnot (all(_isnull (B[[1::2],*])))
@@ -1510,11 +1502,10 @@ test_dup ([1:4]);
 test_dup ([1,2,3,4]);
 test_dup (["foo", "bar", "baz"]);
 
-
 private define test_sumsq (a)
 {
    variable s, t;
-   
+
    s = sumsq (a);
    if (_typeof (a) == Complex_Type)
      t = sumsq (Real(a)) + sumsq(Imag(a));
@@ -1555,12 +1546,12 @@ private define test_linear_combination ()
 	ans1 = 1*a[0] + 2*a[1] + 3*a[2] + 4*a[3];
 	if (ans != ans1)
 	  failed ("%S*%S linear combination1 not equal to sum", _typeof(a), _typeof(b));
-	
+
 	ans1 = a[0]*1 + a[1]*2 + a[2]*3 + a[3]*4;
 	if (ans != ans1)
 	  failed ("%S*%S linear combination2 not equal to sum", _typeof(a), _typeof(b));
      }
-   
+
 }
 test_linear_combination ();
 

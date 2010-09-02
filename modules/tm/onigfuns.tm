@@ -41,7 +41,7 @@
   "utf8"          "utf16_be"       "utf16_le"     "utf32_be"
   "utf32_le"      "euc_jp"         "euc_tw"       "euc_kr"
   "euc_cn"        "sjis"           "koi8_r"       "cp1251"
-  "big5"          "gb18030"  
+  "big5"          "gb18030"
 #v-
  If not specified, "utf8" will be used if the interpreter is UTF-8
  mode and "iso_8859_1" if not in UTF-8 mode.
@@ -49,8 +49,8 @@
  The regular expression syntax of the pattern may be specified by
  setting the \exmp{syntax} parameter to one of the following:
 #v+
-  "asis"    "posix_basic"  "posix_extended"  "emacs"  
-  "grep"    "gnu_regex"    "java"            "perl" 
+  "asis"    "posix_basic"  "posix_extended"  "emacs"
+  "grep"    "gnu_regex"    "java"            "perl"
   "perl_ng" "ruby"
 #v-
  If unspecified, the syntax defaults to \exmp{"perl"}.
@@ -78,7 +78,7 @@
    ONIG_OPTION_NOTEOL
    ONIG_OPTION_POSIX_REGION
 #v-
- See the onig library documentation for more information about the meaning 
+ See the onig library documentation for more information about the meaning
  of these flags.
 
  Upon success, this function returns a positive integer equal to 1 plus the
@@ -106,20 +106,20 @@
     pattern = "file ([^,]+), line ([0-9]+)";
     p = onig_new (pattern);
     if (onig_search (p, str))
-      { 
+      {
          match_pos = onig_nth_match (p, 0);
          file_pos = onig_nth_match (p, 1);
          line_pos = onig_nth_match (p, 2);
       }
 #v-
  \exmp{match_pos} will be set to \exmp{[9,29]}, \exmp{file_pos} to \exmp{[14,19,]}
- and \exmp{line_pos} to \exmp{[26,29]}.  These integer arrays may be used to 
+ and \exmp{line_pos} to \exmp{[26,29]}.  These integer arrays may be used to
  extract the substrings matched by the pattern, e.g.,
 #v+
      file = substr (str, file_pos[0]+1, file_pos[1]-file_pos[0]);
      line = str[[line_pos[0]:line_pos[1]-1]];
 #v-
- Alternatively, the function \ifun{onig_nth_substr} may be used to get the 
+ Alternatively, the function \ifun{onig_nth_substr} may be used to get the
  matched substrings:
 #v+
      file = onig_nth_substr (p, str, 0);

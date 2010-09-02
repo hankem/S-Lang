@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include "slinclud.h"
 #include <ctype.h>
@@ -26,7 +26,6 @@ USA.
 
 #define DEFINE_PSLWC_TOUPPER_TABLE
 #include "slupper.h"
-
 
 #define MODE_VARIABLE _pSLinterp_UTF8_Mode
 SLwchar_Type SLwchar_toupper (SLwchar_Type ch)

@@ -20,7 +20,7 @@
   types \exmp{lhs_type} and \exmp{rhs_type}.  The \exmp{return_type}
   parameter stipulates the return values of the function and the data
   type of the result of the binary operation.
-  
+
   The data type for \exmp{lhs_type} or \exmp{rhs_type} may be left
   unspecified by using \dtype{Any_Type} for either of these values.
   However, at least one of the parameters must correspond to a
@@ -74,7 +74,7 @@
      }
      __add_string (Vector_Type, &vector_string);
 #v-
-  Then 
+  Then
 #v+
      v = vector (3, 4, 5);
      vmessage ("v=%S", v);
@@ -115,7 +115,7 @@
 #v-
   or one of the following:
 #v+
-   "++", "--", 
+   "++", "--",
    "abs", "sign", "sqr", "mul2", "_ispos", "_isneg", "_isnonneg",
 #v-
   The third parameter, \exmp{unary_func} specifies the function to be

@@ -24,7 +24,7 @@ AC_DEFUN(JD_INIT,     dnl#{{{
 CONFIG_DIR=`pwd`
 cd $srcdir
 if test "`pwd`" != "$CONFIG_DIR"
-then 
+then
   AC_MSG_ERROR("This software does not support configuring from another directory.   See the INSTALL file")
 fi
 dnl# if test "X$PWD" != "X"
@@ -44,7 +44,7 @@ JD_Above_Dir2=`cd ..;pwd`
 dnl#}}}
 
 dnl# This function expand the "prefix variables.  For example, it will expand
-dnl# values such as ${exec_prefix}/foo when ${exec_prefix} itself has a 
+dnl# values such as ${exec_prefix}/foo when ${exec_prefix} itself has a
 dnl# of ${prefix}.  This function produces the shell variables:
 dnl# jd_prefix_libdir, jd_prefix_incdir
 AC_DEFUN(JD_EXPAND_PREFIX, dnl#{{{
@@ -61,7 +61,7 @@ AC_DEFUN(JD_EXPAND_PREFIX, dnl#{{{
     then
       jd_exec_prefix="$exec_prefix"
     fi
-  
+
     dnl#Unfortunately, exec_prefix may have a value like ${prefix}, etc.
     dnl#Let the shell expand those.  Yuk.
     eval `sh <<EOF
@@ -149,7 +149,7 @@ AC_DEFUN(JD_SET_RPATH, dnl#{{{
 if test "X$1" != "X"
 then
   if test "X$RPATH" = "X"
-  then 
+  then
     JD_INIT_RPATH
     if test "X$RPATH" != "X"
     then
@@ -196,7 +196,6 @@ AC_SUBST(JD_UP_NAME[]_INCLUDE)dnl
 undefine([JD_UP_NAME])dnl
 ])
 
-
 dnl#}}}
 
 AC_DEFUN(JD_FIND_GENERIC, dnl#{{{
@@ -226,7 +225,7 @@ then
  JD_Search_Dirs="$JD_Search_Dirs $HOME/include,$HOME/sys/$ARCH/lib"
 fi
 
-# Now add the standard system includes.  The reason for doing this is that 
+# Now add the standard system includes.  The reason for doing this is that
 # the other directories may have a better chance of containing a more recent
 # version.
 
@@ -266,7 +265,7 @@ if test -n "[$]JD_UP_NAME[]_LIB_DIR"
 then
     jd_have_$1="yes"
 else
-    echo Unable to find the $JD_UP_NAME library.  
+    echo Unable to find the $JD_UP_NAME library.
     echo You may have to edit $CONFIG_DIR/src/Makefile.
     JD_UP_NAME[]_INCLUDE=$JD_Above_Dir/$1/src
     JD_UP_NAME[]_LIB_DIR=$JD_Above_Dir/$1/src/"$ARCH"objs
@@ -304,7 +303,6 @@ dnl AC_SUBST(RPATH_[]JD_UP_NAME)dnl
 undefine([JD_UP_NAME])dnl
 ])
 
-
 dnl#}}}
 
 AC_DEFUN(JD_FIND_SLANG, dnl#{{{
@@ -332,7 +330,6 @@ then
 fi
 ])
 
-
 dnl#}}}
 
 IEEE_CFLAGS=""
@@ -351,7 +348,6 @@ case "$host_cpu" in
     IEEE_CFLAGS=""
 esac
 ])
-
 
 dnl#}}}
 
@@ -373,11 +369,10 @@ PROGRAM_ELF_ORULES="$PROGRAM_ELF_ORULES
 "
 ])
 
-
 dnl#}}}
 
 AC_DEFUN(JD_CREATE_EXEC_RULE, dnl#{{{
-[  
+[
 PROGRAM_OBJECT_RULES="$PROGRAM_OBJECT_RULES
 $1 : \$(OBJDIR)/$1
 	@echo $1 created in \$(OBJDIR)
@@ -387,7 +382,6 @@ $1 : \$(OBJDIR)/$1
 	cd \$(OBJDIR); \$(COMPILE_CMD) \$("$1"_INC) \$(EXECINC) \$(SRCDIR)/$1.c
 "
 ])
-
 
 dnl#}}}
 
@@ -436,19 +430,17 @@ AC_SUBST(PROGRAM_OBJECTS)dnl
 AC_SUBST(PROGRAM_ELFOBJECTS)dnl
 ])
 
-
 dnl#}}}
 
 AC_DEFUN(JD_APPEND_RULES, dnl#{{{
-[ 
+[
  echo "$PROGRAM_OBJECT_RULES" >> $1
 ])
-
 
 dnl#}}}
 
 AC_DEFUN(JD_APPEND_ELFRULES, dnl#{{{
-[ 
+[
  echo "$PROGRAM_ELF_ORULES" >> $1
 ])
 
@@ -486,7 +478,7 @@ TERMCAP=-ltermcap
 
 for terminfo_dir in $JD_Terminfo_Dirs
 do
-   if test -d $terminfo_dir 
+   if test -d $terminfo_dir
    then
       AC_MSG_RESULT(yes)
       TERMCAP=""
@@ -500,7 +492,6 @@ fi
 AC_SUBST(TERMCAP)dnl
 AC_SUBST(MISC_TERMINFO_DIRS)dnl
 ])
-
 
 dnl#}}}
 
@@ -538,7 +529,6 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ ]], [[
 
 dnl#}}}
 
-
 AC_DEFUN(JD_ELF_COMPILER, dnl#{{{
 [
 dnl #-------------------------------------------------------------------------
@@ -558,7 +548,6 @@ AC_CHECK_HEADER(dlfcn.h,[
     fi
    ])])
 AC_SUBST(DYNAMIC_LINK_LIB)
-
 
 if test "$GCC" = yes
 then
@@ -756,8 +745,6 @@ AC_SUBST(F77)
 AC_SUBST(F77_LIBS)
 ])
 
-
-
 dnl#}}}
 
 dnl# This macro process the --with-xxx, --with-xxxinc, and --with-xxxlib
@@ -770,14 +757,14 @@ AC_DEFUN(JD_WITH_LIBRARY_PATHS, dnl#{{{
  jd_$1_include_dir=""
  jd_$1_library_dir=""
  if test X"$jd_with_$1_library" = X
- then 
+ then
    jd_with_$1_library=""
  fi
 
  AC_ARG_WITH($1,
   [  --with-$1=DIR      Use DIR/lib and DIR/include for $1],
   [jd_with_$1_arg=$withval], [jd_with_$1_arg=unspecified])
-  
+
  case "x$jd_with_$1_arg" in
    xno)
      jd_with_$1_library="no"
@@ -815,7 +802,7 @@ AC_DEFUN(JD_WITH_LIBRARY_PATHS, dnl#{{{
     ;;
  esac
 
- AC_ARG_WITH($1inc, 
+ AC_ARG_WITH($1inc,
   [  --with-$1inc=DIR   $1 include files in DIR],
   [jd_with_$1inc_arg=$withval], [jd_with_$1inc_arg=unspecified])
  case "x$jd_with_$1inc_arg" in
@@ -836,8 +823,8 @@ dnl#}}}
 
 dnl# This function checks for the existence of the specified library $1 with
 dnl# header file $2.  If the library exists, then the shell variables will
-dnl# be created: 
-dnl#  jd_with_$1_library=yes/no, 
+dnl# be created:
+dnl#  jd_with_$1_library=yes/no,
 dnl#  jd_$1_inc_file
 dnl#  jd_$1_include_dir
 dnl#  jd_$1_library_dir
@@ -871,12 +858,12 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
 	 /opt/include/$1,/opt/lib \
 	 /opt/$1/include,/opt/$1/lib \
 	 /opt/include,/opt/lib"
-	 
+
       if test X$3 != X
       then
         inc_and_lib_dirs="$3/include,$3/lib $inc_and_lib_dirs"
       fi
-  
+
       case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
@@ -887,7 +874,7 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
 	 * )
 	   exts="so a"
       esac
-   
+
       xincfile="$jd_$1_inc_file"
       xlibfile="lib$1"
       jd_with_$1_library="no"
@@ -899,7 +886,7 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
 	xlibdir=`echo $include_and_lib | tr ',' ' ' | awk '{print [$]2}'`
 	found=0
 	if test -r $xincdir/$xincfile
-	then 
+	then
 	  for E in $exts
 	  do
 	    if test -r "$xlibdir/$xlibfile.$E"
@@ -915,7 +902,7 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
 	if test $found -eq 1
 	then
 	  break
-	fi	
+	fi
       done
     fi
   fi

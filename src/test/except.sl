@@ -7,7 +7,7 @@ define test_exceptions ()
 {
    variable e;
    variable e_caught = NULL;
-   
+
    variable err_msg = "Caught testing, throwing MathError";
    variable err_obj = struct
      {
@@ -36,7 +36,7 @@ define test_exceptions ()
 	  failed ("e.line: %d != %d", e.line, Exception_Line);
 	e_caught = e;
      }
-   
+
    if (math_error_caught == 0)
      {
 	failed ("to catch MathError from inner catch");
@@ -44,12 +44,11 @@ define test_exceptions ()
 
    if (e_caught.error != MathError)
      failed ("throw not MathError: %S", e_caught);
-   
+
    if (e_caught.message != err_msg)
      failed ("throw MathError not message: %S", e_caught.message);
    if (e_caught.object != err_obj)
      failed ("throw MathError not object");
-
 
    variable finally_run = 0;
 
@@ -75,7 +74,7 @@ define test_exceptions ()
 	     finally_run++;
 	  }
      }
-   
+
    if (e_caught != MathError)
      failed ("MathError");
    if (finally_run != 10)
@@ -85,7 +84,7 @@ define test_exceptions ()
    e_caught = 0;
    variable bad_code_run = 0;
 
-   try 
+   try
      {
 	try
 	  {
@@ -101,7 +100,7 @@ define test_exceptions ()
    catch StackError;
    if (finally_run != 1)
      failed ("StackError finally not run");
-   
+
 }
 test_exceptions ();
 
@@ -130,7 +129,7 @@ define syntax_error ()
 	  eval ("define foo () {loop (10) {x;");
 	catch UndefinedNameError;
 
-	try 
+	try
 	  eval ("[1,2,3");
 	catch ParseError;
 
@@ -138,7 +137,7 @@ define syntax_error ()
 	try eval ("("); catch AnyError; num_evals++;
      }
    catch ParseError;
-   
+
    if (num_evals != 2)
      failed ("try eval: num_evals = %d", num_evals);
 }
@@ -194,7 +193,7 @@ private define test_try_with_return ()
      {
 	return -1;
      }
-   
+
    return -2;
 }
 
@@ -203,7 +202,7 @@ if (0 != test_try_with_return ())
 
 private define test_catch_with_return (frun)
 {
-   
+
    @frun = 0;
    try
      {
@@ -268,7 +267,7 @@ catch MyError;
 
 define test_throw_object (rethrow)
 {
-   variable foo_obj = struct 
+   variable foo_obj = struct
      {
 	foo="foo"
      };
@@ -288,7 +287,7 @@ define test_throw_object (rethrow)
 	  {
 	     if (e.object != foo_obj)
 	       failed ("throwing foo_obj failed");
-	     
+
 	     try (e)
 	       {
 		  throw MathError, "bar object thrown", bar_obj;
@@ -298,10 +297,10 @@ define test_throw_object (rethrow)
 		  if (e.object != bar_obj)
 		    failed ("throwing bar_obj failed");
 	       }
-	     
+
 	     if (rethrow)
 	       throw;
-	     
+
 	     variable e1 = __get_exception_info ();
 	     if (e1.object != foo_obj)
 	       failed ("e.object not equal to foo_obj after throwing bar_obj");
@@ -311,7 +310,7 @@ define test_throw_object (rethrow)
      {
 	if (rethrow == 0)
 	  failed ("catching IOError not expected");
-	
+
 	if (e.object != foo_obj)
 	  failed ("expected e.object=foo_obj after rethrow");
      }
@@ -337,7 +336,7 @@ define eb_stack_underflow ()
 	%vmessage ("Caught Stack underflow");
 	_clear_error ();
      }
-   
+
    variable x = ();
 }
 
@@ -349,7 +348,7 @@ define eb_syntax_error ()
 	  {
 	     _clear_error ();
 	  }
-	
+
 	eval ("define error ();");
 	eval ("define foo () {loop (10) {x;");
 	eval ("[1,2,3");

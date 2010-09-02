@@ -16,7 +16,7 @@ define slsh_main ()
        || not _eqs (s1.a2, s.a2[i,*])
        || not _eqs (s1.a3, s.a3[i,*,*]))
      throw RunTimeError, "filtering on dim=0 failed";
-	
+
    i = [1,2];
    s1 = struct_filter (s, i; dim=1, copy);
    if ((s1.str != s.str)
@@ -24,7 +24,7 @@ define slsh_main ()
        || not _eqs (s1.a2, s.a2[*,i])
        || not _eqs (s1.a3, s.a3[*,i,*]))
      throw RunTimeError, "filtering on dim=1 failed";
-	
+
    i = [1,2];
    s1 = struct_filter (s, i; dim=2, copy);
    if ((s1.str != s.str)
@@ -34,8 +34,3 @@ define slsh_main ()
      throw RunTimeError, "filtering on dim=1 failed";
 }
 
-   
-   
-   
-
-	

@@ -111,15 +111,14 @@ define add_one_with_loop (x)
    return @x;
 }
 
-
 test_do_while (&add_one);
 test_do_while (&add_one_with_call);
 test_do_while (&add_one_with_loop);
-   
+
 test_while (&add_one);
 test_while (&add_one_with_call);
 test_while (&add_one_with_loop);
-   
+
 test_for (&add_one);
 test_for (&add_one_with_call);
 test_for (&add_one_with_loop);
@@ -129,13 +128,13 @@ private define test_loop_then ()
 {
    variable f;
    variable what;
-   
+
    foreach what (["then"])
      {
 	f = NULL;
 	loop (10)
 	  {
-	     if (what == "else") 
+	     if (what == "else")
 	       break;
 	  }
 	%else f = "else";
@@ -143,11 +142,11 @@ private define test_loop_then ()
 
 	if (f != what)
 	  failed ("loop-1 %s", what);
-	
+
 	f = NULL;
 	loop (10)
 	  {
-	     if (what == "else") 
+	     if (what == "else")
 	       break;
 	  }
 	then
@@ -158,28 +157,28 @@ private define test_loop_then ()
 
 	if (f != what)
 	  failed ("loop-2 %s", what);
-	
+
 	f = NULL;
 	loop (10)
 	  {
-	     if (what == "else") 
+	     if (what == "else")
 	       break;
 	  }
 	then
 	  f = "then";
-	
+
 	if (((what == "then") && (f != what))
 	    || ((what == "else") && (f != NULL)))
 	  failed ("loop-3 %s", what);
-	
+
 	f = NULL;
 	loop (10)
 	  {
-	     if (what == "else") 
+	     if (what == "else")
 	       break;
 	  }
 	% else f = "else";
-	
+
 	if (((what == "then") && (f != NULL))
 	    || ((what == "else") && (f != what)))
 	  failed ("loop-3 %s", what);

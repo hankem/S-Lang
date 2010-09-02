@@ -4,7 +4,7 @@
  * written by Eric S. Raymond <esr@snark.thyrsus.com> December 1994
  * to test the scrolling code in ncurses.
  *
- * Takes a filename argument.  It's a simple file-viewer with various 
+ * Takes a filename argument.  It's a simple file-viewer with various
  * scroll-up and scroll-down commands.
  *
  * n	-- scroll one line forward
@@ -102,8 +102,8 @@ char        **lptr, **olptr;
         case KEY_DOWN:
 	case 'n':
 	    olptr = lptr;
-	    for (i = 0; i < n; i++) 
-		if (lptr + LINES < lines + MAXLINES && lptr[LINES + 1]) 
+	    for (i = 0; i < n; i++)
+		if (lptr + LINES < lines + MAXLINES && lptr[LINES + 1])
 		    lptr++;
 	        else
 		    break;
@@ -113,15 +113,15 @@ char        **lptr, **olptr;
         case KEY_UP:
 	case 'p':
 	    olptr = lptr;
-	    for (i = 0; i < n; i++) 
+	    for (i = 0; i < n; i++)
 		if (lptr > lines)
 		    lptr--;
 	        else
 		    break;
 	    wscrl(stdscr, lptr - olptr);
             break;
-	   
-	 default: 
+
+	 default:
 	   move (0,0);
 	   clrtoeol ();
 	   printw ("Invalid input: %c", c);

@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
@@ -50,7 +50,6 @@ static void free_thrown_object (void)
      }
 }
 
-
 typedef struct Error_Context_Type
 {
    int err;
@@ -74,7 +73,7 @@ int _pSLang_push_error_context (void)
 
    if (NULL == (c = (Error_Context_Type *)SLmalloc (sizeof (Error_Context_Type))))
      return -1;
-   
+
    c->next = Error_Context;
    c->err = _pSLang_Error;
    c->err_cleared = 0;
@@ -127,7 +126,7 @@ int _pSLang_pop_error_context (int use_current_queue)
    e = Error_Context;
    if (e == NULL)
      return -1;
-   
+
    Error_Context = e->next;
 
    if ((use_current_queue == 0) || (e->rethrow))
@@ -148,8 +147,7 @@ int _pSLang_pop_error_context (int use_current_queue)
 	if (e->object_was_thrown)
 	  SLang_free_object (&e->object_thrown);
      }
-     
-				     
+
    if (_pSLang_Error == 0)
      {
 	if (e->err_cleared == 0)
@@ -187,7 +185,7 @@ static void do_file_line_funct_error (SLCONST char *file, int linenum, SLCONST c
 {
    if ((file == NULL) || (_pSLang_Error == 0))
      return;
-   
+
    if (Last_Function_With_Error == function)	       /* either slstring or "<top-level>" */
      return;
    Last_Function_With_Error = function;
@@ -233,7 +231,7 @@ int _pSLerr_set_line_info (SLFUTURE_CONST char *file, int linenum, SLFUTURE_CONS
 
    File_With_Error = file;
    Function_With_Error = fun;
-   
+
 #if SLANG_HAS_BOSEOS && SLANG_HAS_DEBUGGER_SUPPORT
    (void) _pSLcall_debug_hook (file, linenum);
 #endif
@@ -267,13 +265,12 @@ static char *get_error_msg_from_queue (int type)
    return _pSLerr_get_error_from_queue (e->err_queue, type);
 }
 
-
 void (*SLang_User_Clear_Error)(void) = NULL;
 void _pSLerr_clear_error (int set_clear_err_flag)
 {
    SLang_set_error (0);
    free_thrown_object ();
-   
+
    if ((Error_Context != NULL)
        && (set_clear_err_flag))
      {
@@ -292,10 +289,10 @@ void _pSLerr_clear_error (int set_clear_err_flag)
 static int rethrow_error (void)
 {
    Error_Context_Type *e = Error_Context;
-   
+
    if (e == NULL)
      return 0;
-   
+
    SLang_set_error (e->err);
    e->rethrow=1;
    e->err_cleared = 0;
@@ -340,7 +337,7 @@ int _pSLerr_throw (void)
 	_pSLang_verror (SL_NumArgs_Error, "expecting: throw error [, optional-message [, optional-arg]]");
 	return -1;
      }
-   
+
    if (msg != NULL)
      {
 	_pSLang_verror (e, "%s", msg);
@@ -348,7 +345,7 @@ int _pSLerr_throw (void)
      }
    else
      SLang_set_error (e);
-   
+
    return 0;
 }
 
@@ -401,10 +398,10 @@ static void get_exception_info_intrinsic (void)
 	(void) SLang_push_null ();
 	return;
      }
-	
+
    desc = SLerr_strerror (err);
    (void) _pSLerr_get_last_error_line_info (&file, &linenum, &function);
-   
+
    field_types[0] = SLANG_INT_TYPE;
    field_values[0] = (VOID_STAR) &err;
 
@@ -413,14 +410,14 @@ static void get_exception_info_intrinsic (void)
 
    field_types[2] = SLANG_STRING_TYPE;
    field_values[2] = (VOID_STAR) &file;
-   
+
    field_types[3] = SLANG_INT_TYPE;
    field_values[3] = (VOID_STAR) &linenum;
 
    field_types[4] = SLANG_STRING_TYPE;
    field_values[4] = (VOID_STAR) &function;
 
-   if ((Error_Context == NULL) 
+   if ((Error_Context == NULL)
        || (Error_Context->object_was_thrown == 0))
      {
 	char *null = NULL;
@@ -470,10 +467,10 @@ static int new_exception_hook (SLFUTURE_CONST char *name, SLFUTURE_CONST char *d
 	  }
 	return 0;
      }
-   
+
    if (-1 == SLns_add_iconstant (NULL, name, SLANG_INT_TYPE, err_code))
      return -1;
-   
+
    return 0;
 }
 
@@ -489,10 +486,10 @@ int _pSLang_init_exceptions (void)
    _pSLerr_New_Exception_Hook = new_exception_hook;
    if (-1 == _pSLerr_init_interp_exceptions ())
      return -1;
-   
+
    if (-1 == SLadd_intrin_fun_table(Except_Table, NULL))
      return -1;
-   
+
    return 0;
 }
 

@@ -6,8 +6,8 @@ private define needs_globbing (path)
 private define do_the_glob (dir, pat)
 {
    variable files;
-   
-   if (dir == "") 
+
+   if (dir == "")
      files = listdir (".");
    else
      files = listdir (dir);
@@ -77,7 +77,7 @@ define glob ()
 
 	variable base = path_basename (pat);
 	variable dir = "";
-	if (base != pat) 
+	if (base != pat)
 	  dir = path_dirname (pat);
 
 	if (needs_globbing (dir))

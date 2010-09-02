@@ -69,14 +69,13 @@ static SLang_IConstant_Type Module_Constants [] =
    SLANG_END_TABLE
 };
 
-
 int init_newt_module_ns (char *ns)
 {
    if ((-1 == SLns_add_intrin_fun_table (ns, Module_Funs, "__NEWT__"))
        || (-1 == SLns_add_intrin_var_table (ns, Module_Variables, NULL))
        || (-1 == SLns_add_iconstant_table (ns, Module_Constants, NULL)))
      return -1;
-   
+
    Ok_To_Draw = 0;
 
    (void) SLang_add_cleanup_function (finished);

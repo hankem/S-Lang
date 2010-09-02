@@ -43,7 +43,7 @@ if ("1" != strcat ("", "1"))
 if ("abcdefg" != strcat ("a", "b", "c", "d", "e", "f", "g")) failed ("strcat");
 if ("abcdefg" != strcat ("abcdefg")) failed ("strcat 2");
 
-if ((strtok (s)[0] != "hello") 
+if ((strtok (s)[0] != "hello")
     or (strtok(s)[1] != "world")
     or (strtok (s, "^a-z")[0] != "hello")
     or (strtok (s, "^a-z")[1] != "world")
@@ -57,7 +57,7 @@ define test_create_delimited_string ()
    variable delim = ();
    variable eresult = ();
    variable result;
-   
+
    result = create_delimited_string (delim, __push_args (args), n);
    if (eresult != result)
      failed ("create_delimited_string: expected: %s, got: %s",
@@ -65,7 +65,7 @@ define test_create_delimited_string ()
 
    if (n)
      result = strjoin ([__push_args (args)], delim);
-   else 
+   else
      result = strjoin (String_Type[0], delim);
 
    if (eresult != result)
@@ -73,12 +73,10 @@ define test_create_delimited_string ()
 	     eresult, result);
 }
 
-	
 test_create_delimited_string ("aXXbXXcXXdXXe",
 			      "XX",
 			      "a", "b", "c", "d", "e",
 			      5);
-
 
 test_create_delimited_string ("", "", "", 1);
 test_create_delimited_string ("a", ",", "a", 1);
@@ -101,7 +99,6 @@ test_str_delete_chars ("abcdefg", "^ag", "ag");
 test_str_delete_chars ("abcdefg", "a-z", "");
 test_str_delete_chars ("abcdefgABCDEF", "\l"R, "ABCDEF");
 test_str_delete_chars ("abcdefgABCDEF", "^\l"R, "abcdefg");
-
 
 static define test_strtrans (s, from, to, ans)
 {
@@ -146,7 +143,7 @@ define test_str_replace_all (a, b, c, result, n)
 
    if (new != result)
      failed ("strreplace (%s, %s, %s, %d) ==> %s!=%s", a, b, c, n, new, result);
-   
+
    if (n == 1)
      {
 	n = str_replace (a, b, c);
@@ -166,7 +163,7 @@ define test_str_replace (a, b, c, result, n)
 
    if (new != result)
      failed ("strreplace (%s, %s, %s, %d) ==> %s!=%s", a, b, c, n, new, result);
-   
+
    if (n == 1)
      {
 	n = str_replace (a, b, c);
@@ -175,7 +172,7 @@ define test_str_replace (a, b, c, result, n)
 	if (new != result)
 	  failed ("str_replace (%s, %s, %s) ==> %s!=%S", a, b, c, new, result);
      }
-   
+
    % Alternate interface
    variable new1 = strreplace (a, b, c);
    (new,) = strreplace (a, b, c, strbytelen (a));
@@ -264,7 +261,7 @@ foreach D ([',', 0xAB, 0xABCD])
 			      char(D),char(D),char(D),char(D),char(D),char(D),
 			      char(D),char(D),char(D)),
 		      strlen (S)));
-   
+
    (S,) = strreplace (S, ",", sprintf ("%c", D), strlen (S));
    test (&extract_element,(S,0,,D,), "foo0");
    test (&extract_element,(S,1,,D,), "bar1");
@@ -280,7 +277,7 @@ foreach D ([',', 0xAB, 0xABCD])
    test(&is_list_element, (S, "goo", ,D,), 0);
    test(&is_list_element, (S, "8", ,D,), 8+1);
    test(&is_list_element, (S, "", ,D,), 3+1);
-   
+
    S = ",1,";
    (S,) = strreplace (S, ",", sprintf ("%c", D), strlen (S));
    test (&extract_element,(S,0,,D,), "");
@@ -311,7 +308,7 @@ static define test_strchop (s, d, len, nth, nth_val)
    variable a = strchop (s, d, 0);
    if (length (a) != len)
      failed ("strchop (%S,%S,0) ==> %S", s,d,a);
-   
+
    if (a[nth] != nth_val)
      failed ("strchop (%S,%S,0)[%d] ==> %S, not %S", s,d,nth,a[nth],nth_val);
 }
@@ -392,7 +389,6 @@ private define test_foreach ()
 }
 test_foreach ();
 
-
 define test_char (c, s)
 {
    variable cs = char (c);
@@ -416,7 +412,6 @@ _for $1 (0, 4000, 10)
    () = sprintf ("%f", -10^-$1);
 }
 #endif
-	 
 
 define test_count_occur (func, s, ch, ans)
 {
@@ -477,6 +472,6 @@ test_strskipbytes ({"abc def", "a-z", 0, 2}, 2);
 test_strskipbytes ({"abc def", "a-z", 0, 4}, 3);
 test_strskipbytes ({"abc def", "a-z", 0, -1}, 3);
 test_strskipbytes ({"abc def", "a-z", -3, -1}, 6);
-		      
+
 print ("Ok\n");
 exit (0);

@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include "slinclud.h"
 #include <ctype.h>
@@ -31,7 +31,7 @@ static int Width_Flags = 0;
 int SLwchar_wcwidth (SLwchar_Type ch)
 {
    int w;
-   
+
    SL_WIDTH_ALOOKUP(w,ch);
 
    if ((w == 1) || (w == 4))
@@ -39,7 +39,7 @@ int SLwchar_wcwidth (SLwchar_Type ch)
 
    if (Width_Flags & SLWCWIDTH_SINGLE_WIDTH)
      return 1;
-   
+
    if (w == 3)
      {
 	if (Width_Flags & SLWCWIDTH_CJK_LEGACY)

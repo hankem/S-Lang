@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #ifndef SL_CONFIG_H
@@ -44,7 +44,6 @@ USA.
 #if defined(__BORLANDC__) && ((__BORLANDC__>>8) == 0x5)
 # define __BORLAND_V5__
 #endif
-
 
 #if defined(__WATCOMC__) && defined(__DOS__)
 # define  DOS386
@@ -157,7 +156,6 @@ USA.
 # define HAVE_VFSCANF	1
 # define HAVE_STRTOD	1
 #endif
-
 
 /* Does VMS have this??? */
 #if !defined(VMS) && !defined(_MSC_VER) && (!defined(__WATCOMC__) || defined(__QNX__))

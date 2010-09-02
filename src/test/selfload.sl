@@ -12,19 +12,19 @@ define crash ();
 
 define crash ()
 {
-   eval (V1);			       
+   eval (V1);
    crash ();
    if (X != "V1")
      failed ("V1");
 
-   if (1) 
+   if (1)
      {
 	eval (V2);
 	crash ();
 	if (X != "V1V2")
 	  failed ("V1V2");
 
-	if (1) 
+	if (1)
 	  eval (V1);
 	crash ();
 	if (X != "V1V2V1")
@@ -38,5 +38,4 @@ if (X != "V1V2V1V0") failed ("V1V2V1V0 : ", + X);
 
 print ("Ok\n");
 exit (0);
-
 

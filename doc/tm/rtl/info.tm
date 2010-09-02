@@ -33,7 +33,7 @@
     {
       variable n, name, a;
       a = _apropos ("Global", s, 0xF);
-      
+
       vmessage ("Found %d matches:", length (a));
       foreach name (a)
         message (name);
@@ -85,7 +85,7 @@
   looking for the documentation associated with the topic \exmp{t}.  If
   found, the documentation for \exmp{t} will be returned, otherwise the
   function will return \NULL.
-  
+
   Files may be added to the internal list via the \ifun{add_doc_file}
   or \ifun{set_doc_files} functions.
 \seealso{add_doc_file, set_doc_files, get_doc_files, _slang_doc_dir}
@@ -173,7 +173,7 @@
      define print_values ()
      {
         variable arg;
-        
+
         if (_NARGS == 0)
           {
              message ("Nothing to print");

@@ -102,7 +102,7 @@ static void set_c_struct (void)
    SLang_free_cstruct ((VOID_STAR) &C_Struct_Buf, C_Struct);
    if (-1 == SLang_pop_cstruct ((VOID_STAR) &C_Struct_Buf, C_Struct))
      return;
-   
+
    at = C_Struct_Buf.a;
    if ((at != NULL) && (at->data_type == SLANG_INT_TYPE))
      {
@@ -124,14 +124,13 @@ static void get_c_struct_via_ref (SLang_Ref_Type *r)
 static void test_pop_mmt (void)
 {
    SLang_MMT_Type *mmt;
-   
+
    if (NULL == (mmt = SLang_pop_mmt (SLang_peek_at_stack ())))
      return;
-   
+
    if (-1 == SLang_push_mmt (mmt))
      SLang_free_mmt (mmt);
 }
-
 
 typedef struct
 {
@@ -236,10 +235,9 @@ static int test_type_sput (SLtype type, SLFUTURE_CONST char *name)
 static int test_type_push (SLtype type, VOID_STAR addr)
 {
    (void) type;
-   
+
    return push_test_type (*(Test_Type **)addr);
 }
-
 
 static void new_test_type (void)
 {
@@ -254,7 +252,7 @@ static void new_test_type (void)
    (void) push_test_type (t);
    free_test_type (t);
 }
-     
+
 static int add_test_classes (void)
 {
    SLang_Class_Type *cl;
@@ -265,14 +263,13 @@ static int add_test_classes (void)
    (void) SLclass_set_sget_function (cl, test_type_sget);
    (void) SLclass_set_sput_function (cl, test_type_sput);
    (void) SLclass_set_push_function (cl, test_type_push);
-   
+
    if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE, sizeof (Test_Type *), SLANG_CLASS_TYPE_PTR))
      return -1;
    Test_Type_Id = SLclass_get_class_id (cl);
 
    return 0;
 }
-
 
 static void fake_import (char *);
 static SLang_Intrin_Fun_Type Intrinsics [] =
@@ -300,10 +297,10 @@ static void fake_import (char *ns_name)
    SLang_NameSpace_Type *ns = SLns_create_namespace (ns_name);
    if (ns == NULL)
      return;
-   
+
    (void) SLns_add_intrin_fun_table (ns, Intrinsics, NULL);
 }
-	
+
 int main (int argc, char **argv)
 {
    int i;
@@ -335,7 +332,7 @@ int main (int argc, char **argv)
        || (-1 == SLadd_intrin_fun_table (Intrinsics, NULL))
        || (-1 == add_test_classes ()))
      return 1;
-   
+
    SLang_Traceback = 1;
 
    if (-1 == SLang_set_argc_argv (argc, argv))
@@ -388,4 +385,3 @@ int main (int argc, char **argv)
    return SLang_get_error ();
 }
 
-	

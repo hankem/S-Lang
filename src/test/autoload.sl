@@ -67,13 +67,12 @@ if ((ns3->get_private_num () != 3)
     or (ns1->get_private_num () != 1))
   failed ("private namepaces were modified");
 
-
-if (is_defined ("private_foo") 
+if (is_defined ("private_foo")
     or is_defined ("ns1->private_foo")
     or is_defined ("ns2->private_foo")
     or is_defined ("ns3->private_foo"))
   failed ("private_foo was defined in a non-private namespace");
-						 
+
 print ("Ok\n");
 exit (0);
 #else

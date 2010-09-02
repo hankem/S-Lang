@@ -47,11 +47,11 @@ static int do_syscall_0 (int (*fun)(int), SLFile_FD_Type *f)
 
    if (-1 == SLfile_get_fd (f, &fd))
      return -1;
-   
+
    while ((-1 == (ret = (*fun) (fd)))
 	  && (0 == check_and_set_errno (errno)))
      ;
-   
+
    return ret;
 }
 
@@ -62,11 +62,11 @@ static int do_syscall_1 (int (*fun)(int, int), SLFile_FD_Type *f, int arg)
 
    if (-1 == SLfile_get_fd (f, &fd))
      return -1;
-   
+
    while ((-1 == (ret = (*fun) (fd, arg)))
 	  && (0 == check_and_set_errno (errno)))
      ;
-   
+
    return ret;
 }
 
@@ -77,11 +77,11 @@ static int do_syscall_struct_1 (int (*fun)(int, void *), SLFile_FD_Type *f, void
 
    if (-1 == SLfile_get_fd (f, &fd))
      return -1;
-   
+
    while ((-1 == (ret = (*fun) (fd, v)))
 	  && (0 == check_and_set_errno (errno)))
      ;
-   
+
    return ret;
 }
 
@@ -92,11 +92,11 @@ static int do_syscall_struct_2 (int (*fun)(int, int, void *), SLFile_FD_Type *f,
 
    if (-1 == SLfile_get_fd (f, &fd))
      return -1;
-   
+
    while ((-1 == (ret = (*fun) (fd, i, v)))
 	  && (0 == check_and_set_errno (errno)))
      ;
-   
+
    return ret;
 }
 
@@ -106,7 +106,6 @@ static int do_syscall_struct_2 (int (*fun)(int, int, void *), SLFile_FD_Type *f,
      do_syscall_struct_1((int(*)(int, void*))(fun), (f), (void*)(s))
 #define DO_SYSCALL_STRUCT_2(fun, f, i, s) \
      do_syscall_struct_2((int(*)(int, int, void*))(fun), (f), (i), (void*)(s))
-
 
 static int tcdrain_intrin (SLFile_FD_Type *f)
 {
@@ -152,7 +151,7 @@ static SLang_MMT_Type *allocate_termios (struct termios *s)
    s1 = (struct termios *) SLmalloc (sizeof (struct termios));
    if (s1 == NULL)
      return NULL;
-   
+
    memcpy (s1, s, sizeof (struct termios));
    if (NULL == (mmt = SLang_create_mmt (Termios_Type_Id, (VOID_STAR) s1)))
      SLfree ((char *) s1);
@@ -169,7 +168,7 @@ static void tcgetattr_intrin (SLFile_FD_Type *f)
 	SLang_push_null ();
 	return;
      }
-   
+
    mmt = allocate_termios (&s);	       /* NULL ok */
    if (-1 == SLang_push_mmt (mmt))
      SLang_free_mmt (mmt);
@@ -211,10 +210,9 @@ static void termios_get_cc (struct termios *s)
 
    for (i = 0; i < NCCS; i++)
      at_data[i] = (unsigned char) s->c_cc[i];
-   
+
    (void) SLang_push_array (at, 1);
 }
-
 
 static void termios_set_oflag (struct termios *s, int *flag)
 {
@@ -249,7 +247,7 @@ static void termios_set_cc (void)
    s = (struct termios *) SLang_object_from_mmt (mmt);
    if (at->num_elements != NCCS)
      {
-	SLang_verror (SL_TYPE_MISMATCH, 
+	SLang_verror (SL_TYPE_MISMATCH,
 		      "Expecting UChar_Type[%d]", NCCS);
 	goto free_and_return;
      }
@@ -265,14 +263,14 @@ static void termios_set_cc (void)
    SLang_free_mmt (mmt);
 }
 
-typedef struct 
+typedef struct
 {
    unsigned int bspeed;
    unsigned int speed;
 }
 Baudrate_Map_Type;
 
-Baudrate_Map_Type Baudrate_Map[] = 
+Baudrate_Map_Type Baudrate_Map[] =
 {
 #ifdef B0
    {B0, 0},
@@ -376,7 +374,7 @@ static int map_speed_to_bspeed (unsigned int speed, unsigned int *bspeed)
 
    b = Baudrate_Map;
    bmax = Baudrate_Map + (sizeof(Baudrate_Map)/sizeof(Baudrate_Map_Type)-1);
-   
+
    while (b < bmax)
      {
 	if (b->speed == speed)
@@ -396,7 +394,7 @@ static int map_bspeed_to_speed (unsigned int bspeed, unsigned int *speed)
 
    b = Baudrate_Map;
    bmax = Baudrate_Map + (sizeof(Baudrate_Map)/sizeof(Baudrate_Map_Type)-1);
-   
+
    while (b < bmax)
      {
 	if (b->bspeed == bspeed)
@@ -429,7 +427,7 @@ static void cfgetospeed_intrin (struct termios *t)
 }
 
 static int cfsetispeed_intrin (struct termios *t, unsigned int *speed)
-{   
+{
    unsigned int bspeed;
 
    if (-1 == map_speed_to_bspeed (*speed, &bspeed))
@@ -444,7 +442,7 @@ static int cfsetispeed_intrin (struct termios *t, unsigned int *speed)
 }
 
 static int cfsetospeed_intrin (struct termios *t, unsigned int *speed)
-{   
+{
    unsigned int bspeed;
 
    if (-1 == map_speed_to_bspeed (*speed, &bspeed))
@@ -458,28 +456,26 @@ static int cfsetospeed_intrin (struct termios *t, unsigned int *speed)
    return 0;
 }
 
-
 static int termios_dereference (SLtype type, VOID_STAR addr)
 {
    struct termios *s;
    SLang_MMT_Type *mmt;
-   
+
    (void) type;
    mmt = *(SLang_MMT_Type **) addr;
    if (NULL == (s = (struct termios *)SLang_object_from_mmt (mmt)))
      return -1;
-   
+
    mmt = allocate_termios (s);
    if (-1 == SLang_push_mmt (mmt))
      {
 	SLang_free_mmt (mmt);
 	return -1;
      }
-   
+
    return 0;
 }
 
-   
 #define DUMMY_TERMIOS_TYPE ((unsigned int)-1)
 #define T DUMMY_TERMIOS_TYPE
 #define F SLANG_FILE_FD_TYPE
@@ -510,7 +506,7 @@ static SLang_Intrin_Fun_Type Termios_Intrinsics [] =
    MAKE_INTRINSIC_2("termios_set_cflag", termios_set_cflag, V, T, I),
    MAKE_INTRINSIC_2("termios_set_lflag", termios_set_lflag, V, T, I),
    MAKE_INTRINSIC_0("termios_set_cc", termios_set_cc, V),
-   
+
    SLANG_END_INTRIN_FUN_TABLE
 };
 #undef T
@@ -712,7 +708,7 @@ static int register_termios_type (void)
 
    if (-1 == SLclass_set_destroy_function (cl, destroy_termios))
      return -1;
-   
+
    if (-1 == SLclass_set_deref_function (cl, termios_dereference))
      return -1;
 
@@ -725,14 +721,14 @@ static int register_termios_type (void)
    Termios_Type_Id = SLclass_get_class_id (cl);
    if (-1 == SLclass_patch_intrin_fun_table1 (Termios_Intrinsics, DUMMY_TERMIOS_TYPE, Termios_Type_Id))
      return -1;
-       
+
    return 0;
 }
 
 int init_termios_module_ns (char *ns_name)
 {
    SLang_NameSpace_Type *ns;
-   
+
    ns = SLns_create_namespace (ns_name);
    if (ns == NULL)
      return -1;

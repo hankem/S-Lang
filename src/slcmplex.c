@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -169,7 +169,6 @@ double SLcomplex_abs (double *z)
 {
    return SLmath_hypot (z[0], z[1]);
 }
-
 
 /* It appears that FORTRAN assumes that the branch cut for the log function
  * is along the -x axis.  So, use this for atan2:
@@ -436,14 +435,14 @@ static double *not_implemented (char *fun, double *p)
 double *SLcomplex_asinh (double *asinhz, double *z)
 {
    double iz[2];
-   
+
    iz[0] = -z[1];
    iz[1] = z[0];
-   
+
    (void) SLcomplex_asin (iz, iz);
    asinhz[0] = iz[1];
    asinhz[1] = -iz[0];
-   
+
    return asinhz;
 }
 
@@ -451,7 +450,7 @@ double *SLcomplex_asinh (double *asinhz, double *z)
 double *SLcomplex_acosh (double *acoshz, double *z)
 {
    double iz[2];
-   
+
    (void) SLcomplex_acos (iz, z);
    acoshz[0] = -iz[1];
    acoshz[1] = iz[0];
@@ -463,14 +462,14 @@ double *SLcomplex_acosh (double *acoshz, double *z)
 double *SLcomplex_atanh (double *atanhz, double *z)
 {
    double iz[2];
-   
+
    iz[0] = -z[1];
    iz[1] = z[0];
-   
+
    (void) SLcomplex_atan (iz, iz);
    atanhz[0] = iz[1];
    atanhz[1] = -iz[0];
-   
+
    return atanhz;
 }
 

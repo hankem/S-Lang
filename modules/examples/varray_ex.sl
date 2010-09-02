@@ -33,5 +33,3 @@ y = 0;				       %  remove the map
 
 exit (0);
 
-
-

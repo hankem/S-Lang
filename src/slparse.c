@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -308,7 +308,7 @@ static Token_List_Type *push_token_list (void)
 {
    if (Token_List_Stack_Depth == MAX_TOKEN_LISTS)
      {
-	_pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED, 
+	_pSLparse_error (SL_BUILTIN_LIMIT_EXCEEDED,
 			"Token list stack size exceeded", NULL, 0);
 	return NULL;
      }
@@ -394,7 +394,7 @@ static int append_copy_of_string_token (_pSLang_Token_Type *t)
 
    t1 = Token_List->stack + Token_List->len;
    *t1 = *t;
-   
+
    if (t->v.s_val == NULL)
      return -1;
 
@@ -408,7 +408,7 @@ static int append_copy_of_string_token (_pSLang_Token_Type *t)
 }
 
 static int append_int_as_token (int n)
-{     
+{
    _pSLang_Token_Type num_tok;
 
    init_token (&num_tok);
@@ -537,7 +537,7 @@ static int compile_token_list (void)
  * with the elements at pos1, e.g.,
  * ...ABCDEabc ==> ...abcABCDE
  * where pos1 denotes A and pos2 denotes a.
- * 
+ *
  * NOTE: The caller must make special provisions for NO_OP_LITERAL tokens.
  */
 static int token_list_element_exchange (unsigned int pos1, unsigned int pos2)
@@ -631,7 +631,7 @@ static void compile_eos (void)
 static int compile_bos (_pSLang_Token_Type *t, int level)
 {
    _pSLang_Token_Type tok;
-   
+
    if (level > _pSLang_Compile_BOSEOS)
      return 0;
 
@@ -653,14 +653,14 @@ static void append_eos (void)
 static int append_bos (_pSLang_Token_Type *t, int level)
 {
    _pSLang_Token_Type tok;
-   
+
    if (level > _pSLang_Compile_BOSEOS)
      return 0;
 
    init_token (&tok);
    tok.type = BOS_TOKEN;
    tok.v.long_val = t->line_number;
-   
+
    append_token (&tok);
    free_token (&tok);
    return 1;
@@ -738,11 +738,11 @@ static void define_function (_pSLang_Token_Type *ctok, unsigned char type)
       case STATIC_TOKEN:
 	type = DEFINE_STATIC_TOKEN;
 	break;
-	
+
       case PUBLIC_TOKEN:
 	type = DEFINE_PUBLIC_TOKEN;
 	break;
-	
+
       case PRIVATE_TOKEN:
 	type = DEFINE_PRIVATE_TOKEN;
      }
@@ -1169,7 +1169,7 @@ static void statement (_pSLang_Token_Type *ctok)
       case DEFINE_TOKEN:
 	define_function (ctok, DEFINE_TOKEN);
 	break;
-	
+
       case TRY_TOKEN:
 	get_token (ctok);
 	handle_try_statement (ctok);
@@ -1327,12 +1327,12 @@ static int init_identifier_token (_pSLang_Token_Type *t, SLFUTURE_CONST char *na
 
    if (EOF_TOKEN == _pSLtoken_init_slstring_token (t, IDENT_TOKEN, name, strlen(name)))
      return -1;
-   
+
    return 0;
 }
 
 /* The try-statement looks like:
- * 
+ *
  *    TRY ev_optional catch_blocks_opt finally_block_opt
  *
  *    ev_optional:
@@ -1347,13 +1347,13 @@ static int init_identifier_token (_pSLang_Token_Type *t, SLFUTURE_CONST char *na
  *    exception-list:
  *       expression
  *       exception-list , exception
- * 
+ *
  *    finally_block_opt:
  *       FINALLY[:] block
- * 
+ *
  * The above gets compiled into the form:
- * 
- *    {ev_block} {try-statements} 
+ *
+ *    {ev_block} {try-statements}
  *       {exception-list}{catch-block}
  *               .
  *               .
@@ -1375,7 +1375,7 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
 	_pSLang_Token_Type e;
 	if (-1 == init_identifier_token (&e, "__get_exception_info"))
 	  return;
-	
+
 	append_token (&e);
 	free_token (&e);
 
@@ -1403,7 +1403,7 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
 	/* Expecting catch expression-list: */
 	compile_token_of_type (OBRACE_TOKEN);
 	get_token (ctok);
-	
+
 	push_token_list ();
 
 	while (_pSLang_Error == 0)
@@ -1416,7 +1416,7 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
 	       break;
 	     get_token (ctok);
 	  }
-	
+
 	if (ctok->type == COLON_TOKEN)
 	  get_token (ctok);
 	else if (ctok->type != SEMICOLON_TOKEN)
@@ -1427,19 +1427,19 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
 	compile_token_list ();
 
 	compile_token_of_type (CBRACE_TOKEN);
-	
+
 	/* catch block */
 	block (ctok);
 	num_catches++;
      }
-   
+
    if ((num_catches == 0)
        && (ctok->type != FINALLY_TOKEN))
      {
 	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting \"catch\" or \"finally\"", ctok, 0);
 	return;
      }
-   
+
    /* finally */
    if (ctok->type == FINALLY_TOKEN)
      {
@@ -1453,7 +1453,7 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
 	/* since this is called directly from statement, we need to get only
 	 * tokens that were used.  So, since we are not using this, put it back.
 	 */
-	unget_token (ctok);	       
+	unget_token (ctok);
 	compile_token_of_type (OBRACE_TOKEN);
 	compile_token_of_type (CBRACE_TOKEN);
      }
@@ -1512,7 +1512,7 @@ static _pSLang_Token_Type *allocate_token (void)
    v = (_pSLang_Token_Type *)SLmalloc (sizeof (_pSLang_Token_Type));
    if (v == NULL)
      return NULL;
-   
+
    init_token (v);
    return v;
 }
@@ -1524,7 +1524,7 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 #if SLANG_HAS_BOSEOS
    int eos;
 #endif
-   
+
 #if SLANG_HAS_BOSEOS
    eos = compile_bos (ctok, 2);
 #endif
@@ -1565,11 +1565,11 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 	function_args_expression (ctok, 0, 0, 0, NULL);
      }
    append_token_of_type (EARG_TOKEN);
-   
+
    compile_token_list ();
 
    compile_token_of_type (OBRACE_TOKEN);
-   
+
    v = var_tokens;
    while (v != NULL)
      {
@@ -1582,7 +1582,7 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 
    compile_token_of_type (CBRACE_TOKEN);
    compile_token_of_type (FOREACH_TOKEN);
-   
+
    free_return:
    while (var_tokens != NULL)
      {
@@ -1691,7 +1691,6 @@ void _pSLparse_start (SLang_Load_Type *llt)
 	else
 	  compile_token_of_type (EOF_TOKEN);
      }
-   
 
    if (_pSLang_Error)
      {
@@ -1803,7 +1802,7 @@ static int prefix_token_sval_field (_pSLang_Token_Type *tok, char *prefix)
 {
    char buf[2*SL_MAX_TOKEN_LEN];
    unsigned int len, prefix_len;
-   
+
    prefix_len = strlen (prefix);
    len = _pSLstring_bytelen (tok->v.s_val);   /* sign */
    if (len + prefix_len >= sizeof(buf))
@@ -1819,7 +1818,6 @@ static int prefix_token_sval_field (_pSLang_Token_Type *tok, char *prefix)
 
    return 0;
 }
-
 
 /*
  * This function parses a structure definition block.  It returns the names
@@ -1841,7 +1839,7 @@ static _pSLang_Token_Type *
    char buf[64];
 
    n = m = 0;
-   while (_pSLang_Error == 0) 
+   while (_pSLang_Error == 0)
      {
 	_pSLang_Token_Type *new_tok;
 	int is_deref = 0;
@@ -1849,7 +1847,7 @@ static _pSLang_Token_Type *
 	if (assign_ok && (ctok->type == DEREF_TOKEN))
 	  {
 	     /* struct { @ expr, ... } */
-	     
+
 	     (void) SLsnprintf (buf, sizeof(buf), "@%d", n);
 	     free_token (ctok);
 	     if (EOF_TOKEN == _pSLtoken_init_slstring_token (ctok, STRING_TOKEN, buf, strlen (buf)))
@@ -1862,7 +1860,7 @@ static _pSLang_Token_Type *
 	     if (IDENT_TOKEN != ctok->type)
 	       break;
 	  }
-	
+
 	new_tok = allocate_token ();
 	if (new_tok == NULL)
 	  break;
@@ -1879,7 +1877,7 @@ static _pSLang_Token_Type *
 	name_list_tail = new_tok;
 
 	n++;
-	
+
 	if ((COMMA_TOKEN == get_token (ctok))
 	    && (is_deref == 0))
 	  {
@@ -1889,7 +1887,7 @@ static _pSLang_Token_Type *
 
 	if (assign_ok == 0)
 	  break;
-	
+
 	if ((ASSIGN_TOKEN == ctok->type) || is_deref)
 	  {
 	     /* name = ... */
@@ -1924,7 +1922,7 @@ static _pSLang_Token_Type *
 	free_token_linked_list (name_list_root);
 	return NULL;
      }
-   
+
    if (n == 0)
      {
 	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting a qualifier", ctok, 0);
@@ -1965,7 +1963,7 @@ static int handle_struct_fields (_pSLang_Token_Type *ctok, int assign_ok)
 	append_int_as_token (m);
 	append_token_of_type (STRUCT_WITH_ASSIGN_TOKEN);
      }
-   
+
    if (_pSLang_Error)
      return -1;
 
@@ -1979,10 +1977,10 @@ static int handle_struct_fields (_pSLang_Token_Type *ctok, int assign_ok)
  * 	struct-field-name [= simple_expr], struct-field-list
  * 	struct-field-name [= simple_expr]
  *
- * Generates code: 
+ * Generates code:
  *    "field-name-1" ... "field-name-N" N STRUCT_TOKEN
  * - OR -
- *    expr-k1 "field-name-k1" ... expr-kM "field-name-kM"  
+ *    expr-k1 "field-name-k1" ... expr-kM "field-name-kM"
  *        "name-1" ... "field-name-N" N M STRUCT_DEF_ASSIGN_TOKEN
  */
 static void struct_declaration (_pSLang_Token_Type *ctok, int assign_ok)
@@ -1996,7 +1994,7 @@ static void struct_declaration (_pSLang_Token_Type *ctok, int assign_ok)
 
    if (-1 == handle_struct_fields (ctok, assign_ok))
      return;
-   
+
    if (ctok->type != CBRACE_TOKEN)
      {
 	_pSLparse_error (SL_SYNTAX_ERROR, "Expecting }", ctok, 0);
@@ -2164,8 +2162,8 @@ static void assignment_expression (_pSLang_Token_Type *ctok)
    if (ctok->type == NO_OP_LITERAL)
      {
 	/* This is called from try_multiple_assignment with a new token list.
-	 * The tokens added to that list collectively make up a object that 
-	 * is treated as a literal.  Reset the list start position to 
+	 * The tokens added to that list collectively make up a object that
+	 * is treated as a literal.  Reset the list start position to
 	 * those start of those elements.
 	 */
 	start_pos = 0;
@@ -2260,7 +2258,7 @@ static void handle_binary_sequence (_pSLang_Token_Type *, unsigned char);
 static void handle_sc_sequence (_pSLang_Token_Type *ctok, unsigned char level)
 {
    unsigned char type = ctok->type;
-   
+
    while ((ctok->type == type) && (_pSLang_Error == 0))
      {
 	append_token_of_type (OBRACE_TOKEN);
@@ -2307,7 +2305,6 @@ static void handle_compare_sequence (_pSLang_Token_Type *ctok, unsigned char lev
    append_token_of_type (CBRACE_TOKEN);
    append_token_of_type (_COMPARE_TOKEN);
 }
-
 
 static void handle_binary_sequence (_pSLang_Token_Type *ctok, unsigned char max_level)
 {
@@ -2424,7 +2421,7 @@ static void simple_expression (_pSLang_Token_Type *ctok)
      return;
 
    handle_binary_sequence (ctok, 0xFF);
-   
+
    if (ctok->type == QUESTION_TOKEN)
      {
 	append_token_of_type (OBRACE_TOKEN);
@@ -2657,7 +2654,7 @@ static int get_identifier_expr_token (_pSLang_Token_Type *ctok)
  *	 postfix-expression ( function-args-expression )
  *	 postfix-expression . identifier
  *       postfix-expression ^ unary-expression
- * 
+ *
  * Not yet supported:
  *	 postfix-expression ++
  *	 postfix-expression --
@@ -2698,7 +2695,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	postfix_expression (ctok);
 	append_token_of_type (DEREF_TOKEN);
 	break;
-#endif	
+#endif
       case IDENT_TOKEN:
 	append_identifier_token (ctok);
 	break;
@@ -2846,7 +2843,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	   case OBRACKET_TOKEN:	       /* X[args] ==> [args] X ARRAY */
 	     get_token (ctok);
 	     append_token_of_type (ARG_TOKEN);
-	     if (ctok->type != CBRACKET_TOKEN) 
+	     if (ctok->type != CBRACKET_TOKEN)
 	       array_index_expression (ctok);
 
 	     if (ctok->type != CBRACKET_TOKEN)
@@ -2876,8 +2873,8 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 		  /* token_list_element_exchange (start_pos, end_pos); */
 		  token_list_element_exchange (end_pos-1, end_pos);
 		  break;
-	       } 
-	     
+	       }
+
 	     if (CPAREN_TOKEN != get_token (ctok))
 	       {
 		  function_args_expression (ctok, 1, 1, 1, NULL);
@@ -3051,7 +3048,7 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 	     simple_expression (ctok);
 	     if ((ctok->type != COMMA_TOKEN)
 		 && (ctok->type != CPAREN_TOKEN)
-		 && ((handle_qualifiers == 0) 
+		 && ((handle_qualifiers == 0)
 		     || (ctok->type != SEMICOLON_TOKEN)))
 	       {
 		  _pSLparse_error (SL_SYNTAX_ERROR, "Expecting ')'", ctok, 0);
@@ -3069,7 +3066,7 @@ static int check_for_lvalue (unsigned char eqs_type, _pSLang_Token_Type *ctok)
    if ((ctok == NULL)
        && (NULL == (ctok = get_last_token ())))
      type = ILLEGAL_TOKEN;
-   else 
+   else
      type = ctok->type;
 
    eqs_type -= ASSIGN_TOKEN;
@@ -3140,20 +3137,20 @@ static void array_index_expression (_pSLang_Token_Type *ctok)
 	     if (num_commas)
 	       _pSLparse_error (SL_SYNTAX_ERROR, "Misplaced ':'", ctok, 0);
 	     return;
-	     
+
 	   case TIMES_TOKEN:
 	     append_token_of_type (_INLINE_WILDCARD_ARRAY_TOKEN);
 	     get_token (ctok);
 	     break;
-	     
+
 	   case COMMA_TOKEN:
 	     _pSLparse_error (SL_SYNTAX_ERROR, "Misplaced ','", ctok, 0);
 	     return;
-	     
+
 	   default:
 	     simple_expression (ctok);
 	  }
-	
+
 	if (ctok->type != COMMA_TOKEN)
 	  return;
 	num_commas++;
@@ -3178,7 +3175,7 @@ static void inline_array_expression (_pSLang_Token_Type *ctok)
 
    if (ctok->type == COLON_TOKEN)	       /* [:...] */
      append_token_of_type (_NULL_TOKEN);
-   else if (ctok->type != CBRACKET_TOKEN) 
+   else if (ctok->type != CBRACKET_TOKEN)
      array_index_expression (ctok);
 
    if (ctok->type == COLON_TOKEN)

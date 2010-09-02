@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 /* This file is best edited with a folding editor */
@@ -2217,7 +2217,7 @@ int SLtt_set_cursor_visibility (int show)
 {
 #if defined(WIN32_VIDEO)
    CONSOLE_CURSOR_INFO c;
-     
+
    if (0 == GetConsoleCursorInfo (hStdout, &c))
      return -1;
    c.bVisible = (show ? TRUE: FALSE);
@@ -2341,10 +2341,10 @@ int SLtt_set_color (int obj, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg,
      been set yet, set it to the new color */
    if ((obj == 0) && (Attribute_Byte == 0))
      SLtt_reverse_video (0);
-   
+
    if (_pSLtt_color_changed_hook != NULL)
      (*_pSLtt_color_changed_hook)();
-   
+
    return 0;
 }
 
@@ -2360,7 +2360,6 @@ static void fixup_colors (void)
 
    SLtt_normal_video ();
 }
-
 
 /* FIXME!!! Add mono support.
  * The following functions have not been fully implemented.
@@ -2385,7 +2384,7 @@ int SLtt_utf8_enable (int mode)
 {
    /* FIXME: UTF-8 mode is disabled until the drivers support UTF-8 */
    mode = 0;
-   
+
    if (mode == -1)
      mode = _pSLtt_UTF8_Mode;
 

@@ -19,7 +19,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -103,14 +103,14 @@ static void char_cmd (SLwchar_Type *x) /*{{{*/
 {
    SLuchar_Type buf[SLUTF8_MAX_MBLEN + 1];
    int is_byte;
-   
+
    is_byte = ((signed)*x < 0);
    if (is_byte)
      {
 	buf[0] = (SLuchar_Type) (-(signed)*x);
 	buf[1] = 0;
      }
-   else if ((_pSLinterp_UTF8_Mode == 0) 
+   else if ((_pSLinterp_UTF8_Mode == 0)
 	    || (*x < 0x80))
      {
         buf[0] = (SLuchar_Type) *x;
@@ -119,13 +119,13 @@ static void char_cmd (SLwchar_Type *x) /*{{{*/
    else
      {
         SLuchar_Type *p;
-        
+
         p = SLutf8_encode (*x, buf, SLUTF8_MAX_MBLEN);
         if (p == NULL) p = buf;
-        
+
         *p = 0;
      }
-   
+
    SLang_push_string ((char *)buf);
 }
 
@@ -325,12 +325,10 @@ static void usage (void)
    SLang_free_slstring (msg);
 }
 
-
 static void guess_type (char *s)
 {
    SLang_push_datatype (SLang_guess_type(s));
 }
-
 
 static int load_string_or_file (int (*f) (SLFUTURE_CONST char *, SLFUTURE_CONST char *))
 {
@@ -349,7 +347,7 @@ static int load_string_or_file (int (*f) (SLFUTURE_CONST char *, SLFUTURE_CONST 
 	SLang_free_slstring (ns);
 	return -1;
      }
-   
+
    status = (*f) (file, ns);
    SLang_free_slstring (file);
    SLang_free_slstring (ns);
@@ -394,18 +392,18 @@ static int get_doc_string (char *file, char *topic)
 	ch = *line;
 	if ((ch == ' ') || (ch == '\t') || (ch == '\n') || (ch == '-'))
 	  continue;
-	
+
 	pos = strstr (line, topic);
 	if (pos == NULL)
 	  continue;
-	
+
 	ch = pos[topic_len];
 
 	/* Most common case */
-	if ((pos == line) 
+	if ((pos == line)
 	    && ((ch == '\n') || (ch == 0) || (ch == ' ') || (ch == '\t') || (ch == ',')))
 	  break;
-	
+
 	pos = line;
 	while (NULL != (pos = strchr (pos, ',')))
 	  {
@@ -419,7 +417,7 @@ static int get_doc_string (char *file, char *topic)
 		  continue;
 	       }
 	     ch = pos[topic_len];
-	     if ((ch == '\n') || (ch == ',') 
+	     if ((ch == '\n') || (ch == ',')
 		 || (ch == ' ') || (ch == '\t') || (ch == 0))
 	       break;
 	  }
@@ -498,7 +496,7 @@ static void set_doc_files_intrin (void)
 
    if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
      return;
-   
+
    _pSLstring_list_delete (Doc_Files);
    Doc_Files = NULL;
 
@@ -522,14 +520,14 @@ static void get_doc_string_intrin (char *topic)
      {
 	if (-1 == SLang_pop_slstring (&file))
 	  return;
-	
+
 	if (-1 == get_doc_string (file, topic))
 	  (void) SLang_push_null ();
-	
+
 	SLang_free_slstring (file);
 	return;
      }
-   
+
    if ((Doc_Files == NULL)
        || (NULL == (files = Doc_Files->buf)))
      {
@@ -542,7 +540,7 @@ static void get_doc_string_intrin (char *topic)
 	file = files[i];
 	if (file == NULL)
 	  continue;
-	
+
 	if (0 == get_doc_string (file, topic))
 	  return;
      }
@@ -557,7 +555,7 @@ static int push_string_array_elements (SLang_Array_Type *at)
 
    if (at == NULL)
      return -1;
-   
+
    strs = (char **)at->data;
    num = at->num_elements;
    for (i = 0; i < num; i++)
@@ -572,7 +570,6 @@ static int push_string_array_elements (SLang_Array_Type *at)
    return 0;
 }
 
-	
 static void intrin_apropos (void)
 {
    int num_args;
@@ -587,7 +584,7 @@ static void intrin_apropos (void)
      return;
    if (-1 == SLang_pop_slstring (&pat))
      return;
-   
+
    namespace_name = NULL;
    at = NULL;
    if (num_args == 3)
@@ -722,16 +719,16 @@ static int do_obj_cmp_fun (int (*fun)(SLang_Object_Type *, SLang_Object_Type *))
 {
    int eqs;
    SLang_Object_Type a, b;
-   
+
    if (-1 == SLang_pop (&b))
      return -1;
-   
+
    if (-1 == SLang_pop (&a))
      {
 	SLang_free_object (&b);
 	return -1;
      }
-   
+
    eqs = (*fun) (&a, &b);
 
    SLang_free_object (&a);
@@ -749,7 +746,6 @@ static int eqs_intrinsic (void)
    return do_obj_cmp_fun (_pSLclass_obj_eqs);
 }
 
-
 static int is_callable_intrinsic (void)
 {
    SLang_Ref_Type *ref;
@@ -763,7 +759,7 @@ static int is_callable_intrinsic (void)
 
    if (-1 == SLang_pop_ref (&ref))
      return -1;
-   
+
    ret = _pSLang_ref_is_callable (ref);
    SLang_free_ref (ref);
 
@@ -772,14 +768,14 @@ static int is_callable_intrinsic (void)
 
 static int is_numeric (SLtype type)
 {
-   /* Version 2: Add attributes to the class tables to simplify this.  
+   /* Version 2: Add attributes to the class tables to simplify this.
     * Also clarify exactly what _pSLang_is_arith_type is supposed to return.
     */
    if (0 == _pSLang_is_arith_type ((SLtype) type))
      {
 	if (type == SLANG_COMPLEX_TYPE)
 	  return 3;
-	
+
 	return 0;
      }
    if ((type == SLANG_DOUBLE_TYPE) || (type == SLANG_FLOAT_TYPE))
@@ -791,7 +787,7 @@ static int is_numeric (SLtype type)
 static int is_numeric_intrinsic (void)
 {
    int type;
-   
+
    if (-1 == (type = SLang_peek_at_stack1 ()))
      return -1;
 
@@ -805,7 +801,7 @@ static int is_datatype_numeric_intrinsic (void)
 
    if (-1 == SLang_pop_datatype (&type))
      return -1;
-   
+
    return is_numeric (type);
 }
 
@@ -875,7 +871,7 @@ static void intrin_atof (void)
    strp = (char **) ats->data;
    strpmax = strp + ats->num_elements;
    ip = (double *) ati->data;
-	
+
    while (strp < strpmax)
      {
 	if (*strp == NULL)
@@ -911,7 +907,7 @@ static void intrin_integer (void)
    strp = (unsigned char **) ats->data;
    strpmax = strp + ats->num_elements;
    ip = (int *) ati->data;
-	
+
    while ((strp < strpmax) && (_pSLang_Error == 0))
      {
 	if (*strp == NULL)
@@ -946,7 +942,7 @@ static void atoi_intrin (void)
    strp = (char **) ats->data;
    strpmax = strp + ats->num_elements;
    ip = (int *) ati->data;
-	
+
    while (strp < strpmax)
      {
 	if (*strp == NULL)
@@ -980,7 +976,7 @@ static void atol_intrin (void)
    strp = (char **) ats->data;
    strpmax = strp + ats->num_elements;
    ip = (long *) ati->data;
-	
+
    while (strp < strpmax)
      {
 	if (*strp == NULL)
@@ -1081,11 +1077,11 @@ static int qualifier_exists_intrin (char *name)
 
    if (-1 == _pSLang_get_qualifiers_intrin (&q))
      return -1;
-   
+
    if ((q == NULL)
        || (NULL == _pSLstruct_get_field_value (q, name)))
      return 0;
-   
+
    return 1;
 }
 
@@ -1113,7 +1109,7 @@ static void qualifier_intrin (void)
      objp = _pSLstruct_get_field_value (q, name);
    else
      objp = NULL;
-   
+
    SLang_free_slstring (name);
 
    if (objp != NULL)
@@ -1124,7 +1120,7 @@ static void qualifier_intrin (void)
      }
    else if (has_default == 0)
      (void) SLang_push_null ();
-   
+
    /* Note: objp and q should _not_ be freed since they were not allocated */
 }
 #endif
@@ -1337,7 +1333,7 @@ int SLang_init_slang (void) /*{{{*/
      return -1;
 #endif
 
-   if ((SLang_Doc_Dir != NULL) 
+   if ((SLang_Doc_Dir != NULL)
        && (*SLang_Doc_Dir != 0))
      {
 	char *docfile = SLpath_dircat (SLang_Doc_Dir, "slangfun.txt");
@@ -1375,21 +1371,21 @@ static int add_argc_argv (SLang_Array_Type *at)
 static void set_argv_intrinsic (void)
 {
    SLang_Array_Type *at;
-   
+
    if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
      return;
 
    if (-1 == add_argc_argv (at))
      SLang_free_array (at);
 }
-   
+
 int SLang_set_argc_argv (int argc, char **argv)
 {
    SLang_Array_Type *at = _pSLstrings_to_array (argv, argc);
 
    if (at == NULL)
      return -1;
-   
+
    if (-1 == add_argc_argv (at))
      {
 	SLang_free_array (at);

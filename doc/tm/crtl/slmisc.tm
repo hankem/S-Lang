@@ -1,4 +1,3 @@
-
 \function{SLcurrent_time_string}
 \synopsis{Get the current time as a string}
 \usage{char *SLcurrent_time_string (void)}
@@ -10,14 +9,12 @@
      "Wed Dec 10 12:50:28 1997"
 #v-
   However, unlike the \var{ctime} function, a newline character is not
-  present in the string.  
-  
+  present in the string.
+
   The returned value points to a statically allocated memory block
   which may get overwritten on subsequent function calls.
 \seealso{SLmake_string}
 \done
-
-
 
 \function{SLatoi}
 \synopsis{Convert a text string to an integer}
@@ -30,8 +27,6 @@
   notation.
 \seealso{SLang_guess_type}
 \done
-
-
 
 \function{SLextract_list_element}
 \synopsis{Extract a substring of a delimited string}
@@ -65,7 +60,7 @@
        nth = 0;
        while (0 == SLextract_list_element (list, nth, delim, buf, sizeof(buf)))
          nth++;
-       
+
        ap = (char **) SLmalloc ((nth + 1) * sizeof (char **));
        nth = 0;
        while (0 == SLextract_list_element (list, nth, delim, buf, sizeof(buf)))

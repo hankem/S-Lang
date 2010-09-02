@@ -38,7 +38,7 @@
     {
        variable img_type;
        img = png_read (file, &img_type);
-       if ((img_type != PNG_COLOR_TYPE_GRAY) 
+       if ((img_type != PNG_COLOR_TYPE_GRAY)
            or (img_type != PNG_COLOR_TYPE_GRAY_ALPHA))
          img = png_rgb_to_gray (img);
        return img;
@@ -46,7 +46,6 @@
 #v-
 \seealso{png_read_flipped, png_write, png_rgb_to_r, png_rgb_to_g, png_rgb_to_b}
 \done
-
 
 \function{png_read_flipped}
 \synopsis{Read an image from a PNG file}
@@ -57,7 +56,6 @@
   \ifun{png_read} for more information.
 \seealso{png_read, png_write_flipped}
 \done
-
 
 \function{png_write}
 \synopsis{Write an image to a PNG file}
@@ -78,7 +76,7 @@
 #v-
   If the optional parameter \exmp{has_alpha} is present and non-zero,
   then an alpha channel will also be written to the file.
-  
+
   See the documentation for the \ifun{png_read} function for
   information about how the various channels are encoded as integers.
 \seealso{png_write_flipped, png_read}
@@ -108,13 +106,13 @@
 \synopsis{Convert a grayscale image to RGB}
 \usage{rgb = png_gray_to_rgb (gray, colormap)}
 \description
-  This function creates an RGB image, represented by a 2d array of 
+  This function creates an RGB image, represented by a 2d array of
   32 bit integers from a grayscale image using the specified colormap.
   The values in the input image will be linearly mapped onto the
   elements of the colormap such that the minimum value in the
   grayscale image will be assigned the first RGB value in the
   colormap, and the maximum value will be assigned the last RGB value.
-  
+
   The colormap argument must either be an array of 32 bit integers
   encoding the RGB information, or must be the name of a supported
   color map.  See the documentation for the \sfun{png_get_colormap}
@@ -126,7 +124,6 @@
 
 \seealso{png_rgb_to_gray, png_get_colormap}
 \done
-
 
 \function{png_get_colormap}
 \synopsis{Retrieve a colormap}

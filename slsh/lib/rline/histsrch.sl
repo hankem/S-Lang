@@ -11,7 +11,7 @@ define rline_up_hist_search();
 define rline_down_hist_search ();
 private variable History_Search = struct
 {
-   history, 
+   history,
    prefix,
    current_index,
    point,
@@ -75,7 +75,7 @@ private define up_down_hist_search (dir)
    rline_ins (h.history[index]);
    h.current_index = index;
 }
-   
+
 define rline_up_hist_search ()
 {
    up_down_hist_search (-1);

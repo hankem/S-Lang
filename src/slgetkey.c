@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -141,7 +141,7 @@ int SLgetkey_map_to_ansi (int enable)
    return 0;
 }
 
-static int convert_scancode (unsigned int scan, 
+static int convert_scancode (unsigned int scan,
 			     unsigned int shift,
 			     int getkey,
 			     unsigned int *ret_key)
@@ -280,7 +280,7 @@ static int convert_scancode (unsigned int scan,
 	  end |= 0x20;
      }
    *b++ = end;
-   
+
    if (getkey)
      {
 	(void) SLang_buffer_keystring (buf + 1, (unsigned int) (b - (buf + 1)));
@@ -292,7 +292,6 @@ static int convert_scancode (unsigned int scan,
    return 0;
 }
 
-   
 unsigned int _pSLpc_convert_scancode (unsigned int scan,
 				     unsigned int shift,
 				     int getkey)
@@ -304,7 +303,7 @@ unsigned int _pSLpc_convert_scancode (unsigned int scan,
 	if (0 == convert_scancode (scan, shift, getkey, &scan))
 	  return scan;
      }
-   
+
    if (getkey)
      {
 	buf[0] = scan & 0xFF;

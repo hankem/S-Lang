@@ -62,17 +62,17 @@ int n = 0;
 	cbreak();
 	noecho();
 	nodelay(stdscr, 1);
-	
+
 	hascolor = has_colors();
 
-	if(hascolor) {	
+	if(hascolor) {
 		start_color();
 		init_pair(1, COLOR_BLACK, COLOR_RED);
 		init_pair(2, COLOR_RED, COLOR_BLACK);
 		init_pair(3, COLOR_WHITE, COLOR_BLACK);
 		attrset(COLOR_PAIR(2));
 	}
-	
+
 	clear();
 	refresh();
 	while(--argc > 0) {
@@ -82,7 +82,7 @@ int n = 0;
 			n = atoi(*argv);
 	}
 
-	if(hascolor) {	
+	if(hascolor) {
 		attrset(COLOR_PAIR(3));
 
 		mvaddch(YBASE - 1,  XBASE - 1, ACS_ULCORNER);
@@ -193,8 +193,8 @@ standt(int on)
 		if(hascolor) {
 			attron(COLOR_PAIR(1));
 		} else {
-			attron(A_STANDOUT);	
-		}	
+			attron(A_STANDOUT);
+		}
 	} else {
 		if(hascolor) {
 			attron(COLOR_PAIR(2));

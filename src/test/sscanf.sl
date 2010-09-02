@@ -24,18 +24,18 @@ static define feqs (x, y)
 
    if (diff <= tol)
      return 1;
-   vmessage ("diff = %e, abs(x)*eps = %e, error=%e", 
+   vmessage ("diff = %e, abs(x)*eps = %e, error=%e",
 	     diff, tol, diff/(x+y));
    return 1;
 }
-   
+
 static variable Inf = 1e1000;
 static define test_atof (x)
 {
    variable y;
    variable str = sprintf ("%.64e", x);
    variable tstr;
-   
+
    tstr = strup (strtrim (str));
 
    if (tstr == "INF")
@@ -49,10 +49,9 @@ static define test_atof (x)
      failed ("%e = atof(%e [%s]): diff = %e\n", y, x, tstr, y-x);
 }
 
-
 static define test_atof_main (n)
 {
-   
+
    loop (n)
      {
 	variable a,b,c;
@@ -81,7 +80,7 @@ define test_scanf (buf, format, xp, yp, n)
    variable nn, x, y;
    nn = sscanf (buf, format, &x, &y);
    if (n != nn)
-     failed ("sscanf (%s, %s, &x, &y) ==> returned %d", 
+     failed ("sscanf (%s, %s, &x, &y) ==> returned %d",
 	     buf, format, nn);
    if (n >= 1)
      {
@@ -175,7 +174,7 @@ define test_default_format ()
 {
    loop (1000)
      {
-	variable x = (2.0 * (random ()-0.5)) 
+	variable x = (2.0 * (random ()-0.5))
 	  * 10^(40*(random()-0.5));
 	if (x != eval(string(x)))
 	  {
@@ -194,6 +193,4 @@ test_default_format ();
 print ("Ok\n");
 
 exit (0);
-
-
 

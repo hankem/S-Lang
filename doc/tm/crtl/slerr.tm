@@ -19,7 +19,6 @@
 \seealso{SLang_vmessage, SLang_exit_error}
 \done
 
-
 \function{SLang_doerror}
 \synopsis{Signal an error}
 \usage{void SLang_doerror (char *err_str)}
@@ -31,8 +30,6 @@
   use the \var{SLang_verror} function instead.
 \seealso{SLang_verror, SLang_exit_error}
 \done
-
-
 
 \function{SLang_vmessage}
 \synopsis{Display a message to the message device}
@@ -52,8 +49,8 @@
    displays an error message using a \var{printf} type variable
    argument list.  The default behavior to this function is to write
    the message to \var{stderr} and exit with the \var{exit} system
-   call. 
-   
+   call.
+
    If the function pointer \var{SLang_Exit_Error_Hook} is
    non-NULL, the function to which it points will be called.  This
    permits an application to perform whatever cleanup is necessary.

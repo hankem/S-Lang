@@ -1,8 +1,8 @@
 % -*- mode: slang; mode: fold -*-
 import ("zlib");
 
-%{{{ Deflate Object and methods 
-private define deflate_method () 
+%{{{ Deflate Object and methods
+private define deflate_method ()
 {
    if (_NARGS != 2)
      {
@@ -58,10 +58,9 @@ define zlib_deflate_new ()
    return z;
 }
 
-
 %}}}
 
-%{{{ Inflate Object and methods 
+%{{{ Inflate Object and methods
 
 private define inflate_method ()
 {
@@ -114,7 +113,6 @@ define zlib_inflate_new ()
    z.zobj = _zlib_inflate_new (qualifier ("wbits", 15));
    return z;
 }
-
 
 %}}}
 

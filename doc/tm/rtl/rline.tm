@@ -39,7 +39,6 @@
 \seealso{rline_setkey, rline_del, rline_ins}
 \done
 
-
 \function{rline_del}
 \synopsis{Delete a specified number of characters at the current position}
 \usage{rline_del(Int_Type n)}
@@ -53,7 +52,6 @@
 \seealso{rline_ins, rline_setkey}
 \done
 
-
 \function{rline_get_edit_width}
 \synopsis{Get the width of the readline edit window}
 \usage{Int_Type rline_get_edit_width ()}
@@ -65,7 +63,6 @@
 \seealso{rline_ins}
 \done
 
-
 \function{rline_get_history}
 \synopsis{Retrieve the readline history}
 \usage{Array_Type rline_get_history ()}
@@ -76,7 +73,6 @@
  \notes_comment
 \seealso{rline_set_line}
 \done
-
 
 \function{rline_get_line}
 \synopsis{Get a copy of the line being edited}
@@ -98,7 +94,6 @@
  \notes_comment
 \seealso{rline_set_point}
 \done
-
 
 \function{rline_getkey}
 \synopsis{Obtain the next byte in the readline input stream}
@@ -124,7 +119,6 @@
 \seealso{rline_getkey}
 \done
 
-
 \function{rline_ins}
 \synopsis{Insert a string at the current editing point}
 \usage{rline_ins (String_Type text)}
@@ -134,7 +128,6 @@
  \notes_comment
 \seealso{rline_set_line, rline_del}
 \done
-
 
 \function{rline_set_history}
 \synopsis{Replace the current history list with a new one}
@@ -158,7 +151,6 @@
 \seealso{rline_get_line}
 \done
 
-
 \function{rline_set_point}
 \synopsis{Move the current editing position to another}
 \usage{rline_set_point (Int_Type ofs)}
@@ -169,7 +161,6 @@
  \notes_comment
 \seealso{rline_get_point}
 \done
-
 
 \function{rline_setkey}
 \synopsis{Bind a key in the readline keymap to a function}
@@ -205,7 +196,6 @@
 \seealso{rline_unsetkey}
 \done
 
-
 \function{rline_unsetkey}
 \synopsis{Unset a key binding from the readline keymap}
 \usage{rline_unsetkey (String_Type keyseq)}
@@ -216,7 +206,6 @@
  \notes_comment
 \seealso{rline_setkey}
 \done
-
 
 \function{rline_set_list_completions_callback}
 \synopsis{Set a callback function to display the list of completions}
@@ -241,7 +230,7 @@
 \notes
 \seealso{rline_set_completion_callback}
 \done
- 
+
 \function{rline_set_completion_callback}
 \synopsis{Set the function to be used for completion at the readline prompt}
 \usage{rline_set_completion_callback (Ref_Type func)}
@@ -251,7 +240,7 @@
   two values, the first being a string containing the text of the line
   being edited, and an integer giving the position of the byte-offset
   into the string where completion was requested.
-  
+
   The callback function must return two values: an array giving the
   list of possible completion strings, and an integer giving the byte
   offset into the string of the start of the text to be completed.

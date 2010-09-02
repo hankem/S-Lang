@@ -13,13 +13,13 @@ static define test_path (path, dir, base, ext, dirbase, sansextname)
 {
    if (dir != path_dirname (path))
      failed ("path_dirname " + path);
-   
+
    if (base != path_basename (path))
      failed ("path_basename " + path);
-   
+
    if (ext != path_extname (path))
      failed ("path_extname " + path);
-   
+
    test_path_concat (dir, base, dirbase);
 
    if (sansextname != path_sans_extname (path))

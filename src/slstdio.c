@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -81,7 +81,7 @@ typedef struct
 #define SL_FDOPEN	0x2000
 #define SL_PIPE		0x4000
 #define SL_INUSE	0x8000
-   
+
    char *buf;
    unsigned int buflen;
 }
@@ -139,7 +139,7 @@ static int signal_safe_fputs (char *buf, FILE *fp)
      {
 	unsigned int n = len - num_written;
 	unsigned int dn;
-	
+
 	clearerr (fp);
 	errno = 0;
 	dn = fwrite (buf + num_written, 1, n, fp);
@@ -155,9 +155,9 @@ static int signal_safe_fputs (char *buf, FILE *fp)
 	      * signal, but return with errno==0 (not EINTR), which resulted
 	      * in data being lost.  So it seemed that as long as something was
 	      * being written, things would work out ok.
-	      * 
+	      *
 	      * However, it was discovered that this work-around would fail
-	      * when writing to a stream buffered pipe that was closed.  In 
+	      * when writing to a stream buffered pipe that was closed.  In
 	      * such a case, glibc was returning a short non-zero item count
 	      * even though the underlying stream was closed.  For this reason
 	      * I recommend that one should turn off stdio buffering when
@@ -189,8 +189,6 @@ static int signal_safe_fgets (char *buf, unsigned int buflen, FILE *fp)
      }
    return 0;
 }
-
-
 
 static unsigned int file_process_flags (char *mode)
 {
@@ -532,7 +530,7 @@ static int read_one_line (FILE *fp, char **strp, unsigned int *lenp, int trim_tr
 	  }
 	len = len1;
      }
-	       
+
    *strp = SLang_create_nslstring (str, len);
    if (str != buf) SLfree (str);
 
@@ -576,7 +574,7 @@ static void stdio_fgetslines_internal (FILE *fp, unsigned int n)
 
    if (n > 1024)
      max_num_lines = 1024;
-   else 
+   else
      {
 	max_num_lines = n;
 	if (max_num_lines == 0)
@@ -665,7 +663,7 @@ static void stdio_fgetslines (void)
 	if (-1 == SLang_pop_uinteger (&n))
 	  return;
      }
-   
+
    if (NULL == (mmt = pop_fp (SL_READ, &fp)))
      {
 	SLang_push_null ();
@@ -683,7 +681,7 @@ static int stdio_fputslines (void)
    FILE *fp;
    SLang_MMT_Type *mmt;
    SLang_Array_Type *at;
-   
+
    if (NULL == (mmt = pop_fp (SL_WRITE, &fp)))
      return -1;
 
@@ -694,7 +692,7 @@ static int stdio_fputslines (void)
      }
    lines = (char **)at->data;
    lines_max = lines + at->num_elements;
-   
+
    while (lines < lines_max)
      {
 	if ((*lines != NULL)
@@ -708,7 +706,6 @@ static int stdio_fputslines (void)
    SLang_free_array (at);
    return num;
 }
-
 
 static int stdio_fputs (char *s, SL_File_Table_Type *t)
 {
@@ -726,7 +723,7 @@ static int stdio_fflush (SL_File_Table_Type *t)
 
    if (NULL == (fp = check_fp (t, SL_WRITE)))
      return -1;
-   
+
    errno = 0;
    clearerr (fp);
    while ((EOF == fflush (fp)) || ferror (fp))
@@ -773,19 +770,19 @@ static void stdio_fread_bytes (SLang_Ref_Type *ref, unsigned int *num_wantedp, S
    SLang_BString_Type *bs;
    if (NULL == (fp = check_fp (t, SL_READ)))
      goto the_return;
-   
+
    if (NULL == (buf = SLmalloc (num_wanted + 1)))
      goto the_return;
-   
+
    while (num_read < num_wanted)
      {
 	unsigned int dnum;
-	
+
 	dnum = fread (buf + num_read, sizeof(char), num_wanted-num_read, fp);
 	num_read += dnum;
 	if (num_read == num_wanted)
 	  break;
-	
+
 	if (0 == handle_errno (errno))
 	  break;
      }
@@ -881,7 +878,7 @@ static void stdio_fread (SLang_Ref_Type *ref, int *data_typep, unsigned int *num
 
    if (s != NULL)
      SLfree (s);
-   
+
    if (ret == -1)
      SLang_push_integer (ret);
    else
@@ -1031,16 +1028,16 @@ static int stdio_fprintf (void)
 
    if (-1 == _pSLstrops_do_sprintf_n (SLang_Num_Function_Args - 2))
      return -1;
-   
+
    if (-1 == SLang_pop_slstring (&s))
      return -1;
-   
+
    if (NULL == (mmt = pop_fp (SL_WRITE, &fp)))
      {
 	_pSLang_free_slstring (s);
 	return -1;
      }
-   
+
    status = signal_safe_fputs (s, fp);
 
    SLang_free_mmt (mmt);
@@ -1058,7 +1055,7 @@ static int stdio_printf (void)
 
    if (-1 == SLang_pop_slstring (&s))
      return -1;
-   
+
    status = signal_safe_fputs (s, stdout);
 
    _pSLang_free_slstring (s);
@@ -1075,7 +1072,7 @@ static int stdio_setvbuf (SL_File_Table_Type *t, int *modep, int *sizep)
 
    if (NULL == (fp = check_fp (t, 0xFFFF)))
      return -1;
-   
+
    if (*sizep < 0)
      {
 	SLang_verror (SL_InvalidParm_Error, "setvbuf: Expecting a positive integer for the size parameter");
@@ -1202,7 +1199,6 @@ static void destroy_file_type (SLtype type, VOID_STAR ptr)
    _pSLerrno_errno = e;
 }
 
-
 struct _pSLang_Foreach_Context_Type
 {
    SLang_MMT_Type *mmt;
@@ -1212,7 +1208,6 @@ struct _pSLang_Foreach_Context_Type
 #define CTX_USE_LINE_WS		3
    unsigned char type;
 };
-
 
 static SLang_Foreach_Context_Type *
 cl_foreach_open (SLtype type, unsigned int num)
@@ -1233,7 +1228,7 @@ cl_foreach_open (SLtype type, unsigned int num)
       case 0:
 	type = CTX_USE_LINE;
 	break;
-	
+
       case 1:
 	if (-1 == SLang_pop_slstring (&s))
 	  {
@@ -1260,7 +1255,7 @@ cl_foreach_open (SLtype type, unsigned int num)
 
       default:
 	SLdo_pop_n (num);
-	_pSLang_verror (SL_NOT_IMPLEMENTED, 
+	_pSLang_verror (SL_NOT_IMPLEMENTED,
 		      "Usage: foreach (File_Type) using ([line|wsline|char])");
 	SLang_free_mmt (mmt);
 	return NULL;
@@ -1299,7 +1294,7 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 
    if (c == NULL)
      return -1;
-   
+
    switch (c->type)
      {
       case CTX_USE_CHAR:
@@ -1318,7 +1313,7 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 	  return 1;
 	return -1;
      }
-   
+
    return -1;
 }
 
@@ -1341,7 +1336,7 @@ int SLang_init_stdio (void)
 
    if (NULL == (cl = SLclass_allocate_class ("File_Type")))
      return -1;
-   
+
    (void) SLclass_set_destroy_function (cl, destroy_file_type);
    (void) SLclass_set_foreach_functions (cl, cl_foreach_open, cl_foreach, cl_foreach_close);
 

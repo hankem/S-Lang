@@ -20,7 +20,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 /* #include "config.h" */
@@ -111,7 +111,7 @@ typedef enum
    SLANG_BC_UNUSED_0x3D		= 0x3D,
    SLANG_BC_UNUSED_0x3E		= 0x3E,
    SLANG_BC_UNUSED_0x3F		= 0x3F,
-   
+
    /* byte codes for literals */
    SLANG_BC_LITERAL		= 0x40,           /* constant objects */
    SLANG_BC_LITERAL_INT		= 0x41,
@@ -131,7 +131,7 @@ typedef enum
    SLANG_BC_UNUSED_0x4D		= 0x4D,
    SLANG_BC_UNUSED_0x4E		= 0x4E,
    SLANG_BC_UNUSED_0x4F		= 0x4F,
-   
+
    /* Unary/Binary operation codes */
    SLANG_BC_UNARY		= 0x50,
    SLANG_BC_BINARY		= 0x51,
@@ -149,7 +149,7 @@ typedef enum
    SLANG_BC_UNUSED_0x5D		= 0x5D,
    SLANG_BC_UNUSED_0x5E		= 0x5E,
    SLANG_BC_UNUSED_0x5F		= 0x5F,
-   
+
    /* byte codes associated with keywords and blocks */
    SLANG_BC_TMP			= 0x60,
    SLANG_BC_EXCH		= 0x61,
@@ -167,7 +167,7 @@ typedef enum
    SLANG_BC_X_USER2		= 0x6D,
    SLANG_BC_X_USER3		= 0x6E,
    SLANG_BC_X_USER4		= 0x6F,
-   
+
    /* byte codes for dealing with the frame pointer and arg list */
    SLANG_BC_CALL_DIRECT		= 0x70,
    SLANG_BC_CALL_DIRECT_FRAME	= 0x71,
@@ -187,7 +187,7 @@ typedef enum
    SLANG_BC_UNUSED_0x7D		= 0x7D,
    SLANG_BC_UNUSED_0x7E		= 0x7E,
    SLANG_BC_UNUSED_0x7F		= 0x7F,
-   
+
    /* These are used only when compiled with USE_COMBINED_BYTECODES */
    SLANG_BC_CALL_DIRECT_INTRINSIC= 0x80,
    SLANG_BC_INTRINSIC_CALL_DIRECT= 0x81,
@@ -255,7 +255,7 @@ typedef enum
    SLANG_BC_UNUSED_0xBE		= 0xBE,
    SLANG_BC_UNUSED_0xBF		= 0xBF,
 
-   /* The following do not actually occur in inner_interp.  They used 
+   /* The following do not actually occur in inner_interp.  They used
     * to signify the bytecode has been combined with another.
     */
    SLANG_BC_LVARIABLE_COMBINED	= 0xC0,
@@ -325,7 +325,7 @@ typedef enum
    SLANG_BC_UNUSED_0xFF		= 0xFF
 }
 _pSLang_BC_Type;
-   
+
 /* Byte-Code Sub Types (_BCST_) */
 
 /* These are sub_types of SLANG_BC_BLOCK */
@@ -376,7 +376,6 @@ _pSLang_BC_Type;
 #define SLANG_BCST_POST_MINUSMINUS	0x0B
 
 /* These use SLANG_PLUS, SLANG_MINUS, SLANG_PLUSPLUS, etc... */
-
 
 #define LONG_IS_INT (SIZEOF_INT == SIZEOF_LONG)
 #define LONG_IS_NOT_INT (SIZEOF_INT != SIZEOF_LONG)
@@ -506,7 +505,6 @@ typedef unsigned long long _pSLuint64_Type;
 # endif
 #endif
 
-
 typedef union
 {
 #if SLANG_HAS_FLOAT
@@ -631,12 +629,11 @@ extern char *_pSLcreate_via_alloced_slstring (char *, unsigned int);
 extern void _pSLunallocate_slstring (char *, unsigned int);
 extern int _pSLpush_alloced_slstring (char *, unsigned int);
 
-
 extern unsigned int _pSLstring_bytelen (SLstr_Type *);
 extern void _pSLang_free_slstring (SLstr_Type *);   /* slstring required and assumed */
 extern unsigned long _pSLstring_get_hash (SLstr_Type *s);   /* slstring required */
 
-typedef struct 
+typedef struct
 {
    char **buf;
    unsigned int max_num;
@@ -659,7 +656,6 @@ extern SLang_Array_Type *_pSLstrings_to_array (char **strs, unsigned int n);
 /* This function assumes that s is an slstring. */
 extern SLCONST char *_pSLstring_dup_slstring (SLCONST char *);
 extern int _pSLang_dup_and_push_slstring (SLCONST char *);
-
 
 extern int _pSLang_init_import (void);
 extern int _pSLinit_exceptions (void);
@@ -916,7 +912,7 @@ struct _pSLang_Class_Type
    SLang_Struct_Type *cl_struct_def;
    int (*cl_dereference) _PROTO((SLtype, VOID_STAR));
 
-   /* cl_a* functions deal with functions that have array addresses.  For 
+   /* cl_a* functions deal with functions that have array addresses.  For
     * scalar and vector types, there is no difference.  However, for vector
     * types such as Complex, which is stored as double[2], the address is
     * the address of the first byte, and not the object itself.
@@ -955,10 +951,10 @@ struct _pSLang_Class_Type
    int (*cl_fdwrite) (SLtype, int, VOID_STAR, unsigned int, unsigned int *);
 
    int (*cl_to_bool) (SLtype, int *);
-   
-   int (*cl_cmp)(SLtype, VOID_STAR, VOID_STAR, int *);   
+
+   int (*cl_cmp)(SLtype, VOID_STAR, VOID_STAR, int *);
    int (*cl_eqs)(SLtype, VOID_STAR, SLtype, VOID_STAR);
-   
+
    /* required for any object that takes advantage of __tmp optimization */
    void (*cl_inc_ref)(SLtype, VOID_STAR, int);
 
@@ -1017,7 +1013,7 @@ extern int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx);
 #endif
 extern int _pSLarith_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
 
-/* Does not perform any range checking.  It is up to the caller. 
+/* Does not perform any range checking.  It is up to the caller.
  * If *atp!=NULL, then it is an array of indices.
  */
 extern int _pSLarray_pop_index (unsigned int num_elements, SLang_Array_Type **ind_atp, SLindex_Type *ind);
@@ -1120,13 +1116,13 @@ typedef struct _pSLtoken_String_List_Type
 _pSLtoken_String_List_Type;
 
 typedef unsigned char _pSLtok_Type;
-typedef struct 
+typedef struct
 {
    _pSLtok_Type type;			       /* [b]string_token */
    unsigned int num;
-   
+
    _pSLtoken_String_List_Type *list;
-   union 
+   union
      {
 	SLFUTURE_CONST char *s_val;		       /* (SLstring) concatenated strings */
 	SLang_BString_Type *b_val;     /* concatenated bstrings */
@@ -1150,11 +1146,11 @@ typedef struct _pSLang_Token_Type
 	 * when reading a preparsed file, I want to keep the user-specified
 	 * form to preserve the precision.  Using a union member would mean
 	 * converting the double to a string when creating a preparsed file.
-	 * We can avoid the issues associated with this by just storing 
+	 * We can avoid the issues associated with this by just storing
 	 * floating point values as strings.
 	 */
 	SLFUTURE_CONST char *s_val;		       /* Used for IDENT_TOKEN, DOUBLE_TOKEN, etc...  */
-	
+
 	SLang_BString_Type *b_val;
 	_pSLang_Multiline_String_Type *multistring_val;
      } v;
@@ -1179,7 +1175,7 @@ typedef struct _pSLang_Token_Type
 _pSLang_Token_Type;
 
 /* return token type or EOF_TOKEN upon error */
-extern _pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *, _pSLtok_Type, 
+extern _pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *, _pSLtok_Type,
 						   SLFUTURE_CONST char *, unsigned int);
 
 extern void _pSLcompile (_pSLang_Token_Type *);
@@ -1198,11 +1194,11 @@ extern int _pSLutf8_mode;
 extern int _pSLinterp_UTF8_Mode;	       /* non-zero for interpreter */
 extern int _pSLtt_UTF8_Mode;
 
-extern SLuchar_Type *_pSLinterp_decode_wchar (SLuchar_Type *u, 
-					     SLuchar_Type *umax, 
+extern SLuchar_Type *_pSLinterp_decode_wchar (SLuchar_Type *u,
+					     SLuchar_Type *umax,
 					     SLwchar_Type *chp);
 
-extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch, 
+extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 					     SLuchar_Type *buf,
 					     unsigned int *encoded_lenp);
 
@@ -1618,8 +1614,8 @@ extern int _pSLang_check_signals_hook (VOID_STAR);
  *   extern fun (void **addr);
  *   double x;
  *   fun ((void **) &x);   <--- warning
- *   fun (VOID_STAR_STAR(&x)); 
- * 
+ *   fun (VOID_STAR_STAR(&x));
+ *
  * Otherwise a type-punning warning could result due to strict-aliasing.
  */
 #define VOID_STAR_STAR(addr) (VOID_STAR *)(VOID_STAR)(addr)

@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "config.h"
@@ -50,7 +50,7 @@ static const Name_Map_Type *lookup_name (const Name_Map_Type *map, char *name)
 	if ((map->namelen == len)
 	    && (0 == strcmp (name, map->name)))
 	  return map;
-	
+
 	map++;
      }
    return NULL;
@@ -905,7 +905,7 @@ static int pop_iname (const Name_Map_Type *map, int *inamep)
      }
    else if (-1 == SLang_pop_int (inamep))
      return -1;
-   
+
    return 1;
 }
 
@@ -939,13 +939,13 @@ static void sysconf_intrinsic (void)
 	if (errno)
 	  goto return_default;
 
-	if (has_def_val) 
+	if (has_def_val)
 	  val = defval;
      }
-   
+
    (void) SLang_push_long (val);
    return;
-   
+
 return_default:
    if (has_def_val)
      (void) SLang_push_long (defval);
@@ -981,19 +981,19 @@ static void pathconf_intrinsic (void)
 	if (-1 == SLang_pop_slstring (&path))
 	  return;
 	break;
-   
+
       case SLANG_FILE_PTR_TYPE:
 	  {
 	     FILE *fp;
 	     SLang_MMT_Type *mmt;
-	     
+
 	     if (-1 == SLang_pop_fileptr (&mmt, &fp))
 	       return;
 	     fd = fileno (fp);
 	     SLang_free_mmt (mmt);
 	  }
 	break;
-	
+
       default:
 	  {
 	     SLFile_FD_Type *f;
@@ -1007,7 +1007,7 @@ static void pathconf_intrinsic (void)
 	     SLfile_free_fd (f);
 	  }
      }
-   
+
    if (status == 0)
      {
 	e = EINVAL;
@@ -1034,13 +1034,13 @@ static void pathconf_intrinsic (void)
 	if (e)
 	  goto return_default;
 
-	if (has_def_val) 
+	if (has_def_val)
 	  val = defval;
      }
-   
+
    (void) SLang_push_long (val);
    return;
-   
+
 return_default:
    if (has_def_val && (e == EINVAL))
      (void) SLang_push_long (defval);
@@ -1105,7 +1105,7 @@ static void confstr_intrinsic (void)
 	SLang_push_string (buf);
 	return;
      }
-   
+
    if (NULL == (bufstr = SLmalloc (len)))
      return;
 
@@ -1135,10 +1135,10 @@ static int push_map (const Name_Map_Type *map)
 	num++;
 	m++;
      }
-   
+
    if (NULL == (at = SLang_create_array (SLANG_STRING_TYPE, 1, NULL, &num, 1)))
      return -1;
-   
+
    names = (char **) at->data;
    m = map;
    while (m->name != NULL)

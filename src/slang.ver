@@ -659,7 +659,7 @@ SLANG2 {
 		SLwchar_wcwidth;
 		_pSLChg_UCase_Lut;
 		_pSLChg_LCase_Lut;
-	local: 
+	local:
 		*;
 };
 

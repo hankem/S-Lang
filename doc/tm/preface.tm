@@ -1,4 +1,3 @@
-
 \chapter{Preface} #%{{{
 
   \slang is an interpreted language that was designed from the start
@@ -28,8 +27,8 @@
   endow with a macro language.  It occured to me that an
   application-independent language that could be embedded into the
   editor would prove more useful because I could envision embedding it
-  into other programs.  As a result, \slang was born.  
-  
+  into other programs.  As a result, \slang was born.
+
   \slang was originally a stack language that supported a
   postscript-like syntax.  For that reason, I named it \slang, where
   the \em{S} was supposed to emphasize its stack-based nature.  About

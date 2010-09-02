@@ -43,7 +43,7 @@
   development of sophisticated, user friendly, multi-platform applications.
   The \slang library includes the following:
 
-\begin{itemize} 
+\begin{itemize}
 \item  Low level tty input routines for reading single characters at a time.
 \item  Keymap routines for defining keys and manipulating multiple keymaps.
 \item  A high-level keyprocessing interface (\verb{SLkp}) for
@@ -58,7 +58,7 @@
 \item  Searching functions: both ordinary searches and regular expression
        searches. (\tt{SLsearch})
 \item  An embedded stack-based language interpreter with a C-like syntax.
-\end{itemize} 
+\end{itemize}
 
   The library is currently available for OS/2, MSDOS, Unix, and VMS
   systems.  For the most part, the interface to library routines has
@@ -86,18 +86,18 @@
   function will return 0 to indicate that there is no error, or a
   non-zero value such as one of the following constants:
 #v+
-     SL_Any_Error                      SL_Index_Error                
-     SL_OS_Error                       SL_Parse_Error                
-     SL_Malloc_Error                   SL_Syntax_Error               
-     SL_IO_Error                       SL_DuplicateDefinition_Error  
-     SL_Write_Error                    SL_UndefinedName_Error        
-     SL_Read_Error                     SL_Usage_Error                
-     SL_Open_Error                     SL_Application_Error          
-     SL_RunTime_Error                  SL_Internal_Error             
-     SL_InvalidParm_Error              SL_NotImplemented_Error       
-     SL_TypeMismatch_Error             SL_LimitExceeded_Error        
+     SL_Any_Error                      SL_Index_Error
+     SL_OS_Error                       SL_Parse_Error
+     SL_Malloc_Error                   SL_Syntax_Error
+     SL_IO_Error                       SL_DuplicateDefinition_Error
+     SL_Write_Error                    SL_UndefinedName_Error
+     SL_Read_Error                     SL_Usage_Error
+     SL_Open_Error                     SL_Application_Error
+     SL_RunTime_Error                  SL_Internal_Error
+     SL_InvalidParm_Error              SL_NotImplemented_Error
+     SL_TypeMismatch_Error             SL_LimitExceeded_Error
      SL_UserBreak_Error                SL_Forbidden_Error
-     SL_Stack_Error                    SL_Math_Error                 
+     SL_Stack_Error                    SL_Math_Error
      SL_StackOverflow_Error            SL_DivideByZero_Error
      SL_StackUnderflow_Error           SL_ArithOverflow_Error
      SL_ReadOnly_Error                 SL_ArithUnderflow_Error
@@ -108,7 +108,7 @@
 #v-
   For example, if a function tries to allocate memory but fails, then
   \cfun{SLang_get_error} will return \var{SL_Malloc_Error}.
-  
+
   If the application makes use of the interpreter, then it is
   important that application-specific functions called from the
   interpreter set the error state of the library in order for
@@ -118,7 +118,7 @@
      if (NULL == (fp = fopen (file, "r")))
        SLang_set_error (SL_Open_Error);
 #v-
-  
+
   Often it is desirable to give error message that contains more
   information about the error.  The \cfun{SLang_verror} function may
   be used for this purpose:
@@ -178,7 +178,6 @@
   resources, and other tasks that the application needs to do for a
   clean exit.
 
-
 #%}}}
 
 \chapter{Unicode Support} #%{{{
@@ -203,7 +202,7 @@
   for Unix, the standard locale mechanism will be used.  The return
   value of this function will be 1 if UTF-8 support was activated, or
   0 if not.
-  
+
   The above function determines the UTF-8 state of the library as a
   whole.  For some purposes it may be desirable to have more
   fine-grained control of the UTF-8 support.  For example, one might
@@ -238,7 +237,6 @@
   character.  Rather one must keep in mind the distinction between a
   character and a byte.
 
-
 #%}}}
 
 \chapter{Interpreter Interface} #%{{{
@@ -256,7 +254,7 @@
   basic philosophy behind the interpreter is that it is not a
   standalone program and it derives much of its power from the
   application that embeds it.
-  
+
 \sect{Embedding the Interpreter} #%{{{
 
   Only one function needs to be called to embed the \slang interpreter
@@ -329,7 +327,7 @@
 #v-
   will load \exfile{site.sl} into a namespace called \exns{NS}.  If such a
   namespace does not exist, then it will be created.
-  
+
   Both the \cfun{SLang_load_file} and \cfun{SLns_load_file} functions
   search for files along an application-specified search path.  This
   path may be set using the \cfun{SLpath_set_load_path} function, as
@@ -429,16 +427,16 @@
      void intrinsic_2 (char *s, int *i);
      void intrinsic_3 (int *i, double *d, double *e);
 #v-
-  are all valid.  However, 
+  are all valid.  However,
 #v+
      int invalid_1 (char *s, int len);
 #v-
   is not valid since the \var{len} parameter is not a pointer.
-  
+
   The return value of an intrinsic function must be one of the
   following types: \var{void}, \var{char}, \var{short}, \var{int},
   \var{long}, \var{double}, \var{char *}, as well as unsigned versions
-  of the integer types.  A function such as 
+  of the integer types.  A function such as
 #v+
     int *invalid (void);
 #v-
@@ -462,7 +460,6 @@
       }
 #v-
   is illegal since the function modifies the string \var{s}.
-
 
 #%}}}
 
@@ -505,13 +502,13 @@
 #v-
   After printing a message, this will cause the \var{intrin_exit}
   function to execute, which in turn calls \var{exit}.
-  
+
   The most convenient mechanism for adding new intrinsic functions is
   to create a table of \cfun{SLang_Intrin_Fun_Type} objects and add the
   table via the \cfun{SLadd_intrin_fun_table} function.  The table will
   look like:
 #v+
-    SLang_Intrin_Fun_Type My_Intrinsics [] = 
+    SLang_Intrin_Fun_Type My_Intrinsics [] =
     {
      /* table entries */
       MAKE_INTRINSIC_N(...),
@@ -521,7 +518,7 @@
       MAKE_INTRINSIC_N(...),
       SLANG_END_INTRIN_FUN_TABLE
     };
-#v-  
+#v-
   Construction of the table entries may be facilitated using a set of
   \var{MAKE_INTRINSIC} macros defined in \var{slang.h}.  The main
   macro is called \var{MAKE_INTRINSIC_N} and takes 11 arguments:
@@ -564,11 +561,11 @@
   application it adds the same table multiple times.  For performance
   reasons, no checking is performed by the library to see if a table
   has already been added.
-  
+
   Earlier it was mentioned that intrinsics may be added to a specified
   namespace.  To this end, one must first get a pointer to the
   namespace via the \cfun{SLns_create_namespace} function.  The
-  following example illustrates how this function is used to add the 
+  following example illustrates how this function is used to add the
   \var{My_Intrinsics} table to a namespace called \exmp{my}:
 #v+
    SLang_NameSpace_Type *ns = SLns_create_namespace ("my");
@@ -585,9 +582,9 @@
   functions that took a fixed number of arguments.  In this section we
   explore more complex intrinsics such as those that take a variable
   number of arguments.
-  
+
   Consider a function that takes two double precision numbers and
-  returns the lesser: 
+  returns the lesser:
 #v+
      double intrin_min (double *a, double *b)
      {
@@ -607,11 +604,11 @@
     {
        double min_value, x;
        unsigned int num = (unsigned int) *num_ptr;
-       
+
        if (-1 == SLang_pop_double (&min_value))
          return 0.0;
        num--;
-       
+
        while (num > 0)
          {
             num--;
@@ -634,7 +631,7 @@
       variable xmin = vmin (x0, x1, x2, x3, x4, 5);
 #v-
   which computes the smallest of \exmp{5} values.
-  
+
   The problem with this intrinsic function is that the user must
   explicitly specify how many numbers to compare.  It would be more
   convenient to simply use
@@ -647,13 +644,13 @@
     double intrin_min (void)
     {
        double min_value, x;
-       
+
        unsigned int num = SLang_Num_Function_Args;
-       
+
        if (-1 == SLang_pop_double (&min_value, NULL, NULL))
          return 0.0;
        num--;
-       
+
        while (num > 0)
          {
             num--;
@@ -666,9 +663,8 @@
 #v-
   This may be declared as an intrinsic using:
 #v+
-    MAKE_INTRINSIC_0("vmin", intrin_min, SLANG_DOUBLE_TYPE)    
+    MAKE_INTRINSIC_0("vmin", intrin_min, SLANG_DOUBLE_TYPE)
 #v-
-
 
 #%}}}
 
@@ -685,8 +681,8 @@
   available to the interpreter.  The most straight forward method is
   to use the function \cfun{SLadd_intrinsic_variable}:
 #v+
-     int SLadd_intrinsic_variable (char *name, VOID_STAR addr, 
-                                   SLtype data_type, 
+     int SLadd_intrinsic_variable (char *name, VOID_STAR addr,
+                                   SLtype data_type,
                                    int read_only);
 #v-
   For example, suppose that \var{I} is an integer variable, e.g.,
@@ -694,9 +690,9 @@
      int I;
 #v-
   One can make it known to the interpreter as \var{I_Variable} via a
-  statement such as 
+  statement such as
 #v+
-     if (-1 == SLadd_intrinsic_variable ("I_Variable", &I, 
+     if (-1 == SLadd_intrinsic_variable ("I_Variable", &I,
                                           SLANG_INT_TYPE, 0))
        exit (EXIT_FAILURE);
 #v-
@@ -704,7 +700,7 @@
 #v+
     char *S;
 #v-
-  then 
+  then
 #v+
      if (-1 == SLadd_intrinsic_variable ("S_Variable", &S,
                                           SLANG_STRING_TYPE, 1))
@@ -714,7 +710,7 @@
   \var{S_Variable}.  Note that if a pointer variable is made available
   to the interpreter, it should be declared as being \em{read-only} to
   prevent the interpreter from changing the pointer's value.
-  
+
   It is important to note that if \var{S} were declared as an array of
   characters, e.g.,
 #v+
@@ -726,7 +722,7 @@
      char *S_Ptr = S;
 #v-
   and make \var{S_Ptr} available as a read-only variable.
-  
+
   One should not make the mistake of trying to use the same address
   for different variables as the following example illustrates:
 #v+
@@ -768,7 +764,7 @@
 #v-
   It should be rather obvious that the arguments to the
   \var{MAKE_VARIABLE} macro correspond to the parameters of the
-  \cfun{SLadd_intrinsic_variable} function.  
+  \cfun{SLadd_intrinsic_variable} function.
 
   Finally, variables may be added to a specific namespace via the
   SLns_add_intrin_var_table and SLns_add_intrinsic_variable functions.
@@ -808,12 +804,12 @@
          };
        SLang_Array_Type *at;
        SLindex_Type i, four;
-       
+
        four = 4;
        at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &four, 1);
        if (at == NULL)
          return;
-       
+
        /* Now set the elements of the array */
        for (i = 0; i < 4; i++)
          {
@@ -823,14 +819,14 @@
                 return;
              }
          }
-      
+
       (void) SLang_push_array (at, 0);
       SLang_free_array (at);
     }
 #v-
 
  This example illustrates several points:
- 
+
  First of all, the
  \cfun{SLang_create_array} function was used to create a 1 dimensional
  array of 4 strings.  Since this function could fail, its return value
@@ -847,8 +843,8 @@
     SLang_set_array_element (at, &i, seasons[i])
 #v-
  was not used.  The return value from this function was also checked
- because it too could also fail. 
- 
+ because it too could also fail.
+
  Finally, the array was pushed onto the interpreter's stack and then
  it was freed.  It is important to understand why it was freed.  This
  is because arrays are reference-counted.  When the array was created,
@@ -882,7 +878,7 @@
       at = SLang_create_array (SLANG_INT_TYPE, 0, NULL, dims, 2);
       if (at == NULL)
         return;
-      
+
       one = 1;
       for (i = 0; i < n; i++)
         {
@@ -893,14 +889,14 @@
                 return;
              }
         }
-      
+
       (void) SLang_push_array (at, 1);
    }
 #v-
   In this example, only the diagonal elements of the array were set.
   This is bacause when the array was created, all its elements were
   set to zero.
-  
+
   Now consider an example that acts upon an existing array.  In
   particular, consider one that computes the trace of a 2-d matrix,
   i.e., the sum of the diagonal elements:
@@ -913,7 +909,7 @@
 
       if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
         return 0.0;
-      
+
       /* We want a 2-d square matrix.  If the matrix is 1-d and has only one
          element, then return that element. */
       trace = 0.0;
@@ -931,15 +927,15 @@
              }
         }
      else SLang_verror (SL_TYPE_MISMATCH, "Expecting a square matrix");
-     
+
      SLang_free_array (at);
      return trace;
-   } 
+   }
 #v-
  In this example, \cfun{SLang_pop_array_of_type} was used to pop an
  array of doubles from the stack.  This function will make implicit
  typecasts in order to return an array of the requested type.
- 
+
 #%}}}
 
 \sect1{Structures} #%{{{
@@ -960,16 +956,16 @@
        char *field_names[2];
        SLtype field_types[2];
        VOID_STAR field_values[2];
-       
+
        field_names[0] = "string_field";
        field_types[0] = SLANG_STRING_TYPE;
        field_values[0] = &string_value;
-       
+
        field_names[1] = "int_field";
        field_types[1] = SLANG_INT_TYPE;
        field_values[1] = &int_value;
-       
-       if (-1 == SLstruct_create_struct (2, field_names, 
+
+       if (-1 == SLstruct_create_struct (2, field_names,
                                             field_types, field_values))
          return -1;
        return 0;
@@ -983,7 +979,7 @@
  structure with a description of how the structure is laid out.  For
  example, consider a C structure defined by
 #v+
-    typedef struct 
+    typedef struct
     {
        char *s;
        int i;
@@ -1002,10 +998,10 @@
 #v-
    Here, MAKE_CSTRUCT_FIELD is a macro taking 5 arguments:
 #v+
-    MAKE_CSTRUCT_FIELD(C-structure-type, 
-                       C-field-name, 
+    MAKE_CSTRUCT_FIELD(C-structure-type,
+                       C-field-name,
                        slang-field-name,
-                       slang-data-type, 
+                       slang-data-type,
                        is-read-only)
 #v-
    The first argument is the structure type, the second is the name of
@@ -1020,13 +1016,13 @@
     int push_struct_example (char *string_value, int int_value)
     {
        SI_Type si;
-       
+
        si.s = string_value;
        si.i = int_value;
        return SLang_push_cstruct ((VOID_STAR)&si, SI_Type_Layout);
     }
-#v- 
-   
+#v-
+
    This mechanism of structure creation also permits a \slang
    structure to be passed to an intrinsic function through the use of
    the SLang_pop_cstruct routine, e.g.,
@@ -1100,7 +1096,7 @@
 #v-
 
  Before leaving this section, it is important to mention that
- access to character array fields is not permitted via this 
+ access to character array fields is not permitted via this
  interface.  That is, a structure such as
 #v+
      typedef struct
@@ -1111,10 +1107,10 @@
 #v-
  is not supported since \exmp{char name[32]} is not a
  \var{SLANG_STRING_TYPE} object.  Always keep in mind that a
- \var{SLANG_STRING_TYPE} object is a \exmp{char *}.  
+ \var{SLANG_STRING_TYPE} object is a \exmp{char *}.
 
 \sect2{Intrinsic Structures}
- 
+
  Here we show how to make intrinsic structures available to
  the interpreter.
 
@@ -1122,7 +1118,7 @@
  to the actual structures themselves.  The latter would require the
  interpreter to be involved with the creation and destruction of the
  structures.  Dealing with the pointers themselves is far simpler.
- 
+
  As an example, consider an object such as
 #v+
     typedef struct _Window_Type
@@ -1191,15 +1187,14 @@
  One should be careful in allowing read/write access to character string
  fields.  If read/write access is allowed, then the application should
  always use the \cfun{SLang_create_slstring} and \cfun{SLang_free_slstring}
- functions to set the character string field of the structure. 
- 
-#%}}}
+ functions to set the character string field of the structure.
 
+#%}}}
 
 #%}}}
 
 \sect{Signals} #%{{{
-  
+
   If your program that embeds the interpreter processes signals, then
   it may be undesirable to allow access to all signals from the
   interpreter.  For example, if your program has a signal handler for
@@ -1211,13 +1206,12 @@
 #v+
     /* forbid a signal handler for SIGHUP */
     SLsig_forbid_signal (SIGHUP, 1);
-    
+
     /* Allow a signal handler for SIGTERM */
     SLsig_forbid_signal (SIGTERM, 0);
 #v-
-  
-  By default, all signals are allowed access from the interpreter.
 
+  By default, all signals are allowed access from the interpreter.
 
 #%}}}
 
@@ -1226,7 +1220,7 @@
 
 \chapter{Keyboard Interface} #%{{{
 
-#%{{{ Overview 
+#%{{{ Overview
 
   \slang's keyboard interface has been designed to allow an
   application to read keyboard input from the user in a
@@ -1254,10 +1248,10 @@
 
   The function \verb{SLang_init_tty} must be called to initialize the
   terminal for single character input.  This puts the terminal in a mode
-  usually referred to as ``raw'' mode.  
-  
+  usually referred to as ``raw'' mode.
+
   The prototype for the function is:
-#v+ 
+#v+
       int SLang_init_tty (int abort_char, int flow_ctrl, int opost);
 #v-
   It takes three parameters that are used to specify how the terminal is to
@@ -1289,7 +1283,7 @@
   it is disabled.  Disabling flow control is necessary to pass certain
   characters to the application (e.g., \key{Ctrl-S} and \key{Ctrl-Q}).
   For some systems such as MSDOS, this parameter is meaningless.
-  
+
   The third parameter, \verb{opost}, is used to turn output processing on or
   off.  If \verb{opost} is zero, output processing is \em{not} turned on
   otherwise, output processing is turned on.
@@ -1300,7 +1294,7 @@
   determined.
 
   Example:
-#v+   
+#v+
       if (-1 == SLang_init_tty (7, 0, 0))  /* For MSDOS, use 34 as scan code */
         {
           fprintf (stderr, "Unable to initialize the terminal.\n");
@@ -1327,7 +1321,7 @@
 #v-
   Usually this function is only called before the program exits.  However,
   if the program is suspended it should also be called just before suspension.
-  
+
 #%}}}
 
 \sect{Initializing the \grp{SLkp} Routines} #%{{{
@@ -1341,11 +1335,11 @@
   function keys send.  Once that information is available, the
   \verb{SLkp_init} function can construct the proper keymaps to
   process the escape sequences.
-  
+
   This part of the initialization process for an application using
   this interface will look something like:
 
-#v+ 
+#v+
       SLtt_get_terminfo ();
       if (-1 == SLkp_init ())
         {
@@ -1357,12 +1351,12 @@
            SLang_doerror ("SLang_init_tty failed.");
            exit (1);
         }
-#v- 
+#v-
 
   It is important to check the return status of the \verb{SLkp_init}
   function which can failed if it cannot allocate enough memory for
   the keymap.
- 
+
 #%}}}
 
 \sect{Setting the Interrupt Handler} #%{{{
@@ -1384,10 +1378,10 @@
       {
         SLsignal_intr (SIGINT, default_sigint);
         SLKeyBoard_Quit = 1;
-        if (SLang_Ignore_User_Abort == 0) 
+        if (SLang_Ignore_User_Abort == 0)
           SLang_set_error (SL_UserBreak_Error);
       }
-#v- 
+#v-
   It simply sets the global variable \verb{SLKeyBoard_Quit} to one and
   if the variable \verb{SLang_Ignore_User_Abort} is non-zero,
   the error state is set to indicate a user break condition.  (The
@@ -1413,7 +1407,7 @@
   keyboard input is available to be read.
 
   These functions have prototypes:
-#v+   
+#v+
       unsigned int SLang_getkey (void);
       int SLang_input_pending (int tsecs);
 #v-
@@ -1441,14 +1435,14 @@
 
   Here is a simple example that reads keys from the terminal until one
   presses \key{Ctrl-G} or until 5 seconds have gone by with no input:
-#v+ 
+#v+
       #include <stdio.h>
       #include <slang.h>
       int main ()
       {
          int abort_char = 7;  /* For MSDOS, use 34 as scan code */
          unsigned int ch;
-         
+
          if (-1 == SLang_init_tty (abort_char, 0, 1))
            {
               fprintf (stderr, "Unable to initialize the terminal.\n");
@@ -1464,7 +1458,7 @@
                    fputs ("Waited too long! Bye\n", stdout);
                    break;
                 }
-              
+
               ch = SLang_getkey ();
               if (SLang_get_error () == SL_UserBreak_Error)
                 {
@@ -1476,8 +1470,7 @@
          SLang_reset_tty ();
          return 0;
       }
-#v- 
-
+#v-
 
 #%}}}
 
@@ -1489,13 +1482,13 @@
   \verb{SLang_getkey} and \slang's keymap facility to process escape
   sequences.  It returns a single integer which describes the key that
   was pressed:
-#v+ 
+#v+
       int SLkp_getkey (void);
 #v-
   That is, the \verb{SLkp_getkey} function simple provides a mapping
   between keys and integers.  In this context the integers are called
   \em{keysyms}.
-  
+
   For single character input such as generated by the \key{a} key on
   the keyboard, the function returns the character that was generated,
   e.g., \verb{'a'}.  For single characters, \verb{SLkp_getkey} will
@@ -1505,15 +1498,15 @@
   that 256.  The actual values of these keysyms are represented as
   macros defined in the \file{slang.h} include file.  For example, the
   up arrow key corresponds to the keysym whose value is
-  \verb{SL_KEY_UP}. 
-  
+  \verb{SL_KEY_UP}.
+
   Since it is possible for the user to enter a character sequence that
   does not correspond to any key.  If this happens, the special keysym
   \verb{SL_KEY_ERR} will be returned.
-  
+
   Here is an example of how \verb{SLkp_getkey} may be used by a file
   viewer:
-#v+ 
+#v+
       switch (SLkp_getkey ())
         {
            case ' ':
@@ -1534,13 +1527,13 @@
            default:
               SLtt_beep ();
         }
-#v- 
-   
+#v-
+
    Unlike its lower-level counterpart, \verb{SLang_getkey}, there do
    not yet exist any functions in the library that are capable of
    ``ungetting'' keysyms.  In particular, the \verb{SLang_ungetkey}
    function will not work.
-   
+
 #%}}}
 
 \sect{Buffering Input} #%{{{
@@ -1580,12 +1573,12 @@
   \verb{SLang_flush_input} with prototype
 #v+
       void SLang_flush_input (void);
-#v- 
+#v-
   It may be used to discard \em{all} input.
-  
+
   Here is a simple example that looks to see what the next key to be read is
   if one is available:
-#v+ 
+#v+
       int peek_key ()
       {
          int ch;
@@ -1594,15 +1587,14 @@
          SLang_ungetkey (ch);
          return ch;
       }
-#v-       
-
+#v-
 
 #%}}}
 
 \sect{Global Variables} #%{{{
   Although the following \slang global variables have already been
   mentioned earlier, they are gathered together here for completeness.
-  
+
   \verb{int SLang_Ignore_User_Abort;}
   If non-zero, pressing the interrupt character will not result in
   the libraries error state set to \verb{SL_UserBreak_Error}.
@@ -1613,7 +1605,7 @@
   \verb{SLang_getkey} is called, the interrupt character will be
   returned from \verb{SLang_getkey}.
 
-  \verb{int SLang_TT_Baud_Rate;} 
+  \verb{int SLang_TT_Baud_Rate;}
   On systems which support it, this variable is set to the value of the
   terminal's baud rate after the call to \verb{SLang_init_tty}.
 
@@ -1627,7 +1619,7 @@
   functionality in its \verb{SLrline} layer.  The \verb{SLrline}
   routines provide a simple mechanism for an application to get
   prompted input from a user with command line editing, completions,
-  and history recall. 
+  and history recall.
 
   The use of the \verb{SLrline} routines will be illustrated with a
   few simple examples.  All of the examples given in this section may
@@ -1647,7 +1639,7 @@
      {
        char *line;
        unsigned int len;
-       
+
        line = SLrline_read_line (rl, "prompt>", &len);
        if (line == NULL) break;
        if (0 == strcmp (line, "quit"))
@@ -1667,7 +1659,7 @@
   the \verb{SLrline} functions use the \verb{SLang_getkey} function to
   read characters and assume that the terminal has been properly
   initialized before use.
-  
+
   The \cfun{SLrline_open} function was used to create an instance of
   an \verb{SLrline_Type} object.  The function takes two arguments:
   and edit window display width (80 above), and a set of flags.  In
@@ -1675,20 +1667,20 @@
   turn on parenthesis blinking.  Once finished, the
   \exmp{SLrline_Type} object must be freed using the
   \exmp{SLrline_close} function.
-  
+
   The actual reading of the line occurs in the
   \cfun{SLrline_read_line} function, which takes an
   \verb{SLrline_Type} instance and a string representing the prompt to
   be used.  The line itself is returned as a malloced \exmp{char *}
   and must be freed using the \cfun{SLfree} function after used.  The
   length (in bytes) of the line is returned via the parameter list.
-  
+
   If an end-of-file character (\exmp{^D} on Unix) was entered at the
   beginning of a line, the \cfun{SLrline_read_line} function will
   return \NULL.  However, it also return \NULL if an error of
   some sort was encountered.  The only way to tell the difference
   between these two conditions is to call \cfun{SLang_get_error}.
-  
+
   The above code fragment did not provide for any sort of
   \exmp{SIGINT} handling.  Without such a provision, pressing
   \exmp{^C} at the prompt could be enough to kill the application.
@@ -1704,7 +1696,7 @@
   the \verb{SLrline} functions to the \slang interpreter.  Hence, this
   functionality is only available to applications that make use of the
   interpreter.
-  
+
   TBD...
 
 \chapter{Screen Management} #%{{{
@@ -1724,22 +1716,22 @@
   The screen management, or \verb{SLsmg}, routines are initialized by
   function \verb{SLsmg_init_smg}.  Once initialized, the application uses
   various \verb{SLsmg} functions to write to a \em{virtual} display.  This does
-  not cause the \em{physical} terminal display to be updated immediately.  
+  not cause the \em{physical} terminal display to be updated immediately.
   The physical display is updated to look like the virtual display only
   after a call to the function \verb{SLsmg_refresh}.  Before exiting, the
   application using these routines is required to call
   \verb{SLsmg_reset_smg} to reset the display system.
-  
+
   The following subsections explore \slang's screen management system in
   greater detail.
-  
+
 \sect{Initialization}
 
   The function \verb{SLsmg_init_smg} must be called before any other
   \verb{SLsmg} function can be used.  It has the simple prototype:
 #v+
       int SLsmg_init_smg (void);
-#v- 
+#v-
   It returns zero if successful or -1 if it cannot allocate space for
   the virtual display.
 
@@ -1762,30 +1754,30 @@
   characters from the keyboard, it is also a good idea to initialize
   the keyboard routines at this point as well.
 
-\sect{Resetting SLsmg}  
+\sect{Resetting SLsmg}
 
   Before the program exits or suspends, the function
   \verb{SLsmg_reset_smg}
   should be called to shutdown the display system.  This function has the
   prototype
-#v+ 
+#v+
       void SLsmg_reset_smg (void);
 #v-
   This will deallocate any memory allocated for the virtual screen and
   reset the terminal's display.
-  
+
   Basically, a program that uses the \verb{SLsmg} screen management functions
   and \slang's keyboard interface will look something like:
-#v+  
+#v+
       #include <slang.h>
       int main ()
       {
          SLtt_get_terminfo ();
          SLang_init_tty (-1, 0, 0);
          SLsmg_init_smg ();
-         
+
          /* do stuff .... */
-    
+
          SLsmg_reset_smg ();
          SLang_reset_tty ();
          return 0;
@@ -1816,7 +1808,7 @@
         Screen_Size_Changed = 1;
         SLsignal (SIGWINCH, sigwinch_handler);
      }
-     
+
      int main (int argc, char **argv)
      {
         SLsignal (SIGWINCH, sigwinch_handler);
@@ -1837,36 +1829,35 @@
           }
        return 0;
      }
-#v-    
-  
+#v-
 
 \sect{SLsmg Functions} #%{{{
 
   In the previous sections, functions for initializing and shutting down the
   \verb{SLsmg} routines were discussed.  In this section, the rest of the
-  \verb{SLsmg} functions are presented.  These functions act only on the 
+  \verb{SLsmg} functions are presented.  These functions act only on the
   \em{virtual} display.  The \em{physical} display is updated when the
   \verb{SLsmg_refresh} function is called and \em{not until that time}.
   This function has the simple prototype:
-#v+   
+#v+
      void SLsmg_refresh (void);
-#v- 
-  
+#v-
+
 \sect1{Positioning the cursor}
 
   The \verb{SLsmg_gotorc} function is used to position the cursor at a given
   row and column.  The prototype for this function is:
-#v+ 
+#v+
       void SLsmg_gotorc (int row, int col);
 #v-
   The origin of the screen is at the top left corner and is given the
   coordinate (0, 0), i.e., the top row of the screen corresponds to
   \verb{row = 0} and the first column corresponds to \verb{col = 0}.  The last
   row of the screen is given by \verb{row = SLtt_Screen_Rows - 1}.
-  
+
   It is possible to change the origin of the coordinate system by using the
   function \verb{SLsmg_set_screen_start} with prototype:
-#v+   
+#v+
      void SLsmg_set_screen_start (int *r, int *c);
 #v-
   This function takes pointers to the new values of the first row and first
@@ -1875,7 +1866,7 @@
   \verb{NULL}
   pointer may be passed to indicate that the origin is to be set to its
   initial value of 0.  For example,
-#v+ 
+#v+
       int r = 10;
       SLsmg_set_screen_start (&r, NULL);
 #v-
@@ -1883,27 +1874,27 @@
   \verb{r} will have the value of the previous row origin.
 
 \sect1{Writing to the Display}
-  
+
   \verb{SLsmg} has several routines for outputting text to the virtual
   display.  The following points should be understood:
-\begin{itemize}   
+\begin{itemize}
 \item The text is output at the position of the cursor of the virtual
       display and the cursor is advanced to the position that corresponds to
       the end of the text.
-      
+
 \item Text does \em{not} wrap at the boundary of the
       display--- it is trucated.  This behavior seems to be more useful in
       practice since most programs that would use screen management tend to
       be line oriented.
-      
+
 \item Control characters are displayed in a two character sequence
       representation with \verb{^} as the first character.  That is,
       \key{Ctrl-X} is output as \verb{^X}.
-      
+
 \item The behavior of the newline character depends upon the value of
       the \verb{SLsmg_Newline_Behavior} variable.  It may be set to
       any one of the following values:
-      
+
       \p\verb{SLSMG_NEWLINE_IGNORED} : If a newline character is
       encountered when writing a string to the virtual display, the
       characters in the string following the newline character will not
@@ -1919,12 +1910,12 @@
       newline character is output at the bottom of the virtual
       display, the display will scroll up.  Otherwise the behavior
       will be the same as that of \verb{SLSMG_NEWLINE_MOVES}.
-      
+
       \p\verb{SLSMG_NEWLINE_PRINTABLE} : When set to this value, a
       newline character will be printed as the two characters sequence
       \verb{^J}.
 
-\end{itemize} 
+\end{itemize}
 
   Although the some of the above items might appear to be too restrictive, in
   practice this is not seem to be the case.  In fact, the design of the
@@ -1938,7 +1929,7 @@
      Write \verb{len} characters pointed to by \verb{str} to the
      virtual display.
 
-\proto{void SLsmg_write_string (char *str);} 
+\proto{void SLsmg_write_string (char *str);}
   Write the null terminated string given by pointer \verb{str} to the
   virtual display.  This function is a wrapper around
   \verb{SLsmg_write_nchars}.
@@ -1951,7 +1942,7 @@
   filled with space characters. This function is a wrapper around
   \verb{SLsmg_write_wrapped_string}.
 
-\proto{void SLsmg_write_wrapped_string(SLuchar_Type *str, int r, int c, unsigned int dr, unsigned int dc, int fill)} 
+\proto{void SLsmg_write_wrapped_string(SLuchar_Type *str, int r, int c, unsigned int dr, unsigned int dc, int fill)}
   The purpose of this function is two write a string \verb{str} to a
   box defined by rows and columns satisfying \verb{r<=row<r+dc} and
   \verb{c<=column<c+dc}. The string will be wrapped at the column
@@ -1974,7 +1965,7 @@
   The following functions may be used to fill portions of the display with
   blank characters.  The attributes of blank character are the current
   attributes.  (See below for a discussion of character attributes)
-\begin{descrip}  
+\begin{descrip}
   \proto{void SLsmg_erase_eol (void);}
   Erase line from current position to the end of the line.
 
@@ -1986,7 +1977,7 @@
 \end{descrip}
 \sect1{Setting Character Attributes}
 
-  Character attributes define the visual characteristics the character 
+  Character attributes define the visual characteristics the character
   possesses when it is displayed.  Visual characteristics include the
   foreground and background colors as well as other attributes such as
   blinking, bold, and so on.  Since \verb{SLsmg} takes a different approach
@@ -2024,7 +2015,7 @@
   actual set of attributes requires a call to any of the following
   \verb{SLtt}
   routines:
-#v+   
+#v+
      void SLtt_set_color (int obj, char *name, char *fg, char *bg);
      void SLtt_set_color_object (int obj, SLtt_Char_Type attr);
      void SLtt_set_mono (int obj, char *, SLtt_Char_Type attr);
@@ -2051,7 +2042,7 @@
      "magenta"              "brightmagenta"
      "cyan"                 "brightcyan"
      "lightgray"            "white"
-#v- 
+#v-
   The value of the foreground parameter \verb{fg} can be anyone of these
   sixteen colors.   However, on most terminals, the background color will
   can only be one of the colors listed in the first column\footnote{This is
@@ -2084,10 +2075,10 @@
 \begin{descrip}
   \proto{void SLsmg_set_color (int obj);}
   Set the current attribute to those of object \verb{obj}.
-  
+
   \proto{void SLsmg_normal_video (void);}
-  This function is equivalent to \verb{SLsmg_set_color (0)}. 
-  
+  This function is equivalent to \verb{SLsmg_set_color (0)}.
+
   \proto{void SLsmg_reverse_video (void);}
   This function is equivalent to \verb{SLsmg_set_color (1)}.  On monochrome
   terminals, it is equivalent to setting the subsequent character attributes
@@ -2121,15 +2112,15 @@
   If \verb{flag} is non-zero, subsequent write functions will use characters
   from the alternate character set.  If \verb{flag} is zero, the default, or,
   ordinary character set will be used.
-  
+
   \proto{void SLsmg_draw_hline (int len);}
   Draw a horizontal line from the current position to the column that is
   \verb{len} characters to the right.
-  
+
   \proto{void SLsmg_draw_vline (int len);}
   Draw a horizontal line from the current position to the row that is
   \verb{len} rows below.
-  
+
   \proto{void SLsmg_draw_box (int r, int c, int dr, int dc);}
   Draw a box whose upper right corner is at row \verb{r} and column
   \verb{c}.
@@ -2138,7 +2129,7 @@
 \end{descrip}
 
 \sect1{Miscellaneous Functions}
- 
+
 \begin{descrip}
   \proto{void SLsmg_touch_lines (int r, int n);}
   Mark screen rows numbered \verb{r}, \verb{r + 1}, \ldots \verb{r +
@@ -2169,7 +2160,7 @@
   \verb{nchars-1} of the \verb{wchars} array.  If \verb{nchars} is 0,
   then the character cell represents the second half of a double-wide
   character.
-  
+
   The \verb{color} field repesents both the color of the character
   cell and the alternate character set setting of the cell.  This
   value may be bitwise-anded with \verb{SLSMG_COLOR_MASK} to obtain
@@ -2184,18 +2175,18 @@
 
   The following \slang global variables are used by the \verb{SLsmg}
   interface.  Some of these have been previously discussed.
-  
+
   \verb{int SLtt_Screen_Rows;}
   \verb{int SLtt_Screen_Cols;}
   The number of rows and columns of the \em{physical} display.  If either of
   these numbers changes, the functions \verb{SLsmg_reset_smg} and
   \verb{SLsmg_init_smg} should be called again so that the \verb{SLsmg}
   routines can re-adjust to the new size.
-  
+
   \verb{int SLsmg_Tab_Width;}
   Set this variable to the tab width that will be used when expanding tab
   characters.  The default is 8.
-  
+
   \verb{int SLsmg_Display_Eight_Bit}
   This variable determines how characters with the high bit set are to be
   output.  Specifically, a character with the high bit set with a value
@@ -2207,14 +2198,14 @@
   \verb{int SLtt_Use_Ansi_Colors;}
   If this value is non-zero, the terminal is assumed to support ANSI colors
   otherwise it is assumed to be monochrome.  The default is 0.
-  
+
   \verb{int SLtt_Term_Cannot_Scroll;}
   If this value is zero, the \verb{SLsmg} will attempt to scroll the physical
   display to optimize the update.  If it is non-zero, the screen management
   routines will not perform this optimization.  For some applications, this
   variable should be set to zero.  The default value is set by the
   \verb{SLtt_get_terminfo} function.
-  
+
 #%}}}
 
 \sect{Hints for using SLsmg}
@@ -2291,15 +2282,14 @@
     void update_screen ()
     {
        SLsig_block_signals ();
-       
+
        /* Call SLsmg functions */
            .
            .
        SLsig_unblock_signals ();
     }
-#v-    
+#v-
  See \file{demo/pager.c} for examples.
-
 
 #%}}}
 
@@ -2307,9 +2297,9 @@
 
  The S-Lang library incorporates two types of searches: Regular expression
  pattern matching and ordinary searching.
- 
+
 \sect{Simple Searches} #%{{{
- 
+
  \slang's \SLsearch interface functions a convenient interface to the
  famous Boyer-Moore fast searching algrothim.  The searches can go in
  either a forward or backward direction and and may be performed with

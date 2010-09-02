@@ -12,14 +12,13 @@ private define perform_echo (s1)
      () = fprintf (stderr, "server: write failed: %s", errno_string(errno));
 }
 
-
 private define unix_server ()
 {
    variable s = socket (PF_UNIX, SOCK_STREAM, 0);
    bind (s, "/tmp/foo.sock");
    listen (s, 1);
    variable s1 = accept (s);
-   perform_echo (s1);   
+   perform_echo (s1);
 }
 
 private define inet_server ()
@@ -32,7 +31,7 @@ private define inet_server ()
    vmessage ("accepted connection from %s:%d", host, port);
    perform_echo (s1);
 }
-   
+
 define slsh_main ()
 {
    %unix_server ();

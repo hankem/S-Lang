@@ -14,7 +14,6 @@ static define sum (a)
    dot_prod (a, ones);
 }
 
-
 if (1+2+3+4+5 != sum([1,2,3,4,5]))
   failed ("sum");
 
@@ -52,7 +51,7 @@ static define arr_cmp (a, b)
    variable i = length (where (b != a));
    if (i == 0)
      return 0;
-   
+
    i = where (b != a);
    a = a[i];
    b = b[i];
@@ -125,7 +124,7 @@ static define multiply_3d (a, b, c)
 {
    variable i, j, k, l, m;
    variable dims_a, dims_b;
-   
+
    (dims_a,,) = array_info(a);
    (dims_b,,) = array_info(b);
 
@@ -141,7 +140,7 @@ static define multiply_3d (a, b, c)
 		  _for (0, dims_b[2]-1, 1)
 		    {
 		       m = ();
-		       
+
 		       variable sum = 0;
 		       _for (0, dims_b[0]-1, 1)
 			 {
@@ -157,7 +156,6 @@ static define multiply_3d (a, b, c)
 }
 
 multiply_3d (A, B, C);
-		       
 
 print ("Ok\n");
 #else

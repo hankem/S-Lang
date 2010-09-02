@@ -47,7 +47,7 @@ slangfun.sgml : slangfun.tm local.tm rtl/*.tm
 html-files: $(HTML_FILES)
 cslang.html : cslang.sgml
 	$(SGML2HTML) cslang.sgml
-slang.html : slang.sgml 
+slang.html : slang.sgml
 	$(SGML2HTML) slang.sgml
 cref.html : cref.sgml
 	$(SGML2HTML) cref.sgml
@@ -65,7 +65,7 @@ slangfun.tex: slangfun.sgml
 	jed -script ./fixtex.sl slangfun.tex
 cref.tex: cref.sgml
 	$(SGML2LATEX) cref.sgml
-	jed -script ./fixtex.sl cref.tex	
+	jed -script ./fixtex.sl cref.tex
 #----- PDF Files -----------------------------------------------------------
 pdf-files: $(PDF_FILES)
 cslang.pdf : cslang.tex

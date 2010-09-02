@@ -9,7 +9,7 @@
  specified variables \exmp{v1,..., vN} (passed as references).  It
  returns the number of lines read from the file that matched the
  format (implicit or specified by a qualifier).
- 
+
  The file parameter may be a string that gives the filename to read,
  a \exmp{File_Type} object representing an open file pointer, or an
  array of lines to be scanned.
@@ -88,7 +88,7 @@
  Now suppose that only the score and flags column are of interest.
  The \exmp{name} and \exmp{date} fields may be ignored using
 #v+
-     n = readascii ("score.dat", &score, &flags"; 
+     n = readascii ("score.dat", &score, &flags";
                     format="%*s %lf %*s %d");
 #v-
  Here, \exmp{%*s} indicates that the field is to be parsed as a
@@ -106,11 +106,11 @@
 #v+
      n = readascii ("books.dat", &year, &author, &title;
                     format="\"%[^\"]\" \"%[^\"]\" \"%[^\"]\"");
-                    
+
 #v-
 \notes
  This current version of this function does not handle missing data.
- 
+
  By default, lines not matching the expected format are assumed to
  be comments and are skipped.  So normally the \exmp{comment}
  qualifier is not needed.  However, it is useful in conjunction with

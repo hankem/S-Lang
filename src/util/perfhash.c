@@ -14,7 +14,7 @@ static char *C_Hash_Table_Type = "Keyword_Table_Type";
 static char *C_Hash_Table_Name = "Keyword_Table";
 static char *C_Is_Keyword_Function_Name = "is_keyword";
 
-typedef struct 
+typedef struct
 {
    unsigned int hash;
    unsigned int len;
@@ -51,11 +51,11 @@ typedef SLCONST struct\n\
 %s;\n\
 ",
 	    C_Hash_Table_Type);
-	    
+
    fprintf (stdout, "\nstatic %s %s [/* %u */] =\n{\n",
 	    C_Hash_Table_Type, C_Hash_Table_Name, (max_hash - min_hash) + 1);
    fprintf (stderr, "String Table Size: %u\n", (max_hash - min_hash) + 1);
-   
+
    for (i = min_hash; i <= max_hash; i++)
      {
 	st = String_Table;
@@ -66,13 +66,13 @@ typedef SLCONST struct\n\
 	       break;
 	     st++;
 	  }
-	
+
 	if (st == st_max)
 	  fprintf (stdout, "   {NULL,0},\n");
 	else
 	  fprintf (stdout, "   {\"%s\",\t%s},\n", st->name, st->type);
      }
-   
+
    fputs ("};\n\n", stdout);
 
    fprintf (stdout, "\
@@ -106,7 +106,7 @@ static unsigned int hash_function (int *char_map,
 				   unsigned char *s, unsigned int len)
 {
    unsigned int sum;
-   
+
    if (Use_Length) sum = len;
    else sum = 0;
 
@@ -123,15 +123,15 @@ static unsigned int Frequency_Table [256];
 static void init_map (int *map)
 {
    unsigned int i;
-   
+
    for (i = 0; i < 256; i++) map [i] = -1;
 
    for (i = 0; i < Num_Strings; i++)
      {
 	unsigned char *s;
-	
+
 	s = (unsigned char *) String_Table[i].name;
-	
+
 	while (*s != 0)
 	  {
 	     map [*s] = 0;
@@ -153,7 +153,7 @@ static void write_map (int *map)
 	unsigned int h = String_Table[i].hash;
 	if (h < min_hash) min_hash = h;
 	if (h > max_hash) max_hash = h;
-#if 0	
+#if 0
 	fprintf (stdout, "-->%s\t%u\n", String_Table[i].name, h);
 #endif
      }
@@ -167,21 +167,21 @@ static void write_map (int *map)
    for (i = 0; i < 256; i++)
      if (map[i] == -1) map[i] = (max_hash + 1);
 
-   if (max_hash + 1 < 0xFF) 
+   if (max_hash + 1 < 0xFF)
      type = "unsigned char";
    else if (max_hash + 1 < 0xFFFF)
      type = "unsigned short";
-   else 
+   else
      type = "unsigned long";
 
    fprintf (stderr, "Hash Table is of type %s with max hash %u\n",
 	    type, max_hash);
 
-   fprintf (stdout, "\nstatic SLCONST %s %s [256] =\n", 
+   fprintf (stdout, "\nstatic SLCONST %s %s [256] =\n",
 	    type, C_Char_Map_Name);
 
    fprintf (stdout, "{\n  ");
-   
+
    for (i = 0; i < 255; i++)
      {
 	fprintf (stdout, "%3d, ", map[i]);
@@ -194,7 +194,7 @@ static void write_map (int *map)
 
    fprintf (stdout, "static %s %s (char *s, unsigned int len)\n",
 	    type, C_Hash_Function_Name);
-   
+
 fprintf (stdout,"\
 {\n\
    unsigned int sum;\n\
@@ -210,21 +210,19 @@ fprintf (stdout,"\
 ",
 	 (Use_Length ? "len" : "0"),
 	 C_Char_Map_Name);
-   
+
    write_table (min_hash, max_hash);
 }
-
 
 static unsigned int compute_hash (unsigned int i)
 {
    String_Table_Type *s;
    unsigned int hash;
-   
+
    s = String_Table + i;
    hash = hash_function (Char_Table_Map, (unsigned char *) s->name, s->len);
    return s->hash = hash;
 }
-
 
 static int tweak_character (unsigned char ch, unsigned int bad)
 {
@@ -235,15 +233,15 @@ static int tweak_character (unsigned char ch, unsigned int bad)
 
    val_save = (unsigned int) Char_Table_Map [ch];
    nvalues = Max_Table_Value;
-   
+
    val = 0;
    while (nvalues)
      {
 	val += Tweak_Step_Size;
 	val = val % Max_Table_Value;
-	
+
 	Char_Table_Map[ch] = (int) val;
-	
+
 	for (i = 0; i <= bad; i++)
 	  {
 	     unsigned int hash = compute_hash (i);
@@ -255,11 +253,11 @@ static int tweak_character (unsigned char ch, unsigned int bad)
 	     if (j != i)
 	       break;
 	  }
-	
+
 	if (i > bad) return 0;
 	nvalues--;
      }
-   
+
    Char_Table_Map [ch] = (int) val_save;
 #if 0
    /* reset hashes */
@@ -268,7 +266,6 @@ static int tweak_character (unsigned char ch, unsigned int bad)
 #endif
    return -1;
 }
-
 
 static void sort_according_to_frequency (unsigned char *s, unsigned int len)
 {
@@ -282,7 +279,7 @@ static void sort_according_to_frequency (unsigned char *s, unsigned int len)
      {
 	si = s[i];
 	fi = Frequency_Table [si];
-	
+
 	for (j = i + 1; j < len; j++)
 	  {
 	     sj = s[j];
@@ -299,13 +296,13 @@ static void sort_according_to_frequency (unsigned char *s, unsigned int len)
 static void create_frequency_table (unsigned int num)
 {
    unsigned int i;
-   
+
    memset ((char *) Frequency_Table, 0, sizeof(Frequency_Table));
-   
+
    for (i = 0; i < num; i++)
      {
 	unsigned char *s, ch;
-	
+
 	s = (unsigned char *)String_Table[i].name;
 	while (0 != (ch = *s))
 	  {
@@ -321,28 +318,27 @@ static int tweak_hash_function (unsigned int bad, unsigned int good)
    unsigned char bad_chars [256], good_chars[256];
    unsigned char *s;
    unsigned int i, len;
-   
 
    memset ((char *)unique_chars, 0, sizeof (unique_chars));
    memset ((char *)bad_chars, 0, sizeof (bad_chars));
    memset ((char *)good_chars, 0, sizeof (good_chars));
 
    s = (unsigned char *) String_Table[bad].name;
-   while (*s != 0) 
+   while (*s != 0)
      {
 	bad_chars [*s] = 1;
 	s++;
      }
-   
+
    s = (unsigned char *) String_Table[good].name;
-   while (*s != 0) 
+   while (*s != 0)
      {
 	good_chars [*s] = 1;
 	s++;
      }
-   
+
    /* Find out the characters that are in good or bad, and not both.  That
-    * way we are free to manipulate those to avoid the collision.  
+    * way we are free to manipulate those to avoid the collision.
     */
    len = 0;
    for (i = 0; i < 256; i++)
@@ -364,19 +360,19 @@ static int tweak_hash_function (unsigned int bad, unsigned int good)
    create_frequency_table (bad);
 #endif
    sort_according_to_frequency (unique_chars, len);
-   
+
    for (i = 0; i < len; i++)
      {
 	unsigned char ch = unique_chars [i];
 	if (0 == tweak_character (ch, bad))
 	  return 0;
      }
-   
+
    return -1;
 }
 
 static int perfect_hash (void)
-{	  
+{
    unsigned int i, j;
    unsigned int hash;
    int has_collisions = 1;
@@ -388,8 +384,8 @@ static int perfect_hash (void)
 	  {
 	     if (hash != String_Table[j].hash)
 	       continue;
-	     
-	     /* Oops.  We have a collision.  tweak_hash_function will 
+
+	     /* Oops.  We have a collision.  tweak_hash_function will
 	      * adjust the hash table array to resolve this collision
 	      * and ensure that previous ones remain resolved.
 	      */
@@ -416,18 +412,17 @@ static int perfect_hash (void)
 	  {
 	     if (hash != String_Table[j].hash)
 	       continue;
-	     
+
 	     has_collisions++;
 	     fprintf (stderr, "Collision: %s, %s\n", s, String_Table [j].name);
 	  }
      }
-   
+
    if (has_collisions)
      return -1;
 
    return 0;
 }
-
 
 static int sort_function (String_Table_Type *a, String_Table_Type *b)
 {
@@ -439,23 +434,23 @@ static void sort_strings (void)
    unsigned int i;
    void (*qsort_fun) (String_Table_Type *, unsigned int,
 		      unsigned int, int (*)(String_Table_Type *, String_Table_Type *));
-   
+
    for (i = 0; i < Num_Strings; i++)
      {
 	int f;
 	unsigned char *s;
-	
+
 	f = 0;
 	s = (unsigned char *) String_Table[i].name;
 	while (*s != 0) f += Frequency_Table [*s++];
 	String_Table [i].freq_statistic = f;
      }
-     
+
    qsort_fun = (void (*) (String_Table_Type *, unsigned int,
-			  unsigned int, 
+			  unsigned int,
 			  int (*)(String_Table_Type *, String_Table_Type *)))
      qsort;
-   
+
    qsort_fun (String_Table, Num_Strings, sizeof (String_Table_Type),
 	      sort_function);
 }
@@ -471,7 +466,7 @@ int main (int argc, char **argv)
    unsigned int i;
 
    Tweak_Step_Size = 5;
-   
+
    if (isatty (0) || (argc > 2))
      {
 	fprintf (stderr, "Usage: %s [step-size] < keywords > hash.c\n", argv[0]);
@@ -483,10 +478,10 @@ int main (int argc, char **argv)
      {
 	if (1 != sscanf (argv[1], "%u", &Tweak_Step_Size))
 	  Tweak_Step_Size = 5;
-	
+
 	if ((Tweak_Step_Size % 2) == 0) Tweak_Step_Size++;
      }
-   
+
    count = 0;
    min_char = 255;
    max_char = 0;
@@ -498,7 +493,7 @@ int main (int argc, char **argv)
 	char *s;
 	unsigned int len;
 	char *type;
-	
+
 	if (*line == '%') continue;
 
 	if (count == 256)
@@ -506,7 +501,7 @@ int main (int argc, char **argv)
 	     fprintf (stderr, "Only 256 keywords permitted.\n");
 	     return 1;
 	  }
-	
+
 	len = strlen (line);
 	if (len && (line [len - 1] == '\n'))
 	  {
@@ -516,7 +511,7 @@ int main (int argc, char **argv)
 
 	if (len == 0)
 	  continue;
-  
+
 	s = malloc (len + 1);
 	if (s == NULL)
 	  {
@@ -525,30 +520,29 @@ int main (int argc, char **argv)
 	  }
 	strcpy (s, line);
 	String_Table[count].name = s;
-	
+
 	type = s;
 	while (*type && (*type != ' ') && (*type != '\t'))
 	  type++;
-	
+
 	len = (unsigned int) (type - s);
 	String_Table [count].len = len;
 	if (len > max_len) max_len = len;
 	if (len < min_len) min_len = len;
-	
+
 	if (*type != 0)
 	  {
 	     *type++ = 0;
 	     while ((*type == ' ') || (*type == '\t'))
 	       type++;
 	  }
-	
+
 	String_Table [count].type = type;
-	  
 
 	for (i = 0; i < len; i++)
 	  {
 	     unsigned char ch;
-	     
+
 	     ch = (unsigned char) s[i];
 
 	     if (ch < min_char)
@@ -556,10 +550,9 @@ int main (int argc, char **argv)
 	     if (ch > max_char)
 	       max_char = ch;
 	  }
-	
+
 	count++;
      }
-
 
    Max_String_Len = max_len;
    Min_String_Len = min_len;
@@ -568,15 +561,15 @@ int main (int argc, char **argv)
    Max_Table_Value = 1;
    while (Max_Table_Value < Num_Strings)
      Max_Table_Value = Max_Table_Value << 1;
-   
+
    Max_Hash_Value = Max_Table_Value * Max_String_Len;
-   
+
    fprintf (stderr, "Theoretical Max_Table_Value: %u\n", Max_Table_Value);
    fprintf (stderr, "Theoretical Max_Hash_Value: %u\n", Max_Hash_Value);
-   
+
    create_frequency_table (Num_Strings);
    sort_strings ();
-   
+
    init_map (Char_Table_Map);
    if (-1 == perfect_hash ())
      {
@@ -585,17 +578,13 @@ int main (int argc, char **argv)
      }
 
    fprintf (stderr, "Success.\n");
-   
+
    fprintf (stdout, "/* Perfect hash generated by command line:\n *");
    for (i = 0; i < (unsigned int)argc; i++)
      fprintf (stdout, " %s", argv[i]);
    fputs ("\n */\n", stdout);
-	
+
    write_map (Char_Table_Map);
    return 0;
 }
 
-	     
-	       
-	
-	

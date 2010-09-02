@@ -17,14 +17,13 @@ define grep (pat, files)
 
    variable fp = popen ("rgrep '$pat' $files"$, "r");
    variable matches;
-   
+
    matches = fgetslines (fp);
    () = pclose (fp);
-   
+
    return matches;
 }
 
-   
 static define prune_array (a, b)
 {
    foreach (b) using ("keys")
@@ -44,7 +43,7 @@ define get_with_pattern (a, pat, white)
    foreach (grep (pat, Src_Files))
      {
 	f = ();
-	
+
 	f = strtok (f, white)[1];
 	a [f] = 1;
      }
@@ -72,7 +71,7 @@ define get_src_intrinsics ()
    get_with_pattern (src, "^[ \t]+MAKE_FCONSTANT.*(\".*\"", "\"");
    get_with_pattern (src, "^[ \t]+MAKE_ICONSTANT.*(\".*\"", "\"");
    get_with_pattern (src, "^[ \t]+MAKE_LLCONSTANT.*(\".*\"", "\"");
-   
+
    get_with_pattern (src, "SLclass_allocate_class[ \t]+(\"", "\"");
    get_with_pattern (src, "SLadd_intrinsic[^(]+(\"", "\"");
 
@@ -109,7 +108,6 @@ define get_doc_intrinsics ()
    return doc;
 }
 
-
 define slsh_main ()
 {
    variable k;
@@ -119,10 +117,10 @@ define slsh_main ()
    src = get_src_intrinsics ();
 
    prune_array (src, doc);
-   
+
    k = assoc_get_keys (src);
    k = k[array_sort(k)];
-   
+
    foreach (k)
      {
 	message ();
@@ -138,4 +136,4 @@ define slsh_main ()
 	  message ();
      }
 }
-   
+

@@ -65,11 +65,11 @@
 @doc/tm/crtl/slinterp.tm
 @doc/tm/crtl/slsearch.tm
 @doc/tm/crtl/slutf8.tm
-@doc/tm/crtl/slerr.tm	
+@doc/tm/crtl/slerr.tm
 @doc/tm/crtl/slkeymap.tm
 @doc/tm/crtl/slsmg.tm
 @doc/tm/crtl/slwchar.tm
-@doc/tm/crtl/slinit.tm	
+@doc/tm/crtl/slinit.tm
 @doc/tm/crtl/slmisc.tm
 @doc/tm/crtl/sltty.tm
 @doc/tm/crtl/undoc.tm

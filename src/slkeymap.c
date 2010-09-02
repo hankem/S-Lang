@@ -21,7 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -58,12 +58,12 @@ static unsigned int Num_Key_Methods;
 static void free_interpret_key (int type, VOID_STAR addr)
 {
    (void) type;
-   
+
    SLang_free_slstring (*(char **) addr);
 }
 
 #define SLKEYMAP_MAX_TYPES 16
-static Key_Methods_Type Key_Methods_Table[SLKEYMAP_MAX_TYPES] = 
+static Key_Methods_Type Key_Methods_Table[SLKEYMAP_MAX_TYPES] =
 {
    {SLKEY_F_INTERPRET, free_interpret_key}
 };
@@ -71,7 +71,7 @@ static Key_Methods_Type Key_Methods_Table[SLKEYMAP_MAX_TYPES] =
 static Key_Methods_Type *find_key_methods (int type)
 {
    Key_Methods_Type *k, *kmax;
-   
+
    k = Key_Methods_Table;
    kmax = k + Num_Key_Methods;
 
@@ -79,7 +79,7 @@ static Key_Methods_Type *find_key_methods (int type)
      {
 	if (k->type == type)
 	  return k;
-	
+
 	k++;
      }
    return NULL;
@@ -107,7 +107,7 @@ int SLkm_set_free_method (int type, void (*f)(int, VOID_STAR))
    if ((NULL == (k = find_key_methods (type)))
        && (NULL == (k = alloc_key_methods (type))))
      return -1;
-   
+
    k->free_method = f;
    return 0;
 }
@@ -118,11 +118,11 @@ int SLkm_set_free_method (int type, void (*f)(int, VOID_STAR))
 static void free_key_function (SLang_Key_Type *key)
 {
    Key_Methods_Type *k;
-   
+
    k = find_key_methods (key->type);
    if ((k != NULL) && (k->free_method != NULL))
      (*k->free_method) (key->type, &key->f);
-   
+
    key->f.f = NULL;
    key->type = 0;
    /* *key->str = 0;  Let caller do this */
@@ -351,7 +351,7 @@ static int find_the_key (SLFUTURE_CONST char *s, SLkeymap_Type *kml, SLang_Key_T
 		       _pSLang_verror (SL_INVALID_PARM, KEY_DEFINITION_ERROR_MSG);
 		       return -2;
 		    }
-		  
+
 		  free_key_function (key);
 
 		  *keyp = key;

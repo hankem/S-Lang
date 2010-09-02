@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -153,7 +153,7 @@ int _pSLmath_isinf (double x)
 static double my_round (double x)
 {
    double xf, xi;
-   
+
    xf = modf (x, &xi);		       /* x = xi + xf */
    if (xi > 0)
      {
@@ -172,7 +172,7 @@ static double my_round (double x)
      }
    else if (xf >= 0.5)		       /* xi=0 */
      return 1.0;
-	  
+
    return xi;
 }
 #endif
@@ -212,7 +212,7 @@ double _pSLmath_expm1 (double x)
    /* f = exp(x)-1
     *    = (exp(x)-1) + x - x
     *    = (exp(x)-(1+x)) + x
-    * 
+    *
     * While the above works, it is not as accurate as the algroithm below,
     * which is due to Kahan (yes, that Kahan).
     */
@@ -239,12 +239,12 @@ double _pSLmath_expm1 (double x)
 static double my_asinh (double x)
 {
    /* f(x) = log(x + sqrt(x^2+1))
-    * Note: f(x)+f(-x) 
+    * Note: f(x)+f(-x)
     *          = log(x+sqrt(x^2+1))+log(-x+sqrt(x^2+1))
     *          = log(x^2+1 - x^2)
     *          = 0
     * Thus, f(-x)=-f(x) as required.
-    * 
+    *
     * So consider x>=0.
     * For large x
     *   = log(2x + sqrt(x^2+1)-x)
@@ -267,7 +267,7 @@ static double my_asinh (double x)
 
    if (x > 1.0)
      return s*log (2.0*x + 1.0/x/(1.0+sqrt(1.0+1.0/x2)));
-   
+
    return LOG1P_FUNC(x+x2/(1.0+sqrt(1.0+x2)));
 }
 #endif
@@ -294,7 +294,7 @@ static double my_acosh (double x)
 static double my_atanh (double x)
 {
    /* 0.5 * log ((1.0 + x)/(1.0 - x));  (0 <= x^2 < 1)
-    * = 0.5*log((1-x+2x)/(1-x)) 
+    * = 0.5*log((1-x+2x)/(1-x))
     * = 0.5*log(1 + 2x/(1-x))
     */
    return 0.5 * LOG1P_FUNC(2.0*x/(1-x));
@@ -376,7 +376,7 @@ static int double_math_op (int op,
 	for (i = 0; i < na; i++)
 	  b[i] = 0.0;
 	return 1;
-	
+
       case SLMATH_ISINF:
 	c = (char *) bp;
 	for (i = 0; i < na; i++)
@@ -388,7 +388,7 @@ static int double_math_op (int op,
 	for (i = 0; i < na; i++)
 	  c[i] = (char) ISNAN_FUN(a[i]);
 	return 1;
-	
+
       case SLMATH_FLOOR:
 	for (i = 0; i < na; i++) b[i] = floor(a[i]);
 	break;
@@ -396,11 +396,11 @@ static int double_math_op (int op,
       case SLMATH_CEIL:
 	for (i = 0; i < na; i++) b[i] = ceil(a[i]);
 	break;
-	
+
       case SLMATH_ROUND:
 	for (i = 0; i < na; i++) b[i] = ROUND_FUN(a[i]);
 	break;
-	
+
       case SLMATH_EXPM1:
 	for (i = 0; i < na; i++) b[i] = EXPM1_FUNC(a[i]);
 	break;
@@ -424,7 +424,6 @@ static int float_math_op (int op,
    (void) type;
    a = (float *) ap;
    b = (float *) bp;
-
 
    switch (op)
      {
@@ -548,91 +547,91 @@ static int generic_math_op (int op,
 	return 0;
 
       case SLMATH_SINH:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = sinh (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_COSH:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = cosh (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_TANH:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = tanh (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_TAN:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = tan (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_ASIN:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = asin (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_ACOS:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = acos (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_ATAN:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = atan (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_EXP:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = exp (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_LOG:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = log (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_LOG10:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = log10 (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_SQRT:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = sqrt (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_SIN:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = sin (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_COS:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = cos (to_double ((VOID_STAR) a));
 	     a += da;
@@ -640,27 +639,26 @@ static int generic_math_op (int op,
 	break;
 
       case SLMATH_ASINH:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = ASINH_FUN (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_ATANH:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = ATANH_FUN (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_ACOSH:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = ACOSH_FUN (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
-
 
       case SLMATH_CONJ:
       case SLMATH_REAL:
@@ -693,21 +691,21 @@ static int generic_math_op (int op,
 	  }
 	return 1;
       case SLMATH_FLOOR:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = floor (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_CEIL:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = ceil (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
       case SLMATH_ROUND:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = ROUND_FUN (to_double ((VOID_STAR) a));
 	     a += da;
@@ -715,7 +713,7 @@ static int generic_math_op (int op,
 	break;
 
       case SLMATH_EXPM1:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = EXPM1_FUNC (to_double ((VOID_STAR) a));
 	     a += da;
@@ -723,14 +721,14 @@ static int generic_math_op (int op,
 	break;
 
       case SLMATH_LOG1P:
-	for (i = 0; i < na; i++) 
+	for (i = 0; i < na; i++)
 	  {
 	     b[i] = LOG1P_FUNC (to_double ((VOID_STAR) a));
 	     a += da;
 	  }
 	break;
      }
-   
+
    return 1;
 }
 
@@ -887,7 +885,6 @@ typedef struct
 }
 Array_Or_Scalar_Type;
 
-
 static void free_array_or_scalar (Array_Or_Scalar_Type *ast)
 {
    if (ast->at != NULL)
@@ -968,7 +965,6 @@ static int pop_2_arrays_or_scalar (Array_Or_Scalar_Type *a, Array_Or_Scalar_Type
    return 0;
 }
 
-
 static SLang_Array_Type *create_from_tmp_array (SLang_Array_Type *a, SLang_Array_Type *b, SLtype type)
 {
    SLang_Array_Type *c;
@@ -984,11 +980,11 @@ static SLang_Array_Type *create_from_tmp_array (SLang_Array_Type *a, SLang_Array
 	return b;
      }
 
-   if (a != NULL) 
+   if (a != NULL)
      c = a;
-   else 
+   else
      c = b;
-   
+
    return SLang_create_array1 (type, 0, NULL, c->dims, c->num_dims, 1);
 }
 
@@ -1124,7 +1120,7 @@ static int do_binary_function (double (*f)(double, double))
      (void) do_df_fun (f, &a_ast, &b_ast, &c_ast);
    else
      (void) do_dd_fun (f, &a_ast, &b_ast, &c_ast);
-   
+
    free_array_or_scalar (&a_ast);
    free_array_or_scalar (&b_ast);
 
@@ -1164,7 +1160,7 @@ static void hypot_fun (void)
 	unsigned int i;
 
 	max = fabs((double)*f);
-	
+
 	for (i = 1; i < num; i++)
 	  {
 	     double max1 = fabs((double)f[i]);
@@ -1175,7 +1171,7 @@ static void hypot_fun (void)
 	  {
 	     double term = f[i]/max;
 	     double new_sum;
-	     
+
 	     term = term*term;
 	     new_sum = sum + term;
 	     esum += term - (new_sum-sum);
@@ -1189,7 +1185,7 @@ static void hypot_fun (void)
 	double *d = ast.dptr;
 	double sum, esum, max;
 	max = fabs(*d);
-	
+
 	for (i = 1; i < num; i++)
 	  {
 	     double max1 = fabs(d[i]);
@@ -1200,7 +1196,7 @@ static void hypot_fun (void)
 	  {
 	     double term = d[i]/max;
 	     double new_sum;
-	     
+
 	     term = term*term;
 	     new_sum = sum + term;
 	     esum += term - (new_sum-sum);
@@ -1229,7 +1225,7 @@ static void math_poly (void)
 	/* drop */
       case 2:
 	break;
-	
+
       default:
 	SLang_verror (SL_Usage_Error, "\
 Usage: y = polynom([a0,a1,...], x [,use_factorial_form])");
@@ -1270,7 +1266,7 @@ Usage: y = polynom([a0,a1,...], x [,use_factorial_form])");
 	     k--;
 	     y = a[k] + x*y;
 	  }
-	
+
 	if (ast.is_float)
 	  (void) SLang_push_float ((float) y);
 	else
@@ -1278,7 +1274,7 @@ Usage: y = polynom([a0,a1,...], x [,use_factorial_form])");
 
 	goto free_and_return;
      }
-   
+
    if (NULL == (y_at = create_from_tmp_array (ast.at, NULL, ast.at->data_type)))
      goto free_and_return;
 
@@ -1336,7 +1332,7 @@ Usage: y = polynom([a0,a1,...], x [,use_factorial_form])");
 	     yd[i] = y;
 	  }
      }
-   
+
    (void) SLang_push_array (y_at, 1);
    /* drop */
 free_and_return:
@@ -1486,7 +1482,7 @@ static int do_binary_function_c (int (*f)(double, double,VOID_STAR), VOID_STAR c
 	  c_ast.at = SLang_create_array1 (SLANG_CHAR_TYPE, 0, NULL, a_ast.at->dims, a_ast.at->num_dims, 1);
 	else
 	  c_ast.at = SLang_create_array1 (SLANG_CHAR_TYPE, 0, NULL, b_ast.at->dims, b_ast.at->num_dims, 1);
-	
+
 	if (c_ast.at == NULL)
 	  {
 	     free_array_or_scalar (&a_ast);
@@ -1519,7 +1515,7 @@ static int do_binary_function_c (int (*f)(double, double,VOID_STAR), VOID_STAR c
    return SLang_push_char (c_ast.c);
 }
 
-typedef struct 
+typedef struct
 {
    double relerr;
    double abserr;
@@ -1535,13 +1531,13 @@ static int get_tolorances (int nargs, Feqs_Err_Type *ep)
 	    || (-1 == SLang_pop_double (&ep->relerr)))
 	  return -1;
 	break;
-	
+
       case 1:
 	if (-1 == SLang_pop_double (&ep->relerr))
 	  return -1;
 	ep->abserr = 0.0;
 	break;
-	
+
       default:
 	ep->relerr = 0.01;
 	ep->abserr = 1e-6;
@@ -1549,17 +1545,17 @@ static int get_tolorances (int nargs, Feqs_Err_Type *ep)
      }
    return 0;
 }
-	  
+
 static int do_feqs (double a, double b, VOID_STAR cd)
-{   
+{
    Feqs_Err_Type *e = (Feqs_Err_Type *)cd;
-   
+
    if (fabs (a-b) <= e->abserr)
      return 1;
-   
+
    if (fabs(a) > fabs(b))
      return fabs ((a-b)/a) <= e->relerr;
-   
+
    return fabs ((b-a)/b) <= e->relerr;
 }
 
@@ -1583,7 +1579,7 @@ static void do_an_feqs_fun (int (*f)(double, double, VOID_STAR))
    Feqs_Err_Type e;
    if (-1 == get_tolorances (SLang_Num_Function_Args-2, &e))
      return;
-   
+
    do_binary_function_c (f, (VOID_STAR)&e);
 }
 
@@ -1608,18 +1604,17 @@ static void fneqs_fun (void)
 }
 #endif
 
-
 static int do_nint (double x)
 {
    double xf, xi;
-   
+
    xf = modf (x, &xi);		       /* x = xi + xf */
    if (x >= 0)
      {
 	if (xf >= 0.5)
 	  return xi + 1;
      }
-   else 
+   else
      {
 	if (xf <= -0.5)
 	  return xi - 1;
@@ -1632,7 +1627,7 @@ static int float_to_nint (SLang_Array_Type *at, SLang_Array_Type *bt)
    unsigned int n, i;
    int *ip;
    float *fp;
-   
+
    fp = (float *) at->data;
    ip = (int *) bt->data;
    n = at->num_elements;
@@ -1648,7 +1643,7 @@ static int double_to_nint (SLang_Array_Type *at, SLang_Array_Type *bt)
    unsigned int n, i;
    int *ip;
    double *dp;
-   
+
    dp = (double *) at->data;
    ip = (int *) bt->data;
    n = at->num_elements;
@@ -1693,7 +1688,7 @@ static void nint_intrin (void)
 	at_to_int_fun = double_to_nint;
 	break;
      }
-   
+
    if (NULL == (bt = SLang_create_array1 (SLANG_INT_TYPE, 0, NULL, at->dims, at->num_dims, 1)))
      {
 	SLang_free_array (at);
@@ -1701,7 +1696,7 @@ static void nint_intrin (void)
      }
    if (0 == (*at_to_int_fun) (at, bt))
      (void) SLang_push_array (bt, 0);
-   
+
    SLang_free_array (bt);
    SLang_free_array (at);
 }
@@ -1734,7 +1729,7 @@ static void frexp_intrin (void)
 	(void) SLang_push_float (f);
 	(void) SLang_push_int (e);
 	return;
-	
+
       default:
       case SLANG_DOUBLE_TYPE:
 	if (-1 == SLang_pop_double (&d))
@@ -1744,21 +1739,21 @@ static void frexp_intrin (void)
 	(void) SLang_push_int (e);
 	return;
      }
-   
+
    switch (SLang_peek_at_stack1 ())
      {
       case SLANG_FLOAT_TYPE:
 	if (-1 == SLang_pop_array_of_type (&at, SLANG_FLOAT_TYPE))
 	  return;
 	break;
-	
+
       default:
       case SLANG_DOUBLE_TYPE:
 	if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
 	  return;
 	break;
      }
-   
+
    if (NULL == (bt = SLang_create_array1 (at->data_type, 0, NULL, at->dims, at->num_dims, 1)))
      {
 	SLang_free_array (at);
@@ -1770,7 +1765,7 @@ static void frexp_intrin (void)
 	SLang_free_array (bt);
 	return;
      }
-   
+
    imax = at->num_elements;
    ep = (int *)et->data;
 
@@ -1792,7 +1787,7 @@ static void frexp_intrin (void)
 	     b[i] = FREXPF_FUN(a[i], ep+i);
 	  }
      }
-   
+
    (void) SLang_push_array (bt, 0);
    (void) SLang_push_array (et, 0);
    SLang_free_array (et);
@@ -1821,7 +1816,7 @@ static void ldexp_intrin (void)
 	  return;
 	e_ptr = (int *)e_at->data;
      }
-   else 
+   else
      {
 	if (-1 == SLang_pop_int (&e_data))
 	  return;
@@ -1899,7 +1894,7 @@ static void ldexp_intrin (void)
 	  }
 	goto push_free_and_return;
      }
-   
+
    if (e_at->num_elements != ast.num)
      {
 	SLang_verror (SL_TypeMismatch_Error, "ldexp: Array sizes do not match");
@@ -1974,7 +1969,7 @@ static SLang_Math_Unary_Type SLmath_Table [] =
    MAKE_MATH_UNARY("round", SLMATH_ROUND),
    MAKE_MATH_UNARY("expm1", SLMATH_EXPM1),
    MAKE_MATH_UNARY("log1p", SLMATH_LOG1P),
-   
+
 #if SLANG_HAS_COMPLEX
    MAKE_MATH_UNARY("Real", SLMATH_REAL),
    MAKE_MATH_UNARY("Imag", SLMATH_IMAG),
@@ -2007,7 +2002,7 @@ static SLang_Intrin_Fun_Type SLang_Math_Table [] =
    SLANG_END_INTRIN_FUN_TABLE
 };
 
-static SLang_IConstant_Type IConsts [] = 
+static SLang_IConstant_Type IConsts [] =
 {
    MAKE_ICONSTANT("FE_DIVBYZERO", SL_FE_DIVBYZERO),
    MAKE_ICONSTANT("FE_INVALID", SL_FE_INVALID),
@@ -2023,7 +2018,7 @@ static int add_nan_and_inf (void)
    if ((-1 == SLns_add_dconstant (NULL, "_NaN", _pSLang_NaN))
        || (-1 == SLns_add_dconstant (NULL, "_Inf", _pSLang_Inf)))
      return -1;
-   
+
    SLfpu_clear_except_bits ();
 
    return 0;

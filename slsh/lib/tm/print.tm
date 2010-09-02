@@ -6,7 +6,7 @@
  value to the display.  An optional second argument may be provided to
  specify where to write the resulting string: a variable, an open file
  pointer, or to a file.
- 
+
  If the string representation of the object appears to contain more
  lines than are available on the screen, then the output will be piped
  to the program given by the \var{PAGER} environment variable.

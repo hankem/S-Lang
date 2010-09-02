@@ -1,5 +1,5 @@
 !ifndef MSDOS WIN16 WIN32 OS2
-# -*- mode: sh; mode: fold -*- 
+# -*- mode: sh; mode: fold -*-
 # This file has been folded.
 
 #{{{ MACRO descriptions
@@ -7,7 +7,7 @@
 This is a master makefile that from which DOS/Windows/OS2 makefiles
 may be derived.  A makefile for a particular system may be derived by
 passing this through the standalone DOS executable 'mkmake' which
-should be present in this directory.  For example, to produce a makefile 
+should be present in this directory.  For example, to produce a makefile
 suitable for OS2 using the EMX compiler use:
 
     mkmake OS2 EMX < makefile.all > Makefile
@@ -25,25 +25,25 @@ Currently supported compilers include:
 
 More will be added in the future.
 
-For example to produce makefile for compiling for Win32 using 
+For example to produce makefile for compiling for Win32 using
 Visual C++ use:
 
    mkmake WIN32 VC < makefile.all > Makefile
 
-Similarly, 
+Similarly,
 
    mkmake WIN32 MINGW32 < makefile.all > Makefile
-   
-will produce a makefile for the MINGW32 compiler.   
-   
+
+will produce a makefile for the MINGW32 compiler.
+
 If you want to create a dynamic link library (instead of static),
 add a 'DLL' parameter to mkmake:
 
    mkmake WIN32 VC DLL < makefile.all > Makefile
-   
+
 (right now this is known to work only with Visual Studio).
 
-Each compiler-dependent section of this master makefile must define 
+Each compiler-dependent section of this master makefile must define
 the following macros:
 
  CC             : The C compiler
@@ -65,7 +65,7 @@ Other macros include:
  RM             : What to use to delete a file
  TOUCH		: Touch program
 
-Special notes:  
+Special notes:
 
  The P macro could be problematic when its value is a backslash (\).  Some
  make programs may require it to be doubled, i.e., \\.  Whatever its value is,
@@ -73,13 +73,13 @@ Special notes:
  this requires that it be followed by a '#' character; however, this may
  result in the '#' character being quoted, or, escaped if the value of P is
  a backslash.
- 
+
 #}}}
 !else   #rest of file
-# Note: 
+# Note:
 # This makefile was automatically generated from the master makefile.all.
 # If you have problems with this file, edit the mkfiles/makefile.all.
-# Also check slconfig.h to make sure that what is defined there is 
+# Also check slconfig.h to make sure that what is defined there is
 # appropriate to your system.
 #
 TOOL_PREFIX =
@@ -131,12 +131,12 @@ O = obj # Object extension
 
 .c.obj: .AUTODEPEND
 	$(CC) $(CFLAGS) /c $< /fo=$@
-	
+
 SRCDIR = .# Location of sources
 OBJDIR = wccobjs# Location of objects
 TARGET = $(OBJDIR)\slang.lib
 RSPFILE = $(OBJDIR)\link.rsp
-RSP_PREFIX = -+ 
+RSP_PREFIX = -+
 RSP_POSTFIX =
 COMPILE_CMD = $(CC) $(CFLAGS) /c /fo=
 LIBDEPS = $(RSPFILE)
@@ -188,7 +188,7 @@ SRCDIR = .# Location of sources
 OBJDIR = wccobjs# Location of objects
 TARGET = $(OBJDIR)\slang.lib
 COMPILE_CMD = $(CC) $(CFLAGS) -fo=#
-RSPFILE = 
+RSPFILE =
 RSP_PREFIX = +-
 RSP_POSTFIX =
 LIBDEPS = $(RSPFILE)
@@ -207,7 +207,7 @@ TARGET = $(OBJDIR)\slang.lib
 COMPILE_CMD = $(CC) -c $(CFLAGS) -Fo#  <-- no trailing space
 LIBDEPS = $(RSPFILE)
 RSPFILE = $(OBJDIR)\link.rsp
-RSP_PREFIX = 
+RSP_PREFIX =
 TMP1=A
 # Hack to get ^&
 RSP_POSTFIX = $(TMP1:A=^^)&
@@ -247,7 +247,7 @@ SRCDIR = .
 # Location of objects
 OBJDIR = bw32objs
 # Object extension
-O = obj 
+O = obj
 P = \\
 TARGET = $(OBJDIR)\wslang.lib
 RSPFILE = $(OBJDIR)\link.rsp
@@ -322,12 +322,12 @@ O = obj # Object extension
 
 .c.obj: .AUTODEPEND
 	$(CC) $(CFLAGS) /c $< /fo=$@
-	
+
 SRCDIR = .# Location of sources
 OBJDIR = w32objs# Location of objects
 TARGET = $(OBJDIR)\wslang32.lib
 RSPFILE = $(OBJDIR)\link.rsp
-RSP_PREFIX = -+ 
+RSP_PREFIX = -+
 RSP_POSTFIX =
 COMPILE_CMD = $(CC) $(CFLAGS) /c /fo=
 LIBDEPS = $(RSPFILE)
@@ -340,11 +340,10 @@ COPY = copy
 !  endif    #ifdef VC elifdef BCC ... elifdef MINGW32
 ! endif #WIN32
 
-
 # End of compiler specific section
 
 CONFIG_H = config.h
-#{{{ OBJS = 
+#{{{ OBJS =
 
 OBJS = $(OBJDIR)$(P)slang.$(O) \
        $(OBJDIR)$(P)slarray.$(O) \
@@ -440,7 +439,7 @@ $(TARGET): $(OBJDIR) $(CONFIG_H) $(LIBDEPS) $(OBJS)
 ! elifdef MINGW32
 !  ifdef DLL
 	$(CC) -shared -o $(TGTBASE).dll $(OBJS) -Wl,--out-implib,$(TARGET)
-!  else	
+!  else
 	$(AR_CR) $(TARGET) $(OBJS)
 	$(RANLIB) $(TARGET)
 !  endif
@@ -448,7 +447,7 @@ $(TARGET): $(OBJDIR) $(CONFIG_H) $(LIBDEPS) $(OBJS)
 # dll support
 !  ifdef DLL
 	link /dll /machine:I386 /out:$(TGTBASE).dll /implib:$(TGTBASE).lib @$(RSPFILE)
-!  else	
+!  else
  	link -lib -out:$(TARGET) @$(RSPFILE)
 !  endif
 ! elifdef WCC
@@ -468,7 +467,7 @@ $(CONFIG_H): slconfig.h
 !ifndef EMX CYGWIN32 MINGW32 #ICC WCC
 #{{{ Create Response File
 
-$(RSPFILE) : 
+$(RSPFILE) :
 	@echo Creating response file $(RSPFILE)
 	@echo $(RSP_PREFIX)$(OBJDIR)$(P)slxstrng.$(O) $(RSP_POSTFIX) > $(RSPFILE)
 	@echo $(RSP_PREFIX)$(OBJDIR)$(P)sllower.$(O) $(RSP_POSTFIX) >> $(RSPFILE)

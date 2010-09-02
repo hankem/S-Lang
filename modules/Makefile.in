@@ -20,7 +20,7 @@ SLANG_INC	= -I../src#-I@includedir@
 ELFDIR		= @ELFDIR@
 DLL_IMPLIB_NAME = @DLL_IMPLIB_NAME@
 # On some systems, the module must be linked to the slang library,
-# but not all do.  If you have such system, point SLANG_LIB to the 
+# but not all do.  If you have such system, point SLANG_LIB to the
 # slang library, otherwise leave it blank.
 SLANG_LIB	= @SLANG_LIB_FOR_MODULES@
 

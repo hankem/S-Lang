@@ -15,12 +15,11 @@ private define exit_error (msg)
    exit (1);
 }
 
-
 private define run_rpm (file)
 {
    variable fp;
    variable lines;
-   variable months = 
+   variable months =
      ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
       "Oct", "Nov", "Dec"];
    variable s;
@@ -28,12 +27,12 @@ private define run_rpm (file)
    fp = popen (RPM_Command + file, "r");
    if (fp == NULL)
      exit_error ("Failed to open RPM process");
-   
-   % each line contains: 
+
+   % each line contains:
    % path size mtime md5sum mode owner group isconfig isdoc rdev symlink
-   
+
    variable six_months_ago = _time () - 3600*24*30*6;
-   
+
    foreach (fp)
      {
 	variable path, size, mode, owner, group, symlink, mtime;
@@ -42,7 +41,7 @@ private define run_rpm (file)
 
 	s = ();
 	s = strchop (strtrim_end (s, "\n"), ' ', 0);
-	
+
 	path = s[0];
 	size = s[1];
 	mtime = integer (s[2]);
@@ -52,7 +51,7 @@ private define run_rpm (file)
 
 	tm = localtime (mtime);
 	if (mtime < six_months_ago)
-	  mtime = sprintf ("%s %2d %4d", 
+	  mtime = sprintf ("%s %2d %4d",
 			   months[tm.tm_mon],
 			   tm.tm_mday,
 			   1900 + tm.tm_year);
@@ -63,11 +62,10 @@ private define run_rpm (file)
 			   tm.tm_hour,
 			   tm.tm_min);
 
-			   
 	symlink = "";
 	if (stat_is ("lnk", mode))
 	  symlink = " -> " + s[10];
-	
+
 	mstring = stat_mode_to_string (mode);
 
 	if (-1 == fprintf (stdout,

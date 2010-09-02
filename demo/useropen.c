@@ -1,4 +1,4 @@
-/* This demo indicates how to read and parse a S-Lang file by bypassing the 
+/* This demo indicates how to read and parse a S-Lang file by bypassing the
  * built-in routines.
  */
 #include "config.h"
@@ -9,16 +9,16 @@
 #endif
 #include <slang.h>
 
-/* Suppose that you want to read input using a read line package 
+/* Suppose that you want to read input using a read line package
  * such as one provided by S-Lang.  For generality, lets assume that this
  * function is called 'readline' and it is prototyped as:
  *   int readline (char *prompt, char *buffer);
  * where it returns the number of characters read and -1 if end of file.  The
  * first parameter is a prompt and the second represents the buffer where the
- * characters are to placed.  Also assume that this routine requires that the 
- * function 'init_readline' be called first before it can be used and 
+ * characters are to placed.  Also assume that this routine requires that the
+ * function 'init_readline' be called first before it can be used and
  * 'reset_readline' must be called after using it.
- * 
+ *
  * The goal here is to get S-Lang to call the readline function.
  */
 
@@ -41,9 +41,9 @@ static void reset_readline (void)
 {
    puts ("Resetting readline."); fflush (stdout);
 }
- 
+
 /* Now lets define the function that S-Lang will use to actually read the data.
- * It calls readline.  S-Lang will call this function and the function must 
+ * It calls readline.  S-Lang will call this function and the function must
  * return a pointer to the buffer containg the characters of the line or NULL
  * upon end of file.  In many ways, it is like fgets except that it is passed
  * a pointer to SLang_Load_Type in stead of FILE.
@@ -63,7 +63,7 @@ static char *read_using_readline (SLang_Load_Type *x)
    client_data = (Our_Client_Data_Type *) x->client_data;
    if (-1 == readline (client_data->prompt, client_data->buf))
      return NULL;
-   
+
    return client_data->buf;
 }
 
@@ -78,7 +78,7 @@ static int read_input (void)
 
    if (NULL == (x = SLallocate_load_type ("<readline>")))
      return -1;
-   
+
    client_data.prompt = "Demo> ";
 
    x->client_data = (VOID_STAR) &client_data;
@@ -92,9 +92,9 @@ static int read_input (void)
 int main (int argc, char **argv)
 {
    /* usual stuff */
-   
+
    (void) argc; (void) argv;
-   
+
    if ((-1 == SLang_init_slang ())    /* basic interpreter functions */
        || (-1 == SLang_init_slmath ()) 	       /* sin, cos, etc... */
 #ifdef unix
@@ -109,11 +109,8 @@ int main (int argc, char **argv)
    init_readline ();
 
    read_input ();
-   
+
    reset_readline ();
    return SLang_get_error ();
 }
 
-
-
- 

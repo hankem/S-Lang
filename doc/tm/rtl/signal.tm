@@ -37,7 +37,7 @@
   Some operating systems may implement the \ifun{sleep} function using
   \ifun{alarm}.  As a result, it is not a good idea to mix calls to
   \ifun{alarm} and \ifun{sleep}.
-  
+
   The default action for \icon{SIGALRM} is to terminate the process.
   Hence, if \ifun{alarm} is called it is wise to establish a signal
   handler for \ifun{SIGALRM}.
@@ -65,7 +65,7 @@
   The first parameter, \exmp{sig}, specifies the signal to be handled.
   The actual supported values vary with the OS.  Common values on Unix
   include \exmp{SIGHUP}, \exmp{SIGINT}, and \exmp{SIGTERM}.
-  
+
   If a third argument is present, then it must be a reference to a
   variable whose value will be set to the value of the previously
   installed handler.
@@ -86,7 +86,7 @@
 \notes
   Currently the signal interface is supported only on systems that
   implement signals according to the POSIX standard.
-  
+
   Once a signal has been received, it will remain blocked until after
   the signal handler has completed.  This is the reason \icon{SIGSTOP}
   was used in the above signal handler instead of \icon{SIGTSTP}.
@@ -102,9 +102,9 @@
   how this is accomplished.  Specifically, \exmp{how} must be one of
   the following values: \icon{SIG_BLOCK}, \icon{SIG_UNBLOCK}, or
   \icon{SIG_SETMASK}.
-  
+
   If \exmp{how} is \icon{SIG_BLOCK}, then the set of blocked signals
-  will be the union the current set with the values specified in the 
+  will be the union the current set with the values specified in the
   \exmp{mask} argument.
 
   If \exmp{how} is \icon{SIG_UNBLOCK}, then the signals specified by
@@ -113,7 +113,7 @@
 
   If \exmp{how} is \icon{SIG_SETMASK}, then the set of blocked signals
   will be set to those given by the \exmp{mask}.
-  
+
   If a third argument is present, then it must be a reference to a
   variable whose value will be set to the previous signal mask.
 \seealso{signal, sigsuspend, alarm}

@@ -1,4 +1,3 @@
-
 \function{SLmake_string}
 \synopsis{Duplicate a string}
 \usage{char *SLmake_string (char *s)}
@@ -14,7 +13,6 @@
 \seealso{SLmake_nstring, SLfree, SLmalloc, SLang_create_slstring}
 \done
 
-
 \function{SLmake_nstring}
 \synopsis{Duplicate a substring}
 \usage{char *SLmake_nstring (char *s, unsigned int n)}
@@ -26,7 +24,6 @@
   freed with \var{SLfree}.
 \seealso{SLmake_string, SLfree, SLang_create_nslstring}
 \done
-
 
 \function{SLang_create_nslstring}
 \synopsis{Created a hashed substring}
@@ -65,7 +62,6 @@
 \seealso{SLang_free_slstring, SLang_create_nslstring, SLmake_string}
 \done
 
-
 \function{SLang_free_slstring}
 \synopsis{Free a hashed string}
 \usage{void SLang_free_slstring (char *s)}
@@ -76,7 +72,6 @@
   If \var{s} is \var{NULL}, the routine does nothing.
 \seealso{SLang_create_slstring, SLang_create_nslstring, SLang_create_static_slstring}
 \done
-
 
 \function{SLang_concat_slstrings}
 \synopsis{Concatenate two strings to produce a hashed string}
@@ -111,7 +106,6 @@
 \seealso{SLang_create_slstring, SLang_create_nslstring}
 \done
 
-
 \function{SLmalloc}
 \synopsis{Allocate some memory}
 \usage{char *SLmalloc (unsigned int nbytes)}
@@ -123,20 +117,18 @@
 \seealso{SLfree, SLrealloc, SLcalloc}
 \done
 
-
 \function{SLcalloc}
 \synopsis{Allocate some memory}
 \usage{char *SLcalloc (unsigned int num_elem, unsigned int elem_size)}
 \description
   This function uses \var{calloc} to allocate memory for
   \var{num_elem} objects with each of size \var{elem_size} and returns
-  the result.  In addition, the newly allocated memory is zeroed. 
+  the result.  In addition, the newly allocated memory is zeroed.
   Upon error it returns \var{NULL}; otherwise it returns a pointer to
   the allocated memory.  One should use \var{SLfree} to free the
   memory after use.
 \seealso{SLmalloc, SLrealloc, SLfree}
 \done
-
 
 \function{SLfree}
 \synopsis{Free some allocated memory}
@@ -152,7 +144,6 @@
 \seealso{SLmalloc, SLcalloc, SLrealloc, SLmake_string}
 \done
 
-
 \function{SLrealloc}
 \synopsis{Resize a dynamic memory block}
 \usage{char *SLrealloc (char *ptr, unsigned int new_size)}
@@ -161,7 +152,7 @@
   memory block specified by \var{ptr} to the new size \var{new_size}.
   If \var{ptr} is \var{NULL}, the function call is equivalent to
   \exmp{SLmalloc(new_size)}.  Similarly, if \var{new_size} is zero,
-  the function call is equivalent to \var{SLfree(ptr)}.  
+  the function call is equivalent to \var{SLfree(ptr)}.
 
   If the function fails, or if \var{new_size} is zero, \var{NULL} is
   returned.  Otherwise a pointer is returned to the (possibly moved)

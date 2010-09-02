@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 /* This file was derived from the code in SLtcp.c distributed with slsh */
@@ -53,7 +53,7 @@ USA.
 # include <sys/socket.h>
 #endif
 
-#if defined(__NT__) 
+#if defined(__NT__)
 # include <winsock.h>
 # define USE_WINSOCK_SLTCP	1
 #else
@@ -89,7 +89,6 @@ SLANG_MODULE(socket);
 extern int h_errno;
 #endif
 
-
 /*}}}*/
 
 static int SocketError = -1;
@@ -97,7 +96,7 @@ static int SocketHerrnoError = -1;
 static int Socket_Type_Id = -1;
 
 typedef struct Socket_Type Socket_Type;
-typedef struct 
+typedef struct
 {
    int domain;
    int (*connect)(Socket_Type *, int);
@@ -125,14 +124,14 @@ static int close_socket (int);
 /*{{{ Generic Routines */
 
 static int Module_H_Errno = 0;
-   
+
 static char *herror_to_string (int h)
 {
 #ifdef HOST_NOT_FOUND
    if (h == HOST_NOT_FOUND)
      return "The specified host is unknown";
 #endif
-	
+
 #ifdef NO_ADDRESS
    if (h == NO_ADDRESS)
      return "The requested name is valid but does not have an IP address";
@@ -152,7 +151,7 @@ static char *herror_to_string (int h)
    if (h == TRY_AGAIN)
      return "A temporary error occurred on an authoritative name server.  Try again later";
 #endif
-   
+
    return "Unknown h_error";
 }
 
@@ -183,7 +182,7 @@ static int perform_connect (int fd, struct sockaddr *addr, unsigned int len, int
 	/* The manpage indicates EAGAIN will be returned if no free ports exist.
 	 * So allow the caller to handle that.
 	 */
-	if (throw_err) 
+	if (throw_err)
 	  throw_errno_error ("connect", errno);
 	return -1;
      }
@@ -236,7 +235,7 @@ static Socket_Type *perform_accept (Socket_Type *s, struct sockaddr *addr, unsig
      (void) close_socket (fd1);
 
    return s1;
-}   
+}
 
 /*}}}*/
 
@@ -258,7 +257,7 @@ static int connect_af_unix (Socket_Type *s, int nargs)
 {
    struct sockaddr_un addr;
    char *file;
-   
+
    if (nargs != 1)
      {
 	SLang_verror (SL_NumArgs_Error, "This socket expects a filename");
@@ -266,7 +265,7 @@ static int connect_af_unix (Socket_Type *s, int nargs)
      }
    if (-1 == SLang_pop_slstring (&file))
      return -1;
-   
+
    if (strlen (file) >= sizeof(addr.sun_path))
      {
 	SLang_verror (SL_InvalidParm_Error, "filename too long for PF_UNIX socket");
@@ -286,7 +285,7 @@ static int bind_af_unix (Socket_Type *s, int nargs)
 {
    struct sockaddr_un addr;
    char *file;
-   
+
    if (nargs != 1)
      {
 	SLang_verror (SL_NumArgs_Error, "This socket expects a filename");
@@ -294,7 +293,7 @@ static int bind_af_unix (Socket_Type *s, int nargs)
      }
    if (-1 == SLang_pop_slstring (&file))
      return -1;
-   
+
    if (strlen (file) >= sizeof(addr.sun_path))
      {
 	SLang_verror (SL_InvalidParm_Error, "filename too long for PF_UNIX socket");
@@ -347,7 +346,7 @@ static int pop_host_port (char *what, int nargs, char **hostp, int *portp)
    if ((-1 == SLang_pop_int (&port))
        || (-1 == SLang_pop_slstring (&host)))
      return -1;
-   
+
    *hostp = host;
    *portp = port;
    return 0;
@@ -381,7 +380,7 @@ static Host_Addr_Info_Type *alloc_host_addr_info (unsigned int num, int h_length
    hinfo = (Host_Addr_Info_Type *) SLcalloc (1, sizeof (Host_Addr_Info_Type));
    if (hinfo == NULL)
      return NULL;
-   
+
    /* We need memory to hold num (char *) addresses + num*h_length bytes */
    nbytes = num * sizeof(char *) + num * h_length;
    if (NULL == (buf = SLmalloc (nbytes)))
@@ -459,12 +458,12 @@ static Host_Addr_Info_Type *get_host_addr_info (char *host)
 #else
    h_addr_list = hp->h_addr_list;
 #endif
-   
+
    /* Now count the number of addresses */
    num = 0;
    while (h_addr_list[num] != NULL)
      num++;
-   
+
    if (num == 0)
      {
 #ifdef NO_DATA
@@ -482,7 +481,7 @@ static Host_Addr_Info_Type *get_host_addr_info (char *host)
 
    for (i = 0; i < num; i++)
      memcpy (hinfo->h_addr_list[i], h_addr_list[i], hp->h_length);
-   
+
    return hinfo;
 }
 
@@ -496,7 +495,7 @@ static int connect_af_inet (Socket_Type *s, int nargs)
 
    if (-1 == pop_host_port ("connect", nargs, &host, &port))
      return -1;
-   
+
    if (NULL == (hinfo = get_host_addr_info (host)))
      {
 	SLang_free_slstring (host);
@@ -519,7 +518,7 @@ static int connect_af_inet (Socket_Type *s, int nargs)
    memset ((char *) &s_in, 0, sizeof(s_in));
    s_in.sin_family = hinfo->h_addrtype;
    s_in.sin_port = htons((unsigned short) port);
-   
+
    for (i = 0; i < hinfo->num; i++)
      {
 	memcpy ((char *) &s_in.sin_addr, hinfo->h_addr_list[i], hinfo->h_length);
@@ -546,7 +545,7 @@ static int bind_af_inet (Socket_Type *s, int nargs)
 
    if (-1 == pop_host_port ("connect", nargs, &host, &port))
      return -1;
-   
+
    if (NULL == (hinfo = get_host_addr_info (host)))
      {
 	SLang_free_slstring (host);
@@ -591,7 +590,7 @@ static Socket_Type *accept_af_inet (Socket_Type *s, unsigned int nrefs, SLang_Re
 	SLang_verror (SL_NumArgs_Error, "accept (sock [,&host,&port])");
 	return NULL;
      }
-	
+
    addr_len = sizeof (struct sockaddr_in);
    s1 = perform_accept (s, (struct sockaddr *)&s_in, &addr_len);
 
@@ -604,9 +603,9 @@ static Socket_Type *accept_af_inet (Socket_Type *s, unsigned int nrefs, SLang_Re
 	char host_ip[32];  /* aaa.bbb.ccc.ddd */
 	unsigned char *bytes = (unsigned char *)&s_in.sin_addr;
 	int port = ntohs (s_in.sin_port);
-	sprintf (host_ip, "%d.%d.%d.%d", 
+	sprintf (host_ip, "%d.%d.%d.%d",
 		 (int)bytes[0],(int)bytes[1],(int)bytes[2],(int)bytes[3]);
-	
+
 	if (NULL == (host = SLang_create_slstring (host_ip)))
 	  {
 	     free_socket (s1);
@@ -677,7 +676,6 @@ static int close_socket (int fd)
    return 0;
 }
 
-	
 static void free_socket (Socket_Type *s)
 {
    if (s == NULL)
@@ -688,7 +686,7 @@ static void free_socket (Socket_Type *s)
 
    if (s->fd != -1)
      close_socket (s->fd);
-   
+
    SLfree ((char *) s);
 }
 
@@ -704,7 +702,7 @@ static Socket_Type *create_socket (int fd, int domain, int type, int protocol)
    if (s == NULL)
      return s;
    memset ((char *)s, 0, sizeof (Socket_Type));
-   
+
    s->fd = fd;
    s->domain = domain;
    s->protocol = protocol;
@@ -774,7 +772,7 @@ static int push_socket (Socket_Type *s)
 	free_socket (s);
 	return -1;
      }
-   
+
    status = SLfile_push_fd (f);
    SLfile_free_fd (f);
    return status;
@@ -804,7 +802,7 @@ static void socket_intrin (int *domain, int *type, int *protocol)
    Socket_Type *s;
    Domain_Methods_Type *a;
    int fd;
-   
+
    if (NULL == (a = lookup_domain_methods (*domain)))
      return;
 
@@ -830,7 +828,7 @@ static void socketpair_intrin (int *domain, int *type, int *protocol)
 {
    Socket_Type *s;
    int fds[2];
-   
+
    if (NULL == lookup_domain_methods (*domain))
      return;
 
@@ -870,7 +868,7 @@ static void connect_intrin (void)
 
    if (-1 == SLroll_stack (-nargs))
      return;
-   
+
    if (NULL == (s = pop_socket (&f)))
      return;
    nargs--;
@@ -889,7 +887,7 @@ static void bind_intrin (void)
 
    if (-1 == SLroll_stack (-nargs))
      return;
-   
+
    if (NULL == (s = pop_socket (&f)))
      return;
    nargs--;
@@ -929,7 +927,7 @@ static void accept_intrin (void)
 
    if (-1 == SLroll_stack (-nargs))
      return;
-   
+
    if (NULL == (s = pop_socket (&f)))
      return;
    nargs--;
@@ -964,7 +962,7 @@ static void accept_intrin (void)
    SLfile_free_fd (f);
 }
 
-typedef struct 
+typedef struct
 {
    int optname;
    int (*setopt)(Socket_Type *, int, int);
@@ -1006,7 +1004,7 @@ static int get_int_sockopt (Socket_Type *s, int level, int optname)
 {
    int val;
    socklen_t len;
-   
+
    len = sizeof (int);
    if (-1 == do_getsockopt (s->fd, level, optname, (void *)&val, &len))
      return -1;
@@ -1040,7 +1038,7 @@ static int get_str_sockopt (Socket_Type *s, int level, int optname)
 }
 
 static int set_struct_sockopt (Socket_Type *s, int level, int optname,
-			       SLang_CStruct_Field_Type *cs, VOID_STAR v, 
+			       SLang_CStruct_Field_Type *cs, VOID_STAR v,
 			       socklen_t len)
 {
    int ret;
@@ -1054,7 +1052,7 @@ static int set_struct_sockopt (Socket_Type *s, int level, int optname,
 }
 
 static int get_struct_sockopt (Socket_Type *s, int level, int optname,
-			       SLang_CStruct_Field_Type *cs, VOID_STAR v, 
+			       SLang_CStruct_Field_Type *cs, VOID_STAR v,
 			       socklen_t len)
 {
    if (-1 == do_getsockopt (s->fd, level, optname, v, &len))
@@ -1242,7 +1240,7 @@ static void getset_sockopt (int set)
 
    if (-1 == SLreverse_stack (3+set))
      return;
-   
+
    if (NULL == (s = pop_socket (&f)))
      return;
 
@@ -1252,7 +1250,7 @@ static void getset_sockopt (int set)
 	SLfile_free_fd (f);
 	return;
      }
-   
+
    switch (level)
      {
 #ifdef SOL_SOCKET
@@ -1265,7 +1263,7 @@ static void getset_sockopt (int set)
 	SLang_verror (SL_NotImplemented_Error, "get/setsockopt level %d is not supported", level);
 	goto free_return;
      }
-   
+
    while (1)
      {
 	if (table->optname == optname)
@@ -1277,13 +1275,13 @@ static void getset_sockopt (int set)
 	       func = table->getopt;
 	     if (func == NULL)
 	       goto not_implemented_error;
-	     
+
 	     (void)(*func)(s, level, optname);
 	     break;
 	  }
 	if (table->optname == -1)
 	  goto free_return;
-	
+
 	table++;
      }
 
@@ -1296,7 +1294,7 @@ static void getset_sockopt (int set)
    SLang_verror (SL_NotImplemented_Error, "get/setsockopt option %d is not supported at level %d", optname, level);
    SLfile_free_fd (f);
 }
-	
+
 static void setsockopt_intrin (void)
 {
    getset_sockopt (1);
@@ -1347,7 +1345,7 @@ static SLang_IConstant_Type Module_IConstants [] =
 #ifdef SOCK_PACKET
    MAKE_ICONSTANT("SOCK_PACKET", SOCK_PACKET),
 #endif
-      
+
 /* Domains  */
 #ifdef PF_UNIX
    MAKE_ICONSTANT("PF_UNIX", PF_UNIX),
@@ -1487,7 +1485,6 @@ static SLang_IConstant_Type Module_IConstants [] =
    SLANG_END_ICONST_TABLE
 };
 
-
 int init_socket_module_ns (char *ns_name)
 {
    SLang_NameSpace_Type *ns;
@@ -1506,11 +1503,11 @@ int init_socket_module_ns (char *ns_name)
 
    if (NULL == (ns = SLns_create_namespace (ns_name)))
      return -1;
-    
+
     if ((-1 == SLns_add_intrin_fun_table (ns, Module_Intrinsics, NULL))
         || (-1 == SLns_add_iconstant_table (ns, Module_IConstants, NULL)))
      return -1;
-   
+
    if (-1 == SLns_add_intrinsic_variable(ns, "h_errno", (VOID_STAR)&Module_H_Errno, SLANG_INT_TYPE, 1))
      return -1;
 

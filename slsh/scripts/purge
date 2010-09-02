@@ -10,10 +10,10 @@ private define purge_file (file, age, print_option)
 	() = fprintf (stderr, "stat %s failed: %s\n", file, errno_string (errno));
 	return;
      }
-   
+
    if (st.st_ctime >= age)
      return;
-   
+
    if (print_option)
      {
 	() = fprintf (stdout, "%s\n", file);
@@ -35,9 +35,9 @@ private define purge_usage ()
 private define main (argc, argv)
 {
    variable age, i, print_option, file;
-   
+
    if (argc < 3) purge_usage ();
-   
+
    i = 2;
    print_option = 0;
    if (argv[1] == "-n")
@@ -53,7 +53,7 @@ private define main (argc, argv)
      purge_usage ();
 
    age = _time() - atof(age) * 24 * 3600;
-   
+
    foreach (argv[[i:]])
      {
 	file = ();

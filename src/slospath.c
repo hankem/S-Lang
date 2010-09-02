@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -30,7 +30,6 @@ USA.
 #else
 # include <sys/stat.h>
 #endif
-
 
 static void path_concat (char *a, char *b)
 {
@@ -88,14 +87,14 @@ int SLpath_set_load_path (SLFUTURE_CONST char *path)
 	Load_Path = NULL;
 	return 0;
      }
-  
+
    path = SLang_create_slstring (path);
    if (path == NULL)
      return -1;
-   
+
    if (Load_Path != NULL)
      SLang_free_slstring ((char *) Load_Path);
-   
+
    Load_Path = path;
    return 0;
 }
@@ -104,7 +103,6 @@ char *SLpath_get_load_path (void)
 {
    return SLang_create_slstring (Load_Path);
 }
-
 
 static SLCONST char *get_load_path (void)
 {
@@ -134,14 +132,13 @@ static char *more_recent (char *a, char *b)
    if (-1 == stat (b, &st))
      return a;
    tb = (unsigned long) st.st_mtime;
-   
+
    if (tb >= ta)
      return b;
-   
+
    return a;
 }
 
-   
 /* returns SLmalloced string */
 static char *find_file (SLFUTURE_CONST char *path, SLFUTURE_CONST char *file)
 {
@@ -157,17 +154,17 @@ static char *find_file (SLFUTURE_CONST char *path, SLFUTURE_CONST char *file)
    /* Not found, or an error occured. */
    if (_pSLang_Error)
      return NULL;
-   
+
    extname = SLpath_extname (file);
    if (*extname != 0)
      return NULL;
-   
+
    /* No extension.  So look for .slc and .sl forms */
    len = (extname - file);
    filebuf = SLmalloc (len + 5);
    strcpy (filebuf, file);
    strcpy (filebuf + len, ".sl");
-	
+
    filesl = SLpath_find_file_in_path (path, filebuf);
    if ((filesl == NULL) && _pSLang_Error)
      {
@@ -184,7 +181,7 @@ static char *find_file (SLFUTURE_CONST char *path, SLFUTURE_CONST char *file)
      SLfree (filesl);
    if (dirfile != fileslc)
      SLfree (fileslc);
-   
+
    return dirfile;
 }
 
@@ -250,8 +247,7 @@ int SLang_init_ospath (void)
 {
    if (-1 == SLadd_intrin_fun_table(Path_Name_Table, "__OSPATH__"))
      return -1;
-   
+
    return 0;
 }
-
 

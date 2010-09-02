@@ -19,7 +19,7 @@
        variable pid = fork ();
        if (pid == -1)
          throw OSError, "fork failed: " + errno_string(errno);
-       
+
        if ((pid == 0)
             && (-1 == execvp ("ls", ["ls", "-l"])))
          {
@@ -60,7 +60,7 @@
   The \exmp{path} parameter must specify the exact location of the
   executable.  The related \ifun{execvp} function may be used to
   search for the executable along a path.
-  
+
   This function is a wrapper around the corresponding system library
   function.  See the system-specific documentation for more
   information.
@@ -144,7 +144,6 @@
 \seealso{execve, execvp, system, fork, _exit}
 \done
 
-
 \function{_exit}
 \synopsis{Exit the current processes}
 \usage{_exit(Int_Type status)}
@@ -155,7 +154,7 @@
   handlers that are normally run when a program is terminated.  See
   the system-specific C runtime library documentation for more
   information about this function.
-  
+
   The main use of the \ifun{_exit} function is after the failure of
   one of the \ifun{execv} functions in a child process.
 \seealso{fork, execv, execvp, execve, waitpid, exit}
@@ -208,7 +207,7 @@
      vmessage ("child exited with status %d", s.exit_status);
    else if (s.signal)
      {
-        vmessage ("child terminated by signal %d %s", 
+        vmessage ("child terminated by signal %d %s",
                   s.signal, (s.coredump ? "(coredump)" : ""));
      }
 #v-

@@ -39,7 +39,6 @@ DEFUN_2(char_to_ldouble,char,long double,copy_char_to_ldouble)
 TO_DOUBLE_FUN(char_to_one_double,char)
 #endif
 
-
 /* ------------ unsigned char ---------- */
 #define copy_uchar_to_char	copy_char_to_char
 #define uchar_to_char	NULL
@@ -80,7 +79,6 @@ DEFUN_2(uchar_to_ldouble,unsigned char,long double,copy_uchar_to_ldouble)
 #if SLANG_HAS_FLOAT
 TO_DOUBLE_FUN(uchar_to_one_double,unsigned char)
 #endif
-
 
 /* ------------ short ---------- */
 DEFUN_1(copy_short_to_char,short,char)
@@ -123,7 +121,6 @@ DEFUN_2(short_to_ldouble,short,long double,copy_short_to_ldouble)
 TO_DOUBLE_FUN(short_to_one_double,short)
 #endif
 
-
 /* ------------ unsigned short ---------- */
 DEFUN_1(copy_ushort_to_char,unsigned short,char)
 #define ushort_to_char	NULL
@@ -164,7 +161,6 @@ DEFUN_2(ushort_to_ldouble,unsigned short,long double,copy_ushort_to_ldouble)
 #if SLANG_HAS_FLOAT
 TO_DOUBLE_FUN(ushort_to_one_double,unsigned short)
 #endif
-
 
 /* ------------ int ---------- */
 DEFUN_1(copy_int_to_char,int,char)
@@ -207,7 +203,6 @@ DEFUN_2(int_to_ldouble,int,long double,copy_int_to_ldouble)
 TO_DOUBLE_FUN(int_to_one_double,int)
 #endif
 
-
 /* ------------ unsigned int ---------- */
 DEFUN_1(copy_uint_to_char,unsigned int,char)
 #define uint_to_char	NULL
@@ -248,7 +243,6 @@ DEFUN_2(uint_to_ldouble,unsigned int,long double,copy_uint_to_ldouble)
 #if SLANG_HAS_FLOAT
 TO_DOUBLE_FUN(uint_to_one_double,unsigned int)
 #endif
-
 
 /* ------------ long ---------- */
 DEFUN_1(copy_long_to_char,long,char)
@@ -291,7 +285,6 @@ DEFUN_2(long_to_ldouble,long,long double,copy_long_to_ldouble)
 TO_DOUBLE_FUN(long_to_one_double,long)
 #endif
 
-
 /* ------------ unsigned long ---------- */
 DEFUN_1(copy_ulong_to_char,unsigned long,char)
 #define ulong_to_char	NULL
@@ -332,7 +325,6 @@ DEFUN_2(ulong_to_ldouble,unsigned long,long double,copy_ulong_to_ldouble)
 #if SLANG_HAS_FLOAT
 TO_DOUBLE_FUN(ulong_to_one_double,unsigned long)
 #endif
-
 
 /* ------------ long long ---------- */
 #if defined(HAVE_LONG_LONG)
@@ -377,7 +369,6 @@ TO_DOUBLE_FUN(llong_to_one_double,long long)
 #endif
 #endif /* defined(HAVE_LONG_LONG) */
 
-
 /* ------------ unsigned long long ---------- */
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_ullong_to_char,unsigned long long,char)
@@ -420,7 +411,6 @@ DEFUN_2(ullong_to_ldouble,unsigned long long,long double,copy_ullong_to_ldouble)
 TO_DOUBLE_FUN(ullong_to_one_double,unsigned long long)
 #endif
 #endif /* defined(HAVE_LONG_LONG) */
-
 
 /* ------------ float ---------- */
 #if SLANG_HAS_FLOAT
@@ -465,7 +455,6 @@ TO_DOUBLE_FUN(float_to_one_double,float)
 #endif
 #endif /* SLANG_HAS_FLOAT */
 
-
 /* ------------ double ---------- */
 #if SLANG_HAS_FLOAT
 DEFUN_1(copy_double_to_char,double,char)
@@ -509,7 +498,6 @@ TO_DOUBLE_FUN(double_to_one_double,double)
 #endif
 #endif /* SLANG_HAS_FLOAT */
 
-
 /* ------------ long double ---------- */
 #if defined(HAVE_LONG_DOUBLE)
 DEFUN_1(copy_ldouble_to_char,long double,char)
@@ -552,7 +540,6 @@ DEFUN_1(copy_ldouble_to_ldouble,long double,long double)
 TO_DOUBLE_FUN(ldouble_to_one_double,long double)
 #endif
 #endif /* defined(HAVE_LONG_DOUBLE) */
-
 
 #if SLANG_HAS_FLOAT
 static To_Double_Fun_Table_Type To_Double_Fun_Table [MAX_ARITHMETIC_TYPES] =

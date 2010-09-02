@@ -5,7 +5,7 @@
  The \ifun{pcre_compile} function compiles a PCRE style regular expression
  and returns the result.  The optional \var{options} argument may be used
  to provide addition information affecting the compilation of the pattern.
- Specifically, it is a bit-mapped value formed from the logical-or of zero 
+ Specifically, it is a bit-mapped value formed from the logical-or of zero
  or more of the following symbolic constants:
 #v+
     PCRE_ANCHORED     Force the match to be at the start of a string
@@ -19,9 +19,9 @@
     PCRE_UTF8         Regard the pattern and subject strings as UTF-8
 #v-
  Many of these flags may be set within the pattern itself.   See the PCRE
- library documentation for more information about the precise details 
+ library documentation for more information about the precise details
  of these flags and the supported regular expressions.
- 
+
  Upon success, this function returns a \dtype{PCRE_Type} object representing
  the compiled patterned.  If compilation fails, a \exc{ParseError}
  exception will be thrown.
@@ -37,24 +37,24 @@
    Int_Type pos, options;
 #v-
 \description
- The \ifun{pcre_exec} function applies a pre-compiled pattern \var{p} to a 
- string \ifun{str} and returns the result of the match.  The optional third 
+ The \ifun{pcre_exec} function applies a pre-compiled pattern \var{p} to a
+ string \ifun{str} and returns the result of the match.  The optional third
  argument \ifun{pos} may be used to specify the point, as an offset from the
  start of the string, where matching is to start.  The fourth argument, if
  present, may be used to provide additional information about how matching
  is to take place.  Its value may be specified as a logical-or of zero or
  more of the following flags:
 #v+
-   PCRE_NOTBOL      
+   PCRE_NOTBOL
         The first character in the string is not at the beginning of a line.
    PCRE_NOTEOL
         The last character in the string is not at the end of a line.
    PCRE_NOTEMPTY
         An empty string is not a valid match.
 #v-
- See the PCRE library documentation for more information about the meaning 
+ See the PCRE library documentation for more information about the meaning
  of these flags.
- 
+
  Upon success, this function returns a positive integer equal to 1 plus the
  number of so-called captured substrings.  It returns 0 if the pattern
  fails to match the string.
@@ -73,7 +73,7 @@
  pattern using the \ifun{pcre_compile} function.  The third parameter
  is optional and if providied, will be passed as the \exmp{options}
  parameter to \ifun{pcre_exec}.
- 
+
  If no match is found, the function will return NULL.
 \qualifiers
  The following qualifiers are supported:
@@ -90,7 +90,7 @@
 #v-
  the value of the matches variable will be the array:
 #v+
-    [ "file foo.c, line 127", 
+    [ "file foo.c, line 127",
       "foo.c",
       127
     ]
@@ -103,11 +103,11 @@
 \usage{Int_Type[2] pcre_nth_match (PCRE_Type p, Int_Type nth)}
 \description
  The \ifun{pcre_nth_match} function returns an integer array whose values
- specify the locations of the beginning and end of the \var{nth} captured 
+ specify the locations of the beginning and end of the \var{nth} captured
  substrings of the most recent call to \ifun{pcre_exec} with the compiled
- pattern.  A value of \var{nth} equal to 0 represents the substring 
+ pattern.  A value of \var{nth} equal to 0 represents the substring
  representing the entire match of the pattern.
- 
+
  If the \var{nth} match did not take place, the function returns \NULL.
 \example
  After the execution of:
@@ -116,20 +116,20 @@
     pattern = "file ([^,]+), line (\\d+)";
     p = pcre_compile (pattern);
     if (pcre_exec (p, str))
-      { 
+      {
          match_pos = pcre_nth_match (p, 0);
          file_pos = pcre_nth_match (p, 1);
          line_pos = pcre_nth_match (p, 2);
       }
 #v-
  \exmp{match_pos} will be set to \exmp{[9,29]}, \exmp{file_pos} to \exmp{[14,19,]}
- and \exmp{line_pos} to \exmp{[26,29]}.  These integer arrays may be used to 
+ and \exmp{line_pos} to \exmp{[26,29]}.  These integer arrays may be used to
  extract the substrings matched by the pattern, e.g.,
 #v+
      file = substr (str, file_pos[0]+1, file_pos[1]-file_pos[0]);
      line = str[[line_pos[0]:line_pos[1]-1]];
 #v-
- Alternatively, the function \ifun{pcre_nth_substr} may be used to get the 
+ Alternatively, the function \ifun{pcre_nth_substr} may be used to get the
  matched substrings:
 #v+
      file = pcre_nth_substr (p, str, 0);

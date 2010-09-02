@@ -8,7 +8,7 @@ static define test_pack ()
 {
    variable str;
    variable fmt, val, args;
-   
+
    args = __pop_args (_NARGS - 2);
    (fmt, val) = ();
 
@@ -16,7 +16,7 @@ static define test_pack ()
    if (typeof (str) != BString_Type)
      failed ("pack did not return a bstring for format = " + fmt);
    if (str != val)
-     failed ("pack returned wrong result for format = " 
+     failed ("pack returned wrong result for format = "
 	     + fmt + ":" + str);
 }
 
@@ -97,7 +97,7 @@ define test_unpack3 (fmt, a, b)
 {
    variable c, d;
    variable s;
-   
+
    (c, d) = unpack (fmt, pack (fmt, a, b));
    if ((a != c) or (b != d))
      failed ("%s", "unpack failed for $fmt, found ($a!=$c) or ($b!=$d)"$);

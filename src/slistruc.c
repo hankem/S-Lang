@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -113,7 +113,7 @@ static int istruct_push (SLtype type, VOID_STAR ptr)
    _pSLang_IStruct_Type *s;
 
    s = *(_pSLang_IStruct_Type **) ptr;
-   if ((s == NULL) 
+   if ((s == NULL)
        || (s->addr == NULL)
        || (*(char **) s->addr == NULL))
      return SLang_push_null ();

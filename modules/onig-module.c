@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "config.h"
@@ -58,7 +58,7 @@ static char *_slang_to_pcre (char *slpattern)
    pattern = SLmalloc (3*len + 1);
    if (pattern == NULL)
      return NULL;
-   
+
    p = pattern;
    s = slpattern;
    in_bracket = 0;
@@ -80,7 +80,7 @@ static char *_slang_to_pcre (char *slpattern)
 	     in_bracket = 1;
 	     *p++ = ch;
 	     break;
-	     
+
 	   case ']':
 	     in_bracket = 0;
 	     *p++ = ch;
@@ -93,7 +93,7 @@ static char *_slang_to_pcre (char *slpattern)
 		case 0:
 		  s--;
 		  break;
-		  
+
 		case '<':
 		case '>':
 		  *p++ = '\\'; *p++ = 'b';
@@ -112,20 +112,20 @@ static char *_slang_to_pcre (char *slpattern)
 		case 'c':
 		  *p++ = '('; *p++ = '?'; *p++ = '-'; *p++ = 'i'; *p++ = ')';
 		  break;
-		  
+
 		default:
 		  *p++ = '\\';
 		  *p++ = ch;
 	       }
 	     break;
-	     
+
 	   default:
 	     *p++ = ch;
 	     break;
 	  }
      }
    *p = 0;
-   
+
    s = SLang_create_slstring (pattern);
    SLfree (pattern);
    return s;
@@ -161,20 +161,19 @@ typedef struct
 }
 Name_Map_Type;
 
-typedef struct 
+typedef struct
 {
    char *name;
    OnigSyntaxType *syn;
 }
 Syntax_Table_Map_Type;
 
-typedef struct 
+typedef struct
 {
    char *name;
    OnigEncodingType *encoding;
 }
 Encoding_Table_Map_Type;
-
 
 static VOID_STAR pop_onig_name_ptr (Name_Map_Type *map, char *onig_object)
 {
@@ -182,7 +181,7 @@ static VOID_STAR pop_onig_name_ptr (Name_Map_Type *map, char *onig_object)
 
    if (-1 == SLang_pop_slstring (&str))
      return NULL;
-   
+
    while (map->name != NULL)
      {
 	if (0 == strcmp (str, map->name))
@@ -198,7 +197,6 @@ static VOID_STAR pop_onig_name_ptr (Name_Map_Type *map, char *onig_object)
    return NULL;
 }
 
-
 static void get_onig_names (Name_Map_Type *map)
 {
    SLindex_Type i, num;
@@ -210,10 +208,10 @@ static void get_onig_names (Name_Map_Type *map)
    while (table->name != NULL)
      table++;
    num = (SLindex_Type) (table - map);
-   
+
    if (NULL == (at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &num, 1)))
      return;
-   
+
    table = map;
    names = (char **)at->data;
    for (i = 0; i < num; i++)
@@ -228,7 +226,7 @@ static void get_onig_names (Name_Map_Type *map)
    (void) SLang_push_array (at, 1);
 }
 
-Syntax_Table_Map_Type Syntax_Table_Map [] = 
+Syntax_Table_Map_Type Syntax_Table_Map [] =
 {
    { "asis", ONIG_SYNTAX_ASIS },
    { "posix_basic", ONIG_SYNTAX_POSIX_BASIC },
@@ -248,8 +246,7 @@ static OnigSyntaxType *pop_onig_syntax (void)
    return (OnigSyntaxType *) pop_onig_name_ptr ((Name_Map_Type *)Syntax_Table_Map, "syntax");
 }
 
-
-static Encoding_Table_Map_Type Encoding_Table_Map [] = 
+static Encoding_Table_Map_Type Encoding_Table_Map [] =
 {
 #ifdef ONIG_ENCODING_ASCII
    {"ascii", ONIG_ENCODING_ASCII},
@@ -436,7 +433,6 @@ static void do_onig_new (void)
 	if (-1 == SLang_pop_slstring ((char **)&pattern))
 	  return;
      }
-   
 
    if (NULL == (o = (Onig_Type *) SLcalloc (1, sizeof (Onig_Type))))
      {
@@ -491,7 +487,7 @@ static int do_onig_search_internal (Onig_Type *o, OnigOptionType option, UChar *
 
    if (status >= 0)
      return status;
-   
+
    if (status == ONIG_MISMATCH)
      return -1;
 
@@ -505,7 +501,7 @@ static int do_onig_search (void)
    int start_pos = 0, end_pos = -1;
    char *str, *str_end;
    SLang_BString_Type *bstr = NULL;
-   Onig_Type *o; 
+   Onig_Type *o;
    SLang_MMT_Type *mmt;
    int status = -1;
    OnigOptionType option = ONIG_OPTION_NONE;
@@ -534,7 +530,6 @@ static int do_onig_search (void)
 	 break;
      }
 
-   
    switch(SLang_peek_at_stack())
      {
       case SLANG_STRING_TYPE:
@@ -542,12 +537,12 @@ static int do_onig_search (void)
 	  return -1;
 	str_end = str + strlen (str);
 	break;
-	
+
       case SLANG_BSTRING_TYPE:
       default:
 	  {
 	     unsigned int len;
-	     
+
 	     if (-1 == SLang_pop_bstring(&bstr))
 	       return -1;
 
@@ -626,10 +621,10 @@ static void nth_match (Onig_Type *o, int *np)
 	SLang_push_null ();
 	return;
      }
-   
+
    if (NULL == (at = SLang_create_array (SLANG_INT_TYPE, 0, NULL, &two, 1)))
      return;
-   
+
    data = (int *)at->data;
    data[0] = (int)start;
    data[1] = (int)stop;
@@ -640,7 +635,7 @@ static void nth_substr (Onig_Type *o, char *str, int *np)
 {
    unsigned int start, stop;
    unsigned int len;
-   
+
    len = strlen (str);
 
    if ((-1 == get_nth_start_stop (o, (unsigned int) *np, &start, &stop))
@@ -649,7 +644,7 @@ static void nth_substr (Onig_Type *o, char *str, int *np)
 	SLang_push_null ();
 	return;
      }
-   
+
    str = SLang_create_nslstring (str + start, stop - start);
    (void) SLang_push_string (str);
    SLang_free_slstring (str);
@@ -783,7 +778,7 @@ static int register_onig_type (void)
     */
    if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE, sizeof (Onig_Type), SLANG_CLASS_TYPE_MMT))
      return -1;
-   
+
    Onig_Type_Id = SLclass_get_class_id (cl);
 
    if (-1 == SLclass_patch_intrin_fun_table1 (Onig_Intrinsics, DUMMY_ONIG_TYPE, Onig_Type_Id))
@@ -791,7 +786,7 @@ static int register_onig_type (void)
 
    return 0;
 }
-   
+
 static int setup_onig (void)
 {
    static int inited = 0;
@@ -812,12 +807,12 @@ static int setup_onig (void)
    onig_set_warn_func (&warn_func);
    onig_set_verb_warn_func (&verb_warn_func);
    onig_set_default_syntax (ONIG_SYNTAX_PERL);
-   
+
    inited = 1;
 
    return 0;
 }
-	 
+
 int init_onig_module_ns (char *ns_name)
 {
    SLang_NameSpace_Type *ns = SLns_create_namespace (ns_name);
@@ -835,7 +830,6 @@ int init_onig_module_ns (char *ns_name)
 
    return 0;
 }
-
 
 /* This function is optional */
 void deinit_onig_module (void)

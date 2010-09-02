@@ -19,7 +19,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
@@ -53,7 +53,6 @@ USA.
 # define SLMALLOC_FUN	SLMALLOC
 # define SLFREE_FUN	SLFREE
 #endif
-
 
 int SLang_Version = SLANG_VERSION;
 SLFUTURE_CONST char *SLang_Version_String = SLANG_VERSION_STRING;
@@ -108,7 +107,7 @@ static int utf8_enable (int mode)
 	    || (0 == strcmp (locale, "utf8"))
 	    || (0 == strcmp (locale, "UTF8")))
 	  return 1;
-	
+
 	return 0;
      }
 #endif
@@ -125,11 +124,11 @@ static int utf8_enable (int mode)
     *   language[_territory][.codeset][@modifier][+special][,...
     * Here, we want the codeset, if present.
     */
-   
+
    while (*locale && (*locale != '.') && (*locale != '@')
 	  && (*locale != '+') && (*locale != ','))
      locale++;
-   
+
    if (*locale == '.')
      {
 	locale++;
@@ -139,16 +138,15 @@ static int utf8_enable (int mode)
 	  locale += 4;
 	else
 	  return 0;
-	
-	if ((*locale == 0) || (*locale == '@') 
+
+	if ((*locale == 0) || (*locale == '@')
 	    || (*locale == '+') || (*locale == ','))
 	  return 1;
      }
-   
+
    return 0;
 }
 
-  
 /* Returns the value of _pSLutf8_mode */
 int SLutf8_enable (int mode)
 {
@@ -168,7 +166,7 @@ int SLutf8_enable (int mode)
 
 /* Mallocing 0 bytes leads to undefined behavior.  Some C libraries will
  * return NULL, and others return non-NULL.  Here, if 0 bytes is requested,
- * and the library malloc function returns NULL, then malloc will be retried 
+ * and the library malloc function returns NULL, then malloc will be retried
  * using 1 byte.
  */
 char *SLmalloc (unsigned int len)
@@ -234,7 +232,7 @@ int _pSLsecure_issetugid (void)
    static int enable_secure;
    if (enable_secure == 0)
     {
-       if ((getuid () != geteuid ()) 
+       if ((getuid () != geteuid ())
 	   || (getgid () != getegid ()))
 	 enable_secure = 1;
        else
@@ -255,7 +253,6 @@ char *_pSLsecure_getenv (SLCONST char *s)
      return NULL;
    return getenv (s);
 }
-
 
 typedef struct Interrupt_Hook_Type
 {
@@ -285,17 +282,17 @@ static Interrupt_Hook_Type *
      }
    return NULL;
 }
-   
+
 int SLang_add_interrupt_hook (int (*func)(VOID_STAR), VOID_STAR cd)
 {
    Interrupt_Hook_Type *h;
 
    if (NULL != find_interrupt_hook (func, cd, NULL))
      return 0;
-   
+
    if (NULL == (h = (Interrupt_Hook_Type *)SLmalloc (sizeof (Interrupt_Hook_Type))))
      return -1;
-   
+
    h->func = func;
    h->client_data = cd;
    h->next = Interrupt_Hooks;
@@ -309,12 +306,12 @@ void SLang_remove_interrupt_hook (int (*func)(VOID_STAR), VOID_STAR cd)
 
    if (NULL == (h = find_interrupt_hook (func, cd, &hprev)))
      return;
-   
+
    if (hprev == NULL)
      Interrupt_Hooks = h->next;
    else
      hprev->next = h->next;
-   
+
    SLfree ((char *) h);
 }
 

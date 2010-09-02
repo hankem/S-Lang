@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -529,8 +529,8 @@ static int handle_interrupt (void)
 	if (-1 == (*SLang_getkey_intr_hook) ())
 	  return -1;
 
-	/* The interrupt hook may suspend the process and reset the tty.  
-	 * When it comes back up, a new descriptor may allocated.  
+	/* The interrupt hook may suspend the process and reset the tty.
+	 * When it comes back up, a new descriptor may allocated.
 	 * Allow that here.
 	 */
 
@@ -569,7 +569,7 @@ unsigned int _pSLsys_getkey (void)
 	  {
 	     if (-1 == handle_interrupt ())
 	       return SLANG_GETKEY_ERROR;
-	     
+
 	     if (SLKeyBoard_Quit)
 	       return SLang_Abort_Char;
 

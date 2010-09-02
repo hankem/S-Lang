@@ -21,7 +21,7 @@ private define self_insert_unless_command_mode ()
    Last_Command = &rline_beep;
    if (Is_Command_Mode)
      return 0;
-   
+
    rline_call ("self_insert");
    return 1;
 }
@@ -33,7 +33,7 @@ private define vi_insert_mode ()
 
    vi_enter_insert_mode ();
 }
-     
+
 private define vi_append_mode ()
 {
    if (self_insert_unless_command_mode ())
@@ -129,7 +129,7 @@ private define vi_replace_char ()
 {
    if (self_insert_unless_command_mode ())
      return;
-   
+
    rline_del (1);
    rline_ins (char (-rline_getkey ()));
 }
@@ -139,7 +139,7 @@ private define vi_bskip_word ()
 {
    if (self_insert_unless_command_mode ())
      return;
-   
+
    Last_Command = &vi_bskip_word;
    rline_bskip_word ();
 }
@@ -149,7 +149,7 @@ private define vi_skip_word ()
 {
    if (self_insert_unless_command_mode ())
      return;
-   
+
    Last_Command = &vi_skip_word;
    rline_skip_word ();
 }
@@ -158,7 +158,7 @@ private define vi_self_insert ()
 {
    if (self_insert_unless_command_mode ())
      return;
-   
+
    rline_beep ();
 }
 
@@ -206,7 +206,7 @@ private define vi_escape ()
 
 	while (rline_input_pending (1))
 	  () = rline_getkey ();
-	
+
 	return;
      }
    if (Command_Map[ch] != NULL)

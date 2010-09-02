@@ -34,7 +34,7 @@ if (length (L) != 3)
 if (0 == _eqs(L[0], {})) failed ("list {}");
 
 L = {"200", L, 3.14};
-if ((L[0] != "200") 
+if ((L[0] != "200")
     or (L[2] != 3.14)
     or (L[-1] != 3.14))
   failed ("list {with list elements}");
@@ -81,13 +81,13 @@ if (L[1] != 10)
 private define test_push_pop_list ()
 {
    variable list = __pop_list (_NARGS);
-   
+
    variable d0 = _stkdepth ();
    __push_list (list);
    variable d1 = _stkdepth ();
    if (d1 - d0 != _NARGS)
      failed ("push/pop_list");
-   
+
    loop (_NARGS)
      {
 	variable a = list_pop (list, -1);
@@ -112,14 +112,14 @@ private define test_complex_list ()
 #ifexists Complex_Type
    z0 += 2i;
 #endif
-   
+
    variable n = 20;
    loop (n)
      {
 	list_append (l, z0);
 	list_append (l, s0);
      }
-   
+
    variable za, sa, zl, sl;
 
    zl = l[[::2]];
@@ -130,10 +130,10 @@ private define test_complex_list ()
 
    if (any(za != z0))
      failed ("list of complex numbers with array indexing");
-   
+
    if (any (sa != s0))
      failed ("list of strings with array indexing");
-   
+
    % LHS = array
    l[[::2]] = sa;
    l[[1::2]] = za;
@@ -153,12 +153,12 @@ private define test_complex_list ()
 
    sa = list_to_array (l[[::2]]);
    za = list_to_array (l[[1::2]]);
-   
+
    if (any(za != z0))
      failed ("aput complex with array LHS");
 
    if (any (sa != s0))
-     failed ("aput string with array LHS");   
+     failed ("aput string with array LHS");
 }
 test_complex_list ();
 
@@ -205,11 +205,11 @@ private define test_indexing (type, num, nloops, index_fun, cd)
 	(i, j) = (@index_fun)(num, cd);
 	if (l[i] != i)
 	  failed ("%s list indexing", type);
-	
+
 	list_insert (l, -j, j);
 	if (l[j] != -j)
 	  failed ("%s list indexing with insertion", type);
-	
+
 	if (i < j)
 	  {
 	     if (l[i] != i)
@@ -220,9 +220,9 @@ private define test_indexing (type, num, nloops, index_fun, cd)
 	     if (l[i] != i-1)
 	       failed ("%s list indexing after insertion", type);
 	  }
-	
+
 	list_delete (l, j);
-	
+
 	if (l[i] != i)
 	  failed ("%s list indexing with deletion", type);
      }

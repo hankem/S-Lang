@@ -16,9 +16,8 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
-
 
 #include "slinclud.h"
 
@@ -138,7 +137,7 @@ SLtype _pSLarith_Arith_Types [MAX_ARITHMETIC_TYPES+1] =
 };
 
 static SLtype Alias_Map [MAX_ARITHMETIC_TYPES];
-   
+
 /* Here are a bunch of functions to convert from one type to another.  To
  * facilitate the process, macros will be used.
  */
@@ -203,12 +202,12 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 
    if ((type < SLANG_CHAR_TYPE) || (type > MAX_SLARITH_TYPE))
      return NULL;
-   
+
    t = To_Double_Fun_Table + (type - SLANG_CHAR_TYPE);
-   if ((sizeof_type != NULL) 
+   if ((sizeof_type != NULL)
        && (t->to_double_fun != NULL))
      *sizeof_type = t->sizeof_type;
-   
+
    return t->to_double_fun;
 }
 #endif				       /* SLANG_HAS_FLOAT */
@@ -435,12 +434,11 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
 #include "slarith.inc"
 #endif				       /* SHORT_IS_NOT_INT */
 
-
 int _pSLarith_get_precedence (SLtype type)
 {
    if ((type < SLANG_CHAR_TYPE) || (type > MAX_SLARITH_TYPE))
      return -1;
- 
+
    type = Alias_Map[TYPE_TO_TABLE_INDEX(type)];
    return type - SLANG_CHAR_TYPE;
 }
@@ -486,7 +484,7 @@ static SLtype promote_to_common_type (SLtype a, SLtype b)
    if (a == b)
      return a1;
    b = _pSLarith_promote_type (b);
-   
+
    return (a1 > b) ? a1 : b;
 }
 
@@ -651,7 +649,6 @@ static int arith_unary_op_result (int op, SLtype a, SLtype *b)
    return 1;
 }
 
-
 static int integer_pop (SLtype type, VOID_STAR ptr)
 {
    SLang_Object_Type obj;
@@ -803,7 +800,6 @@ int SLang_push_strlen_type (SLstrlen_Type i)
    return SLang_push_uint (i);
 }
 
-
 _INLINE_
 int _pSLarith_typecast (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			SLtype b_type, VOID_STAR bp)
@@ -852,7 +848,7 @@ int SLang_pop_double (double *x)
       case SLANG_UINT_TYPE: *x = (double) obj.v.uint_val; break;
       case SLANG_LONG_TYPE: *x = (double) obj.v.long_val; break;
       case SLANG_ULONG_TYPE: *x = (double) obj.v.ulong_val; break;
-#ifdef HAVE_LONG_LONG	
+#ifdef HAVE_LONG_LONG
       case SLANG_LLONG_TYPE: *x = (double) obj.v.llong_val; break;
       case SLANG_ULLONG_TYPE: *x = (double) obj.v.ullong_val; break;
 #endif
@@ -946,15 +942,15 @@ void _pSLset_double_format (SLCONST char *fmt)
 
    if (*s++ != '%')
      return;
-   
+
    /* 0 or more flags */
-   while ((*s == '#') || (*s == '0') || (*s == '-') 
+   while ((*s == '#') || (*s == '0') || (*s == '-')
 	  || (*s == ' ') || (*s == '+'))
      s++;
 
    /* field width */
    while (isdigit (*s)) s++;
-   
+
    /* precision */
    if (*s == '.')
      {
@@ -984,7 +980,7 @@ void _pSLset_double_format (SLCONST char *fmt)
 	Double_Format_Ptr = Double_Format;
 	return;
      }
-   
+
    if ((*s == 'S') || (*s == 's'))
      {
 	s++;
@@ -1003,7 +999,7 @@ SLCONST char *_pSLget_double_format (void)
 {
    if (Double_Format_Ptr == NULL)
      return "%S";
-   
+
    return Double_Format_Ptr;
 }
 
@@ -1034,7 +1030,7 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
 	if (ch != '.')
 	  return;			       /* something else */
 
-	/* We are at a decimal point.  If expon > 1, then buf does not contain 
+	/* We are at a decimal point.  If expon > 1, then buf does not contain
 	 * an exponential formatted quantity.
 	 */
 	if (count <= expon_threshold)
@@ -1048,7 +1044,7 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
      }
 
    /* We get here only when *b==0. */
-   
+
    if ((has_point == 0) && (count <= 6))
      {
 	if (b + 3 >= bufmax)
@@ -1063,7 +1059,7 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
      }
 
    expon = count-1;
-   
+
    /* Now add on the exponent.  First move the decimal point but drop trailing 0s */
    while ((count > 1) && (*(b-1) == '0'))
      {
@@ -1072,7 +1068,7 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
      }
 
    if (count > 1)
-     {	
+     {
 	while (count > 1)
 	  {
 	     bstart[count] = bstart[count-1];
@@ -1087,7 +1083,7 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
      sprintf (buf, "%e", x);
 }
 
-static int massage_decimal_buffer (char *inbuf, char *buf, 
+static int massage_decimal_buffer (char *inbuf, char *buf,
 				   unsigned int buflen, unsigned int min_slen)
 {
    char *s;
@@ -1114,7 +1110,7 @@ static int massage_decimal_buffer (char *inbuf, char *buf,
 
    if ((count < 4) || (0 == isdigit (*s)))
      return 0;
-   
+
    if (c == '9')
      {
 	/* e.g., 9.699999999999999 */
@@ -1151,7 +1147,6 @@ static void massage_float_buffer (char *inbuf, float x)
        && ((float)atof(buf) == x))
      strcpy (inbuf, buf);
 }
-
 
 static void default_format_double (double x, char *buf, unsigned int buflen)
 {
@@ -1390,7 +1385,7 @@ int _pSLformat_as_binary (unsigned int min_num_bits, int use_binary_prefix)
 	     ret = uchar_to_binary (u, bufp, buflen, min_num_bits);
 	  }
 	break;
-	
+
       case SLANG_SHORT_TYPE:
       case SLANG_USHORT_TYPE:
 	  {
@@ -1428,7 +1423,7 @@ int _pSLformat_as_binary (unsigned int min_num_bits, int use_binary_prefix)
 	SLang_verror (SL_INTERNAL_ERROR, "Buffer is not large enough for the binary representations");
 	return -1;
      }
-   
+
    (void) SLang_push_string (buf);
    return 0;
 }
@@ -1446,7 +1441,7 @@ static void to_binary_string_intrin (void)
 	if (n > 0)
 	  min_num_bits = (unsigned int) n;
      }
-   
+
    (void) _pSLformat_as_binary (min_num_bits, 0);
 }
 #endif
@@ -1532,7 +1527,7 @@ static int create_synonyms (void)
        || (-1 == _pSLclass_copy_class (SLANG_ULLONG_TYPE, _pSLANG_ULONG_TYPE)))
      return -1;
 #endif
-   
+
    return 0;
 }
 
@@ -1694,7 +1689,6 @@ static void compute_inf_an_nan (void)
 #endif
 }
 
-
 int _pSLarith_register_types (void)
 {
    SLang_Class_Type *cl;
@@ -1703,7 +1697,7 @@ int _pSLarith_register_types (void)
 
 #if defined(HAVE_SETLOCALE) && defined(LC_NUMERIC)
    /* make sure decimal point it used --- the parser requires it */
-   (void) setlocale (LC_NUMERIC, "C"); 
+   (void) setlocale (LC_NUMERIC, "C");
 #endif
 
    for (i = 0; i < NUM_INTEGER_TYPES; i++)
@@ -1796,7 +1790,7 @@ int _pSLarith_register_types (void)
 	if (Alias_Map[TYPE_TO_TABLE_INDEX(a_type)] != a_type)
 	  continue;
 #endif
-	if (a_type == 0) 
+	if (a_type == 0)
 	  continue;
 
 	for (j = 0; j < MAX_ARITHMETIC_TYPES; j++)
@@ -1807,7 +1801,7 @@ int _pSLarith_register_types (void)
 	     if (b_type == 0)
 	       continue;
 	     /* Allow implicit typecast, except from int to float */
-	     implicit_ok = ((b_type >= SLANG_FLOAT_TYPE) 
+	     implicit_ok = ((b_type >= SLANG_FLOAT_TYPE)
 			    || (a_type < SLANG_FLOAT_TYPE));
 
 	     if (-1 == SLclass_add_binary_op (a_type, b_type, arith_bin_op, arith_bin_op_result))
@@ -1854,7 +1848,7 @@ static void promote_objs (SLang_Object_Type *a, SLang_Object_Type *b,
 
    ia = a->o_data_type;
    ib = b->o_data_type;
-   
+
    ic = _pSLarith_promote_type (ia);
 
    if (ic == ib) id = ic;	       /* already promoted */
@@ -1908,12 +1902,11 @@ int _pSLarith_bin_op (SLang_Object_Type *oa, SLang_Object_Type *ob, int op)
 	promote_objs (oa, ob, &obj_a, &obj_b);
 	oa = &obj_a;
 	ob = &obj_b;
-	
+
 	a_type = oa->o_data_type;
 	/* b_type = ob->data_type; */
      }
-   
-	  
+
    switch (a_type)
      {
       case SLANG_CHAR_TYPE:
@@ -1943,7 +1936,7 @@ int _pSLarith_bin_op (SLang_Object_Type *oa, SLang_Object_Type *ob, int op)
 #endif
       case SLANG_UINT_TYPE:
 	return uint_uint_scalar_bin_op (oa->v.uint_val, ob->v.uint_val, op);
-	
+
 #if LONG_IS_NOT_INT
       case SLANG_LONG_TYPE:
 	return long_long_scalar_bin_op (oa->v.long_val, ob->v.long_val, op);

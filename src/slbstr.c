@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -630,7 +630,7 @@ static unsigned int count_byte_occurances (SLang_BString_Type *b, unsigned char 
 
    bytes = BS_GET_POINTER(b);
    bytes_max = bytes + b->len;
-   
+
    n = 0;
    while (bytes < bytes_max)
      {
@@ -639,7 +639,6 @@ static unsigned int count_byte_occurances (SLang_BString_Type *b, unsigned char 
      }
    return n;
 }
-
 
 /* returns the character position of substring in a string or null */
 static int issubbytes (SLang_BString_Type *as, SLang_BString_Type *bs)
@@ -652,10 +651,10 @@ static int issubbytes (SLang_BString_Type *as, SLang_BString_Type *bs)
    b = BS_GET_POINTER(bs);
    lena = as->len;
    lenb = bs->len;
-   
+
    if ((lenb > lena) || (lenb == 0))
      return 0;
-   
+
    lena -= lenb;
    amax = a + lena;
    bmax = b + lenb;
@@ -677,7 +676,7 @@ static int issubbytes (SLang_BString_Type *as, SLang_BString_Type *bs)
 	  }
 	if (b == bmax)
 	  return (a0 - astart);
-	
+
 	a = a0;
 	b = b0;
      }
@@ -695,7 +694,6 @@ static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
    MAKE_INTRINSIC_2("is_substrbytes", issubbytes, SLANG_INT_TYPE, SLANG_BSTRING_TYPE, SLANG_BSTRING_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
-
 
 struct _pSLang_Foreach_Context_Type
 {
@@ -748,7 +746,7 @@ _pSLbstring_foreach_open (SLtype type, unsigned int num)
 		      "'foreach ([B]String_Type) using' requires single control value (chars|bytes)");
 	return NULL;
      }
-   
+
    /* In UTF-8 mode, chars and bytes are synonymous */
    if (_pSLinterp_UTF8_Mode == 0)
      using_chars = 0;
@@ -761,7 +759,7 @@ _pSLbstring_foreach_open (SLtype type, unsigned int num)
      }
 
    memset ((char *) c, 0, sizeof (SLang_Foreach_Context_Type));
-   
+
    c->bstr = bstr;
    c->s = SLbstring_get_pointer (bstr, &len);
    c->smax = c->s + len;
@@ -782,7 +780,7 @@ int _pSLbstring_foreach (SLtype type, SLang_Foreach_Context_Type *c)
    unsigned char ch;
    SLwchar_Type wch;
    unsigned char *s, *s1, *smax;
-   
+
    (void) type;
 
    s = c->s;
@@ -808,13 +806,13 @@ int _pSLbstring_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 	/* Invalid encoded char-- return it as a negative int */
 	if (-1 == SLang_push_int (-iwch))
 	  return -1;
-	
+
 	return 1;
      }
    c->s = s1;
    if (-1 == SLang_push_wchar (wch))
      return -1;
-   
+
    return 1;
 }
 
@@ -849,7 +847,7 @@ int _pSLang_init_bstring (void)
    cl->cl_foreach_open = _pSLbstring_foreach_open;
    cl->cl_foreach_close = _pSLbstring_foreach_close;
    cl->cl_foreach = _pSLbstring_foreach;
-   
+
    if (-1 == SLadd_intrin_fun_table (BString_Table, NULL))
      return -1;
 

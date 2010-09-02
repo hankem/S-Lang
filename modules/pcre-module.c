@@ -16,7 +16,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include "config.h"
 
@@ -81,7 +81,7 @@ static SLang_MMT_Type *allocate_pcre_type (pcre *p, pcre_extra *extra)
      {
 	free_pcre_type (pt);
 	return NULL;
-     }   
+     }
    return mmt;
 }
 
@@ -98,7 +98,7 @@ static int _pcre_compile_1 (char *pattern, int options)
    p = pcre_compile (pattern, options, &err, &erroffset, table);
    if (NULL == p)
      {
-	SLang_verror (SL_Parse_Error, "Error compiling pattern '%s' at offset %d: %s", 
+	SLang_verror (SL_Parse_Error, "Error compiling pattern '%s' at offset %d: %s",
 		      pattern, erroffset, err);
 	return -1;
      }
@@ -111,7 +111,7 @@ static int _pcre_compile_1 (char *pattern, int options)
 	pcre_free (p);
 	return -1;
      }
-   
+
    if (NULL == (mmt = allocate_pcre_type (p, extra)))
      {
 	pcre_free ((char *) p);
@@ -131,7 +131,7 @@ static void _pcre_compile (void)
 {
    char *pattern;
    int options = 0;
-   
+
    switch (SLang_Num_Function_Args)
      {
       case 2:
@@ -147,13 +147,11 @@ static void _pcre_compile (void)
    SLang_free_slstring (pattern);
 }
 
-
-
 /* returns number of matches */
 static int _pcre_exec_1 (PCRE_Type *pt, char *str, unsigned int len, int pos, int options)
 {
    int rc;
-   
+
    pt->num_matches = 0;
    if ((unsigned int) pos > len)
      return 0;
@@ -234,20 +232,19 @@ free_and_return:
    return ret;
 }
 
-
-static int get_nth_start_stop (PCRE_Type *pt, unsigned int n, 
+static int get_nth_start_stop (PCRE_Type *pt, unsigned int n,
 			       unsigned int *a, unsigned int *b)
 {
    int start, stop;
 
-   if (n >= pt->num_matches) 
+   if (n >= pt->num_matches)
      return -1;
-   
+
    start = pt->ovector[2*n];
    stop = pt->ovector[2*n+1];
    if ((start < 0) || (stop < start))
      return -1;
-   
+
    *a = (unsigned int) start;
    *b = (unsigned int) stop;
    return 0;
@@ -265,10 +262,10 @@ static void _pcre_nth_match (PCRE_Type *pt, int *np)
 	SLang_push_null ();
 	return;
      }
-   
+
    if (NULL == (at = SLang_create_array (SLANG_INT_TYPE, 0, NULL, &two, 1)))
      return;
-   
+
    data = (int *)at->data;
    data[0] = (int)start;
    data[1] = (int)stop;
@@ -279,7 +276,7 @@ static void _pcre_nth_substr (PCRE_Type *pt, char *str, int *np)
 {
    unsigned int start, stop;
    unsigned int len;
-   
+
    len = strlen (str);
 
    if ((-1 == get_nth_start_stop (pt, (unsigned int) *np, &start, &stop))
@@ -288,7 +285,7 @@ static void _pcre_nth_substr (PCRE_Type *pt, char *str, int *np)
 	SLang_push_null ();
 	return;
      }
-   
+
    str = SLang_create_nslstring (str + start, stop - start);
    (void) SLang_push_string (str);
    SLang_free_slstring (str);
@@ -323,7 +320,7 @@ static char *_slang_to_pcre (char *slpattern)
    pattern = SLmalloc (3*len + 1);
    if (pattern == NULL)
      return NULL;
-   
+
    p = pattern;
    s = slpattern;
    in_bracket = 0;
@@ -345,7 +342,7 @@ static char *_slang_to_pcre (char *slpattern)
 	     in_bracket = 1;
 	     *p++ = ch;
 	     break;
-	     
+
 	   case ']':
 	     in_bracket = 0;
 	     *p++ = ch;
@@ -358,7 +355,7 @@ static char *_slang_to_pcre (char *slpattern)
 		case 0:
 		  s--;
 		  break;
-		  
+
 		case '<':
 		case '>':
 		  *p++ = '\\'; *p++ = 'b';
@@ -377,20 +374,20 @@ static char *_slang_to_pcre (char *slpattern)
 		case 'c':
 		  *p++ = '('; *p++ = '?'; *p++ = '-'; *p++ = 'i'; *p++ = ')';
 		  break;
-		  
+
 		default:
 		  *p++ = '\\';
 		  *p++ = ch;
 	       }
 	     break;
-	     
+
 	   default:
 	     *p++ = ch;
 	     break;
 	  }
      }
    *p = 0;
-   
+
    s = SLang_create_slstring (pattern);
    SLfree (pattern);
    return s;
@@ -408,7 +405,7 @@ static void destroy_pcre (SLtype type, VOID_STAR f)
 {
    PCRE_Type *pt;
    (void) type;
-   
+
    pt = (PCRE_Type *) f;
    if (pt->extra != NULL)
      pcre_free ((char *) pt->extra);
@@ -444,7 +441,7 @@ static SLang_IConstant_Type PCRE_Consts [] =
    MAKE_ICONSTANT("PCRE_MULTILINE", PCRE_MULTILINE),
    MAKE_ICONSTANT("PCRE_UNGREEDY", PCRE_UNGREEDY),
    MAKE_ICONSTANT("PCRE_UTF8", PCRE_UTF8),
-   
+
    /* exec options */
    MAKE_ICONSTANT("PCRE_NOTBOL", PCRE_NOTBOL),
    MAKE_ICONSTANT("PCRE_NOTEOL", PCRE_NOTEOL),
@@ -511,7 +508,6 @@ int init_pcre_module_ns (char *ns_name)
 
    return 0;
 }
-
 
 /* This function is optional */
 void deinit_pcre_module (void)

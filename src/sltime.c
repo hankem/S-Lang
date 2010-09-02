@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -107,7 +107,7 @@ static void sleep_cmd (void)
    if (-1 == SLang_pop_double (&x))
      return;
 
-   if (x < 0.0) 
+   if (x < 0.0)
      x = 0.0;
    secs = (unsigned int) x;
    sleep (secs);
@@ -236,7 +236,7 @@ static int pop_tm_struct (struct tm *tms)
    memset ((char *) tms, 0, sizeof (*tms));
    if (-1 == SLang_pop_cstruct (tms, TM_Struct))
      return -1;
-   
+
    return validate_tm (tms);
 }
 
@@ -245,7 +245,7 @@ static void localtime_cmd (long *t)
    time_t tt = (time_t) *t;
    (void) push_tm_struct (localtime (&tt));
 }
-   
+
 static void gmtime_cmd (long *t)
 {
 #ifdef HAVE_GMTIME
@@ -263,7 +263,7 @@ static long mktime_cmd (void)
 
    if (-1 == SLang_pop_cstruct (&t, TM_Struct))
      return (long)-1;
-   
+
    return (long) mktime (&t);
 }
 #endif
@@ -278,7 +278,7 @@ static long mktime_cmd (void)
 
 #ifdef CLK_TCK
 # define SECS_PER_TICK (1.0/(double)CLK_TCK)
-#else 
+#else
 # ifdef CLOCKS_PER_SEC
 #  define SECS_PER_TICK (1.0/(double)CLOCKS_PER_SEC)
 # else
@@ -287,7 +287,7 @@ static long mktime_cmd (void)
 #endif
 
 typedef struct
-{ 
+{
    double tms_utime;
    double tms_stime;
    double tms_cutime;
@@ -311,7 +311,7 @@ static void times_cmd (void)
 
    (void) times (&t);
 
-   d.tms_utime = SECS_PER_TICK * (double)t.tms_utime; 
+   d.tms_utime = SECS_PER_TICK * (double)t.tms_utime;
    d.tms_stime = SECS_PER_TICK * (double)t.tms_stime;
    d.tms_cutime = SECS_PER_TICK * (double)t.tms_cutime;
    d.tms_cstime = SECS_PER_TICK * (double)t.tms_cstime;
@@ -331,7 +331,7 @@ static double _toc_cmd (void)
    double d;
 
    (void) times (&t);
-   
+
    d = ((t.tms_utime - Tic_TMS.tms_utime)
 	+ (t.tms_stime - Tic_TMS.tms_stime)) * SECS_PER_TICK;
    Tic_TMS = t;
@@ -382,7 +382,7 @@ static double toc_cmd (void)
 # endif
 #endif
 }
-     
+
 #ifdef SLANG_HAS_FLOAT
 # if USE_FROM_FUTURE
 static double ftime_cmd (void)
@@ -430,23 +430,23 @@ static void strftime_cmd (void)
      }
    else if (-1 == pop_tm_struct (&tms))
      return;
-   
+
    if (-1 == SLang_pop_slstring (&fmt))
      return;
 
    /* Ugh.  The man page says:
-    * 
+    *
     *  The strftime() function returns the number of characters placed in  the
     *  array  s,  not  including  the  terminating NUL character, provided the
     *  string, including the terminating NUL, fits.  Otherwise, it returns  0,
     *  and  the contents of the array is undefined.  (Thus at least since libc
     *  4.4.4; very old versions of libc, such as libc 4.4.1, would return  max
     *  if the array was too small.)
-    *  
+    *
     *  Note  that  the  return value 0 does not necessarily indicate an error;
     *  for example, in many locales %p yields an empty string.
-    * 
-    * Was this too designed by committee? 
+    *
+    * Was this too designed by committee?
     */
    status = strftime (buf, sizeof(buf), fmt, &tms);
    if (status == 0)

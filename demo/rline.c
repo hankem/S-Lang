@@ -10,9 +10,9 @@ static void issue_instructions (void)
    (void) fputs ("An EOF (^D) will also exit the example\n", stdout);
    (void) fputs ("\n", stdout);
 }
-   
+
 static int example_1 (void)
-{   
+{
    SLrline_Type *rl;
    unsigned int width = 80;
 
@@ -43,7 +43,7 @@ static int example_1 (void)
 }
 
 static int example_2 (void)
-{   
+{
    SLrline_Type *rl;
    unsigned int width = 80;
 
@@ -91,7 +91,7 @@ static int example_2 (void)
 }
 
 static int example_3 (void)
-{   
+{
    SLrline_Type *rl;
    unsigned int width = 80;
 
@@ -101,7 +101,7 @@ static int example_3 (void)
      return -1;
 
    (void) SLpath_set_load_path ("../slsh/lib");
-   
+
    if (-1 == SLrline_init ("demo/rline", NULL, NULL))
      return -1;
 
@@ -157,7 +157,7 @@ int main (int argc, char **argv)
 
    if (argc == 2)
      n = atoi (argv[1]);
-   
+
    switch (n)
      {
       case 1:

@@ -18,7 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -107,7 +107,7 @@ static int get_fd (SLFile_FD_Type *f, int *fdp)
 	     *fdp = f->fd;
 	     return 0;
 	  }
-   
+
 	if (0 == (*f->get_fd)(f->clientdata, fdp))
 	  return 0;
      }
@@ -153,19 +153,19 @@ static void unchain_fdtype (SLFile_FD_Type *f)
 static SLFile_FD_Type *find_chained_fd (int fd)
 {
    SLFile_FD_Type *f;
-   
+
    f = FD_Type_List;
    while (f != NULL)
      {
 	int fd1;
-	
+
 	if ((0 == get_fd (f, &fd1))
 	    && (fd1 == fd))
 	  return f;
-	
+
 	f = f->next;
      }
-   
+
    return NULL;
 }
 
@@ -175,7 +175,7 @@ static SLFile_FD_Type *find_chained_fd (int fd)
 void _pSLfclose_fdopen_fp (SLang_MMT_Type *mmt)
 {
    SLFile_FD_Type *f;
-   
+
    f = FD_Type_List;
    while (f != NULL)
      {
@@ -191,12 +191,12 @@ void _pSLfclose_fdopen_fp (SLang_MMT_Type *mmt)
 		  curr = curr->next;
 		  continue;
 	       }
-	     
+
 	     if (prev == NULL)
 	       f->stdio_mmt_list = curr->next;
 	     else
 	       prev->next = curr->next;
-	     
+
 	     SLang_free_mmt (mmt);
 	     SLfree ((char *) curr);
 	     return;
@@ -208,7 +208,7 @@ void _pSLfclose_fdopen_fp (SLang_MMT_Type *mmt)
 static void free_stdio_mmts (SLFile_FD_Type *f)
 {
    Stdio_MMT_List_Type *curr = f->stdio_mmt_list;
-   
+
    while (curr != NULL)
      {
 	Stdio_MMT_List_Type *next = curr->next;
@@ -228,7 +228,7 @@ static Stdio_MMT_List_Type *alloc_stdio_list_elem (void)
      memset ((char *)elem, 0, sizeof (Stdio_MMT_List_Type));
    return elem;
 }
-	
+
 /* Returns 0 the system call should not be restarted, 1 otherwise */
 static int is_interrupt (int e, int check_eagain)
 {
@@ -251,11 +251,11 @@ static int is_interrupt (int e, int check_eagain)
 #endif
    return 0;
 }
-	
+
 static int do_close (SLFile_FD_Type *f)
 {
    int fd;
-	  
+
    if (-1 == get_fd (f, &fd))
      return -1;
 
@@ -268,7 +268,7 @@ static int do_close (SLFile_FD_Type *f)
 	  status = (*f->close)(f->clientdata);
 	else
 	  status = close (fd);
-	
+
 	if (status == 0)
 	  {
 	     f->fd = -1;
@@ -303,7 +303,7 @@ static int do_write (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 	  num = (*f->write)(f->clientdata, buf, *nump);
 	else
 	  num = write (fd, buf, *nump);
-	
+
 	if (num != -1)
 	  {
 	     *nump = (unsigned int) num;
@@ -312,7 +312,7 @@ static int do_write (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 
 	if (is_interrupt (errno, 0))
 	  continue;
-	
+
 	*nump = 0;
 	return -1;
      }
@@ -346,7 +346,7 @@ static int do_read (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 
 	if (is_interrupt (errno, 0))
 	  continue;
-	
+
 	*nump = 0;
 	return -1;
      }
@@ -376,7 +376,7 @@ static void posix_write (SLFile_FD_Type *f, SLang_BString_Type *bstr)
 {
    unsigned int len;
    char *p;
-   
+
    if ((NULL == (p = (char *)SLbstring_get_pointer (bstr, &len)))
        || (-1 == do_write (f, p, &len)))
      {
@@ -410,7 +410,7 @@ static void posix_read (SLFile_FD_Type *f, SLang_Ref_Type *ref, unsigned int *nb
 
    bstr = SLbstring_create_malloced ((unsigned char *) b, len, 0);
    if (bstr != NULL)
-     {	
+     {
 	if (-1 == SLang_assign_to_ref (ref, SLANG_BSTRING_TYPE, (VOID_STAR)&bstr))
 	  {
 	     SLbstring_free (bstr);
@@ -490,7 +490,7 @@ int SLfile_get_clientdata (SLFile_FD_Type *f, int id, VOID_STAR *cdp)
 	*cdp = NULL;
 	return -1;
      }
-   
+
    *cdp = f->clientdata;
    return 0;
 }
@@ -550,7 +550,7 @@ SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
 
    if (f0 == NULL)
      return NULL;
-   
+
    if (-1 == get_fd (f0, &fd0))
      return NULL;
 
@@ -561,17 +561,17 @@ SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
      {
 	if (is_interrupt (errno, 1))
 	  continue;
-	
+
 	return NULL;
      }
-   
+
    if (NULL == (f = SLfile_create_fd (f0->name, fd)))
      {
 	while ((-1 == close (fd)) && is_interrupt (errno, 1))
 	  ;
 	return NULL;
      }
-   
+
    return f;
 }
 
@@ -593,7 +593,7 @@ static int SLfile_dup2_fd (SLFile_FD_Type *f0, int newfd)
      {
 	if (is_interrupt (errno, 1))
 	  continue;
-	
+
 	return -1;
      }
    return fd;
@@ -603,7 +603,7 @@ int SLfile_get_fd (SLFile_FD_Type *f, int *fd)
 {
    if (f == NULL)
      return -1;
-   
+
    return get_fd (f, fd);
 }
 
@@ -617,7 +617,7 @@ void SLfile_free_fd (SLFile_FD_Type *f)
 	f->num_refs -= 1;
 	return;
      }
-   
+
    if (0 == (f->flags & _SLFD_NO_AUTO_CLOSE))
      (void) do_close (f);
 
@@ -726,10 +726,10 @@ static int posix_fileno_int (void)
 
    if (-1 == SLfile_pop_fd (&f))
      return -1;
-	
+
    if (-1 == get_fd (f, &fd))
      fd = -1;
-	
+
    SLfile_free_fd (f);
    return fd;
 }
@@ -768,10 +768,10 @@ static void posix_fileno (void)
 static void posix_fdopen (SLFile_FD_Type *f, char *mode)
 {
    Stdio_MMT_List_Type *elem;
-   
+
    if (NULL == (elem = alloc_stdio_list_elem ()))
      return;
-   
+
    if (-1 == _pSLstdio_fdopen (f->name, f->fd, mode))
      {
 	SLfree ((char *)elem);
@@ -789,7 +789,7 @@ static void posix_fdopen (SLFile_FD_Type *f, char *mode)
 	SLfree ((char *) elem);
 	return;
      }
-   
+
    elem->next = f->stdio_mmt_list;
    f->stdio_mmt_list = elem;
 }
@@ -798,7 +798,7 @@ static _pSLc_off_t_Type posix_lseek (SLFile_FD_Type *f, _pSLc_off_t_Type *ofs, i
 {
    _pSLc_off_t_Type status;
    int fd;
-   
+
    if (-1 == get_fd (f, &fd))
      return -1;
 
@@ -849,7 +849,7 @@ static void posix_dup (SLFile_FD_Type *f)
    if ((NULL == (f = SLfile_dup_fd (f)))
        || (-1 == SLfile_push_fd (f)))
      SLang_push_null ();
-   
+
    SLfile_free_fd (f);
 }
 
@@ -873,7 +873,7 @@ static int fdtype_datatype_deref (SLtype type)
      {
 	if (is_interrupt (errno, 1))
 	  continue;
-	
+
 	return SLang_push_null ();
      }
 #endif
@@ -892,7 +892,6 @@ static int fdtype_datatype_deref (SLtype type)
    SLfile_free_fd (f);
    return status;
 }
-
 
 #define I SLANG_INT_TYPE
 #define V SLANG_VOID_TYPE
@@ -1052,7 +1051,7 @@ fd_fd_bin_op (int op,
    if (na > nb) n_max = na; else n_max = nb;
 
    a = (SLFile_FD_Type **) ap;
-   b = (SLFile_FD_Type **) bp;   
+   b = (SLFile_FD_Type **) bp;
    ic = (char *) cp;
 
    switch (op)

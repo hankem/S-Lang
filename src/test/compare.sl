@@ -28,7 +28,7 @@ define test_is_in (x0, x, x1)
      {
 	failed ("is_in: Self_Called != 1");
      }
-   
+
    is_in = ((x0 > x) and (x < x1));
    ifnot (_eqs (is_in, (x0 > x < x1)))
      failed ("is_in b0");

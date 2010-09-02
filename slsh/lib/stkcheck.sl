@@ -1,11 +1,11 @@
 % This file adds BOS/EOS hooks to the interpreter to help debug stack problems.
 % To use it, put the following at the top of a problematic file:
-%   
+%
 %   require ("stkcheck");
 %   enable_stack_check ();
-%   
+%
 % To check only portions of a file, surround the suspect functions by:
-% 
+%
 %   enable_stack_check ();
 %      .
 %      .

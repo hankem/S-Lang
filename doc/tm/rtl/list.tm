@@ -87,7 +87,6 @@
 \seealso{list_new, list_insert, list_append, list_delete, list_pop}
 \done
 
-
 \function{list_to_array}
 \synopsis{Convert a list into an array}
 \usage{Array_Type list_to_array (List_Type list [,DataType_Type type])}
@@ -98,7 +97,7 @@
  \exmp{type} is given, \ifun{list_to_array} tries to find the common
  data type of all list elements. This function will generate an
  exception if the list is empty and no type has been specified, or the
- objects in the list cannot be converted to a common type. 
+ objects in the list cannot be converted to a common type.
 \notes
  A future version of this function may produce an \dtype{Any_Type}
  array for an empty or heterogeneous list.

@@ -20,7 +20,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -520,12 +520,11 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
     * eval `tset -s -A -Q` sets value of TERMCAP to ":",
     *  under other shells it works fine.
     *  SUN was informed, they marked it as duplicate of bug 4086585
-    *  but didn't care to fix it... <mikkopa@cs.tut.fi> 
+    *  but didn't care to fix it... <mikkopa@cs.tut.fi>
     */
    if ((termcap[0] == ':') && (termcap[1] == 0))
      return -1;
-   
-   
+
    /* We have a termcap so lets use it provided it does not have a reference
     * to another terminal via tc=.  In that case, use terminfo.  The alternative
     * would be to parse the termcap file which I do not want to do right now.
@@ -543,7 +542,7 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
 
    /* malloc some extra space just in case it is needed. */
    len = strlen ((char *) termcap) + 256;
-   if (NULL == (buf = (unsigned char *) SLmalloc ((unsigned int) len))) 
+   if (NULL == (buf = (unsigned char *) SLmalloc ((unsigned int) len)))
      return -1;
 
    b = buf;
@@ -670,7 +669,6 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
    return 0;
 }
 
-
 /* These routines are provided only for backward binary compatability.
  * They will vanish in V2.x
  */
@@ -692,5 +690,4 @@ extern int SLtt_tigetnum (SLFUTURE_CONST char *s, char **p)
      return -1;
    return _pSLtt_tigetnum ((SLterminfo_Type *) *p, s);
 }
-
 

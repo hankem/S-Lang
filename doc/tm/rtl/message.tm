@@ -53,7 +53,7 @@
   containing the string representation of the \ivar{errno} value.
 #v+
     if (-1 == mkdir (dir))
-       throw IOError, sprintf ("mkdir %s failed: %s", 
+       throw IOError, sprintf ("mkdir %s failed: %s",
                                dir, errno_string (errno));
 #v-
 \seealso{errno_string, error, mkdir}
@@ -170,7 +170,7 @@
 \example
 #v+
   new_exception ("MyError", RunTimeError, "My very own error");
-  try 
+  try
     {
        if (something_is_wrong ())
          throw MyError;
@@ -194,7 +194,7 @@
   usage message if the wrong number of arguments was passed:
 #v+
     define plot ()
-    { 
+    {
        variable x, y;
 
        if (_NARGS != 2)
@@ -237,7 +237,7 @@
   To generate a specific exception, a \kw{throw} statement should be
   used.  In fact, a \kw{throw} statement such as:
 #v+
-     if (fp == NULL) 
+     if (fp == NULL)
        throw OpenError, "Unable to open $file"$;
 #v-
   is preferable to the use of \ifun{verror} in the above example.

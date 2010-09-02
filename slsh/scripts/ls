@@ -2,12 +2,11 @@
 %_debug_info = 1;
 % A simple ls designed primarily for windows.
 
-private variable Months = 
+private variable Months =
   ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
   "Oct", "Nov", "Dec"];
 
 private variable Six_Months_Ago = _time () - 3600*24*30*6;
-   
 
 private define ls_long (this_dir, file_list, st_list)
 {
@@ -36,7 +35,7 @@ private define ls_long (this_dir, file_list, st_list)
 	else
 #endif
 	if (mtime < Six_Months_Ago)
-	  mtime = sprintf ("%s %2d  %4d", 
+	  mtime = sprintf ("%s %2d  %4d",
 			   Months[tm.tm_mon],
 			   tm.tm_mday,
 			   1900 + tm.tm_year);
@@ -52,7 +51,7 @@ private define ls_long (this_dir, file_list, st_list)
 	if (stat_is ("lnk", mode))
 	  {
 	     symlink = readlink (path_concat (this_dir, file));
-	     if (symlink == NULL) 
+	     if (symlink == NULL)
 	       symlink = "??";
 
 	     symlink = " -> " + symlink;
@@ -69,7 +68,7 @@ private define ls_long (this_dir, file_list, st_list)
      }
 }
 
-private variable 
+private variable
   Use_Long_Form = 0,
   Use_atime = 0,
   Sort_By_Time = 0,
@@ -79,11 +78,10 @@ private variable
   Use_R_Option = 0,
   Use_d_Option = 0;
 
-
 private define parse_args (args)
 {
    variable ch;
-   
+
    foreach (args)
      {
 	ch = ();
@@ -114,14 +112,14 @@ define ls_short (dirs)
    foreach (dirs)
      {
 	variable dir;
-	
+
 	dir = ();
 	if (strlen (dir) > max_len)
 	  max_len = strlen (dir);
      }
 
    max_len += 2;
-   
+
    variable format = "%-" + string (max_len) + "s";
 
    ncols = 80;
@@ -165,11 +163,10 @@ private define is_non_null_fun (a)
    a != NULL;
 }
 
-
 define sort_files (dirs, sts)
 {
    variable st, i, non_null;
-   
+
    % Some of the sts structs may be NULL.  Get rid of those
    non_null = array_map (Char_Type, &is_non_null_fun, sts);
 
@@ -177,7 +174,6 @@ define sort_files (dirs, sts)
    dirs = dirs [i];
    sts = sts [i];
 
-   
    if (Use_atime)
      {
 	foreach (sts)
@@ -186,14 +182,14 @@ define sort_files (dirs, sts)
 	     st.st_mtime = st.st_atime;
 	  }
      }
-   
+
    if (Sort_By_Time)
      i = array_sort (sts, &time_sort);
    else if (Sort_By_Size)
      i = array_sort (sts, &size_sort);
    else
      i = array_sort (dirs);
-   
+
    return dirs[i], sts[i];
 }
 
@@ -212,7 +208,6 @@ private define list_dir (dir)
      listdir (dir);
 }
 
-   
 define do_ls ();
 define do_ls (dirs, this_dir, recurse, prune_hidden)
 {
@@ -223,7 +218,6 @@ define do_ls (dirs, this_dir, recurse, prune_hidden)
 
    len = length(dirs);
    sts = Struct_Type [len];
-
 
    _for (0, len-1, 1)
      {
@@ -249,11 +243,10 @@ define do_ls (dirs, this_dir, recurse, prune_hidden)
 	  sts[i] = st;
      }
 
-
    (dirs, sts) =  sort_files (dirs, sts);
 
    variable isdir;
-   
+
    if (length (sts)) isdir = array_map (Char_Type, &isdir_fun, sts);
    else isdir = Int_Type[0];
 
@@ -261,10 +254,9 @@ define do_ls (dirs, this_dir, recurse, prune_hidden)
    variable i_dir = where (isdir);
    variable dont_recurse;
 
-
    if (Use_F_Option and length (i_dir))
      dirs[i_dir] = array_map (String_Type, &path_concat, dirs[i_dir], "");
-   
+
    dont_recurse = (Use_d_Option or not recurse);
 
    if (dont_recurse)
@@ -280,20 +272,18 @@ define do_ls (dirs, this_dir, recurse, prune_hidden)
      ls_long (this_dir, dirs[i_reg], sts[i_reg]);
    else
      ls_short (dirs[i_reg]);
-	
 
    if (length(i_dir) == 1)
      {
 	if (length (i_reg) == 0)
 	  {
 	     dir = dirs[i_dir][0];
-	     
+
 	     do_ls (list_dir (dir), dir, Use_R_Option, 1);
 	     return;
 	  }
 	() = fputs ("\n", stdout);
      }
-
 
    foreach (dirs[i_dir])
      {
@@ -329,5 +319,4 @@ define main (argc, argv)
    do_ls (dirs, ".", 1, 0);
 }
 
-   
 main (__argc, __argv);

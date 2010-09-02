@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -67,7 +67,7 @@ typedef int Signal_Set_Type;
 #endif
 
 #define MAKE_SIGNAL(sig,name) {sig,name,NULL,NULL,0,0}
-static Signal_Type Signal_Table [] = 
+static Signal_Type Signal_Table [] =
 {
 #ifdef SIGHUP
      MAKE_SIGNAL(SIGHUP,"SIGHUP"),
@@ -174,7 +174,7 @@ static Signal_Type Signal_Table [] =
 static Signal_Type *find_signal (int sig)
 {
    Signal_Type *s = Signal_Table;
-   
+
    while (s->name != NULL)
      {
 	if (s->sig == sig)
@@ -226,7 +226,6 @@ static int unblock_signal (int sig)
    return 0;
 }
 
-
 static void signal_handler (int sig)
 {
    Signal_Type *s;
@@ -275,13 +274,13 @@ int _pSLsig_block_and_call (int (*func)(VOID_STAR), VOID_STAR cd)
 #ifdef SLANG_POSIX_SIGNALS
    (void) do_sigprocmask (SIG_BLOCK, &new_mask, &old_mask);
 #endif
-   
+
    status = (*func) (cd);
 
 #ifdef SLANG_POSIX_SIGNALS
    (void) do_sigprocmask (SIG_SETMASK, &old_mask, NULL);
 #endif
-   
+
    return status;
 }
 
@@ -293,7 +292,7 @@ static int handle_signal (Signal_Type *s)
 
    (void) block_signal (s->sig, &was_blocked);
 
-   /* At this point, sig is blocked and the handler is about to be called. 
+   /* At this point, sig is blocked and the handler is about to be called.
     * The pending flag can be safely set to 0 here.
     */
    s->pending = 0;
@@ -307,8 +306,8 @@ static int handle_signal (Signal_Type *s)
 	    || (-1 == SLang_end_arg_list ())
 	    || (-1 == SLexecute_function (s->handler)))
 	  status = -1;
-	
-	if ((status == 0) 
+
+	if ((status == 0)
 	    && (depth != SLstack_depth ()))
 	  {
 	     SLang_verror (SL_Application_Error, "The signal handler %s corrupted the stack", s->handler->name);
@@ -348,7 +347,7 @@ static int pop_signal (Signal_Type **sp)
 
    if (-1 == SLang_pop_int (&sig))
      return -1;
-   
+
    s = Signal_Table;
    while (s->name != NULL)
      {
@@ -365,7 +364,7 @@ static int pop_signal (Signal_Type **sp)
 	  }
 	s++;
      }
-   
+
    _pSLang_verror (SL_INVALID_PARM, "Signal %d invalid or unknown", sig);
    return -1;
 }
@@ -394,7 +393,7 @@ static int set_old_handler (Signal_Type *s, SLang_Ref_Type *ref, void (*old_hand
 	       h = SIG_DFL_CONSTANT;
 	     else
 	       h = SIG_APP_CONSTANT;
-	     
+
 	     ret = SLang_assign_to_ref (ref, SLANG_INT_TYPE, &h);
 	  }
 	if (ret == -1)
@@ -406,7 +405,7 @@ static int set_old_handler (Signal_Type *s, SLang_Ref_Type *ref, void (*old_hand
 
    if (old_handler != signal_handler)
      s->c_handler = old_handler;
-   
+
    return 0;
 }
 
@@ -423,7 +422,7 @@ static void signal_intrinsic (void)
 	  return;
      }
    else old_ref = NULL;
-   
+
    if (SLang_Num_Function_Args == 0)
      {
 	SLang_verror (SL_Internal_Error, "signal called with 0 args");
@@ -483,7 +482,7 @@ static void signal_intrinsic (void)
 	SLang_free_ref (old_ref);
 	return;
      }
-   
+
    if (-1 == pop_signal (&s))
      {
 	SLang_free_ref (old_ref);
@@ -519,7 +518,7 @@ static void alarm_intrinsic (void)
 	if (-1 == SLang_pop_ref (&ref))
 	  return;
      }
-   
+
    if (-1 == SLang_pop_uint (&secs))
      {
 	SLang_free_ref (ref);	       /* NULL ok */
@@ -536,7 +535,7 @@ static void alarm_intrinsic (void)
    secs = alarm (secs);
    if (ref != NULL)
      (void) SLang_assign_to_ref (ref, SLANG_UINT_TYPE, &secs);
-#endif	
+#endif
 }
 
 #ifdef SLANG_POSIX_SIGNALS
@@ -559,7 +558,7 @@ static int pop_signal_mask (sigset_t *maskp)
 	int sig = sigs[i];
 	if (NULL == find_signal (sig))
 	  continue;
-	
+
 	sigaddset (maskp, sig);
 	num_set++;
      }
@@ -568,7 +567,7 @@ static int pop_signal_mask (sigset_t *maskp)
    return 0;
 }
 #endif 				       /* SLANG_POSIX_SIGNALS */
-  
+
 static void sigsuspend_intrinsic (void)
 {
 #ifdef SLANG_POSIX_SIGNALS
@@ -584,7 +583,7 @@ static void sigsuspend_intrinsic (void)
 #endif
 	return;
      }
-   
+
 #ifndef SLANG_POSIX_SIGNALS
    SLang_set_error (SL_NotImplemented_Error);
 #else
@@ -626,14 +625,14 @@ static SLang_Array_Type *mask_to_array (sigset_t *mask)
 
    return at;
 }
-   
+
 static int assign_mask_to_ref (sigset_t *mask, SLang_Ref_Type *ref)
 {
    SLang_Array_Type *at = mask_to_array (mask);
 
    if (at == NULL)
      return -1;
-   
+
    if (-1 == SLang_assign_to_ref (ref, SLANG_ARRAY_TYPE, (VOID_STAR)&at))
      {
 	SLang_free_array (at);
@@ -660,22 +659,22 @@ static void sigprocmask_intrinsic (void)
 	SLang_free_ref (ref);
 	return;
      }
-   
+
    if (-1 == SLang_pop_int (&how))
      {
 	SLang_free_ref (ref);
 	return;
      }
-   
+
    if ((how != SIG_BLOCK) && (how != SIG_UNBLOCK) && (how != SIG_SETMASK))
      {
 	_pSLang_verror (SL_InvalidParm_Error, "sigprocmask: invalid operation");
 	SLang_free_ref (ref);
 	return;
      }
-   
+
    do_sigprocmask (how, &mask, &oldmask);
-   
+
    if (ref == NULL)
      return;
 
@@ -687,7 +686,7 @@ static void sigprocmask_intrinsic (void)
 
 #endif
 
-static SLang_IConstant_Type IConsts [] = 
+static SLang_IConstant_Type IConsts [] =
 {
 #ifdef SLANG_POSIX_SIGNALS
    MAKE_ICONSTANT("SIG_BLOCK", SIG_BLOCK),
@@ -724,7 +723,7 @@ int SLang_init_signal (void)
      {
 	if (-1 == SLns_add_iconstant (NULL, s->name, SLANG_INT_TYPE, s->sig))
 	  return -1;
-	
+
 	s++;
      }
 
@@ -745,5 +744,3 @@ int SLsig_forbid_signal (int sig)
 #endif
 }
 
-   
-   

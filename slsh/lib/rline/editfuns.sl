@@ -1,4 +1,3 @@
-
 define rline_beep ()
 {
    () = fputs ("\007", stdout);
@@ -99,7 +98,6 @@ define rline_skip_word ()
    variable line = rline_get_line (), p = rline_get_point ();
    rline_set_point (skip_word_chars (line, skip_non_word_chars(line, p)));
 }
-
 
 private variable Mark = NULL;
 private variable Paste_Buffer = "";

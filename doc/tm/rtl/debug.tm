@@ -7,7 +7,7 @@
  function callback handlers.  The value of this variable is local to
  the compilation unit, but is inherited by other units loaded by the
  current unit.
- 
+
  If the value of this variable is 1 when a function is defined, then
  when the function is executed, the callback handlers defined via
  \ifun{_set_bof_handler} and \ifun{_set_eof_handler} will be called.
@@ -109,7 +109,7 @@
  been evaluated, provided that function was defined
  with \ivar{_bofeof_info} set appropriately.  The callback function
  must be defined to take a single parameter representing the name of
- the function and must return nothing.  
+ the function and must return nothing.
 \example
 #v+
     private define bof_handler (fun)
@@ -152,7 +152,7 @@
  This function is used to set the function to be called at the end of
  execution of a \slang function, provided that function was compiled with
  \ivar{_bofeof_info} set accordingly.
- 
+
  The callback function will be passed no parameters and it must return
  nothing.
 \example
@@ -215,7 +215,7 @@
        4        Generate just one line of traceback
 #v-
   The default value of this variable is 4.
-\notes  
+\notes
   Running \slsh with the \exmp{-g} option causes this variable to be
   set to 1.
 \seealso{_boseos_info}

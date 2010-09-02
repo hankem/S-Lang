@@ -16,7 +16,7 @@ private define _slprof_usage ()
    variable fp = stderr;
    () = fprintf (fp, "Usage: %s [options] script args...\n", path_basename (__argv[0]));
    () = fprintf (fp, "Options:\n");
-   variable opts = 
+   variable opts =
      [
       " -c|--calibrate <N>         Calibrate using N repetitions [default:1000, 0=off]\n",
       " -f|--func <function>       Name of Function to call [default: slsh_main]\n",
@@ -71,13 +71,13 @@ private define _slprof_main ()
    if (cal_n < 0) cal_n = 0;
    if (func == "")
      _slprof_usage ();
-   
+
    if (i >= __argc)
      _slprof_usage ();
 
    variable main = strtok (func, " \t(;")[0];
    variable main_args = strtrim (substrbytes (func, 1+strlen(main), -1));
-   
+
    variable depth = _stkdepth();
    try
      {
@@ -94,7 +94,7 @@ private define _slprof_main ()
 
    if (not path_is_absolute (script))
      script = path_concat (getcwd (), script);
-   
+
    variable st = stat_file (script);
    if (st == NULL)
      {
@@ -125,7 +125,7 @@ private define _slprof_main ()
 #endif
 
    __set_argc_argv (__argv[[i:]]);
-	
+
    % Actual profiling starts here
 
    _slprof_calibrate (cal_n);

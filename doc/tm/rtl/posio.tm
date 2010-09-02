@@ -72,7 +72,7 @@
 \notes
    Not all file descriptors are capable of supporting the seek
    operation, e.g., a descriptor associated with a pipe.
-   
+
    By using \icon{SEEK_END} with a positive value of the \exmp{ofs}
    parameter, it is possible to position the file pointer beyond the
    current size of the file.
@@ -153,7 +153,7 @@
   the open file descriptor and no data is available for reading then
   the function will return \-1 and set \ivar{errno} to \icon{EAGAIN}.
 \seealso{fread, open, close, write}
-\done  
+\done
 
 \function{write}
 \synopsis{Write to an open file descriptor}

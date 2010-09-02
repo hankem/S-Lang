@@ -24,7 +24,6 @@
   \arg{\option{-|\replaceable{script-file args...}}}
 }
 
-
 \refsect1{DESCRIPTION}
   \p
   \slsh is a simple program for interpreting \slang scripts.  It
@@ -81,7 +80,7 @@
 \refsect1-end
 
 \refsect1{INITIALIZATION}
-\p 
+\p
    Upon startup, the program will try to load \filename{slsh.rc} as
    follows. If either \literal{SLSH_CONF_DIR} or
    \literal{SLSH_LIB_DIR} environment variables exist, then \slsh will
@@ -135,7 +134,7 @@
 \pp
   If an uncaught exception occurs during execution of a command, the
   error message will be shown and the user will be prompted for more
-  input. 
+  input.
 \pp
   Any objects left on the stack after a command will be printed and
   the stack cleared.  This makes interactive mode useful as a
@@ -221,10 +220,10 @@
        .
     slsh> help list_append
     list_append
-    
+
      SYNOPSIS
        Append an object to a list
-    
+
      USAGE
        list_append (List_Type, object, Int_Type nth)
        .
@@ -290,7 +289,7 @@
 \refsect1-end
 
 \refsect1{MISCELLANEOUS SCRIPTS}
-\p  
+\p
   Several useful example scripts are located in
   \filename{$prefix/share/slsh/scripts/}, where $prefix represents the
   \slsh installation prefix (\filename{/usr},

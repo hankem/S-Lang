@@ -15,7 +15,7 @@ signal (SIGPIPE, SIG_IGN);
 
 private define parse_redir (redir)
 {
-   variable redir_info = 
+   variable redir_info =
      [{"^>> ?\(.*\)"R, O_WRONLY|O_CREAT|O_APPEND},
       {"^> ?\(.*\)"R, O_WRONLY|O_TRUNC|O_CREAT},
       {"^<> ?\(.*\)"R, O_RDWR|O_CREAT},
@@ -36,7 +36,6 @@ private define parse_redir (redir)
    return 0, redir;
 }
 
-
 private variable S_RWUGO = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
 
 % Look for structure fields of the form fpN and open the corresponding
@@ -46,7 +45,7 @@ private define open_redirect_files (q)
    variable redir_fds = FD_Type[0], redir_ifds = Int_Type[0];
    if (q == NULL)
      return redir_fds, redir_ifds;
-   
+
    foreach (get_struct_field_names (q))
      {
 	variable name = ();
@@ -67,9 +66,9 @@ private define open_redirect_files (q)
 	     (flags, file) = parse_redir (value);
 	     if (file == "")
 	       throw InvalidParmError, "Invalid redirection: $value";
-	
+
 	     if (flags == 0) flags = defflags;
-		
+
 	     if (flags & O_CREAT)
 	       fd = open (file, flags, S_RWUGO);
 	     else
@@ -126,13 +125,12 @@ private define parse_dup_qualifiers (q)
 	  fd = @FD_Type(value);
 	if (fd == NULL)
 	  throw OSError, "fd$ifd: "$ + errno_string();
-	
+
 	open_fds = [open_fds, fd];
 	wanted_ifds = [wanted_ifds, ifd];
      }
    return open_fds, wanted_ifds;
 }
-
 
 % Here, open_fds is an array of all (known) open FD_Type objects, and open_ifds
 % is the corresponding array of integer descriptors.  Starting at the
@@ -145,7 +143,7 @@ private define dup2_open_fds (wanted_ifds, open_ifds, open_fds, idx_offset)
    _for i (0, length(wanted_ifds)-1, 1)
      {
 	ifd = wanted_ifds[i];
-	     
+
 	i += idx_offset;
 	variable j = wherefirst (open_ifds == ifd);
 	if (j != NULL)
@@ -186,7 +184,7 @@ private define exec_child (argv, child_fds, required_child_ifds)
 
 	variable ofs = length (child_open_ifds);
 	child_fds = [child_fds, redir_fds];
-	child_open_ifds = [child_open_ifds, 
+	child_open_ifds = [child_open_ifds,
 			   array_map (Int_Type, &_fileno, redir_fds)];
 	redir_fds = NULL;	       % decrement ref-counts
 	dup2_open_fds (wanted_redir_ifds, child_open_ifds, child_fds, ofs);
@@ -208,7 +206,7 @@ private define exec_child (argv, child_fds, required_child_ifds)
 	     dup2_open_fds (ifdNs, child_open_ifds, child_fds, length(child_fds)-num_aliased);
 	  }
      }
-   
+
    variable hook = qualifier ("pre_exec_hook");
    if (hook != NULL)
      {
@@ -242,7 +240,7 @@ private define wait_method ()
 
    if (s.pid == -1)
      return NULL;
-   
+
    return waitpid (s.pid, options);
 }
 

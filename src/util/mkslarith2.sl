@@ -1,6 +1,6 @@
 #!/usr/bin/env slsh
 
-static variable CTypes = 
+static variable CTypes =
   ["char", "unsigned char", "short", "unsigned short", "int", "unsigned int",
    "long", "unsigned long", "long long", "unsigned long long",
    "float", "double", "long double"];
@@ -14,21 +14,21 @@ static variable SLTypes =
   ["CHAR", "UCHAR", "SHORT", "USHORT", "INT", "UINT",
    "LONG", "ULONG", "LLONG", "ULLONG",
    "FLOAT", "DOUBLE", "LDOUBLE"];
-static variable FNames = 
+static variable FNames =
   ["char", "uchar", "short", "ushort", "int", "uint",
    "long", "ulong", "llong", "ullong",
    "float", "double", "ldouble"];
 static variable Compile_If =
   ["", "", "SHORT_IS_NOT_INT", "SHORT_IS_NOT_INT", "", "",
-   "LONG_IS_NOT_INT", "LONG_IS_NOT_INT", 
+   "LONG_IS_NOT_INT", "LONG_IS_NOT_INT",
    "defined(HAVE_LONG_LONG)", "defined(HAVE_LONG_LONG)",
    "SLANG_HAS_FLOAT", "SLANG_HAS_FLOAT", "defined(HAVE_LONG_DOUBLE)"];
 static variable Compile_If =
-  ["", "", "", "", "", "", "", "", 
+  ["", "", "", "", "", "", "", "",
    "defined(HAVE_LONG_LONG)", "defined(HAVE_LONG_LONG)",
    "SLANG_HAS_FLOAT", "SLANG_HAS_FLOAT", "defined(HAVE_LONG_DOUBLE)"];
 
-static variable Else_Alias = 
+static variable Else_Alias =
   ["", "", "int", "uint", "", "", "int", "uint", "", "", "", "", ""];
 
 define mkarith_copy_funs (fp)
@@ -47,7 +47,7 @@ define mkarith_copy_funs (fp)
 	() = fprintf (fp, "/* ------------ %s ---------- */\n", ctype);
 	if (compile_if != "")
 	  () = fprintf (fp, "#if %s\n", compile_if);
-	
+
 	_for j (0, ntypes-1, 1)
 	  {
 	     variable ctype1 = CTypes[j];
@@ -59,7 +59,6 @@ define mkarith_copy_funs (fp)
 	     variable prec1 = Precedence[j];
 	     variable s_fname, s_fname1;
 
-	     
 	     if (compile_if1 != "")
 	       () = fprintf (fp, "#if %s\n", compile_if1);
 
@@ -101,12 +100,11 @@ define mkarith_copy_funs (fp)
 	     if (compile_if1 != "")
 	       () = fprintf (fp, "#endif /* %s */\n", compile_if1);
 	  }
-	
+
 	() = fprintf (fp, "#if SLANG_HAS_FLOAT\n");
 	() = fprintf (fp, "TO_DOUBLE_FUN(%s_to_one_double,%s)\n",
 		      fname, ctype);
 	() = fprintf (fp, "#endif\n");
-	
 
 	if (compile_if != "")
 	  () = fprintf (fp, "#endif /* %s */\n", compile_if);
@@ -114,14 +112,14 @@ define mkarith_copy_funs (fp)
 	() = fprintf (fp, "\n\n");
      }
 }
-	
+
 define mk_to_double_table (fp)
 {
    variable ntypes = length (CTypes);
 
    () = fprintf (fp, "#if SLANG_HAS_FLOAT\n");
    () = fprintf (fp, "static To_Double_Fun_Table_Type To_Double_Fun_Table [MAX_ARITHMETIC_TYPES] =\n{\n");
-   
+
    variable i;
    _for i (0, ntypes-1, 1)
      {
@@ -145,7 +143,7 @@ static define mk_binary_table (fp)
 {
    variable ntypes = length (CTypes);
    variable i, j;
-   
+
    () = fprintf (fp, "static Binary_Matrix_Type Binary_Matrix [MAX_ARITHMETIC_TYPES][MAX_ARITHMETIC_TYPES] =\n{\n");
 
    _for i (0, ntypes-1, 1)
@@ -157,7 +155,7 @@ static define mk_binary_table (fp)
 
 	if (compile_if != "")
 	  () = fprintf (fp, "#if %s\n", compile_if);
-	
+
 	() = fprintf (fp, "   {\n");
 
 	_for j (0, ntypes-1, 1)
@@ -173,16 +171,16 @@ static define mk_binary_table (fp)
 
 	     if (compile_if1 == "")
 	       continue;
-	     
+
 	     () = fprintf (fp, "#else\n");
 	     () = fprintf (fp, "     {NULL, NULL},\n");
 	     () = fprintf (fp, "#endif\n");
 	  }
-	
+
 	() = fprintf (fp, "   },\n");
 	if (compile_if == "")
 	  continue;
-	
+
 	() = fprintf (fp, "#else\n");
 
 	() = fprintf (fp, "   {\n");

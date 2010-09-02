@@ -20,7 +20,7 @@ if (__argv[1] == "--pid")
      usage ();
    if (1 != sscanf (__argv[2], "%d", &pid))
      usage ();
-   
+
    public variable __SLDB_CLIENT__ = 1;
    if (-1 == sldbsock_attach (pid))
      exit (1);

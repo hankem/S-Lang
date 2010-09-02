@@ -32,7 +32,7 @@ define slsh_main ()
    exec("asis",
 	"abc def* e+ g?ddd[a-rvvv] (vv){3,7}hv\\dvv(?:aczui ss)\\W\\w$",
 	"abc def* e+ g?ddd[a-rvvv] (vv){3,7}hv\\dvv(?:aczui ss)\\W\\w$");
-   
+
    message ("Supported syntaxes:");
    array_map (Void_Type, &message, onig_get_syntaxes());
    message ("Supported encodings:");

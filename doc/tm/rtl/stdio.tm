@@ -50,10 +50,10 @@
      fd = 0;     % This will cause the FD_Type descriptor to go out of
                  % scope.  Any I/O on fp will now fail.
 #v-
-   
+
    Calling the \ifun{fclose} function on the \dtype{File_Type} object
    will cause the underlying descriptor to close.
-   
+
    Any stdio \dtype{File_Type} object created by the \ifun{fdopen}
    function will remain associated with the \dtype{FD_Type} descriptor,
    unless the object is explicitly removed via \ifun{fclose}.  This
@@ -61,7 +61,7 @@
 #v+
       fd = open (...);
       loop (50)
-        { 
+        {
            fp = fdopen (fd, ...);
               .
               .
@@ -179,11 +179,11 @@
        fp = fopen (file, "r");
        if (fp == NULL)
          return -1;
-       
+
        lines = fgetslines (fp);
        if (lines == NULL)
          return -1;
-       
+
        return length (lines);
     }
 #v-
@@ -222,7 +222,7 @@
     define append_string_to_file (str, file)
     {
        variable fp = fopen (file, "a");
-       if (fp == NULL) 
+       if (fp == NULL)
          throw OpenError, "$file could not be opened"$;
        () = fputs (str, fp);
        () = fclose (fp);
@@ -245,12 +245,12 @@
 \description
   \ifun{fprintf} formats the objects specified by the variable argument
   list according to the format \exmp{fmt} and write the result to the
-  open file pointer \exmp{fp}.  
-  
+  open file pointer \exmp{fp}.
+
   The format string obeys the same syntax and semantics as the
   \ifun{sprintf} format string.  See the description of the
   \ifun{sprintf} function for more information.
-  
+
   \ifun{fprintf} returns the number of bytes written to the file,
   or -1 upon error.
 \seealso{fputs, printf, fwrite, message}
@@ -271,7 +271,7 @@
     {
        variable fp;
        fp = fopen (file, "a");
-       if (fp == NULL) 
+       if (fp == NULL)
          throw OpenError, "Unable to open $file"$;
        if ((-1 == fputs (s, fp))
            or (-1 == fclose (fp)))
@@ -298,7 +298,7 @@
 \example
 #v+
     if (length (lines) != fputslines (lines, fp))
-      throw WriteError;   
+      throw WriteError;
 #v-
 \seealso{fputs, fgetslines, fopen}
 \done
@@ -321,12 +321,12 @@
      define read_50_ints_from_a_file (file)
      {
         variable fp, n, buf;
-        
+
         fp = fopen (file, "rb");
-        if (fp == NULL) 
+        if (fp == NULL)
           throw OpenError;
         n = fread (&buf, Int_Type, 50, fp);
-        if (n == -1) 
+        if (n == -1)
           throw ReadError, "fread failed";
         () = fclose (fp);
         return buf;
@@ -335,10 +335,10 @@
 \notes
   Use the \ifun{pack} and \ifun{unpack} functions to read data with a
   specific byte-ordering.
-  
+
   The \ifun{fread_bytes} function may be used to read a specified number of
   bytes in the form of a binary string (\exmp{BString_Type}).
-  
+
   If an attempt is made to read at the end of a file, the function
   will return -1.  To distinguish this condition from a system error,
   the \ifun{feof} function should be used.  This distinction is
@@ -373,7 +373,7 @@
   constants \icon{SEEK_SET}, \icon{SEEK_CUR}, or \icon{SEEK_END}, the
   offset is relative to the start of the file, the current position
   indicator, or end-of-file, respectively.
-  
+
   The function returns 0 upon success, or -1 upon failure and sets
   \ivar{errno} accordingly.
 \example
@@ -418,7 +418,7 @@
   Here is how to write the array one element at a time:
 #v+
      variable ai, a = [1:50];
-     
+
      foreach ai (a)
        {
           if (1 != fwrite(ai, fp))
@@ -455,7 +455,7 @@
   the function failed and \NULL will be returned.
 \notes
   This function is not available on all systems.
-  
+
  The \module{process} module's \ifun{new_process} function provides a
  much more secure and powerful interface to process I/O.
 \seealso{new_process, pclose, fopen}

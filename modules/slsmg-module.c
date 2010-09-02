@@ -17,14 +17,14 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 #include <stdio.h>
 #include <slang.h>
 
 SLANG_MODULE(slsmg);
 
-/* If this is +1, the then it is ok to call the SLsmg routines.  If it is 
+/* If this is +1, the then it is ok to call the SLsmg routines.  If it is
  * 0, then only SLsmg_init_smg may be called.  If it is -1, then SLsmg is
  * suspended and one must call SLsmg_resume_smg.
  */
@@ -36,11 +36,11 @@ static void smg_write_to_status_line (char *s)
 {
    if (Smg_Initialized <= 0)
      return;
-   
+
    (void) SLtt_write_to_status_line (s, 0);
 }
 #endif
-   
+
 static void smg_suspend_smg (void)
 {
    if (Smg_Initialized <= 0)
@@ -113,16 +113,16 @@ static void smg_write_nstring (char *s, int *len)
    if ((Smg_Initialized <= 0)
        || (*len < 0))
      return;
-   
+
    SLsmg_write_nstring (s, (unsigned int) *len);
 }
 
-static void smg_write_wrapped_string (char *s, int *r, int *c, int *dr, int *dc, 
+static void smg_write_wrapped_string (char *s, int *r, int *c, int *dr, int *dc,
 				      int *fill)
 {
    if (Smg_Initialized <= 0)
      return;
-   
+
    SLsmg_write_wrapped_string ((SLuchar_Type *)s, *r, *c, *dr, *dc, *fill);
 }
 
@@ -136,14 +136,14 @@ static int smg_char_at (void)
 
    if (c.nchars == 0)
      return 0;
-   
+
    return (int) c.wchars[0];
 }
 
 static void smg_set_screen_start (int *rp, int *cp)
 {
    int r, c;
-   
+
    if (Smg_Initialized <= 0) return;
    r = *rp;
    c = *cp;
@@ -154,7 +154,7 @@ static void smg_draw_hline (int *dn)
 {
    if (Smg_Initialized <= 0)
      return;
-   
+
    SLsmg_draw_hline (*dn);
 }
 
@@ -162,7 +162,7 @@ static void smg_draw_vline (int *dn)
 {
    if (Smg_Initialized <= 0)
      return;
-   
+
    SLsmg_draw_vline (*dn);
 }
 
@@ -201,7 +201,6 @@ static void smg_set_color_in_region (int *color, int *r, int *c, int *dr, int *d
    if (Smg_Initialized <= 0) return;
    SLsmg_set_color_in_region (*color, *r, *c, *dr, *dc);
 }
-
 
 static void smg_cls (void)
 {

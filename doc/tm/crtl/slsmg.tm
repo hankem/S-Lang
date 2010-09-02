@@ -1,4 +1,3 @@
-
 \function{SLsmg_fill_region}
 \synopsis{Fill a rectangular region with a character}
 \usage{void SLsmg_fill_region (r, c, nr, nc, ch)}
@@ -10,15 +9,13 @@
     unsigned char ch
 #v-
 \description
-  The \var{SLsmg_fill_region} function may be used to a 
+  The \var{SLsmg_fill_region} function may be used to a
   rectangular region with the character \var{ch} in the current color.
   The rectangle's upper left corner is at row \var{r} and column
   \var{c}, and spans \var{nr} rows and \var{nc} columns.  The position
   of the virtual cursor will be left at (\var{r}, \var{c}).
 \seealso{SLsmg_write_char, SLsmg_set_color}
 \done
-
-
 
 \function{SLsmg_set_char_set}
 \synopsis{Turn on or off line drawing characters}
@@ -36,7 +33,6 @@
 \seealso{SLsmg_write_char, SLtt_get_terminfo}
 \done
 
-
 \variable{int SLsmg_Scroll_Hash_Border;}
 \synopsis{Set the size of the border for the scroll hash}
 \usage{int SLsmg_Scroll_Hash_Border = 0;}
@@ -48,7 +44,6 @@
 \seealso{SLsmg_refresh}
 \done
 
-
 \function{SLsmg_suspend_smg}
 \synopsis{Suspend screen management}
 \usage{int SLsmg_suspend_smg (void)}
@@ -56,7 +51,7 @@
   \var{SLsmg_suspend_smg} can be used to suspend the state of the
   screen management facility during suspension of the program.  Use of
   this function will reset the display back to its default state.  The
-  funtion \var{SLsmg_resume_smg} should be called after suspension.  
+  funtion \var{SLsmg_resume_smg} should be called after suspension.
 
   It returns zero upon success, or \-1 upon error.
 
@@ -64,7 +59,6 @@
   state of the display prior to calling \var{SLsmg_suspend_smg} is saved.
 \seealso{SLsmg_resume_smg, SLsmg_reset_smg}
 \done
-
 
 \function{SLsmg_resume_smg}
 \synopsis{Resume screen management}
@@ -77,7 +71,6 @@
 \seealso{SLsmg_suspend_smg}
 \done
 
-
 \function{SLsmg_erase_eol}
 \synopsis{Erase to the end of the row}
 \usage{void SLsmg_erase_eol (void);}
@@ -89,7 +82,6 @@
 \seealso{SLsmg_gotorc, SLsmg_erase_eos, SLsmg_fill_region}
 \done
 
-
 \function{SLsmg_gotorc}
 \synopsis{Move the virtual cursor}
 \usage{void SLsmg_gotorc (int r, int c)}
@@ -99,7 +91,6 @@
   specified by \exmp{r = 0} and \exmp{c = 0}.
 \seealso{SLsmg_refresh}
 \done
-
 
 \function{SLsmg_erase_eos}
 \synopsis{Erase to the end of the screen}
@@ -112,15 +103,13 @@
 \seealso{SLsmg_erase_eol}
 \done
 
-
 \function{SLsmg_reverse_video}
 \synopsis{Set the current color to 1}
 \usage{void SLsmg_reverse_video (void);}
 \description
-  This function is nothing more than \exmp{SLsmg_set_color(1)}.  
+  This function is nothing more than \exmp{SLsmg_set_color(1)}.
 \seealso{SLsmg_set_color}
 \done
-
 
 \function{SLsmg_set_color (int)}
 \synopsis{Set the current color}
@@ -159,7 +148,6 @@
 \seealso{SLtt_set_color, SLtt_set_color_object}
 \done
 
-
 \function{SLsmg_normal_video}
 \synopsis{Set the current color to 0}
 \usage{void SLsmg_normal_video (void);}
@@ -167,7 +155,6 @@
   \var{SLsmg_normal_video} sets the current color descriptor to \var{0}.
 \seealso{SLsmg_set_color}
 \done
-
 
 \function{SLsmg_printf}
 \synopsis{Format a string on the virtual display}
@@ -179,7 +166,6 @@
 \seealso{SLsmg_write_string, SLsmg_vprintf}
 \done
 
-
 \function{SLsmg_vprintf}
 \synopsis{Format a string on the virtual display}
 \usage{void SLsmg_vprintf (char *fmt, va_list ap)}
@@ -190,7 +176,6 @@
 \seealso{SLsmg_write_string, SLsmg_printf}
 \done
 
-
 \function{SLsmg_write_string}
 \synopsis{Write a character string on the display }
 \usage{void SLsmg_write_string (char *s)}
@@ -200,7 +185,6 @@
   to the end of the string.
 \seealso{SLsmg_printf, SLsmg_write_nstring}
 \done
-
 
 \function{SLsmg_write_nstring}
 \synopsis{Write the first n characters of a string on the display}
@@ -214,7 +198,6 @@
 \seealso{SLsmg_write_string, SLsmg_write_nchars}
 \done
 
-
 \function{SLsmg_write_char}
 \synopsis{Write a character to the virtual display}
 \usage{void SLsmg_write_char (char ch);}
@@ -224,7 +207,6 @@
 \seealso{SLsmg_write_nchars, SLsmg_write_string}
 \done
 
-
 \function{SLsmg_write_nchars}
 \synopsis{Write n characters to the virtual display}
 \usage{void SLsmg_write_nchars (char *s, unsigned int n);}
@@ -232,14 +214,13 @@
   \var{SLsmg_write_nchars} writes at most \var{n} characters from the
   string \var{s} to the display.  If the length of \var{s} is less
   than \var{n}, the whole length of the string will get written.
-  
+
   This function differs from \var{SLsmg_write_nstring} in that
   \var{SLsmg_write_nstring} will pad the string to write exactly
   \var{n} characters.  \var{SLsmg_write_nchars} does not perform any
   padding.
 \seealso{SLsmg_write_nchars, SLsmg_write_nstring}
 \done
-
 
 \function{SLsmg_write_wrapped_string}
 \synopsis{Write a string to the display with wrapping}
@@ -264,7 +245,6 @@
 \seealso{SLsmg_write_string}
 \done
 
-
 \function{SLsmg_cls}
 \synopsis{Clear the virtual display}
 \usage{void SLsmg_cls (void)}
@@ -282,7 +262,6 @@
 \seealso{SLsmg_refresh, SLsmg_erase_eos}
 \done
 
-
 \function{SLsmg_refresh}
 \synopsis{Update physical screen}
 \usage{void SLsmg_refresh (void)}
@@ -291,7 +270,6 @@
   look like the virtual display.
 \seealso{SLsmg_suspend_smg, SLsmg_init_smg, SLsmg_reset_smg}
 \done
-
 
 \function{SLsmg_touch_lines}
 \synopsis{Mark lines on the virtual display for redisplay}
@@ -318,15 +296,14 @@
   terminal's physical display in the proper state.  It is up to the
   caller to make sure that the \var{SLtt} routines are initialized via
   \var{SLtt_get_terminfo} before calling \var{SLsmg_init_smg}.
-  
+
   This function should also be called any time the size of the
   physical display has changed so that it can reallocate a new virtual
   display to match the physical display.
-  
+
   It returns zero upon success, or \-1 upon failure.
 \seealso{SLsmg_reset_smg}
 \done
-
 
 \function{SLsmg_reset_smg}
 \synopsis{Reset the \var{SLsmg} routines}
@@ -339,7 +316,6 @@
 \seealso{SLsmg_init_smg}
 \done
 
-
 \function{SLsmg_char_at}
 \synopsis{Get the character at the current position on the virtual display}
 \usage{unsigned short SLsmg_char_at(void)}
@@ -348,7 +324,6 @@
   at the current position on the virtual display.
 \seealso{SLsmg_read_raw, SLsmg_write_char}
 \done
-
 
 \function{SLsmg_set_screen_start}
 \synopsis{Set the origin of the virtual display}
@@ -359,12 +334,11 @@
   is \var{NULL}, then the corresponding value will be set to \var{0}.
   Otherwise, the location specified by the pointers will be updated to
   reflect the old origin.
-  
+
   See \tt{slang/demo/pager.c} for how this function may be used to
   scroll horizontally.
 \seealso{SLsmg_init_smg}
 \done
-
 
 \function{SLsmg_draw_hline}
 \synopsis{Draw a horizontal line}
@@ -376,7 +350,6 @@
 \seealso{SLsmg_draw_vline}
 \done
 
-
 \function{SLsmg_draw_vline}
 \synopsis{Draw a vertical line}
 \usage{void SLsmg_draw_vline (unsigned int len);}
@@ -387,7 +360,6 @@
 \seealso{??}
 \done
 
-
 \function{SLsmg_draw_object}
 \synopsis{Draw an object from the alternate character set}
 \usage{void SLsmg_draw_object (int r, int c, unsigned char obj)}
@@ -397,9 +369,9 @@
   object is really a character from the alternate character set and
   may be specified using one of the following constants:
 #v+
-    SLSMG_HLINE_CHAR         Horizontal line 
-    SLSMG_VLINE_CHAR         Vertical line 
-    SLSMG_ULCORN_CHAR        Upper left corner 
+    SLSMG_HLINE_CHAR         Horizontal line
+    SLSMG_VLINE_CHAR         Vertical line
+    SLSMG_ULCORN_CHAR        Upper left corner
     SLSMG_URCORN_CHAR        Upper right corner
     SLSMG_LLCORN_CHAR        Lower left corner
     SLSMG_LRCORN_CHAR        Lower right corner
@@ -412,7 +384,6 @@
 #v-
 \seealso{SLsmg_draw_vline, SLsmg_draw_hline, SLsmg_draw_box}
 \done
-
 
 \function{SLsmg_draw_box}
 \synopsis{Draw a box on the virtual display}
@@ -443,7 +414,6 @@
 \seealso{SLsmg_draw_box, SLsmg_set_color}
 \done
 
-
 \function{SLsmg_get_column}
 \synopsis{Get the column of the virtual cursor}
 \usage{int SLsmg_get_column(void);}
@@ -452,7 +422,6 @@
   the virtual cursor on the virtual display.
 \seealso{SLsmg_get_row, SLsmg_gotorc}
 \done
-
 
 \function{SLsmg_get_row}
 \synopsis{Get the row of the virtual cursor}
@@ -463,7 +432,6 @@
 \seealso{SLsmg_get_column, SLsmg_gotorc}
 \done
 
-
 \function{SLsmg_forward}
 \synopsis{Move the virtual cursor forward n columns}
 \usage{void SLsmg_forward (int n);}
@@ -472,7 +440,6 @@
   \var{n} columns.
 \seealso{SLsmg_gotorc}
 \done
-
 
 \function{SLsmg_write_color_chars}
 \synopsis{Write characters with color descriptors to virtual display}
@@ -485,7 +452,6 @@
   form the character and the next eight bits form the color.
 \seealso{SLsmg_char_at, SLsmg_write_raw}
 \done
-
 
 \function{SLsmg_read_raw}
 \synopsis{Read characters from the virtual display}
@@ -502,7 +468,6 @@
   region of the virtual display to another region.
 \seealso{SLsmg_char_at, SLsmg_write_raw}
 \done
-
 
 \function{SLsmg_write_raw}
 \synopsis{Write characters directly to the virtual display}

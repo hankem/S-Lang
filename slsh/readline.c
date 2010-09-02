@@ -58,7 +58,6 @@ USA.
 # include <readline/history.h>
 #endif
 
-
 static int Use_Readline;
 static int Slsh_Quit = 0;
 static SLang_Load_Type *Readline_Load_Object;
@@ -113,7 +112,6 @@ static void sig_sigtstp (int sig)
    SLsig_unblock_signals ();
 }
 # endif
-
 
 #ifdef SIGWINCH
 static int Want_Window_Size_Change = 0;
@@ -272,7 +270,7 @@ static char *read_input_line (SLang_RLine_Info_Type *rline, char *prompt, int no
 	       }
 #endif
 	  }
-	
+
 	line = buf;
 	while (NULL == fgets (buf, sizeof (buf), stdin))
 	  {
@@ -338,14 +336,13 @@ static char *read_input_line (SLang_RLine_Info_Type *rline, char *prompt, int no
    return line;
 }
 
-
 static int save_input_line (SLang_RLine_Info_Type *rline, char *line)
 {
    char *p;
 
    if (line == NULL)
      return 0;
-   
+
    p = line;
    while ((*p == ' ') || (*p == '\t') || (*p == '\n'))
      p++;
@@ -374,9 +371,9 @@ static void set_prompt_hook (void)
    else if (NULL == (h = SLang_pop_function ()))
      return;
 
-   if (Prompt_Hook != NULL) 
+   if (Prompt_Hook != NULL)
      SLang_free_function (Prompt_Hook);
-   
+
    Prompt_Hook = h;
 }
 
@@ -417,7 +414,7 @@ static char *get_input_line (SLang_Load_Type *x)
    else
      prompt = "       ";
 
-   if (parse_level == 0) 
+   if (parse_level == 0)
      {
 	if (-1 == SLang_run_hooks ("slsh_interactive_before_hook", 0))
 	  {
@@ -431,7 +428,7 @@ static char *get_input_line (SLang_Load_Type *x)
    if (free_prompt)
      SLang_free_slstring (prompt);
 
-   if ((line == NULL) 
+   if ((line == NULL)
        && (parse_level == 0)
        && (SLang_get_error() == 0))
      {
@@ -448,7 +445,7 @@ static char *get_input_line (SLang_Load_Type *x)
    (void) SLang_run_hooks ("slsh_interactive_after_hook", 1, line);
 
    (void) save_input_line (Rline_Info, line);
-   
+
    return line;
 }
 
@@ -494,7 +491,7 @@ static char *read_using_readline (SLang_Load_Type *x)
 static void enable_keyboard_interrupt (void)
 {
    static int is_enabled = 0;
-   
+
    if (is_enabled == 0)
      {
 	(void) SLang_set_abort_signal (NULL);
@@ -508,7 +505,7 @@ static void close_interactive (void)
 
    if (Readline_Load_Object == NULL)
      return;
-     
+
    SLdeallocate_load_type (Readline_Load_Object);
    Readline_Load_Object = NULL;
 #if !SYSTEM_SUPPORTS_SIGNALS
@@ -544,11 +541,10 @@ static int open_interactive (void)
    return 0;
 }
 
-
 static int init_readline (char *appname)
 {
    static int inited = 0;
-   
+
    if (inited)
      return 0;
 
@@ -608,7 +604,6 @@ int slsh_interactive (void)
    return 0;
 }
 
-
 static SLang_RLine_Info_Type *Intrinsic_Rline_Info;
 #if USE_SLANG_READLINE
 static void close_intrinsic_readline (void)
@@ -620,7 +615,7 @@ static void close_intrinsic_readline (void)
      }
 }
 #endif
-	
+
 static int readline_intrinsic_internal (SLang_RLine_Info_Type *rli, char *prompt, int noecho)
 {
    char *line;
@@ -701,7 +696,7 @@ static void new_slrline_intrinsic (char *name)
 
    if (NULL == (rli = SLrline_open2 (name, SLtt_Screen_Cols, SL_RLINE_BLINK_MATCH)))
      return;
-   
+
    if (NULL == (mmt = SLang_create_mmt (Rline_Type_Id, (VOID_STAR) rli)))
      {
 	SLrline_close (rli);
@@ -732,7 +727,7 @@ static void destroy_rline (SLtype type, VOID_STAR f)
 {
    SLang_RLine_Info_Type *rli;
    (void) type;
-   
+
    rli = (SLang_RLine_Info_Type *) f;
    if (rli != NULL)
      SLrline_close (rli);
@@ -762,7 +757,6 @@ static int register_rline_type (void)
    return 0;
 }
 
-
 int slsh_init_readline_intrinsics ()
 {
    if (-1 == register_rline_type ())
@@ -770,7 +764,7 @@ int slsh_init_readline_intrinsics ()
 
    if (-1 == SLadd_intrin_fun_table (Intrinsics, NULL))
      return -1;
-   
+
    return 0;
 }
 

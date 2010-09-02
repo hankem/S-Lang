@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -28,7 +28,7 @@ USA.
 
 /* A list is a heterogeneous collection of objects.  The list container
  * object here supports the following operations:
- * 
+ *
  *    append (list, a) ==> list = {list, a}.
  *    prepend (list, a) ==> list = {a, list}.
  *    extract (list, n) ==> list[n]  (n = 0, ...)
@@ -58,7 +58,7 @@ struct _pSLang_List_Type
    SLindex_Type length;
    Chunk_Type *first;
    Chunk_Type *last;
-   
+
    Chunk_Type *recent;		       /* most recent chunk accessed */
    SLindex_Type recent_num;	       /* num elements before the recent chunk */
 };
@@ -70,7 +70,7 @@ static void delete_chunk (Chunk_Type *c)
 
    if (c == NULL)
      return;
-   
+
    n = c->num_elements;
    objs = c->elements;
    for (i = 0; i < n; i++)
@@ -82,7 +82,7 @@ static void delete_chunk (Chunk_Type *c)
 static Chunk_Type *new_chunk (void)
 {
    Chunk_Type *c;
-   
+
    c = (Chunk_Type *) SLcalloc (1, sizeof (Chunk_Type));
    if (c == NULL)
      return c;
@@ -109,14 +109,13 @@ static void delete_chunk_chain (Chunk_Type *c)
 
 static void delete_list (SLang_List_Type *list)
 {
-   if (list == NULL) 
+   if (list == NULL)
      return;
-   
+
    delete_chunk_chain (list->first);
    SLfree ((char *) list);
 }
 
-   
 static void list_destroy (SLtype type, VOID_STAR ptr)
 {
    (void) type;
@@ -165,7 +164,7 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, SLindex_Type 
    length = list->length;
    if (nth < 0)
      nth += length;
-   
+
    if ((nth < 0) || (nth >= length))
      {
 	_pSLang_verror (SL_Index_Error, "List Index out of range");
@@ -174,7 +173,7 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, SLindex_Type 
 
    n = 0;
    first = list->first;
-   last = list->last;   
+   last = list->last;
    dir = 1;
 
    if (list->recent != NULL)
@@ -187,7 +186,7 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, SLindex_Type 
 		  dir = -1;
 		  n = mid;
 		  last = list->recent->prev;
-		  /* Note: last cannot be NULL.  The only way for it to be NULL 
+		  /* Note: last cannot be NULL.  The only way for it to be NULL
 		   * is for list->recent == list_first, which would mean that
 		   * mid==0.  But the condition here is that nth < mid, and
 		   * nth >= 0
@@ -258,7 +257,6 @@ static int pop_list (SLang_MMT_Type **mmtp, SLang_List_Type **list)
    return 0;
 }
 
-
 /* FIXME: This is currently used only by list_dereference and breaks on an
  * empty list.  For this reason, it would probably fail in other contexts.
  */
@@ -281,7 +279,7 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a
 	indx_a = indx_b;
 	indx_b = tmp;
      }
-   
+
    if ((indx_b >= length) || (indx_a < 0))
      {
 	_pSLang_verror (SL_Index_Error, "Indices are out of range for list object");
@@ -380,7 +378,7 @@ static void list_delete_elem (SLang_List_Type *list, SLindex_Type *indxp)
    src_max = src + sizeof(SLang_Object_Type)*((c->elements+c->num_elements)-elem);
    while (src < src_max)
      *dest++ = *src++;
-   
+
    if ((list->recent != NULL) && (list->recent_num > indx))
      list->recent_num--;
 }
@@ -388,10 +386,10 @@ static void list_delete_elem (SLang_List_Type *list, SLindex_Type *indxp)
 static void slide_right (Chunk_Type *c, int n)
 {
    SLang_Object_Type *e2, *e1;
-   
+
    e2 = c->elements + c->num_elements;
    e1 = c->elements + n;
-   
+
    while (e2 != e1)
      {
 	*e2 = *(e2-1);
@@ -494,7 +492,7 @@ the_return:
 
    if (list->recent != NULL)
      {
-	if ((list->recent_num > indx) 
+	if ((list->recent_num > indx)
 	    || ((list->recent_num == indx) && equality_ok))
 	  list->recent_num++;
      }
@@ -507,7 +505,7 @@ the_return:
 /* Upon sucess, obj is stored in list and calling routine should not free it.
  * Upon failure, calling routine should free obj.
  */
-   
+
 static int pop_insert_append_args (SLang_MMT_Type **mmtp, SLang_List_Type **listp,
 				   SLang_Object_Type *obj, int *indx)
 {
@@ -536,13 +534,13 @@ static void list_insert_elem (void)
    indx = 0;
    if (-1 == pop_insert_append_args (&mmt, &list, &obj, &indx))
      return;
-   
+
    if (indx < 0)
      indx += list->length;
-   
+
    if (-1 == insert_element (list, &obj, indx))
      SLang_free_object (&obj);
-   
+
    SLang_free_mmt (mmt);
 }
 
@@ -556,13 +554,13 @@ static void list_append_elem (void)
    indx = -1;
    if (-1 == pop_insert_append_args (&mmt, &list, &obj, &indx))
      return;
-   
+
    if (indx < 0)
      indx += list->length;
-   
+
    if (-1 == insert_element (list, &obj, indx+1))
      SLang_free_object (&obj);
-   
+
    SLang_free_mmt (mmt);
 }
 
@@ -589,14 +587,14 @@ static void list_new (void)
 
    if (NULL == (list = allocate_list ()))
      return;
-   
+
    (void) push_list (list);
 }
 
 static void list_reverse (SLang_List_Type *list)
 {
    Chunk_Type *c;
-   
+
    c = list->first;
    list->first = list->last;
    list->last = c;
@@ -617,7 +615,7 @@ static void list_reverse (SLang_List_Type *list)
 	     j--;
 	     i++;
 	  }
-	
+
 	c1 = c->next;
 	c->next = c->prev;
 	c->prev = c1;
@@ -654,7 +652,7 @@ static void list_pop (void)
      }
    if (-1 == pop_list (&mmt, &list))
      return;
-   
+
    (void) list_pop_nth (list, indx);
    SLang_free_mmt (mmt);
 }
@@ -669,10 +667,10 @@ static int pop_as_list_internal (unsigned int count)
    while (count)
      {
 	SLang_Object_Type obj;
-	
+
 	if (-1 == SLang_pop (&obj))
 	  goto return_error;
-	
+
 	if (-1 == insert_element (list, &obj, 0))
 	  {
 	     SLang_free_object (&obj);
@@ -707,7 +705,7 @@ static void push_list_elements (SLang_List_Type *list)
 {
    SLindex_Type n = list->length;
    SLindex_Type i;
-   
+
    for (i = 0; i < n; i++)
      {
 	SLang_Object_Type *objp = find_nth_element (list, i, NULL);
@@ -719,7 +717,7 @@ static void push_list_elements (SLang_List_Type *list)
 static int l2a_get_type_callback (VOID_STAR vlist, SLuindex_Type i, SLtype *type)
 {
    SLang_Object_Type *obj;
-   
+
    if (NULL == (obj = find_nth_element ((SLang_List_Type *)vlist, i, NULL)))
      return -1;
    *type = obj->o_data_type;
@@ -729,28 +727,27 @@ static int l2a_get_type_callback (VOID_STAR vlist, SLuindex_Type i, SLtype *type
 static int l2a_push_callback (VOID_STAR vlist, SLuindex_Type i)
 {
    SLang_Object_Type *obj;
-   
+
    if (NULL == (obj = find_nth_element ((SLang_List_Type *)vlist, i, NULL)))
      return -1;
 
    return _pSLpush_slang_obj (obj);
 }
 
-
 static void list_to_array (void)
 {
    SLang_List_Type *list;
    SLang_MMT_Type *mmt;
    SLtype type = 0;
-   
+
    if ((SLang_Num_Function_Args == 2)
        && (-1 == SLang_pop_datatype (&type)))
      return;
-   
+
    if (-1 == pop_list (&mmt, &list))
      return;
 
-   (void) _pSLarray_convert_to_array ((VOID_STAR) list, 
+   (void) _pSLarray_convert_to_array ((VOID_STAR) list,
 				      l2a_get_type_callback,
 				      l2a_push_callback,
 				      list->length, type);
@@ -804,10 +801,10 @@ static char *string_method (SLtype type, VOID_STAR p)
 {
    SLang_List_Type *list;
    char buf[256];
-   
+
    (void) type;
    list = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)p);
-   
+
    sprintf (buf, "List_Type with %ld elements", (long)list->length);
    return SLmake_string (buf);
 }
@@ -820,22 +817,22 @@ static int eqs_method (SLtype a_type, VOID_STAR pa, SLtype b_type, VOID_STAR pb)
 
    if ((a_type != SLANG_LIST_TYPE) || (b_type != SLANG_LIST_TYPE))
      return 0;
-   
+
    a = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)pa);
    b = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)pb);
-   
+
    if (a == b)
      return 1;
-   
+
    if (a->length != b->length)
      return 0;
-   
+
    if (a->length == 0)
      return 1;
 
    ca = a->first;
    cb = b->first;
-   
+
    objb = cb->elements;
    objb_max = objb + cb->num_elements;
 
@@ -843,7 +840,7 @@ static int eqs_method (SLtype a_type, VOID_STAR pa, SLtype b_type, VOID_STAR pb)
      {
 	SLang_Object_Type *obja = ca->elements;
 	SLang_Object_Type *obja_max = obja + ca->num_elements;
-	
+
 	while (obja < obja_max)
 	  {
 	     int ret;
@@ -854,21 +851,21 @@ static int eqs_method (SLtype a_type, VOID_STAR pa, SLtype b_type, VOID_STAR pb)
 		  objb = cb->elements;
 		  objb_max = objb + cb->num_elements;
 	       }
-	     /* For now, use _pSLclass_obj_eqs.  Doing so makes the semantics 
+	     /* For now, use _pSLclass_obj_eqs.  Doing so makes the semantics
 	      * different from the array_eqs function.
 	      */
-	     
+
 	     ret = _pSLclass_obj_eqs (obja, objb);
 	     if (ret != 1)
 	       return ret;
-	     
+
 	     obja++; objb++;
 	  }
 	ca = ca->next;
      }
    return 1;
 }
-   
+
 struct _pSLang_Foreach_Context_Type
 {
    SLang_List_Type *list;
@@ -882,7 +879,7 @@ cl_foreach_open (SLtype type, unsigned int num)
    SLang_Foreach_Context_Type *c;
 
    (void) type;
-   
+
    if (num != 0)
      {
 	_pSLang_verror (SL_NOT_IMPLEMENTED,
@@ -914,7 +911,7 @@ static void cl_foreach_close (SLtype type, SLang_Foreach_Context_Type *c)
 static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 {
    SLang_Object_Type *obj;
-   
+
    (void) type;
    if (c == NULL)
      return -1;
@@ -925,12 +922,12 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
    if ((NULL == (obj = find_nth_element (c->list, c->next_index, NULL)))
        || (-1 == _pSLpush_slang_obj (obj)))
      return -1;
-   
+
    c->next_index++;
    return 1;
 }
 
-static int pop_list_and_index (unsigned int num_indices, 
+static int pop_list_and_index (unsigned int num_indices,
 			       SLang_MMT_Type **mmtp, SLang_List_Type **listp,
 			       SLang_Array_Type **ind_atp,
 			       SLindex_Type *indx)
@@ -970,7 +967,6 @@ static int pop_list_and_index (unsigned int num_indices,
    *mmtp = mmt;
    return 0;
 }
-
 
 /* FIXME: Extend this to allow an index array */
 static int _pSLlist_aget (SLtype type, unsigned int num_indices)
@@ -1026,7 +1022,7 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
 
    ret = push_list (new_list);	       /* frees upon error */
    new_list = NULL;
- 
+
 free_and_return:
 
    if (new_list != NULL)
@@ -1039,7 +1035,7 @@ free_and_return:
 static int aput_object (SLang_List_Type *list, SLindex_Type indx, SLang_Object_Type *obj)
 {
    SLang_Object_Type *elem;
-   
+
    if (NULL == (elem = find_nth_element (list, indx, NULL)))
      return -1;
 
@@ -1070,7 +1066,7 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 	     SLang_free_mmt (mmt);
 	     return -1;
 	  }
-   
+
 	if (-1 == aput_object (list, indx, &obj))
 	  {
 	     SLang_free_object (&obj);
@@ -1080,11 +1076,11 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 	SLang_free_mmt (mmt);
 	return 0;
      }
-   
+
    idx_data = (SLindex_Type *)ind_at->data;
    num = ind_at->num_elements;
    list_len = list->length;
-   
+
    if (-1 == SLang_pop (&obj))
      {
 	SLang_free_mmt (mmt);
@@ -1093,7 +1089,7 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
      }
 
    ret = -1;
-   
+
    if (obj.o_data_type == SLANG_ARRAY_TYPE)
      {
 	SLang_Array_Type *at = obj.v.array_val;
@@ -1102,12 +1098,12 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 	     SLang_verror (SL_Index_Error, "Inappropriate array for list[indices]=array expression");
 	     goto free_and_return;
 	  }
-	
+
 	for (i = 0; i < num; i++)
 	  {
 	     SLang_Object_Type objb;
 	     indx = idx_data[i];
-	
+
 	     if ((-1 == _pSLarray1d_push_elem (at, i))
 		 || (-1 == SLang_pop (&objb)))
 	       goto free_and_return;
@@ -1121,12 +1117,12 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 	ret = 0;
 	goto free_and_return;
      }
-   
+
    if (obj.o_data_type == SLANG_LIST_TYPE)
      {
 	SLang_MMT_Type *mmt2;
 	SLang_List_Type *list2;
-	
+
 	mmt2 = obj.v.ref;
 	if (NULL == (list2 = (SLang_List_Type *)SLang_object_from_mmt (mmt2)))
 	  goto free_and_return;
@@ -1142,7 +1138,7 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 	     SLang_Object_Type *obja;
 	     SLang_Object_Type objb;
 	     indx = idx_data[i];
-	
+
 	     if (NULL == (obja = find_nth_element (list, idx_data[i], NULL)))
 	       goto free_and_return;
 
@@ -1158,12 +1154,12 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 	ret = 0;
 	goto free_and_return;
      }
-   
+
    for (i = 0; i < num; i++)
      {
 	SLang_Object_Type objb;
 	indx = idx_data[i];
-	
+
 	if (-1 == _pSLslang_copy_obj (&obj, &objb))
 	  goto free_and_return;
 
@@ -1217,6 +1213,4 @@ int _pSLang_init_sllist (void)
 
    return 0;
 }
-
-
 

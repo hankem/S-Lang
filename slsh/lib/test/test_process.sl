@@ -7,7 +7,7 @@ define slsh_main ()
    % to it.
    variable echo = new_process (["echo", "foo bar"]; write=12, dup1=12);
    variable wc = new_process ("wc"; write=10, dup1=10, fd16=echo.fd12, dup0=16);
-   
+
    variable line;
    if (-1 == fgets (&line, wc.fp10))
      throw IOError, "Failed to read from wc process: " + errno_string ();

@@ -181,7 +181,7 @@
  \exmp{absdiff=1e-6}.  If only the relative difference has been
  specified, the absolute difference (\exmp{absdiff}) will be taken to
  be 0.0.
- 
+
  For the case when \exmp{|b|>=|a|}, \exmp{a} and \exmp{b} are
  considered to be equal to within the specified tolerances if either
  \exmp{|b-a|<=absdiff} or \exmp{|b-a|/|b|<=reldiff} is true.
@@ -254,7 +254,7 @@
   to avoid arithmetic overflow when \exmp{x} or \exmp{y} are large.
   If either argument is an array, an array of the corresponding values
   will be returned.
-  
+
   If given a single array argument \exmp{x}, the \ifun{hypot} function will
   compute \exmp{sqrt(sumsq(x))}, where \exmp{sumsq(x)} computes the sum
   of the squares of the elements of \exmp{x}.
@@ -321,7 +321,7 @@
   \exmp{x} returns the result.  If its argument is an array, the
   \ifun{log1p} function will be applied to each element and the results
   returned as an array.
-  
+
   This function should be used instead of \exmp{log(1+x)} to avoid
   numerical errors whenever \exmp{x} is close to 0.
 \seealso{log, expm1, cos, atan, acosh, cosh}
@@ -399,7 +399,7 @@
 
   The \ifun{polynom} function does not yet support complex-valued
   coefficients.
-  
+
   For the case of a scalar value of \exmp{x} and a small degree
   polynomial, it is more efficient to use an explicit expression.
 \seealso{exp}
@@ -535,7 +535,6 @@
   as an array.
 \seealso{cos, atan, acosh, cosh}
 \done
-
 
 \function{_ispos}
 \synopsis{Test if a number is greater than 0}

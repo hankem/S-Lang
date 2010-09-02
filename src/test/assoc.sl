@@ -36,14 +36,14 @@ define setup (type)
    add_to_x (x, "cow"); num++;
    add_to_x (x, "dog"); num++;
    add_to_x (x, "chicken"); num++;
-   
-   variable i = 0; 
+
+   variable i = 0;
    while (i < 512)
      {
 	assoc_delete_key (x, sprintf ("key_%d", i)); num--;
 	i += 2;
      }
-   
+
    if (length (x) != num)
      {
 	failed ("length(x)");
@@ -63,7 +63,7 @@ static variable X;
 loop (3) X = setup (Any_Type);
 
 loop (3) X = setup (String_Type);
-   
+
 static variable k, v;
 
 foreach k,v (X)
@@ -109,7 +109,7 @@ static define eqs (a, b)
    len = length (a);
    if (len != length (b))
      return 0;
-   
+
    len == length (where (a == b));
 }
 
@@ -117,7 +117,6 @@ static define neqs (a, b)
 {
    not (eqs (a, b));
 }
-
 
 static define store_and_test (a, indx, value)
 {
@@ -127,7 +126,7 @@ static define store_and_test (a, indx, value)
    if (neqs (a[indx], value))
      failed ("a[indx] != value");
 }
-   
+
 X = Assoc_Type[];
 
 store_and_test (X, "string", "string");
@@ -164,19 +163,17 @@ define test_arith ()
      failed ("a[foo]++");
 
    a = Assoc_Type [Array_Type, [1,2]];
-   
+
    a["bar"] += 3;
    ifnot (_eqs (a["bar"], [1,2] + 3))
      failed ("a[bar] += 3");
-   
+
    a["bar"]++;
    ifnot (_eqs (a["bar"], [1,2] + 3 + 1))
      failed ("a[bar]++");
 }
 test_arith ();
 
-
-  
 print ("Ok\n");
 
 exit (0);

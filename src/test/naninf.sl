@@ -20,7 +20,7 @@ if (0 == isinf (-_Inf)) failed ("isinf(-_Inf)");
 private define test_sscanf (ret, str, format, x, y)
 {
    variable x1, y1, ret1;
-   
+
    ret1 = sscanf (str, format, &x1, &y1);
    if (ret1 != ret)
      failed ("sscanf (str=%s using format=%s failed: returned %d",
@@ -66,7 +66,6 @@ test_sscanf (2, "Nan(xxx) -Inf", "%lf %lf", _NaN, -_Inf);
 test_sscanf (2, "Nan() -Inf", "%lf %lf", _NaN, -_Inf);
 test_sscanf (1, "Nan( -Inf", "%lf %lf", _NaN, -_Inf);
 test_sscanf (2, "-Nan() -Inf", "%lf %lf", _NaN, -_Inf);
-
 
 print ("Ok\n");
 

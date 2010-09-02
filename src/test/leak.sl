@@ -1,5 +1,5 @@
 % This used to produce a subtle leak.
-typedef struct 
+typedef struct
 {
    x, y, z
 }

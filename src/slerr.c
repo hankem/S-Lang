@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -47,11 +47,10 @@ struct _Exception_Type
 };
 
 static Exception_Type *Exception_Root;
-static Exception_Type Exception_Root_Buf = 
+static Exception_Type Exception_Root_Buf =
 {
    -1, "AnyError", "All Errors", NULL, NULL, NULL
 };
-
 
 /* Built-in error codes */
 /* These values should correspond to the values produced by _pSLerr_init.
@@ -189,7 +188,7 @@ static int is_exception_ancestor (int a, int b)
 
    if (NULL == (e = find_exception (Exception_Root, a)))
      return 0;
-   
+
    while (e->parent != NULL)
      {
 	e = e->parent;
@@ -203,7 +202,7 @@ int SLerr_exception_eqs (int a, int b)
 {
    if (is_exception_ancestor (a, b))
      return 1;
-   
+
    return 0;
 }
 
@@ -211,7 +210,7 @@ static void free_this_exception (Exception_Type *e)
 {
    if (e == NULL)
      return;
-   
+
    if (e->name != NULL)
      SLang_free_slstring ((char *) e->name);
 
@@ -221,7 +220,6 @@ static void free_this_exception (Exception_Type *e)
    SLfree ((char *)e);
 }
 
-	
 static int Next_Exception_Code;
 /* The whole point of this nonsense involving the _pSLerr_New_Exception_Hook
  * is to provide a mechanism to avoid linking in the interpreter for apps
@@ -236,7 +234,7 @@ int _pSLerr_init_interp_exceptions (void)
 
    if (_pSLerr_New_Exception_Hook == NULL)
      return 0;
-   
+
    e = &Exception_Root_Buf;
    if (-1 == (*_pSLerr_New_Exception_Hook)(e->name, e->description, e->error_code))
      return -1;
@@ -246,7 +244,7 @@ int _pSLerr_init_interp_exceptions (void)
      {
 	if (-1 == (*_pSLerr_New_Exception_Hook)(b->name, b->description, *b->errcode_ptr))
 	  return -1;
-	
+
 	b++;
      }
    return 0;
@@ -267,18 +265,18 @@ int SLerr_new_exception (int baseclass, SLFUTURE_CONST char *name, SLFUTURE_CONS
 		      "Base class for new exception not found");
 	return -1;
      }
-   
+
    e = (Exception_Type *) SLcalloc (1, sizeof (Exception_Type));
    if (e == NULL)
      return -1;
-   
+
    if ((NULL == (e->name = SLang_create_slstring (name)))
        || (NULL == (e->description = SLang_create_slstring (descript))))
      {
 	free_this_exception (e);
 	return -1;
      }
-   
+
    e->error_code = Next_Exception_Code;
 
    if ((_pSLerr_New_Exception_Hook != NULL)
@@ -296,7 +294,6 @@ int SLerr_new_exception (int baseclass, SLFUTURE_CONST char *name, SLFUTURE_CONS
    return e->error_code;
 }
 
-
 static int init_exceptions (void)
 {
    SLCONST BuiltIn_Exception_Table_Type *b;
@@ -310,7 +307,7 @@ static int init_exceptions (void)
    while (b->errcode_ptr != NULL)
      {
 	int err_code;
-	
+
 	err_code = SLerr_new_exception (*b->base_class_ptr, b->name, b->description);
 	if (err_code == -1)
 	  return -1;
@@ -318,7 +315,7 @@ static int init_exceptions (void)
 	*b->errcode_ptr = err_code;
 	b++;
      }
-   
+
    return 0;
 }
 
@@ -330,21 +327,20 @@ static void free_exceptions (Exception_Type *root)
 
 	if (root->subclasses != NULL)
 	  free_exceptions (root->subclasses);
-	
+
 	next = root->next;
 	free_this_exception (root);
 	root = next;
      }
 }
 
-	
 static void deinit_exceptions (void)
 {
    Exception_Type *root = Exception_Root;
-   
+
    if (root != NULL)
      free_exceptions (root->subclasses);
-   
+
    Exception_Root = NULL;
    Next_Exception_Code = 0;
 }
@@ -361,7 +357,7 @@ SLFUTURE_CONST char *SLerr_strerror (int err_code)
 
    if (NULL == (e = find_exception (Exception_Root, err_code)))
      return "Invalid/Unknown Error Code";
-   
+
    return e->description;
 }
 
@@ -400,14 +396,14 @@ static void free_error_msg (Error_Message_Type *m)
      SLang_free_slstring (m->msg);
    SLfree ((char *)m);
 }
-       
+
 static Error_Message_Type *allocate_error_msg (char *msg, int msg_type)
 {
    Error_Message_Type *m;
 
    if (NULL == (m = (Error_Message_Type*) SLcalloc (1, sizeof (Error_Message_Type))))
      return NULL;
-   
+
    if ((NULL != msg) && (NULL == (m->msg = SLang_create_slstring (msg))))
      {
 	free_error_msg (m);
@@ -439,19 +435,18 @@ void _pSLerr_delete_error_queue (_pSLerr_Error_Queue_Type *q)
 {
    if (q == NULL)
      return;
-   
+
    free_queued_messages (q);
    SLfree ((char *)q);
 }
 
-   
 _pSLerr_Error_Queue_Type *_pSLerr_new_error_queue (int make_active)
 {
    _pSLerr_Error_Queue_Type *q;
 
    if (NULL == (q = (_pSLerr_Error_Queue_Type *)SLcalloc (1, sizeof(_pSLerr_Error_Queue_Type))))
      return NULL;
-   
+
    if (make_active)
      Active_Error_Queue = q;
    return q;
@@ -460,10 +455,10 @@ _pSLerr_Error_Queue_Type *_pSLerr_new_error_queue (int make_active)
 static int queue_message (_pSLerr_Error_Queue_Type *q, char *msg, int msg_type)
 {
    Error_Message_Type *m;
-   
+
    if (NULL == (m = allocate_error_msg (msg, msg_type)))
      return -1;
-   
+
    if (q->tail != NULL)
      q->tail->next = m;
    if (q->head == NULL)
@@ -495,7 +490,7 @@ static void print_error (int msg_type, SLFUTURE_CONST char *err)
 	  }
 	break;
      }
-   
+
    len = strlen (err);
    if (len == 0)
      return;
@@ -512,7 +507,7 @@ static void print_queue (void)
 {
    if (-1 == _pSLerr_init ())
      print_error (_SLERR_MSG_ERROR, "Unable to initialize SLerr module");
-   
+
    if (_pSLang_Error == 0)
      return;
 
@@ -527,7 +522,7 @@ static void print_queue (void)
 	       print_error (m->msg_type, m->msg);
 	     m = m_next;
 	  }
-	
+
 	free_queued_messages (q);
      }
    if (Static_Error_Message != NULL)
@@ -547,7 +542,7 @@ char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q, int type)
    char *err, *err1, *err_max;
    int nl_len;
 
-   if ((q == NULL) 
+   if ((q == NULL)
        && (NULL == (q = Default_Error_Queue)))
      return NULL;
 
@@ -562,13 +557,13 @@ char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q, int type)
 
 	m = m->next;
      }
-   
-   if (len) 
+
+   if (len)
      len -= nl_len;			       /* last \n not needed */
 
    if (NULL == (err = _pSLallocate_slstring (len)))
      return NULL;
-   
+
    err_max = err + len;
    err1 = err;
    m = q->head;
@@ -585,23 +580,21 @@ char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q, int type)
 	m = m->next;
      }
    *err1 = 0;
-   
+
    return _pSLcreate_via_alloced_slstring (err, len);
 }
-
 
 void _pSLerr_print_message_queue (void)
 {
    print_queue ();
 }
 
-
 static volatile int Suspend_Error_Messages = 0;
 int _pSLerr_resume_messages (void)
 {
    if (Suspend_Error_Messages == 0)
      return 0;
-   
+
    Suspend_Error_Messages--;
    if (Suspend_Error_Messages == 0)
      print_queue ();
@@ -619,7 +612,6 @@ void _pSLerr_free_queued_messages (void)
    Static_Error_Message = NULL;
    free_queued_messages (Active_Error_Queue);
 }
-
 
 static void set_error (int error)
 {
@@ -647,7 +639,7 @@ static void verror_va (int err_code, SLCONST char *fmt, va_list ap)
 	return;
      }
 
-   if (err_code == 0) 
+   if (err_code == 0)
      err_code = SL_INTRINSIC_ERROR;
 
    if (_pSLang_Error == 0)
@@ -686,7 +678,6 @@ void _pSLang_verror (int err_code, SLCONST char *fmt, ...)
    verror_va (err_code, fmt, ap);
    va_end(ap);
 }
-
 
 int _pSLerr_traceback_msg (SLFUTURE_CONST char *fmt, ...)
 {
@@ -732,14 +723,14 @@ int SLang_set_error (int error)
 
    if (error == SL_UserBreak_Error)
      {
-	/* This function may be called from a SIGINT handler, in which case the 
+	/* This function may be called from a SIGINT handler, in which case the
 	 * error code will be SL_UserBreak_Error.
 	 */
 	/* print_error (_SLERR_MSG_ERROR, SLerr_strerror (_pSLang_Error)); */
 	Static_Error_Message = SLerr_strerror (error);
 	return 0;
-     }	
-   
+     }
+
    /* If a string is not in the message queue, then add one. */
    if (Active_Error_Queue != NULL)
      {
@@ -751,7 +742,7 @@ int SLang_set_error (int error)
 	     m = m->next;
 	  }
      }
-   
+
    _pSLang_verror (_pSLang_Error, "%s", SLerr_strerror (_pSLang_Error));
    return 0;
 }
@@ -825,7 +816,7 @@ int _pSLerr_init (void)
 
    if (-1 == init_exceptions ())
      return -1;
-   
+
    return 0;
 }
 

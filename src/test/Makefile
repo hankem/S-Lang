@@ -66,5 +66,5 @@ memcheck: memcheck_run_tests memcheck_run_tests_slc
 
 sltest: sltest.c $(SLANGLIB)/libslang.a
 	$(CC) $(CFLAGS) $(LDFLAGS) sltest.c -o sltest -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
-clean: 
+clean:
 	-/bin/rm -f *~ sltest *.o *.log tmp-* log.pid* *.slc log.*

@@ -1,6 +1,5 @@
 _debug_info = 1; () = evalfile ("inc.sl");
 
-
 testing_feature ("POSIX I/O routines");
 
 static define open_tmp_file (fileptr, flags, mode)
@@ -8,7 +7,7 @@ static define open_tmp_file (fileptr, flags, mode)
    variable n;
    variable file, fd;
    variable fmt;
-   
+
    @fileptr = NULL;
 
    fmt = "tmp-xxx.%03d";    % I need something that works on an 8+3 filesystem
@@ -20,7 +19,7 @@ static define open_tmp_file (fileptr, flags, mode)
 	file = sprintf (fmt, n);
 	if (NULL != stat_file (file))
 	  continue;
-	
+
 	fd = open (file, flags, 0777);
 	if (fd != NULL)
 	  {
@@ -65,7 +64,7 @@ define run_tests (some_text)
      failed ("read");
 
    if ((nbytes != len)
-       or (some_text != new_text)) 
+       or (some_text != new_text))
      failed ("read");
 
    if (0 != read (fd, &new_text, 1))
@@ -79,7 +78,6 @@ define run_tests (some_text)
    () = remove (file);
    if (stat_file (file) != NULL) failed ("remove");
 }
-
 
 run_tests ("ABCDEFG");
 run_tests ("A\000BC\000\n\n\n");

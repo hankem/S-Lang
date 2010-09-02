@@ -184,6 +184,7 @@ Changes since 2.2.2
     statements.
 72. src/slang.c: _pSLlocate_name return NULL instead of an exception
     if the name contains a non-existent namespace.
+73. Removed excess whitespace from all files (*.c, *.h, *.tm, *.sl, ...).
 
 {{{ Previous Versions
 

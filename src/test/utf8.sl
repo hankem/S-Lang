@@ -54,7 +54,7 @@ if ("\u{AD}" != "\xC2\xAD")
    failed ("\\u{AD} != \\xC2\\xAD");
 }
 
-% If \x{...} is used with 3 or more hex digits, the result is UTF-8, 
+% If \x{...} is used with 3 or more hex digits, the result is UTF-8,
 % regardless of the mode.
 if ("\x{0AD}" != "\xC2\xAD")
 {

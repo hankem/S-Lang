@@ -17,7 +17,7 @@ typedef struct
 % The ut_tv is a timeval structure which has the format: l2
 % Also the ut_exit field is a struct of h2
 format = pad_pack_format ("h i S32 S4 S32 S256 h2 l l2 k4 x20");
-#else   
+#else
 typedef struct
 {
    ut_type, ut_pid, ut_line, ut_id,

@@ -1,4 +1,4 @@
-Before building slsh, it is wise to first build the slang library and 
+Before building slsh, it is wise to first build the slang library and
 install it via, e.g., 'make install-elf'.
 
 On Unix, running 'make install' will put:
@@ -28,7 +28,7 @@ For a windows native slsh.exe use, e.g.,
    ..\src\mkfiles\mkmake WIN32 VC < mkfiles\makefile.all > Makefile
    nmake
 
-(change the options to mkmake and the 'make' program name to suit your 
+(change the options to mkmake and the 'make' program name to suit your
 development environment).
 
 Good luck.

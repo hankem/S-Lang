@@ -1,4 +1,3 @@
-
 \function{SLallocate_load_type}
 \synopsis{Allocate a SLang_Load_Type object}
 \usage{SLang_Load_Type *SLallocate_load_type (char *name)}
@@ -22,7 +21,6 @@
 \seealso{SLallocate_load_type, SLang_load_object}
 \done
 
-
 \function{SLang_load_object}
 \synopsis{Load an object into the interpreter}
 \usage{int SLang_load_object (SLang_Load_Type *obj)}
@@ -35,7 +33,6 @@
 \seealso{SLang_load_file, SLang_load_string, SLallocate_load_type}
 \done
 
-
 \function{SLclass_allocate_class}
 \synopsis{Allocate a class for a new data type}
 \usage{SLang_Class_Type *SLclass_allocate_class (char *name)}
@@ -44,7 +41,7 @@
   that defines a new data type or class called \var{name}.  If
   successful, a pointer to the class is returned, or upon failure the
   function returns \var{NULL}.
-  
+
   This function does not automatically create the new data type.
   Callback functions must first be associated with the data type via
   functions such as \var{SLclass_set_push_function}, and the data
@@ -53,7 +50,6 @@
   guide for more information.
 \seealso{SLclass_register_class, SLclass_set_push_function}
 \done
-
 
 \function{SLclass_register_class}
 \synopsis{Register a new data type with the interpreter}
@@ -79,7 +75,7 @@
   function), otherwise a value greater than \exmp{255} should be
   used.  The values in the range \exmp{0-255} are reserved for
   internal use by the library.
- 
+
   The size that the data type represents in bytes is specified by the
   third parameter, \var{sizeof_type}.   This value should not be
   confused with the sizeof the structure that represents the data
@@ -98,17 +94,17 @@
   The \var{SLANG_CLASS_TYPE_SCALAR} indicates that the new data type
   is a scalar.  Examples of scalars in \var{SLANG_INT_TYPE} and
   \var{SLANG_DOUBLE_TYPE}.
-  
+
   Setting \var{class_type} to SLANG_CLASS_TYPE_VECTOR implies that the
   new data type is a vector, or a 1-d array of scalar types.  An
   example of a data type of this class is the
   \var{SLANG_COMPLEX_TYPE}, which represents complex numbers.
-  
+
   \var{SLANG_CLASS_TYPE_PTR} specifies the data type is of a pointer
   type.  Examples of data types of this class include
   \var{SLANG_STRING_TYPE} and \var{SLANG_ARRAY_TYPE}.  Such types must
   provide for their own memory management.
-  
+
   Data types of class \var{SLANG_CLASS_TYPE_MMT} are pointer types
   except that the memory management, i.e., creation and destruction of
   the type, is handled by the interpreter.  Such a type is called a
@@ -118,7 +114,6 @@
    See the \slang-c-programmers-guide for more information.
 \seealso{SLclass_allocate_class, SLclass_get_class_id}
 \done
-
 
 \function{SLclass_set_string_function}
 \synopsis{Set a data type's string representation callback}
@@ -137,7 +132,7 @@
   type, and the address of the object for which a string represetation
   is required.  The callback function must return a \em{malloced}
   string.
-  
+
   Upon success, \var{SLclass_set_string_function} returns zero, or
   upon error it returns \-1.
 \example
@@ -152,7 +147,7 @@
           {
            case SLANG_STRING_TYPE:
              return SLmake_string (*(char **)addr);
-             
+
            case SLANG_INTEGER_TYPE:
              sprintf (buf, "%d", *(int *)addr);
              return SLmake_string (buf);
@@ -164,7 +159,6 @@
   The default string callback simply returns the name of the data type.
 \seealso{SLclass_allocate_class, SLclass_register_class}
 \done
-
 
 \function{SLclass_set_destroy_function}
 \synopsis{Set the destroy method callback for a data type}
@@ -180,7 +174,7 @@
   When called, \var{destroy_fun} will be passed two arguments: an
   SLtype which represents the data type, and the address of the
   object to be destroyed.
-  
+
   \var{SLclass_set_destroy_function} returns zero upon success, and
   \-1 upon failure.
 \example
@@ -198,7 +192,6 @@
 \seealso{SLclass_allocate_class, SLclass_register_class}
 \done
 
-
 \function{SLclass_set_push_function}
 \synopsis{Set the push callback for a new data type}
 \usage{int SLclass_set_push_function (cl, push_fun)}
@@ -210,12 +203,12 @@
    \var{SLclass_set_push_function} is used to set the push callback
    for a new data type specified by \var{cl}, which must have been
    previously obtained via \var{SLclass_allocate_class}.
-   
+
    The parameter \var{push_fun} is a pointer to the push callback.  It
    is required to take two arguments: an SLtype
    representing the data type, and the address of the object to be
    pushed.  It must return zero upon success, or \-1 upon failure.
-   
+
    \var{SLclass_set_push_function} returns zero upon success, or \-1
    upon failure.
 \example
@@ -230,7 +223,6 @@
 \seealso{SLclass_allocate_class, SLclass_register_class}
 \done
 
-
 \function{SLclass_set_pop_function}
 \synopsis{Set the pop callback for a new data type}
 \usage{int SLclass_set_pop_function (cl, pop_fun)}
@@ -242,7 +234,7 @@
    \var{SLclass_set_pop_function} is used to set the callback for
    popping an object from the stack for a new data type specified by
    \var{cl}, which must have been previously obtained via
-   \var{SLclass_allocate_class}. 
+   \var{SLclass_allocate_class}.
 
    The parameter \var{pop_fun} is a pointer to the pop callback
    function, which is required to take two arguments: an unsigned
@@ -264,7 +256,6 @@
 \seealso{SLclass_allocate_class, SLclass_register_class}
 \done
 
-
 \function{SLclass_get_datatype_name}
 \synopsis{Get the name of a data type}
 \usage{char *SLclass_get_datatype_name (SLtype type)}
@@ -273,7 +264,7 @@
   data type specified by \var{type}.  For example, if \var{type} is
   \var{SLANG_INT_TYPE}, the string \exmp{"Integer_Type"} will be
   returned.
-  
+
   This function returns a pointer that should not be modified or freed.
 \seealso{SLclass_allocate_class, SLclass_register_class}
 \done
@@ -287,7 +278,6 @@
 \seealso{SLang_object_from_mmt, SLang_create_mmt}
 \done
 
-
 \function{SLang_object_from_mmt}
 \synopsis{Get a pointer to the value of a memory managed type}
 \usage{VOID_STAR SLang_object_from_mmt (SLang_MMT_Type *mmt)}
@@ -296,7 +286,6 @@
   actual object whose memory is being managed by the interpreter.
 \seealso{SLang_free_mmt, SLang_create_mmt}
 \done
-
 
 \function{SLang_create_mmt}
 \synopsis{Create a memory managed data type}
@@ -309,7 +298,6 @@
 \seealso{SLang_object_from_mmt, SLang_push_mmt, SLang_free_mmt}
 \done
 
-
 \function{SLang_push_mmt}
 \synopsis{Push a memory managed type}
 \usage{int SLang_push_mmt (SLang_MMT_Type *mmt)}
@@ -319,7 +307,6 @@
    failure.
 \seealso{SLang_create_mmt, SLang_pop_mmt}
 \done
-
 
 \function{SLang_pop_mmt}
 \synopsis{Pop a memory managed data type}
@@ -333,7 +320,6 @@
 \seealso{SLang_object_from_mmt, SLang_push_mmt}
 \done
 
-
 \function{SLang_inc_mmt}
 \synopsis{Increment a memory managed type reference count}
 \usage{void SLang_inc_mmt (SLang_MMT_Type *mmt);}
@@ -344,7 +330,6 @@
 \seealso{SLang_free_mmt, SLang_create_mmt, SLang_pop_mmt, SLang_pop_mmt}
 \done
 
-
 \function{SLadd_intrin_fun_table}
 \synopsis{Add a table of intrinsic functions to the interpreter}
 \usage{int SLadd_intrin_fun_table(SLang_Intrin_Fun_Type *tbl, char *pp_name);}
@@ -354,7 +339,7 @@
   parameter, \var{tbl} specifies the table to be added.  The second
   parameter \var{pp_name}, if non-NULL will be added to the list of
   preprocessor symbols.
-  
+
   This function returns \-1 upon failure or zero upon success.
 \notes
   A table should only be loaded one time and it is considered to be an
@@ -372,7 +357,7 @@
   parameter, \var{tbl} specifies the table to be added.  The second
   parameter \var{pp_name}, if non-NULL will be added to the list of
   preprocessor symbols.
-  
+
   This function returns \-1 upon failure or zero upon success.
 \notes
   A table should only be loaded one time and it is considered to be an
@@ -380,7 +365,6 @@
   once.
 \seealso{SLadd_intrin_var_table, SLadd_intrinsic_function, SLdefine_for_ifdef}
 \done
-
 
 \function{SLang_load_file}
 \synopsis{Load a file into the interpreter}
@@ -406,7 +390,6 @@
 \seealso{SLang_load_object, SLang_load_string}
 \done
 
-
 \function{SLang_restart}
 \synopsis{Reset the interpreter after an error}
 \usage{void SLang_restart (int full)}
@@ -418,7 +401,7 @@
    intact.  Any time the stack is believed to be trashed, this routine
    should be called with a non-zero argument (e.g., if
    \var{setjmp}/\var{longjmp} is called).
-   
+
    Calling \var{SLang_restart} does not reset the global variable
    \var{SLang_Error} to zero.  It is up to the application to reset
    that variable to zero after calling \var{SLang_restart}.
@@ -426,7 +409,7 @@
 #v+
       while (1)
         {
-           if (SLang_Error) 
+           if (SLang_Error)
              {
                 SLang_restart (1);
                 SLang_Error = 0;
@@ -436,7 +419,6 @@
 #v-
 \seealso{SLang_init_slang, SLang_load_file}
 \done
-
 
 \function{SLang_byte_compile_file}
 \synopsis{Byte-compile a file for faster loading}
@@ -450,12 +432,11 @@
   will have the name exmp{init.slc}.  The meaning of the second
   parameter, \var{reserved}, is reserved for future use.  For now, set
   it to \var{0}.
-  
+
   The function returns zero upon success, or \exmp{-1} upon error and
   sets SLang_Error accordingly.
 \seealso{SLang_load_file, SLang_init_slang}
 \done
-
 
 \function{SLang_autoload}
 \synopsis{Autoload a function from a file}
@@ -465,13 +446,12 @@
   \var{slang} function name \var{funct} with the file \var{filename}
   such that if \var{funct} has not already been defined when needed,
   it will be loaded from \var{filename}.
-  
+
   \var{SLang_autoload} has no effect if \var{funct} has already been
   defined.  Otherwise it declares \var{funct} as a user-defined \slang
   function.  It returns \exmp{0} upon success, or \exmp{-1} upon error.
 \seealso{SLang_load_file, SLang_is_defined}
 \done
-
 
 \function{SLang_load_string}
 \synopsis{Interpret a string}
@@ -482,7 +462,6 @@
   success, or \exmp{-1} upon failure.
 \seealso{SLang_load_file, SLang_load_object}
 \done
-
 
 \function{SLdo_pop}
 \synopsis{Delete an object from the stack}
@@ -506,7 +485,6 @@
 \seealso{SLdo_pop, SLang_pop_integer, SLang_pop_string}
 \done
 
-
 \function{SLang_pop_integer}
 \synopsis{Pop an integer off the stack}
 \usage{int SLang_pop_integer (int *i)}
@@ -519,7 +497,6 @@
    \var{SLang_Error} accordingly.
 \seealso{SLang_push_integer, SLang_pop_double}
 \done
-
 
 \function{SLpop_string}
 \synopsis{Pop a string from the stack}
@@ -549,7 +526,6 @@
 \seealso{SLang_pop_slstring. SLfree}
 \done
 
-
 \function{SLang_pop_string}
 \synopsis{Pop a string from the stack}
 \usage{int SLang_pop_string(char **strptr, int *do_free)}
@@ -557,7 +533,7 @@
    The \var{SLpop_string} function pops a string from the stack and
    returns it as a malloced pointer via \var{strptr}.  After the
    function returns, the integer pointed to by the second parameter
-   will be set to a non-zero value if \var{*strptr} should be freed via 
+   will be set to a non-zero value if \var{*strptr} should be freed via
    \var{free} or \var{SLfree}.  If successful, \var{SLpop_string}
    returns zero.  However, if the top stack item is not of type
    \var{SLANG_STRING_TYPE}, or the stack is empty, the function will
@@ -570,7 +546,6 @@
    \var{SLang_pop_slstring} should be used.
 \seealso{SLang_pop_slstring, SLpop_string}
 \done
-
 
 \function{SLang_pop_slstring}
 \synopsis{Pop a hashed string from the stack}
@@ -595,7 +570,7 @@
    \var{SLang_free_slstring} is the preferred function for popping
    strings.  This is a result of the fact that the interpreter uses
    hashed strings as the native representation for string data.
-   
+
    One must \em{never} free a hashed string using \var{free} or
    \var{SLfree}.  In addition, one must never make any attempt to
    modify a hashed string and doing so will result in memory
@@ -614,7 +589,6 @@
 \seealso{SLang_pop_integer, SLang_push_double}
 \done
 
-
 \function{SLang_pop_complex}
 \synopsis{Pop a complex number from the stack}
 \usage{int SLang_pop_complex (double *re, double *im)}
@@ -629,7 +603,6 @@
 \seealso{SLang_pop_integer, SLang_pop_double, SLang_push_complex}
 \done
 
-
 \function{SLang_push_complex}
 \synopsis{Push a complex number onto the stack}
 \usage{int SLang_push_complex (double re, double im)}
@@ -641,7 +614,6 @@
 \seealso{SLang_pop_complex, SLang_push_double}
 \done
 
-
 \function{SLang_push_double}
 \synopsis{Push a double onto the stack}
 \usage{int SLang_push_double(double d)}
@@ -652,7 +624,6 @@
    \var{SLang_Error} accordingly.
 \seealso{SLang_pop_double, SLang_push_integer}
 \done
-
 
 \function{SLang_push_string}
 \synopsis{Push a string onto the stack}
@@ -712,7 +683,6 @@
 \seealso{SLang_push_string, SLmake_string}
 \done
 
-
 \function{SLang_is_defined}
 \synopsis{Check to see if the interpreter defines an object}
 \usage{int SLang_is_defined (char *nm)}
@@ -732,7 +702,6 @@
    are represented by positive numbers.
 \seealso{SLadd_intrinsic_function, SLang_run_hooks, SLang_execute_function}
 \done
-
 
 \function{SLang_run_hooks}
 \synopsis{Run a user-defined hook with arguments}
@@ -758,7 +727,6 @@
 #v-
 \seealso{SLang_is_defined, SLang_execute_function}
 \done
-
 
 \function{SLang_execute_function}
 \synopsis{Execute a user or intrinsic function}
@@ -786,8 +754,6 @@
   from C.
 \seealso{SLexecute_function}
 \done
-
-
 
 \function{SLexecute_function}
 \synopsis{Execute a \slang or intrinsic function}
@@ -818,7 +784,7 @@
 
          if (NULL == (nt = SLang_get_function (fname)))
            return -1;
-         
+
          sum = 0;
          for (x = 0; x < 10.0; x += 0.1)
            {
@@ -830,7 +796,7 @@
                 return -1;
               if (-1 == SLang_pop_double (&y))
                 return -1;
-              
+
               sum += y;
            }
          return sum;
@@ -841,7 +807,6 @@
    information about the number of parameters passed to it.
 \seealso{SLang_get_function, SLang_start_arg_list, SLang_end_arg_list}
 \done
-
 
 \function{SLang_peek_at_stack}
 \synopsis{Find the type of object on the top of the stack}
@@ -854,14 +819,13 @@
 \seealso{SLang_pop_string, SLang_pop_integer}
 \done
 
-
 \function{SLang_pop_fileptr}
 \synopsis{Pop a file pointer}
 \usage{int SLang_pop_fileptr (SLang_MMT_Type **mmt, FILE **fp)}
 \description
   \var{SLang_pop_fileptr} pops a file pointer from the \slang
   run-time stack.  It returns zero upon success, or \-1 upon failure.
-  
+
   A \slang file pointer (SLANG_FILEPTR_TYPE) is actually a memory
   managed object.  For this reason, \var{SLang_pop_fileptr} also
   returns the memory managed object via the argument list.  It is up
@@ -909,7 +873,6 @@
 #v-
 \seealso{SLang_free_mmt, SLang_pop_double}
 \done
-
 
 \function{SLadd_intrinsic_function}
 \synopsis{Add a new intrinsic function to the interpreter}
@@ -981,7 +944,7 @@
   data type of the variable.  If the fourth parameter, \var{rdonly},
   is non-zero, the variable will interpreted by the interpreter as
   read-only.
-  
+
   If successful, \var{SLadd_intrinsic_variable} returns zero,
   otherwise it returns \-1.
 \example
@@ -1014,7 +977,6 @@
 \seealso{SLadd_intrinsic_function, SLadd_intrinsic_array}
 \done
 
-
 \function{SLclass_add_unary_op}
 \synopsis{??}
 \usage{int SLclass_add_unary_op (SLtype,int (*) (int, SLtype, VOID_STAR, unsigned int, VOID_STAR), int (*) (int, SLtype, SLtype *));}
@@ -1022,7 +984,6 @@
 ??
 \seealso{??}
 \done
-
 
 \function{SLclass_add_app_unary_op}
 \synopsis{??}

@@ -9,7 +9,7 @@
   function should print out the error message, display a usage
   message, and the call \ifun{exit}.  If the error handler is \NULL,
   or it returns instead of calling exit, then an exception will be thrown.
-  
+
   The error hander must be defined to take a single string argument
   (the error message) and must return nothing.
 \example
@@ -38,7 +38,7 @@
       cmdopt_add (c, "h|help", &help_callback);
       cmdopt_add (c, "s:o|output", &outfile; type="str");
       variable iend = cmdopt_process (c, __argv, 1);
-       
+
       if (verbose) message ("some informative message");
       variable fp = stdout;
       if (outfile != "-") fp = fopen (outfile, "w");
@@ -48,7 +48,6 @@
 #v-
 \seealso{cmdopt_add, cmdopt_process}
 \done
-
 
 \function{cmdopt_process}
 \synopsis{Process the command-line options}
@@ -69,7 +68,7 @@
 \example
 #v+
     define slsh_main ()
-    { 
+    {
           .
           .
        optobj = cmdopt_new (...);
@@ -92,7 +91,6 @@
 \seealso{cmdopt_add, cmdopt_new}
 \done
 
-
 \function{cmdopt_add}
 \synopsis{Add support for a command-line option}
 \usage{cmdopt_add (optobj, optname, addr [,...] [;qualifiers])}
@@ -106,8 +104,8 @@
   \exmp{optobj} and specifies how that option should be handled.
   Handling an option involves setting the value of a variable
   associated with the option, or by calling a function upon its
-  behalf.  
-  
+  behalf.
+
   For clarity, assume a command-line option can be specified using the
   single character \exmp{f} or by the longer name \exmp{foo}. Then the
   rules for calling \sfun{cmdopt_add} for the various flavors options
@@ -124,7 +122,7 @@
   Options that increment an integer variable \exmp{v}:
 #v+
     cmdopt_add (optobj, "f|foo", &v; inc);
-    cmdline: pgm -f -f ...       % In these examples, v 
+    cmdline: pgm -f -f ...       % In these examples, v
     cmdline: pgm --foo --foo ... % gets incremented twice
 #v-
 
@@ -166,12 +164,12 @@
 
   For the latter two cases, if the \exmp{append} qualifier is used,
   then instead of assigning the value to the specified variable, the
-  value will be appended to a list assigned to the variable, e.g., 
+  value will be appended to a list assigned to the variable, e.g.,
 #v+
     cmdopt_add (optobj, "f|foo", &v; type="float", append);
 #v-
   Then the command line \exmp{pgm --foo=VAL1 -fVAL2 -f VAL3 ...} will
-  result in the assignment to \exmp{v} or the 3 element list 
+  result in the assignment to \exmp{v} or the 3 element list
   \exmp{\{VAL1, VAL2, VAL3\}}.
 
   An option can also be associated with a callback function that get
@@ -200,7 +198,7 @@
 #v+
     define func (value, a0, ...) {...}
 #v-
-  
+
   As the above examples illustrate, the data-type of the value assigned
   to a variable must be specified using the \exmp{type} qualifier.
   Currently the \exmp{type} must be set to one of the following values:

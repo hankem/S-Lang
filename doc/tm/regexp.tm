@@ -5,7 +5,7 @@
  should be familiar to anyone acquainted with regular expressions.  In
  this section the syntax of the \slang regular expressions is
  discussed.
- 
+
  NOTE: At the moment, the \slang regular expressions do not support
  UTF-8 encoded strings.  The \slang library will most likely migrate
  to the use of the PCRE regular expression library, deprecating the
@@ -13,13 +13,13 @@
  encouraged to make use of the \module{pcre} module if possible.
 
 \sect{\slang RE Syntax}
- 
+
  A regular expression specifies a pattern to be matched against a
  string, and has the property that the contcatenation of two REs is
  also a RE.
- 
+
  The \slang library supports the following standard regular
- expressions: 
+ expressions:
 #v+
    .                 match any character except newline
    *                 matches zero or more occurences of previous RE
@@ -34,7 +34,7 @@
    \<                Match the beginning of a word.
    \>                Match the end of a word.
    \( ... \)
-   \1, \2, ..., \9   Matches the match specified by nth \( ... \) 
+   \1, \2, ..., \9   Matches the match specified by nth \( ... \)
                      expression.
 #v-
  In addition the following extensions are also supported:
@@ -47,12 +47,12 @@
 Here are some simple examples:
 
   \exmp{"^int "} matches the \exmp{"int "} at the beginning of a line.
-  
+
   \exmp{"\\<money\\>"} matches \exmp{"money"} but only if it appears
   as a separate word.
-  
+
   \exmp{"^$"} matches an empty line.
-  
+
  A more complex pattern is
 #v+
   "\(\<[a-zA-Z]+\>\)[ ]+\1\>"
@@ -61,7 +61,7 @@ Here are some simple examples:
  operators \exmp{\\(} and \exmp{\\)} are used to define the text
  matched by the enclosed regular expression, and then subsequently
  referred to \exmp{\\1}.
- 
+
  Finally, remember that when used in string literals either in the
  \slang language or in the C language, care must be taken to
  "double-up" the \exmp{'\\'} character since both languages treat it
@@ -92,7 +92,7 @@ Here are some simple examples:
  regular expression.  Thus expression such as \exmp{"\\(hello\\)*"} is
  \em{not} a pattern to match zero or more occurrences of \exmp{"hello"}
  as it is in e.g., \bf{egrep}.
- 
+
  One question that comes up from time to time is why doesn't \slang
  simply employ some posix-compatible regular expression library.  The
  simple answer is that, at the time of this writing, none exists that
@@ -101,4 +101,4 @@ Here are some simple examples:
  can be distributed under both the GNU licenses.  It is particularly
  important that the library and the interpreter support a common set
  of regular expressions in a platform independent manner.
- 
+

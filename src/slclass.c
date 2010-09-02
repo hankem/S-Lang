@@ -17,7 +17,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.  
+USA.
 */
 
 #include "slinclud.h"
@@ -49,7 +49,7 @@ static void add_class_to_slot (Class_Table_Type *t, SLang_Class_Type **clp,
 static SLang_Class_Type *lookup_class (SLtype type)
 {
    Class_Table_Type *t;
-   
+
    t = Class_Tables[(type >> 8)&0xFF];
 
    if (t == NULL)
@@ -106,9 +106,9 @@ static SLang_Class_Type **find_empty_class_slot (SLtype *typep, Class_Table_Type
 
 	if (t->nclasses == 256)
 	  continue;
-	
+
 	clp = t->classes;
-	
+
 	for (j = 0; j < 256; j++)
 	  {
 	     if (clp[j] == NULL)
@@ -118,14 +118,14 @@ static SLang_Class_Type **find_empty_class_slot (SLtype *typep, Class_Table_Type
 		  return clp + j;
 	       }
 	  }
-	
+
 	_pSLang_verror (SL_INTERNAL_ERROR, "Class table nclasses variable is out of sync");
 	return NULL;
      }
-   
+
    return NULL;
 }
-	
+
 static SLang_Class_Type *lookup_class_by_name (SLCONST char *name)
 {
    unsigned int i;
@@ -134,7 +134,7 @@ static SLang_Class_Type *lookup_class_by_name (SLCONST char *name)
      {
 	Class_Table_Type *t = Class_Tables[i];
 	SLang_Class_Type **clp, **clpmax;
-	
+
 	if (t == NULL)
 	  continue;
 
@@ -153,11 +153,10 @@ static SLang_Class_Type *lookup_class_by_name (SLCONST char *name)
    return NULL;
 }
 
-
 SLang_Class_Type *_pSLclass_get_class (SLtype type)
 {
    SLang_Class_Type *cl;
-   
+
    if (NULL == (cl = lookup_class (type)))
      SLang_exit_error ("Application error: Type %d not registered", (int) type);
 
@@ -169,7 +168,6 @@ int SLclass_is_class_defined (SLtype type)
    return (NULL != lookup_class (type));
 }
 
-
 int _pSLclass_copy_class (SLtype to, SLtype from)
 {
    SLang_Class_Type *cl, **clp;
@@ -178,7 +176,7 @@ int _pSLclass_copy_class (SLtype to, SLtype from)
    cl = _pSLclass_get_class (from);
    if (NULL == (clp = alloc_class_slot (to, &t)))
      return -1;
-   
+
    if (*clp != NULL)
      {
 	_pSLang_verror (SL_APPLICATION_ERROR, "Class %d already exists", to);
@@ -561,7 +559,7 @@ use_cmp_bin_op (int op,
    switch (op)
      {
 	int result;
-	
+
       default:
 	return 0;
 
@@ -644,14 +642,14 @@ int _pSLclass_is_same_obj (SLang_Object_Type *a, SLang_Object_Type *b)
 
       case SLANG_CLASS_TYPE_SCALAR:
 	return !memcmp (&a->v, &b->v, sizeof_type);
-	
+
       case SLANG_CLASS_TYPE_VECTOR:
 	return !memcmp (a->v.ptr_val, b->v.ptr_val, sizeof_type);
      }
    return 0;
 }
 
-static int do_default_eqs (SLang_Class_Type *a_cl, VOID_STAR pa, 
+static int do_default_eqs (SLang_Class_Type *a_cl, VOID_STAR pa,
 			   SLang_Class_Type *b_cl, VOID_STAR pb)
 {
    SLang_Class_Type *c_cl;
@@ -666,7 +664,7 @@ static int do_default_eqs (SLang_Class_Type *a_cl, VOID_STAR pa,
      {
 	if (a_cl != b_cl)
 	  return 0;
-	
+
 	switch (a_cl->cl_class_type)
 	  {
 	   case SLANG_CLASS_TYPE_MMT:
@@ -679,22 +677,22 @@ static int do_default_eqs (SLang_Class_Type *a_cl, VOID_STAR pa,
 	  }
 	return 0;
      }
-   
+
    pc = c_cl->cl_transfer_buf;
 
    if (1 != (*binary_fun) (SLANG_EQ, a_cl->cl_data_type, pa, 1, b_cl->cl_data_type, pb, 1, pc))
      return 0;
-   
+
    /* apush will create a copy, so make sure we free after the push */
    ret = (*c_cl->cl_apush)(c_cl->cl_data_type, pc);
    (*c_cl->cl_adestroy)(c_cl->cl_data_type, pc);
 
    if (ret != 0)
      return -1;
-   
+
    if (-1 == SLang_pop_integer (&ret))
      return -1;
-   
+
    return (ret != 0);
 }
 
@@ -798,7 +796,7 @@ int SLang_push_datatype (SLtype data_type)
 {
    /* This data type could be a copy of another type, e.g., short and
     * int if they are the same size (Int16 == Short).  So, make sure
-    * we push the original and not the copy. 
+    * we push the original and not the copy.
     */
    data_type = _pSLclass_get_class (data_type)->cl_data_type;
    return SLclass_push_int_obj (SLANG_DATATYPE_TYPE, data_type);
@@ -835,7 +833,7 @@ int SLang_pop_datatype (SLtype *type)
    int i;
    if (-1 == SLclass_pop_int_obj (SLANG_DATATYPE_TYPE, &i))
      return -1;
-   
+
    *type = (SLtype) i;
    return 0;
 }
@@ -898,7 +896,7 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
      clp = find_empty_class_slot (&type, &t);
    else
      clp = alloc_class_slot (type, &t);
-   
+
    if (clp == NULL)
      {
 	_pSLang_verror (SL_APPLICATION_ERROR, "Class type %d already in use", (int) type);
@@ -970,7 +968,7 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
 	_pSLang_verror (SL_INVALID_PARM, "type size must be non-zero for %s", name);
 	return -1;
      }
-   
+
    if (cl->cl_string == NULL) cl->cl_string = default_string;
    if (cl->cl_acopy == NULL) cl->cl_acopy = default_acopy;
    if (cl->cl_datatype_deref == NULL) cl->cl_datatype_deref = default_datatype_deref;
@@ -1020,7 +1018,7 @@ int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type
    else if (can_binop
 	    && (-1 == SLclass_add_binary_op (type, type, scalar_vector_bin_op, scalar_vector_bin_op_result)))
      return -1;
-   
+
    cl->cl_anytype_typecast = _pSLanytype_typecast;
 
    return 0;
@@ -1061,7 +1059,7 @@ int SLclass_add_binary_op (SLtype a, SLtype b,
 
    ab->binary_function = f;
    ab->binary_result = r;
-   
+
    if (a == SLANG_VOID_TYPE)
      {
 	cl = _pSLclass_get_class (b);
@@ -1284,12 +1282,12 @@ int SLclass_set_aelem_init_function (SLang_Class_Type *cl, int (*f)(SLtype, VOID
 
 int SLclass_set_foreach_functions (SLang_Class_Type *cl,
 				   SLang_Foreach_Context_Type *(*fe_open)(SLtype, unsigned int),
-				   int (*fe)(SLtype, SLang_Foreach_Context_Type *),  
+				   int (*fe)(SLtype, SLang_Foreach_Context_Type *),
 				   void (*fe_close)(SLtype, SLang_Foreach_Context_Type *))
 {
    if (cl == NULL)
      return -1;
-   
+
    if ((fe_open == NULL) || (fe == NULL) || (fe_close == NULL))
      {
 	SLang_set_error (SL_APPLICATION_ERROR);
@@ -1298,7 +1296,7 @@ int SLclass_set_foreach_functions (SLang_Class_Type *cl,
    cl->cl_foreach_open = fe_open;
    cl->cl_foreach = fe;
    cl->cl_foreach_close = fe_close;
-   
+
    return 0;
 }
 
@@ -1365,7 +1363,7 @@ static int get_binary_unary_opcode (SLCONST char *name, SLCONST char **tbl, int 
      {
 	if (0 == strcmp (name, *u))
 	  return min_val + (int) (u - tbl);
-	
+
 	u++;
      }
 
@@ -1386,7 +1384,7 @@ int _pSLclass_get_binary_opcode (SLCONST char *name)
 
 static SLCONST char *get_binary_op_string (int op)
 {
-   if ((op < SLANG_BINARY_OP_MIN) 
+   if ((op < SLANG_BINARY_OP_MIN)
        || (op > SLANG_BINARY_OP_MAX))
      return "- ?? -";		       /* Note: -??- is a trigraph (sigh) */
    return Binary_Ops[op - SLANG_BINARY_OP_MIN];
@@ -1419,7 +1417,7 @@ int (*_pSLclass_get_binary_fun (int op,
      {
 	if (bt->data_type == b)
 	  break;
-	
+
 	last = bt;
 	bt = bt->next;
      }
@@ -1430,7 +1428,7 @@ int (*_pSLclass_get_binary_fun (int op,
 	bt->next = a_cl->cl_binary_ops;
 	a_cl->cl_binary_ops = bt;
      }
-	
+
    /* Did find find any specific function, so look for a more generic match */
    if ((bt != NULL)
        || (NULL != (bt = a_cl->cl_this_binary_void))
@@ -1533,7 +1531,7 @@ SLclass_typecast (SLtype to_type, int is_implicit, int allow_array)
 	return SLang_push (&obj);
      }
 
-   /* Since the typecast functions are designed to work on arrays, 
+   /* Since the typecast functions are designed to work on arrays,
     * get the pointer to the value instead of just &obj.v.
     */
    ap = _pSLclass_get_ptr_to_value (cl_from, &obj);
@@ -1570,9 +1568,9 @@ SLclass_typecast (SLtype to_type, int is_implicit, int allow_array)
 	 */
 	if (to_type == SLANG_ANY_TYPE)
 	  status = (*cl_to->cl_push)(to_type, bp);
-	else 
+	else
 	  status = (*cl_to->cl_apush)(to_type, bp);
-	
+
 	if (status == -1)
 	  {
 	     (*cl_to->cl_adestroy) (to_type, bp);
@@ -1669,7 +1667,7 @@ SLang_MMT_Type *SLang_pop_mmt (SLtype type) /*{{{*/
 {
    SLang_MMT_Type *mmt;
    SLang_Class_Type *cl;
-   
+
    cl = lookup_class (type);
    if (cl == NULL)
      {
@@ -1751,7 +1749,7 @@ SLang_MMT_Type *SLang_create_mmt (SLtype t, VOID_STAR p)
 
    ref->data_type = t;
    ref->user_data = p;
-   /* FIXME!!  To be consistent with other types, the reference count should 
+   /* FIXME!!  To be consistent with other types, the reference count should
     * be set to 1 here.  However, doing so will require other code changes
     * involving the use of MMTs.  For instance, SLang_free_mmt would have
     * to be called after every push of the MMT.
@@ -1915,7 +1913,6 @@ int SLclass_pop_char_obj (SLtype type, char *x)
    return 0;
 }
 
-
 SLtype SLang_get_int_type (int nbits)
 {
    switch (nbits)
@@ -1967,11 +1964,11 @@ int SLang_get_int_size (SLtype type)
    return 0;
 }
 
-int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table, 
+int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table,
 				  SLtype *from_types, SLtype *to_types, unsigned int n)
 {
    unsigned int i, j;
-   
+
    for (i = 0; i < n; i++)
      {
 	SLang_Intrin_Fun_Type *t = table;
@@ -1997,7 +1994,7 @@ int SLclass_patch_intrin_fun_table (SLang_Intrin_Fun_Type *table,
      }
    return 0;
 }
-int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table, 
+int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table,
 				   SLtype from_type, SLtype to_type)
 {
    return SLclass_patch_intrin_fun_table (table, &from_type, &to_type, 1);

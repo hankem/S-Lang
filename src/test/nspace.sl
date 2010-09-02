@@ -6,7 +6,7 @@ if (current_namespace () != "")
   failed ("current_namespace - 1");
 
 implements ("NSpace");
-% From this point on, define and variable defaults to static 
+% From this point on, define and variable defaults to static
 
 if (current_namespace () != "NSpace")
   failed ("current_namespace - 2");
@@ -87,7 +87,7 @@ if (Global->func1 () != "3")
 if (length (_get_namespaces ()) != 4)  %  Global, NS1, NS2, NSpace
   failed ("_get_namespaces: %S", _get_namespaces());
 
-% Test multiple namespaces in the same file.  Implements works such that 
+% Test multiple namespaces in the same file.  Implements works such that
 % if there is a namespace associated with the file, a new one will be created.
 % Otherwise, the existing one will be used.  Since there was one created above,
 % foo0 defined below is part of it.
@@ -135,7 +135,6 @@ if ("space3" != func ())
 print ("Ok\n");
 
 exit (0);
-
 
 print ("Ok\n");
 

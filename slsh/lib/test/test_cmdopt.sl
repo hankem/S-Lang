@@ -7,7 +7,7 @@ private define test_args (opts, args, expected_iend, s, val_list, should_error)
 	variable iend = cmdopt_process (opts, args, 0);
 	if (should_error)
 	  throw RunTimeError;
-	
+
 	variable names = get_struct_field_names (s);
 	_for (0, length(val_list)-1, 1)
 	  {
@@ -41,7 +41,7 @@ private define test_list_args (opts, args, expected_iend, listp, val_list, shoul
 	variable list = @listp;
 	if (iend != expected_iend)
 	  throw RunTimeError, "iend=${expected_iend}, found $iend"$;
-	
+
 	if (length (list) != length (val_list))
 	  throw RunTimeError, "list not of expected size";
 	ifnot (_eqs (list, val_list))
@@ -53,7 +53,6 @@ private define test_list_args (opts, args, expected_iend, listp, val_list, shoul
 	  throw;
      }
 }
-
 
 private define callback_opt (value, ref)
 {
@@ -88,7 +87,7 @@ define slsh_main ()
    cmdopt_add (opts, "l|lil", &s.l; type="int", optional=3);
 
    variable args;
-   
+
    set_struct_fields (s, 1,0,NULL,0,1.0,0);
    args = ["--foo", "7", "-vvv", "-al", "foo"];
    test_args (opts, args, 4, s, {7, 3, NULL, 1, 1.0, 3}, 0);
@@ -112,7 +111,7 @@ define slsh_main ()
    set_struct_fields (s, 1, 0, "opt", -1, PI, -1);
    args = ["-vv", "-f36", "-al", "--float", "-1", "-v"];
    test_args (opts, args, 6, s, {36, 3, "opt", 1, -1.0, 3}, 0);
-   
+
    cmdopt_add (opts, "g|ginc", &callback_inc, &s.g; inc);
    cmdopt_add (opts, "h|hfun", &callback_opt, &s.h; type="int");
 
@@ -123,7 +122,7 @@ define slsh_main ()
    opts.add ("list", &s.list; type="string", optional="foo", append);
    args = ["--list", "--list=3", "--list=bar"];
    test_list_args (opts, args, 3, &s.list, {"foo", "3", "bar"}, 0);
-   
+
    s = struct {bitmap = 1, flags=0x4|0x2};
    opts = cmdopt_new (NULL);
    opts.add ("a|b8000", &s.bitmap; bor=0x8000);
