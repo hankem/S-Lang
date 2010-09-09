@@ -186,6 +186,8 @@ Changes since 2.2.2
     if the name contains a non-existent namespace.
 73. Removed excess whitespace from all files (*.c, *.h, *.tm, *.sl, ...).
 74. src/slang.c: define MAX_USER_BLOCKS to be 5, and use it instead of `5'.
+75. src/slsignal.c: Use (char*)NULL instead of NULL in call to execl
+    to avoid a compiler warning on OpenBSD.
 
 {{{ Previous Versions
 
