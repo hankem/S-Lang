@@ -185,6 +185,7 @@ Changes since 2.2.2
 72. src/slang.c: _pSLlocate_name return NULL instead of an exception
     if the name contains a non-existent namespace.
 73. Removed excess whitespace from all files (*.c, *.h, *.tm, *.sl, ...).
+74. src/slang.c: define MAX_USER_BLOCKS to be 5, and use it instead of `5'.
 
 {{{ Previous Versions
 

@@ -4230,8 +4230,10 @@ int _pSLdump_objects (char *prefix, SLang_Object_Type *x, unsigned int n, int di
    return 0;
 }
 
+/* Do NOT change this-- it corresponds to USRBLK[0-4]_TOKEN */
+#define MAX_USER_BLOCKS	5
 static SLBlock_Type *Exit_Block_Ptr;
-static SLBlock_Type *Global_User_Block[5];
+static SLBlock_Type *Global_User_Block[MAX_USER_BLOCKS];
 static SLBlock_Type **User_Block_Ptr = Global_User_Block;
 
 static int find_local_variable_index (Function_Header_Type *header, char *name)
@@ -4383,14 +4385,14 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    /* SLBlock_Type *val; */
    SLBlock_Type *exit_block_save;
    SLBlock_Type **user_block_save;
-   SLBlock_Type *user_blocks[5];
+   SLBlock_Type *user_blocks[MAX_USER_BLOCKS];
    int issue_bofeof_info = 0;
    int nargs;
 
    exit_block_save = Exit_Block_Ptr;
    user_block_save = User_Block_Ptr;
    User_Block_Ptr = user_blocks;
-   memset ((char *)user_blocks, 0, 5*sizeof (SLBlock_Type *));
+   memset ((char *)user_blocks, 0, MAX_USER_BLOCKS*sizeof (SLBlock_Type *));
    Exit_Block_Ptr = NULL;
 
    if (-1 == increment_slang_frame_pointer (fun, linenum))
