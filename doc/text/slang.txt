@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  Aug 4, 2010
+  Sep 16, 2010
   ____________________________________________________________
 
 
@@ -4939,7 +4939,7 @@
   binary files, i.e., files that contain null characters. For such
   files, the file should be opened in binary mode via
 
-        fp = fopen (file, "rb");
+             fp = fopen (file, "rb");
 
   and then the data read using the fread function:
 
@@ -4987,7 +4987,6 @@
   used to count the number of bytes in a file when that information is
   more readily accessible by another means. For example, it is
   preferable to get this information via the stat_file function:
-
             define count_chars_in_file (file)
             {
                variable st;
@@ -5942,9 +5941,9 @@
 
   A.2.  What's new for S-Lang 2.1
 
-  o   Short circuiting boolean operators || and && have been added to
-     the languange. The use of orelse and andelse constructs are
-     nolonger necessary nor encouraged.
+  o  Short circuiting boolean operators || and && have been added to the
+     languange. The use of orelse and andelse constructs are nolonger
+     necessary nor encouraged.
 
   o  Qualifiers have been added to the language as a convenient and
      powerful mechanism to pass optional information to functions.

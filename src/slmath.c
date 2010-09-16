@@ -1138,11 +1138,16 @@ static void hypot_fun (void)
    Array_Or_Scalar_Type ast;
    unsigned int num;
 
-   if (SLang_Num_Function_Args == 2)
+   if (SLang_Num_Function_Args >= 2)
      {
-	(void) do_binary_function (SLmath_hypot);
+	int count = SLang_Num_Function_Args-1;
+	while ((count > 0)
+	       && (0 == do_binary_function (SLmath_hypot)))
+	  count--;
+
 	return;
      }
+
    if (-1 == pop_array_or_scalar (&ast))
      return;
 

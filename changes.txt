@@ -190,6 +190,8 @@ Changes since 2.2.2
     to avoid a compiler warning on OpenBSD.
 76. src/slproc.c: define _XOPEN_SOURCE_EXTENDED to be 1 instead of
     just defining it.  This pulls in some prototypes on OpenBSD.
+77. src/slmath.c: The hypot intrinsic was modified to work with N
+    arrays instead of just 2.  (Manfred Hanke)
 
 {{{ Previous Versions
 

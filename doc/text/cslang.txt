@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide, V2.0.4
   John E. Davis, jed@jedsoft.org
-  Apr 8, 2010
+  Sep 16, 2010
   ____________________________________________________________
 
 
@@ -1692,7 +1692,8 @@
   Before the program exits or suspends, the function SLsmg_reset_smg
   should be called to shutdown the display system. This function has the
   prototype
-             void SLsmg_reset_smg (void);
+
+        void SLsmg_reset_smg (void);
 
   This will deallocate any memory allocated for the virtual screen and
   reset the terminal's display.
@@ -1910,7 +1911,6 @@
   this problem than other screen management libraries an explanation of
   this approach is given here. This approach has been motivated by
   experience with programs that require some sort of screen management.
-
   Most programs that use SLsmg are composed of specific textual objects
   or objects made up of line drawing characters. For example, consider
   an application with a menu bar with drop down menus. The menus might
@@ -2035,7 +2035,6 @@
         If flag is non-zero, subsequent write functions will use
         characters from the alternate character set. If flag is zero,
         the default, or, ordinary character set will be used.
-
      void SLsmg_draw_hline (int len);
         Draw a horizontal line from the current position to the column
         that is len characters to the right.
@@ -2095,7 +2094,6 @@
   columns of the physical display. If either of these numbers changes,
   the functions SLsmg_reset_smg and SLsmg_init_smg should be called
   again so that the SLsmg routines can re-adjust to the new size.
-
   int SLsmg_Tab_Width; Set this variable to the tab width that will be
   used when expanding tab characters. The default is 8.
 

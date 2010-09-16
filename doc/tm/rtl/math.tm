@@ -246,18 +246,18 @@
 \done
 
 \function{hypot}
-\synopsis{Compute sqrt(x^2+y^2)}
-\usage{r = hypot (x [,y])}
+\synopsis{Compute sqrt(x1^2+x2^2+...+xN^2)}
+\usage{r = hypot (x1 [,x2...,xN]}
 \description
-  If given two arguments, \ifun{hypot} function computes the quantity
-  \exmp{sqrt(x^2+y^2)} except that it employs an algorithm that tries
-  to avoid arithmetic overflow when \exmp{x} or \exmp{y} are large.
-  If either argument is an array, an array of the corresponding values
-  will be returned.
+ If given two or more arguments, \exmp{x1,...,xN}, \ifun{hypot}
+ function computes the quantity \exmp{sqrt(x1^2+...+xN^2)} using an
+ algorithm that tries to avoid arithmetic overflow.  If any of the
+ arguments is an array, an array of the corresponding values will be
+ returned.
 
-  If given a single array argument \exmp{x}, the \ifun{hypot} function will
-  compute \exmp{sqrt(sumsq(x))}, where \exmp{sumsq(x)} computes the sum
-  of the squares of the elements of \exmp{x}.
+ If given a single array argument \exmp{x}, the \ifun{hypot} function
+ will compute \exmp{sqrt(sumsq(x))}, where \exmp{sumsq(x)} computes
+ the sum of the squares of the elements of \exmp{x}.
 \seealso{atan2, cos, atan, acosh, cosh, sum, sumsq}
 \done
 
