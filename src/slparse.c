@@ -1564,7 +1564,21 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
 	get_token (ctok);
 	function_args_expression (ctok, 0, 0, 0, NULL);
      }
-   append_token_of_type (EARG_TOKEN);
+   /* append_token_of_type (EARG_TOKEN); // This is now handled by the
+    * FOREACH_TOKEN itself.  Doing it presents a problem if a hook gets
+    * called when the loop_statements are being parsed.  This can and will
+    * happen when slsh calls its massage_input hook.  The would result in
+    * bytecode such as:
+    *  __args <using-expression> __eargs __args <hookargs> __eargs hook
+    * As a result, the first __args/__eargs info will be lost.  By allowing
+    * __foreach__ to handle it, we effectively get the proper nested
+    * __args/__eargs form:
+    *  __args <using-expression> __args <hookargs> __eargs hook __eargs __foreach
+    *
+    * Yes, this is subtle.  Always follow the rule:  Avoid __args/__eargs
+    * outside a token list and make sure the code that uses it is either also
+    * in the same token list, or implicitely calls __eargs.
+    */
 
    compile_token_list ();
 
@@ -1581,7 +1595,7 @@ static void handle_foreach_statement (_pSLang_Token_Type *ctok)
    loop_statement (ctok);
 
    compile_token_of_type (CBRACE_TOKEN);
-   compile_token_of_type (FOREACH_TOKEN);
+   compile_token_of_type (FOREACH_EARGS_TOKEN);
 
    free_return:
    while (var_tokens != NULL)

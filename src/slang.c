@@ -3636,7 +3636,11 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
      {
 	int next_fn_args;
 
-      case SLANG_BCST_FOREACH:
+      case SLANG_BCST_FOREACH_EARGS:
+	if (-1 == end_arg_list ())
+	  goto return_error;
+	/* drop */
+      case SLANG_BCST_FOREACH:	       /* obsolete */
 	loop_name = "foreach";
 	if (num_blocks != 1)
 	  goto wrong_num_blocks_error;
@@ -5663,6 +5667,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 		case SLANG_BCST_CFOR:
 		case SLANG_BCST_DOWHILE:
 		case SLANG_BCST_FOREACH:
+		case SLANG_BCST_FOREACH_EARGS:
 		    {
 		       int status;
 		       SLBlock_Type *addr1 = addr + 1;
@@ -9423,6 +9428,11 @@ static void compile_directive_mode (_pSLang_Token_Type *t)
       case FOREACH_TOKEN:
 	delay = 1;
 	bc_sub_type = SLANG_BCST_FOREACH;
+	break;
+
+      case FOREACH_EARGS_TOKEN:
+	delay = 1;
+	bc_sub_type = SLANG_BCST_FOREACH_EARGS;
 	break;
 
       case OBRACE_TOKEN:

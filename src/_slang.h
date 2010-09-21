@@ -343,8 +343,9 @@ _pSLang_BC_Type;
 #define SLANG_BCST_FOREVER	0x13
 #define SLANG_BCST_CFOR	0x14
 #define SLANG_BCST_DOWHILE	0x15
-#define SLANG_BCST_FOREACH	0x16
+#define SLANG_BCST_FOREACH	0x16   /* obsolete */
 #define SLANG_BCST_TRY		0x17
+#define SLANG_BCST_FOREACH_EARGS	0x18
 
 #define SLANG_BCST_IF		0x20
 #define SLANG_BCST_IFNOT	0x21
@@ -1384,8 +1385,8 @@ extern SLuchar_Type *_pSLinterp_encode_wchar (SLwchar_Type wch,
 #define BREAK_N_TOKEN	0x8b
 #define CONT_N_TOKEN	0x8c
 #define THEN_TOKEN	0x8d
-
 #define STRUCT_WITH_ASSIGN_TOKEN	0x8e
+#define FOREACH_EARGS_TOKEN	0x8f
 
 /* Note: the order here must match the order of the generic assignment tokens.
  * Also, the first token of each group must be the ?_ASSIGN_TOKEN.

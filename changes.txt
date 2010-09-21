@@ -195,6 +195,10 @@ Changes since 2.2.2
 78. src/slarith.inc: Use doubles for intermediate calculations when
     double is the expected result.  This avoids some integer overflows 
     (Matthias Kühnel, Michael Wille, Manfred Hanke).
+79. src/slparse.c,slang.c: Added FOREACH_EARGS byte-code that will
+    implicitly call the __eargs function.  This avoids a problem with
+    the standard FOREACH bytecode if a hook gets called after __eargs
+    but before the FOREACH byte-code executes.
 
 {{{ Previous Versions
 
