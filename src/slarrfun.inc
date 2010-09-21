@@ -359,7 +359,7 @@ static int SUMSQ_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOI
    xmax = x + num;
    while (x < xmax)
      {
-	double v = (*x) * (*x) - sumerr;
+	double v = (double)(*x) * (double)(*x) - sumerr;
 	double new_sum = sum + v;
 	sumerr = (new_sum - sum) - v;
 	sum = new_sum;

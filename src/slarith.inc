@@ -17,7 +17,10 @@
  *
  * If GENERIC_BIT_OPERATIONS is defined, the bit-level binary operators
  * will get included.  If the data type has a power operation (SLANG_POW),
- * then POW_FUNCTION should be defined to return POW_RESULT_TYPE.
+ * then POW_FUNCTION should be defined to return POW_RESULT_TYPE.  The code
+ * below assumes that POW_RESULT_TYPE is a floating point type,
+ * with intermediate computations performed in double precision.
+ *
  * If division by zero errors should be trapped, the define TRAP_DIV_ZERO to 1
  */
 #ifdef GENERIC_BINARY_FUNCTION
@@ -78,7 +81,7 @@ static int GENERIC_BINARY_FUNCTION
 	     GENERIC_TYPE xb = *b;
 	     if (xb == 2)
 	       for (n = 0; n < na; n++)
-		 d[n] = a[n] * a[n];
+		 d[n] = (double)a[n] * (double)a[n];
 	     else
 	       for (n = 0; n < na; n++)
 		 d[n] = POW_FUNCTION(a[n], xb);

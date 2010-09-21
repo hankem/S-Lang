@@ -192,6 +192,9 @@ Changes since 2.2.2
     just defining it.  This pulls in some prototypes on OpenBSD.
 77. src/slmath.c: The hypot intrinsic was modified to work with N
     arrays instead of just 2.  (Manfred Hanke)
+78. src/slarith.inc: Use doubles for intermediate calculations when
+    double is the expected result.  This avoids some integer overflows 
+    (Matthias Kühnel, Michael Wille, Manfred Hanke).
 
 {{{ Previous Versions
 
