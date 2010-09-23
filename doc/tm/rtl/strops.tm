@@ -514,12 +514,13 @@
 
 \function{string_match}
 \synopsis{Match a string against a regular expression}
-\usage{Int_Type string_match(String_Type str, String_Type pat, Int_Type pos)}
+\usage{Int_Type string_match(String_Type str, String_Type pat [,Int_Type pos])}
 \description
   The \ifun{string_match} function returns zero if \exmp{str} does not
   match regular expression specified by \exmp{pat}.  This function
-  performs the match starting at byte-offset \exmp{pos} in the string
-  \exmp{str} (numbered from 1).  This function returns the position in
+  performs the match starting at the first byte of the string.  The
+  optional \exmp{pos} argument may be used to specify a different byte
+  offse (numbered from 1).  This function returns the position in
   bytes (numbered from 1) of the start of the match in \exmp{str}.
   The exact substring matched may be found using
   \ifun{string_match_nth}.
@@ -531,6 +532,8 @@
   The function is not yet UTF-8 aware.  If possible, consider using
   the \module{pcre} module for better, more sophisticated regular
   expressions.
+
+  The \exmp{pos} argument was made optional in version 2.2.3.
 \seealso{string_matches, string_match_nth, strcmp, strncmp}
 \done
 
@@ -572,7 +575,7 @@
 
 \function{string_matches}
 \synopsis{Match a string against a regular expression and return the matches}
-\usage{String_Type[] string_matches(String_Type str, String_Type pat, Int_Type pos)}
+\usage{String_Type[] string_matches(String_Type str, String_Type pat [,Int_Type pos])}
 \description
   The \ifun{string_matches} function combines the functionality of
   \ifun{string_match} and \ifun{string_match_nth}.  Like
@@ -591,13 +594,15 @@
     %     strs[2] = "27"
 
     strs = string_matches ("q0.5keV_27deg.dat",
-                           "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R, 1);
+                           "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R);
     % ==> strs = NULL
 #v-
 \notes
   The function is not yet UTF-8 aware.  If possible, consider using
   the \module{pcre} module for better, more sophisticated regular
   expressions.
+
+  The \exmp{pos} argument was made optional in version 2.2.3.
 \seealso{string_match, string_match_nth, strcmp, strncmp}
 \done
 

@@ -1936,7 +1936,7 @@ static int is_list_element_cmd (char *list, char *elem, SLwchar_Type *delim_ptr)
 static SLRegexp_Type *Regexp;
 static unsigned int Regexp_Match_Byte_Offset;
 
-static int string_match_cmd (char *str, char *pat, int *nptr) /*{{{*/
+static int string_match_internal (char *str, char *pat, int n) /*{{{*/
 {
    char *match;
    unsigned int len;
@@ -1948,7 +1948,7 @@ static int string_match_cmd (char *str, char *pat, int *nptr) /*{{{*/
 	Regexp = NULL;
      }
 
-   byte_offset = (unsigned int) (*nptr - 1);
+   byte_offset = (unsigned int) (n - 1);
    len = strlen(str);
 
    if (byte_offset > len)
@@ -1965,6 +1965,41 @@ static int string_match_cmd (char *str, char *pat, int *nptr) /*{{{*/
 }
 
 /*}}}*/
+
+
+static int pop_string_match_args (int nargs, char **strp, char **patp, int *np)
+{
+   *strp = *patp = NULL;
+
+   if (nargs == 2)
+     *np = 1;
+   else if (-1 == SLang_pop_int (np))
+     return -1;
+
+   if (-1 == SLang_pop_slstring (patp))
+     return -1;
+
+   if (0 == SLang_pop_slstring (strp))
+     return 0;
+
+   SLang_free_slstring (*patp);
+   *patp = NULL;
+   return -1;
+}
+
+static int string_match_cmd (void)
+{
+   char *str, *pat;
+   int n, status;
+
+   if (-1 == pop_string_match_args (SLang_Num_Function_Args, &str, &pat, &n))
+     return -1;
+
+   status = string_match_internal (str, pat, n);
+   SLang_free_slstring (str);
+   SLang_free_slstring (pat);
+   return status;
+}
 
 static int string_match_nth_cmd (int *nptr) /*{{{*/
 {
@@ -1991,7 +2026,7 @@ static int string_match_nth_cmd (int *nptr) /*{{{*/
 
 /*}}}*/
 
-static void string_matches_cmd (char *str, char *pat, int *nptr)
+static int string_matches_internal (char *str, char *pat, int n)
 {
    int status;
    unsigned int i;
@@ -2001,11 +2036,11 @@ static void string_matches_cmd (char *str, char *pat, int *nptr)
    SLindex_Type num;
    SLang_Array_Type *at;
 
-   status = string_match_cmd (str, pat, nptr);
+   status = string_match_internal (str, pat, n);
    if (status <= 0)
      {
 	SLang_push_null ();
-	return;
+	return -1;
      }
 
    for (i = 0; i < 10; i++)
@@ -2018,7 +2053,7 @@ static void string_matches_cmd (char *str, char *pat, int *nptr)
    num = (SLindex_Type)i;
 
    if (NULL == (at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &num, 1)))
-     return;
+     return -1;
 
    strs = (char **) at->data;
    for (i = 0; i < (unsigned int) num; i++)
@@ -2026,11 +2061,24 @@ static void string_matches_cmd (char *str, char *pat, int *nptr)
 	if (NULL == (strs[i] = SLang_create_nslstring (str+offsets[i], lens[i])))
 	  {
 	     SLang_free_array (at);
-	     return;
+	     return -1;
 	  }
      }
 
-   (void) SLang_push_array (at, 1);
+   return SLang_push_array (at, 1);
+}
+
+static void string_matches_cmd (void)
+{
+   char *str, *pat;
+   int n;
+
+   if (-1 == pop_string_match_args (SLang_Num_Function_Args, &str, &pat, &n))
+     return;
+
+   (void) string_matches_internal (str, pat, n);
+   SLang_free_slstring (str);
+   SLang_free_slstring (pat);
 }
 
 /* UTF-8 ok */
@@ -2502,8 +2550,8 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_2("strbytesub",  strbytesub_cmd, SLANG_VOID_TYPE, SLANG_INT_TYPE, SLANG_UCHAR_TYPE),
    MAKE_INTRINSIC_3("extract_element", extract_element_cmd, SLANG_VOID_TYPE, SLANG_STRING_TYPE, SLANG_INT_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_3("is_list_element", is_list_element_cmd, SLANG_INT_TYPE, SLANG_STRING_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE),
-   MAKE_INTRINSIC_SSI("string_match", string_match_cmd, SLANG_INT_TYPE),
-   MAKE_INTRINSIC_SSI("string_matches", string_matches_cmd, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("string_match", string_match_cmd, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_0("string_matches", string_matches_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_I("string_match_nth", string_match_nth_cmd, SLANG_INT_TYPE),
    MAKE_INTRINSIC_0("strlow", strlow_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_1("tolower", tolower_cmd, SLANG_INT_TYPE, SLANG_WCHAR_TYPE),

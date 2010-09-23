@@ -8309,13 +8309,14 @@ string_match
   Match a string against a regular expression
 
  USAGE
-  Int_Type string_match(String_Type str, String_Type pat, Int_Type pos)
+  Int_Type string_match(String_Type str, String_Type pat [,Int_Type pos])
 
  DESCRIPTION
   The `string_match' function returns zero if `str' does not
   match regular expression specified by `pat'.  This function
-  performs the match starting at byte-offset `pos' in the string
-  `str' (numbered from 1).  This function returns the position in
+  performs the match starting at the first byte of the string.  The
+  optional `pos' argument may be used to specify a different byte
+  offse (numbered from 1).  This function returns the position in
   bytes (numbered from 1) of the start of the match in `str'.
   The exact substring matched may be found using
   `string_match_nth'.
@@ -8328,6 +8329,8 @@ string_match
   The function is not yet UTF-8 aware.  If possible, consider using
   the `pcre' module for better, more sophisticated regular
   expressions.
+
+  The `pos' argument was made optional in version 2.2.3.
 
  SEE ALSO
   string_matches, string_match_nth, strcmp, strncmp
@@ -8386,7 +8389,7 @@ string_matches
   Match a string against a regular expression and return the matches
 
  USAGE
-  String_Type[] string_matches(String_Type str, String_Type pat, Int_Type pos)
+  String_Type[] string_matches(String_Type str, String_Type pat [,Int_Type pos])
 
  DESCRIPTION
   The `string_matches' function combines the functionality of
@@ -8407,7 +8410,7 @@ string_matches
     %     strs[2] = "27"
 
     strs = string_matches ("q0.5keV_27deg.dat",
-                           "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R, 1);
+                           "p\([0-9.]+\)keV_\([0-9.]+\)deg\.dat"R);
     % ==> strs = NULL
 
 
@@ -8415,6 +8418,8 @@ string_matches
   The function is not yet UTF-8 aware.  If possible, consider using
   the `pcre' module for better, more sophisticated regular
   expressions.
+
+  The `pos' argument was made optional in version 2.2.3.
 
  SEE ALSO
   string_match, string_match_nth, strcmp, strncmp

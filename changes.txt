@@ -199,6 +199,8 @@ Changes since 2.2.2
     implicitly call the __eargs function.  This avoids a problem with
     the standard FOREACH bytecode if a hook gets called after __eargs
     but before the FOREACH byte-code executes.
+80. src/slstrops.c: The pos argument to the string_match and
+    string_matches function was made optional (defaults to 1).
 
 {{{ Previous Versions
 
