@@ -203,6 +203,9 @@ Changes since 2.2.2
     string_matches function was made optional (defaults to 1).
 81. src/slstring.c: Use _pSLuint32_Type instead of unsigned long for
     hashes since the hash algorithm was designed for 32 bits.
+82. src/slstd.c: Save the pointer passed to putenv to a global array
+    so that leak checkers can find it.  The reason for this is that
+    some libc implementations copy the pointer but others do not.
 
 {{{ Previous Versions
 

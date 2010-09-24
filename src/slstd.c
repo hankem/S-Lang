@@ -189,11 +189,18 @@ static void intrin_getenv_cmd (char *s)
 }
 
 #ifdef HAVE_PUTENV
+/* This is a silly hack to deal with the ambiguity of whether or not to free
+ * a pointer passed to putenv.  Here it is attached to an array so that leak
+ * checkers can located it.
+ */
+# define MAX_PUTENV_ARRAY_SIZE 64
+static char *Putenv_Pointer_Array[MAX_PUTENV_ARRAY_SIZE];
+unsigned int Num_Putenv_Pointers = 0;
 static void intrin_putenv (void) /*{{{*/
 {
    char *s;
 
-   /* Some putenv implementations required malloced strings. */
+   /* Some putenv implementations require malloced strings. */
    if (SLpop_string(&s)) return;
 
    if (putenv (s))
@@ -201,8 +208,10 @@ static void intrin_putenv (void) /*{{{*/
 	SLang_set_error (SL_OS_Error);
 	SLfree (s);
      }
-
    /* Note that s is NOT freed */
+
+   if (Num_Putenv_Pointers < MAX_PUTENV_ARRAY_SIZE)
+     Putenv_Pointer_Array[Num_Putenv_Pointers++] = s;
 }
 
 /*}}}*/
