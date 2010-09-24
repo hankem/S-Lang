@@ -88,8 +88,6 @@ static void uncache_string (char *s)
  *   See http://burtleburtle.net/bob/hash/evahash.html
  */
 
-typedef  unsigned long uint32;
-
 #define mix(a,b,c) \
 { \
   a -= b; a -= c; a ^= (c>>13); \
@@ -106,7 +104,7 @@ typedef  unsigned long uint32;
 _INLINE_
 unsigned long _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *smax)
 {
-   register uint32 a,b,c;
+   register _pSLuint32_Type a,b,c;
    unsigned int length = (unsigned int)(smax - s);
    unsigned int len = length;
 
@@ -116,9 +114,9 @@ unsigned long _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *
    /*---------------------------------------- handle most of the key */
    while (len >= 12)
      {
-	a += (s[0] +((uint32)s[1]<<8) +((uint32)s[2]<<16) +((uint32)s[3]<<24));
-	b += (s[4] +((uint32)s[5]<<8) +((uint32)s[6]<<16) +((uint32)s[7]<<24));
-	c += (s[8] +((uint32)s[9]<<8) +((uint32)s[10]<<16)+((uint32)s[11]<<24));
+	a += (s[0] +((_pSLuint32_Type)s[1]<<8) +((_pSLuint32_Type)s[2]<<16) +((_pSLuint32_Type)s[3]<<24));
+	b += (s[4] +((_pSLuint32_Type)s[5]<<8) +((_pSLuint32_Type)s[6]<<16) +((_pSLuint32_Type)s[7]<<24));
+	c += (s[8] +((_pSLuint32_Type)s[9]<<8) +((_pSLuint32_Type)s[10]<<16)+((_pSLuint32_Type)s[11]<<24));
 	mix(a,b,c);
 	s += 12; len -= 12;
      }
@@ -127,21 +125,22 @@ unsigned long _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *
    c += length;
    switch(len)              /* all the case statements fall through */
    {
-   case 11: c+=((uint32)s[10]<<24);
-   case 10: c+=((uint32)s[9]<<16);
-   case 9 : c+=((uint32)s[8]<<8);
+   case 11: c+=((_pSLuint32_Type)s[10]<<24);
+   case 10: c+=((_pSLuint32_Type)s[9]<<16);
+   case 9 : c+=((_pSLuint32_Type)s[8]<<8);
       /* the first byte of c is reserved for the length */
-   case 8 : b+=((uint32)s[7]<<24);
-   case 7 : b+=((uint32)s[6]<<16);
-   case 6 : b+=((uint32)s[5]<<8);
+   case 8 : b+=((_pSLuint32_Type)s[7]<<24);
+   case 7 : b+=((_pSLuint32_Type)s[6]<<16);
+   case 6 : b+=((_pSLuint32_Type)s[5]<<8);
    case 5 : b+=s[4];
-   case 4 : a+=((uint32)s[3]<<24);
-   case 3 : a+=((uint32)s[2]<<16);
-   case 2 : a+=((uint32)s[1]<<8);
+   case 4 : a+=((_pSLuint32_Type)s[3]<<24);
+   case 3 : a+=((_pSLuint32_Type)s[2]<<16);
+   case 2 : a+=((_pSLuint32_Type)s[1]<<8);
    case 1 : a+=s[0];
      /* case 0: nothing left to add */
    }
    mix(a,b,c);
+
    /*-------------------------------------------- report the result */
    return (unsigned long) c;
 }
