@@ -4060,7 +4060,7 @@ static int do_try_internal (SLBlock_Type *ev_block, SLBlock_Type *final)
 		  continue;
 	       }
 	     if (num > 1)
-	       SLdo_pop_n (num);
+	       SLdo_pop_n (num-1);
 	  }
 
 	/* Found a match--- move on to the code to be executed */

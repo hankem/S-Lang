@@ -208,7 +208,9 @@ private define test_catch_with_return (frun)
      {
 	$1 = 1/0;
      }
-   catch MathError:
+   catch IOError: return -2;
+   catch WriteError, OpenError: return -3;
+   catch ImportError, MathError:
      {
 	return -1;
      }

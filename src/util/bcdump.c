@@ -525,6 +525,8 @@ static void dump_token (_pSLang_Token_Type *t)
 	b = "__bos__"; break;
       case EOS_TOKEN:
 	b = "__eos__"; break;
+      case THROW_TOKEN:
+	b = "__throw__"; break;
 
       default:
 	sprintf (buf, "____UNKNOWN___0x%X", t->type);

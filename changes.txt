@@ -206,6 +206,8 @@ Changes since 2.2.2
 82. src/slstd.c: Save the pointer passed to putenv to a global array
     so that leak checkers can find it.  The reason for this is that
     some libc implementations copy the pointer but others do not.
+83. src/slang.c: An off-by-one error was causing a stackunderflow
+    error when handling a exception list in a try-catch statement.
 
 {{{ Previous Versions
 
