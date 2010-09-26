@@ -5,39 +5,29 @@
 
 define analyse_file (file)
 {
-   variable fp;
-   variable line;
-   variable i, a, n, word;
-   variable keys, values;
-
-   fp = fopen (file, "r");
+   variable fp = fopen (file, "r");
    if (fp == NULL)
-     verror ("Unable to open %s", file);
+     throw OpenError, "Unable to open $file"$;
 
    % Create an Integer_Type assoc array with default value of 0.
-   a = Assoc_Type[Integer_Type, 0];
+   variable a = Assoc_Type[Integer_Type, 0];
 
+   variable line, word;
    while (-1 != fgets (&line, fp))
      {
-	foreach word (strtok (strlow(line), "^a-zA-Z\d128-\d255"))
+	foreach word (strtok (strlow(line), "^\\w"))
 	  a[word] = a[word] + 1;    %  default value of 0 assumed!!
      }
-
    () = fclose (fp);
-   keys = assoc_get_keys (a);
-   values = assoc_get_values (a);
 
-   i = array_sort (values);
-   keys = keys[i];
-   values = values[i];
+   variable keys = assoc_get_keys (a);
+   variable values = assoc_get_values (a);
 
-   fp = fopen ("count.log", "w");
    % The default array_sort for Int_Type is an ascending sort.  We want the
    % opposite.
-   for (i = n-1; i >= 0; i--)
-     {
-	() = fputs (sprintf ("%s:\t%d\n", keys[i], values[i]), fp);
-     }
+   variable i = array_sort (values; dir=-1);
+
+   fp = fopen ("count.log", "w");
+   () = array_map (Int_Type, &fprintf, fp, "%s:\t%d\n", keys[i], values[i]);
    () = fclose (fp);
 }
-

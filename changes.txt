@@ -210,6 +210,7 @@ Changes since 2.2.2
     error when handling a exception list in a try-catch statement.
 84. slsh/lib/arrayfuns.sl: Add support for empty arrays to the shift
     function (Manfred Hanke).
+85. */examples/*.sl: Various updates and corrections (Manfred Hanke).
 
 {{{ Previous Versions
 

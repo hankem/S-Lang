@@ -161,7 +161,7 @@ listen
   Listen for connections on a socket
 
  USAGE
-  listen (FD_Type s, Int_Type max_pending}
+  listen (FD_Type s, Int_Type max_pending)
 
  DESCRIPTION
   The `listen' function may be used to wait for a connection to a

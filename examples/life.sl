@@ -2,19 +2,12 @@
 % It uses the SMG module from the modules directory.  Make sure you
 % build it first.
 
-import ("smg");
-
-% This is a simple random number generator
-private variable _urand_seed = _time() / (getpid () + 1);
-private define _urand (unused)
-{
-   _urand_seed =  _urand_seed * 69069UL + 1013904243UL;
-   return _urand_seed / 4294967296.0;
-}
+require ("slsmg");
+require ("rand");
 
 private define urand (m, n)
 {
-   variable a = array_map (Double_Type, &_urand, [1:m*n]);
+   variable a = rand_uniform (m*n);
    reshape (a, [m, n]);
    return a;
 }
@@ -88,8 +81,8 @@ define life_print (a, old_a)
    a[where (a)] = 1;
    a[where (a and (old_a == 0))] = 2;
 
-   smg_set_color (0);
-   smg_cls ();
+   slsmg_set_color (0);
+   slsmg_cls ();
 
    _for (0, dims[0]-1, 1)
      {
@@ -97,13 +90,13 @@ define life_print (a, old_a)
 	foreach (where (a[i,*]))
 	  {
 	     j = ();
-	     smg_gotorc(i,j);
-	     smg_set_color (a[i,j]);
-	     smg_write_string ("O");
+	     slsmg_gotorc(i,j);
+	     slsmg_set_color (a[i,j]);
+	     slsmg_write_string ("O");
 	  }
      }
-   smg_set_color (0);
-   smg_refresh ();
+   slsmg_set_color (0);
+   slsmg_refresh ();
    sleep (1);
 }
 
@@ -123,7 +116,7 @@ define life (nr, nc)
    while (length (where (new_a)));
 }
 
-smg_init_smg ();
+slsmg_init_smg ();
 
-life (Smg_Screen_Rows, Smg_Screen_Cols);
+life (SLsmg_Screen_Rows, SLsmg_Screen_Cols);
 

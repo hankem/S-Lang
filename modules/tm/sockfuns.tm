@@ -121,7 +121,7 @@
 
 \function{listen}
 \synopsis{Listen for connections on a socket}
-\usage{listen (FD_Type s, Int_Type max_pending}}
+\usage{listen (FD_Type s, Int_Type max_pending)}
 \description
   The \ifun{listen} function may be used to wait for a connection to a
   socket \exmp{s}.  The second argument specified the maximum number
