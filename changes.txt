@@ -208,6 +208,8 @@ Changes since 2.2.2
     some libc implementations copy the pointer but others do not.
 83. src/slang.c: An off-by-one error was causing a stackunderflow
     error when handling a exception list in a try-catch statement.
+84. slsh/lib/arrayfuns.sl: Add support for empty arrays to the shift
+    function (Manfred Hanke).
 
 {{{ Previous Versions
 

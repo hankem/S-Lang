@@ -17,11 +17,11 @@ define reverse (a)
 define shift (x, n)
 {
    variable len = length(x);
-   variable i = [0:len-1];
+   ifnot (len) return x;
 
    % allow n to be negative and large
    n = len + n mod len;
-   return x[(i + n)mod len];
+   return x[[n:n+len-1] mod len];
 }
 
 $1 = path_concat (path_dirname (__FILE__), "help/arrayfuns.hlp");
