@@ -414,7 +414,7 @@ static void destroy_pcre (SLtype type, VOID_STAR f)
    free_pcre_type (pt);
 }
 
-#define DUMMY_PCRE_TYPE ((unsigned int)-1)
+#define DUMMY_PCRE_TYPE ((SLtype)-1)
 #define P DUMMY_PCRE_TYPE
 #define I SLANG_INT_TYPE
 #define V SLANG_VOID_TYPE
