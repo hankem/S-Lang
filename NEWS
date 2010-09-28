@@ -63,6 +63,9 @@ Modules
    3.  sysconf: Module that implements interfaces to the posix
        sysconf, pathconf, etc. functions.
 
+   4.  (2.2.3) csv: A module that supports the reading and writing of
+       so-called Comma Separated Values files.
+
 Intrinsic Functions
 ===================
 

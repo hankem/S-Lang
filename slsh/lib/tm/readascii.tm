@@ -110,11 +110,13 @@
 #v-
 \notes
  This current version of this function does not handle missing data.
+ For such files, the \sfun{csv_readcol} function might be a better
+ choice.
 
  By default, lines not matching the expected format are assumed to
  be comments and are skipped.  So normally the \exmp{comment}
  qualifier is not needed.  However, it is useful in conjunction with
  the \exmp{stop_on_mismatch} qualifier to force the parser to skip
  lines beginning with the comment string and continue scanning.
-\seealso{sscanf, atof, fopen, fgets, fgetslines}
+\seealso{sscanf, atof, fopen, fgets, fgetslines, csv_readcol}
 \done

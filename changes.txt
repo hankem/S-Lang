@@ -218,6 +218,8 @@ Changes since 2.2.2
     _min/_max functions (Manfred Hanke).
 89. src/sllist.c: Added list_join, list_concat intrinsics (Mike Noble).
 90. slsh/lib/setfuns.sl: adds unique, intersection, complement, union
+91. modules/csv.sl: Added a module to support the reading and writing
+    of comma separated values (csv) formatted files.
 
 {{{ Previous Versions
 

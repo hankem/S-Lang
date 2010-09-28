@@ -10,7 +10,7 @@ TM2SGML = tmexpand
 SGML2HTML = sgml2html
 
 HLP_FILES = pngfuns.hlp pcrefuns.hlp sockfuns.hlp onigfuns.hlp \
-  randfuns.hlp forkfuns.hlp
+  randfuns.hlp forkfuns.hlp csvfuns.hlp
 
 all: help-files
 help-files: $(HLP_FILES)
@@ -34,6 +34,8 @@ randfuns.hlp: randfuns.tm
 	$(TMEXPAND) $(MACRODIR) -Mslhlp randfuns.tm randfuns.hlp
 forkfuns.hlp: forkfuns.tm
 	$(TMEXPAND) $(MACRODIR) -Mslhlp forkfuns.tm forkfuns.hlp
+csvfuns.hlp: csvfuns.tm
+	$(TMEXPAND) $(MACRODIR) -Mslhlp csvfuns.tm csvfuns.hlp
 #----------------------------------------------------------------------------
 clean:
 	-rm -f *~ *.dvi *.log *.aux *.toc *.bak *.sgml
