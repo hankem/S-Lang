@@ -211,6 +211,8 @@ Changes since 2.2.2
 84. slsh/lib/arrayfuns.sl: Add support for empty arrays to the shift
     function (Manfred Hanke).
 85. */examples/*.sl: Various updates and corrections (Manfred Hanke).
+86. src/sllist.c: A extra call to SLang_free_mmt was causing a list to
+    be freed when set via an index array.
 
 {{{ Previous Versions
 
