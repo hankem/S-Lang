@@ -1168,7 +1168,6 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 	     SLang_free_object (&objb);
 	     goto free_and_return;
 	  }
-	SLang_free_mmt (mmt);
      }
 
    ret = 0;
