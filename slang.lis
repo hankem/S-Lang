@@ -126,6 +126,8 @@
 @modules/mkfiles/README
 @modules/Makefile.in
 @modules/README
+@modules/csv-module.c
+@modules/csv.sl
 @modules/fcntl-module.c
 @modules/fcntl.sl
 @modules/fork.sl
@@ -169,12 +171,14 @@
 @modules/tm/forkfuns.tm
 @modules/tm/Makefile
 @modules/tm/modfuns.tm
+@modules/tm/csvfuns.tm
 @modules/help/pcrefuns.hlp
 @modules/help/pngfuns.hlp
 @modules/help/randfuns.hlp
 @modules/help/sockfuns.hlp
 @modules/help/onigfuns.hlp
 @modules/help/forkfuns.hlp
+@modules/help/csvfuns.hlp
 
 @modules/examples/newt_ex.sl
 @modules/examples/slsmg_ex.sl

@@ -35,7 +35,7 @@ static int execute_read_callback (CSV_Parser_Type *csv, char **sptr)
 
    if (-1 == SLang_pop_slstring (&s))
      return -1;
-   
+
    *sptr = s;
    return 1;
 }
@@ -114,13 +114,10 @@ static int store_value (Values_Array_Type *va, char *value)
 }
 
 #define NEXT_CHAR(ch) \
-   if (do_read) \
+   while (do_read || (0 == (ch = line[line_ofs++]))) \
    { \
-      if (line != NULL) \
-	{ \
-	   SLang_free_slstring (line); \
-	   line = NULL; \
-	} \
+      SLang_free_slstring (line); \
+      line = NULL; \
       status = execute_read_callback (csv, &line); \
       do_read = 0; \
       if (status == -1) \
@@ -128,14 +125,10 @@ static int store_value (Values_Array_Type *va, char *value)
       line_ofs = 0; \
       if (status == 0) \
 	{ \
-	   if ((av.num == 0) && (value_ofs == 0)) break; \
 	   ch = 0; \
+	   break; \
 	} \
-      else \
-	ch = line[line_ofs++]; \
-   } \
-   else \
-     ch = line[line_ofs++]
+   }
 
 static int parse_csv_row (CSV_Parser_Type *csv)
 {
@@ -183,13 +176,13 @@ static int parse_csv_row (CSV_Parser_Type *csv)
 	     value = new_value;
 	  }
 
-	NEXT_CHAR(ch);
+	NEXT_CHAR(ch)
 
 	if ((ch == quotechar) && quotechar)
 	  {
 	     if (in_quote)
 	       {
-		  NEXT_CHAR(ch);
+		  NEXT_CHAR(ch)
 		  if (ch == quotechar)
 		    {
 		       value[value_ofs++] = ch;
@@ -243,10 +236,12 @@ static int parse_csv_row (CSV_Parser_Type *csv)
 		  goto return_error;
 	       }
 
-	     value[value_ofs] = 0;
-	     if (-1 == store_value (&av, value))
-	       goto return_error;
-
+	     if ((ch != 0) || (av.num != 0) || (value_ofs > 0))
+	       {
+		  value[value_ofs] = 0;
+		  if (-1 == store_value (&av, value))
+		    goto return_error;
+	       }
 	     break;		       /* done */
 	  }
 
