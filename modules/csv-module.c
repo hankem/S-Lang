@@ -9,6 +9,7 @@ static int CSV_Parser_Type_Id = 0;
 typedef struct _CSV_Parser_Type CSV_Parser_Type;
 struct _CSV_Parser_Type
 {
+   int flags;
    char delimchar;
    char quotechar;
    SLang_Name_Type *read_callback;
@@ -48,21 +49,28 @@ typedef struct
 }
 Values_Array_Type;
 
-static int push_values_array (Values_Array_Type *av)
+static int push_values_array (Values_Array_Type *av, int allow_empty_array)
 {
    SLang_Array_Type *at;
    char **new_values;
 
    if (av->num == 0)
      {
-	return SLang_push_null ();
+	if (allow_empty_array == 0)
+	  return SLang_push_null ();
+	SLfree ((char *) av->values);
+	av->values = NULL;
+     }
+   else
+     {
+	if (NULL == (new_values = (char **)SLrealloc ((char *)av->values, av->num*sizeof(char *))))
+	  return -1;
+	av->values = new_values;
      }
 
-   if (NULL == (new_values = (char **)SLrealloc ((char *)av->values, av->num*sizeof(char *))))
-     return -1;
-   av->values = new_values;
    av->num_allocated = av->num;
    at = SLang_create_array (SLANG_STRING_TYPE, 0, av->values, &av->num, 1);
+
    if (at == NULL)
      return -1;
 
@@ -114,8 +122,16 @@ static int store_value (Values_Array_Type *va, char *value)
 }
 
 #define NEXT_CHAR(ch) \
-   while (do_read || (0 == (ch = line[line_ofs++]))) \
+   while (do_read \
+	  || (0 == (ch = line[line_ofs++])) \
+	  || (ch == '\r')) \
    { \
+      if ((do_read == 0) && (ch == '\r') && (line[line_ofs] == '\n')) \
+	{ \
+	   line_ofs++; \
+	   ch = '\n'; \
+	   break; \
+	} \
       SLang_free_slstring (line); \
       line = NULL; \
       status = execute_read_callback (csv, &line); \
@@ -130,7 +146,11 @@ static int store_value (Values_Array_Type *va, char *value)
 	} \
    }
 
-static int parse_csv_row (CSV_Parser_Type *csv)
+#define SKIP_BLANK_ROWS		1
+#define STOP_ON_BLANK_ROWS	2
+#define BLANK_ROW_BEHAVIOR	(SKIP_BLANK_ROWS|STOP_ON_BLANK_ROWS)
+
+static int parse_csv_row (CSV_Parser_Type *csv, int flags)
 {
    char *line;
    size_t line_ofs;
@@ -140,13 +160,14 @@ static int parse_csv_row (CSV_Parser_Type *csv)
    int return_status;
    Values_Array_Type av;
    int do_read, in_quote;
+   int blank_line_seen;
+   int is_quoted;
 
    if (-1 == init_values_array_type (&av))
      return -1;
 
    delimchar = csv->delimchar;
    quotechar = csv->quotechar;
-
    value_ofs = line_ofs = 0;
    value_size = 0;
    value = NULL;
@@ -155,6 +176,8 @@ static int parse_csv_row (CSV_Parser_Type *csv)
 
    in_quote = 0;
    return_status = -1;
+   blank_line_seen = 0;
+   is_quoted = 0;
    while (1)
      {
 	int status;
@@ -205,6 +228,7 @@ static int parse_csv_row (CSV_Parser_Type *csv)
 	     else 
 	       {
 		  in_quote = 1;
+		  is_quoted = 1;
 		  continue;
 	       }
 	  }
@@ -236,8 +260,24 @@ static int parse_csv_row (CSV_Parser_Type *csv)
 		  goto return_error;
 	       }
 
-	     if ((ch != 0) || (av.num != 0) || (value_ofs > 0))
+	     if ((ch == '\n') || (av.num != 0) || (value_ofs > 0))
 	       {
+		  if ((is_quoted == 0)
+		      && (ch == '\n') && (av.num == 0) && (value_ofs == 0))
+		    {
+		       /* blank line */
+		       int blank_line_behavior = (flags & BLANK_ROW_BEHAVIOR);
+		       if (blank_line_behavior == SKIP_BLANK_ROWS)
+			 {
+			    do_read = 1;
+			    continue;
+			 }
+		       if (blank_line_behavior == STOP_ON_BLANK_ROWS)
+			 {
+			    blank_line_seen = 1;
+			    break;
+			 }
+		    }
 		  value[value_ofs] = 0;
 		  if (-1 == store_value (&av, value))
 		    goto return_error;
@@ -249,7 +289,7 @@ static int parse_csv_row (CSV_Parser_Type *csv)
      }
 
    /* Get here if at end of line or file */
-   return_status = push_values_array (&av);
+   return_status = push_values_array (&av, blank_line_seen);
    /* drop */
 
 return_error:
@@ -269,7 +309,7 @@ static void free_csv_parser (CSV_Parser_Type *csv)
    SLfree ((char *)csv);
 }
 
-/* Usage: obj = cvs_parser_new (&read_callback, callback_data, delim, quote) */
+/* Usage: obj = cvs_parser_new (&read_callback, callback_data, delim, quote, flags) */
 static void new_csv_parser_intrin (void)
 {
    CSV_Parser_Type *csv;
@@ -279,7 +319,8 @@ static void new_csv_parser_intrin (void)
      return;
    memset ((char *)csv, 0, sizeof(CSV_Parser_Type));
 
-   if ((-1 == SLang_pop_char (&csv->quotechar))
+   if ((-1 == SLang_pop_int (&csv->flags))
+       ||(-1 == SLang_pop_char (&csv->quotechar))
        || (-1 == SLang_pop_char (&csv->delimchar))
        || (-1 == SLang_pop_anytype (&csv->callback_data))
        || (NULL == (csv->read_callback = SLang_pop_function ()))
@@ -293,17 +334,45 @@ static void new_csv_parser_intrin (void)
      SLang_free_mmt (mmt);
 }
 
-static void parse_csv_row_intrin (CSV_Parser_Type *csv)
+static void parse_csv_row_intrin (void)
 {
-   (void) parse_csv_row (csv);
+   CSV_Parser_Type *csv;
+   SLang_MMT_Type *mmt;
+   int flags = 0;
+   int has_flags = 0;
+
+   if (SLang_Num_Function_Args == 2)
+     {
+	if (-1 == SLang_pop_int (&flags))
+	  return;
+
+	has_flags = 1;
+     }
+
+   if (NULL == (mmt = SLang_pop_mmt (CSV_Parser_Type_Id)))
+     return;
+   csv = (CSV_Parser_Type *)SLang_object_from_mmt (mmt);
+
+   if (has_flags == 0)
+     flags = csv->flags;
+
+   (void) parse_csv_row (csv, flags);
+   SLang_free_mmt (mmt);
 }
 
 #define DUMMY_CSV_PARSER_TYPE ((SLtype)-1)
 static SLang_Intrin_Fun_Type Module_Intrinsics [] =
 {
    MAKE_INTRINSIC_0("_csv_parser_new", new_csv_parser_intrin, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_1("_csv_parse_row", parse_csv_row_intrin, SLANG_VOID_TYPE, DUMMY_CSV_PARSER_TYPE),
+   MAKE_INTRINSIC_0("_csv_parse_row", parse_csv_row_intrin, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
+};
+
+static SLang_IConstant_Type Module_Constants [] =
+{
+   MAKE_ICONSTANT("CSV_SKIP_BLANK_ROWS", SKIP_BLANK_ROWS),
+   MAKE_ICONSTANT("CSV_STOP_BLANK_ROWS", STOP_ON_BLANK_ROWS),
+   SLANG_END_ICONST_TABLE
 };
 
 static void destroy_csv (SLtype type, VOID_STAR f)
@@ -348,7 +417,8 @@ int init_csv_module_ns (char *ns_name)
    if (-1 == register_csv_type ())
      return -1;
 
-   if (-1 == SLns_add_intrin_fun_table (ns, Module_Intrinsics, NULL))
+   if ((-1 == SLns_add_intrin_fun_table (ns, Module_Intrinsics, NULL))
+       || (-1 == SLns_add_iconstant_table (ns, Module_Constants, NULL)))
      return -1;
 
    return 0;

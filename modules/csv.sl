@@ -2,14 +2,18 @@ import ("csv");
 
 private define read_fp_callback (info)
 {
-   variable line, ch = info.comment_char;
-   do
+   variable line, comment_char = info.comment_char;
+   forever
      {
 	if (-1 == fgets (&line, info.fp))
 	  return NULL;
+
+	if ((line[0] == comment_char)
+	     && (0 == strnbytecmp (line, info.comment, info.comment_len)))
+	  continue;
+
+	return line;
      }
-   while (line[0] == ch);
-   return line;
 }
 
 private define read_strings_callback (str_info)
@@ -55,10 +59,22 @@ private define atofloat (x)
    typecast (atof(x), Float_Type);
 }
 
+private define get_blankrows_bits (val)
+{
+   if (val == "skip") return CSV_SKIP_BLANK_ROWS;
+   if (val == "stop") return CSV_STOP_BLANK_ROWS;
+   return 0;
+}
+
 private define read_row (csv)
 {
-   variable row = _csv_parse_row (csv.csv_parser);
-   return row;
+   % The blank row handling default is to use that of the csv object.
+   if (qualifier_exists ("blankrows"))
+     {
+	return _csv_parse_row (csv.csv_parser,
+			       get_blankrows_bits (qualifier("blankrows")));
+     }
+   return _csv_parse_row (csv.csv_parser);
 }
 
 private define fixup_header_names (names)
@@ -115,6 +131,8 @@ Qualifiers:\n\
        && (length(fields) != length(columns)))
      throw InvalidParmError, "The fields qualifier must be the same size as the number of columns";
 
+   variable flags = get_blankrows_bits (qualifier("blankrows", "skip"));
+
    header = fixup_header_names (header);
    columns = fixup_header_names (columns);
 
@@ -137,7 +155,7 @@ Qualifiers:\n\
 	  }
      }
 
-   variable row_data = csv.readrow();
+   variable row_data = _csv_parse_row (csv.csv_parser, flags);
    if (column_ints == NULL)
      column_ints = [1:length(row_data)];
 
@@ -219,8 +237,18 @@ Qualifiers:\n\
      }
 
    variable nread = 1;
-   while (row_data = csv.readrow(), row_data != NULL)
+   variable min_row_size = 1+max(column_ints);
+   while (row_data = _csv_parse_row (csv.csv_parser, flags), row_data != NULL)
      {
+	if (length (row_data) < min_row_size)
+	  {
+	     % FIXME-- make what to do here configurable
+	     if (length(row_data) == 0)
+	       break;
+
+	     continue;
+	  }
+
 	if (nread >= max_allocated)
 	  {
 	     max_allocated += dsize;
@@ -266,7 +294,8 @@ Qualifiers:\n\
    variable delim = qualifier("delim", ',');
    variable quote = qualifier("quote", '"');
    variable comment = qualifier("comment", NULL);
-   variable comment_char = (comment == NULL) ? 0 : comment[0];
+   variable comment_char = (comment == NULL) ? NULL : comment[0];
+   variable flags = get_blankrows_bits (qualifier("blankrows", "skip"));
 
    if ((type == Array_Type) || (type == List_Type))
      {
@@ -276,8 +305,8 @@ Qualifiers:\n\
 	     strings = fp,
 	     i = skiplines, n = length(fp),
 	     output_crlf = 0,
-	     comment = comment,
 	     comment_char = comment_char,
+	     comment = comment,
 	  };
      }
    else if (typeof (fp) != File_Type)
@@ -288,8 +317,9 @@ Qualifiers:\n\
 	func_data = struct
 	  {
 	     fp = fp,
-	     comment = comment,
 	     comment_char = comment_char,
+	     comment = comment,
+	     comment_len = ((comment == NULL) ? 0 : strbytelen(comment)),
 	  };
 	variable line;
 	loop (skiplines)
@@ -299,7 +329,7 @@ Qualifiers:\n\
      {
 	readrow = &read_row,
 	readcol = &read_cols,
-	csv_parser = _csv_parser_new (func, func_data, delim, quote),
+	csv_parser = _csv_parser_new (func, func_data, delim, quote, flags),
      };
 
    return csv;

@@ -11,6 +11,7 @@
 \qualifier{quote}{character used for the quoting fields}{'"'}
 \qualifier{skiplines}{number of lines to skip before parsing}{0}
 \qualifier{comment}{lines beginning with this string will be skipped}
+\qualifier{blankrows}{default for how blank rows should be handled}{"skip"}
 \methods
   readrow: Read and parse a row from the CSV object
   readcol: Read one or more columns from the CVS object
@@ -57,6 +58,7 @@
   \qualifier{fnan}{Float value to use for an empty float element}{_NaN}
   \qualifier{dnan}{Double value to use for an empty double element}{_NaN}
   \qualifier{nanN}{Value used for an empty element in the column N}
+  \qualifier{blankrows}{How a blank row should be handled}{"skip"}
 
   The type-specifier is used to specifiy the type of a field.  It must
   be one of the following characters:
@@ -81,6 +83,9 @@
   For normalization, the column name is first lower-cased, then all
   non-alphanumeric values are converted to "_",  and excess underscore
   characters removed.
+
+  See the documentation for the \sfun{csv.readrow} for more
+  information about how blank rows should be handled.
 \example
  Suppose that \file{data.csv} is a file that contains
 #v+
@@ -170,5 +175,30 @@
   \sfun{cvs_parser_new} function.  It returns the row data in the form
   of an array of strings.  If the end of input it reached, \NULL will
   be returned.
+\qualifiers
+\qualifier{blankrows}{How a blank row should be handled}{"skip"}
+
+  The \exmp{blankrows} qualifier is used to specify how a blank row
+  should be handled.  A blankrow is defined as a row made up of no
+  characters except for the newline or carriage-return sequance.  For
+  example, the following 9 lines has one blank row that occurs on
+  line 8:
+#v+
+     "12.3"
+     "4
+
+     5"
+     "5.1"
+     ""
+     "7.2"
+     
+     "6.2"
+#v-
+  If the value of \exmp{"blankrow"} is \exmp{"skip"}, then blank rows
+  will be ignored by the parser.  If the value is \exmp{"stop"}, then the row
+  will be returned as an empty array of strings (length equal to 0).
+  Otherwise the row will be treated as if it contained the empty
+  string and returned as an array of length 1 with a value of "".  The
+  default behavior is to skip such rows.
 \seealso{csv_parser_new, csv.readcol}
 \done
