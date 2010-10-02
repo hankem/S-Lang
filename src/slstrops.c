@@ -917,34 +917,6 @@ static void strsub_cmd (int *nptr, SLwchar_Type *mptr) /*{{{*/
 
 /*}}}*/
 
-static void strup_cmd(void) /*{{{*/
-{
-   unsigned char c, *a;
-   char *str;
-
-   if (SLpop_string (&str))
-     return;
-
-   if (_pSLinterp_UTF8_Mode)
-     {
-	a = SLutf8_strup ((SLuchar_Type*)str, (SLuchar_Type*)str+strlen(str));
-	SLfree (str);
-	(void) _pSLang_push_slstring ((char *) a);   /* frees string */
-	return;
-     }
-
-   a = (unsigned char *) str;
-   while ((c = *a) != 0)
-     {
-	/* if ((*a >= 'a') && (*a <= 'z')) *a -= 32; */
-	*a = UPPER_CASE(c);
-	a++;
-     }
-
-   SLang_push_malloced_string (str);
-}
-
-/*}}}*/
 
 static int pop_wchar (SLwchar_Type *wchp)
 {
@@ -1124,33 +1096,125 @@ static int tolower_cmd (SLwchar_Type *ch) /*{{{*/
 
 /*}}}*/
 
-static void strlow_cmd (void) /*{{{*/
+static int arraymap_str_func_str (char *(*func)(char *))
 {
-   unsigned char c, *a;
-   char *str;
+   SLang_Array_Type *at, *bt;
+   SLuindex_Type i, num;
+   char **adata, **bdata;
 
-   if (SLpop_string(&str)) return;
+   if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
+     return -1;
+
+   if (NULL == (bt = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, at->dims, at->num_dims)))
+     {
+	SLang_free_array (at);
+	return -1;
+     }
+
+   adata = (char **)at->data; bdata = (char **)bt->data;
+   num = bt->num_elements;
+   for (i = 0; i < num; i++)
+     {
+	char *s = adata[i];
+	if (s != NULL)
+	  {
+	     s = (*func)(s);
+	     if (s == NULL)
+	       {
+		  SLang_free_array (bt);
+		  SLang_free_array (at);
+		  return -1;
+	       }
+	  }
+	bdata[i] = s;
+     }
+   SLang_free_array (at);
+   return SLang_push_array (bt, 1);
+}
+
+static char *strup_func (char *str)
+{
+   unsigned int i, len;
+   unsigned char *a;
+
+   len = strlen (str);
 
    if (_pSLinterp_UTF8_Mode)
+     return (char *)SLutf8_strup ((SLuchar_Type *)str, (SLuchar_Type *)str+len);
+
+   if (NULL == (a = (unsigned char *)SLmalloc (len+1)))
+     return NULL;
+
+   for (i = 0; i < len; i++)
      {
-	a = SLutf8_strlo ((SLuchar_Type *)str, (SLuchar_Type *)str+strlen(str));
-	SLfree (str);
-	(void) _pSLang_push_slstring ((char *) a);   /* frees string */
+	unsigned char c = (unsigned char)str[i];
+	a[i] = UPPER_CASE(c);
+     }
+   a[len] = 0;
+   str = SLang_create_nslstring ((char *)a, len);
+   SLfree ((char *)a);
+   return str;
+}
+
+static void strup_cmd (void)
+{
+   char *a, *b;
+
+   if (SLang_peek_at_stack () == SLANG_ARRAY_TYPE)
+     {
+	(void) arraymap_str_func_str (&strup_func);
 	return;
      }
 
-   a = (unsigned char *) str;
-   while ((c = *a) != 0)
-     {
-	/* if ((*a >= 'a') && (*a <= 'z')) *a -= 32; */
-	*a = LOWER_CASE(c);
-	a++;
-     }
+   if (-1 == SLang_pop_slstring (&a))
+     return;
 
-   SLang_push_malloced_string ((char *) str);
+   b = strup_func (a);
+   SLang_free_slstring (a);
+   (void) _pSLang_push_slstring (b);   /* frees string */
 }
 
-/*}}}*/
+static char *strlow_func (char *str)
+{
+   unsigned int i, len;
+   unsigned char *a;
+
+   len = strlen (str);
+
+   if (_pSLinterp_UTF8_Mode)
+     return (char *)SLutf8_strlo ((SLuchar_Type *)str, (SLuchar_Type *)str+len);
+
+   if (NULL == (a = (unsigned char *)SLmalloc (len+1)))
+     return NULL;
+
+   for (i = 0; i < len; i++)
+     {
+	unsigned char c = (unsigned char)str[i];
+	a[i] = LOWER_CASE(c);
+     }
+   a[len] = 0;
+   str = SLang_create_nslstring ((char *)a, len);
+   SLfree ((char *)a);
+   return str;
+}
+
+static void strlow_cmd (void)
+{
+   char *a, *b;
+
+   if (SLang_peek_at_stack () == SLANG_ARRAY_TYPE)
+     {
+	(void) arraymap_str_func_str (&strlow_func);
+	return;
+     }
+
+   if (-1 == SLang_pop_slstring (&a))
+     return;
+
+   b = strlow_func (a);
+   SLang_free_slstring (a);
+   (void) _pSLang_push_slstring (b);   /* frees string */
+}
 
 static SLang_Array_Type *do_strchop (SLuchar_Type *str, SLwchar_Type delim, SLwchar_Type quote)
 {

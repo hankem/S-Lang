@@ -473,5 +473,42 @@ test_strskipbytes ({"abc def", "a-z", 0, 4}, 3);
 test_strskipbytes ({"abc def", "a-z", 0, -1}, 3);
 test_strskipbytes ({"abc def", "a-z", -3, -1}, 6);
 
+private define test_strup (a, b)
+{
+   variable c = strup (a);
+   if (b != c)
+     failed ("strup %s produced %s, expected %s", a, c, b);
+   a = [a, a+a, a+a+a];
+   b = [b, b+b, b+b+b];
+   c = strup (a);
+   ifnot (_eqs (b, c))
+     failed ("strup on an array");
+
+   ifnot (_eqs (String_Type[0], strup(String_Type[0])))
+     failed ("strup on empty array");
+}
+test_strup("", "");
+test_strup("a", "A");
+test_strup("ab", "AB");
+test_strup("abC", "ABC");
+
+private define test_strlow (a, b)
+{
+   variable c = strlow (a);
+   if (b != c)
+     failed ("strlow %s produced %s", a, c);
+   a = [a, a+a, a+a+a];
+   b = [b, b+b, b+b+b];
+   c = strlow (a);
+   ifnot (_eqs (b, c))
+     failed ("strlow on an array");
+   ifnot (_eqs (String_Type[0], strlow(String_Type[0])))
+     failed ("strlow on empty array");
+}
+test_strlow("", "");
+test_strlow("A", "a");
+test_strlow("AB", "ab");
+test_strlow("ABc", "abc");
+
 print ("Ok\n");
 exit (0);
