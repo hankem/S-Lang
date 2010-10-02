@@ -213,6 +213,7 @@ Changes since 2.2.2
 85. */examples/*.sl: Various updates and corrections (Manfred Hanke).
 86. src/sllist.c: A extra call to SLang_free_mmt was causing a list to
     be freed when set via an index array.
+87. src/slstrops.c: Vectorized strlow/strup intrinsics.
 
 {{{ Previous Versions
 
