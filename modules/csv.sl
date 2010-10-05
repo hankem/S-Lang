@@ -71,10 +71,10 @@ private define read_row (csv)
    % The blank row handling default is to use that of the csv object.
    if (qualifier_exists ("blankrows"))
      {
-	return _csv_parse_row (csv.csv_parser,
+	return _csv_decode_row (csv.decoder,
 			       get_blankrows_bits (qualifier("blankrows")));
      }
-   return _csv_parse_row (csv.csv_parser);
+   return _csv_decode_row (csv.decoder);
 }
 
 private define fixup_header_names (names)
@@ -155,7 +155,7 @@ Qualifiers:\n\
 	  }
      }
 
-   variable row_data = _csv_parse_row (csv.csv_parser, flags);
+   variable row_data = _csv_decode_row (csv.decoder, flags);
    if (column_ints == NULL)
      column_ints = [1:length(row_data)];
 
@@ -238,7 +238,7 @@ Qualifiers:\n\
 
    variable nread = 1;
    variable min_row_size = 1+max(column_ints);
-   while (row_data = _csv_parse_row (csv.csv_parser, flags), row_data != NULL)
+   while (row_data = _csv_decode_row (csv.decoder, flags), row_data != NULL)
      {
 	if (length (row_data) < min_row_size)
 	  {
@@ -277,11 +277,11 @@ Qualifiers:\n\
    return datastruct;
 }
 
-define csv_parser_new ()
+define csv_decoder_new ()
 {
    if (_NARGS != 1)
      usage ("\
-obj = csv_parser_new (file|fp|strings ; qualifiers);\n\
+obj = csv_decoder_new (file|fp|strings ; qualifiers);\n\
 Qualifiers:\n\
   quote='\"', delim=',', skiplines=0, comment=string");
 
@@ -327,10 +327,139 @@ Qualifiers:\n\
      }
    variable csv = struct
      {
+	decoder = _csv_decoder_new (func, func_data, delim, quote, flags),
 	readrow = &read_row,
 	readcol = &read_cols,
-	csv_parser = _csv_parser_new (func, func_data, delim, quote, flags),
      };
 
    return csv;
+}
+
+% Encoder
+
+private define writecol ()
+{
+   if (_NARGS < 3)
+     {
+	usage("\
+writecol (file|fp, list_of_column_data | datastruct | col1,col2,...)\n\
+Qualifiers:\n\
+  names=array-of-column-names, noheader, quoteall, quotesome\n\
+"
+	     );
+     }
+
+   variable csv, data, file;
+   if (_NARGS == 3)
+     {
+	(csv, file, data) = ();
+     }
+   else
+     {
+	data = __pop_list (_NARGS-1);
+	(csv, file) = ();
+     }
+
+   variable type = typeof (data);
+   if ((type != List_Type) && (type != Array_Type)
+       && not is_struct_type (data))
+     data = {data};
+
+   variable flags = 0;
+   if (qualifier_exists ("quoteall")) flags |= CSV_QUOTE_ALL;
+   if (qualifier_exists ("quotesome")) flags |= CSV_QUOTE_SOME;
+
+   variable fp = file;
+   if (typeof(file) != File_Type)
+     fp = fopen (file, "wb");
+   if (fp == NULL)
+     throw OpenError, "Error opening $file in write mode"$;
+
+   variable names = NULL;
+   ifnot (qualifier_exists ("noheader"))
+     {
+	names = qualifier ("names");
+	if ((names == NULL) && is_struct_type (data))
+	  names = get_struct_field_names (data);
+     }
+
+   if (is_struct_type (data))
+     {
+	variable tmp = {};
+	data = {(_push_struct_field_values(data), pop())};
+     }
+
+   EXIT_BLOCK
+     {
+	ifnot (__is_same(file, fp))
+	  {
+	     if (-1 == fclose (fp))
+	       throw WriteError, "Error closing $file"$;
+	  }
+     }
+
+   variable ncols = length(data);
+   if (length (data) == 0)
+     return;
+   variable nrows = length(data[0]), i, j;
+   _for i (1, ncols-1, 1)
+     {
+	if (nrows != length(data[i]))
+	  throw InvalidParmError, "Data columns must be the length";
+     }
+   
+   variable str, encoder = csv.encoder;
+
+   if (names != NULL)
+     {
+	str = _csv_encode_row (encoder, names, flags);
+	if (-1 == fputs (str, fp))
+	  throw WriteError, "Write to CSV file failed";
+     }
+
+   variable row_data = String_Type[ncols];
+   _for i (0, nrows-1, 1)
+     {
+	_for j (0, ncols-1, 1)
+	  row_data[j] = string (data[j][i]);
+
+	str = _csv_encode_row (encoder, row_data, flags);
+	if (-1 == fputs (str, fp))
+	  throw WriteError, "Write to CSV file failed";
+     }
+}
+
+define csv_encoder_new ()
+{
+   variable flags = qualifier ("flags", CSV_QUOTE_SOME);
+   variable quotechar = qualifier ("quote", '"');
+   variable delimchar = qualifier ("delim", ',');
+
+   if (_NARGS == 1)
+     flags = ();
+
+   variable csv = struct
+     {
+	encoder = _csv_encoder_new (delimchar, quotechar, flags),
+	writecol = &writecol,
+     };
+
+   return csv;
+}
+
+define csv_writecol ()
+{
+   if (_NARGS < 2)
+     {
+	usage("\
+csv_writecol (file|fp, list_of_column_data | datastruct | col1,col2,...)\n\
+Qualifiers:\n\
+  names=array-of-column-names, noheader, quoteall, quotesome\n\
+"
+	      );
+     }
+
+   variable args = __pop_list (_NARGS);
+   variable csv = csv_encoder_new (;;__qualifiers);
+   csv.writecol (__push_list(args);;__qualifiers);
 }

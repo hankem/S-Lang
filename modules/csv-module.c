@@ -4,19 +4,24 @@
 
 SLANG_MODULE(csv);
 
-static int CSV_Parser_Type_Id = 0;
+static int CSV_Type_Id = 0;
 
-typedef struct _CSV_Parser_Type CSV_Parser_Type;
-struct _CSV_Parser_Type
+typedef struct _CSV_Type CSV_Type;
+struct _CSV_Type
 {
-   int flags;
    char delimchar;
    char quotechar;
    SLang_Name_Type *read_callback;
    SLang_Any_Type *callback_data;
+#define CSV_SKIP_BLANK_ROWS	0x01
+#define CSV_STOP_ON_BLANK_ROWS	0x02
+#define BLANK_ROW_BEHAVIOR	(CSV_SKIP_BLANK_ROWS|CSV_STOP_ON_BLANK_ROWS)
+#define CSV_QUOTE_SOME		0x04
+#define CSV_QUOTE_ALL		0x08
+   int flags;
 };
 
-static int execute_read_callback (CSV_Parser_Type *csv, char **sptr)
+static int execute_read_callback (CSV_Type *csv, char **sptr)
 {
    char *s;
 
@@ -146,11 +151,8 @@ static int store_value (Values_Array_Type *va, char *value)
 	} \
    }
 
-#define SKIP_BLANK_ROWS		1
-#define STOP_ON_BLANK_ROWS	2
-#define BLANK_ROW_BEHAVIOR	(SKIP_BLANK_ROWS|STOP_ON_BLANK_ROWS)
 
-static int parse_csv_row (CSV_Parser_Type *csv, int flags)
+static int decode_csv_row (CSV_Type *csv, int flags)
 {
    char *line;
    size_t line_ofs;
@@ -163,6 +165,12 @@ static int parse_csv_row (CSV_Parser_Type *csv, int flags)
    int blank_line_seen;
    int is_quoted;
 
+   if (NULL == csv->read_callback)
+     {
+	SLang_verror (SL_InvalidParm_Error, "CSV decoder object has no read callback function");
+	return -1;
+     }
+	
    if (-1 == init_values_array_type (&av))
      return -1;
 
@@ -267,12 +275,12 @@ static int parse_csv_row (CSV_Parser_Type *csv, int flags)
 		    {
 		       /* blank line */
 		       int blank_line_behavior = (flags & BLANK_ROW_BEHAVIOR);
-		       if (blank_line_behavior == SKIP_BLANK_ROWS)
+		       if (blank_line_behavior == CSV_SKIP_BLANK_ROWS)
 			 {
 			    do_read = 1;
 			    continue;
 			 }
-		       if (blank_line_behavior == STOP_ON_BLANK_ROWS)
+		       if (blank_line_behavior == CSV_STOP_ON_BLANK_ROWS)
 			 {
 			    blank_line_seen = 1;
 			    break;
@@ -300,7 +308,7 @@ return_error:
    return return_status;
 }
 
-static void free_csv_parser (CSV_Parser_Type *csv)
+static void free_csv_type (CSV_Type *csv)
 {
    if (csv == NULL)
      return;
@@ -309,24 +317,37 @@ static void free_csv_parser (CSV_Parser_Type *csv)
    SLfree ((char *)csv);
 }
 
-/* Usage: obj = cvs_parser_new (&read_callback, callback_data, delim, quote, flags) */
-static void new_csv_parser_intrin (void)
+static CSV_Type *pop_csv_type (SLang_MMT_Type **mmtp)
 {
-   CSV_Parser_Type *csv;
    SLang_MMT_Type *mmt;
 
-   if (NULL == (csv = (CSV_Parser_Type *)SLmalloc(sizeof(CSV_Parser_Type))))
+   if (NULL == (mmt = SLang_pop_mmt (CSV_Type_Id)))
+     {
+	*mmtp = NULL;
+	return NULL;
+     }
+   *mmtp = mmt;
+   return (CSV_Type *)SLang_object_from_mmt (mmt);
+}
+
+/* Usage: obj = cvs_decoder_new (&read_callback, callback_data, delim, quote, flags) */
+static void new_csv_decoder_intrin (void)
+{
+   CSV_Type *csv;
+   SLang_MMT_Type *mmt;
+
+   if (NULL == (csv = (CSV_Type *)SLmalloc(sizeof(CSV_Type))))
      return;
-   memset ((char *)csv, 0, sizeof(CSV_Parser_Type));
+   memset ((char *)csv, 0, sizeof(CSV_Type));
 
    if ((-1 == SLang_pop_int (&csv->flags))
        ||(-1 == SLang_pop_char (&csv->quotechar))
        || (-1 == SLang_pop_char (&csv->delimchar))
        || (-1 == SLang_pop_anytype (&csv->callback_data))
        || (NULL == (csv->read_callback = SLang_pop_function ()))
-       || (NULL == (mmt = SLang_create_mmt (CSV_Parser_Type_Id, (VOID_STAR)csv))))
+       || (NULL == (mmt = SLang_create_mmt (CSV_Type_Id, (VOID_STAR)csv))))
      {
-	free_csv_parser (csv);
+	free_csv_type (csv);
 	return;
      }
 
@@ -334,9 +355,9 @@ static void new_csv_parser_intrin (void)
      SLang_free_mmt (mmt);
 }
 
-static void parse_csv_row_intrin (void)
+static void decode_csv_row_intrin (void)
 {
-   CSV_Parser_Type *csv;
+   CSV_Type *csv;
    SLang_MMT_Type *mmt;
    int flags = 0;
    int has_flags = 0;
@@ -348,47 +369,242 @@ static void parse_csv_row_intrin (void)
 
 	has_flags = 1;
      }
-
-   if (NULL == (mmt = SLang_pop_mmt (CSV_Parser_Type_Id)))
+   if (NULL == (csv = pop_csv_type (&mmt)))
      return;
-   csv = (CSV_Parser_Type *)SLang_object_from_mmt (mmt);
 
    if (has_flags == 0)
      flags = csv->flags;
 
-   (void) parse_csv_row (csv, flags);
+   (void) decode_csv_row (csv, flags);
    SLang_free_mmt (mmt);
 }
 
-#define DUMMY_CSV_PARSER_TYPE ((SLtype)-1)
+/* returns a malloced string */
+static char *csv_encode (CSV_Type *csv,
+			 char **fields, SLuindex_Type nfields,
+			 int flags)
+{
+   char *encoded_str, *s;
+   size_t size;
+   SLuindex_Type i;
+   char delimchar, quotechar;
+   int quote_some, quote_all;
+   char *fieldflags;
+
+   delimchar = csv->delimchar;
+   quotechar = csv->quotechar;
+   quote_some = flags & (CSV_QUOTE_SOME|CSV_QUOTE_ALL);
+   quote_all = flags & CSV_QUOTE_ALL;
+
+   size = 0;
+   if (nfields > 1)
+     size += nfields-1;		       /* for delimiters */
+   size += 3;			       /* for CRLF\0 */
+
+   fieldflags = SLmalloc(nfields+1);
+   if (fieldflags == NULL)
+     return NULL;
+
+   for (i = 0; i < nfields; i++)
+     {
+	char ch, *f, *field = fields[i];
+	int needs_quote = 0;
+
+	fieldflags[i] = 0;
+	if ((field == NULL) || (*field == 0))
+	  {
+	     if (quote_some)
+	       {
+		  fieldflags[i] = 1;
+		  size += 2;
+	       }
+	     continue;
+	  }
+	f = field;
+	while ((ch = *f++) != 0)
+	  {
+	     size++;
+	     if (ch == quotechar)
+	       {
+		  needs_quote=1;
+		  size++;
+		  continue;
+	       }
+	     if (ch == delimchar)
+	       {
+		  needs_quote = 1;
+		  continue;
+	       }
+
+	     if ((unsigned char)ch > ' ')
+	       continue;
+		  
+	     if (ch == '\n')
+	       {
+		  size++;	       /* for \r */
+		  needs_quote = 1;
+		  continue;
+	       }
+	     if (quote_some)
+	       needs_quote = 1;
+	  }
+
+	if (needs_quote || quote_all)
+	  {
+	     fieldflags[i] = 1;
+	     size += 2;
+	  }
+     }
+
+   if (NULL == (encoded_str = SLmalloc (size)))
+     {
+	SLfree (fieldflags);
+	return NULL;
+     }
+   s = encoded_str;
+
+   i = 0;
+   while (i < nfields)
+     {
+	char ch, *f, *field;
+	int needs_quote;
+
+	needs_quote = fieldflags[i];
+	field = fields[i];
+	i++;
+
+	if ((i > 1) && (i < nfields))
+	  *s++ = delimchar;
+
+	if (needs_quote) *s++ = quotechar;
+
+	if ((field == NULL) || (*field == 0))
+	  {
+	     if (needs_quote)
+	       *s++ = quotechar;
+	     continue;
+	  }
+
+	f = field;
+	while ((ch = *f++) != 0)
+	  {
+	     if (ch == quotechar)
+	       {
+		  *s++ = ch;
+		  *s++ = ch;
+		  continue;
+	       }
+
+	     if (ch == '\n')
+	       {
+		  *s++ = '\r';
+		  *s++ = ch;
+		  continue;
+	       }
+
+	     *s++ = ch;
+	  }
+	if (needs_quote)
+	  *s++ = quotechar;
+     }
+
+   *s++ = '\r';
+   *s++ = '\n';
+   *s = 0;
+
+   SLfree (fieldflags);
+   return encoded_str;
+}
+
+static void encode_csv_row_intrin (void)
+{
+   SLang_Array_Type *at;
+   CSV_Type *csv;
+   SLang_MMT_Type *mmt;
+   int flags;
+   int has_flags;
+   char *str;
+
+   if (SLang_Num_Function_Args == 3)
+     {
+	if (-1 == SLang_pop_int (&flags))
+	  return;
+	has_flags = 1;
+     }
+   else has_flags = 0;
+
+   if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
+     return;
+
+   if (NULL == (csv = pop_csv_type (&mmt)))
+     {
+	SLang_free_array (at);
+	return;
+     }
+
+   if (0 == has_flags)
+     flags = csv->flags;
+
+   str = csv_encode (csv, (char **)at->data, at->num_elements, flags);
+   SLang_free_array (at);
+   (void) SLang_push_malloced_string (str);
+}
+
+static void new_csv_encoder_intrin (void)
+{
+   CSV_Type *csv;
+   SLang_MMT_Type *mmt;
+
+   if (NULL == (csv = (CSV_Type *)SLmalloc(sizeof(CSV_Type))))
+     return;
+   memset ((char *)csv, 0, sizeof(CSV_Type));
+
+   if ((-1 == SLang_pop_int (&csv->flags))
+       ||(-1 == SLang_pop_char (&csv->quotechar))
+       || (-1 == SLang_pop_char (&csv->delimchar))
+       || (NULL == (mmt = SLang_create_mmt (CSV_Type_Id, (VOID_STAR)csv))))
+     {
+	free_csv_type (csv);
+	return;
+     }
+
+   if (-1 == SLang_push_mmt (mmt))
+     SLang_free_mmt (mmt);
+}
+
+#define DUMMY_CSV_TYPE ((SLtype)-1)
 static SLang_Intrin_Fun_Type Module_Intrinsics [] =
 {
-   MAKE_INTRINSIC_0("_csv_parser_new", new_csv_parser_intrin, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("_csv_parse_row", parse_csv_row_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_csv_decoder_new", new_csv_decoder_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_csv_decode_row", decode_csv_row_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_csv_encoder_new", new_csv_encoder_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_csv_encode_row", encode_csv_row_intrin, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 
 static SLang_IConstant_Type Module_Constants [] =
 {
-   MAKE_ICONSTANT("CSV_SKIP_BLANK_ROWS", SKIP_BLANK_ROWS),
-   MAKE_ICONSTANT("CSV_STOP_BLANK_ROWS", STOP_ON_BLANK_ROWS),
+   MAKE_ICONSTANT("CSV_SKIP_BLANK_ROWS", CSV_SKIP_BLANK_ROWS),
+   MAKE_ICONSTANT("CSV_STOP_BLANK_ROWS", CSV_STOP_ON_BLANK_ROWS),
+   MAKE_ICONSTANT("CSV_QUOTE_SOME", CSV_QUOTE_SOME),
+   MAKE_ICONSTANT("CSV_QUOTE_ALL", CSV_QUOTE_ALL),
    SLANG_END_ICONST_TABLE
 };
 
 static void destroy_csv (SLtype type, VOID_STAR f)
 {
    (void) type;
-   free_csv_parser ((CSV_Parser_Type *)f);
+   free_csv_type ((CSV_Type *)f);
 }
 
 static int register_csv_type (void)
 {
    SLang_Class_Type *cl;
 
-   if (CSV_Parser_Type_Id != 0)
+   if (CSV_Type_Id != 0)
      return 0;
 
-   if (NULL == (cl = SLclass_allocate_class ("CSV_Parser_Type")))
+   if (NULL == (cl = SLclass_allocate_class ("CSV_Type")))
      return -1;
 
    if (-1 == SLclass_set_destroy_function (cl, destroy_csv))
@@ -397,11 +613,11 @@ static int register_csv_type (void)
    /* By registering as SLANG_VOID_TYPE, slang will dynamically allocate a
     * type.
     */
-   if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE, sizeof (CSV_Parser_Type), SLANG_CLASS_TYPE_MMT))
+   if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE, sizeof (CSV_Type), SLANG_CLASS_TYPE_MMT))
      return -1;
 
-   CSV_Parser_Type_Id = SLclass_get_class_id (cl);
-   if (-1 == SLclass_patch_intrin_fun_table1 (Module_Intrinsics, DUMMY_CSV_PARSER_TYPE, CSV_Parser_Type_Id))
+   CSV_Type_Id = SLclass_get_class_id (cl);
+   if (-1 == SLclass_patch_intrin_fun_table1 (Module_Intrinsics, DUMMY_CSV_TYPE, CSV_Type_Id))
      return -1;
 
    return 0;
