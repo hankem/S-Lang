@@ -214,6 +214,8 @@ Changes since 2.2.2
 86. src/sllist.c: A extra call to SLang_free_mmt was causing a list to
     be freed when set via an index array.
 87. src/slstrops.c: Vectorized strlow/strup intrinsics.
+88. src/slmath.c: Add support for more than 2 arguments to the
+    _min/_max functions (Manfred Hanke).
 
 {{{ Previous Versions
 

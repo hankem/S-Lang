@@ -3828,42 +3828,42 @@ log1p
 _max
 
  SYNOPSIS
-  Compute the maximum of two values
+  Compute the maximum of two or more numeric values
 
  USAGE
-  z = _max (x,y)
+  z = _max (x1,...,xN)
 
  DESCRIPTION
-  The `_max' function returns a floating point number equal to the
-  maximum value of its two arguments.
-  If either argument is an array, an array of the corresponding values
-  will be returned.
+  The `_max' function returns a floating point number equal to
+  the maximum value of its arguments.  If any of the argiments are
+  arrays (of equal length) an array, an array of the corresponding
+  values will be returned.
 
  NOTES
-  This function returns a floating point result even when both
+  This function returns a floating point result even when the
   arguments are integers.
 
  SEE ALSO
-  max, _min, min
+  _min, min, max
 
 --------------------------------------------------------------
 
 _min
 
  SYNOPSIS
-  Compute the minimum of two values
+  Compute the minimum of two or more numeric values
 
  USAGE
-  z = _min (x,y)
+  z = _min (x1,...,xN)
 
  DESCRIPTION
-  The `_min' function returns a floating point number equal to the
-  minimum value of its two arguments.
-  If either argument is an array, an array of the corresponding values
-  will be returned.
+  The `_min' function returns a floating point number equal to
+  the minimum value of its arguments.  If any of the argiments are
+  arrays (of equal length) an array, an array of the corresponding
+  values will be returned.
 
  NOTES
-  This function returns a floating point result even when both
+  This function returns a floating point result even when the
   arguments are integers.
 
  SEE ALSO
