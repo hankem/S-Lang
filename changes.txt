@@ -217,6 +217,7 @@ Changes since 2.2.2
 88. src/slmath.c: Add support for more than 2 arguments to the
     _min/_max functions (Manfred Hanke).
 89. src/sllist.c: Added list_join, list_concat intrinsics (Mike Noble).
+90. slsh/lib/setfuns.sl: adds unique, intersection, complement, union
 
 {{{ Previous Versions
 
