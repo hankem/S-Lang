@@ -66,7 +66,7 @@ Modules
 Intrinsic Functions
 ===================
 
-   The following intrinsic functions have been added for 2.2:
+   The following intrinsic functions have been added for 2.2.x:
 
       sumsq
           equivalent to sum(x*x)
@@ -113,11 +113,18 @@ Intrinsic Functions
       isgraph, ispunct, isblank, isspace (v2.2.3):
           Character classification functions.
 
+      list_append, list_join (v2.2.3)
+          Functions for merging two lists together.
+
+
    The following functions have been enhanced:
 
       hypot
           If given a single array argument, it returns the equivalent
 	  of sqrt(sum(X*X)).
+
+      _min, _max: (v2.2.3)
+          Added support for more than two elements.
 
       polynom
           The calling interface to this function was changed and

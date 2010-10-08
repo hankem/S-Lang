@@ -3120,7 +3120,25 @@ list_append
   appended.  See the documentation on `list_insert' for more details.
 
  SEE ALSO
-  list_insert, list_delete, list_pop, list_new, list_reverse
+  list_concat, list_insert, list_join, list_delete, list_pop, list_new, list_reverse
+
+--------------------------------------------------------------
+
+list_concat
+
+ SYNOPSIS
+  Concatenate two lists to form a third
+
+ USAGE
+  List_Type = list_concat (List_Type a, List_Type b)
+
+ DESCRIPTION
+  This function creates a new list that is formed by concatenating the
+  two lists `a' and `b' together.  Neither of the input
+  lists are modified by this operation.
+
+ SEE ALSO
+  list_join, list_append, list_insert
 
 --------------------------------------------------------------
 
@@ -3175,6 +3193,23 @@ list_insert
 
  SEE ALSO
   list_append, list_pop, list_delete, list_new, list_reverse
+
+--------------------------------------------------------------
+
+list_join
+
+ SYNOPSIS
+  Join the elements of a second list onto the end of the first
+
+ USAGE
+  list_join (List_Type a, List_Type b)
+
+ DESCRIPTION
+  This function modifies the list `a' by appending the elements
+  of `b' to it.
+
+ SEE ALSO
+  list_concat, list_append, list_insert
 
 --------------------------------------------------------------
 

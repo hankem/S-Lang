@@ -260,27 +260,17 @@ static int pop_list (SLang_MMT_Type **mmtp, SLang_List_Type **list)
 /* FIXME: This is currently used only by list_dereference and breaks on an
  * empty list.  For this reason, it would probably fail in other contexts.
  */
-static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a, SLindex_Type indx_b)
+static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a, SLindex_Type length)
 {
    SLang_List_Type *new_list;
    Chunk_Type *c, *new_c;
-   SLindex_Type i, length;
+   SLindex_Type i;
    SLang_Object_Type *obj, *obj_max, *new_obj, *new_obj_max;
 
-   length = list->length;
-   if (indx_a < 0)
-     indx_a += length;
-   if (indx_b < 0)
-     indx_b += length;
+   if (length == 0)
+     return allocate_list ();
 
-   if (indx_a > indx_b)
-     {
-	SLindex_Type tmp = indx_a;
-	indx_a = indx_b;
-	indx_b = tmp;
-     }
-
-   if ((indx_b >= length) || (indx_a < 0))
+   if ((indx_a < 0) || (indx_a + (length - 1) >= list->length))
      {
 	_pSLang_verror (SL_Index_Error, "Indices are out of range for list object");
 	return NULL;
@@ -288,10 +278,6 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a
 
    if (NULL == (new_list = allocate_list ()))
      return NULL;
-
-   length = (indx_b - indx_a) + 1;
-   if (length == 0)
-     return new_list;
 
    if (-1 == make_chunk_chain (length, &new_list->first, &new_list->last))
      {
@@ -755,6 +741,61 @@ static void list_to_array (void)
    SLang_free_mmt (mmt);
 }
 
+/* joins  l2 onto l1 */
+static int list_join_internal (SLang_List_Type *l1, SLang_List_Type *l2)
+{
+   Chunk_Type *chunk;
+   SLindex_Type num2;
+
+   chunk = l2->first;
+   num2 = l2->length;
+   while (num2 > 0)
+     {
+	SLindex_Type i, imax;
+	SLang_Object_Type *objs;
+	objs = chunk->elements;
+	i = 0; imax = chunk->num_elements;
+
+	while ((num2 > 0) && (i < imax))
+	  {
+	     SLang_Object_Type obj;
+	     if (-1 == _pSLslang_copy_obj (objs+i, &obj))
+	       return -1;
+
+	     if (-1 == insert_element(l1, &obj,  l1->length))
+	       {
+		  SLang_free_object (&obj);
+		  return -1;
+	       }
+	     i++;
+	     num2--;
+	  }
+	chunk = chunk->next;
+     }
+   return 0;
+}
+
+static void list_join (SLang_List_Type *l1, SLang_List_Type *l2)
+{
+   (void) list_join_internal (l1, l2);
+}
+
+static void list_concat (SLang_List_Type *l1, SLang_List_Type *l2)
+{
+   SLang_List_Type *list;
+
+   if (NULL == (list = make_sublist (l1, 0, l1->length)))
+     return;
+
+   if (-1 == list_join_internal (list, l2))
+     {
+	delete_list (list);
+	return;
+     }
+
+  (void) push_list (list);	       /* will delete upon failure */
+}
+
 #define L SLANG_LIST_TYPE
 #define I SLANG_INT_TYPE
 #define A SLANG_ARRAY_INDEX_TYPE
@@ -767,6 +808,8 @@ static SLang_Intrin_Fun_Type Intrin_Table [] =
    MAKE_INTRINSIC_0("list_to_array", list_to_array, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("list_new", list_new, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("list_pop", list_pop, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_2("list_concat", list_concat, SLANG_VOID_TYPE, L, L),
+   MAKE_INTRINSIC_2("list_join", list_join, SLANG_VOID_TYPE, L, L),
    MAKE_INTRINSIC_1("__push_list", push_list_elements, SLANG_VOID_TYPE, L),
    MAKE_INTRINSIC_1("__pop_list", pop_as_list, SLANG_VOID_TYPE, I),
    SLANG_END_INTRIN_FUN_TABLE
@@ -791,7 +834,8 @@ static int list_dereference (SLtype type, VOID_STAR addr)
    (void) type;
 
    list = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)addr);
-   if (NULL == (list = make_sublist (list, 0, -1)))
+
+   if (NULL == (list = make_sublist (list, 0, list->length)))
      return -1;
 
    return push_list (list);	       /* will delete upon failure */
