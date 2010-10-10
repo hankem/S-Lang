@@ -220,6 +220,7 @@ Changes since 2.2.2
 90. slsh/lib/setfuns.sl: adds unique, intersection, complement, union
 91. modules/csv.sl: Added a module to support the reading and writing
     of comma separated values (csv) formatted files.
+92. Some documentation corrections (Manfred Hanke).
 
 {{{ Previous Versions
 

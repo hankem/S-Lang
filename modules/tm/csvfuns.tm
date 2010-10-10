@@ -1,6 +1,6 @@
-\function{csv_parser_new}
+\function{csv_decoder_new}
 \synopsis{Instantiate a parser for CSV data}
-\usage{obj = cvs_parser_new (filename|File_Type|Strings[])}
+\usage{obj = cvs_decoder_new (filename|File_Type|Strings[])}
 \description
   This function instantiates an object that may be used to parse and
   read so-called comma-separated-value (CSV) data.  It requires a
@@ -106,13 +106,13 @@
 
  The first step is to instantiate a parser object using:
 #v+
-    csv = csv_parser_new ("data.csv" ;comment="#");
+    csv = csv_decoder_new ("data.csv" ;comment="#");
 #v-
  The use of the \exmp{comment} qualifier will cause all lines
  beginning with \exmp{"#"} to be skipped.  Alternatively, the first
  line could have been skipped using
 #v+
-    csv = csv_parser_new ("data.csv" ;skiplines=1);
+    csv = csv_decoder_new ("data.csv" ;skiplines=1);
 #v-
  The second row (also second line) in the file is the header line: it
  gives the names of the columns.  It may be read using
@@ -161,7 +161,7 @@
 #v-
  The \exmp{header} qualifier was required in the last form to map the
  column names to numbers.
-\seealso{cvs_parser_new, csv_readcol, readascii}
+\seealso{cvs_decoder_new, csv_readcol, readascii}
 \done
 
 
@@ -172,7 +172,7 @@
   The \exmp{csv.readrow} function method may be used to read the next
   row from the underlying CSV (comma-separated-value) parser object.  The
   object must have already been instantiated using the
-  \sfun{cvs_parser_new} function.  It returns the row data in the form
+  \sfun{cvs_decoder_new} function.  It returns the row data in the form
   of an array of strings.  If the end of input it reached, \NULL will
   be returned.
 \qualifiers
@@ -200,7 +200,7 @@
   Otherwise the row will be treated as if it contained the empty
   string and returned as an array of length 1 with a value of "".  The
   default behavior is to skip such rows.
-\seealso{csv_parser_new, csv.readcol, csv_readcol}
+\seealso{csv_decoder_new, csv.readcol, csv_readcol}
 \done
 
 \function{csv_readcol}

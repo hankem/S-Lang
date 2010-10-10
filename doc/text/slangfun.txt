@@ -3728,18 +3728,18 @@ hypot
   Compute sqrt(x1^2+x2^2+...+xN^2)
 
  USAGE
-  r = hypot (x1 [,x2...,xN]
+  r = hypot (x1 [,x2,..,xN])
 
  DESCRIPTION
- If given two or more arguments, `x1,...,xN', `hypot'
- function computes the quantity `sqrt(x1^2+...+xN^2)' using an
- algorithm that tries to avoid arithmetic overflow.  If any of the
- arguments is an array, an array of the corresponding values will be
- returned.
+  If given two or more arguments, `x1,...,xN', the `hypot'
+  function computes the quantity `sqrt(x1^2+...+xN^2)' using an
+  algorithm that tries to avoid arithmetic overflow.  If any of the
+  arguments is an array, an array of the corresponding values will be
+  returned.
 
- If given a single array argument `x', the `hypot' function
- will compute `sqrt(sumsq(x))', where `sumsq(x)' computes
- the sum of the squares of the elements of `x'.
+  If given a single array argument `x', the `hypot' function
+  computes `sqrt(sumsq(x))', where `sumsq(x)' computes
+  the sum of the squares of the elements of `x'.
 
  SEE ALSO
   atan2, cos, atan, acosh, cosh, sum, sumsq
@@ -3871,8 +3871,8 @@ _max
  DESCRIPTION
   The `_max' function returns a floating point number equal to
   the maximum value of its arguments.  If any of the argiments are
-  arrays (of equal length) an array, an array of the corresponding
-  values will be returned.
+  arrays (of equal length), an array of the corresponding values will
+  be returned.
 
  NOTES
   This function returns a floating point result even when the
@@ -3894,8 +3894,8 @@ _min
  DESCRIPTION
   The `_min' function returns a floating point number equal to
   the minimum value of its arguments.  If any of the argiments are
-  arrays (of equal length) an array, an array of the corresponding
-  values will be returned.
+  arrays (of equal length), an array of the corresponding values will
+  be returned.
 
  NOTES
   This function returns a floating point result even when the

@@ -1,10 +1,10 @@
-csv_parser_new
+csv_decoder_new
 
  SYNOPSIS
   Instantiate a parser for CSV data
 
  USAGE
-  obj = cvs_parser_new (filename|File_Type|Strings[])
+  obj = cvs_decoder_new (filename|File_Type|Strings[])
 
  DESCRIPTION
   This function instantiates an object that may be used to parse and
@@ -125,13 +125,13 @@ csv.readcol
 
  The first step is to instantiate a parser object using:
 
-    csv = csv_parser_new ("data.csv" ;comment="#");
+    csv = csv_decoder_new ("data.csv" ;comment="#");
 
  The use of the `comment' qualifier will cause all lines
  beginning with `"#"' to be skipped.  Alternatively, the first
  line could have been skipped using
 
-    csv = csv_parser_new ("data.csv" ;skiplines=1);
+    csv = csv_decoder_new ("data.csv" ;skiplines=1);
 
  The second row (also second line) in the file is the header line: it
  gives the names of the columns.  It may be read using
@@ -182,7 +182,7 @@ csv.readcol
  column names to numbers.
 
  SEE ALSO
-  cvs_parser_new, csv_readcol, readascii
+  cvs_decoder_new, csv_readcol, readascii
 
 --------------------------------------------------------------
 
@@ -198,7 +198,7 @@ csv.readrow
   The `csv.readrow' function method may be used to read the next
   row from the underlying CSV (comma-separated-value) parser object.  The
   object must have already been instantiated using the
-  `cvs_parser_new' function.  It returns the row data in the form
+  `cvs_decoder_new' function.  It returns the row data in the form
   of an array of strings.  If the end of input it reached, NULL will
   be returned.
 
@@ -229,7 +229,7 @@ csv.readrow
   default behavior is to skip such rows.
 
  SEE ALSO
-  csv_parser_new, csv.readcol, csv_readcol
+  csv_decoder_new, csv.readcol, csv_readcol
 
 --------------------------------------------------------------
 
