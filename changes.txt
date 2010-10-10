@@ -221,6 +221,9 @@ Changes since 2.2.2
 91. modules/csv.sl: Added a module to support the reading and writing
     of comma separated values (csv) formatted files.
 92. Some documentation corrections (Manfred Hanke).
+93. src/slmath.c: In the hypot function, use the convenience function
+    do_binary_function_on_nargs instead of an explicit loop. (Manfred
+    Hanke).
 
 {{{ Previous Versions
 

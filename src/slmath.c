@@ -1133,6 +1133,26 @@ static int do_binary_function (double (*f)(double, double))
    return SLang_push_double (c_ast.d);
 }
 
+/* num is assumed to be at least 2 here */
+static int do_binary_function_on_nargs (double (*f)(double, double), int num)
+{
+   int depth = SLstack_depth () - num;
+
+   num--;			       /* first time consumes 2 args */
+   while (num > 0)
+     {
+	if (-1 == do_binary_function (f))
+	  {
+	     num = SLstack_depth () - depth;
+	     if (num > 0)
+	       (void) SLdo_pop_n ((unsigned int) num);
+	     return -1;
+	  }
+	num--;
+     }
+   return 0;
+}
+
 static void hypot_fun (void)
 {
    Array_Or_Scalar_Type ast;
@@ -1140,11 +1160,7 @@ static void hypot_fun (void)
 
    if (SLang_Num_Function_Args >= 2)
      {
-	int count = SLang_Num_Function_Args-1;
-	while ((count > 0)
-	       && (0 == do_binary_function (SLmath_hypot)))
-	  count--;
-
+	(void) do_binary_function_on_nargs (SLmath_hypot, SLang_Num_Function_Args);
 	return;
      }
 
@@ -1365,26 +1381,6 @@ static double do_max (double a, double b)
 static double do_diff (double a, double b)
 {
    return fabs(a-b);
-}
-
-/* num is assumed to be at least 2 here */
-static int do_binary_function_on_nargs (double (*f)(double, double), int num)
-{
-   int depth = SLstack_depth () - num;
-
-   num--;			       /* first time consumes 2 args */
-   while (num > 0)
-     {
-	if (-1 == do_binary_function (f))
-	  {
-	     num = SLstack_depth () - depth;
-	     if (num > 0)
-	       (void) SLdo_pop_n ((unsigned int) num);
-	     return -1;
-	  }
-	num--;
-     }
-   return 0;
 }
 
 static void min_fun (void)
