@@ -224,6 +224,8 @@ Changes since 2.2.2
 93. src/slmath.c: In the hypot function, use the convenience function
     do_binary_function_on_nargs instead of an explicit loop. (Manfred
     Hanke).
+94. modules/tm/slsmg.tm: Manfred Hanke has started documenting the
+    slsmg module.  He also provided a new example (slsmgex2.sl).
 
 {{{ Previous Versions
 

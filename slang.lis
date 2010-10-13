@@ -121,6 +121,7 @@
 @examples/saveobj.sl
 @examples/sort.sl
 @examples/utmp.sl
+@examples/slsmgex2.sl
 
 @modules/mkfiles/makefile.all
 @modules/mkfiles/README
@@ -159,6 +160,7 @@
 @modules/zlib-module.c
 @modules/zlib.sl
 
+@modules/test/test_csv.sl
 @modules/test/test_zlib.sl
 @modules/test/test_onig.sl
 @modules/test/test_rand.sl
@@ -172,6 +174,8 @@
 @modules/tm/Makefile
 @modules/tm/modfuns.tm
 @modules/tm/csvfuns.tm
+@modules/tm/slsmg.tm
+
 @modules/help/pcrefuns.hlp
 @modules/help/pngfuns.hlp
 @modules/help/randfuns.hlp
@@ -179,6 +183,7 @@
 @modules/help/onigfuns.hlp
 @modules/help/forkfuns.hlp
 @modules/help/csvfuns.hlp
+@modules/help/slsmg.hlp
 
 @modules/examples/newt_ex.sl
 @modules/examples/slsmg_ex.sl
