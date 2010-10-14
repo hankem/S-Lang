@@ -1,10 +1,10 @@
-csv_parser_new
+csv_decoder_new
 
  SYNOPSIS
   Instantiate a parser for CSV data
 
  USAGE
-  obj = cvs_parser_new (filename|File_Type|Strings[])
+  obj = cvs_decoder_new (filename|File_Type|Strings[])
 
  DESCRIPTION
   This function instantiates an object that may be used to parse and
@@ -125,13 +125,13 @@ csv.readcol
 
  The first step is to instantiate a parser object using:
 
-    csv = csv_parser_new ("data.csv" ;comment="#");
+    csv = csv_decoder_new ("data.csv" ;comment="#");
 
  The use of the `comment' qualifier will cause all lines
  beginning with `"#"' to be skipped.  Alternatively, the first
  line could have been skipped using
 
-    csv = csv_parser_new ("data.csv" ;skiplines=1);
+    csv = csv_decoder_new ("data.csv" ;skiplines=1);
 
  The second row (also second line) in the file is the header line: it
  gives the names of the columns.  It may be read using
@@ -182,7 +182,7 @@ csv.readcol
  column names to numbers.
 
  SEE ALSO
-  cvs_parser_new, readascii
+  cvs_decoder_new, csv_readcol, readascii
 
 --------------------------------------------------------------
 
@@ -198,7 +198,7 @@ csv.readrow
   The `csv.readrow' function method may be used to read the next
   row from the underlying CSV (comma-separated-value) parser object.  The
   object must have already been instantiated using the
-  `cvs_parser_new' function.  It returns the row data in the form
+  `cvs_decoder_new' function.  It returns the row data in the form
   of an array of strings.  If the end of input it reached, NULL will
   be returned.
 
@@ -229,6 +229,74 @@ csv.readrow
   default behavior is to skip such rows.
 
  SEE ALSO
-  csv_parser_new, csv.readcol
+  csv_decoder_new, csv.readcol, csv_readcol
+
+--------------------------------------------------------------
+
+csv_readcol
+
+ SYNOPSIS
+  Read one or more columns from a CSV file
+
+ USAGE
+  Struct_Type csv_readcol (file|fp [,columns] ;qualifiers)
+
+ DESCRIPTION
+ This function may be used to read one or more of the columns in the specified
+ CSV file.  If the `columns' argument is present, then only those
+ columns will be read; otherwise all columns in the file will be read.
+ The columns will be returned in the form of a structure.
+
+ QUALIFIERS
+ This function supports all of the qualifiers supported by the
+ `csv_decoder_new' function and the `csv.readcol' method.  In
+ addition, if the `has_header' qualifier is present, the first
+ line processed (after skipping any lines implied by the
+ `skiplines' and `comment' qualifiers) will be regarded as
+ the header.
+
+ EXAMPLE
+
+   data = csv_readcol ("mirror.csv" ;comment="#", has_header, delim='|');
+
+
+ SEE ALSO
+  csv_decoder_new, csv.readcol, csv.readrow, csv.writecol, csv_encoder_new
+
+--------------------------------------------------------------
+
+csv_encoder_new
+
+ SYNOPSIS
+  Create an object for writing CSV files
+
+ USAGE
+  csv = csv_encoder_new ()
+
+ DESCRIPTION
+  The `csv_encoder_new' function returns an object that may
+  be used for creating a CSV file.
+
+ QUALIFIERS
+  ; delim: Character used for the field delimiter (default: ',')
+  ; quote: Character used for quoting fields (default: '"')
+  ; quoteall: Quote all field values
+  ; quotesome: Quote only those fields where quoting is necessary
+
+ METHODS
+  writecol: write one or more colums to a file.  For more information
+  about this method, see the documentation for `csv.writecol'.
+
+ EXAMPLE
+    x = [0:2*PI:#100];
+    csv = csv_encoder_new (;delim='|');
+    csv.writecol ("sinx.csv", x, sin(x) ; names=["x", "sin of x"]);
+
+ NOTES
+  The `set_float_format' function may be used to specify the
+  format used where writing floating point numbers to the CSV file.
+
+ SEE ALSO
+  csv_writecol, csv_encoder_new, csv_readcol
 
 --------------------------------------------------------------

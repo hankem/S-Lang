@@ -473,7 +473,7 @@ static char *csv_encode (CSV_Type *csv,
 	field = fields[i];
 	i++;
 
-	if ((i > 1) && (i < nfields))
+	if ((i > 1) && (i <= nfields))
 	  *s++ = delimchar;
 
 	if (needs_quote) *s++ = quotechar;
@@ -546,6 +546,7 @@ static void encode_csv_row_intrin (void)
      flags = csv->flags;
 
    str = csv_encode (csv, (char **)at->data, at->num_elements, flags);
+   SLang_free_mmt (mmt);
    SLang_free_array (at);
    (void) SLang_push_malloced_string (str);
 }

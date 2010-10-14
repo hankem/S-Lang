@@ -121,6 +121,7 @@
 @examples/saveobj.sl
 @examples/sort.sl
 @examples/utmp.sl
+@examples/slsmgex2.sl
 
 @modules/mkfiles/makefile.all
 @modules/mkfiles/README
@@ -159,6 +160,7 @@
 @modules/zlib-module.c
 @modules/zlib.sl
 
+@modules/test/test_csv.sl
 @modules/test/test_zlib.sl
 @modules/test/test_onig.sl
 @modules/test/test_rand.sl
@@ -172,6 +174,8 @@
 @modules/tm/Makefile
 @modules/tm/modfuns.tm
 @modules/tm/csvfuns.tm
+@modules/tm/slsmg.tm
+
 @modules/help/pcrefuns.hlp
 @modules/help/pngfuns.hlp
 @modules/help/randfuns.hlp
@@ -179,6 +183,7 @@
 @modules/help/onigfuns.hlp
 @modules/help/forkfuns.hlp
 @modules/help/csvfuns.hlp
+@modules/help/slsmg.hlp
 
 @modules/examples/newt_ex.sl
 @modules/examples/slsmg_ex.sl
@@ -240,6 +245,7 @@
 @slsh/lib/cmdopt.sl
 @slsh/lib/readascii.sl
 @slsh/lib/process.sl
+@slsh/lib/setfuns.sl
 
 @slsh/lib/rline/editfuns.sl
 @slsh/lib/rline/emacskeys.sl
@@ -259,6 +265,7 @@
 @slsh/lib/help/profile.hlp
 @slsh/lib/help/print.hlp
 @slsh/lib/help/process.hlp
+@slsh/lib/help/setfuns.hlp
 
 @slsh/lib/tm/Makefile
 @slsh/lib/tm/arrayfuns.tm
@@ -270,12 +277,14 @@
 @slsh/lib/tm/profile.tm
 @slsh/lib/tm/print.tm
 @slsh/lib/tm/process.tm
+@slsh/lib/tm/setfuns.tm
 
 @slsh/lib/test/test_cmdopt.sl
 @slsh/lib/test/test_structfuns.sl
 @slsh/lib/test/test_readascii.sl
 @slsh/lib/test/test_print.sl
 @slsh/lib/test/test_process.sl
+@slsh/lib/test/test_setfuns.sl
 
 @slsh/doc/tm/slsh.tm
 @slsh/doc/tm/Makefile

@@ -6,7 +6,17 @@
   this function appends the object to the list.  The optional
   argument \exmp{nth} may be used to specify where the object is to be
   appended.  See the documentation on \ifun{list_insert} for more details.
-\seealso{list_insert, list_delete, list_pop, list_new, list_reverse}
+\seealso{list_concat, list_insert, list_join, list_delete, list_pop, list_new, list_reverse}
+\done
+
+\function{list_concat}
+\synopsis{Concatenate two lists to form a third}
+\usage{List_Type = list_concat (List_Type a, List_Type b)}
+\description
+  This function creates a new list that is formed by concatenating the
+  two lists \exmp{a} and \exmp{b} together.  Neither of the input
+  lists are modified by this operation.
+\seealso{list_join, list_append, list_insert}
 \done
 
 \function{list_delete}
@@ -44,6 +54,15 @@
   since the latter creates a new list with two items, \exmp{object}
   and the old list.
 \seealso{list_append, list_pop, list_delete, list_new, list_reverse}
+\done
+
+\function{list_join}
+\synopsis{Join the elements of a second list onto the end of the first}
+\usage{list_join (List_Type a, List_Type b)}
+\description
+  This function modifies the list \exmp{a} by appending the elements
+  of \exmp{b} to it.
+\seealso{list_concat, list_append, list_insert}
 \done
 
 \function{list_new}

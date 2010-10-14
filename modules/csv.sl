@@ -94,7 +94,7 @@ private define fixup_header_names (names)
 
 private define read_cols ()
 {
-   if (_NARGS == 0)
+   if ((_NARGS == 0) || (qualifier_exists ("help")))
      {
 	usage("struct = .readcol ([columns] ; qualifiers)\n\
 where columns is an optional 1-based array of column numbers,\n\
@@ -339,7 +339,7 @@ Qualifiers:\n\
 
 private define writecol ()
 {
-   if (_NARGS < 3)
+   if ((_NARGS < 3) || qualifier_exists("help"))
      {
 	usage("\
 writecol (file|fp, list_of_column_data | datastruct | col1,col2,...)\n\
@@ -356,7 +356,7 @@ Qualifiers:\n\
      }
    else
      {
-	data = __pop_list (_NARGS-1);
+	data = __pop_list (_NARGS-2);
 	(csv, file) = ();
      }
 
@@ -387,6 +387,7 @@ Qualifiers:\n\
      {
 	variable tmp = {};
 	data = {(_push_struct_field_values(data), pop())};
+	list_reverse (data);
      }
 
    EXIT_BLOCK
@@ -431,12 +432,21 @@ Qualifiers:\n\
 
 define csv_encoder_new ()
 {
-   variable flags = qualifier ("flags", CSV_QUOTE_SOME);
+   if (qualifier_exists ("help"))
+     {
+	usage ("csv = csv_encoder_new ();\n\
+Qualifiers:\n\
+  delim=','\n\
+  quote='\"'\n\
+  quotesome, quoteall"
+	      );
+     }
+
+   variable flags = 0;
+   if (qualifier_exists ("quoteall")) flags |= CSV_QUOTE_ALL;
+   if (qualifier_exists ("quotesome")) flags |= CSV_QUOTE_SOME;
    variable quotechar = qualifier ("quote", '"');
    variable delimchar = qualifier ("delim", ',');
-
-   if (_NARGS == 1)
-     flags = ();
 
    variable csv = struct
      {
@@ -449,17 +459,51 @@ define csv_encoder_new ()
 
 define csv_writecol ()
 {
-   if (_NARGS < 2)
+   if ((_NARGS < 2) || qualifier_exists("help"))
      {
 	usage("\
 csv_writecol (file|fp, list_of_column_data | datastruct | col1,col2,...)\n\
 Qualifiers:\n\
   names=array-of-column-names, noheader, quoteall, quotesome\n\
 "
-	      );
+	     );
      }
 
    variable args = __pop_list (_NARGS);
    variable csv = csv_encoder_new (;;__qualifiers);
    csv.writecol (__push_list(args);;__qualifiers);
 }
+
+define csv_readcol ()
+{
+   if ((_NARGS == 0) || qualifier_exists("help"))
+     {
+	usage ("struct = csvreadcol (file|fp [,columns] ;qualifier)\n\
+where columns is an optional 1-based array of column numbers,\n\
+ or array of column names.\n\
+Qualifiers:\n\
+ quote='\"', delim=',', skiplines=0, comment=string, has_header,\n\
+ header=header, fields=[array of field names],\n\
+ type=value|array of 's','i','l','f','d' (string,int,long,float,double)\n\
+ typeNTH=val (specifiy type for NTH column)\n\
+ snan=\"\", inan=0, lnan=0L, fnan=_NaN, dnan=_NaN (defaults for empty fields),\n\
+ nanNTH=val (value used for an empty field in the NTH column\n\
+"
+	      );
+     }
+
+   variable file, columns;
+   columns = __pop_list (_NARGS-1);
+   file = ();
+
+   variable q = __qualifiers ();
+   variable csv = csv_decoder_new (file ;; q);
+   if (qualifier_exists ("has_header"))
+     {
+	variable header = csv.readrow ();
+	q = struct { header=header, @q };
+     }
+
+   return csv.readcol (__push_list(columns) ;; q);
+}
+

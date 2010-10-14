@@ -1,6 +1,6 @@
-\function{csv_parser_new}
+\function{csv_decoder_new}
 \synopsis{Instantiate a parser for CSV data}
-\usage{obj = cvs_parser_new (filename|File_Type|Strings[])}
+\usage{obj = cvs_decoder_new (filename|File_Type|Strings[])}
 \description
   This function instantiates an object that may be used to parse and
   read so-called comma-separated-value (CSV) data.  It requires a
@@ -106,13 +106,13 @@
 
  The first step is to instantiate a parser object using:
 #v+
-    csv = csv_parser_new ("data.csv" ;comment="#");
+    csv = csv_decoder_new ("data.csv" ;comment="#");
 #v-
  The use of the \exmp{comment} qualifier will cause all lines
  beginning with \exmp{"#"} to be skipped.  Alternatively, the first
  line could have been skipped using
 #v+
-    csv = csv_parser_new ("data.csv" ;skiplines=1);
+    csv = csv_decoder_new ("data.csv" ;skiplines=1);
 #v-
  The second row (also second line) in the file is the header line: it
  gives the names of the columns.  It may be read using
@@ -161,7 +161,7 @@
 #v-
  The \exmp{header} qualifier was required in the last form to map the
  column names to numbers.
-\seealso{cvs_parser_new, readascii}
+\seealso{cvs_decoder_new, csv_readcol, readascii}
 \done
 
 
@@ -172,7 +172,7 @@
   The \exmp{csv.readrow} function method may be used to read the next
   row from the underlying CSV (comma-separated-value) parser object.  The
   object must have already been instantiated using the
-  \sfun{cvs_parser_new} function.  It returns the row data in the form
+  \sfun{cvs_decoder_new} function.  It returns the row data in the form
   of an array of strings.  If the end of input it reached, \NULL will
   be returned.
 \qualifiers
@@ -200,5 +200,51 @@
   Otherwise the row will be treated as if it contained the empty
   string and returned as an array of length 1 with a value of "".  The
   default behavior is to skip such rows.
-\seealso{csv_parser_new, csv.readcol}
+\seealso{csv_decoder_new, csv.readcol, csv_readcol}
+\done
+
+\function{csv_readcol}
+\synopsis{Read one or more columns from a CSV file}
+\usage{Struct_Type csv_readcol (file|fp [,columns] ;qualifiers)}
+\description
+ This function may be used to read one or more of the columns in the specified
+ CSV file.  If the \exmp{columns} argument is present, then only those
+ columns will be read; otherwise all columns in the file will be read.
+ The columns will be returned in the form of a structure.
+\qualifiers
+ This function supports all of the qualifiers supported by the
+ \sfun{csv_decoder_new} function and the \sfun{csv.readcol} method.  In
+ addition, if the \exmp{has_header} qualifier is present, the first
+ line processed (after skipping any lines implied by the
+ \exmp{skiplines} and \exmp{comment} qualifiers) will be regarded as
+ the header.
+\example
+#v+
+   data = csv_readcol ("mirror.csv" ;comment="#", has_header, delim='|');
+#v-
+\seealso{csv_decoder_new, csv.readcol, csv.readrow, csv.writecol, csv_encoder_new}
+\done
+
+\function{csv_encoder_new}
+\synopsis{Create an object for writing CSV files}
+\usage{csv = csv_encoder_new ()}
+\description
+  The \sfun{csv_encoder_new} function returns an object that may
+  be used for creating a CSV file.
+\qualifiers
+\qualifier{delim}{Character used for the field delimiter}{','}
+\qualifier{quote}{Character used for quoting fields}{'"'}
+\qualifier{quoteall}{Quote all field values}
+\qualifier{quotesome}{Quote only those fields where quoting is necessary}
+\methods
+  writecol: write one or more colums to a file.  For more information
+  about this method, see the documentation for \sfun{csv.writecol}.
+\example
+    x = [0:2*PI:#100];
+    csv = csv_encoder_new (;delim='|');
+    csv.writecol ("sinx.csv", x, sin(x) ; names=["x", "sin of x"]);
+\notes
+  The \ifun{set_float_format} function may be used to specify the
+  format used where writing floating point numbers to the CSV file.
+\seealso{csv_writecol, csv_encoder_new, csv_readcol}
 \done

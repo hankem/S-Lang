@@ -247,17 +247,17 @@
 
 \function{hypot}
 \synopsis{Compute sqrt(x1^2+x2^2+...+xN^2)}
-\usage{r = hypot (x1 [,x2...,xN]}
+\usage{r = hypot (x1 [,x2,..,xN])}
 \description
- If given two or more arguments, \exmp{x1,...,xN}, \ifun{hypot}
- function computes the quantity \exmp{sqrt(x1^2+...+xN^2)} using an
- algorithm that tries to avoid arithmetic overflow.  If any of the
- arguments is an array, an array of the corresponding values will be
- returned.
+  If given two or more arguments, \exmp{x1,...,xN}, the \ifun{hypot}
+  function computes the quantity \exmp{sqrt(x1^2+...+xN^2)} using an
+  algorithm that tries to avoid arithmetic overflow.  If any of the
+  arguments is an array, an array of the corresponding values will be
+  returned.
 
- If given a single array argument \exmp{x}, the \ifun{hypot} function
- will compute \exmp{sqrt(sumsq(x))}, where \exmp{sumsq(x)} computes
- the sum of the squares of the elements of \exmp{x}.
+  If given a single array argument \exmp{x}, the \ifun{hypot} function
+  computes \exmp{sqrt(sumsq(x))}, where \exmp{sumsq(x)} computes
+  the sum of the squares of the elements of \exmp{x}.
 \seealso{atan2, cos, atan, acosh, cosh, sum, sumsq}
 \done
 
@@ -328,29 +328,29 @@
 \done
 
 \function{_max}
-\synopsis{Compute the maximum of two values}
-\usage{z = _max (x,y)}
+\synopsis{Compute the maximum of two or more numeric values}
+\usage{z = _max (x1,...,xN)}
 \description
-  The \ifun{_max} function returns a floating point number equal to the
-  maximum value of its two arguments.
-  If either argument is an array, an array of the corresponding values
-  will be returned.
+  The \ifun{_max} function returns a floating point number equal to
+  the maximum value of its arguments.  If any of the argiments are
+  arrays (of equal length), an array of the corresponding values will
+  be returned.
 \notes
-  This function returns a floating point result even when both
+  This function returns a floating point result even when the
   arguments are integers.
-\seealso{max, _min, min}
+\seealso{_min, min, max}
 \done
 
 \function{_min}
-\synopsis{Compute the minimum of two values}
-\usage{z = _min (x,y)}
+\synopsis{Compute the minimum of two or more numeric values}
+\usage{z = _min (x1,...,xN)}
 \description
-  The \ifun{_min} function returns a floating point number equal to the
-  minimum value of its two arguments.
-  If either argument is an array, an array of the corresponding values
-  will be returned.
+  The \ifun{_min} function returns a floating point number equal to
+  the minimum value of its arguments.  If any of the argiments are
+  arrays (of equal length), an array of the corresponding values will
+  be returned.
 \notes
-  This function returns a floating point result even when both
+  This function returns a floating point result even when the
   arguments are integers.
 \seealso{min, _max, max}
 \done

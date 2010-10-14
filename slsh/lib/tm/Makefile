@@ -6,7 +6,7 @@
 TMEXPAND = tmexpand
 
 HLP_FILES = arrayfuns.hlp glob.hlp require.hlp structfuns.hlp cmdopt.hlp \
-            readascii.hlp profile.hlp print.hlp process.hlp
+            readascii.hlp profile.hlp print.hlp process.hlp setfuns.hlp
 
 all: help-files
 help-files: $(HLP_FILES)
@@ -28,6 +28,8 @@ profile.hlp: profile.tm
 	$(TMEXPAND) -Mslhlp profile.tm profile.hlp
 process.hlp: process.tm
 	$(TMEXPAND) -Mslhlp process.tm process.hlp
+setfuns.hlp: setfuns.tm
+	$(TMEXPAND) -Mslhlp setfuns.tm setfuns.hlp
 #----------------------------------------------------------------------------
 clean:
 	-rm -f *~ *.dvi *.log *.aux *.toc *.bak

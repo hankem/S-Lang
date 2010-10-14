@@ -242,6 +242,40 @@ private define run_index_tests ()
 }
 run_index_tests ();
 
+private define test_append_join ()
+{
+   variable da = {PI, "foo", 2.1, Array_Type[4]};
+   variable ab = {};
+   variable ab_concat = {};
+   variable ab_join = {};
+   variable obj;
+   variable N = 31;
+   loop (N)
+     {
+	ab_concat = list_concat (ab, da);
+	list_join (ab_join, da);
+	foreach obj (da)
+	  list_append (ab, obj);
+     }
+   variable num = N*length(da);
+   if (num != length (ab))
+     failed ("list_append failed to produce a list of the expected length");
+   if (num != length (ab_concat))
+     failed ("list_concat failed to produce a list of the expected length");
+   if (num != length (ab_join))
+     failed ("list_join failed to produce a list of the expected length");
+
+   _for (0, num-1, 1)
+     {
+	variable i = ();
+	ifnot (_eqs (ab[i], ab_concat[i]))
+	  failed ("list_concat failure: %S != %S", ab[i], ab_concat[i]);
+	ifnot (_eqs (ab[i], ab_join[i]))
+	  failed ("list_join failure: %S != %S", ab[i], ab_join[i]);
+     }
+}
+test_append_join ();
+
 print ("Ok\n");
 
 exit (0);

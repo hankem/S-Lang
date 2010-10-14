@@ -3120,7 +3120,25 @@ list_append
   appended.  See the documentation on `list_insert' for more details.
 
  SEE ALSO
-  list_insert, list_delete, list_pop, list_new, list_reverse
+  list_concat, list_insert, list_join, list_delete, list_pop, list_new, list_reverse
+
+--------------------------------------------------------------
+
+list_concat
+
+ SYNOPSIS
+  Concatenate two lists to form a third
+
+ USAGE
+  List_Type = list_concat (List_Type a, List_Type b)
+
+ DESCRIPTION
+  This function creates a new list that is formed by concatenating the
+  two lists `a' and `b' together.  Neither of the input
+  lists are modified by this operation.
+
+ SEE ALSO
+  list_join, list_append, list_insert
 
 --------------------------------------------------------------
 
@@ -3175,6 +3193,23 @@ list_insert
 
  SEE ALSO
   list_append, list_pop, list_delete, list_new, list_reverse
+
+--------------------------------------------------------------
+
+list_join
+
+ SYNOPSIS
+  Join the elements of a second list onto the end of the first
+
+ USAGE
+  list_join (List_Type a, List_Type b)
+
+ DESCRIPTION
+  This function modifies the list `a' by appending the elements
+  of `b' to it.
+
+ SEE ALSO
+  list_concat, list_append, list_insert
 
 --------------------------------------------------------------
 
@@ -3693,18 +3728,18 @@ hypot
   Compute sqrt(x1^2+x2^2+...+xN^2)
 
  USAGE
-  r = hypot (x1 [,x2...,xN]
+  r = hypot (x1 [,x2,..,xN])
 
  DESCRIPTION
- If given two or more arguments, `x1,...,xN', `hypot'
- function computes the quantity `sqrt(x1^2+...+xN^2)' using an
- algorithm that tries to avoid arithmetic overflow.  If any of the
- arguments is an array, an array of the corresponding values will be
- returned.
+  If given two or more arguments, `x1,...,xN', the `hypot'
+  function computes the quantity `sqrt(x1^2+...+xN^2)' using an
+  algorithm that tries to avoid arithmetic overflow.  If any of the
+  arguments is an array, an array of the corresponding values will be
+  returned.
 
- If given a single array argument `x', the `hypot' function
- will compute `sqrt(sumsq(x))', where `sumsq(x)' computes
- the sum of the squares of the elements of `x'.
+  If given a single array argument `x', the `hypot' function
+  computes `sqrt(sumsq(x))', where `sumsq(x)' computes
+  the sum of the squares of the elements of `x'.
 
  SEE ALSO
   atan2, cos, atan, acosh, cosh, sum, sumsq
@@ -3828,42 +3863,42 @@ log1p
 _max
 
  SYNOPSIS
-  Compute the maximum of two values
+  Compute the maximum of two or more numeric values
 
  USAGE
-  z = _max (x,y)
+  z = _max (x1,...,xN)
 
  DESCRIPTION
-  The `_max' function returns a floating point number equal to the
-  maximum value of its two arguments.
-  If either argument is an array, an array of the corresponding values
-  will be returned.
+  The `_max' function returns a floating point number equal to
+  the maximum value of its arguments.  If any of the argiments are
+  arrays (of equal length), an array of the corresponding values will
+  be returned.
 
  NOTES
-  This function returns a floating point result even when both
+  This function returns a floating point result even when the
   arguments are integers.
 
  SEE ALSO
-  max, _min, min
+  _min, min, max
 
 --------------------------------------------------------------
 
 _min
 
  SYNOPSIS
-  Compute the minimum of two values
+  Compute the minimum of two or more numeric values
 
  USAGE
-  z = _min (x,y)
+  z = _min (x1,...,xN)
 
  DESCRIPTION
-  The `_min' function returns a floating point number equal to the
-  minimum value of its two arguments.
-  If either argument is an array, an array of the corresponding values
-  will be returned.
+  The `_min' function returns a floating point number equal to
+  the minimum value of its arguments.  If any of the argiments are
+  arrays (of equal length), an array of the corresponding values will
+  be returned.
 
  NOTES
-  This function returns a floating point result even when both
+  This function returns a floating point result even when the
   arguments are integers.
 
  SEE ALSO
