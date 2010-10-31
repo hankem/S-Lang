@@ -226,6 +226,8 @@ Changes since 2.2.2
     Hanke).
 94. modules/tm/slsmg.tm: Manfred Hanke has started documenting the
     slsmg module.  He also provided a new example (slsmgex2.sl).
+95. src/slnspace.c,slang.c: Free up some memory associated with
+    namespaces upon exit.
 
 {{{ Previous Versions
 

@@ -46,8 +46,7 @@ SLang_NameSpace_Type *_pSLns_find_namespace (SLCONST char *name)
 }
 
 /* This function deletes the namespace.  It is up to the caller to ensure that
- * the table has already been removed from the list.  Currently, it makes no
- * attempt to delete objects attached to the table.
+ * the table has already been removed from the list.
  */
 void _pSLns_deallocate_namespace (SLang_NameSpace_Type *ns)
 {
@@ -58,23 +57,23 @@ void _pSLns_deallocate_namespace (SLang_NameSpace_Type *ns)
    if (ns == NULL)
      return;
 
-   SLang_free_slstring ((char *) ns->name);
-
    table = ns->table;
    table_size = ns->table_size;
 
    for (i = 0; i < table_size; i++)
      {
 	SLang_Name_Type *t = table [i];
-	while (t != NULL)
+   	while (t != NULL)
 	  {
 	     SLang_Name_Type *t1 = t->next;
 	     SLang_free_slstring ((char *) t->name);
 	     SLfree ((char *) t);
-	     /* Later: free additional objects here */
 	     t = t1;
 	  }
      }
+   SLang_free_slstring ((char *) ns->name);
+   SLang_free_slstring ((char *) ns->namespace_name);
+   SLang_free_slstring ((char *) ns->private_name);
    SLfree ((char *)table);
    SLfree ((char *) ns);
 }
@@ -356,7 +355,6 @@ SLang_NameSpace_Type *SLns_create_namespace (SLFUTURE_CONST char *namespace_name
 
 void SLns_delete_namespace (SLang_NameSpace_Type *ns)
 {
-   /* FIXME: remove symbols from the namespace */
    if (ns == NULL)
      return;
 
@@ -376,7 +374,6 @@ void SLns_delete_namespace (SLang_NameSpace_Type *ns)
 	     break;
 	  }
      }
-
    _pSLns_deallocate_namespace (ns);
 }
 
@@ -481,5 +478,76 @@ SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt)
 SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *ns, SLCONST char *name)
 {
    return _pSLns_locate_hashed_name (ns, name, _pSLcompute_string_hash (name));
+}
+
+static void delete_namespace_objects (SLang_NameSpace_Type *ns)
+{
+   SLang_Name_Type **table = ns->table;
+   unsigned int i, table_size = ns->table_size;
+
+   for (i = 0; i < table_size; i++)
+     {
+	SLang_Name_Type *t = table[i];
+	while (t != NULL)
+	  {
+	     SLang_Name_Type *t1 = t->next;
+	     switch (t->name_type)
+	       {
+		case SLANG_PVARIABLE:
+		case SLANG_GVARIABLE:
+		  SLang_free_object (&((SLang_Global_Var_Type *)t)->obj);
+		  break;
+
+		case SLANG_PFUNCTION:
+		case SLANG_FUNCTION:
+		  SLang_free_function (t);
+		  break;
+
+		case SLANG_ICONSTANT:
+		case SLANG_DCONSTANT:
+		case SLANG_FCONSTANT:
+		case SLANG_LLCONSTANT:
+		case SLANG_HCONSTANT:
+		case SLANG_LCONSTANT:
+		case SLANG_RVARIABLE:
+		case SLANG_IVARIABLE:
+		case SLANG_INTRINSIC:
+		case SLANG_MATH_UNARY:
+		case SLANG_APP_UNARY:
+		case SLANG_ARITH_UNARY:
+		case SLANG_ARITH_BINARY:
+		default:
+		  break;
+	       }
+	     SLang_free_slstring (t->name);
+	     t = t1;
+	  }
+     }
+}
+
+/* This is only called at exit.  Until version 3, I cannot delete everything
+ * since the namespace contains a mixture of statically allocated table
+ * and dynamically allocated ones.  The only way to tell the difference is
+ * to change the API by adding an additional field to SLang_Name_Type object.
+ * So, here I delete what I can safely do, but to avoid leak checkers complaining
+ * about false leaks, the Namespace_Tables pointer will be left as is.
+ */
+void _pSLns_delete_namespaces (void)
+{
+   SLang_NameSpace_Type *ns;
+
+   ns = Namespace_Tables;
+   while (ns != NULL)
+     {
+	SLang_NameSpace_Type *next = ns->next;
+	delete_namespace_objects (ns);
+	SLang_free_slstring ((char *) ns->name);
+	SLang_free_slstring ((char *) ns->namespace_name);
+	SLang_free_slstring ((char *) ns->private_name);
+	/* SLfree ((char *)ns->table); v3*/
+	/* SLfree ((char *) ns); v3 */
+	ns = next;
+     }
+   /* Namespace_Tables = NULL; v3 */
 }
 

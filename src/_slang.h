@@ -541,6 +541,16 @@ typedef struct _pSLang_Object_Type
 }
 SLang_Object_Type;
 
+typedef struct
+{
+   char *name;
+   SLang_Name_Type *next;
+   char name_type;
+
+   SLang_Object_Type obj;
+}
+SLang_Global_Var_Type;
+
 struct _pSLang_MMT_Type
 {
    SLtype data_type;	       /* int, string, etc... */
@@ -710,6 +720,7 @@ extern SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt);
 extern SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *, SLCONST char *);
 extern SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, SLFUTURE_CONST char *nsname);
 extern SLang_NameSpace_Type *_pSLns_create_namespace2 (SLFUTURE_CONST char *name, SLFUTURE_CONST char *nsname);
+extern void _pSLns_delete_namespaces (void);
 
 /* The long-long constants functions need to be fixed in slang.h.  This will
  * have to wait for a major version change.

@@ -80,16 +80,6 @@ typedef struct
    SLang_Name_Type *next;
    char name_type;
 
-   SLang_Object_Type obj;
-}
-SLang_Global_Var_Type;
-
-typedef struct
-{
-   char *name;
-   SLang_Name_Type *next;
-   char name_type;
-
    int local_var_number;
 }
 SLang_Local_Var_Type;
@@ -6715,10 +6705,12 @@ static unsigned int Block_Context_Stack_Len;
 static SLBlock_Type *Compile_ByteCode_Ptr;
 static SLBlock_Type *This_Compile_Block;
 static SLBlock_Type *This_Compile_Block_Max;
-static int This_Compile_Block_Type;
+
+#define COMPILE_BLOCK_TYPE_NONE		0
 #define COMPILE_BLOCK_TYPE_FUNCTION	1
 #define COMPILE_BLOCK_TYPE_BLOCK	2
 #define COMPILE_BLOCK_TYPE_TOP_LEVEL	3
+static int This_Compile_Block_Type = COMPILE_BLOCK_TYPE_NONE;
 
 /* If it returns 0, DO NOT FREE p */
 static int lang_free_branch (SLBlock_Type *p)
@@ -8577,6 +8569,7 @@ void reset_compiler_state (void)
    Lang_Defining_Function = 0;
 
    while ((This_Compile_Block_Type != COMPILE_BLOCK_TYPE_TOP_LEVEL)
+	  && (This_Compile_Block_Type != COMPILE_BLOCK_TYPE_NONE)
 	  && (0 == pop_block_context ()))
      ;
 }
@@ -10268,6 +10261,27 @@ static void free_stacks (void)
 #endif
 }
 
+static void delete_interpreter (void)
+{
+   if (Run_Stack != NULL)
+     {
+	/* Allow any object destructors to run */
+	while (Stack_Pointer != Run_Stack)
+	  {
+	     SLdo_pop ();
+	  }
+     }
+
+   SLang_restart (0);
+
+   while ((This_Compile_Block_Type != COMPILE_BLOCK_TYPE_NONE)
+	  && (0 == _pSLcompile_pop_context ()))
+     ;
+
+   _pSLns_delete_namespaces ();
+   free_stacks ();
+}
+
 static int init_interpreter (void)
 {
    SLang_NameSpace_Type *ns;
@@ -10318,6 +10332,9 @@ static int init_interpreter (void)
    /* Function_Stack_Ptr_Max = Function_Stack_Ptr + SLANG_MAX_RECURSIVE_DEPTH; */
 
    (void) setup_default_compile_linkage (1);
+   if (-1 == SLang_add_cleanup_function (delete_interpreter))
+     goto return_error;
+
    return 0;
 
 return_error:
