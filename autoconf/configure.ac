@@ -153,6 +153,7 @@ confstr pathconf \
 getpriority setpriority \
 setvbuf \
 utime utimes \
+ttyname ttyname_r \
 )
 
 dnl# Systems that have nl_langinfo may not have CODESET.  Test for both here

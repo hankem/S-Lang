@@ -50,6 +50,12 @@ Interpreter Enhancements
 	  space = struct {x, y, z};
 	  spacetime = struct {@space, t};
 
+    7.  (v2.2.3) Dereferencing a scalar or vector class type now
+       results in duplication of the object, e.g, @7 will produce 7.
+
+    8.  (v2.2.3) Mergesort was made the default sorting algorithm.  See the
+        array_sort for details.
+
 Modules
 =======
 
@@ -113,18 +119,23 @@ Intrinsic Functions
 	  and x=ldexp(a,b).
 
       islower, isupper, isxdigit, isalnum, isalpha, iscntrl, isprint,
-      isgraph, ispunct, isblank, isspace (v2.2.3):
+      isgraph, ispunct, isblank, isascii, isspace (v2.2.3):
           Character classification functions.
 
       list_append, list_join (v2.2.3)
           Functions for merging two lists together.
 
+      ttyname (v2.2.3)
+          Get the name of the terminal
 
    The following functions have been enhanced:
 
       hypot
           If given a single array argument, it returns the equivalent
 	  of sqrt(sum(X*X)).
+
+          Support for N arrays added for e.g., the Euclidean norm in
+	  an N dimensional space (v2.2.3)
 
       _min, _max: (v2.2.3)
           Added support for more than two elements.
@@ -133,9 +144,22 @@ Intrinsic Functions
           The calling interface to this function was changed and
 	  support added for arrays.
 
+      strjoin (v2.2.3)
+          delimiter made optional
+
       strreplace (v2.2.3)
           New usage designed to facilitate the most common case where
 	  one wants to replace all the substrings.
+
+      strtrans (v2.2.3)
+          Additional character classes added (see documentation).
+
+      string_match, string_matches (v2.2.3)
+          The position argument made optional
+
+      strup/strlow (v2.2.3)
+          Added support for an array of strings.
+
 
 slsh
 ====
@@ -153,6 +177,9 @@ slsh
 
          Instead of scrolling horizontally when editing a line,
 	 attempt to wrap the line. (v2.2.3)
+
+         setfuns.sl: Various set functions: unique, intersection,
+	 complement,union (v2.2.3)
 
 Misc
 ====

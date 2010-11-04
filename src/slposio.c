@@ -812,37 +812,118 @@ static _pSLc_off_t_Type posix_lseek (SLFile_FD_Type *f, _pSLc_off_t_Type *ofs, i
    return status;
 }
 
+static int pop_fd (int *fdp, SLFile_FD_Type **fp, SLang_MMT_Type **mmtp)
+{
+   int fd;
+
+   *fp = NULL; *mmtp = NULL;
+
+   switch (SLang_peek_at_stack ())
+     {
+      case SLANG_FILE_PTR_TYPE:
+	  {
+	     SLang_MMT_Type *mmt;
+	     FILE *p;
+
+	     if (-1 == SLang_pop_fileptr (&mmt, &p))
+	       return -1;
+	     fd = fileno (p);
+	     *mmtp = mmt;
+	  }
+	break;
+
+      case SLANG_FILE_FD_TYPE:
+	  {
+	     SLFile_FD_Type *f;
+	     if (-1 == SLfile_pop_fd (&f))
+	       return -1;
+	     if (-1 == get_fd (f, &fd))
+	       {
+		  SLfile_free_fd (f);
+		  return -1;
+	       }
+	  }
+	break;
+
+      default:
+	if (-1 == SLang_pop_int (&fd))
+	  return -1;
+     }
+   *fdp = fd;
+   return 0;
+}
+
 static int posix_isatty (void)
 {
    int ret;
    SLFile_FD_Type *f;
+   SLang_MMT_Type *mmt;
    int fd;
 
-   if (SLang_peek_at_stack () == SLANG_FILE_PTR_TYPE)
-     {
-	SLang_MMT_Type *mmt;
-	FILE *fp;
+   if (-1 == pop_fd (&fd, &f, &mmt))
+     return 0;		       /* invalid descriptor */
 
-	if (-1 == SLang_pop_fileptr (&mmt, &fp))
-	  return 0;		       /* invalid descriptor */
+   if (0 == (ret = isatty (fd)))
+     _pSLerrno_errno = errno;
 
-	ret = isatty (fileno (fp));
-	SLang_free_mmt (mmt);
-	return ret;
-     }
-
-   if (-1 == SLfile_pop_fd (&f))
-     return 0;
-
-   if (-1 == get_fd (f, &fd))
-     ret = -1;
-   else
-     ret = isatty (f->fd);
-
-   SLfile_free_fd (f);
+   if (mmt != NULL) SLang_free_mmt (mmt);
+   if (f != NULL) SLfile_free_fd (f);
 
    return ret;
 }
+
+#ifdef HAVE_TTYNAME_R
+# define TTYNAME_R ttyname_r
+#else
+# ifdef HAVE_TTYNAME
+#  define TTYNAME_R my_ttyname_r
+static int my_ttyname_r (int fd, char *buf, size_t buflen)
+{
+   char *tty = ttyname (fd);
+   if (tty == NULL)
+     {
+	int e = errno;
+	if (e == 0)
+	  e = -1;
+	return e;
+     }
+   strncpy (buf, tty, buflen);
+   buf[buflen-1] = 0;
+   return 0;
+}
+# endif
+#endif
+
+#ifdef TTYNAME_R
+static void posix_ttyname (void)
+{
+   SLFile_FD_Type *f;
+   SLang_MMT_Type *mmt;
+   int fd;
+   char buf[512];
+   int e;
+
+   if (SLang_Num_Function_Args == 0)
+     {
+	fd = 0;
+	f = NULL;
+	mmt = NULL;
+     }
+   else if (-1 == pop_fd (&fd, &f, &mmt))
+     return;
+
+   if (0 != (e = TTYNAME_R (fd, buf, sizeof(buf))))
+     {
+	_pSLerrno_errno = e;
+	SLang_push_null ();
+     }
+   else
+     (void) SLang_push_string (buf);
+
+   if (mmt != NULL) SLang_free_mmt (mmt);
+   if (f != NULL) SLfile_free_fd (f);
+}
+#endif
 
 static void posix_dup (SLFile_FD_Type *f)
 {
@@ -915,6 +996,9 @@ static SLang_Intrin_Fun_Type Fd_Name_Table [] =
    MAKE_INTRINSIC_2("dup2_fd", posix_dup2, I, F, I),
    MAKE_INTRINSIC_1("close", posix_close, I, F),
    MAKE_INTRINSIC_1("_close", posix_close_fd, I, I),
+#if defined(TTYNAME_R)
+   MAKE_INTRINSIC_0("ttyname", posix_ttyname, V),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 #undef I

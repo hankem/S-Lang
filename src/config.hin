@@ -120,6 +120,8 @@
 #undef HAVE_MKTIME
 #undef HAVE_MKFIFO
 #undef HAVE_MMAP
+#undef HAVE_TTYNAME_R
+#undef HAVE_TTYNAME
 
 #undef HAVE_GETPPID
 #undef HAVE_GETGID

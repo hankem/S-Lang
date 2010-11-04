@@ -228,6 +228,7 @@ Changes since 2.2.2
     slsmg module.  He also provided a new example (slsmgex2.sl).
 95. src/slnspace.c,slang.c: Free up some memory associated with
     namespaces upon exit.
+96. src/slposio.c: added ttyname intrinsic
 
 {{{ Previous Versions
 
