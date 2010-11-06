@@ -45,10 +45,13 @@ help:
 	@echo "make install-static : install a static version"
 	@echo "make install-all : install both shared and static versions"
 	@echo "make check : Build the library and run the regression tests"
-static: makefiles
+slang.pc: configure autoconf/slangpc.in
+	@echo "slang.pc needs to be updated -- rerun configure"
+	@exit 1
+static: makefiles slang.pc
 	cd src; $(MAKE) static
 	cd slsh; $(MAKE) all
-elf: makefiles
+elf: makefiles slang.pc
 	cd src; $(MAKE) elf
 	cd slsh; $(MAKE) all
 	cd modules; $(MAKE) all

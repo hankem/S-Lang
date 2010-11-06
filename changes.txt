@@ -229,6 +229,7 @@ Changes since 2.2.2
 95. src/slnspace.c,slang.c: Free up some memory associated with
     namespaces upon exit.
 96. src/slposio.c: added ttyname intrinsic
+97. autoconf/slang.pc: Use @libdir@ instead of assuming $prefix/lib.
 
 {{{ Previous Versions
 
