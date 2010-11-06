@@ -101,7 +101,7 @@ where columns is an optional 1-based array of column numbers,\n\
  or array of column names.\n\
 Qualifiers:\n\
  header=header, fields=[array of field names],\n\
- type=value|array of 's','i','l','f','d' (string,int,long,float,double)\n\
+ type=value|array|string of 's','i','l','f','d' (str,int,long,float,dbl)\n\
  typeNTH=val (specifiy type for NTH column)\n\
  snan=\"\", inan=0, lnan=0L, fnan=_NaN, dnan=_NaN (defaults for empty fields),\n\
  nanNTH=val (value used for an empty field in the NTH column\n\
@@ -171,6 +171,9 @@ Qualifiers:\n\
      {
 	if (typeof(types) == List_Type)
 	  types = list_to_array (types);
+
+	if (typeof(types) == String_Type)
+	  types = bstring_to_array (types);
 
 	if ((typeof(types) == Array_Type) && (length(types) != ncols))
 	  throw InvalidParmError, "types array must be equal to the number of columns";

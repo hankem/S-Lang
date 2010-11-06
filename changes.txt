@@ -230,6 +230,9 @@ Changes since 2.2.2
     namespaces upon exit.
 96. src/slposio.c: added ttyname intrinsic
 97. autoconf/slang.pc: Use @libdir@ instead of assuming $prefix/lib.
+98. modules/csv.sl: The read_cols method allows the type qualifier to
+    be a string of type specifiers, e.g., types="liff".  This is
+    equivalent to types=['l', 'i', 'f', 'f'].
 
 {{{ Previous Versions
 
