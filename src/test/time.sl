@@ -42,6 +42,33 @@ static define test_strftime ()
 }
 
 test_strftime ();
+
+define test_mktime ()
+{
+   loop (50)
+     {
+	variable t0 = int (urand () * 0x7FFFFFFFL);
+	variable t1, tm;
+	tm = localtime (t0);
+	if (tm != NULL)
+	  {
+	     t1 = mktime(tm);
+	     if (t0 != t1)
+	       failed ("mktime failed to produce %S, got %S instead", t0, t1);
+	  }
+#ifexists timegm
+	tm = gmtime (t0);
+	if (tm != NULL)
+	  {
+	     t1 = timegm(tm);
+	     if (t0 != t1)
+	       failed ("timegm failed to produce %S, got %S instead", t0, t1);
+	  }
+#endif
+     }
+}
+test_mktime ();
+
 print ("Ok\n");
 
 exit (0);

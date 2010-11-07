@@ -57,6 +57,32 @@ USA.
 /* Turns on/off intrinsics that _may_ get added in the future */
 #define USE_FROM_FUTURE		0
 
+#if ((SIZEOF_LONG < 8) && defined(HAVE_LONG_LONG))
+# define SLANG_TIME_T_TYPE SLANG_LLONG_TYPE
+typedef long long _sltime_t;
+# define PUSH_TIME_T SLang_push_long_long
+# define POP_TIME_T SLang_pop_long_long
+#else
+# define SLANG_TIME_T_TYPE SLANG_LONG_TYPE
+typedef long _sltime_t;
+# define PUSH_TIME_T SLang_push_long
+# define POP_TIME_T SLang_pop_long
+#endif
+
+static int pop_time_t (time_t *tt)
+{
+   _sltime_t t;
+   if (-1 == POP_TIME_T(&t))
+     return -1;
+   *tt = (time_t)t;
+   return 0;
+}
+
+static int push_time_t (time_t t)
+{
+   return PUSH_TIME_T ((_sltime_t) t);
+}
+
 #if defined(IBMPC_SYSTEM)
 /* For other system (Unix and VMS), _pSLusleep is in sldisply.c */
 int _pSLusleep (unsigned long s)
@@ -88,11 +114,20 @@ unsigned int sleep (unsigned int seconds)
 }
 #endif
 
-static char *ctime_cmd (long *tt)
+static char *ctime_cmd (void)
 {
    char *t;
-
-   t = ctime ((time_t *) tt);
+   time_t tt;
+#ifdef HAVE_CTIME_R
+   static char buf[64];
+#endif
+   if (-1 == pop_time_t (&tt))
+     return NULL;
+#ifdef HAVE_CTIME_R
+   t = ctime_r (&tt, buf);
+#else
+   t = ctime (&tt);
+#endif
    t[24] = 0;  /* knock off \n */
    return (t);
 }
@@ -121,9 +156,9 @@ static void sleep_cmd (void)
 #endif
 }
 
-static long _time_cmd (void)
+static void _time_cmd (void)
 {
-   return (long) time (NULL);
+   (void) push_time_t (time(NULL));
 }
 
 #if defined(__GO32__)
@@ -225,6 +260,8 @@ static int validate_tm (struct tm *tms)
 
 static int push_tm_struct (struct tm *tms)
 {
+   if (tms == NULL)
+     return SLang_push_null ();
    return SLang_push_cstruct ((VOID_STAR) tms, TM_Struct);
 }
 
@@ -240,31 +277,245 @@ static int pop_tm_struct (struct tm *tms)
    return validate_tm (tms);
 }
 
-static void localtime_cmd (long *t)
+#ifdef HAVE_GMTIME
+static int call_gmtime (time_t t, struct tm *tmp)
 {
-   time_t tt = (time_t) *t;
-   (void) push_tm_struct (localtime (&tt));
+   struct tm *_tmp;
+# ifdef HAVE_GMTIME_R
+   if (NULL != (_tmp = gmtime_r (&t, tmp)))
+     return 0;
+# else
+   _tmp = gmtime (&t);
+   if (_tmp != NULL)
+     {
+	*tmp = *_tmp;
+	return 0;
+     }
+# endif
+   SLang_verror (SL_RunTime_Error, "libc gmtime returned NULL");
+   return -1;
+}
+#endif
+
+static int call_localtime (time_t t, struct tm *tmp)
+{
+   struct tm *_tmp;
+#ifdef HAVE_LOCALTIME_R
+   if (NULL != (_tmp = localtime_r (&t, tmp)))
+     return 0;
+#else
+   _tmp = localtime (&t);
+   if (_tmp != NULL)
+     {
+	*tmp = *_tmp;
+	return 0;
+     }
+#endif
+   SLang_verror (SL_RunTime_Error, "libc localtime returned NULL");
+   return -1;
 }
 
-static void gmtime_cmd (long *t)
+
+static void localtime_cmd (void)
 {
+   time_t t;
+   struct tm tm;
+
+   if (-1 == pop_time_t (&t))
+     return;
+   if (0 == call_localtime (t, &tm))
+     (void) push_tm_struct (&tm);
+}
+
+static void gmtime_cmd (void)
+{
+   time_t t;
+   struct tm tm;
+
+   if (-1 == pop_time_t (&t))
+     return;
+
 #ifdef HAVE_GMTIME
-   time_t tt = (time_t) *t;
-   (void) push_tm_struct (gmtime (&tt));
+   if (0 == call_gmtime (t, &tm))
+     (void) push_tm_struct (&tm);
 #else
-   localtime_cmd (t);
+   if (0 == call_localtime (t, &tm))
+     (void) push_tm_struct (&tm);
 #endif
 }
 
-#ifdef HAVE_MKTIME
-static long mktime_cmd (void)
+#ifdef HAVE_GMTIME
+/* Implement gmtime using a binary search.  The linux manpage says to
+ * play games with the TZ environment variable but that is too ugly for
+ * my taste.
+ */
+static int tm_cmp (struct tm *a, struct tm *b)
 {
-   struct tm t;
+   if (a->tm_year != b->tm_year)
+     return a->tm_year - b->tm_year;
+   if (a->tm_yday != b->tm_yday)
+     return a->tm_yday - b->tm_yday;
+   if (a->tm_hour - b->tm_hour)
+     return a->tm_hour - b->tm_hour;
+   return (a->tm_min - b->tm_min)*60 + (a->tm_sec - b->tm_sec);
+}
 
-   if (-1 == SLang_pop_cstruct (&t, TM_Struct))
-     return (long)-1;
+static int timegm_internal (struct tm *tmp, time_t *tp)
+{
+   struct tm tm0;
+   struct tm tm1;
+   time_t t0, t1, t, dt;
+   static time_t delta;
+   static int delta_ok = 0;
+   int diff;
 
-   return (long) mktime (&t);
+   /* Construct t0 and t1 to bracket the answer.  First, guess a value close
+    * to the correct answer.  Consider:
+    *    tm_utc = gmtime(t)
+    *    tm_loc = localtime(t)
+    *    delta = tm_loc - tm_utc
+    * Then we expect
+    *    t = mktime (tm_loc) = timegm(tm_utc)
+    *      = mktime (tm_utc + delta)
+    *      = mktime (tm_utc) + delta
+    * ==> timegm(tm) = mktime(tm) + delta
+    * ==> tm = gmtime(mktime(tm+delta))
+    *        = gmtime(mktime(tm)) + delta
+    *    delta = tm - gmtime(mktime(tm))
+    */
+   if (delta_ok == 0)
+     {
+	/* localtime Jan 15, 2000 00:00:00 */
+	memset ((char *)&tm1, 0, sizeof(tm0));
+	tm1.tm_mday = 15;
+	tm1.tm_year = 100;
+
+	/* want mktime(tm1), but mktime will modify tm1, so use tm0 as a tmp */
+	tm0 = tm1; t1 = mktime (&tm0);
+	if (-1 == call_gmtime (t1, &tm0))
+	  return -1;
+	/* Compute delta = tm1 - tm0 */
+	tm1.tm_hour += 24*(tm1.tm_mday - tm0.tm_mday);
+	delta = (tm1.tm_hour - tm0.tm_hour)*3600
+	  + (tm1.tm_min - tm0.tm_min)*60 + (tm1.tm_sec - tm0.tm_sec);
+	delta_ok = 1;
+     }
+
+   tm0 = *tmp;			       /* do not allow mktime to mess with *tmp */
+   t = mktime (&tm0) + delta;
+
+   /* Find a lower bound */
+   dt = 0;
+   while (1)
+     {
+	int wrapped = 0;
+	t0 = t - dt;
+	while (t0 > t)/* handle wrapping */
+	  {
+	     wrapped = 1;
+	     t0++;
+	  }
+	if (-1 == call_gmtime (t0, &tm0))
+	  return -1;
+	diff = tm_cmp (&tm0, tmp);
+	if (diff == 0)
+	  {
+	     *tp = t0;
+	     return 0;
+	  }
+	if (diff < 0)
+	  break;
+
+	if (wrapped)
+	  {
+	     SLang_verror (SL_Internal_Error, "timegm: Unable to find a lower limit");
+	     return -1;
+	  }
+
+	dt = dt*2 + 1;
+     }
+
+   /* upper bound */
+   dt = 1;
+   while (1)
+     {
+	int wrapped = 0;
+	t1 = t + dt;
+	while (t1 < t)/* handle wrapping */
+	  {
+	     wrapped = 1;
+	     t1--;
+	  }
+	if (-1 == call_gmtime (t1, &tm1))
+	  return -1;
+	diff = tm_cmp (&tm1, tmp);
+	if (diff == 0)
+	  {
+	     *tp = t1;
+	     return 0;
+	  }
+	if (diff>0)
+	  break;
+
+	if (wrapped)
+	  {
+	     SLang_verror (SL_Internal_Error, "timegm: Unable to find an upper limit");
+	     return -1;
+	  }
+	dt = dt * 2;
+     }
+
+   do
+     {
+	struct tm tmx;
+	t = t0 + (t1-t0)/2;
+	if (-1 == call_gmtime (t, &tmx))
+	  return -1;
+	diff = tm_cmp (&tmx, tmp);
+	if (diff == 0)
+	  {
+	     *tp = t;
+	     return 0;
+	  }
+	if (diff < 0)
+	  {
+	     if (t0 == t)
+	       break;
+	     t0 = t; tm0 = tmx;
+	  }
+	else
+	  {
+	     t1 = t; tm1 = tmx;
+	  }
+     }
+   while (t0 + 1 < t1);
+   *tp = t1;
+   return 0;
+}
+
+static void timegm_cmd (void)
+{
+   struct tm tm;
+   time_t t;
+
+   if (-1 == pop_tm_struct (&tm))
+     return;
+   if (-1 == timegm_internal (&tm, &t))
+     return;
+   (void) push_time_t (t);
+}
+
+#endif
+
+#ifdef HAVE_MKTIME
+static void mktime_cmd (void)
+{
+   struct tm tm;
+
+   if (-1 == SLang_pop_cstruct (&tm, TM_Struct))
+     return;
+
+   (void) push_time_t (mktime (&tm));
 }
 #endif
 
@@ -424,7 +675,8 @@ static void strftime_cmd (void)
    if (SLang_Num_Function_Args == 1)
      {
 	time_t t = time(NULL);
-	tms = *localtime(&t);
+	if (-1 == call_localtime (t, &tms))
+	  return;
 	if (-1 == validate_tm (&tms))
 	  return;
      }
@@ -458,14 +710,17 @@ static void strftime_cmd (void)
 
 static SLang_Intrin_Fun_Type Time_Funs_Table [] =
 {
-   MAKE_INTRINSIC_1("ctime", ctime_cmd, SLANG_STRING_TYPE, SLANG_LONG_TYPE),
+   MAKE_INTRINSIC_0("ctime", ctime_cmd, SLANG_STRING_TYPE),
    MAKE_INTRINSIC_0("sleep", sleep_cmd, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("_time", _time_cmd, SLANG_LONG_TYPE),
+   MAKE_INTRINSIC_0("_time", _time_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("time", SLcurrent_time_string, SLANG_STRING_TYPE),
-   MAKE_INTRINSIC_1("localtime", localtime_cmd, SLANG_VOID_TYPE, SLANG_LONG_TYPE),
-   MAKE_INTRINSIC_1("gmtime", gmtime_cmd, SLANG_VOID_TYPE, SLANG_LONG_TYPE),
+   MAKE_INTRINSIC_0("localtime", localtime_cmd, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("gmtime", gmtime_cmd, SLANG_VOID_TYPE),
+#ifdef HAVE_GMTIME
+   MAKE_INTRINSIC_0("timegm", timegm_cmd, SLANG_VOID_TYPE),
+#endif
 #ifdef HAVE_MKTIME
-   MAKE_INTRINSIC_0("mktime", mktime_cmd, SLANG_LONG_TYPE),
+   MAKE_INTRINSIC_0("mktime", mktime_cmd, SLANG_VOID_TYPE),
 #endif
    MAKE_INTRINSIC_0("strftime", strftime_cmd, SLANG_VOID_TYPE),
 #ifdef HAVE_TIMES
@@ -485,6 +740,10 @@ static SLang_Intrin_Fun_Type Time_Funs_Table [] =
 
 int _pSLang_init_sltime (void)
 {
+   if (sizeof (time_t) > sizeof(_sltime_t))
+     {
+	SLang_exit_error ("S-Lang library not built properly.  Fix _sltime_t in sltime.c");
+     }
 #ifdef HAVE_TIMES
    (void) tic_cmd ();
 #endif

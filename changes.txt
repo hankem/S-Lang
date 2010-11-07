@@ -233,6 +233,10 @@ Changes since 2.2.2
 98. modules/csv.sl: The read_cols method allows the type qualifier to
     be a string of type specifiers, e.g., types="liff".  This is
     equivalent to types=['l', 'i', 'f', 'f'].
+99. src/sltime.c: Added timegm, which is the inverse of gmtime.  I
+    also made changes to the time functions so that time_t is not
+    assumed to be a long.  This means that _time may produce a
+    longlong integer on some platforms.
 
 {{{ Previous Versions
 

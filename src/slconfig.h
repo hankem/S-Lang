@@ -194,6 +194,10 @@ USA.
 #undef HAVE_GETTIMEOFDAY
 
 #undef HAVE_GMTIME
+#undef HAVE_GMTIME_R
+#undef HAVE_LOCALTIME_R
+#undef HAVE_CTIME_R
+
 #ifdef __unix__
 # define HAVE_GMTIME	1
 #endif
