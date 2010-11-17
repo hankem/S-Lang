@@ -193,6 +193,7 @@
 @modules/examples/oniggrep
 @modules/examples/echoclnt.sl
 
+@modules/cmaps/mkcmap.sl
 @modules/cmaps/cool.map
 @modules/cmaps/globe.map
 @modules/cmaps/jet.map
@@ -215,6 +216,8 @@
 @modules/cmaps/wysiwyg.map
 @modules/cmaps/ds9b.map
 @modules/cmaps/ds9sls.map
+@modules/cmaps/coolwarm.map
+#
 
 @slang.lis
 @slsh/INSTALL

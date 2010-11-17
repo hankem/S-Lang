@@ -30,4 +30,4 @@ $1 =
   0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,
 ];
 
-png_add_colormap ("ds9sls", __tmp($1))
+png_add_colormap ("ds9sls", __tmp($1));

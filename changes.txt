@@ -237,6 +237,7 @@ Changes since 2.2.2
     also made changes to the time functions so that time_t is not
     assumed to be a long.  This means that _time may produce a
     longlong integer on some platforms.
+100. modules/cmaps/coolwarm.map: A color map by Kenneth Moreland.
 
 {{{ Previous Versions
 
