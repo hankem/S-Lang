@@ -1,17 +1,17 @@
-dnl -*- sh -*-
-dnl
-dnl   This file requires m4 macros that I define in my acsite.m4 file.
-dnl   A copy is in the autoconf directory.
-dnl
+dnl# -*- sh -*-
+dnl#
+dnl#   This file requires JD_* m4 macros that are defined in 
+dnl# the aclocal.m4 file.
+dnl#
 
 AC_INIT(src/slang.c)
 #AC_PREFIX_DEFAULT($MY_PREFIX_DEAULT)
 
 # Installation location
 AC_PREFIX_DEFAULT("/usr/local"
-dnl if test -f "/usr/include/slang.h"; then
-dnl ac_default_prefix="/usr"
-dnl fi
+dnl# if test -f "/usr/include/slang.h"; then
+dnl# ac_default_prefix="/usr"
+dnl# fi
 )
 
 AC_CONFIG_AUX_DIR(autoconf)
@@ -164,20 +164,20 @@ AC_CACHE_CHECK([for nl_langinfo and CODESET], jd_cv_nl_langinfo_codeset,
 ])
 if test $jd_cv_nl_langinfo_codeset = yes
 then
-  AC_DEFINE(HAVE_NL_LANGINFO_CODESET, 1)
+  AC_DEFINE(HAVE_NL_LANGINFO_CODESET, 1, [Set to 1 if you have the nl_langinfo(CODESET) function])
 fi
 
-AC_CHECK_LIB(m, acosh, [AC_DEFINE(HAVE_ACOSH)])
-AC_CHECK_LIB(m, asinh, [AC_DEFINE(HAVE_ASINH)])
-AC_CHECK_LIB(m, atanh, [AC_DEFINE(HAVE_ATANH)])
-AC_CHECK_LIB(m, hypot, [AC_DEFINE(HAVE_HYPOT)])
-AC_CHECK_LIB(m, atan2, [AC_DEFINE(HAVE_ATAN2)])
-AC_CHECK_LIB(m, frexp, [AC_DEFINE(HAVE_FREXP)])
-AC_CHECK_LIB(m, frexpf, [AC_DEFINE(HAVE_FREXPF)])
-AC_CHECK_LIB(m, ldexp, [AC_DEFINE(HAVE_LDEXP)])
-AC_CHECK_LIB(m, ldexpf, [AC_DEFINE(HAVE_LDEXPF)])
-AC_CHECK_LIB(m, feclearexcept, [AC_DEFINE(HAVE_FECLEAREXCEPT)])
-AC_CHECK_LIB(m, fpsetsticky, [AC_DEFINE(HAVE_FPSETSTICKY)])
+AC_CHECK_LIB(m, acosh, [AC_DEFINE(HAVE_ACOSH,1,[Set to 1 if you have the acosh function])])
+AC_CHECK_LIB(m, asinh, [AC_DEFINE(HAVE_ASINH,1,[Set to 1 if you have the asinh function])])
+AC_CHECK_LIB(m, atanh, [AC_DEFINE(HAVE_ATANH,1,[Set to 1 if you have the atanh function])])
+AC_CHECK_LIB(m, hypot, [AC_DEFINE(HAVE_HYPOT,1,[Set to 1 if you have the hypot function])])
+AC_CHECK_LIB(m, atan2, [AC_DEFINE(HAVE_ATAN2,1,[Set to 1 if you have the atan2 function])])
+AC_CHECK_LIB(m, frexp, [AC_DEFINE(HAVE_FREXP,1,[Set to 1 if you have the frexp function])])
+AC_CHECK_LIB(m, frexpf, [AC_DEFINE(HAVE_FREXPF,1,[Set to 1 if you have the frexpf function])])
+AC_CHECK_LIB(m, ldexp, [AC_DEFINE(HAVE_LDEXP,1,[Set to 1 if you have the ldexp function])])
+AC_CHECK_LIB(m, ldexpf, [AC_DEFINE(HAVE_LDEXPF,1,[Set to 1 if you have the ldexpf function])])
+AC_CHECK_LIB(m, feclearexcept, [AC_DEFINE(HAVE_FECLEAREXCEPT,1,[Set to 1 if you have the feclearexcept function])])
+AC_CHECK_LIB(m, fpsetsticky, [AC_DEFINE(HAVE_FPSETSTICKY,1,[Set to 1 if you have the fpsetsticky function])])
 
 JD_ELF_COMPILER
 JD_IEEE_CFLAGS
@@ -210,7 +210,7 @@ JD_CHECK_FOR_LIBRARY(pcre)
 if test $jd_with_pcre_library = yes
 then
   PCRE_MODULE="pcre-module.so"
-  AC_DEFINE(HAVE_PCRE_H)
+  AC_DEFINE(HAVE_PCRE_H,1,[Set to 1 if you have the pcre.h header])
   extramodules="$extramodules pcre"
 else
   PCRE_MODULE=""
@@ -222,7 +222,7 @@ JD_CHECK_FOR_LIBRARY(onig,oniguruma.h)
 if test $jd_with_onig_library = yes
 then
   ONIG_MODULE="onig-module.so"
-  AC_DEFINE(HAVE_ONIGURUMA_H)
+  AC_DEFINE(HAVE_ONIGURUMA_H,1,[Set to 1 if you have the oniguruma.h header])
   extramodules="$extramodules oniguruma"
 else
   ONIG_MODULE=""
@@ -234,7 +234,7 @@ JD_CHECK_FOR_LIBRARY(png)
 if test $jd_with_png_library = yes
 then
   PNG_MODULE="png-module.so"
-  AC_DEFINE(HAVE_PNG_H)
+  AC_DEFINE(HAVE_PNG_H,1,[Set to 1 if you have the png.h header])
   extramodules="$extramodules png"
 else
   PNG_MODULE=""
@@ -246,7 +246,7 @@ JD_CHECK_FOR_LIBRARY(z,zlib.h)
 if test $jd_with_z_library = yes
 then
   ZLIB_MODULE="zlib-module.so"
-  AC_DEFINE(HAVE_ZLIB_H)
+  AC_DEFINE(HAVE_ZLIB_H,1,[Set to 1 if you have the zlib.h header])
   extramodules="$extramodules z"
 else
   ZLIB_MODULE=""
@@ -261,7 +261,7 @@ JD_CHECK_FOR_LIBRARY(iconv)
 if test $jd_with_iconv_library = yes
 then
   ICONV_MODULE="iconv-module.so"
-  AC_DEFINE(HAVE_ICONV_H)
+  AC_DEFINE(HAVE_ICONV_H,1,[Set to 1 if you have the iconv.h header])
   ICONV_LIB="$ICONV_LIB -liconv"
   extramodules="$extramodules iconv"
 else

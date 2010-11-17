@@ -247,6 +247,8 @@ Changes since 2.2.2
      were ifdefed out in v2.2.2 but were made available by some linux
      distributions for code to use: SLtt_tgetent, SLtt_tgoto,
      SLtt_tputs (patch forwarded by Marco Atzeri).
+104. autoconf/aclocal.m4,configure.ac: Various updates by Marco Atzeri
+     including a cygwin specific change.
 
 {{{ Previous Versions
 
