@@ -238,6 +238,9 @@ Changes since 2.2.2
     assumed to be a long.  This means that _time may produce a
     longlong integer on some platforms.
 100. modules/cmaps/coolwarm.map: A color map by Kenneth Moreland.
+101. modules/png-module.c: Use png_set_expand_gray_1_2_4_to_8 instead
+     of png_set_gray_1_2_4_to_8 if available (patch forwarded from Marco
+     Atzeri).
 
 {{{ Previous Versions
 

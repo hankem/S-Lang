@@ -302,7 +302,11 @@ static SLang_Array_Type *read_image_internal (char *file, int flip, int *color_t
    switch (png_get_color_type (png, info))
      {
       case PNG_COLOR_TYPE_GRAY:
+#if defined(PNG_LIBPNG_VER) && (PNG_LIBPNG_VER >= 10209)
+	if (bit_depth < 8) png_set_expand_gray_1_2_4_to_8 (png);
+#else				       /* deprecated */
 	if (bit_depth < 8) png_set_gray_1_2_4_to_8 (png);
+#endif
 	break;
       case PNG_COLOR_TYPE_GRAY_ALPHA:
 	/* png_set_gray_to_rgb (png); */
