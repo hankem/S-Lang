@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20203
-#define SLANG_VERSION_STRING "pre2.2.3-102"
+#define SLANG_VERSION_STRING "pre2.2.3-103"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1688,6 +1688,9 @@ SL_EXTERN void SLtt_disable_status_line (void);
 SL_EXTERN char *SLtt_tgetstr (SLFUTURE_CONST char *);
 SL_EXTERN int SLtt_tgetnum (SLFUTURE_CONST char *);
 SL_EXTERN int SLtt_tgetflag (SLFUTURE_CONST char *);
+SL_EXTERN int SLtt_tgetent(char *name);
+SL_EXTERN char *SLtt_tgoto(char *cap, int col, int row);
+SL_EXTERN int SLtt_tputs(char *str, int affcnt, int (*putcfun)(int));
 
 /* The following are terminfo-only routines -- these prototypes will change
  * in V2.x.

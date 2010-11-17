@@ -243,6 +243,10 @@ Changes since 2.2.2
      Atzeri).
 102. src/slcommon.c: Code using __libc_enable_secure was removed
      (patch forwarded from Marco Atzeri)
+103. src/sldisply.c: Added some termcap compatibility functions that
+     were ifdefed out in v2.2.2 but were made available by some linux
+     distributions for code to use: SLtt_tgetent, SLtt_tgoto,
+     SLtt_tputs (patch forwarded by Marco Atzeri).
 
 {{{ Previous Versions
 
