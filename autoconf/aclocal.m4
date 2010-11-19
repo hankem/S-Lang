@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.6-2: Missing hyphen for cygwin ELFLIB_MAJOR (Marco Atzeri)
 dnl# 0.2.6-1: Added optional second and third arguments to AC_DEFINE (Marco Atzeri)
 dnl# 0.2.6-0: On cygwin, change libfooX_Y_Z.dll to cygfoo-X_Y_Z.dll (Marco Atzeri)
 dnl# 0.2.5-3: Changed AC_DEFUN(foo...) to AC_DEFUN([foo]...)
@@ -685,7 +686,7 @@ case "$host_os" in
     INSTALL_MODULE="\$(INSTALL)"
     INSTALL_ELFLIB_TARGET="install-elf-cygwin"
     ELFLIB="lib\$(THIS_LIB).dll"
-    ELFLIB_MAJOR="cyg\$(THIS_LIB)\$(ELF_MAJOR_VERSION).dll"
+    ELFLIB_MAJOR="cyg\$(THIS_LIB)-\$(ELF_MAJOR_VERSION).dll"
     ELFLIB_MAJOR_MINOR="cyg\$(THIS_LIB)-\$(ELF_MAJOR_VERSION)_\$(ELF_MINOR_VERSION).dll"
     ELFLIB_MAJOR_MINOR_MICRO="cyg\$(THIS_LIB)-\$(ELF_MAJOR_VERSION)_\$(ELF_MINOR_VERSION)_\$(ELF_MICRO_VERSION).dll"
     ELFLIB_BUILD_NAME="\$(ELFLIB_MAJOR)"
