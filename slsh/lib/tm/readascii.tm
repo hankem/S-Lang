@@ -1,5 +1,3 @@
-#c __FILE__: ../readascii.sl
-#c __LINE__: 17
 \function{readascii}
 \synopsis{Read data from a text file}
 \usage{Int_Type readascii (file, &v1,...&vN ; qualifiers)}

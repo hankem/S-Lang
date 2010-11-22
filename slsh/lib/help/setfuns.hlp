@@ -22,7 +22,9 @@ complement
   `a[0]' and `a[2]' are not contained in `b'.
 
  NOTES
-  A set may either be an Array_Type or a List_Type object.  For   a homogeneous collection of objects, it is better to use an   Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
+  A set may either be an Array_Type or a List_Type object.
+  For a homogeneous collection of objects, it is better to
+  use an Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
 
  SEE ALSO
   intersection, ismember, union, unique
@@ -51,7 +53,9 @@ intersection
   `a[0]' and `a[2]' are the common elements of the sets.
 
  NOTES
-  A set may either be an Array_Type or a List_Type object.  For   a homogeneous collection of objects, it is better to use an   Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
+  A set may either be an Array_Type or a List_Type object.
+  For a homogeneous collection of objects, it is better to
+  use an Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
 
  SEE ALSO
   complement, ismember, union, unique
@@ -73,7 +77,9 @@ ismember
   `a' is a member of `b'.
 
  NOTES
-  A set may either be an Array_Type or a List_Type object.  For   a homogeneous collection of objects, it is better to use an   Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
+  A set may either be an Array_Type or a List_Type object.
+  For a homogeneous collection of objects, it is better to
+  use an Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
 
  SEE ALSO
   complement, intersection, union, unique
@@ -95,7 +101,9 @@ union
   object.
 
  NOTES
-  A set may either be an Array_Type or a List_Type object.  For   a homogeneous collection of objects, it is better to use an   Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
+  A set may either be an Array_Type or a List_Type object.
+  For a homogeneous collection of objects, it is better to
+  use an Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
 
  SEE ALSO
   complement, intersection, ismember, unique
@@ -115,7 +123,9 @@ unique
   of a set.
 
  NOTES
-  A set may either be an Array_Type or a List_Type object.  For   a homogeneous collection of objects, it is better to use an   Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
+  A set may either be an Array_Type or a List_Type object.
+  For a homogeneous collection of objects, it is better to
+  use an Array_Type. i.e., `[1,2,3]' instead of `{1,2,3}'.
 
  SEE ALSO
   complement, intersection, ismember, union

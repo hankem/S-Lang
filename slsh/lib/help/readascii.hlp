@@ -116,6 +116,8 @@ readascii
 
  NOTES
  This current version of this function does not handle missing data.
+ For such files, the `csv_readcol' function might be a better
+ choice.
 
  By default, lines not matching the expected format are assumed to
  be comments and are skipped.  So normally the `comment'
@@ -124,6 +126,6 @@ readascii
  lines beginning with the comment string and continue scanning.
 
  SEE ALSO
-  sscanf, atof, fopen, fgets, fgetslines
+  sscanf, atof, fopen, fgets, fgetslines, csv_readcol
 
 --------------------------------------------------------------

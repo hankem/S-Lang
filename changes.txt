@@ -251,6 +251,8 @@ Changes since 2.2.2
      including a cygwin specific change.
 105. autoconf/aclocal.m4: Missing hyphen for ELFLIB_MAJOR on cygin
      (Marco Atzeri).
+106. slsh/lib/doc/tm/setfuns.tm: Add newlines to the note1 macro
+     (Manfred Hanke).
 
 {{{ Previous Versions
 

@@ -1,6 +1,6 @@
-#d note1 A set may either be an Array_Type or a List_Type object.  For \
-  a homogeneous collection of objects, it is better to use an \
-  Array_Type. i.e., \exmp{[1,2,3]} instead of \exmp{\{1,2,3\}}.
+#d note1 A set may either be an Array_Type or a List_Type object.\__newline__\
+  For a homogeneous collection of objects, it is better to\__newline__\
+  use an Array_Type. i.e., \exmp{[1,2,3]} instead of \exmp{\{1,2,3\}}.
 
 
 \function{complement}
