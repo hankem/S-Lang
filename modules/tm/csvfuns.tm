@@ -60,7 +60,7 @@
   \qualifier{nanN}{Value used for an empty element in the column N}
   \qualifier{blankrows}{How a blank row should be handled}{"skip"}
 
-  The type-specifier is used to specifiy the type of a field.  It must
+  The type-specifier is used to specify the type of a field.  It must
   be one of the following characters:
 #v+
      's' (String_Type)
@@ -180,7 +180,7 @@
 
   The \exmp{blankrows} qualifier is used to specify how a blank row
   should be handled.  A blankrow is defined as a row made up of no
-  characters except for the newline or carriage-return sequance.  For
+  characters except for the newline or carriage-return sequence.  For
   example, the following 9 lines has one blank row that occurs on
   line 8:
 #v+
@@ -191,7 +191,7 @@
      "5.1"
      ""
      "7.2"
-     
+
      "6.2"
 #v-
   If the value of \exmp{"blankrow"} is \exmp{"skip"}, then blank rows
@@ -237,7 +237,7 @@
 \qualifier{quoteall}{Quote all field values}
 \qualifier{quotesome}{Quote only those fields where quoting is necessary}
 \methods
-  writecol: write one or more colums to a file.  For more information
+  writecol: write one or more columns to a file.  For more information
   about this method, see the documentation for \sfun{csv.writecol}.
 \example
     x = [0:2*PI:#100];
@@ -247,4 +247,106 @@
   The \ifun{set_float_format} function may be used to specify the
   format used where writing floating point numbers to the CSV file.
 \seealso{csv_writecol, csv_encoder_new, csv_readcol}
+\done
+
+
+\function{csv_writecol}
+\synopsis{Write to a file using a CSV format}
+\usage{csv_writecol(file|fp, datalist | datastruct | col1,...,colN)}
+\description
+  This function write a one or more data columns to a file or open
+  file descriptor using a comma-separated-value format.  The data
+  values may be expressed in several ways: as a list of a column
+  values (\exmp{datalist}), a structure whose fields specify the
+  column values (\exmp{datastruct}), or passed explicitly as
+  individual values (\exmp{col1},...\exmp{colN}).
+\qualifiers
+\qualifier{delim}{character used for the delimiter}{','}
+\qualifier{names}{An array of strings used to name the columns}
+\qualifier{noheader}{Do not write a header to the file}
+\qualifier{quote}{character used for the quoting fields}{'"'}
+\qualifier{quoteall}{Quote all field values}
+\qualifier{quotesome}{Quote only those fields where quoting is necessary}
+
+  Unless the \exmp{noheader} qualifier is given, a header containing
+  the names of the columns will be written if either the \exmp{names}
+  qualifier is present, or the data values are passed as a structure.
+  In the latter case, the structure field names will be used for the
+  column names.
+
+  The function will throw an \exc{IOError} exception if a write error occurs.
+\example
+  For the purposes of this example, assume that three arrays are
+  given: \exmp{time}, \exmp{temp}, \exmp{humidity}, which represent a
+  time series of temperature and humidity.  Here are three equivalent
+  ways of writing the arrays to a CSV file:
+#v+
+     % Via a structure
+     data = struct {time=time, temperature=temp, humidity=humidity};
+     csv_writecol ("weather.dat", data);
+
+     % Via a list
+     data = {time, temp, humidity};
+     csv_writecol ("weather.dat", data
+                   ;names=["time","temperature","humidity"]);
+
+     % Via explicit arguments
+     csv_writecol ("weather.dat", time, temp, humidity
+                   ;names=["time","temperature","humidity"]);
+#v-
+\notes
+   This function is a simple wrapper around \sfun{csv_encoder_new} and
+   \exmp{csv.writecol}.
+\seealso{csv_encoder_new, csv.writecol, csv_readcol}
+\done
+
+\function{csv.writecol}
+\synopsis{Write to a file using a CSV format}
+\usage{csv.writecol(file|fp, datalist | datastruct | col1,...,colN)}
+\description
+  The \exmp{csv.writecol} function method may be used to write one of
+  more data columns to a file or file descriptor via a CSV encoder
+  object instantiated using the \sfun{csv_encoder_new} function.
+
+  The data values may be expressed in several ways: as a list of a
+  column values (\exmp{datalist}), a structure whose fields specify
+  the column values (\exmp{datastruct}), or passed explicitly as
+  individual values (\exmp{col1},...\exmp{colN}).
+
+  An \exc{IOError} exception will be thrown if a write error occurs.
+
+\qualifiers
+\qualifier{delim}{character used for the delimiter}{','}
+\qualifier{names}{An array of strings used for names of the columns}
+\qualifier{noheader}{Do not write a header to the file}
+\qualifier{quoteall}{Quote all field values}
+\qualifier{quotesome}{Quote only those fields where quoting is necessary}
+
+  Unless the \exmp{noheader} qualifier is given, a header containing
+  the names of the columns will be written if either the \exmp{names}
+  qualifier is present, or the data values are passed as a structure.
+  In the latter case, the structure field names will be used for the
+  column names.
+\example
+  For the purposes of this example, assume that three arrays are
+  given: \exmp{time}, \exmp{temp}, \exmp{humidity}, which represent a
+  time series of temperature and humidity.  Here are three equivalent
+  ways of writing the arrays to a TAB delimited file:
+#v+
+     csv = csv_encoder_new (;quote='\t');
+
+     % Via a structure
+     data = struct {time=time, temperature=temp, humidity=humidity};
+     csv.writecol ("weather.dat", data);
+
+     % Via a list
+     data = {time, temp, humidity};
+     csv.writecol ("weather.dat", data
+                   ;names=["time","temperature","humidity"]);
+
+     % Via explicit arguments
+     csv.writecol ("weather.dat", time, temp, humidity
+                   ;names=["time","temperature","humidity"]);
+#v-
+\seealso{csv_encoder_new, csv_writecol, csv_readcol}
 \done

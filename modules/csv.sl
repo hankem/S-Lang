@@ -411,7 +411,7 @@ Qualifiers:\n\
 	if (nrows != length(data[i]))
 	  throw InvalidParmError, "Data columns must be the length";
      }
-   
+
    variable str, encoder = csv.encoder;
 
    if (names != NULL)
@@ -467,7 +467,7 @@ define csv_writecol ()
 	usage("\
 csv_writecol (file|fp, list_of_column_data | datastruct | col1,col2,...)\n\
 Qualifiers:\n\
-  names=array-of-column-names, noheader, quoteall, quotesome\n\
+  names=array-of-column-names, noheader, quote=val, quoteall, quotesome\n\
 "
 	     );
      }

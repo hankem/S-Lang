@@ -128,6 +128,9 @@ Intrinsic Functions
       ttyname (v2.2.3)
           Get the name of the terminal
 
+      timegm (v2.2.3)
+          Inverse of gmtime
+
    The following functions have been enhanced:
 
       hypot

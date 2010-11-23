@@ -255,6 +255,7 @@ Changes since 2.2.2
      (Manfred Hanke).
 107. src/slang.c: change #5 caused a problem evaluating the bytecode
      produced by preparsed files (.slc) produced by slang v2.2.2.
+108. modules/tm/csvfuns.tm: Documentation updates
 
 {{{ Previous Versions
 

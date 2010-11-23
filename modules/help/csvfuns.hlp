@@ -78,7 +78,7 @@ csv.readcol
     ; nanN: Value used for an empty element in the column N
     ; blankrows: How a blank row should be handled (default: "skip")
 
-  The type-specifier is used to specifiy the type of a field.  It must
+  The type-specifier is used to specify the type of a field.  It must
   be one of the following characters:
 
      's' (String_Type)
@@ -207,7 +207,7 @@ csv.readrow
 
   The `blankrows' qualifier is used to specify how a blank row
   should be handled.  A blankrow is defined as a row made up of no
-  characters except for the newline or carriage-return sequance.  For
+  characters except for the newline or carriage-return sequence.  For
   example, the following 9 lines has one blank row that occurs on
   line 8:
 
@@ -284,7 +284,7 @@ csv_encoder_new
   ; quotesome: Quote only those fields where quoting is necessary
 
  METHODS
-  writecol: write one or more colums to a file.  For more information
+  writecol: write one or more columns to a file.  For more information
   about this method, see the documentation for `csv.writecol'.
 
  EXAMPLE
@@ -298,5 +298,126 @@ csv_encoder_new
 
  SEE ALSO
   csv_writecol, csv_encoder_new, csv_readcol
+
+--------------------------------------------------------------
+
+csv_writecol
+
+ SYNOPSIS
+  Write to a file using a CSV format
+
+ USAGE
+  csv_writecol(file|fp, datalist | datastruct | col1,...,colN)
+
+ DESCRIPTION
+  This function write a one or more data columns to a file or open
+  file descriptor using a comma-separated-value format.  The data
+  values may be expressed in several ways: as a list of a column
+  values (`datalist'), a structure whose fields specify the
+  column values (`datastruct'), or passed explicitly as
+  individual values (`col1',...`colN').
+
+ QUALIFIERS
+  ; delim: character used for the delimiter (default: ',')
+  ; names: An array of strings used to name the columns
+  ; noheader: Do not write a header to the file
+  ; quote: character used for the quoting fields (default: '"')
+  ; quoteall: Quote all field values
+  ; quotesome: Quote only those fields where quoting is necessary
+
+  Unless the `noheader' qualifier is given, a header containing
+  the names of the columns will be written if either the `names'
+  qualifier is present, or the data values are passed as a structure.
+  In the latter case, the structure field names will be used for the
+  column names.
+
+  The function will throw an `IOError' exception if a write error occurs.
+
+ EXAMPLE
+  For the purposes of this example, assume that three arrays are
+  given: `time', `temp', `humidity', which represent a
+  time series of temperature and humidity.  Here are three equivalent
+  ways of writing the arrays to a CSV file:
+
+     % Via a structure
+     data = struct {time=time, temperature=temp, humidity=humidity};
+     csv_writecol ("weather.dat", data);
+
+     % Via a list
+     data = {time, temp, humidity};
+     csv_writecol ("weather.dat", data
+                   ;names=["time","temperature","humidity"]);
+
+     % Via explicit arguments
+     csv_writecol ("weather.dat", time, temp, humidity
+                   ;names=["time","temperature","humidity"]);
+
+
+ NOTES
+   This function is a simple wrapper around `csv_encoder_new' and
+   `csv.writecol'.
+
+ SEE ALSO
+  csv_encoder_new, csv.writecol, csv_readcol
+
+--------------------------------------------------------------
+
+csv.writecol
+
+ SYNOPSIS
+  Write to a file using a CSV format
+
+ USAGE
+  csv.writecol(file|fp, datalist | datastruct | col1,...,colN)
+
+ DESCRIPTION
+  The `csv.writecol' function method may be used to write one of
+  more data columns to a file or file descriptor via a CSV encoder
+  object instantiated using the `csv_encoder_new' function.
+
+  The data values may be expressed in several ways: as a list of a
+  column values (`datalist'), a structure whose fields specify
+  the column values (`datastruct'), or passed explicitly as
+  individual values (`col1',...`colN').
+
+  An `IOError' exception will be thrown if a write error occurs.
+
+ QUALIFIERS
+  ; delim: character used for the delimiter (default: ',')
+  ; names: An array of strings used for names of the columns
+  ; noheader: Do not write a header to the file
+  ; quoteall: Quote all field values
+  ; quotesome: Quote only those fields where quoting is necessary
+
+  Unless the `noheader' qualifier is given, a header containing
+  the names of the columns will be written if either the `names'
+  qualifier is present, or the data values are passed as a structure.
+  In the latter case, the structure field names will be used for the
+  column names.
+
+ EXAMPLE
+  For the purposes of this example, assume that three arrays are
+  given: `time', `temp', `humidity', which represent a
+  time series of temperature and humidity.  Here are three equivalent
+  ways of writing the arrays to a TAB delimited file:
+
+     csv = csv_encoder_new (;quote='\t');
+
+     % Via a structure
+     data = struct {time=time, temperature=temp, humidity=humidity};
+     csv.writecol ("weather.dat", data);
+
+     % Via a list
+     data = {time, temp, humidity};
+     csv.writecol ("weather.dat", data
+                   ;names=["time","temperature","humidity"]);
+
+     % Via explicit arguments
+     csv.writecol ("weather.dat", time, temp, humidity
+                   ;names=["time","temperature","humidity"]);
+
+
+ SEE ALSO
+  csv_encoder_new, csv_writecol, csv_readcol
 
 --------------------------------------------------------------
