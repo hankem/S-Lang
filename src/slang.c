@@ -4897,7 +4897,20 @@ static int deref_fun_call (int linenum)
    if (-1 == roll_stack (-(Next_Function_Num_Args + 1)))
      return -1;
 
-   /* Next_Function_Num_Args--;	*/       /* do not include function to be derefed. */
+   if (-1 == pop_object(&obj))
+     return -1;
+
+   return deref_call_object (&obj, linenum);
+}
+
+static int obsolete_deref_fun_call (int linenum)
+{
+   SLang_Object_Type obj;
+
+   if (-1 == end_arg_list ())
+     return -1;
+
+  Next_Function_Num_Args--;          /* do not include function to be derefed. */
 
    if (-1 == pop_object(&obj))
      return -1;
@@ -5487,12 +5500,15 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     (void) _pSLstruct_push_field_ref (addr->b.s_blk);
 	     break;
 
+	   case SLANG_BC_OBSOLETE_DEREF_FUN_CALL:
+	     (void) obsolete_deref_fun_call (addr->linenum);
+	     break;
+
 	   case SLANG_BC_DEREF_FUN_CALL:
 	     (void) deref_fun_call (addr->linenum);
 	     break;
 
 #if USE_UNUSED_BYCODES_IN_SWITCH
-	   case SLANG_BC_UNUSED_0x2E:
 	   case SLANG_BC_UNUSED_0x2F:
 	   case SLANG_BC_UNUSED_0x30:
 	   case SLANG_BC_UNUSED_0x31:
@@ -9498,6 +9514,10 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 
       case DEREF_TOKEN:
 	compile_call_direct (dereference_object, SLANG_BC_CALL_DIRECT);
+	break;
+
+      case _DEREF_OBSOLETE_FUNCALL_TOKEN:
+	compile_simple (SLANG_BC_OBSOLETE_DEREF_FUN_CALL);
 	break;
 
       case _DEREF_FUNCALL_TOKEN:

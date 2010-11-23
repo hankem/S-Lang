@@ -496,6 +496,9 @@ static void dump_token (_pSLang_Token_Type *t)
       case _DEREF_POST_MINUSMINUS_TOKEN:
 	b = "__deref_pminusminus"; break;
 
+      case _DEREF_OBSOLETE_FUNCALL_TOKEN:
+	b = "__deref_funcall ***WARNING: OBSOLETE form"; break;
+
       case _DEREF_FUNCALL_TOKEN:
 	b = "__deref_funcall"; break;
 

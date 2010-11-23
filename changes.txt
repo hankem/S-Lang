@@ -253,6 +253,8 @@ Changes since 2.2.2
      (Marco Atzeri).
 106. slsh/lib/doc/tm/setfuns.tm: Add newlines to the note1 macro
      (Manfred Hanke).
+107. src/slang.c: change #5 caused a problem evaluating the bytecode
+     produced by preparsed files (.slc) produced by slang v2.2.2.
 
 {{{ Previous Versions
 
