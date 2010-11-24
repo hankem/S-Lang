@@ -2931,8 +2931,13 @@ int _pSLtt_init_cmdline_mode (void)
 {
    if (TT_Is_Initialized == 0)
      {
-	if (0 != SLtt_initialize (NULL))
-	  return -1;
+	int status = SLtt_initialize (NULL);
+	if (status < 0)
+	  {
+	     if (status == -1)
+	       SLang_vmessage ("%s", "**WARNING: Unknown terminal capabilities.\n");
+	     return 0;
+	  }
      }
    /* We need to be able to use relative cursor addressing in this mode */
    if (((Curs_UpN_Str == NULL) && (Curs_Up_Str == NULL))

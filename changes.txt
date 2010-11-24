@@ -256,6 +256,9 @@ Changes since 2.2.2
 107. src/slang.c: change #5 caused a problem evaluating the bytecode
      produced by preparsed files (.slc) produced by slang v2.2.2.
 108. modules/tm/csvfuns.tm: Documentation updates
+109. src/sldisply.c: slsh would exit if the underlying terminal was
+     unknown because _pSLtt_init_cmdline_mode was returning a fatal
+     error.
 
 {{{ Previous Versions
 
