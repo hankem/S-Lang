@@ -259,6 +259,10 @@ Changes since 2.2.2
 109. src/sldisply.c: slsh would exit if the underlying terminal was
      unknown because _pSLtt_init_cmdline_mode was returning a fatal
      error.
+110. configure, *Makefile.in,etc: Made changes so that ARCH
+     environment variable influences where the .o files are placed.
+     The INSTALL.unx file documented this feature but the slsh and
+     modules Makefiles did not implement this.
 
 {{{ Previous Versions
 

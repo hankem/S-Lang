@@ -63,14 +63,13 @@ DEST_BINDIR = $(DESTDIR)$(install_bin_dir)
 RANLIB 		= @RANLIB@
 INSTALL		= @INSTALL@
 INSTALL_DATA	= @INSTALL_DATA@
-MKINSDIR	= ../autoconf/mkinsdir.sh
+MKINSDIR	= @CONFIG_DIR@/autoconf/mkinsdir.sh
 RM 		= rm -f
 RM_R		= rm -rf
 AR_CR 		= ar cr
 RMDIR 		= rmdir
 LN 		= /bin/ln -sf
 CP 		= cp
-MKDIR		= mkdir
 @SET_MAKE@
 #---------------------------------------------------------------------------
 # There should be no need to change anything below here.
@@ -145,26 +144,26 @@ elf: $(ELFDIR) $(CONFIG_H) $(ELFDIR_ELF_LIB)
 
 $(OBJDIR_NORMAL_LIB): $(OBJDIR) $(CONFIG_H) $(OBJS)
 	-$(RM) $(OBJDIR_NORMAL_LIB)
-	cd $(OBJDIR); $(AR_CR) $(NORMAL_LIB) $(OFILES)
+	cd $(OBJDIR) && $(AR_CR) $(NORMAL_LIB) $(OFILES)
 	$(RANLIB) $(OBJDIR_NORMAL_LIB)
 	@echo ""
 	@echo $(NORMAL_LIB) created in $(OBJDIR)
 
 $(ELFDIR_ELF_LIB): $(ELFDIR) $(CONFIG_H) $(ELFOBJS) $(VERSION_SCRIPT)
 	-$(RM) $(ELFDIR_ELF_LIB)
-	cd $(ELFDIR); $(ELF_LINK_CMD) -o $(ELFLIB_BUILD_NAME) $(OFILES) $(LDFLAGS) $(ELF_DEP_LIBS)
+	cd $(ELFDIR) && $(ELF_LINK_CMD) -o $(ELFLIB_BUILD_NAME) $(OFILES) $(LDFLAGS) $(ELF_DEP_LIBS)
 	if [ $(ELFLIB_MAJOR) != $(ELFLIB_BUILD_NAME) ]; then \
-	  cd $(ELFDIR); $(RM) $(ELFLIB_MAJOR); $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB_MAJOR); \
+	  cd $(ELFDIR) && $(RM) $(ELFLIB_MAJOR) && $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB_MAJOR); \
 	fi
-	cd $(ELFDIR); $(RM) $(ELFLIB); $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB)
+	cd $(ELFDIR) && $(RM) $(ELFLIB) && $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB)
 	@echo ""
 	@echo $(ELFLIB_BUILD_NAME) created in $(ELFDIR).
 	@echo The link $(ELFLIB) to $(ELFLIB_BUILD_NAME) was also created.
 	@echo ""
 $(OBJDIR) :
-	-$(MKDIR) $(OBJDIR)
+	-$(MKINSDIR) $(OBJDIR)
 $(ELFDIR) :
-	-$(MKDIR) $(ELFDIR)
+	-$(MKINSDIR) $(ELFDIR)
 $(CONFIG_H) : sysconf.h
 	-$(CP) sysconf.h $(CONFIG_H)
 terminfo.inc: $(TERMINFO_INC) Makefile
@@ -197,8 +196,8 @@ install-elf-and-links:
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB_MAJOR)
 	@echo installing $(ELFLIB_BUILD_NAME) in $(DEST_LIBDIR)
 	$(INSTALL_DATA) $(ELFDIR_ELF_LIB) $(DEST_LIBDIR)/
-	-cd $(DEST_LIBDIR); $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB_MAJOR)
-	-cd $(DEST_LIBDIR); $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB)
+	-cd $(DEST_LIBDIR) && $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB_MAJOR)
+	-cd $(DEST_LIBDIR) && $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB)
 	@echo ""
 	@echo $(ELFLIB_BUILD_NAME) created in $(DEST_LIBDIR).
 	@echo The links $(ELFLIB) and $(ELFLIB_MAJOR) to $(ELFLIB_BUILD_NAME) were also created.

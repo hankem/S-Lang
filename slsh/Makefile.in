@@ -2,6 +2,9 @@
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
 LDFLAGS		= @LDFLAGS@ @DYNAMIC_LINK_FLAGS@
+CONFIG_DIR	= @CONFIG_DIR@
+OBJDIR		= $(ARCH)objs
+SRCDIR		= $(CONFIG_DIR)/slsh
 #---------------------------------------------------------------------------
 # Installation location of the slang library
 #---------------------------------------------------------------------------
@@ -20,7 +23,7 @@ RPATH		= @RPATH@
 #----------------------------------------------------------------------------
 INSTALL		= @INSTALL@
 INSTALL_DATA	= @INSTALL_DATA@
-MKINSDIR	= ../autoconf/mkinsdir.sh
+MKINSDIR	= $(CONFIG_DIR)/autoconf/mkinsdir.sh
 #----------------------------------------------------------------------------
 # Where system-wide slsh.rc, scripts, and library files reside
 #----------------------------------------------------------------------------
@@ -72,15 +75,18 @@ DEFS = -DSLSH_CONF_DIR='"$(SLSH_CONF_DIR)"' -DSLSH_PATH='"$(SLSH_LIB_DIR)"' \
  -DSLSH_PATH_ENV='$(SLSH_PATH_ENV)'
 SRC_LIBS = $(SLANG_SRCLIB) -lslang $(READLINE_LIB) $(OTHER_LIBS)
 #
-all: slsh_exe
-slsh_exe: slsh.o readline.o
-	$(CC) $(CFLAGS) slsh.o readline.o -o slsh_exe $(LDFLAGS) $(SRC_LIBS)
-slsh: slsh.o readline.o
-	$(CC) $(CFLAGS) slsh.o readline.o -o slsh $(LDFLAGS) $(INST_LIBS)
-slsh.o: slsh.c slsh.h config.h Makefile
-	$(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) slsh.c
-readline.o: readline.c slsh.h config.h Makefile
-	$(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) -DUSE_GNU_READLINE=$(GNU_READLINE) readline.c
+all: $(OBJDIR)/slsh_exe
+slsh: $(OBJDIR)/slsh
+$(OBJDIR)/slsh_exe: $(OBJDIR)/slsh.o $(OBJDIR)/readline.o
+	$(CC) $(CFLAGS) $(OBJDIR)/slsh.o $(OBJDIR)/readline.o -o $(OBJDIR)/slsh_exe $(LDFLAGS) $(SRC_LIBS)
+$(OBJDIR)/slsh: $(OBJDIR)/slsh.o $(OBJDIR)/readline.o
+	$(CC) $(CFLAGS) $(OBJDIR)/slsh.o $(OBJDIR)/readline.o -o $(OBJDIR)/slsh $(LDFLAGS) $(INST_LIBS)
+$(OBJDIR)/slsh.o: $(OBJDIR) slsh.c slsh.h config.h Makefile
+	cd $(OBJDIR) && $(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) $(SRCDIR)/slsh.c
+$(OBJDIR)/readline.o: $(OBJDIR) readline.c slsh.h config.h Makefile
+	cd $(OBJDIR) && $(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) -DUSE_GNU_READLINE=$(GNU_READLINE) $(SRCDIR)/readline.c
+$(OBJDIR):
+	-$(MKINSDIR) $(OBJDIR)
 config.h: ../src/config.h
 	cp ../src/config.h .
 install_directories:
@@ -138,10 +144,10 @@ install_docs:
 		  exit 1; \
 		fi; \
 	done
-
+#
 install: slsh install_directories install_lib_files install_rline_files \
  install_scripts install_help install_docs
-	$(INSTALL) slsh $(DEST_BIN_DIR)/
+	$(INSTALL) $(OBJDIR)/slsh $(DEST_BIN_DIR)/
 	$(INSTALL_DATA) etc/slsh.rc $(DEST_SLSH_CONF_DIR)/
 	echo 'prepend_to_slang_load_path("$(SLSH_LOCALLIB_DIR)");' >> $(DEST_SLSH_CONF_DIR)/slsh.rc
 	$(INSTALL_DATA) doc/man/slsh.1 $(DEST_MAN_DIR)/
@@ -149,10 +155,11 @@ install: slsh install_directories install_lib_files install_rline_files \
 # Housekeeping
 #---------------------------------------------------------------------------
 clean:
-	-/bin/rm -f *~ slsh.o readline.o slsh slsh_exe scripts/*~ lib/*~
+	-/bin/rm -f *~ $(OBJDIR)/slsh.o $(OBJDIR)/readline.o $(OBJDIR)/slsh $(OBJDIR)/slsh_exe scripts/*~ lib/*~
 distclean: clean
 	-/bin/rm -f Makefile
-symlinks:
-	-/bin/rm -f $(ARCH)objs
-	-mkdir -p $(HOME)/sys/$(ARCH)/objs/jdl/src
-	ln -s $(HOME)/sys/$(ARCH)/objs/jdl/src $(ARCH)objs
+#
+.PHONY: all clean distclean symlinks slsh install install_directories \
+  install_lib_files install_rline_files install_scripts install_help \
+  install_docs
+

@@ -6769,8 +6769,8 @@ then
   fi
 fi
 
-OBJDIR=$SRCDIR/"$ARCH"objs
-ELFDIR=$SRCDIR/elf"$ARCH"objs
+OBJDIR=$SRCDIR/"\$(ARCH)"objs
+ELFDIR=$SRCDIR/"\$(ARCH)"elfobjs
 
 
 missingmodules=""
@@ -8245,13 +8245,13 @@ done
 
 PROGRAM_OBJECT_RULES="$PROGRAM_OBJECT_RULES
 \$(OBJDIR)/$program_module.o : \$(SRCDIR)/$program_module.c \$(DOT_O_DEPS) \$("$program_module"_O_DEP)
-	cd \$(OBJDIR); \$(COMPILE_CMD) \$("$program_module"_C_FLAGS) \$(SRCDIR)/$program_module.c
+	cd \$(OBJDIR) && \$(COMPILE_CMD) \$("$program_module"_C_FLAGS) \$(SRCDIR)/$program_module.c
 "
 
 
 PROGRAM_ELF_ORULES="$PROGRAM_ELF_ORULES
 \$(ELFDIR)/$program_module.o : \$(SRCDIR)/$program_module.c \$(DOT_O_DEPS) \$("$program_module"_O_DEP)
-	cd \$(ELFDIR); \$(ELFCOMPILE_CMD) \$("$program_module"_C_FLAGS) \$(SRCDIR)/$program_module.c
+	cd \$(ELFDIR) && \$(ELFCOMPILE_CMD) \$("$program_module"_C_FLAGS) \$(SRCDIR)/$program_module.c
 "
 
  done
@@ -9570,7 +9570,7 @@ calc : \$(OBJDIR)/calc
 \$(OBJDIR)/calc : \$(OBJDIR)/calc.o \$("calc"_DEPS) \$(EXECDEPS)
 	\$(CC) -o \$(OBJDIR)/calc \$(LDFLAGS) \$(OBJDIR)/calc.o \$("calc"_LIBS) \$(EXECLIBS)
 \$(OBJDIR)/calc.o : \$(SRCDIR)/calc.c \$(DOT_O_DEPS) \$("calc"_O_DEP)
-	cd \$(OBJDIR); \$(COMPILE_CMD) \$("calc"_INC) \$(EXECINC) \$(SRCDIR)/calc.c
+	cd \$(OBJDIR) && \$(COMPILE_CMD) \$("calc"_INC) \$(EXECINC) \$(SRCDIR)/calc.c
 "
 
 
@@ -9580,7 +9580,7 @@ untic : \$(OBJDIR)/untic
 \$(OBJDIR)/untic : \$(OBJDIR)/untic.o \$("untic"_DEPS) \$(EXECDEPS)
 	\$(CC) -o \$(OBJDIR)/untic \$(LDFLAGS) \$(OBJDIR)/untic.o \$("untic"_LIBS) \$(EXECLIBS)
 \$(OBJDIR)/untic.o : \$(SRCDIR)/untic.c \$(DOT_O_DEPS) \$("untic"_O_DEP)
-	cd \$(OBJDIR); \$(COMPILE_CMD) \$("untic"_INC) \$(EXECINC) \$(SRCDIR)/untic.c
+	cd \$(OBJDIR) && \$(COMPILE_CMD) \$("untic"_INC) \$(EXECINC) \$(SRCDIR)/untic.c
 "
 
 

@@ -1,4 +1,7 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.7-2: For the Makefile rules, use cd foo && bar instead of cd foo; bar
+dnl# 0.2.7-1: Use "$ARCH"elfobjs instead of elf"$ARCH"objs for better flexibility
+dnl# 0.2.7-0: Instead of expanding $ARCH at configure time, use \$ARCH for compile-time expansion
 dnl# 0.2.6-2: Missing hyphen for cygwin ELFLIB_MAJOR (Marco Atzeri)
 dnl# 0.2.6-1: Added optional second and third arguments to AC_DEFINE (Marco Atzeri)
 dnl# 0.2.6-0: On cygwin, change libfooX_Y_Z.dll to cygfoo-X_Y_Z.dll (Marco Atzeri)
@@ -99,8 +102,8 @@ then
   fi
 fi
 
-OBJDIR=$SRCDIR/"$ARCH"objs
-ELFDIR=$SRCDIR/elf"$ARCH"objs
+OBJDIR=$SRCDIR/"\$(ARCH)"objs
+ELFDIR=$SRCDIR/"\$(ARCH)"elfobjs
 AC_SUBST(SRCDIR)dnl
 AC_SUBST(OBJDIR)dnl
 AC_SUBST(ELFDIR)dnl
@@ -361,7 +364,7 @@ AC_DEFUN([JD_CREATE_ORULE], dnl#{{{
 [
 PROGRAM_OBJECT_RULES="$PROGRAM_OBJECT_RULES
 \$(OBJDIR)/$1.o : \$(SRCDIR)/$1.c \$(DOT_O_DEPS) \$("$1"_O_DEP)
-	cd \$(OBJDIR); \$(COMPILE_CMD) \$("$1"_C_FLAGS) \$(SRCDIR)/$1.c
+	cd \$(OBJDIR) && \$(COMPILE_CMD) \$("$1"_C_FLAGS) \$(SRCDIR)/$1.c
 "
 ])
 
@@ -371,7 +374,7 @@ AC_DEFUN([JD_CREATE_ELFORULE], dnl#{{{
 [
 PROGRAM_ELF_ORULES="$PROGRAM_ELF_ORULES
 \$(ELFDIR)/$1.o : \$(SRCDIR)/$1.c \$(DOT_O_DEPS) \$("$1"_O_DEP)
-	cd \$(ELFDIR); \$(ELFCOMPILE_CMD) \$("$1"_C_FLAGS) \$(SRCDIR)/$1.c
+	cd \$(ELFDIR) && \$(ELFCOMPILE_CMD) \$("$1"_C_FLAGS) \$(SRCDIR)/$1.c
 "
 ])
 
@@ -385,7 +388,7 @@ $1 : \$(OBJDIR)/$1
 \$(OBJDIR)/$1 : \$(OBJDIR)/$1.o \$("$1"_DEPS) \$(EXECDEPS)
 	\$(CC) -o \$(OBJDIR)/$1 \$(LDFLAGS) \$(OBJDIR)/$1.o \$("$1"_LIBS) \$(EXECLIBS)
 \$(OBJDIR)/$1.o : \$(SRCDIR)/$1.c \$(DOT_O_DEPS) \$("$1"_O_DEP)
-	cd \$(OBJDIR); \$(COMPILE_CMD) \$("$1"_INC) \$(EXECINC) \$(SRCDIR)/$1.c
+	cd \$(OBJDIR) && \$(COMPILE_CMD) \$("$1"_INC) \$(EXECINC) \$(SRCDIR)/$1.c
 "
 ])
 
