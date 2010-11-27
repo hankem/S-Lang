@@ -1150,7 +1150,7 @@ typedef struct _pSLang_Token_Type
      {
 	long long_val;
 	unsigned long ulong_val;
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 	long long llong_val;
 	unsigned long long ullong_val;
 #endif

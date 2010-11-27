@@ -265,6 +265,8 @@ Changes since 2.2.2
      modules Makefiles did not implement this.
 111. */mkfiles/makefile.all: Added WFLAGS to mingw sections to allow
      the warning flags to be specified independently of the CFLAGS.
+112. src/slang.c,_slang.h: Changed `#if HAVE_LONG_LONG' to `#ifdef
+     HAVE_LONG_LONG' in a few places.
 
 {{{ Previous Versions
 

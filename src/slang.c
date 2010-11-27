@@ -126,7 +126,7 @@ typedef struct _pSLBlock_Type
 #if SLANG_HAS_FLOAT
 	double *double_blk;		       /*literal double is a pointer */
 #endif
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 	long long *llong_blk;
 #endif
 	float float_blk;
@@ -7319,7 +7319,7 @@ int SLns_add_lconstant (SLang_NameSpace_Type *ns, SLFUTURE_CONST char *name, SLt
    return 0;
 }
 
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 int _pSLns_add_llconstant (SLang_NameSpace_Type *ns, SLFUTURE_CONST char *name, SLtype type, long long value)
 {
    _pSLang_LLConstant_Type *v;
@@ -8930,7 +8930,7 @@ static void compile_integer (long i, _pSLang_BC_Type bc_main_type, SLtype bc_sub
    lang_try_now ();
 }
 
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 static void compile_llong (long long i, _pSLang_BC_Type bc_main_type, SLtype bc_sub_type)
 {
 # if LLONG_IS_NOT_LONG

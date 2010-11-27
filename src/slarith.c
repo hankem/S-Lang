@@ -780,7 +780,7 @@ int SLang_push_ulong (unsigned long i)
    return SLclass_push_long_obj (_pSLANG_ULONG_TYPE, (long) i);
 }
 
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
 int SLang_push_long_long (long long i)
 {
    return SLclass_push_llong_obj (_pSLANG_LLONG_TYPE, i);
