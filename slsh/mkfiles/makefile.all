@@ -207,13 +207,14 @@ CPU = _X86_
 ! elifdef CYGWIN32 MINGW32 #{{{
 CC = $(TOOL_PREFIX)gcc
 P = /
+WFLAGS = -W -Wall
 !  ifdef CYGWIN32
-CFLAGS = -DWIN32 -W -Wall -O2 -fno-strength-reduce -mno-cygwin
+CFLAGS = -DWIN32 -O2 -fno-strength-reduce $(WFLAGS) -mno-cygwin
 !  else
 !   ifdef DLL
 DLL_FLAGS = -DSLANG_DLL=1
 !   endif
-CFLAGS = -DWIN32 -W -Wall -O2 -fno-strength-reduce $(DLL_FLAGS)
+CFLAGS = -DWIN32 -O2 -fno-strength-reduce $(WFLAGS) $(DLL_FLAGS)
 !  endif
 LINK_CMD = $(CC) -s -L$(SLANGLIB) -o $(OBJDIR)$(P)slsh.exe $(OBJS) -lslang -luser32
 OBJDIR = gw32objs# Location of objects

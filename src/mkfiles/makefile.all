@@ -284,10 +284,11 @@ RANLIB = ranlib
 !  elifdef MINGW32 #{{{
 # This Makefile is for the MINGW32 environment
 CC = $(TOOL_PREFIX)gcc
+WFLAGS = -W -Wall
 !   ifdef DLL
-CFLAGS = -DWIN32 -W -Wall -O2 -DSLANG_DLL=1
+CFLAGS = -DWIN32 -DSLANG_DLL=1 -O2 $(WFLAGS)
 !   else
-CFLAGS = -DWIN32 -W -Wall -O2
+CFLAGS = -DWIN32 -O2 $(WFLAGS)
 !   endif
 P = /#
 O = o # Object extension

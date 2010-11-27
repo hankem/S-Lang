@@ -106,12 +106,13 @@ OBJDIR = gw32objs
 !  ifdef DLL
 DLL_FLAGS = -DSLANG_DLL=1
 !  endif
+WFLAGS = -W -Wall
 !  ifdef CYGWIN32
-CFLAGS = -DWIN32 -W -Wall -O2 -mno-cygwin $(DLL_FLAGS)
+CFLAGS = -DWIN32 -O2 $(WFLAGS) -mno-cygwin $(DLL_FLAGS)
 RM = rm
 COPY = cp
 !  else
-CFLAGS = -DWIN32 -W -Wall -O2 $(DLL_FLAGS)
+CFLAGS = -DWIN32 -O2 $(WFLAGS) $(DLL_FLAGS)
 RM = del
 COPY = copy
 !  endif
