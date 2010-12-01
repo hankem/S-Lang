@@ -215,7 +215,7 @@ static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
 	s = numbuf;
 	break;
 
-#if HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
       case LLONG_TOKEN:
 	sprintf (numbuf, "%lld", tok->v.llong_val);
 	s = numbuf;
