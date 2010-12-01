@@ -86,53 +86,53 @@ config.h: ../src/config.h
 $(OBJDIR):
 	-$(MKINSDIR) $(OBJDIR)
 #
-slsmg-module.so: $(OBJDIR)/slsmg-module.so
-$(OBJDIR)/slsmg-module.so: $(OBJDIR) slsmg-module.c config.h
+slsmg-module.so: $(OBJDIR) $(OBJDIR)/slsmg-module.so
+$(OBJDIR)/slsmg-module.so: slsmg-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/slsmg-module.c -o slsmg-module.so $(LIBS)
-rand-module.so: $(OBJDIR)/rand-module.so
-$(OBJDIR)/rand-module.so: $(OBJDIR) rand-module.c config.h
+rand-module.so: $(OBJDIR) $(OBJDIR)/rand-module.so
+$(OBJDIR)/rand-module.so: rand-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/rand-module.c -o rand-module.so $(LIBS)
-newt-module.so: $(OBJDIR)/newt-module.so
-$(OBJDIR)/newt-module.so: $(OBJDIR) newt-module.c config.h
+newt-module.so: $(OBJDIR) $(OBJDIR)/newt-module.so
+$(OBJDIR)/newt-module.so: newt-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/newt-module.c -o newt-module.so -lnewt $(LIBS)
-termios-module.so: $(OBJDIR)/termios-module.so
-$(OBJDIR)/termios-module.so: $(OBJDIR) termios-module.c config.h
+termios-module.so: $(OBJDIR) $(OBJDIR)/termios-module.so
+$(OBJDIR)/termios-module.so: termios-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/termios-module.c -o termios-module.so $(LIBS)
-select-module.so: $(OBJDIR)/select-module.so
-$(OBJDIR)/select-module.so: $(OBJDIR) select-module.c config.h
+select-module.so: $(OBJDIR) $(OBJDIR)/select-module.so
+$(OBJDIR)/select-module.so: select-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/select-module.c -o select-module.so $(LIBS)
-fcntl-module.so: $(OBJDIR)/fcntl-module.so
-$(OBJDIR)/fcntl-module.so: $(OBJDIR) fcntl-module.c config.h
+fcntl-module.so: $(OBJDIR) $(OBJDIR)/fcntl-module.so
+$(OBJDIR)/fcntl-module.so: fcntl-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/fcntl-module.c -o fcntl-module.so $(LIBS)
-varray-module.so: $(OBJDIR)/varray-module.so
-$(OBJDIR)/varray-module.so: $(OBJDIR) varray-module.c config.h
+varray-module.so: $(OBJDIR) $(OBJDIR)/varray-module.so
+$(OBJDIR)/varray-module.so: varray-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/varray-module.c -o varray-module.so $(LIBS)
-pcre-module.so: $(OBJDIR)/pcre-module.so
-$(OBJDIR)/pcre-module.so: $(OBJDIR) pcre-module.c config.h
+pcre-module.so: $(OBJDIR) $(OBJDIR)/pcre-module.so
+$(OBJDIR)/pcre-module.so: pcre-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(PCRE_INC) $(SRCDIR)/pcre-module.c -o pcre-module.so $(PCRE_LIB) $(LIBS)
-onig-module.so: $(OBJDIR)/onig-module.so
-$(OBJDIR)/onig-module.so: $(OBJDIR) onig-module.c config.h
+onig-module.so: $(OBJDIR) $(OBJDIR)/onig-module.so
+$(OBJDIR)/onig-module.so: onig-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(ONIG_INC) $(SRCDIR)/onig-module.c -o onig-module.so $(ONIG_LIB) $(LIBS)
-png-module.so: $(OBJDIR)/png-module.so
-$(OBJDIR)/png-module.so: $(OBJDIR) png-module.c config.h
+png-module.so: $(OBJDIR) $(OBJDIR)/png-module.so
+$(OBJDIR)/png-module.so: png-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(PNG_INC) $(SRCDIR)/png-module.c -o png-module.so $(PNG_LIB) $(LIBS)
-socket-module.so: $(OBJDIR)/socket-module.so
-$(OBJDIR)/socket-module.so: $(OBJDIR) socket-module.c config.h
+socket-module.so: $(OBJDIR) $(OBJDIR)/socket-module.so
+$(OBJDIR)/socket-module.so: socket-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/socket-module.c -o socket-module.so $(SOCKET_LIBS) $(LIBS)
-iconv-module.so: $(OBJDIR)/iconv-module.so
-$(OBJDIR)/iconv-module.so: $(OBJDIR) iconv-module.c config.h
+iconv-module.so: $(OBJDIR) $(OBJDIR)/iconv-module.so
+$(OBJDIR)/iconv-module.so: iconv-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(ICONV_INC) $(SRCDIR)/iconv-module.c -o iconv-module.so $(ICONV_LIB) $(LIBS)
-zlib-module.so: $(OBJDIR)/zlib-module.so
-$(OBJDIR)/zlib-module.so: $(OBJDIR) zlib-module.c config.h
+zlib-module.so: $(OBJDIR) $(OBJDIR)/zlib-module.so
+$(OBJDIR)/zlib-module.so: zlib-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(ZLIB_INC) $(SRCDIR)/zlib-module.c -o zlib-module.so $(ZLIB_LIB) $(LIBS)
-fork-module.so: $(OBJDIR)/fork-module.so
-$(OBJDIR)/fork-module.so: $(OBJDIR) fork-module.c config.h
+fork-module.so: $(OBJDIR) $(OBJDIR)/fork-module.so
+$(OBJDIR)/fork-module.so: fork-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/fork-module.c -o fork-module.so $(LIBS)
-sysconf-module.so: $(OBJDIR)/sysconf-module.so
-$(OBJDIR)/sysconf-module.so: $(OBJDIR) sysconf-module.c config.h
+sysconf-module.so: $(OBJDIR) $(OBJDIR)/sysconf-module.so
+$(OBJDIR)/sysconf-module.so: sysconf-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/sysconf-module.c -o sysconf-module.so $(LIBS)
-csv-module.so: $(OBJDIR)/csv-module.so
-$(OBJDIR)/csv-module.so: $(OBJDIR) csv-module.c config.h
+csv-module.so: $(OBJDIR) $(OBJDIR)/csv-module.so
+$(OBJDIR)/csv-module.so: csv-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/csv-module.c -o csv-module.so $(LIBS)
 
 # Note that Windows/Cygwin modules need execute permissions

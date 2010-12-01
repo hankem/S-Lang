@@ -274,6 +274,9 @@ Changes since 2.2.2
 	strcompress strlen strlow strnbytecmp strncharcmp strncmp
 	strtrans strtrim strtrim_beg strtrim_end strup
 
+114. modules/Makefile.in: Change #110 introduced a bug
+     that caused the modules to always be need rebuilding.
+
 {{{ Previous Versions
 
 Changes since 2.2.1
