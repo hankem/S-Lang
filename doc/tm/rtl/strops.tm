@@ -1,3 +1,28 @@
+#d n \__newline__
+#d notearray_int_f_str2 \
+  This function has been vectorized in the sense that if an array of strings\n\
+  is  passed for either of the string-valued arguments, then a\n\
+  corresponding array of integers will be returned.  If two arrays\n\
+  are passed then the arrays must have the same length.
+#d notearray_int_f_str \
+  This function has been vectorized in the sense that if an array of strings\n\
+  is passed to the function, then a corresponding array of integers\n\
+  will be returned.
+#d notearray_str_f_str \
+  This function has been vectorized in the sense that if an array of strings\n\
+  is passed to the function, then a corresponding array of strings\n\
+  will be returned.
+#d notearray_str_f_str_arg1 \
+  This function has been vectorized in the sense that if an array of strings\n\
+  is passed as the first argument then a corresponding array of strings\n\
+  will be returned.  Array values are not supported for the remaining\n\
+  arguments.
+#d notearray_strtrim \
+  This function has been vectorized in the sense that if the first argument\n\
+  is an array of strings, then a corresponding array of strings\n\
+  will be returned.  An array value for the optional whitespace\n\
+  argument is not supported.
+
 \function{count_char_occurances}
 \synopsis{Count the number of occurrences of a character in a string}
 \usage{UInt_Type count_char_occurances (str, ch)}
@@ -144,6 +169,8 @@
 
   The distinction between characters and bytes is significant in UTF-8
   mode.
+
+  \notearray_int_f_str2
 \seealso{substr, string_match, strreplace}
 \done
 
@@ -386,6 +413,8 @@
   mode, this value is generally different from the number of
   characters in a string.  For the latter information, the
   \ifun{strlen} or \ifun{strcharlen} functions should be used.
+\notes
+  \notearray_int_f_str
 \seealso{strlen, strcharlen, length}
 \done
 
@@ -429,6 +458,8 @@
   string.  If the string contains combining characters, then they are
   also counted.  Use the \ifun{strlen} function to obtain the
   character count ignoring combining characters.
+\notes
+  \notearray_int_f_str
 \seealso{strlen, strbytelen}
 \done
 
@@ -474,14 +505,14 @@
 \synopsis{Compare two strings}
 \usage{Int_Type strcmp (String_Type a, String_Type b)}
 \description
-   The \ifun{strcmp} function may be used to perform a case-sensitive
-   string comparison, in the lexicographic sense, on strings \exmp{a} and
-   \exmp{b}.  It returns 0 if the strings are identical, a negative integer
-   if \exmp{a} is less than \exmp{b}, or a positive integer if \exmp{a} is greater
-   than \exmp{b}.
+  The \ifun{strcmp} function may be used to perform a case-sensitive
+  string comparison, in the lexicographic sense, on strings \exmp{a}
+  and \exmp{b}.  It returns 0 if the strings are identical, a negative
+  integer if \exmp{a} is less than \exmp{b}, or a positive integer if
+  \exmp{a} is greater than \exmp{b}.
 \example
-   The \ifun{strup} function may be used to perform a case-insensitive
-   string comparison:
+  The \ifun{strup} function may be used to perform a case-insensitive
+  string comparison:
 #v+
     define case_insensitive_strcmp (a, b)
     {
@@ -489,8 +520,10 @@
     }
 #v-
 \notes
-   One may also use one of the binary comparison operators, e.g.,
-   \exmp{a > b}.
+  One may also use one of the binary comparison operators, e.g.,
+  \exmp{a > b}.
+
+  \notearray_int_f_str
 \seealso{strup, strncmp}
 \done
 
@@ -509,6 +542,8 @@
     strcompress (",;apple,,cherry;,banana", ",;");
 #v-
   returns the string \exmp{"apple,cherry,banana"}.
+\notes
+  \notearray_str_f_str_arg1
 \seealso{strtrim, strtrans, str_delete_chars}
 \done
 
@@ -629,17 +664,19 @@
 \synopsis{Compute the length of a string}
 \usage{Int_Type strlen (String_Type a)}
 \description
-   The \ifun{strlen} function may be used to compute the character
-   length of a string ignoring the presence of combining characters.
-   The \ifun{strcharlen} function may be used to count combining
-   characters as distinct characters.  For byte-semantics, use the
-   \ifun{strbytelen} function.
+  The \ifun{strlen} function may be used to compute the character
+  length of a string ignoring the presence of combining characters.
+  The \ifun{strcharlen} function may be used to count combining
+  characters as distinct characters.  For byte-semantics, use the
+  \ifun{strbytelen} function.
 \example
-   After execution of
+  After execution of
 #v+
    variable len = strlen ("hello");
 #v-
-   \exmp{len} will have a value of \exmp{5}.
+  \exmp{len} will have a value of \exmp{5}.
+\notes
+  \notearray_int_f_str
 \seealso{strbytelen, strcharlen, bstrlen, length, substr}
 \done
 
@@ -660,6 +697,8 @@
 #v-
   performs a case-insensitive comparison operation of two strings by
   converting them to lower case first.
+\notes
+  \notearray_str_f_str
 \seealso{strup, tolower, strcmp, strtrim, define_case}
 \done
 
@@ -670,6 +709,8 @@
   This function compares the first \exmp{n} bytes of the strings
   \exmp{a} and \exmp{b}.  See the documentation for \ifun{strcmp} for
   information about the return value.
+\notes
+  \notearray_int_f_str2
 \seealso{strncmp, strncharcmp, strcmp}
 \done
 
@@ -681,6 +722,8 @@
   \exmp{a} and \exmp{b} counting combining characters as distinct
   characters.  See the documentation for \ifun{strcmp} for information
   about the return value.
+\notes
+  \notearray_int_f_str2
 \seealso{strncmp, strnbytecmp, strcmp}
 \done
 
@@ -706,6 +749,8 @@
   will return zero since the first three characters match.
 \notes
   This function uses character semantics.
+
+  \notearray_int_f_str2
 \seealso{strcmp, strlen, strncharcmp, strnbytecmp}
 \done
 
@@ -945,6 +990,8 @@
     str = strtrans (str, "^0-9", " ");    % Replace anything but 0-9 by space
     str = strtrans (str, "\\^0-9", " ");  % Replace '^' and 0-9 by a space
 #v-
+\notes
+  \notearray_str_f_str_arg1
 \seealso{strreplace, strtrim, strup, strlow}
 \done
 
@@ -970,6 +1017,8 @@
 #v-
   If the first character of a set is \exmp{^} then the set is taken to
   be the complement set.
+\notes
+  \notearray_strtrim
 \seealso{strtrim_beg, strtrim_end, strcompress}
 \done
 
@@ -982,6 +1031,8 @@
   The optional second parameter specifies the set of whitespace
   characters.  See the documentation for the \ifun{strtrim} function
   form more information about the whitespace parameter.
+\notes
+  \notearray_strtrim
 \seealso{strtrim, strtrim_end, strcompress}
 \done
 
@@ -994,6 +1045,8 @@
   optional second parameter specifies the set of whitespace
   characters.  See the documentation for the \ifun{strtrim} function
   form more information about the whitespace parameter.
+\notes
+  \notearray_strtrim
 \seealso{strtrim, strtrim_beg, strcompress}
 \done
 
@@ -1014,15 +1067,19 @@
 #v-
   performs a case-insensitive comparison operation of two strings by
   converting them to upper case first.
+\notes
+  \notearray_str_f_str
 \seealso{strlow, toupper, strcmp, strtrim, define_case, strtrans}
 \done
 
 \function{str_delete_chars}
 \synopsis{Delete characters from a string}
-\usage{String_Type str_delete_chars (String_Type str, String_Type del_set)}
+\usage{String_Type str_delete_chars (String_Type str [, String_Type del_set])}
 \description
   This function may be used to delete the set of characters specified
-  by \exmp{del_set} from the string \exmp{str}.  The result is returned.
+  by the optional argument \exmp{del_set} from the string \exmp{str}.
+  If \exmp{del_set} is not given, \exmp{"\\s"} will be used.
+  The modified string is returned.
 
   The set of characters to be deleted may include ranges such as
   \exmp{A-Z} and characters classes:
@@ -1048,6 +1105,8 @@
     str = str_delete_chars (str, "^\\a");
 #v-
   will remove all but the alphabetic characters.
+\notes
+  \notearray_str_f_str_arg1
 \seealso{strtrans, strreplace, strcompress}
 \done
 

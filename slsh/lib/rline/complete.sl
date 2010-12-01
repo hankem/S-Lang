@@ -59,7 +59,7 @@ private define struct_completion (partial_word)
      }
    fields = get_struct_field_names (s);
    word = words[-1];
-   i = where (0 == array_map (Int_Type, &strnbytecmp, fields, word, strbytelen(word)));
+   i = where (0 == strnbytecmp(fields, word, strbytelen(word)));
    fields = fields[i];
    if (length (fields) == 0)
      return completions;
@@ -161,7 +161,7 @@ private define completion_callback (line, point)
 
 private define list_completions (completions)
 {
-   variable max_len = 1 + max (array_map(Int_Type, &strlen, completions));
+   variable max_len = 1 + max (strlen(completions));
    variable max_cols = rline_get_edit_width ();
 
    if (max_cols < 1)

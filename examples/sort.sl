@@ -33,7 +33,7 @@ private define sort_fun (i, j)
    return s;
 }
 
-define main ()
+define slsh_main ()
 {
    variable line, len, i, vals;
    foreach line (stdin)
@@ -47,7 +47,7 @@ define main ()
 	Keys = line[[0::2]];
 	vals = line[[1::2]];
 
-	Values = array_map(Int_Type, &integer, vals);
+	Values = atoi (vals);
 
 	i = array_sort ([0:len-1], &sort_fun);
 
@@ -56,5 +56,3 @@ define main ()
 	() = printf ("%s\n", strjoin (Keys[i] + "=" + vals[i], " "));
      }
 }
-
-main ();

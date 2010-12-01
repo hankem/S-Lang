@@ -7854,6 +7854,11 @@ is_substr
   The distinction between characters and bytes is significant in UTF-8
   mode.
 
+  This function has been vectorized in the sense that if an array of strings
+  is  passed for either of the string-valued arguments, then a
+  corresponding array of integers will be returned.  If two arrays
+  are passed then the arrays must have the same length.
+
  SEE ALSO
   substr, string_match, strreplace
 
@@ -8147,6 +8152,11 @@ strbytelen
   characters in a string.  For the latter information, the
   `strlen' or `strcharlen' functions should be used.
 
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is passed to the function, then a corresponding array of integers
+  will be returned.
+
  SEE ALSO
   strlen, strcharlen, length
 
@@ -8217,6 +8227,11 @@ strcharlen
   also counted.  Use the `strlen' function to obtain the
   character count ignoring combining characters.
 
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is passed to the function, then a corresponding array of integers
+  will be returned.
+
  SEE ALSO
   strlen, strbytelen
 
@@ -8286,15 +8301,15 @@ strcmp
   Int_Type strcmp (String_Type a, String_Type b)
 
  DESCRIPTION
-   The `strcmp' function may be used to perform a case-sensitive
-   string comparison, in the lexicographic sense, on strings `a' and
-   `b'.  It returns 0 if the strings are identical, a negative integer
-   if `a' is less than `b', or a positive integer if `a' is greater
-   than `b'.
+  The `strcmp' function may be used to perform a case-sensitive
+  string comparison, in the lexicographic sense, on strings `a'
+  and `b'.  It returns 0 if the strings are identical, a negative
+  integer if `a' is less than `b', or a positive integer if
+  `a' is greater than `b'.
 
  EXAMPLE
-   The `strup' function may be used to perform a case-insensitive
-   string comparison:
+  The `strup' function may be used to perform a case-insensitive
+  string comparison:
 
     define case_insensitive_strcmp (a, b)
     {
@@ -8303,8 +8318,12 @@ strcmp
 
 
  NOTES
-   One may also use one of the binary comparison operators, e.g.,
-   `a > b'.
+  One may also use one of the binary comparison operators, e.g.,
+  `a > b'.
+
+  This function has been vectorized in the sense that if an array of strings
+  is passed to the function, then a corresponding array of integers
+  will be returned.
 
  SEE ALSO
   strup, strncmp
@@ -8332,6 +8351,12 @@ strcompress
     strcompress (",;apple,,cherry;,banana", ",;");
 
   returns the string `"apple,cherry,banana"'.
+
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is passed as the first argument then a corresponding array of strings
+  will be returned.  Array values are not supported for the remaining
+  arguments.
 
  SEE ALSO
   strtrim, strtrans, str_delete_chars
@@ -8498,18 +8523,23 @@ strlen
   Int_Type strlen (String_Type a)
 
  DESCRIPTION
-   The `strlen' function may be used to compute the character
-   length of a string ignoring the presence of combining characters.
-   The `strcharlen' function may be used to count combining
-   characters as distinct characters.  For byte-semantics, use the
-   `strbytelen' function.
+  The `strlen' function may be used to compute the character
+  length of a string ignoring the presence of combining characters.
+  The `strcharlen' function may be used to count combining
+  characters as distinct characters.  For byte-semantics, use the
+  `strbytelen' function.
 
  EXAMPLE
-   After execution of
+  After execution of
 
    variable len = strlen ("hello");
 
-   `len' will have a value of `5'.
+  `len' will have a value of `5'.
+
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is passed to the function, then a corresponding array of integers
+  will be returned.
 
  SEE ALSO
   strbytelen, strcharlen, bstrlen, length, substr
@@ -8540,6 +8570,11 @@ strlow
   performs a case-insensitive comparison operation of two strings by
   converting them to lower case first.
 
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is passed to the function, then a corresponding array of strings
+  will be returned.
+
  SEE ALSO
   strup, tolower, strcmp, strtrim, define_case
 
@@ -8557,6 +8592,12 @@ strnbytecmp
   This function compares the first `n' bytes of the strings
   `a' and `b'.  See the documentation for `strcmp' for
   information about the return value.
+
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is  passed for either of the string-valued arguments, then a
+  corresponding array of integers will be returned.  If two arrays
+  are passed then the arrays must have the same length.
 
  SEE ALSO
   strncmp, strncharcmp, strcmp
@@ -8576,6 +8617,12 @@ strncharcmp
   `a' and `b' counting combining characters as distinct
   characters.  See the documentation for `strcmp' for information
   about the return value.
+
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is  passed for either of the string-valued arguments, then a
+  corresponding array of integers will be returned.  If two arrays
+  are passed then the arrays must have the same length.
 
  SEE ALSO
   strncmp, strnbytecmp, strcmp
@@ -8611,6 +8658,11 @@ strncmp
 
  NOTES
   This function uses character semantics.
+
+  This function has been vectorized in the sense that if an array of strings
+  is  passed for either of the string-valued arguments, then a
+  corresponding array of integers will be returned.  If two arrays
+  are passed then the arrays must have the same length.
 
  SEE ALSO
   strcmp, strlen, strncharcmp, strnbytecmp
@@ -8904,6 +8956,12 @@ strtrans
     str = strtrans (str, "\\^0-9", " ");  % Replace '^' and 0-9 by a space
 
 
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is passed as the first argument then a corresponding array of strings
+  will be returned.  Array values are not supported for the remaining
+  arguments.
+
  SEE ALSO
   strreplace, strtrim, strup, strlow
 
@@ -8937,6 +8995,12 @@ strtrim
   If the first character of a set is `^' then the set is taken to
   be the complement set.
 
+ NOTES
+  This function has been vectorized in the sense that if the first argument
+  is an array of strings, then a corresponding array of strings
+  will be returned.  An array value for the optional whitespace
+  argument is not supported.
+
  SEE ALSO
   strtrim_beg, strtrim_end, strcompress
 
@@ -8957,6 +9021,12 @@ strtrim_beg
   characters.  See the documentation for the `strtrim' function
   form more information about the whitespace parameter.
 
+ NOTES
+  This function has been vectorized in the sense that if the first argument
+  is an array of strings, then a corresponding array of strings
+  will be returned.  An array value for the optional whitespace
+  argument is not supported.
+
  SEE ALSO
   strtrim, strtrim_end, strcompress
 
@@ -8976,6 +9046,12 @@ strtrim_end
   optional second parameter specifies the set of whitespace
   characters.  See the documentation for the `strtrim' function
   form more information about the whitespace parameter.
+
+ NOTES
+  This function has been vectorized in the sense that if the first argument
+  is an array of strings, then a corresponding array of strings
+  will be returned.  An array value for the optional whitespace
+  argument is not supported.
 
  SEE ALSO
   strtrim, strtrim_beg, strcompress
@@ -9006,6 +9082,11 @@ strup
   performs a case-insensitive comparison operation of two strings by
   converting them to upper case first.
 
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is passed to the function, then a corresponding array of strings
+  will be returned.
+
  SEE ALSO
   strlow, toupper, strcmp, strtrim, define_case, strtrans
 
@@ -9017,11 +9098,13 @@ str_delete_chars
   Delete characters from a string
 
  USAGE
-  String_Type str_delete_chars (String_Type str, String_Type del_set)
+  String_Type str_delete_chars (String_Type str [, String_Type del_set])
 
  DESCRIPTION
   This function may be used to delete the set of characters specified
-  by `del_set' from the string `str'.  The result is returned.
+  by the optional argument `del_set' from the string `str'.
+  If `del_set' is not given, `"\s"' will be used.
+  The modified string is returned.
 
   The set of characters to be deleted may include ranges such as
   `A-Z' and characters classes:
@@ -9048,6 +9131,12 @@ str_delete_chars
     str = str_delete_chars (str, "^\\a");
 
   will remove all but the alphabetic characters.
+
+ NOTES
+  This function has been vectorized in the sense that if an array of strings
+  is passed as the first argument then a corresponding array of strings
+  will be returned.  Array values are not supported for the remaining
+  arguments.
 
  SEE ALSO
   strtrans, strreplace, strcompress

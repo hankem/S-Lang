@@ -19,7 +19,7 @@ private define do_the_glob (dir, pat)
 
    if ((pat[0] == '?') || (pat[0] == '*'))
      {
-	files = files [where(array_map (Int_Type, &strncmp, files, ".", 1))];
+	files = files [where (strncmp (files, ".", 1))];
      }
 
    if (length (files) == 0)

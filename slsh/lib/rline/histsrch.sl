@@ -24,7 +24,7 @@ private define get_unique_history (prefix)
    if (prefix == "")
      return [h, prefix];
 
-   variable i = array_map (Int_Type, &strncmp, h, prefix, strlen(prefix));
+   variable i = strncmp (h, prefix, strlen(prefix));
    h = h[wherenot(i)];
 
    variable new_h = String_Type[0];

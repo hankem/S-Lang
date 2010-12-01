@@ -160,8 +160,25 @@ Intrinsic Functions
       string_match, string_matches (v2.2.3)
           The position argument made optional
 
-      strup/strlow (v2.2.3)
-          Added support for an array of strings.
+   The following string functions have been vectorized to act upon
+   arrays of strings (v2.2.3):
+
+       is_substr
+       str_delete_chars
+       strbytelen
+       strcharlen
+       strcmp
+       strcompress
+       strlen
+       strlow
+       strnbytecmp
+       strncharcmp
+       strncmp
+       strtrans
+       strtrim
+       strtrim_beg
+       strtrim_end
+       strup
 
 
 slsh

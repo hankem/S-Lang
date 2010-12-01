@@ -97,7 +97,7 @@ define rline_edit_line ()
    lines = rline_call_editor (lines, "rline", "sl");
    if ((lines == NULL) || (length (lines) == 0))
      return;
-   lines = array_map (String_Type, &strtrim_end, lines, "\n");
+   lines = strtrim_end (lines, "\n");
    rline_set_line (strjoin (lines, ""));
 }
 

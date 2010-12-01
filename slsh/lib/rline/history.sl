@@ -26,7 +26,7 @@ define rline_load_history ()
 
    variable lines = fgetslines (fp);
    () = fclose (fp);
-   lines = array_map (String_Type, &strtrim_end, lines, "\n");
+   lines = strtrim_end (lines, "\n");
    rline_set_history (lines);
 }
 
@@ -70,5 +70,5 @@ define rline_edit_history ()
        || (length (lines) == 0))
      return;
 
-   rline_set_history (array_map (String_Type, &strtrim_end, lines, "\n"));
+   rline_set_history (strtrim_end(lines, "\n"));
 }

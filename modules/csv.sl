@@ -85,10 +85,10 @@ private define fixup_header_names (names)
    if (_typeof(names) != String_Type)
      return names;
 
-   names = array_map (String_Type, &strlow, names);
-   names = array_map (String_Type, &strtrans, names, "\\,", "");
-   names = array_map (String_Type, &strtrans, names, "^\\w", "_");
-   names = array_map (String_Type, &strcompress, names, "_");
+   names = strlow (names);
+   names = strtrans (names, "\\,", "");
+   names = strtrans (names, "^\\w", "_");
+   names = strcompress (names, "_");
    return names;
 }
 

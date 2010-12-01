@@ -20,14 +20,7 @@ static define test ()
 
 %test (&str_delete_chars, "foo\xAAbar", "\xAA", "foobar");
 
-static variable s;
-
-s = strcompress (" \t  \tA\n\ntest\t", " \t\n");
-if (s != "A test") failed ("strcompress");
-s = strcompress ("../afoo/bfoo/cbard/ooohbhar", "/");
-if (s != "../afoo/bfoo/cbard/ooohbhar")
-  failed ("strcompress 2");
-
+private variable s;
 s = " \t hello world\n\t";
 if ("hello world" != strtrim (s)) failed ("strtrim");
 if ("hello world\n\t" != strtrim_beg (s)) failed ("strtrim_beg");
@@ -89,6 +82,14 @@ static define test_str_delete_chars (str, del_set, ans)
    variable s1 = str_delete_chars (str, del_set);
    if (ans != s1)
      failed ("str_delete_chars(%s, %s) --> %s", str, del_set, s1);
+
+   variable a, b, b1, i = [1,3,4];
+   a = String_Type[5]; b = @a;
+   a[i] = str;
+   b[i] = ans;
+   b1 = str_delete_chars (a, del_set);
+   if (any(b1 != b))
+     failed ("str_delete_chars(%S, %S) --> %S", a, del_set, b1);
 }
 
 test_str_delete_chars ("abcdefg", "bdf", "aceg");
@@ -105,6 +106,14 @@ static define test_strtrans (s, from, to, ans)
    variable s1 = strtrans (s, from, to);
    if (ans != s1)
      failed ("strtrans(%s, %s, %s) --> %s", s, from, to, s1);
+
+   variable a, b, b1, i = [1,3,4];
+   a = String_Type[5]; b = @a;
+   a[i] = s;
+   b[i] = ans;
+   b1 = strtrans (a, from, to);
+   if (any(b1 != b))
+     failed ("strtrans(%S, %S, %S) --> %S", a, from, to, b1);
 }
 
 test_strtrans ("hello world", "^a-zA-Z", "X", "helloXworld");
@@ -133,6 +142,23 @@ test_strtrans ("HeLLo", "A-Ze", "", "o");
 test_strtrans ("HeLLo", "^A-Z", "", "HLL");
 test_strtrans ("HeLLo", "\\l\\u", "aA", "AaAAa");
 test_strtrans ("He11o", "\l\u\d"R, "aAx", "Aaxxa");
+
+private define test_strcompress (str, white, ans)
+{
+   variable ans1 = strcompress (str, white);
+   if (ans != ans1)
+     failed ("%S != %S = strcompress(%S, %S)", ans, ans1, str, white);
+
+   variable a, b, b1, i = [1,3,4];
+   a = String_Type[5]; b = @a;
+   a[i] = str;
+   b[i] = ans;
+   b1 = strcompress (a, white);
+   if (any(b1 != b))
+     failed ("strcompress(%S, %S) --> %S", a, white, b1);
+}
+test_strcompress (" \t  \tA\n\ntest\t", " \t\n", "A test");
+test_strcompress ("../afoo/bfoo/cbard/ooohbhar/", "/", "../afoo/bfoo/cbard/ooohbhar");
 
 define test_str_replace_all (a, b, c, result, n)
 {
@@ -298,10 +324,94 @@ static define test_strncmp (a, b, n, ans)
    variable ans1 = strncmp (a, b, n);
    if (ans1 != ans)
      failed ("strncmp (%s,%s,%s)", a, b, n);
+   variable aa, bb;
+
+   aa = [a,a,a], bb = b;
+   ans1 = strncmp (aa, bb, n);
+   if ((length (ans1) != length (aa))
+       || not all (ans1 == ans))
+     failed ("%S = strncmp (%S, %S, %S)", ans1, aa, bb, n);
+
+   aa = a, bb = [b,b];
+   ans1 = strncmp (aa, bb, n);
+   if ((length (ans1) != length (bb))
+       || not all (ans1 == ans))
+     failed ("%S = strncmp (%S, %S, %S)", ans1, aa, bb, n);
+
+   aa = [a,a,a,a], bb = [b,b,b,b];
+   ans1 = strncmp (aa, bb, n);
+   if ((length (ans1) != length (aa))
+       || not all (ans1 == ans))
+     failed ("%S = strncmp (%S, %S, %S)", ans1, aa, bb, n);
 }
 
 test_strncmp ("ignore_all", "ign", 3, 0);
 test_strncmp ("ign", "ignore_all", 3, 0);
+
+static define test_strnbytecmp (a, b, n, ans)
+{
+   variable ans1 = strnbytecmp (a, b, n);
+   if (ans1 != ans)
+     failed ("strnbytecmp (%s,%s,%s)", a, b, n);
+   variable aa, bb;
+
+   aa = [a,a,a], bb = b;
+   ans1 = strnbytecmp (aa, bb, n);
+   if ((length (ans1) != length (aa))
+       || not all (ans1 == ans))
+     failed ("%S = strnbytecmp (%S, %S, %S)", ans1, aa, bb, n);
+
+   aa = a, bb = [b,b];
+   ans1 = strnbytecmp (aa, bb, n);
+   if ((length (ans1) != length (bb))
+       || not all (ans1 == ans))
+     failed ("%S = strnbytecmp (%S, %S, %S)", ans1, aa, bb, n);
+
+   aa = [a,a,a,a], bb = [b,b,b,b];
+   ans1 = strnbytecmp (aa, bb, n);
+   if ((length (ans1) != length (aa))
+       || not all (ans1 == ans))
+     failed ("%S = strnbytecmp (%S, %S, %S)", ans1, aa, bb, n);
+
+   aa = String_Type[0];
+   bb = b;
+   ans1 = strnbytecmp (aa, bb, n);
+   if (length (ans1) != length (aa))
+     failed ("%S = strnbytecmp (%S, %S, %S)", ans1, aa, bb, n);
+}
+
+test_strnbytecmp ("ignore_all", "ign", 3, 0);
+test_strnbytecmp ("ign", "ignore_all", 3, 0);
+
+static define test_strcmp (a, b, ans)
+{
+   variable ans1 = sign(strcmp (a, b));
+   if (ans1 != ans)
+     failed ("strcmp (%s,%s)", a, b);
+   variable aa, bb;
+
+   aa = [a,a,a], bb = b;
+   ans1 = sign(strcmp (aa, bb));
+   if ((length (ans1) != length (aa))
+       || not all (ans1 == ans))
+     failed ("%S = strcmp (%S, %S)", ans1, aa, bb);
+
+   aa = a, bb = [b,b];
+   ans1 = sign(strcmp (aa, bb));
+   if ((length (ans1) != length (bb))
+       || not all (ans1 == ans))
+     failed ("%S = strcmp (%S, %S)", ans1, aa, bb);
+
+   aa = [a,a,a,a], bb = [b,b,b,b];
+   ans1 = sign(strcmp (aa, bb));
+   if ((length (ans1) != length (aa))
+       || not all (ans1 == ans))
+     failed ("%S = strcmp (%S, %S)", ans1, aa, bb);
+}
+
+test_strcmp ("ignore_all", "ign", 1);
+test_strcmp ("ign", "ignore_all", -1);
+test_strcmp ("silly", "silly", 0);
 
 static define test_strchop (s, d, len, nth, nth_val)
 {
@@ -509,6 +619,63 @@ test_strlow("", "");
 test_strlow("A", "a");
 test_strlow("AB", "ab");
 test_strlow("ABc", "abc");
+
+private define test_strlen (func, s, ans)
+{
+   variable ans1 = (@func)(s);
+   if (ans1 != ans)
+     failed ("%S != %S = %S (%S)", ans, ans1, func, s);
+
+   variable ss = [s,s,s,s];
+   ans1 = (@func)(ss);
+   if (all (ans1 != ans))
+     failed ("%S != %S = %S (%S)", ans, ans1, func, s);
+
+   ans = Int_Type[5] + ans;
+   ans[1] = 0; ans[-1] = 0;
+   ss = String_Type[5];
+   ss[[0,2,3]] = s;
+   ans1 = (@func)(ss);
+   if (all (ans1 != ans))
+     failed ("%S != %S = %S (%S)", ans, ans1, func, s);
+}
+test_strlen (&strlen, "foobar", 6);
+test_strlen (&strbytelen, "foobar", 6);
+test_strlen (&strcharlen, "foobar", 6);
+
+private define test_strtrim (func, in, out, white)
+{
+   variable out1;
+   variable a, b, b1;
+   if (white == NULL)
+     {
+	out1 = (@func)(in);
+	if (out != out1)
+	  failed ("%S != %S = %S(%S)", out, out1, func, in);
+	a = [in, in, in];
+	b = [out, out, out];
+	b1 = (@func)(a);
+	if (any(b != b1))
+	  failed ("%S != %S = %S(%S)", b, b1, func, a);
+	return;
+     }
+   out1 = (@func)(in, white);
+   if (out != out1)
+     failed ("%S != %S = %S(%S,%S)", out, out1, func, in, white);
+   a = String_Type[5];
+   b = String_Type[5];
+   a[[1,3,4]] = in;
+   b[[1,3,4]] = out;
+   b1 = (@func)(a, white);
+   if (any(b != b1))
+     failed ("%S != %S = %S(%S,%S)", b, b1, func, a, white);
+}
+
+$1 = " \t hello world\n\t";
+test_strtrim (&strtrim, $1, "hello world", NULL);
+test_strtrim (&strtrim_beg, $1, "hello world\n\t", NULL);
+test_strtrim (&strtrim_end, $1, " \t hello world", NULL);
+test_strtrim (&strtrim, $1, "hello wor", " \t\nld");
 
 print ("Ok\n");
 exit (0);
