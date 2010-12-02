@@ -73,7 +73,15 @@ define rline_call_editor (lines, prefix, ext)
 
    variable mtime = st.st_mtime;
 
+#ifexists __rline_reset_tty
+   __rline_reset_tty ();
+#endif
    variable p = new_process ([editor, file]).wait();
+#ifexists __rline_init_tty
+   __rline_init_tty ();
+#endif
+   rline_call ("redraw");
+
    if ((p.exited == 0) || (p.exit_status != 0))
      return NULL;
 

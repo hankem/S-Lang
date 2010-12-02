@@ -714,6 +714,8 @@ static void init_readline_intrinsic (char *appname)
 
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
+   MAKE_INTRINSIC_0("__rline_init_tty", init_tty, VOID_TYPE),
+   MAKE_INTRINSIC_0("__rline_reset_tty", reset_tty, VOID_TYPE),
    MAKE_INTRINSIC_S("slsh_readline_init", init_readline_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("slsh_readline_new", new_slrline_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("slsh_readline", readline_intrinsic, VOID_TYPE),
