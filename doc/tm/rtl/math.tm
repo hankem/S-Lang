@@ -258,6 +258,36 @@
   If given a single array argument \exmp{x}, the \ifun{hypot} function
   computes \exmp{sqrt(sumsq(x))}, where \exmp{sumsq(x)} computes
   the sum of the squares of the elements of \exmp{x}.
+\example
+  A vector in Euclidean 3 dimensional space may be represented by an
+  array of three values representing the components of the vector in
+  some orthogonal cartesian coordinate system.  Then the length of the
+  vector may be computed using the \ifun{hypot} function, e.g.,
+#v+
+      A = [2,3,4];
+      len_A = hypot (A);
+#v-
+  The dot-product or scalar-product between two such vectors \exmp{A}
+  and \exmp{B} may be computed using the \exmp{sum(A*B)}.  It is well
+  known that this is also equal to the product of the lengths of the
+  two vectors and the cosine of the angle between them.  Hence, the
+  angle between the vectors \exmp{A} and \exmp{B} may be computed using
+#v+
+      ahat = A/hypot(A);
+      bhat = B/hypot(B);
+      theta = acos(\sum(ahat*bhat));
+#v-
+  Here, \exmp{ahat} and \exmp{bhat} are the unit vectors associated
+  with the vectors \exmp{A} and \exmp{B}, respectively.
+  Unfortunately, the above method for computing the angle between the
+  vectors is numerically unstable when \exmp{A} and \exmp{B} are
+  nearly parallel.  An alternative method is to use:
+#v+
+      ahat = A/hypot(A);
+      bhat = B/hypot(B);
+      ab = sum(ahat*bhat);
+      theta = atan2 (hypot(bhat - ab*ahat), ab);
+#v-
 \seealso{atan2, cos, atan, acosh, cosh, sum, sumsq}
 \done
 

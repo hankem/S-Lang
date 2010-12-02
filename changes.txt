@@ -277,6 +277,7 @@ Changes since 2.2.2
 114. modules/Makefile.in: Change #110 introduced a bug
      that caused the modules to always be need rebuilding.
 115. src/sltoken.c: Change #if HAVE_LONG_LONG to #ifdef HAVE_LONG_LONG.
+116. src/slmath.c: Tweaked the Kahan sum for the hypot function.
 
 {{{ Previous Versions
 

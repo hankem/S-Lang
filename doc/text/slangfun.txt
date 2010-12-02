@@ -3741,6 +3741,37 @@ hypot
   computes `sqrt(sumsq(x))', where `sumsq(x)' computes
   the sum of the squares of the elements of `x'.
 
+ EXAMPLE
+  A vector in Euclidean 3 dimensional space may be represented by an
+  array of three values representing the components of the vector in
+  some orthogonal cartesian coordinate system.  Then the length of the
+  vector may be computed using the `hypot' function, e.g.,
+
+      A = [2,3,4];
+      len_A = hypot (A);
+
+  The dot-product or scalar-product between two such vectors `A'
+  and `B' may be computed using the `sum(A*B)'.  It is well
+  known that this is also equal to the product of the lengths of the
+  two vectors and the cosine of the angle between them.  Hence, the
+  angle between the vectors `A' and `B' may be computed using
+
+      ahat = A/hypot(A);
+      bhat = B/hypot(B);
+      theta = acos(\sum(ahat*bhat));
+
+  Here, `ahat' and `bhat' are the unit vectors associated
+  with the vectors `A' and `B', respectively.
+  Unfortunately, the above method for computing the angle between the
+  vectors is numerically unstable when `A' and `B' are
+  nearly parallel.  An alternative method is to use:
+
+      ahat = A/hypot(A);
+      bhat = B/hypot(B);
+      ab = sum(ahat*bhat);
+      theta = atan2 (hypot(bhat - ab*ahat), ab);
+
+
  SEE ALSO
   atan2, cos, atan, acosh, cosh, sum, sumsq
 
