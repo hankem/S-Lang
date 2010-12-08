@@ -148,7 +148,7 @@ Qualifiers:\n\
 	_for i (0, length(columns)-1, 1)
 	  {
 	     col = columns[i];
-	     j = wherefirst (col == columns);
+	     j = wherefirst (col == header);
 	     if (j == NULL)
 	       throw InvalidParmError, "Unknown (canonical) column name $col";
 	     column_ints[i] = j+1;

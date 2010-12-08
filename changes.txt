@@ -282,6 +282,8 @@ Changes since 2.2.2
      them in the rline editor routines to reset the terminal before
      calling an external editor.  This avoids problems when the editor
      is subsequently suspended.
+118. modules/csv.sl: Typo causing a bug involving the mapping of string valued
+     column-specifiers to column numbers by csv.readcol. (Paul Boekholt)
 
 {{{ Previous Versions
 
