@@ -114,6 +114,13 @@ unsigned int sleep (unsigned int seconds)
 }
 #endif
 
+/* Older POSIX standards had a different interfaces for these.  Avoid them. */
+#if !defined(_POSIX_C_SOURCE) || (_POSIX_C_SOURCE < 199506L)
+# undef HAVE_CTIME_R
+# undef HAVE_GMTIME_R
+# undef HAVE_LOCALTIME_R
+#endif
+
 static char *ctime_cmd (void)
 {
    char *t;

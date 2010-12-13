@@ -873,6 +873,13 @@ static int posix_isatty (void)
 }
 
 #ifdef HAVE_TTYNAME_R
+/* Older POSIX standards had a different interface for this.  Avoid it. */
+# if !defined(_POSIX_C_SOURCE) || (_POSIX_C_SOURCE < 199506L)
+#  undef HAVE_TTYNAME_R
+# endif
+#endif
+
+#ifdef HAVE_TTYNAME_R
 # define TTYNAME_R ttyname_r
 #else
 # ifdef HAVE_TTYNAME

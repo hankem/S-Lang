@@ -286,6 +286,8 @@ Changes since 2.2.2
      column-specifiers to column numbers by csv.readcol. (Paul Boekholt)
 119. doc/tm/rtl/strops.tm: Typo in sprintf documentation (Andras
      Irrgang).
+120. src/sltime.c,slposio.c: Avoid certain posix *_r functions if
+     _POSIX_C_SOURCE is too old.
 
 {{{ Previous Versions
 
