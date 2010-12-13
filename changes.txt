@@ -284,6 +284,8 @@ Changes since 2.2.2
      is subsequently suspended.
 118. modules/csv.sl: Typo causing a bug involving the mapping of string valued
      column-specifiers to column numbers by csv.readcol. (Paul Boekholt)
+119. doc/tm/rtl/strops.tm: Typo in sprintf documentation (Andras
+     Irrgang).
 
 {{{ Previous Versions
 

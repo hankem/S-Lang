@@ -8041,7 +8041,7 @@ sprintf
      s    as a string
      f    as a floating point number
      e    as a float using exponential form, e.g., 2.345e08
-     g    format as e or g, depending upon its value
+     g    format as e or f, depending upon its value
      c    as a character
      b    as a byte
      %    a literal percent character
