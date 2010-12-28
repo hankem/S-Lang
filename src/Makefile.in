@@ -197,7 +197,7 @@ install-elf-and-links:
 	@echo installing $(ELFLIB_BUILD_NAME) in $(DEST_LIBDIR)
 	$(INSTALL_DATA) $(ELFDIR_ELF_LIB) $(DEST_LIBDIR)/
 	-cd $(DEST_LIBDIR) && $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB_MAJOR)
-	-cd $(DEST_LIBDIR) && $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB)
+	-cd $(DEST_LIBDIR) && $(LN) $(ELFLIB_MAJOR) $(ELFLIB)
 	@echo ""
 	@echo $(ELFLIB_BUILD_NAME) created in $(DEST_LIBDIR).
 	@echo The links $(ELFLIB) and $(ELFLIB_MAJOR) to $(ELFLIB_BUILD_NAME) were also created.
