@@ -1,4 +1,8 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.2.3
+1. src/slpack.c: Typo affecting 64 bit integers ('q' & 'Q') (Paul
+   Boekholt).
+
 Changes since 2.2.2
 1. src/sltermin.c: Added support for native terminfo binary layouts.
    Some systems have binary terminfo files that are incompatible with

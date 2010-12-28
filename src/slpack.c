@@ -297,12 +297,12 @@ static int parse_a_format (char **format, Format_Type *ft)
 	/* 64 bit ints */
       case 'q':
 	ft->sizeof_type = 8;
-	if (-1 == get_int_type_for_size (4, &ft->data_type, NULL))
+	if (-1 == get_int_type_for_size (8, &ft->data_type, NULL))
 	  return -1;
 	break;
       case 'Q':
 	ft->sizeof_type = 8;
-	if (-1 == get_int_type_for_size (4, NULL, &ft->data_type))
+	if (-1 == get_int_type_for_size (8, NULL, &ft->data_type))
 	  return -1;
 	break;
 
