@@ -13,6 +13,7 @@ CC_SHARED 	= @CC_SHARED@
 CONFIG_DIR	= @CONFIG_DIR@
 SRCDIR		= $(CONFIG_DIR)/modules
 OBJDIR		= $(ARCH)objs
+ELFDIR          = @ELFDIR@
 #---------------------------------------------------------------------------
 # Installation location of the slang library
 #---------------------------------------------------------------------------
