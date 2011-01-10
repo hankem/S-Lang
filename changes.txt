@@ -5,6 +5,9 @@ Changes since 2.2.3
 2. src/Makefile.in: Make libslang.so a symlink to libslang.so.2
    instead of libslang.so.2.2.4 (Miroslav Lichvar)
 3. modules/Makefile.in: Cygwin needs ELFDIR defined (Marco Atzeri).
+4. src/slutty.c: Added additional baud rate values (Sergey Vlasov)
+
+{{{ Previous Versions
 
 Changes since 2.2.2
 1. src/sltermin.c: Added support for native terminfo binary layouts.
@@ -295,8 +298,6 @@ Changes since 2.2.2
      Irrgang).
 120. src/sltime.c,slposio.c: Avoid certain posix *_r functions if
      _POSIX_C_SOURCE is too old.
-
-{{{ Previous Versions
 
 Changes since 2.2.1
 1. src/slsmg.c: Call SLutf8_enable if UTF8 mode has not been setup.
