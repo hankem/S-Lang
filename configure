@@ -5237,6 +5237,94 @@ fi
 done
 
 
+if test x"$ac_cv_func_socketpair" != x"yes"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for socketpair in -lsocket" >&5
+$as_echo_n "checking for socketpair in -lsocket... " >&6; }
+if test "${ac_cv_lib_socket_socketpair+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsocket  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char socketpair ();
+int
+main ()
+{
+return socketpair ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_socket_socketpair=yes
+else
+  ac_cv_lib_socket_socketpair=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socketpair" >&5
+$as_echo "$ac_cv_lib_socket_socketpair" >&6; }
+if test "x$ac_cv_lib_socket_socketpair" = x""yes; then :
+  $as_echo "#define HAVE_SOCKETPAIR 1" >>confdefs.h
+
+fi
+
+fi
+if test x"$ac_cv_func_socket" != x"yes"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
+$as_echo_n "checking for socket in -lsocket... " >&6; }
+if test "${ac_cv_lib_socket_socket+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsocket  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char socket ();
+int
+main ()
+{
+return socket ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_socket_socket=yes
+else
+  ac_cv_lib_socket_socket=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socket" >&5
+$as_echo "$ac_cv_lib_socket_socket" >&6; }
+if test "x$ac_cv_lib_socket_socket" = x""yes; then :
+  $as_echo "#define HAVE_SOCKET 1" >>confdefs.h
+
+fi
+
+fi
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nl_langinfo and CODESET" >&5
 $as_echo_n "checking for nl_langinfo and CODESET... " >&6; }
 if test "${jd_cv_nl_langinfo_codeset+set}" = set; then :

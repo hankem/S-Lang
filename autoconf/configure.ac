@@ -157,6 +157,14 @@ utime utimes \
 ttyname ttyname_r \
 )
 
+if test x"$ac_cv_func_socketpair" != x"yes"; then
+  AC_CHECK_LIB(socket, socketpair, AC_DEFINE(HAVE_SOCKETPAIR,1))
+fi
+if test x"$ac_cv_func_socket" != x"yes"; then
+  AC_CHECK_LIB(socket, socket, AC_DEFINE(HAVE_SOCKET,1))
+fi
+
+
 dnl# Systems that have nl_langinfo may not have CODESET.  Test for both here
 AC_CACHE_CHECK([for nl_langinfo and CODESET], jd_cv_nl_langinfo_codeset,
  [AC_TRY_LINK([#include <langinfo.h>], [char* cs = nl_langinfo(CODESET);],

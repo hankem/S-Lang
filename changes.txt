@@ -6,6 +6,8 @@ Changes since 2.2.3
    instead of libslang.so.2.2.4 (Miroslav Lichvar)
 3. modules/Makefile.in: Cygwin needs ELFDIR defined (Marco Atzeri).
 4. src/slutty.c: Added additional baud rate values (Sergey Vlasov)
+5. autoconf/configure.ac: Check for socket and socketpair in -lsocket
+   if it is not in libc.
 
 {{{ Previous Versions
 
