@@ -24,7 +24,7 @@
 
   I first began working on \slang sometime during the fall of 1992.
   At that time I was writing a text editor (\jed), which I wanted to
-  endow with a macro language.  It occured to me that an
+  endow with a macro language.  It occurred to me that an
   application-independent language that could be embedded into the
   editor would prove more useful because I could envision embedding it
   into other programs.  As a result, \slang was born.

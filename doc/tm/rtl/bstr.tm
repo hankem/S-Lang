@@ -33,16 +33,16 @@
 \seealso{strlen, length}
 \done
 
-\function{count_byte_occurances}
+\function{count_byte_occurrences}
 \synopsis{Count the number of occurrences of a byte in a binary string}
-\usage{UInt_Type count_byte_occurances (bstring, byte)}
+\usage{UInt_Type count_byte_occurrences (bstring, byte)}
 \description
   This function returns the number of times the specified byte
   occurs in the binary string \exmp{bstr}.
 \notes
   This function uses byte-semantics.  If character semantics are
-  desired, use the \ifun{count_char_occurances} function.
-\seealso{count_char_occurances}
+  desired, use the \ifun{count_char_occurrences} function.
+\seealso{count_char_occurrences}
 \done
 
 \function{pack}

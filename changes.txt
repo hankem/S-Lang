@@ -8,6 +8,8 @@ Changes since 2.2.3
 4. src/slutty.c: Added additional baud rate values (Sergey Vlasov)
 5. autoconf/configure.ac: Check for socket and socketpair in -lsocket
    if it is not in libc.
+6. *.tm, src/slstrops.c, src/slbstr.c: Changed occurances to
+   occurrences (Marcel Telka).
 
 {{{ Previous Versions
 

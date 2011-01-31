@@ -2255,7 +2255,7 @@
  the either the \var{SLsmg} routines or the \var{getkey} routines are
  initialized.  The \cfun{SLang_init_tty}, \cfun{SLang_reset_tty},
  \cfun{SLsmg_init_smg}, and \cfun{SLsmg_reset_smg} functions block these
- signals from occuring while they are being called.
+ signals from occurring while they are being called.
 
  Since a signal can be delivered at any time, it is important for the
  signal handler to call only functions that can be called from a

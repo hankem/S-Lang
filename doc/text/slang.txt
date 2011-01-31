@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2)
   John E. Davis, jed@jedsoft.org
-  Nov 30, 2010
+  Jan 31, 2011
   ____________________________________________________________
 
 
@@ -30,7 +30,7 @@
 
   I first began working on S-Lang sometime during the fall of 1992.  At
   that time I was writing a text editor (jed), which I wanted to endow
-  with a macro language. It occured to me that an application-
+  with a macro language. It occurred to me that an application-
   independent language that could be embedded into the editor would
   prove more useful because I could envision embedding it into other
   programs. As a result, S-Lang was born.
@@ -1025,7 +1025,7 @@
   4.1.4.1.2.  The $ suffix
 
   If the string contains the $ suffix, then variable name expansion will
-  be performed upon names prefixed by a $ character occuring within the
+  be performed upon names prefixed by a $ character occurring within the
   string, e.g.,
 
             "The value of X is $X and the value of Y is $Y"$.
@@ -5757,9 +5757,9 @@
   expressions:
 
           .                 match any character except newline
-          *                 matches zero or more occurences of previous RE
-          +                 matches one or more occurences of previous RE
-          ?                 matches zero or one occurence of previous RE
+          *                 matches zero or more occurrences of previous RE
+          +                 matches one or more occurrences of previous RE
+          ?                 matches zero or one occurrence of previous RE
           ^                 matches beginning of a line
           $                 matches end of line
           [ ... ]           matches any single character between brackets.

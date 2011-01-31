@@ -60,7 +60,7 @@ static int demolib_init_terminal (int tty, int smg)
 {
    SLang_Exit_Error_Hook = exit_error_hook;
 
-   /* It is wise to block the occurance of display  related signals while we are
+   /* It is wise to block the occurrence of display  related signals while we are
     * initializing.
     */
    SLsig_block_signals ();

@@ -1085,13 +1085,13 @@ bstrlen
 
 --------------------------------------------------------------
 
-count_byte_occurances
+count_byte_occurrences
 
  SYNOPSIS
   Count the number of occurrences of a byte in a binary string
 
  USAGE
-  UInt_Type count_byte_occurances (bstring, byte)
+  UInt_Type count_byte_occurrences (bstring, byte)
 
  DESCRIPTION
   This function returns the number of times the specified byte
@@ -1099,10 +1099,10 @@ count_byte_occurances
 
  NOTES
   This function uses byte-semantics.  If character semantics are
-  desired, use the `count_char_occurances' function.
+  desired, use the `count_char_occurrences' function.
 
  SEE ALSO
-  count_char_occurances
+  count_char_occurrences
 
 --------------------------------------------------------------
 
@@ -7685,13 +7685,13 @@ printf
 
 --------------------------------------------------------------
 
-count_char_occurances
+count_char_occurrences
 
  SYNOPSIS
   Count the number of occurrences of a character in a string
 
  USAGE
-  UInt_Type count_char_occurances (str, ch)
+  UInt_Type count_char_occurrences (str, ch)
 
  DESCRIPTION
   This function returns the number of times the specified character
@@ -7701,10 +7701,10 @@ count_char_occurances
   If UTF-8 mode is in effect, then the character may correspond to
   more than one byte.  In such a case, the function returns the number
   of such byte-sequences in the string.  To count actual bytes, use
-  the `count_byte_occurances' function.
+  the `count_byte_occurrences' function.
 
  SEE ALSO
-  count_byte_occurances
+  count_byte_occurrences
 
 --------------------------------------------------------------
 
@@ -8728,7 +8728,7 @@ strreplace
   the resulting string and an integer indicating how many replacements
   were made.
 
-  The second calling form may be used to replace all occurances of
+  The second calling form may be used to replace all occurrences of
   `b' in `a' with `c'.  In this case, only the
   resulting string will be returned.
 

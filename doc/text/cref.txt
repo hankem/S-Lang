@@ -1,6 +1,6 @@
   The S-Lang C Library Reference
   John E. Davis, jed@jedsoft.org
-  Nov 30, 2010
+  Jan 31, 2011
   ____________________________________________________________
 
 
@@ -93,9 +93,9 @@
 
       Description
         This functions attempts to skip backward past num UTF-8 encoded
-        characters occuring immediately before u. It returns the the
+        characters occurring immediately before u. It returns the the
         actual number skipped via the parameter dnum. No attempt will be
-        made to examine the bytes occuring before umin.  Unicode
+        made to examine the bytes occurring before umin.  Unicode
         combining characters will not be counted if ignore_combining is
         non-zero, otherwise they will be treated as distinct characters.
         If the input contains an invalid or illegal UTF-8 sequence, then
@@ -118,7 +118,7 @@
 
       Description
         The SLutf8_decode function decodes the UTF-8 encoded character
-        occuring at u and returns the decoded character via the
+        occurring at u and returns the decoded character via the
         parameter w. No attempt will be made to examine the bytes at
         umax and beyond. If the parameter nconsumedp is non-NULL, then
         the number of bytes consumed by the function will be returned to

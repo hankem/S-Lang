@@ -59,9 +59,9 @@
 #v-
 \description
  This functions attempts to skip backward past \exmp{num} UTF-8
- encoded characters occuring immediately before \exmp{u}.  It returns
+ encoded characters occurring immediately before \exmp{u}.  It returns
  the the actual number skipped via the parameter \exmp{dnum}.  No
- attempt will be made to examine the bytes occuring before \exmp{umin}.
+ attempt will be made to examine the bytes occurring before \exmp{umin}.
  Unicode combining characters will not be counted if \exmp{ignore_combining}
  is non-zero, otherwise they will be treated as distinct characters.
  If the input contains an invalid or illegal UTF-8 sequence, then each
@@ -79,7 +79,7 @@
 #v-
 \description
  The \cfun{SLutf8_decode} function decodes the UTF-8 encoded character
- occuring at \exmp{u} and returns the decoded character via the
+ occurring at \exmp{u} and returns the decoded character via the
  parameter \exmp{w}.  No attempt will be made to examine the bytes at
  \exmp{umax} and beyond.  If the parameter \exmp{nconsumedp} is
  non-NULL, then the number of bytes consumed by the function will

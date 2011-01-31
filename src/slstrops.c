@@ -2666,7 +2666,7 @@ static void strjoin_cmd (void)
    (void) SLang_push_malloced_string (str);   /* NULL Ok */
 }
 
-static unsigned int count_char_occurances (char *str, SLwchar_Type *wchp)
+static unsigned int count_char_occurrences (char *str, SLwchar_Type *wchp)
 {
    SLwchar_Type wch = *wchp;
    SLuchar_Type wch_utf8[SLUTF8_MAX_MBLEN+1];
@@ -2951,7 +2951,8 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_S("strtrans", strtrans_vintrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("str_delete_chars", str_delete_chars_vintrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("glob_to_regexp", glob_to_regexp, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_2("count_char_occurances", count_char_occurances, SLANG_UINT_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE),
+   MAKE_INTRINSIC_2("count_char_occurrences", count_char_occurrences, SLANG_UINT_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE),
+   MAKE_INTRINSIC_2("count_char_occurances", count_char_occurrences, SLANG_UINT_TYPE, SLANG_STRING_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_0("strskipbytes", skip_bytes_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("islower", islower_intrin, SLANG_CHAR_TYPE),
    MAKE_INTRINSIC_0("isupper", isupper_intrin, SLANG_CHAR_TYPE),

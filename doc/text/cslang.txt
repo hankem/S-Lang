@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide, V2.0.4
   John E. Davis, jed@jedsoft.org
-  Nov 30, 2010
+  Jan 31, 2011
   ____________________________________________________________
 
 
@@ -30,7 +30,7 @@
 
   I first began working on S-Lang sometime during the fall of 1992.  At
   that time I was writing a text editor (jed), which I wanted to endow
-  with a macro language. It occured to me that an application-
+  with a macro language. It occurred to me that an application-
   independent language that could be embedded into the editor would
   prove more useful because I could envision embedding it into other
   programs. As a result, S-Lang was born.
@@ -2158,8 +2158,8 @@
   It is important that handlers be established for these signals while
   the either the SLsmg routines or the getkey routines are initialized.
   The SLang_init_tty, SLang_reset_tty, SLsmg_init_smg, and
-  SLsmg_reset_smg functions block these signals from occuring while they
-  are being called.
+  SLsmg_reset_smg functions block these signals from occurring while
+  they are being called.
 
   Since a signal can be delivered at any time, it is important for the
   signal handler to call only functions that can be called from a signal

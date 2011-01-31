@@ -622,7 +622,7 @@ static unsigned int bstrlen_cmd (SLang_BString_Type *b)
    return b->len;
 }
 
-static unsigned int count_byte_occurances (SLang_BString_Type *b, unsigned char *chp)
+static unsigned int count_byte_occurrences (SLang_BString_Type *b, unsigned char *chp)
 {
    unsigned char ch = *chp;
    unsigned char *bytes, *bytes_max;
@@ -686,7 +686,8 @@ static int issubbytes (SLang_BString_Type *as, SLang_BString_Type *bs)
 static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
 {
    MAKE_INTRINSIC_1("bstrlen",  bstrlen_cmd, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE),
-   MAKE_INTRINSIC_2("count_byte_occurances", count_byte_occurances, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE, SLANG_UCHAR_TYPE),
+   MAKE_INTRINSIC_2("count_byte_occurances", count_byte_occurrences, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE, SLANG_UCHAR_TYPE),
+   MAKE_INTRINSIC_2("count_byte_occurrences", count_byte_occurrences, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE, SLANG_UCHAR_TYPE),
    MAKE_INTRINSIC_0("pack", _pSLpack, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_2("unpack", _pSLunpack, SLANG_VOID_TYPE, SLANG_STRING_TYPE, SLANG_BSTRING_TYPE),
    MAKE_INTRINSIC_1("pad_pack_format", _pSLpack_pad_format, SLANG_VOID_TYPE, SLANG_STRING_TYPE),

@@ -23,9 +23,9 @@
   will be returned.  An array value for the optional whitespace\n\
   argument is not supported.
 
-\function{count_char_occurances}
+\function{count_char_occurrences}
 \synopsis{Count the number of occurrences of a character in a string}
-\usage{UInt_Type count_char_occurances (str, ch)}
+\usage{UInt_Type count_char_occurrences (str, ch)}
 \description
   This function returns the number of times the specified character
   \exmp{ch} occurs in the string \exmp{str}.
@@ -33,8 +33,8 @@
   If UTF-8 mode is in effect, then the character may correspond to
   more than one byte.  In such a case, the function returns the number
   of such byte-sequences in the string.  To count actual bytes, use
-  the \ifun{count_byte_occurances} function.
-\seealso{count_byte_occurances}
+  the \ifun{count_byte_occurrences} function.
+\seealso{count_byte_occurrences}
 \done
 
 \function{create_delimited_string}
@@ -778,7 +778,7 @@
   the resulting string and an integer indicating how many replacements
   were made.
 
-  The second calling form may be used to replace all occurances of
+  The second calling form may be used to replace all occurrences of
   \exmp{b} in \exmp{a} with \exmp{c}.  In this case, only the
   resulting string will be returned.
 

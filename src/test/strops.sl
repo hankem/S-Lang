@@ -532,28 +532,28 @@ define test_count_occur (func, s, ch, ans)
      }
 }
 
-test_count_occur (&count_char_occurances, "", 'A', 0);
-test_count_occur (&count_char_occurances, "A", 'A', 1);
-test_count_occur (&count_char_occurances, " A", 'A', 1);
-test_count_occur (&count_char_occurances, "A ", 'A', 1);
-test_count_occur (&count_char_occurances, "A A", 'A', 2);
-test_count_occur (&count_char_occurances, "A  A ", 'A', 2);
+test_count_occur (&count_char_occurrences, "", 'A', 0);
+test_count_occur (&count_char_occurrences, "A", 'A', 1);
+test_count_occur (&count_char_occurrences, " A", 'A', 1);
+test_count_occur (&count_char_occurrences, "A ", 'A', 1);
+test_count_occur (&count_char_occurrences, "A A", 'A', 2);
+test_count_occur (&count_char_occurrences, "A  A ", 'A', 2);
 
-test_count_occur (&count_byte_occurances, "", 'A', 0);
-test_count_occur (&count_byte_occurances, "A", 'A', 1);
-test_count_occur (&count_byte_occurances, " A\0", 'A', 1);
-test_count_occur (&count_byte_occurances, "A ", 'A', 1);
-test_count_occur (&count_byte_occurances, "A \0A", 'A', 2);
-test_count_occur (&count_byte_occurances, "A \0 A ", 'A', 2);
+test_count_occur (&count_byte_occurrences, "", 'A', 0);
+test_count_occur (&count_byte_occurrences, "A", 'A', 1);
+test_count_occur (&count_byte_occurrences, " A\0", 'A', 1);
+test_count_occur (&count_byte_occurrences, "A ", 'A', 1);
+test_count_occur (&count_byte_occurrences, "A \0A", 'A', 2);
+test_count_occur (&count_byte_occurrences, "A \0 A ", 'A', 2);
 
 if (_slang_utf8_ok)
 {
-   test_count_occur (&count_char_occurances, "", 0xFF, 0);
-   test_count_occur (&count_char_occurances, "\u{00FF}", 0xFF, 1);
-   test_count_occur (&count_char_occurances, " \u{00FF}", 0xFF, 1);
-   test_count_occur (&count_char_occurances, "\u{00FF} ", 0xFF, 1);
-   test_count_occur (&count_char_occurances, "\u{00FF} \u{00FF}", 0xFF, 2);
-   test_count_occur (&count_char_occurances, "\u{00FF}  \u{00FF} ", 0xFF, 2);
+   test_count_occur (&count_char_occurrences, "", 0xFF, 0);
+   test_count_occur (&count_char_occurrences, "\u{00FF}", 0xFF, 1);
+   test_count_occur (&count_char_occurrences, " \u{00FF}", 0xFF, 1);
+   test_count_occur (&count_char_occurrences, "\u{00FF} ", 0xFF, 1);
+   test_count_occur (&count_char_occurrences, "\u{00FF} \u{00FF}", 0xFF, 2);
+   test_count_occur (&count_char_occurrences, "\u{00FF}  \u{00FF} ", 0xFF, 2);
 }
 
 private define test_strskipbytes (args, ans)

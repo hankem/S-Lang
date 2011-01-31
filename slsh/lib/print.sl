@@ -320,7 +320,7 @@ define print ()
 	  }
 	  {
 	   case String_Type:
-	     use_pager = count_byte_occurances (x, '\n') > Pager_Rows;
+	     use_pager = count_byte_occurrences (x, '\n') > Pager_Rows;
 	  }
 	  {
 	     if (is_struct_type (x))
@@ -328,7 +328,7 @@ define print ()
 	     else
 	       str_x = generic_to_string (x);
 
-	     use_pager = (count_byte_occurances (str_x, '\n') > Pager_Rows);
+	     use_pager = (count_byte_occurrences (str_x, '\n') > Pager_Rows);
 	  }
      }
 

@@ -1051,7 +1051,7 @@
 \sect3{The $ suffix}
    If the string contains the \exmp{$} suffix, then variable name
    expansion will be performed upon names prefixed by a \exmp{$}
-   character occuring within the string, e.g.,
+   character occurring within the string, e.g.,
 #v+
      "The value of X is $X and the value of Y is $Y"$.
 #v-

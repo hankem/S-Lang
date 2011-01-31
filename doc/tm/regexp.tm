@@ -22,9 +22,9 @@
  expressions:
 #v+
    .                 match any character except newline
-   *                 matches zero or more occurences of previous RE
-   +                 matches one or more occurences of previous RE
-   ?                 matches zero or one occurence of previous RE
+   *                 matches zero or more occurrences of previous RE
+   +                 matches one or more occurrences of previous RE
+   ?                 matches zero or one occurrence of previous RE
    ^                 matches beginning of a line
    $                 matches end of line
    [ ... ]           matches any single character between brackets.
