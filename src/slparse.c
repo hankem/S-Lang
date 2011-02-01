@@ -1906,7 +1906,7 @@ static _pSLang_Token_Type *
 	  {
 	     /* name = ... */
 #if SLANG_HAS_BOSEOS
-	     int eos = append_bos (ctok, 1);
+	     int eos = append_bos (ctok, 2);
 #endif
 	     if (is_deref == 0)
 	       get_token (ctok);

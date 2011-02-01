@@ -10,6 +10,8 @@ Changes since 2.2.3
    if it is not in libc.
 6. *.tm, src/slstrops.c, src/slbstr.c: Changed occurances to
    occurrences (Marcel Telka).
+7. src/slparse.c: Increment the _boseos_info value for qualifier
+   expressions.
 
 {{{ Previous Versions
 
