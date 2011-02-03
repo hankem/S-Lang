@@ -632,7 +632,7 @@ static int compile_bos (_pSLang_Token_Type *t, int level)
 {
    _pSLang_Token_Type tok;
 
-   if (level > _pSLang_Compile_BOSEOS)
+   if (level > (_pSLang_Compile_BOSEOS & SLANG_BOSEOS_VALUE_BITS))
      return 0;
 
    tok.type = BOS_TOKEN;
@@ -654,7 +654,7 @@ static int append_bos (_pSLang_Token_Type *t, int level)
 {
    _pSLang_Token_Type tok;
 
-   if (level > _pSLang_Compile_BOSEOS)
+   if (level > (_pSLang_Compile_BOSEOS & SLANG_BOSEOS_VALUE_BITS))
      return 0;
 
    init_token (&tok);

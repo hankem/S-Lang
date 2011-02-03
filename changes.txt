@@ -12,6 +12,9 @@ Changes since 2.2.3
    occurrences (Marcel Telka).
 7. src/slparse.c: Increment the _boseos_info value for qualifier
    expressions.
+8. src/sltoken.c,slparse.c: The semantics of the _boseos_info variable
+   changed such that bos/eos callbacks are not generated for
+   preprocessor #ifeval statements unless bit 0x100 is set.
 
 {{{ Previous Versions
 

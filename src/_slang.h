@@ -753,6 +753,8 @@ extern int _pSLang_trace_fun(SLFUTURE_CONST char *);
 /* extern int _pSLang_Compile_Line_Num_Info; */
 #if SLANG_HAS_BOSEOS
 extern int _pSLang_Compile_BOSEOS;
+#define SLANG_BOSEOS_VALUE_BITS		0x0FF
+#define SLANG_BOSEOS_PREPROC		0x100
 extern int _pSLang_Compile_BOFEOF;
 extern int _pSLang_init_boseos (void);
 extern int _pSLcall_bos_handler (SLFUTURE_CONST char *, int);

@@ -1462,6 +1462,9 @@ static int prep_eval_expr (SLprep_Type *pt, SLFUTURE_CONST char *expr)
    SLCONST char *end;
    void (*compile)(_pSLang_Token_Type *);
    char *expr1;
+#if SLANG_HAS_BOSEOS
+   int boseos;
+#endif
 
    (void) pt;
    end = strchr (expr, '\n');
@@ -1473,16 +1476,19 @@ static int prep_eval_expr (SLprep_Type *pt, SLFUTURE_CONST char *expr)
 
    compile = _pSLcompile_ptr;
    _pSLcompile_ptr = _pSLcompile;
-   if (
-#if 0
-       (0 != SLang_load_string (expr1))
-#else
-       (0 != SLns_load_string (expr1, _pSLang_cur_namespace_intrinsic ()))
+#if SLANG_HAS_BOSEOS
+   boseos = _pSLang_Compile_BOSEOS;
+   if (0 == (boseos & SLANG_BOSEOS_PREPROC))
+     _pSLang_Compile_BOSEOS = 0;
 #endif
+   if ((0 != SLns_load_string (expr1, _pSLang_cur_namespace_intrinsic ()))
        || (-1 == SLang_pop_integer (&ret)))
      ret = -1;
    else
      ret = (ret != 0);
+#if SLANG_HAS_BOSEOS
+   _pSLang_Compile_BOSEOS = boseos;
+#endif
    _pSLcompile_ptr = compile;
 
    SLfree (expr1);

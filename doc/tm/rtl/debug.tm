@@ -24,7 +24,7 @@
  the compilation unit, but is inherited by other units loaded by the
  current unit.
 
- The value of \ivar{_boseos_info} controls the generation of code for
+ The lower 8 bits of \ivar{_boseos_info} controls the generation of code for
  callbacks as follows:
 #v+
    Value      Description
@@ -40,6 +40,9 @@
  A non-branching statement is one that does not effect chain of
  execution.  Branching statements include all looping statements,
  conditional statement, \exmp{break}, \exmp{continue}, and \exmp{return}.
+
+ If bit 0x100 is set, callbacks will be generated for preprocessor
+ statements.
 \example
  Consider the following:
 #v+
