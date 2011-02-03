@@ -13,6 +13,7 @@
 #d usage#1 <tag> Usage </tag> <tt>$1</tt>
 #d description <tag> Description </tag>
 #d qualifiers <tag> Qualifiers </tag>
+#d methods <tag> Methods </tag>
 #d example <tag> Example </tag>
 #d notes <tag> Notes </tag>
 #d seealso#1 <tag> See Also </tag> <tt>$1</tt>
@@ -103,5 +104,12 @@ subprocesses and pipelines.
 These functions are used by \bf{slprof} for profiling \slsh
 applications.
 #i ../../lib/tm/profile.tm
+
+\chapter{Set Functions}
+These functions manipulate arrays and lists as sets.
+#i ../../lib/tm/setfuns.tm
+
+\chapter{Miscellaneous Functions}
+#i ../../lib/tm/print.tm
 
 \end{\documentstyle}

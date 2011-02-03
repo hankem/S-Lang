@@ -1614,7 +1614,7 @@ _boseos_info
  the compilation unit, but is inherited by other units loaded by the
  current unit.
 
- The value of `_boseos_info' controls the generation of code for
+ The lower 8 bits of `_boseos_info' controls the generation of code for
  callbacks as follows:
 
    Value      Description
@@ -1630,6 +1630,9 @@ _boseos_info
  A non-branching statement is one that does not effect chain of
  execution.  Branching statements include all looping statements,
  conditional statement, `break', `continue', and `return'.
+
+ If bit 0x100 is set, callbacks will be generated for preprocessor
+ statements.
 
  EXAMPLE
  Consider the following:
@@ -1728,8 +1731,6 @@ _set_bof_handler
     }
     _set_bos_handler (&bof_handler);
 
-
- NOTES
 
  SEE ALSO
   _set_eof_handler, _boseos_info, _set_bos_handler
@@ -2787,7 +2788,7 @@ _apropos
   `flags'.  It returns an array of strings containing the names
   matched.
 
-  The second parameter `flags' is a bit mapped value whose bits
+  The third parameter `flags' is a bit mapped value whose bits
   are defined according to the following table
 
      1          Intrinsic Function
@@ -5667,8 +5668,6 @@ getpriority
  an error occurs, the function will return NULL with `errno' set
  accordingly.
 
- NOTES
-
  SEE ALSO
   setpriority, getpid, getppid
 
@@ -6290,10 +6289,10 @@ rline_getkey
 
  USAGE
   Int_Type rline_getkey ()
-  This function returns the next byte in the readline input stream.
-  If no byte is available, the function will wait until one is.
 
  DESCRIPTION
+  This function returns the next byte in the readline input stream.
+  If no byte is available, the function will wait until one is.
 
  NOTES
  This function is part of the S-Lang readline interface.
@@ -6493,8 +6492,6 @@ rline_set_list_completions_callback
      }
      rline_set_list_completions_callback (&display_completions);
 
-
- NOTES
 
  SEE ALSO
   rline_set_completion_callback
@@ -6861,8 +6858,6 @@ __pop_list
         }
   }
 
-
- NOTES
 
  SEE ALSO
   __push_list
@@ -8706,14 +8701,9 @@ strreplace
   Replace one or more substrings
 
  USAGE
-
-
-   (new,n) = strreplace(a, b, c, max_n);  % Form 1
-   new = strreplace(a, b, c);             % Form 2
-
-   String_Type a, b, c;
-   Int_Type n, max_n;
-
+  (new,n) = strreplace(a, b, c, max_n)
+  % or
+  new = strreplace(a, b, c)
 
  DESCRIPTION
   The `strreplace' function may be used to replace one or more

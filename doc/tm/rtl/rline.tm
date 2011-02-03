@@ -98,9 +98,9 @@
 \function{rline_getkey}
 \synopsis{Obtain the next byte in the readline input stream}
 \usage{Int_Type rline_getkey ()}
+\description
   This function returns the next byte in the readline input stream.
   If no byte is available, the function will wait until one is.
-\description
 \notes
  \notes_comment
 \seealso{rline_input_pending, rline_setkey}
@@ -227,7 +227,6 @@
      }
      rline_set_list_completions_callback (&display_completions);
 #v-
-\notes
 \seealso{rline_set_completion_callback}
 \done
 

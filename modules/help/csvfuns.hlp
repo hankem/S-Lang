@@ -20,8 +20,8 @@ csv_decoder_new
   ; blankrows: default for how blank rows should be handled (default: "skip")
 
  METHODS
-  readrow: Read and parse a row from the CSV object
-  readcol: Read one or more columns from the CVS object
+  .readrow : Read and parse a row from the CSV object
+  .readcol : Read one or more columns from the CVS object
 
  EXAMPLE
   See the documentation for the `cvs.readcol' and
@@ -284,7 +284,7 @@ csv_encoder_new
   ; quotesome: Quote only those fields where quoting is necessary
 
  METHODS
-  writecol: write one or more columns to a file.  For more information
+  .writecol : write one or more columns to a file.  For more information
   about this method, see the documentation for `csv.writecol'.
 
  EXAMPLE

@@ -19,7 +19,7 @@
   \exmp{flags}.  It returns an array of strings containing the names
   matched.
 
-  The second parameter \exmp{flags} is a bit mapped value whose bits
+  The third parameter \exmp{flags} is a bit mapped value whose bits
   are defined according to the following table
 #v+
      1          Intrinsic Function

@@ -17,6 +17,7 @@ Changes since 2.2.3
    preprocessor #ifeval statements unless bit 0x100 is set.
 9. slsh/scripts/slstkchk: a new script used for running the
    stack-check debugger.
+10. documentation updates/tweaks (Manfred Hanke).
 
 {{{ Previous Versions
 
@@ -305,7 +306,7 @@ Changes since 2.2.2
      is subsequently suspended.
 118. modules/csv.sl: Typo causing a bug involving the mapping of string valued
      column-specifiers to column numbers by csv.readcol. (Paul Boekholt)
-119. doc/tm/rtl/strops.tm: Typo in sprintf documentation (Andras
+119. doc/tm/rtl/strops.tm: Typo in sprintf documentation (Andreas
      Irrgang).
 120. src/sltime.c,slposio.c: Avoid certain posix *_r functions if
      _POSIX_C_SOURCE is too old.

@@ -124,7 +124,7 @@ be <CODE>String_Type</CODE> arrays, <CODE>score</CODE> will be a
 The <CODE>name</CODE> and <CODE>date</CODE> fields may be ignored using
 <BLOCKQUOTE><CODE>
 <PRE>
-     n = readascii ("score.dat", &amp;score, &amp;flags"; 
+     n = readascii ("score.dat", &amp;score, &amp;flags";
                     format="%*s %lf %*s %d");
 </PRE>
 </CODE></BLOCKQUOTE>
@@ -147,19 +147,20 @@ Such a file may be read using
 <PRE>
      n = readascii ("books.dat", &amp;year, &amp;author, &amp;title;
                     format="\"%[^\"]\" \"%[^\"]\" \"%[^\"]\"");
-                    
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
 <DT><B> Notes </B><DD>
-<P>This current version of this function does not handle missing data.</P>
+<P>This current version of this function does not handle missing data.
+For such files, the <CODE>csv_readcol</CODE> function might be a better
+choice.</P>
 <P>By default, lines not matching the expected format are assumed to
 be comments and are skipped.  So normally the <CODE>comment</CODE>
 qualifier is not needed.  However, it is useful in conjunction with
 the <CODE>stop_on_mismatch</CODE> qualifier to force the parser to skip
 lines beginning with the comment string and continue scanning.</P>
 <DT><B> See Also </B><DD>
-<P><CODE>sscanf, atof, fopen, fgets, fgetslines</CODE></P>
+<P><CODE>sscanf, atof, fopen, fgets, fgetslines, csv_readcol</CODE></P>
 </DL>
 </P>
 

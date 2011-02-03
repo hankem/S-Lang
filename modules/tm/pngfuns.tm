@@ -96,9 +96,10 @@
 \synopsis{Convert an RGB image to grayscale}
 \usage{gray = png_rgb_to_gray (rgb)}
 \description
-  This function converts an RGB image represented by a 2d array of 32 bit
-  integers to a 2d array of 8 bit integers representing the grayscale values.
-  The grayscale values are formed by averaging the R, G, and B channels.
+  This function converts an RGB image represented by an array
+  (typically 2d) to a corresponding array of 8 bit integers
+  representing the grayscale values. The grayscale values are formed
+  by averaging the R, G, and B channels.
 \seealso{png_gray_to_rgb}
 \done
 
@@ -106,11 +107,12 @@
 \synopsis{Convert a grayscale image to RGB}
 \usage{rgb = png_gray_to_rgb (gray, colormap)}
 \description
-  This function creates an RGB image, represented by a 2d array of
-  32 bit integers from a grayscale image using the specified colormap.
-  The values in the input image will be linearly mapped onto the
-  elements of the colormap such that the minimum value in the
-  grayscale image will be assigned the first RGB value in the
+  This function creates an RGB image, represented by an array of 32
+  bit integers from a grayscale image using the specified colormap.
+  The shape of the of the RGB array will be that of the input
+  grayscale array.  The values in the input image will be linearly
+  mapped onto the elements of the colormap such that the minimum value
+  in the grayscale image will be assigned the first RGB value in the
   colormap, and the maximum value will be assigned the last RGB value.
 
   The colormap argument must either be an array of 32 bit integers

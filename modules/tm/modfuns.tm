@@ -7,9 +7,12 @@
 #d variable#1 \sect{<bf>$1</bf>\label{$1}}<descrip>
 #d datatype#1 \sect{<bf>$1</bf>\label{$1}}<descrip>
 
+#d qualifier#2:3 <tt>$1</tt> : $2\ifarg{$3}{ (Default: <tt>$3</tt>)}<p>
+#d method#2 <tt>$1</tt> : $2<p>
 #d synopsis#1 <tag> Synopsis </tag> $1
 #d keywords#1 <tag> Keywords </tag> $1
 #d usage#1 <tag> Usage </tag> <tt>$1</tt>
+#d methods <tag> Methods </tag>
 #d description <tag> Description </tag>
 #d qualifiers <tag> Qualifiers </tag>
 #d example <tag> Example </tag>
@@ -48,6 +51,7 @@
 #d exstr#1 \tt{"$1"}
 #d module#1 \tt{$1}
 #d dtype#1 \tt{$1}
+#d file#1 \tt{$1}
 
 #%}}}
 
@@ -114,5 +118,11 @@ be used for subprocess creation.  Use \exmp{require("fork")} to load it.
 This module provides an interface to the POSIX socket functions.  Use
 \exmp{require("socket")} to load it.
 #i sockfuns.tm
+
+\chapter{CSV Module}
+This module allows a \slang script to read and write
+comma-separated-value, tab-delimited files, etc.  Use
+\exmp{require("csv")} to load it.
+#i csvfuns.tm
 
 \end{\documentstyle}

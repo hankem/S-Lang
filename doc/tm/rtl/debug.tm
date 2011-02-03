@@ -121,7 +121,6 @@
     }
     _set_bos_handler (&bof_handler);
 #v-
-\notes
 \seealso{_set_eof_handler, _boseos_info, _set_bos_handler}
 \done
 

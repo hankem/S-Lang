@@ -62,7 +62,7 @@ or it returns instead of calling exit, then an exception will be thrown.</P>
       cmdopt_add (c, "h|help", &amp;help_callback);
       cmdopt_add (c, "s:o|output", &amp;outfile; type="str");
       variable iend = cmdopt_process (c, __argv, 1);
-       
+
       if (verbose) message ("some informative message");
       variable fp = stdout;
       if (outfile != "-") fp = fopen (outfile, "w");
@@ -76,7 +76,6 @@ or it returns instead of calling exit, then an exception will be thrown.</P>
 <P><CODE>cmdopt_add, cmdopt_process</CODE></P>
 </DL>
 </P>
-
 
 
 <H2><A NAME="cmdopt_process"></A> <A NAME="ss3.2">3.2</A> <A HREF="slshfun.html#toc3.2"><B>cmdopt_process</B></A>
@@ -109,7 +108,7 @@ handler established  by the prior call to <CODE>cmdopt_new</CODE>.</P>
 <BLOCKQUOTE><CODE>
 <PRE>
     define slsh_main ()
-    { 
+    {
           .
           .
        optobj = cmdopt_new (...);
@@ -140,7 +139,6 @@ handler established  by the prior call to <CODE>cmdopt_new</CODE>.</P>
 </P>
 
 
-
 <H2><A NAME="cmdopt_add"></A> <A NAME="ss3.3">3.3</A> <A HREF="slshfun.html#toc3.3"><B>cmdopt_add</B></A>
 </H2>
 
@@ -163,7 +161,7 @@ handler established  by the prior call to <CODE>cmdopt_new</CODE>.</P>
 <CODE>optobj</CODE> and specifies how that option should be handled.
 Handling an option involves setting the value of a variable
 associated with the option, or by calling a function upon its
-behalf.  </P>
+behalf.</P>
 <P>For clarity, assume a command-line option can be specified using the
 single character <CODE>f</CODE> or by the longer name <CODE>foo</CODE>. Then the
 rules for calling <CODE>cmdopt_add</CODE> for the various flavors options
@@ -182,7 +180,7 @@ the command line are as follows:</P>
 <BLOCKQUOTE><CODE>
 <PRE>
     cmdopt_add (optobj, "f|foo", &amp;v; inc);
-    cmdline: pgm -f -f ...       % In these examples, v 
+    cmdline: pgm -f -f ...       % In these examples, v
     cmdline: pgm --foo --foo ... % gets incremented twice
 </PRE>
 </CODE></BLOCKQUOTE>
@@ -237,7 +235,7 @@ The above two options may be combined:
 </P>
 <P>For the latter two cases, if the <CODE>append</CODE> qualifier is used,
 then instead of assigning the value to the specified variable, the
-value will be appended to a list assigned to the variable, e.g., 
+value will be appended to a list assigned to the variable, e.g.,
 <BLOCKQUOTE><CODE>
 <PRE>
     cmdopt_add (optobj, "f|foo", &amp;v; type="float", append);
@@ -245,7 +243,7 @@ value will be appended to a list assigned to the variable, e.g.,
 </CODE></BLOCKQUOTE>
 
 Then the command line <CODE>pgm --foo=VAL1 -fVAL2 -f VAL3 ...</CODE> will
-result in the assignment to <CODE>v</CODE> or the 3 element list 
+result in the assignment to <CODE>v</CODE> or the 3 element list
 <CODE>{VAL1, VAL2, VAL3}</CODE>.</P>
 <P>An option can also be associated with a callback function that get
 called when the option is handled.</P>

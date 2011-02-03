@@ -1,6 +1,7 @@
+#!/usr/bin/env slsh
 private define check_file (file)
 {
-   variable infun = 0, inexample = 0;
+   variable infun = 0, inexample = 0, innotes = 0, indescr = 0;
    variable fp = fopen (file, "r");
 
    variable fun_name = "";
@@ -13,6 +14,8 @@ private define check_file (file)
 	if (line[0] != '\\')
 	  {
 	     if (inexample) inexample++;
+	     if (innotes) innotes++;
+	     if (indescr) indescr++;
 	     continue;
 	  }
 
@@ -34,7 +37,28 @@ private define check_file (file)
 	     fun_name = strs[1];
 	     infun++;
 	     inexample=0;
+	     innotes=0;
+	     indescr=0;
 	     continue;
+	  }
+
+	if (inexample == 1)
+	  {
+	     () = fprintf (stderr, "%s:%d:Empty Example in %s\n",
+			   file, lineno, fun_name);
+	     inexample = 0;
+	  }
+	if (innotes == 1)
+	  {
+	     () = fprintf (stderr, "%s:%d:Empty Notes in %s\n",
+			   file, lineno, fun_name);
+	     innotes = 0;
+	  }
+	if (indescr == 1)
+	  {
+	     () = fprintf (stderr, "%s:%d:Empty Description in %s\n",
+			   file, lineno, fun_name);
+	     indescr = 0;
 	  }
 
 	if (0 == strncmp (line, "\example"R, 8))
@@ -43,10 +67,16 @@ private define check_file (file)
 	     continue;
 	  }
 
-	if (inexample == 1)
+	if (0 == strncmp (line, "\description"R, 12))
 	  {
-	     () = fprintf (stderr, "%s:%d:Empty Example in %s\n",
-			   file, lineno, fun_name);
+	     indescr++;
+	     continue;
+	  }
+
+	if (0 == strncmp (line, "\notes"R, 6))
+	  {
+	     innotes++;
+	     continue;
 	  }
 
 	if (strncmp (line, "\done"R, 5))
@@ -56,7 +86,7 @@ private define check_file (file)
 
 define slsh_main ()
 {
-   if (__argc < 1)
+   if (__argc < 2)
      {
 	() = fprintf (stderr, "Usage: %s files...\n", __argv[0]);
 	exit (1);

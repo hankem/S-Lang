@@ -99,7 +99,6 @@
         }
   }
 #v-
-\notes
 \seealso{__push_list}
 \done
 

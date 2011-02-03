@@ -9,10 +9,13 @@
 #d variable#1 \sect{<bf>$1</bf>\label{$1}}<descrip>
 #d datatype#1 \sect{<bf>$1</bf>\label{$1}}<descrip>
 
+#d qualifier#2:3 <tt>$1</tt> : $2\ifarg{$3}{ (Default: <tt>$3</tt>)}<p>
 #d synopsis#1 <tag> Synopsis </tag> $1
 #d keywords#1 <tag> Keywords </tag> $1
 #d usage#1 <tag> Usage </tag> <tt>$1</tt>
+#d altusage#1 <tag> Usage </tag> <tt>$1</tt>
 #d description <tag> Description </tag>
+#d qualifiers <tag> Qualifiers </tag>
 #d example <tag> Example </tag>
 #d notes <tag> Notes </tag>
 #% d seealso#1 <tag> See Also </tag> <tt>$1</tt>

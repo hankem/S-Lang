@@ -47,13 +47,13 @@ obtained using <CODE>fdopen</CODE> with the correponding <CODE>fdN</CODE> value.
 the process-id of the newly created process.</P>
 <P>The status of the process may be checked or collected using the
 <CODE>wait</CODE> method.  It is very important to call this method to
-avoid the creation of zombie processes. </P>
+avoid the creation of zombie processes.</P>
 
 <DT><B> Qualifiers </B><DD>
 <P>The following qualifiers are supported:
 <BLOCKQUOTE><CODE>
 <PRE>
-   read=fds 
+   read=fds
 </PRE>
 </CODE></BLOCKQUOTE>
 
@@ -72,13 +72,15 @@ process using the fdN or fpN fields of the structure.
 <BLOCKQUOTE><CODE>
 <PRE>
    stdin=filename
-   stdout=filename 
+   stdout=filename
    stderr=filename
 </PRE>
 </CODE></BLOCKQUOTE>
 
 These qualifiers allow the stdin, stdout, and stderr file
-descriptors in the subprocess to be redirected to a file.
+descriptors in the subprocess to be redirected to a file.  Note:
+The filenames are interpreted relative to the value of the
+<CODE>dir</CODE> qualifier.
 <BLOCKQUOTE><CODE>
 <PRE>
    fdN=string
@@ -87,7 +89,8 @@ descriptors in the subprocess to be redirected to a file.
 
 This qualifier will cause the integer file descriptor N to be open
 in the subprocess and redirected to the filename represented by
-the string.  The access mode is dictated by the first few
+the string, which is interpreted relative to the value of the <CODE>dir</CODE>
+qualifier.  The access mode is dictated by the first few
 characters of the string as described in more detail below.
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -114,6 +117,16 @@ integer value of the qualifier.  For example, dup2=1 would cause
 stderr (fd=2) in the subprocess to be redirected to stdout (fd=1).
 <BLOCKQUOTE><CODE>
 <PRE>
+   dir=string
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Change to the specified directory in the child process.  This
+will happen after the child process is started, but before any
+files have been opened.  Hence, files attached to <CODE>stdin</CODE>,
+<CODE>stdout</CODE>, etc will be opened relative to this directory.
+<BLOCKQUOTE><CODE>
+<PRE>
    pre_exec_hook=&amp;func
 </PRE>
 </CODE></BLOCKQUOTE>
@@ -128,7 +141,9 @@ file descriptors from the child process's view.  That is, those
 opened in the child process using the read qualifier, may be written
 to by the parent.  Similarly, those opened using the write qualifier
 may be read by the parent.</P>
-<P>\methods
+
+<DT><B> Methods </B><DD>
+<P>
 <BLOCKQUOTE><CODE>
 <PRE>
     Struct_Type .wait ( [ options ] )

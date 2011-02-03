@@ -756,15 +756,8 @@
 
 \function{strreplace}
 \synopsis{Replace one or more substrings}
-\usage{
-#v+
-   (new,n) = strreplace(a, b, c, max_n);  % Form 1
-   new = strreplace(a, b, c);             % Form 2
-
-   String_Type a, b, c;
-   Int_Type n, max_n;
-#v-
-}
+\usage{(new,n) = strreplace(a, b, c, max_n)}
+\altusage{new = strreplace(a, b, c)}
 \description
   The \ifun{strreplace} function may be used to replace one or more
   occurrences of \exmp{b} in \exmp{a} with \exmp{c}.  This function

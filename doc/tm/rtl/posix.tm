@@ -71,7 +71,6 @@
  Upon success, the function returns the specified priority value.  If
  an error occurs, the function will return \NULL with \ivar{errno} set
  accordingly.
-\notes
 \seealso{setpriority, getpid, getppid}
 \done
 

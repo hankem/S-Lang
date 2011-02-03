@@ -13,8 +13,8 @@
 \qualifier{comment}{lines beginning with this string will be skipped}
 \qualifier{blankrows}{default for how blank rows should be handled}{"skip"}
 \methods
-  readrow: Read and parse a row from the CSV object
-  readcol: Read one or more columns from the CVS object
+\method{readrow}{Read and parse a row from the CSV object}
+\method{readcol}{Read one or more columns from the CVS object}
 \example
   See the documentation for the \sfun{cvs.readcol} and
   \sfun{cvs.readrow} methods for examples.
@@ -237,8 +237,8 @@
 \qualifier{quoteall}{Quote all field values}
 \qualifier{quotesome}{Quote only those fields where quoting is necessary}
 \methods
-  writecol: write one or more columns to a file.  For more information
-  about this method, see the documentation for \sfun{csv.writecol}.
+\method{writecol}{write one or more columns to a file.  For more information
+  about this method, see the documentation for \sfun{csv.writecol}}.
 \example
     x = [0:2*PI:#100];
     csv = csv_encoder_new (;delim='|');
