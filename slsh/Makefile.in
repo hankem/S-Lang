@@ -33,7 +33,7 @@ SLSH_HELP_DIR	= $(SLSH_LIB_DIR)/help
 SLSH_DOC_DIR	= $(datarootdir)/doc/slsh
 SLSH_LOCALLIB_DIR = $(SLSH_LIB_DIR)/local-packages
 SLSH_SCRIPT_DIR	= $(SLSH_LIB_DIR)/scripts
-SCRIPTS		= jpegsize lsrpm sldb svnsh slprof
+SCRIPTS		= jpegsize lsrpm sldb svnsh slprof slstkchk
 #---------------------------------------------------------------------------
 # Hard-coded paths may be configured during run-time via the SLSH_CONF_DIR
 # and SLSH_PATH env variables.  The names of those variables may be

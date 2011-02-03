@@ -15,23 +15,31 @@ _boseos_info = 0;
 private variable Stack = Struct_Type[512];
 private variable Stack_Depth = 0;
 
-private define output ()
+private variable Output_Hook = NULL;
+private variable Output_Hook_Args = NULL;
+
+define stkcheck_set_output_hook ()
 {
-   variable args = __pop_args (_NARGS);
-#ifexists _jed_version
-   if (BATCH == 0)
+   if (_NARGS == 0)
      {
-	variable cbuf = whatbuf ();
-	setbuf ("*traceback*");
-	vinsert (__push_args(args));
-	setbuf (cbuf);
+	Output_Hook = NULL;
+	Output_Hook_Args = NULL;
 	return;
      }
-   () = fprintf (stderr, __push_args (args));
-   return;
-#else
-   () = fprintf (stderr, __push_args (args));
-#endif
+
+   Output_Hook_Args = __pop_list (_NARGS-1);
+   Output_Hook = ();
+}
+
+private define output ()
+{
+   variable args = __pop_list (_NARGS);
+   variable str = sprintf (__push_list (args));
+
+   if (Output_Hook != NULL)
+     return (@Output_Hook)(__push_list (Output_Hook_Args), str);
+
+   () = fprintf (stderr, __push_list (args));
 }
 
 private define bos_handler (file, line)
@@ -63,7 +71,14 @@ private define eos_handler ()
 	if (depth < s.depth)
 	  ;
 	else
-	  output ("%s:%d: %d object(s) left on the stack\n", s.file, s.line, depth-s.depth);
+	  {
+	     output ("%s:%d: %d object(s) left on the stack\n", s.file, s.line, depth-s.depth);
+	     if ((s.file == "***string***") && (Stack_Depth > 0))
+	       {
+		  s = Stack[Stack_Depth-1];
+		  output (" called from %s:%d\n", s.file, s.line);
+	       }
+	  }
      }
 }
 
@@ -82,5 +97,16 @@ define disable_stack_check ()
    Stack_Depth = 0;
    _boseos_info = 0;
 }
+
+#ifexists _jed_version
+private define output_to_buffer (buf, str)
+{
+   variable cbuf = whatbuf ();
+   setbuf (buf);
+   insert (str);
+   setbuf (cbuf);
+}
+if (BATCH == 0) stkcheck_set_output_hook (&output_to_buffer, "*traceback*");
+#endif
 
 provide ("stkcheck");

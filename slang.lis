@@ -314,6 +314,7 @@
 @slsh/scripts/svnsh 0755
 @slsh/scripts/sldb 0755
 @slsh/scripts/slprof 0755
+@slsh/scripts/slstkchk 0755
 @slsh/slsh.c
 @slsh/slsh.h
 @slsh/readline.c
