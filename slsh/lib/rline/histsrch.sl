@@ -19,7 +19,7 @@ private variable History_Search = struct
 
 private define get_unique_history (prefix)
 {
-   variable h = rline_get_history;
+   variable h = rline_get_history ();
 
    if (prefix == "")
      return [h, prefix];
@@ -29,6 +29,8 @@ private define get_unique_history (prefix)
 
    variable new_h = String_Type[0];
 
+   %  build the list using most recent history first
+   array_reverse (h);
    foreach (h)
      {
 	variable name = ();
@@ -36,6 +38,7 @@ private define get_unique_history (prefix)
 	  continue;
 	new_h = [new_h, name];
      }
+   array_reverse (new_h);
    return [new_h, prefix];
 }
 
