@@ -98,6 +98,11 @@ static int pop_array (SLang_Array_Type **at_ptr, int convert_scalar)
    return 0;
 }
 
+static void throw_size_error (int e)
+{
+   _pSLang_verror (e, "Unable to create a multi-dimensional array of the desired size");
+}
+
 static VOID_STAR linear_get_data_addr (SLang_Array_Type *at, SLindex_Type *dims)
 {
    size_t ofs;
@@ -117,12 +122,19 @@ static VOID_STAR linear_get_data_addr (SLang_Array_Type *at, SLindex_Type *dims)
 	ofs = 0;
 	for (i = 0; i < num_dims; i++)
 	  {
+	     size_t new_ofs;
 	     SLindex_Type d = dims[i];
-
 	     if (d < 0)
 	       d = d + max_dims[i];
 
-	     ofs = ofs * (size_t)max_dims [i] + (size_t) d;
+	     new_ofs = ofs * (size_t)max_dims [i] + (size_t) d;
+	     if ((max_dims[i] != 0)
+		 && ((new_ofs - (size_t)d)/max_dims[i] != ofs))
+	       {
+		  throw_size_error (SL_Index_Error);
+		  return NULL;
+	       }
+	     ofs = new_ofs;
 	  }
      }
    if (ofs >= at->num_elements)
@@ -347,8 +359,16 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
    num_elements = 1;
    for (i = 0; i < num_dims; i++)
      {
+	SLuindex_Type new_num_elements;
 	at->dims[i] = dims[i];
-	num_elements = dims[i] * num_elements;
+	new_num_elements = dims[i] * num_elements;
+	if (dims[i] && (new_num_elements/dims[i] != num_elements))
+	  {
+	     _pSLang_verror (SL_INVALID_PARM, "Unable to create array of the desired size");
+	     free_array (at);
+	     return NULL;
+	  }
+	num_elements = new_num_elements;
      }
 
    /* Now set the rest of the unused dimensions to 1.  This makes it easier
@@ -370,7 +390,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
    size = (unsigned int) (num_elements * sizeof_type);
    if (size/sizeof_type != num_elements)
      {
-	_pSLang_verror (SL_INVALID_PARM, "Unable to create array of the desired size");
+	throw_size_error (SL_INVALID_PARM);
 	free_array (at);
 	return NULL;
      }
@@ -700,7 +720,7 @@ int _pSLarray_pop_index (unsigned int num_elements, SLang_Array_Type **ind_atp, 
    dims = (SLindex_Type) num_elements;
    if (dims < 0)
      {
-	SLang_verror (SL_Index_Error, "Objected is too large to be indexed");
+	SLang_verror (SL_Index_Error, "Object is too large to be indexed");
 	return -1;
      }
 
@@ -1054,7 +1074,7 @@ convert_nasty_index_objs (SLang_Array_Type *at,
 			  unsigned int *num_elements,
 			  int *is_array, int is_dim_array[SLARRAY_MAX_DIMS])
 {
-   unsigned int i, total_num_elements;
+   SLuindex_Type i, total_num_elements;
    SLang_Array_Type *ind_at;
 
    if (num_indices != at->num_dims)
@@ -1067,6 +1087,7 @@ convert_nasty_index_objs (SLang_Array_Type *at,
    total_num_elements = 1;
    for (i = 0; i < num_indices; i++)
      {
+	SLuindex_Type new_total_num_elements;
 	SLang_Object_Type *obj = index_objs + i;
 	range_delta_buf [i] = 0;
 
@@ -1108,7 +1129,13 @@ convert_nasty_index_objs (SLang_Array_Type *at,
 	       }
 	  }
 
-	total_num_elements = total_num_elements * max_dims[i];
+	new_total_num_elements = total_num_elements * max_dims[i];
+	if (max_dims[i] && (new_total_num_elements/max_dims[i] != total_num_elements))
+	  {
+	     throw_size_error (SL_INVALID_PARM);
+	     return -1;
+	  }
+       total_num_elements = new_total_num_elements;
      }
 
    *num_elements = total_num_elements;

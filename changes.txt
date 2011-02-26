@@ -20,6 +20,8 @@ Changes since 2.2.3
 10. documentation updates/tweaks (Manfred Hanke).
 11. slsh/lib/rline/histsrch.sl: When building history search
     completions, use most recent history first.
+12. src/slarray.c: Detect integer overflows for multi-dimensional
+    arrays.
 
 {{{ Previous Versions
 
