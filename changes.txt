@@ -22,6 +22,7 @@ Changes since 2.2.3
     completions, use most recent history first.
 12. src/slarray.c: Detect integer overflows for multi-dimensional
     arrays.
+13. Updated year from 2010 to 2011
 
 {{{ Previous Versions
 

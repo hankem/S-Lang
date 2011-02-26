@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2010 John E. Davis
+Copyright (C) 2010-2011 John E. Davis
 
 This file is part of the S-Lang Library.
 

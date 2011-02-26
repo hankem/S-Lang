@@ -2,7 +2,7 @@
 #define DAVIS_SLANG_H_
 /* -*- mode: C; mode: fold; -*- */
 /*
-Copyright (C) 2004-2010 John E. Davis
+Copyright (C) 2004-2011 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20204
-#define SLANG_VERSION_STRING "pre2.2.4-12"
+#define SLANG_VERSION_STRING "pre2.2.4-13"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */

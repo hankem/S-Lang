@@ -1,6 +1,6 @@
 /* slutty.c --- Unix Low level terminal (tty) functions for S-Lang */
 /*
-Copyright (C) 2004-2010 John E. Davis
+Copyright (C) 2004-2011 John E. Davis
 
 This file is part of the S-Lang Library.
 
