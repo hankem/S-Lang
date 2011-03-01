@@ -1588,8 +1588,8 @@ static int init_smg (int mode)
    len = Screen_Cols + 3;
    for (i = 0; i < Screen_Rows; i++)
      {
-	if ((NULL == (old = (SLsmg_Char_Type *) SLmalloc (sizeof(SLsmg_Char_Type) * len)))
-	    || ((NULL == (neew = (SLsmg_Char_Type *) SLmalloc (sizeof(SLsmg_Char_Type) * len)))))
+	if ((NULL == (old = (SLsmg_Char_Type *) _SLcalloc (len, sizeof(SLsmg_Char_Type))))
+	    || ((NULL == (neew = (SLsmg_Char_Type *) _SLcalloc (len, sizeof(SLsmg_Char_Type))))))
 	  {
 	     SLfree ((char *) old);
 	     return -1;

@@ -155,7 +155,7 @@ static VOID_STAR f (VOID_STAR xp, unsigned int n) \
    from_type *x; \
    to_type *y; \
    x = (from_type *) xp; \
-   if (NULL == (y = (to_type *) SLmalloc (sizeof (to_type) * n))) return NULL; \
+   if (NULL == (y = (to_type *) _SLcalloc (n, sizeof (to_type)))) return NULL; \
    copy_fun (y, x, n); \
    return (VOID_STAR) y; \
 }

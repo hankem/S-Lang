@@ -92,7 +92,7 @@ static _pSLang_Struct_Type *allocate_struct (unsigned int nfields)
    SLMEMSET((char *) s, 0, sizeof (_pSLang_Struct_Type));
 
    size = nfields * sizeof(_pSLstruct_Field_Type);
-   if (NULL == (f = (_pSLstruct_Field_Type *) SLmalloc (size)))
+   if (NULL == (f = (_pSLstruct_Field_Type *) _SLcalloc (nfields, size)))
      {
 	SLfree ((char *) s);
 	return NULL;
@@ -418,7 +418,7 @@ static int merge_struct_fields (SLCONST char *atname, _pSLang_Struct_Type *a, _p
    if (b != NULL)
      {
 	unsigned int nb = b->nfields;
-	new_names = (char **)SLmalloc (nb * sizeof (char *));
+	new_names = (char **)_SLcalloc (nb, sizeof (char *));
 	if (new_names == NULL)
 	  return -1;
 
@@ -1184,7 +1184,7 @@ static Unary_Op_Info_Type *find_unary_info (int op, SLtype t)
      {
 	Unary_Op_Info_Type *ui;
 
-	ui = (Unary_Op_Info_Type *)SLmalloc (NUM_UNARY_OPS*sizeof(Unary_Op_Info_Type));
+	ui = (Unary_Op_Info_Type *)_SLcalloc (NUM_UNARY_OPS,sizeof(Unary_Op_Info_Type));
 	if (NULL == (si->ui = ui))
 	  return NULL;
 
@@ -1216,7 +1216,7 @@ static Binary_Op_Info_Type *find_binary_info (int op, SLtype t)
      {
 	Binary_Op_Info_Type *bi;
 
-	bi = (Binary_Op_Info_Type *)SLmalloc (NUM_BINARY_OPS*sizeof(Binary_Op_Info_Type));
+	bi = (Binary_Op_Info_Type *)_SLcalloc (NUM_BINARY_OPS, sizeof(Binary_Op_Info_Type));
 	if (NULL == (si->bi = bi))
 	  return NULL;
 
@@ -2108,7 +2108,7 @@ void _pSLstruct_pop_args (int *np)
 	return;
      }
 
-   data = (_pSLang_Struct_Type **) SLmalloc ((n + 1) * sizeof (_pSLang_Struct_Type *));
+   data = (_pSLang_Struct_Type **) _SLcalloc (n, sizeof (_pSLang_Struct_Type *));
    if (data == NULL)
      {
 	SLdo_pop_n (n);
@@ -2307,9 +2307,9 @@ static _pSLang_Struct_Type *create_cstruct (VOID_STAR cs, SLang_CStruct_Field_Ty
    s = NULL;
    field_types = NULL;
    field_values = NULL;
-   if ((NULL == (field_names = (SLFUTURE_CONST char **) SLmalloc (n*sizeof (char *))))
-       || (NULL == (field_types = (SLtype *)SLmalloc (n*sizeof(SLtype))))
-       || (NULL == (field_values = (VOID_STAR *)SLmalloc (n*sizeof(VOID_STAR)))))
+   if ((NULL == (field_names = (SLFUTURE_CONST char **) _SLcalloc (n,sizeof (char *))))
+       || (NULL == (field_types = (SLtype *)_SLcalloc (n,sizeof(SLtype))))
+       || (NULL == (field_values = (VOID_STAR *)_SLcalloc (n,sizeof(VOID_STAR)))))
      goto return_error;
 
    for (i = 0; i < n; i++)

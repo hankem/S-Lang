@@ -1414,7 +1414,7 @@ int SLang_set_argc_argv (int argc, char **argv)
    if (argc < 0) argc = 0;
    this_argc = argc;
 
-   if (NULL == (this_argv = (char **) SLmalloc ((argc + 1) * sizeof (char *))))
+   if (NULL == (this_argv = (char **) _SLcalloc ((argc + 1), sizeof (char *))))
      return -1;
    memset ((char *) this_argv, 0, sizeof (char *) * (argc + 1));
 

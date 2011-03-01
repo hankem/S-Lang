@@ -426,7 +426,7 @@ make_n_bstrings (SLang_BString_Type **b, char **a, unsigned int n, int ptr_type)
    malloc_flag = 0;
    if (b == NULL)
      {
-	b = (SLang_BString_Type **) SLmalloc ((n + 1) * sizeof (SLang_BString_Type *));
+	b = (SLang_BString_Type **) _SLcalloc (n, sizeof (SLang_BString_Type *));
 	if (b == NULL)
 	  return NULL;
 	malloc_flag = 1;

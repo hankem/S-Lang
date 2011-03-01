@@ -160,7 +160,7 @@ static void strcat_cmd (void) /*{{{*/
 
    if (nargs <= 10)
      ptrs = ptrs_buf;
-   else if (NULL == (ptrs = (char **)SLmalloc (nargs * sizeof (char *))))
+   else if (NULL == (ptrs = (char **)_SLcalloc (nargs, sizeof (char *))))
      return;
 
    memset ((char *) ptrs, 0, sizeof (char *) * nargs);
@@ -448,7 +448,7 @@ static void str_uncomment_string_cmd (char *str, char *b, char *e) /*{{{*/
 	return;
      }
 
-   if (NULL == (etable = (SLuchar_Type *) SLmalloc (blen * (SLUTF8_MAX_MBLEN+1))))
+   if (NULL == (etable = (SLuchar_Type *) _SLcalloc (blen, (SLUTF8_MAX_MBLEN+1))))
      return;
 
    b1 = (SLuchar_Type *) b;
@@ -2611,7 +2611,7 @@ static void create_delimited_string_cmd (int *nptr)
 
    n = 1 + (unsigned int) *nptr;       /* n includes delimiter */
 
-   if (NULL == (strings = (char **)SLmalloc (n * sizeof (char *))))
+   if (NULL == (strings = (char **)_SLcalloc (n, sizeof (char *))))
      {
 	SLdo_pop_n (n);
 	return;

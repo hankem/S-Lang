@@ -581,7 +581,7 @@ static void stdio_fgetslines_internal (FILE *fp, unsigned int n)
 	  max_num_lines++;
      }
 
-   list = (char **) SLmalloc (sizeof (char *) * max_num_lines);
+   list = (char **) _SLcalloc (max_num_lines, sizeof (char *));
    if (list == NULL)
      return;
 

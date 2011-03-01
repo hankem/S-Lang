@@ -205,13 +205,34 @@ char *SLrealloc (char *p, unsigned int len)
    return p;
 }
 
+char *_SLrecalloc (char *p, unsigned int nelems, unsigned int len)
+{
+   unsigned int nlen = nelems * len;
+
+   if (nelems && (nlen/nelems != len))
+     {
+	SLang_set_error (SL_Malloc_Error);
+	return NULL;
+     }
+   return SLrealloc (p, nlen);
+}
+
+char *_SLcalloc (unsigned int nelems, unsigned int len)
+{
+   unsigned int nlen = nelems * len;
+
+   if (nelems && (nlen/nelems != len))
+     {
+	SLang_set_error (SL_Malloc_Error);
+	return NULL;
+     }
+   return SLmalloc (nlen);
+}
+
 char *SLcalloc (unsigned int nelems, unsigned int len)
 {
-   char *p;
-
-   len = nelems * len;
-   p = SLmalloc (len);
-   if (p != NULL) memset (p, 0, len);
+   char *p = _SLcalloc (nelems, len);
+   if (p != NULL) memset (p, 0, len*nelems);
    return p;
 }
 

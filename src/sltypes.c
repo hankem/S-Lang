@@ -442,7 +442,7 @@ int _pSLstring_list_push (_pSLString_List_Type *p, int delete_list)
 
 int _pSLstring_list_init (_pSLString_List_Type *p, unsigned int max_num, unsigned int delta_num)
 {
-   if (NULL == (p->buf = (char **) SLmalloc (max_num * sizeof (char *))))
+   if (NULL == (p->buf = (char **) _SLcalloc (max_num, sizeof (char *))))
      return -1;
 
    p->max_num = max_num;

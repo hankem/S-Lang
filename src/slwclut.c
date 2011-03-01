@@ -58,8 +58,8 @@ SLwchar_Lut_Type *SLwchar_create_lut (unsigned int num_entries)
    if (r == NULL)
      return NULL;
 
-   r->chmin = (SLwchar_Type *) SLmalloc (num_entries*sizeof(SLwchar_Type));
-   r->chmax = (SLwchar_Type *) SLmalloc (num_entries*sizeof(SLwchar_Type));
+   r->chmin = (SLwchar_Type *) _SLcalloc (num_entries, sizeof(SLwchar_Type));
+   r->chmax = (SLwchar_Type *) _SLcalloc (num_entries, sizeof(SLwchar_Type));
    if ((r->chmin == NULL) || (r->chmax == NULL))
      {
         SLwchar_free_lut (r);
@@ -104,12 +104,12 @@ int SLwchar_add_range_to_lut (SLwchar_Lut_Type *r, SLwchar_Type a, SLwchar_Type 
         SLwchar_Type *chmin, *chmax;
         unsigned int malloced_len = r->malloced_len + 5;
 
-        chmin = (SLwchar_Type *) SLrealloc ((char *)r->chmin, malloced_len * sizeof (SLwchar_Type));
+        chmin = (SLwchar_Type *) _SLrecalloc ((char *)r->chmin, malloced_len, sizeof (SLwchar_Type));
         if (chmin == NULL)
           return -1;
         r->chmin = chmin;
 
-        chmax = (SLwchar_Type *) SLrealloc ((char *)r->chmax, malloced_len * sizeof (SLwchar_Type));
+        chmax = (SLwchar_Type *) _SLrecalloc ((char *)r->chmax, malloced_len, sizeof (SLwchar_Type));
         if (chmax == NULL)
           return -1;
 

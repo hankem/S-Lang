@@ -505,7 +505,7 @@ SLcurses_Window_Type *SLcurses_newwin (unsigned int nrows, unsigned int ncols,
    if (ncols == 0)
      ncols = (unsigned int) SLtt_Screen_Cols - c;
 
-   lines = (SLcurses_Cell_Type **) SLmalloc (nrows * sizeof (SLcurses_Cell_Type *));
+   lines = (SLcurses_Cell_Type **) _SLcalloc (nrows, sizeof (SLcurses_Cell_Type *));
    if (lines == NULL)
      {
 	SLcurses_delwin (win);
@@ -528,7 +528,7 @@ SLcurses_Window_Type *SLcurses_newwin (unsigned int nrows, unsigned int ncols,
      {
 	SLcurses_Cell_Type *b;
 
-	b = (SLcurses_Cell_Type *) SLmalloc (ncols * sizeof (SLcurses_Cell_Type));
+	b = (SLcurses_Cell_Type *) _SLcalloc (ncols, sizeof (SLcurses_Cell_Type));
 	if (b == NULL)
 	  {
 	     SLcurses_delwin (win);
@@ -1125,7 +1125,7 @@ SLcurses_Window_Type *SLcurses_subwin (SLcurses_Window_Type *orig,
    sw->_maxx = (begin_x + ncols) - 1;
    sw->_maxy = (begin_y + nlines) - 1;
 
-   sw->lines = (SLcurses_Cell_Type **) SLmalloc (nlines * sizeof (SLcurses_Cell_Type *));
+   sw->lines = (SLcurses_Cell_Type **) _SLcalloc (nlines, sizeof (SLcurses_Cell_Type *));
    if (sw->lines == NULL)
      {
 	SLcurses_delwin (sw);

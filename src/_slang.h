@@ -1071,6 +1071,8 @@ extern SLFUTURE_CONST char *_pSLdefines[];
 #define SL_ERRNO_NOT_IMPLEMENTED	0x7FFF
 extern int _pSLerrno_errno;
 extern int _pSLerrno_init (void);
+extern char *_SLcalloc (unsigned int, unsigned int);
+extern char *_SLrecalloc (char *, unsigned int, unsigned int);
 
 extern int _pSLstdio_fdopen (char *, int, char *);
 extern void _pSLfclose_fdopen_fp (SLang_MMT_Type *);

@@ -818,7 +818,7 @@ static int build_dirlist (char *file, char *opt, char ***listp, unsigned int *nu
 
    num = 0;
    max_num = 50;
-   list = (char **)SLmalloc (max_num * sizeof(char *));
+   list = (char **)_SLcalloc (max_num, sizeof(char *));
    if (list == NULL)
      {
 	SLfree (pat);

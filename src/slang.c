@@ -6873,7 +6873,7 @@ static int push_block_context (int type)
      }
 
    num = 20;
-   if (NULL == (b = (SLBlock_Type *) SLmalloc (num * sizeof (SLBlock_Type))))
+   if (NULL == (b = (SLBlock_Type *) _SLcalloc (num, sizeof (SLBlock_Type))))
      return -1;
 
    c = Block_Context_Stack + Block_Context_Stack_Len;
@@ -8473,7 +8473,7 @@ static int lang_check_space (void)
    /* enlarge the space by 2 objects */
    n += 20;
 
-   if (NULL == (p = (SLBlock_Type *) SLrealloc((char *)p, n * sizeof(SLBlock_Type))))
+   if (NULL == (p = (SLBlock_Type *) _SLrecalloc((char *)p, n, sizeof(SLBlock_Type))))
      return -1;
 
    This_Compile_Block_Max = p + n;
@@ -10327,12 +10327,12 @@ static int init_interpreter (void)
    Stack_Pointer = Run_Stack;
    Stack_Pointer_Max = Run_Stack + SLANG_MAX_STACK_LEN;
 
-   Num_Args_Stack = (int *) SLmalloc (sizeof (int) * SLANG_MAX_RECURSIVE_DEPTH);
+   Num_Args_Stack = (int *) _SLcalloc (SLANG_MAX_RECURSIVE_DEPTH, sizeof(int));
    if (Num_Args_Stack == NULL)
      goto return_error;
 
    Recursion_Depth = 0;
-   Frame_Pointer_Stack = (unsigned int *) SLmalloc (sizeof (unsigned int) * SLANG_MAX_RECURSIVE_DEPTH);
+   Frame_Pointer_Stack = (unsigned int *) _SLcalloc (SLANG_MAX_RECURSIVE_DEPTH, sizeof(unsigned int));
    if (Frame_Pointer_Stack == NULL)
      goto return_error;
    Frame_Pointer_Depth = 0;
@@ -10344,7 +10344,7 @@ static int init_interpreter (void)
      goto return_error;
 #endif
 
-   Function_Stack = (Function_Stack_Type *) SLmalloc (sizeof (Function_Stack_Type) * SLANG_MAX_RECURSIVE_DEPTH);
+   Function_Stack = (Function_Stack_Type *) _SLcalloc (SLANG_MAX_RECURSIVE_DEPTH, sizeof (Function_Stack_Type));
    if (Function_Stack == NULL)
      goto return_error;
 

@@ -555,7 +555,8 @@ static int coerse_array_to_linear (SLang_Array_Type *at)
      }
 
    imax = at->num_elements;
-   vdata = (VOID_STAR) SLmalloc ((imax + 1) * at->sizeof_type);
+   
+   vdata = (VOID_STAR) _SLcalloc (imax, at->sizeof_type);
    if (vdata == NULL)
      return -1;
    (void) (*range->to_linear_fun)(at, range, vdata);
@@ -2183,7 +2184,7 @@ static int _pSLmergesort (void *obj,
    while ((i*2 < n) && (i*2 > 0))
      i *= 2;
 
-   if (NULL == (tmp = (SLindex_Type *)SLmalloc (i * sizeof(SLindex_Type))))
+   if (NULL == (tmp = (SLindex_Type *)_SLcalloc (i, sizeof(SLindex_Type))))
      return -1;
 
    try_quick_merge = 0;
@@ -3253,7 +3254,7 @@ static SLang_Array_Type *concat_arrays (unsigned int count)
    size_t sizeof_type;
    int max_dims, min_dims, max_rows, min_rows;
 
-   arrays = (SLang_Array_Type **)SLmalloc (count * sizeof (SLang_Array_Type *));
+   arrays = (SLang_Array_Type **)_SLcalloc (count, sizeof (SLang_Array_Type *));
    if (arrays == NULL)
      {
 	SLdo_pop_n (count);
@@ -4279,7 +4280,7 @@ static void array_map (void)
      }
 
    num_args = (unsigned int)SLang_Num_Function_Args - 2;
-   args = (Map_Arg_Type *) SLmalloc (num_args * sizeof (Map_Arg_Type));
+   args = (Map_Arg_Type *) _SLcalloc (num_args, sizeof (Map_Arg_Type));
    if (args == NULL)
      {
 	SLdo_pop_n (SLang_Num_Function_Args);
@@ -4926,10 +4927,11 @@ SLang_Array_Type *SLang_duplicate_array (SLang_Array_Type *at)
    type = at->data_type;
    num_elements = at->num_elements;
    sizeof_type = at->sizeof_type;
-   size = num_elements * sizeof_type;
 
-   if (NULL == (data = SLmalloc (size)))
+   if (NULL == (data = _SLcalloc (num_elements, sizeof_type)))
      return NULL;
+
+   size = num_elements * sizeof_type;
 
    if (NULL == (bt = SLang_create_array (type, 0, (VOID_STAR)data, at->dims, at->num_dims)))
      {

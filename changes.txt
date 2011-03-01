@@ -23,6 +23,10 @@ Changes since 2.2.3
 12. src/slarray.c: Detect integer overflows for multi-dimensional
     arrays.
 13. Updated year from 2010 to 2011
+14. src/slcommon.c: Added _slcalloc, _slrecalloc memory allocation
+    functions that check for unsigned integer wrapping.  A number of
+    vulnerable calls to SLmalloc were modified to use these functions.
+    (Fixes an issue reported by Pablo Cassatella).
 
 {{{ Previous Versions
 
