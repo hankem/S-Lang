@@ -322,7 +322,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
    size_t sizeof_type;
    unsigned int size;
 
-   if (num_dims > SLARRAY_MAX_DIMS)
+   if ((num_dims == 0) || (num_dims > SLARRAY_MAX_DIMS))
      {
 	_pSLang_verror (SL_NOT_IMPLEMENTED, "%u dimensional arrays are not supported", num_dims);
 	return NULL;
@@ -1405,6 +1405,12 @@ static int aget_from_array (unsigned int num_indices)
    int ret;
    int is_index_array, free_indices;
    unsigned int i;
+
+   if (num_indices == 0)
+     {
+	SLang_set_error (SL_Index_Error);
+	return -1;
+     }
 
    if (num_indices > SLARRAY_MAX_DIMS)
      {

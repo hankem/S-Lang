@@ -27,6 +27,7 @@ Changes since 2.2.3
     functions that check for unsigned integer wrapping.  A number of
     vulnerable calls to SLmalloc were modified to use these functions.
     (Fixes an issue reported by Pablo Cassatella).
+15. src/slarray.c: Detect attempts to create a 0 dimensional array.
 
 {{{ Previous Versions
 
