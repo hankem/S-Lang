@@ -86,7 +86,7 @@ private define fixup_header_names (names)
      return names;
 
    names = strlow (names);
-   names = strtrans (names, "\\,", "");
+   %names = strtrans (names, "\\,", "_");
    names = strtrans (names, "^\\w", "_");
    names = strcompress (names, "_");
    return names;
@@ -122,8 +122,8 @@ Qualifiers:\n\
    variable header = qualifier ("header");
    variable types = qualifier ("type");
    variable snan = qualifier ("snan", "");
-   variable fnan = qualifier ("fnan", _NaN);
-   variable dnan = qualifier ("dnan", typecast(_NaN,Float_Type));
+   variable dnan = qualifier ("fnan", _NaN);
+   variable fnan = qualifier ("dnan", typecast(_NaN,Float_Type));
    variable inan = qualifier ("inan", 0);
    variable lnan = qualifier ("lnan", 0L);
 

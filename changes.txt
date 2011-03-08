@@ -28,6 +28,9 @@ Changes since 2.2.3
     vulnerable calls to SLmalloc were modified to use these functions.
     (Fixes an issue reported by Pablo Cassatella).
 15. src/slarray.c: Detect attempts to create a 0 dimensional array.
+16. modules/csv.sl: Float and double NaNs were reversed.  When
+    normalizing columns names, _ characters were not being properly
+    treated.
 
 {{{ Previous Versions
 
