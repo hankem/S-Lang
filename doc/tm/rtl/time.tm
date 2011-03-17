@@ -11,13 +11,13 @@
 \synopsis{Break down a time in seconds to the GMT timezone}
 \usage{Struct_Type gmtime (Long_Type secs)}
 \description
-   The \ifun{gmtime} function is exactly like \ifun{localtime} except
-   that the values in the structure it returns are with respect to GMT
-   instead of the local timezone.  See the documentation for
-   \ifun{localtime} for more information.
+  The \ifun{gmtime} function is exactly like \ifun{localtime} except
+  that the values in the structure it returns are with respect to GMT
+  instead of the local timezone.  See the documentation for
+  \ifun{localtime} for more information.
 \notes
-   On systems that do not support the \ifun{gmtime} C library function,
-   this function is the same as \ifun{localtime}.
+  On systems that do not support the \ifun{gmtime} C library function,
+  this function is the same as \ifun{localtime}.
 \seealso{localtime, _time, mktime}
 \done
 
@@ -25,39 +25,39 @@
 \synopsis{Break down a time in seconds to the local timezone}
 \usage{Struct_Type localtime (Long_Type secs)}
 \description
-   The \ifun{localtime} function takes a parameter \exmp{secs}
-   representing the number of seconds since 00:00:00, January 1 1970
-   UTC and returns a structure containing information about \exmp{secs}
-   in the local timezone.  The structure contains the following
-   \dtype{Int_Type} fields:
+  The \ifun{localtime} function takes a parameter \exmp{secs}
+  representing the number of seconds since 00:00:00, January 1 1970
+  UTC and returns a structure containing information about \exmp{secs}
+  in the local timezone.  The structure contains the following
+  \dtype{Int_Type} fields:
 
-   \var{tm_sec} The number of seconds after the minute, normally
-      in the range 0 to 59, but can be up to 61 to allow for
-      leap seconds.
+  \var{tm_sec} The number of seconds after the minute, normally
+     in the range 0 to 59, but can be up to 61 to allow for
+     leap seconds.
 
-   \var{tm_min} The number of minutes after the hour, in the
-      range 0 to 59.
+  \var{tm_min} The number of minutes after the hour, in the
+     range 0 to 59.
 
-   \var{tm_hour} The number of hours past midnight, in the range
-      0 to 23.
+  \var{tm_hour} The number of hours past midnight, in the range
+     0 to 23.
 
-   \var{tm_mday} The day of the month, in the range 1 to 31.
+  \var{tm_mday} The day of the month, in the range 1 to 31.
 
-   \var{tm_mon} The number of months since January, in the range
-      0 to 11.
+  \var{tm_mon} The number of months since January, in the range
+     0 to 11.
 
-   \var{tm_year} The number of years since 1900.
+  \var{tm_year} The number of years since 1900.
 
-   \var{tm_wday} The number of days since Sunday, in the range 0
-      to 6.
+  \var{tm_wday} The number of days since Sunday, in the range 0
+     to 6.
 
-   \var{tm_yday} The number of days since January 1, in the
-      range 0 to 365.
+  \var{tm_yday} The number of days since January 1, in the
+     range 0 to 365.
 
-   \var{tm_isdst} A flag that indicates whether daylight saving
-      time is in effect at the time described.  The value is
-      positive if daylight saving time is in effect, zero if it
-      is not, and negative if the information is not available.
+  \var{tm_isdst} A flag that indicates whether daylight saving
+     time is in effect at the time described.  The value is
+     positive if daylight saving time is in effect, zero if it
+     is not, and negative if the information is not available.
 \seealso{gmtime, _time, ctime, mktime}
 \done
 
@@ -169,6 +169,14 @@
     Sun Apr 21 13:34:17 1996
 #v-
 \seealso{strftime, ctime, message, substr}
+\done
+
+\function{timegm}
+\synopsis{Convert a time structure for the GMT timezone to seconds}
+\usage{Long_Type secs = timegm(Struct_Type tm)}
+\description
+  \ifun{timegm} is the inverse of the \ifun{gmtime} function.
+\seealso{gmtime, mktime, localtime}
 \done
 
 \function{times}

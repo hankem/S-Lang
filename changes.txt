@@ -31,6 +31,7 @@ Changes since 2.2.3
 16. modules/csv.sl: Float and double NaNs were reversed.  When
     normalizing columns names, _ characters were not being properly
     treated.
+17. doc/tm/rtl/time.tm: Added documentation for timegm (Manfred Hanke).
 
 {{{ Previous Versions
 
