@@ -455,7 +455,7 @@
 
 \function{SLsmg_read_raw}
 \synopsis{Read characters from the virtual display}
-\usage{unsigned int SLsmg_read_raw (unsigned short *buf, unsigned int len)}
+\usage{unsigned int SLsmg_read_raw (SLsmg_Char_Type *buf, unsigned int len)}
 \description
   \var{SLsmg_read_raw} attempts to read \var{len} characters from the
   current position on the virtual display into the buffer specified by

@@ -32,6 +32,7 @@ Changes since 2.2.3
     normalizing columns names, _ characters were not being properly
     treated.
 17. doc/tm/rtl/time.tm: Added documentation for timegm (Manfred Hanke).
+18. doc/tm/crtl/slsmg.tm: Corrected prototype for SLsmg_read_raw (Manfred Hanke).
 
 {{{ Previous Versions
 
