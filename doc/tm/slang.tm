@@ -18,8 +18,9 @@
 
 \begin{\documentstyle}
 
-\title A Guide to the S-Lang Language (v2.2)
-\author John E. Davis, \tt{jed@jedsoft.org}
+#d DocTitle A Guide to the S-Lang Language
+\title \DocTitle (\docversion)
+\author John E. Davis <www.jedsoft.org>
 \date \__today__
 
 \toc

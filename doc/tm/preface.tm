@@ -15,10 +15,10 @@
   develop sophisticated platform-independent software.  In addition to
   providing the \slang interpreter, the library provides
   facilities for screen management, keymaps, low-level terminal I/O,
-  etc.  However, this document is concerned only with the extension
+  etc. \if{\strcmp{\DocTitle}{\slang-library-programmers-guide}}{However, this document is concerned only with the extension
   language and does not address these other features of the \slang
   library.  For information about the other components of the library,
-  the reader is referred to \slang-library-reference.
+  the reader is referred to the \bf{\slang-library-programmers-guide.}}
 
 \sect{A Brief History of \slang} #%{{{
 

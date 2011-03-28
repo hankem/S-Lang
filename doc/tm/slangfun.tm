@@ -43,9 +43,9 @@
 \linuxdoc
 \begin{\documentstyle}
 
-\title S-Lang Run-Time Library Intrinsic Function Reference
-\author John E. Davis, \tt{jed@jedsoft.org}
-\date \__today__ (v2.3.0)
+\title \slang-intrinsic-function-reference (\docversion)
+\author John E. Davis <www.jedsoft.org>
+\date \__today__
 
 \toc
 

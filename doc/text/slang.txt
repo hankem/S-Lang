@@ -1,6 +1,6 @@
-  A Guide to the S-Lang Language (v2.2)
-  John E. Davis, jed@jedsoft.org
-  Jan 31, 2011
+  A Guide to the S-Lang Language (v2.2.4)
+  John E. Davis <www.jedsoft.org>
+  Mar 28, 2011
   ____________________________________________________________
 
 
@@ -24,7 +24,7 @@
   document is concerned only with the extension language and does not
   address these other features of the S-Lang library. For information
   about the other components of the library, the reader is referred to
-  The S-Lang Library Reference.
+  the S-Lang Library C Programmer's Guide.
 
   1.1.  A Brief History of S-Lang
 

@@ -1,6 +1,5 @@
 #i linuxdoc.tm
 
-#d slang-c-programmers-guide \em{S-Lang Library C Programmer's Guide}
 #i local.tm
 
 #d chapter#1 <chapt>$1<p>
@@ -23,8 +22,8 @@
 \linuxdoc
 \begin{\documentstyle}
 
-\title The \slang C Library Reference
-\author John E. Davis, \tt{jed@jedsoft.org}
+\title The S-Lang C Library Reference
+\author John E. Davis <www.jedsoft.org>
 \date \__today__
 
 \toc

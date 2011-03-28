@@ -33,6 +33,7 @@ Changes since 2.2.3
     treated.
 17. doc/tm/rtl/time.tm: Added documentation for timegm (Manfred Hanke).
 18. doc/tm/crtl/slsmg.tm: Corrected prototype for SLsmg_read_raw (Manfred Hanke).
+19. Tweaked doc macros and rebuilt docs.
 
 {{{ Previous Versions
 

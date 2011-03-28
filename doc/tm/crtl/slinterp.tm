@@ -111,7 +111,7 @@
   \em{memory managed type}.  An example of this data type is the
   \var{SLANG_FILEPTR_TYPE}.
 \notes
-   See the \slang-c-programmers-guide for more information.
+   See the \slang-library-programmers-guide for more information.
 \seealso{SLclass_allocate_class, SLclass_get_class_id}
 \done
 

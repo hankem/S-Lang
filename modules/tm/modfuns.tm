@@ -59,7 +59,7 @@
 \begin{\documentstyle}
 
 \title S-Lang Module Reference (version 2.2)
-\author John E. Davis, \tt{jed@jedsoft.org}
+\author John E. Davis <www.jedsoft.org>
 \date \__today__
 
 \toc

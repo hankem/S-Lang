@@ -1,6 +1,6 @@
   The S-Lang C Library Reference
-  John E. Davis, jed@jedsoft.org
-  Jan 31, 2011
+  John E. Davis <www.jedsoft.org>
+  Mar 28, 2011
   ____________________________________________________________
 
 
@@ -1448,7 +1448,7 @@
         Read characters from the virtual display
 
       Usage
-        unsigned int SLsmg_read_raw (unsigned short *buf, unsigned int
+        unsigned int SLsmg_read_raw (SLsmg_Char_Type *buf, unsigned int
         len)
 
       Description

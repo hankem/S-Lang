@@ -42,10 +42,12 @@
 #d sc#1 \tt{$1}
 #d verb#1 \tt{$1}
 #d url#1 <htmlurl url="$1" name="$1">
-#d slang-library-reference \bf{The \slang Library Reference}
+#d slang-library-programmers-guide S-Lang Library C Programmer's Guide
+#d slang-intrinsic-function-reference S-Lang Library Intrinsic Function Reference
 #d chapter#1 <chapt>$1<p>
 #d tag#1 <tag>$1</tag>
 #d appendix <appendix>
 
 #d kbd#1 <tt>$1</tt>
 #d math#1 $1
+#d docversion v2.2.4

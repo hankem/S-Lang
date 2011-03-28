@@ -39,7 +39,7 @@
 \begin{\documentstyle}
 
 \title SLSH Library Reference (version 2.2.0)
-\author John E. Davis, \tt{jed@jedsoft.org}
+\author John E. Davis <www.jedsoft.org>
 \date \__today__
 
 \toc

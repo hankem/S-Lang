@@ -29,8 +29,9 @@
 
 \begin{\documentstyle}
 
-\title S-Lang Library C Programmer's Guide, V2.0.4
-\author John E. Davis, \tt{jed@jedsoft.org}
+#d DocTitle \slang-library-programmers-guide
+\title \DocTitle (\docversion)
+\author John E. Davis <www.jedsoft.org>
 \date \__today__
 
 \toc
@@ -287,7 +288,7 @@
      if (-1 == SLang_init_all ())
        exit (EXIT_FAILURE);
 #v-
-  See the \slang-run-time-library for more information about the
+  See the \bf{\slang-intrinsic-function-reference} for more information about the
   intrinsic functions.
 
 #%}}}

@@ -1,6 +1,6 @@
-  S-Lang Library C Programmer's Guide, V2.0.4
-  John E. Davis, jed@jedsoft.org
-  Jan 31, 2011
+  S-Lang Library C Programmer's Guide (v2.2.4)
+  John E. Davis <www.jedsoft.org>
+  Mar 28, 2011
   ____________________________________________________________
 
 
@@ -20,11 +20,7 @@
   S-Lang is also a programmer's library that permits a programmer to
   develop sophisticated platform-independent software. In addition to
   providing the S-Lang interpreter, the library provides facilities for
-  screen management, keymaps, low-level terminal I/O, etc. However, this
-  document is concerned only with the extension language and does not
-  address these other features of the S-Lang library. For information
-  about the other components of the library, the reader is referred to
-  The S-Lang Library Reference.
+  screen management, keymaps, low-level terminal I/O, etc.
 
   1.1.  A Brief History of S-Lang
 
@@ -64,7 +60,6 @@
 
   John Burnell for the OS/2 port of the video and keyboard routines. He
   also made value suggestions regarding the interpreter interface.
-
   Darrel Hankerson for cleaning up and unifying some of the code and the
   makefiles.
 
@@ -327,8 +322,8 @@
             if (-1 == SLang_init_all ())
               exit (EXIT_FAILURE);
 
-  See the \slang-run-time-library for more information about the intrin-
-  sic functions.
+  See the S-Lang Library Intrinsic Function Reference for more informa-
+  tion about the intrinsic functions.
 
   5.2.  Calling the Interpreter
 

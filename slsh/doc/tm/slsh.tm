@@ -302,15 +302,13 @@
 \p-end
 \refsect1{AUTHOR}
 \p
-  The principal author of \slsh is John E. Davis <jed@jedsoft.org>.
-  The interactive mode was provided by Mike Noble
-  <mnoble@space.mit.edu>.  The \slang library upon which \slsh is
-  based is primarily the work of John E. Davis with help from many
-  others.
+  The principal author of \slsh is John E. Davis <www.jedsoft.org>.
+  The interactive mode was provided by Mike Noble.  The \slang library
+  upon which \slsh is based is primarily the work of John E. Davis
+  with help from many others.
 \pp
-  This manual page was originally written by Rafael Laboissiere
-  <rafael@debian.org> for the Debian system (but may be used by
-  others).
+  This manual page was originally written by Rafael Laboissiere for
+  the Debian system (but may be used by others).
 \pp
   Permission is granted to copy, distribute and/or modify
   this document under the terms of the GNU General Public License,
