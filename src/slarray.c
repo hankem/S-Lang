@@ -2944,13 +2944,26 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 	 * such that a + nc < b.  That is, b lies outside the interval.
 	 */
 
-	/* Allow for roundoff by adding 0.5 before truncation */
-	n = (int)(1.5 + ((xmax - xmin) / dx));
-	if (n <= 0)
+	if (((xmax <= xmin) && (dx >= 0.0))
+	    || ((xmax >= xmin) && (dx <= 0.0)))
 	  n = 0;
 	else
 	  {
-	     double last = xmin + (n-1) * dx;
+	     double last;
+
+	     if ((xmin + dx == (volatile double)xmin) || (xmax + dx == (volatile double)xmax))
+	       n = 0;
+	     else
+	     /* Allow for roundoff by adding 0.5 before truncation */
+	       n = (int)(1.5 + ((xmax - xmin) / dx));
+
+	     if (n <= 0)
+	       {
+		  _pSLang_verror (SL_INVALID_PARM, "range-array increment is too small");
+		  return NULL;
+	       }
+
+	     last = xmin + (n-1)*dx;
 
 	     if (dx > 0.0)
 	       {
@@ -2960,7 +2973,6 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 	     else if (last <= xmax)
 	       n -= 1;
 	  }
-	/* FIXME: Priority=medium: Add something to detect cases where the increment is too small */
      }
 
    dims = n;

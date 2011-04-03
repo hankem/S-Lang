@@ -34,6 +34,8 @@ Changes since 2.2.3
 17. doc/tm/rtl/time.tm: Added documentation for timegm (Manfred Hanke).
 18. doc/tm/crtl/slsmg.tm: Corrected prototype for SLsmg_read_raw (Manfred Hanke).
 19. Tweaked doc macros and rebuilt docs.
+20. src/slarray.c: Added a check for too small of a range array
+    increment.
 
 {{{ Previous Versions
 
