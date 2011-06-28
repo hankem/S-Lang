@@ -552,10 +552,10 @@
 \usage{Int_Type string_match(String_Type str, String_Type pat [,Int_Type pos])}
 \description
   The \ifun{string_match} function returns zero if \exmp{str} does not
-  match regular expression specified by \exmp{pat}.  This function
+  match the regular expression specified by \exmp{pat}.  This function
   performs the match starting at the first byte of the string.  The
   optional \exmp{pos} argument may be used to specify a different byte
-  offse (numbered from 1).  This function returns the position in
+  offset (numbered from 1).  This function returns the position in
   bytes (numbered from 1) of the start of the match in \exmp{str}.
   The exact substring matched may be found using
   \ifun{string_match_nth}.

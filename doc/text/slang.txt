@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2.4)
   John E. Davis <www.jedsoft.org>
-  Mar 28, 2011
+  Jun 28, 2011
   ____________________________________________________________
 
 
@@ -64,7 +64,6 @@
 
   John Burnell for the OS/2 port of the video and keyboard routines. He
   also made value suggestions regarding the interpreter interface.
-
   Darrel Hankerson for cleaning up and unifying some of the code and the
   makefiles.
 
@@ -435,10 +434,10 @@
   variables with a lower level language such as C. Consider a function
   that concatenates three strings. An example in S-Lang is:
 
-       define concat_3_strings (a, b, c)
-       {
-          return strcat (a, b, c);
-       }
+            define concat_3_strings (a, b, c)
+            {
+               return strcat (a, b, c);
+            }
 
   This function uses the built-in strcat function for concatenating two
   or more strings. In C, the simplest such function would look like:
@@ -480,20 +479,20 @@
   are commonly used as a mechanism to pass a function as an argument to
   another function as the following example illustrates:
 
-         define compute_functional_sum (funct)
-         {
-            variable i, s;
+              define compute_functional_sum (funct)
+              {
+                 variable i, s;
 
-            s = 0;
-            for (i = 0; i < 10; i++)
-             {
-                s += (@funct)(i);
-             }
-            return s;
-         }
+                 s = 0;
+                 for (i = 0; i < 10; i++)
+                  {
+                     s += (@funct)(i);
+                  }
+                 return s;
+              }
 
-         variable sin_sum = compute_functional_sum (&sin);
-         variable cos_sum = compute_functional_sum (&cos);
+              variable sin_sum = compute_functional_sum (&sin);
+              variable cos_sum = compute_functional_sum (&cos);
 
   Here, the function compute_functional_sum applies the function speci-
   fied by the parameter funct to the first 10 integers and returns the
@@ -530,14 +529,14 @@
   example involving fgets presented above provided an illustration of
   this. Another example is
 
-         define set_xyz (x, y, z)
-         {
-            @x = 1;
-            @y = 2;
-            @z = 3;
-         }
-         variable X, Y, Z;
-         set_xyz (&X, &Y, &Z);
+              define set_xyz (x, y, z)
+              {
+                 @x = 1;
+                 @y = 2;
+                 @z = 3;
+              }
+              variable X, Y, Z;
+              set_xyz (&X, &Y, &Z);
 
   which, after execution, results in X set to 1, Y set to 2, and Z set
   to 3. A C programmer will note the similarity of set_xyz to the fol-
@@ -600,9 +599,9 @@
   There are more concise ways of accomplishing the result of the
   previous example. These include:
 
-             A = [7, 7, 7, 7, 7, 7, 7, 7, 7, 7];
-             A = Int_Type [10];  A[[0:9]] = 7;
-             A = Int_Type [10];  A[*] = 7;
+        A = [7, 7, 7, 7, 7, 7, 7, 7, 7, 7];
+        A = Int_Type [10];  A[[0:9]] = 7;
+        A = Int_Type [10];  A[*] = 7;
 
   The second and third methods use an array of indices to index the
   array A. In the second, the range of indices has been explicitly spec-
@@ -669,14 +668,14 @@
   (or of Any_Type), whereas a structure is heterogeneous. As an example,
   consider
 
-        variable person = struct
-        {
-           first_name, last_name, age
-        };
-        variable bill = @person;
-        bill.first_name = "Bill";
-        bill.last_name = "Clinton";
-        bill.age = 51;
+             variable person = struct
+             {
+                first_name, last_name, age
+             };
+             variable bill = @person;
+             bill.first_name = "Bill";
+             bill.last_name = "Clinton";
+             bill.age = 51;
 
   In this example a structure consisting of the three fields has been
   created and assigned to the variable person. Then an instance of this
@@ -697,16 +696,16 @@
   A named structure is really a new data type and may be created using
   the typedef keyword:
 
-             typedef struct
-             {
-                first_name, last_name, age
-             }
-             Person_Type;
+        typedef struct
+        {
+           first_name, last_name, age
+        }
+        Person_Type;
 
-             variable bill = @Person_Type;
-             bill.first_name = "Bill";
-             bill.last_name = "Clinton";
-             bill.age = 51;
+        variable bill = @Person_Type;
+        bill.first_name = "Bill";
+        bill.last_name = "Clinton";
+        bill.age = 51;
 
   One advantage of creating a new type is that array elements of such
   types are automatically initialized to instances of the type. For
@@ -720,6 +719,7 @@
   first_name fields of the first two elements. In contrast, the form
   using an anonymous would require a separate step to instantiate the
   array elements:
+
              People = Struct_Type [100];
              People[0] = @person;
              People[0].first_name = "Bill";
@@ -819,7 +819,7 @@
   will be determined by the ASCII value of the character in quotes. For
   example,
 
-                     i = '0';
+                i = '0';
 
   assigns to i the character 48 since the '0' character has an ASCII
   value of 48.
@@ -857,6 +857,7 @@
   part, while the second number forms the imaginary part. That is, a
   complex number may be regarded as the sum of a real number and an
   imaginary number.
+
   Strictly speaking, the current implementation of the S-Lang does not
   support generic complex literals. However, it does support imaginary
   literals permitting a more generic complex number with a non-zero real
@@ -865,7 +866,6 @@
 
   An imaginary literal is specified in the same way as a floating point
   literal except that i or j is appended. For example,
-
                 12i    12.0i   12e0j
 
   all represent the same imaginary number.
@@ -900,19 +900,19 @@
   possible to construct strings longer than this by string
   concatenation, e.g.,
 
-        "This is the first part of a long string"
-         + " and this is the second part"
+             "This is the first part of a long string"
+              + " and this is the second part"
 
   S-Lang version 2.2 introduced support for multi-line string literals.
   There are basic variants supported. The first makes use of the
   backslash at the end of a line to indicate that the string is
   continued onto the next line:
 
-             "This is a \
-             multi-line string. \
-             Note the presence of the \
-             backslash character at the end \
-             of each of the lines."
+        "This is a \
+        multi-line string. \
+        Note the presence of the \
+        backslash character at the end \
+        of each of the lines."
 
   The second form of multiline string is delimited by the backquote
   character (`) and does not require backslashes:
@@ -1014,7 +1014,7 @@
   The only exception is that a backslash character is not permitted as
   the last character of a string with the R suffix. That is,
 
-            string = "This is illegal\"R;
+       string = "This is illegal\"R;
 
   is not permitted. Without this exception, a string such as
 
@@ -1049,13 +1049,13 @@
 
   Consider the following example:
 
-       private variable bar = "two";
-       putenv ("MYHOME=/home/baz");
-       define funct (foo)
-       {
-         variable bar = 1;
-         message ("file: $MYHOME/foo: garage=$MYGARAGE,bar=$bar"$);
-       }
+            private variable bar = "two";
+            putenv ("MYHOME=/home/baz");
+            define funct (foo)
+            {
+              variable bar = 1;
+              message ("file: $MYHOME/foo: garage=$MYGARAGE,bar=$bar"$);
+            }
 
   When executed, this will produce the message:
 
@@ -1087,16 +1087,16 @@
 
   As a trivial example of its use, consider
 
-        define add_numbers (a, b)
-        {
-           if (a == NULL) a = 0;
-           if (b == NULL) b = 0;
-           return a + b;
-        }
-        variable c = add_numbers (1, 2);
-        variable d = add_numbers (1, NULL);
-        variable e = add_numbers (1,);
-        variable f = add_numbers (,);
+             define add_numbers (a, b)
+             {
+                if (a == NULL) a = 0;
+                if (b == NULL) b = 0;
+                return a + b;
+             }
+             variable c = add_numbers (1, 2);
+             variable d = add_numbers (1, NULL);
+             variable e = add_numbers (1,);
+             variable f = add_numbers (,);
 
   It should be clear that after these statements have been executed, c
   will have a value of 3. It should also be clear that d will have a
@@ -1114,8 +1114,8 @@
   Such objects may be dereferenced using the dereference operator @. For
   example,
 
-             sin_ref = &sin;
-             y = (@sin_ref) (1.0);
+        sin_ref = &sin;
+        y = (@sin_ref) (1.0);
 
   creates a reference to the sin function and assigns it to sin_ref. The
   second statement uses the dereference operator to call the function
@@ -1140,6 +1140,7 @@
   S-Lang defines a type called DataType_Type. Objects of this type have
   values that are type names. For example, an integer is an object of
   type Integer_Type. The literals of DataType_Type include:
+
             Char_Type            (signed character)
             UChar_Type           (unsigned character)
             Short_Type           (short integer)
@@ -1170,7 +1171,7 @@
   typeof(Integer_Type) returns DataType_Type. One can use this function
   as in the following example:
 
-            if (Integer_Type == typeof (x)) message ("x is an integer");
+       if (Integer_Type == typeof (x)) message ("x is an integer");
 
   The literals of DataType_Type have other uses as well. One of the most
   common uses of these literals is to create arrays, e.g.,
@@ -1218,8 +1219,8 @@
   involving the conversion of an array of integers to an array of
   doubles could have been performed by multiplication by 1.0, i.e.,
 
-             x = [1:10];       % Array of integers
-             y = 1.0 * x;
+        x = [1:10];       % Array of integers
+        y = 1.0 * x;
 
   The string intrinsic function should be used whenever a string
   representation is needed. Using the typecast function for this purpose
@@ -1447,7 +1448,7 @@
   perform the so-called boolean short-circuit evaluation. For example,
   consider the expression:
 
-             (x != 0) and (1/x > 10)
+        (x != 0) and (1/x > 10)
 
   Here, if x were to have a value of zero, a division by zero error
   would occur because even though x!=0 evaluates to zero, the and opera-
@@ -1527,8 +1528,8 @@
                return (flags & 2);
             }
 
-  to determine whether or not autosave has been turned on for the
-  buffer.
+  to determine whether or not autosave has been turned on for the buf-
+  fer.
 
   The shl operator may be used to form the integer with only the nth bit
   set. For example, 1 shl 6 produces an integer with all bits set to
@@ -1587,13 +1588,13 @@
   ues, it must occur as the left binary operand.  Putting it on the
   right as in
 
-          while (0 < read_line (fp))    % Incorrect
-            {
-               text = ();
-               % Do something with text
-               .
-               .
-            }
+               while (0 < read_line (fp))    % Incorrect
+                 {
+                    text = ();
+                    % Do something with text
+                    .
+                    .
+                 }
 
   violates the rule and will result in the wrong answer. For this rea-
   son, one should avoid using a function that returns muliple return
@@ -1606,10 +1607,10 @@
   point value, the other will be converted to a floating point value,
   and a floating point result be produced. For example:
 
-             11 / 2           --> 5   (integer)
-             11 / 2.0         --> 5.5 (double)
-             11.0 / 2         --> 5.5 (double)
-             11.0 / 2.0       --> 5.5 (double)
+        11 / 2           --> 5   (integer)
+        11 / 2.0         --> 5.5 (double)
+        11.0 / 2         --> 5.5 (double)
+        11.0 / 2.0       --> 5.5 (double)
 
   Sometimes to achive the desired result, it is necessary to explicitly
   convert from one data type to another. For example, suppose that a and
@@ -1633,6 +1634,7 @@
        expr-1 and expr-2 and ... expr-n
 
   can be replaced by the short circuited version using andelse:
+
        andelse {expr-1} {expr-2} ... {expr-n}
 
   A similar syntax holds for the orelse operator. For example, consider
@@ -1795,7 +1797,6 @@
 
   Another form of if statement is the if-else statement.  It follows the
   syntax:
-
        if (integer-expression) statement-or-block-1 else statement-or-block-2
        next-statement
 
@@ -1841,12 +1842,13 @@
        if (integer-expression == 0) statement-or-block
 
   or equivalently,
+
        if (not(integer-expression)) statement-or-block
 
   The ifnot statement was added to the language to simplify the handling
   of such statements. It obeys the syntax
 
-       ifnot (integer-expression) statement-or-block
+  ifnot (integer-expression) statement-or-block
 
   and is functionally equivalent to
 
@@ -1890,11 +1892,11 @@
 
   The switch statement deviates from its C counterpart. The syntax is:
 
-            switch (x)
-              { ...  :  ...}
-                .
-                .
-              { ...  :  ...}
+                 switch (x)
+                   { ...  :  ...}
+                     .
+                     .
+                   { ...  :  ...}
 
   The `:' operator is a special symbol that in the context of the switch
   statement, causes the top item on the stack to be tested, and if it is
@@ -1946,13 +1948,13 @@
   will fail because the == operation is not defined between strings and
   integers. The correct way to write this is to use the case keyword:
 
-             switch (x)
-               { case 1 or case "one" : message("Number is one.");}
-               { case 2 or case "two" : message("Number is two.");}
-               { case 3 or case "three" : message("Number is three.");}
-               { case 4 or case "four" : message("Number is four.");}
-               { case 5 or case "five" : message("Number is five.");}
-               { message ("Number is greater than five.");}
+        switch (x)
+          { case 1 or case "one" : message("Number is one.");}
+          { case 2 or case "two" : message("Number is two.");}
+          { case 3 or case "three" : message("Number is three.");}
+          { case 4 or case "four" : message("Number is four.");}
+          { case 5 or case "five" : message("Number is five.");}
+          { message ("Number is greater than five.");}
 
   8.3.2.  Looping Forms
 
@@ -2156,9 +2158,9 @@
        foreach var ( container-object ) using ( control-list ) statement-or-
        block
 
-  The allowed values of control-list will depend upon the type of con-
-  tainer object. For associative arrays (Assoc_Type), control-list spec-
-  ifies whether keys, values, or both are used. For example,
+  The allowed values of control-list will depend upon the type of
+  container object. For associative arrays (Assoc_Type), control-list
+  specifies whether keys, values, or both are used. For example,
 
             foreach k (a) using ("keys")
               {
@@ -2251,18 +2253,18 @@
   terminated via a break statement. As an example, consider the
   following:
 
-           count = 0;
-           max_tries = 20;
-           while (count < max_tries)
-             {
-                if (try_something ())
-                  break;
+      count = 0;
+      max_tries = 20;
+      while (count < max_tries)
+        {
+           if (try_something ())
+             break;
 
-                count++;
-                % Failed -- try again
-             }
-           if (count == 20)
-             throw RunTimeError, "try_something failed 20 times";
+           count++;
+           % Failed -- try again
+        }
+      if (count == 20)
+        throw RunTimeError, "try_something failed 20 times";
 
   Here, the code makes 20 attempts to perform some task (via the
   try_something function) and if not successful it will throw an excep-
@@ -2303,16 +2305,16 @@
   possible or convenient. The duplication can be eliminated by using the
   then form of the loop statement:
 
-          loop (some_condition != 0)
+     loop (some_condition != 0)
+       {
+          foo_statements;
+          if (another_condition)
             {
-               foo_statements;
-               if (another_condition)
-                 {
-                   bar_statements;
-                   break;
-                 }
+              bar_statements;
+              break;
             }
-          then fizzle_statements;
+       }
+     then fizzle_statements;
 
   Here, the expression some_condition != 0 is going to result in either
   0 or 1, causing the code to execute 0 or 1 loops. Since the fiz-
@@ -2379,7 +2381,6 @@
 
   Parameters to a function are always passed by value and never by
   reference. To see what this means, consider
-
             define add_10 (a)
             {
                a = a + 10;
@@ -2425,13 +2426,12 @@
   NULL for missing value. This means that the parser will convert the
   latter three statements in the above example to:
 
-       variable s = add_two_numbers (2, NULL);
-       variable s = add_two_numbers (NULL, 3);
-       variable s = add_two_numbers (NULL, NULL);
+            variable s = add_two_numbers (2, NULL);
+            variable s = add_two_numbers (NULL, 3);
+            variable s = add_two_numbers (NULL, NULL);
 
   It is important to note that this mechanism is available only for
   function calls that specify more than one parameter. That is,
-
             variable s = add_10 ();
 
   is not equivalent to add_10(NULL). The reason for this is simple: the
@@ -2466,10 +2466,10 @@
   In the previous section an example of a function returning two values
   was given. That function can also be written somewhat simpler as:
 
-         define sum_and_diff (x, y)
-         {
-            return x + y, x - y;
-         }
+              define sum_and_diff (x, y)
+              {
+                 return x + y, x - y;
+              }
 
   This function may be called using
 
@@ -2517,13 +2517,13 @@
   used. To see how such functions can be dealt with, consider the
   following function:
 
-            define read_line (fp)
-            {
-               variable line;
-               if (-1 == fgets (&line, fp))
-                 return -1;
-               return (line, 0);
-            }
+       define read_line (fp)
+       {
+          variable line;
+          if (-1 == fgets (&line, fp))
+            return -1;
+          return (line, 0);
+       }
 
   This function returns either one or two values, depending upon the
   return value of fgets. Such a function may be handled using:
@@ -2623,13 +2623,13 @@
 
   Consider the add_10 example presented earlier. This time it is written
 
-            define add_10 ()
-            {
-               variable x;
-               x = ();
-               return x + 10;
-            }
-            variable s = add_10 (12);  % ==> s = 22;
+       define add_10 ()
+       {
+          variable x;
+          x = ();
+          return x + 10;
+       }
+       variable s = add_10 (12);  % ==> s = 22;
 
   For the uninitiated, this example looks as if it is destined for dis-
   aster. The add_10 function appears to accept zero arguments, yet it
@@ -2672,28 +2672,28 @@
   function that accepts a variable number of arguments. Consider the
   function:
 
-           define average_n (n)
+      define average_n (n)
+      {
+         variable x, y;
+         variable s;
+
+         if (n == 1)
            {
-              variable x, y;
-              variable s;
+              x = ();
+              s = x;
+           }
+         else if (n == 2)
+           {
+              y = ();
+              x = ();
+              s = x + y;
+           }
+         else throw NotImplementedError;
 
-              if (n == 1)
-                {
-                   x = ();
-                   s = x;
-                }
-              else if (n == 2)
-                {
-                   y = ();
-                   x = ();
-                   s = x + y;
-                }
-              else throw NotImplementedError;
-
-              return s / n;
-          }
-          variable ave1 = average_n (3.0, 1);        % ==> 3.0
-          variable ave2 = average_n (3.0, 5.0, 2);   % ==> 4.0
+         return s / n;
+     }
+     variable ave1 = average_n (3.0, 1);        % ==> 3.0
+     variable ave2 = average_n (3.0, 5.0, 2);   % ==> 4.0
 
   Here, the last argument passed to average_n is an integer reflecting
   the number of quantities to be averaged. Although this example works
@@ -2962,6 +2962,7 @@
   it is recommended over the other two mechanisms. Finally, this form
   has the redeeming feature that it presents a visual reminder that the
   function is returning a value that is not being used.
+
   10.  Namespaces
 
   By default, all global variables and functions are defined in the
@@ -3118,7 +3119,7 @@
 
   Similarly,
 
-            b = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+       b = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
 
   specifies an array of ten doubles.
 
@@ -3218,7 +3219,7 @@
   The _reshape function works like reshape except that it creates a new
   array instead of changing the shape of an existing array:
 
-       new_a = _reshape (a, [10,10]);
+            new_a = _reshape (a, [10,10]);
 
   11.3.  Simple Array Indexing
 
@@ -3310,14 +3311,14 @@
   an array of the same type as A, but with the dimensionality of I. For
   example,
 
-      a = 1.0*[1:10];
-      i = _reshape ([4,5,6,7,8,9], [2,3]);
+           a = 1.0*[1:10];
+           i = _reshape ([4,5,6,7,8,9], [2,3]);
 
   defines a to be a 10 element array of doubles, and i to be 2x3 array
   of integers. Then a[i] will be a 2x3 array of doubles with elements:
 
-           a[4]   a[5]   a[6]
-           a[7]   a[8]   a[9]
+      a[4]   a[5]   a[6]
+      a[7]   a[8]   a[9]
 
   Often, it is convenient to use a ``rubber'' range to specify indices.
   For example, a[[500:]] specifies all elements of a whose index is
@@ -3365,6 +3366,7 @@
 
   The most straightforward implementation of such a function uses an
   explicit loop:
+
              define array_trace (a, n)
              {
                 variable s = 0, i;
@@ -3411,14 +3413,13 @@
 
   Using this function, the trace function may be written more simply as
 
-       define array_trace (a)
-       {
-          return sum (a[diag_indices(a)]);
-       }
+            define array_trace (a)
+            {
+               return sum (a[diag_indices(a)]);
+            }
 
   Another example of this technique is a function that creates an n by n
   unit matrix:
-
              define unit_matrix (n)
              {
                 variable a = Int_Type[n, n];
@@ -3565,28 +3566,28 @@
   coefficients of the previous example that generated non-real
   solutions. Using an explicit for loop requires code such as:
 
-            nn = 0;
-            _for i (0, n-1, 1)
-              if (index_array [i]) nn++;
+       nn = 0;
+       _for i (0, n-1, 1)
+         if (index_array [i]) nn++;
 
-            tmp_a = Double_Type [nn];
-            tmp_b = Double_Type [nn];
-            tmp_c = Double_Type [nn];
+       tmp_a = Double_Type [nn];
+       tmp_b = Double_Type [nn];
+       tmp_c = Double_Type [nn];
 
-            j = 0;
-            _for i (0, n-1, 1)
+       j = 0;
+       _for i (0, n-1, 1)
+         {
+            if (index_array [i])
               {
-                 if (index_array [i])
-                   {
-                      tmp_a [j] = a[i];
-                      tmp_b [j] = b[i];
-                      tmp_c [j] = c[i];
-                      j++;
-                   }
+                 tmp_a [j] = a[i];
+                 tmp_b [j] = b[i];
+                 tmp_c [j] = c[i];
+                 j++;
               }
-            a = tmp_a;
-            b = tmp_b;
-            c = tmp_c;
+         }
+       a = tmp_a;
+       b = tmp_b;
+       c = tmp_c;
 
   Not only is this a lot of code, making it hard to digest, but it is
   also clumsy and error-prone. Using the where function, this task is
@@ -3612,12 +3613,12 @@
 
   The number of columns may be obtained in a similar manner:
 
-       define num_cols (a)
-       {
-          variable dims = array_shape (a);
-          if (length(dims) > 1) return dims[1];
-          return 1;
-       }
+            define num_cols (a)
+            {
+               variable dims = array_shape (a);
+               if (length(dims) > 1) return dims[1];
+               return 1;
+            }
 
   The array_shape function may also be used to create an array that has
   the same number of dimensions as another array:
@@ -4017,11 +4018,11 @@
   pair. We can define a data type called Population_Type to represent
   the same information:
 
-             typedef struct
-             {
-                city_name,
-                population
-             } Population_Type;
+        typedef struct
+        {
+           city_name,
+           population
+        } Population_Type;
 
   This data type can be used like all other data types. For example, an
   array of Population_Type types can be created,
@@ -4055,16 +4056,16 @@
   To illustrate how this works, consider a data type that represents a
   vector in 3-space:
 
-      typedef struct { x, y, z } Vector_Type;
+           typedef struct { x, y, z } Vector_Type;
 
   and a function that instantiates such an object:
 
-           define vector_new (x, y, z)
-           {
-              variable v = @Vector_Type;
-              v.x = double(x); v.y = double(y); v.z = double(z);
-              return v;
-           }
+      define vector_new (x, y, z)
+      {
+         variable v = @Vector_Type;
+         v.x = double(x); v.y = double(y); v.z = double(z);
+         return v;
+      }
 
   This function may be used to define a function that adds two vectors
   together:
@@ -4105,7 +4106,7 @@
   This function may be used to extend the + operator to Vector_Type
   objects:
 
-           __add_binary ("+", Vector_Type, &vector_add, Vector_Type, Vector_Type);
+      __add_binary ("+", Vector_Type, &vector_add, Vector_Type, Vector_Type);
 
   Similarly the subtraction and equality operators may be extended to
   Vector_Type via
@@ -4143,14 +4144,14 @@
   produce another vector. This can happen in two ways as reflected by
   the following functions:
 
-     define vector_scalar_mul (v, a)
-     {
-        return vector_new (a*v.x, a*v.y, a*v.z);
-     }
-     define scalar_vector_mul (a, v)
-     {
-        return vector_new (a*v.x, a*v.y, a*v.z);
-     }
+          define vector_scalar_mul (v, a)
+          {
+             return vector_new (a*v.x, a*v.y, a*v.z);
+          }
+          define scalar_vector_mul (a, v)
+          {
+             return vector_new (a*v.x, a*v.y, a*v.z);
+          }
 
   Here a represents the scalar, which can be any object that may be mul-
   tiplied by a Double_Type, e.g., Int_Type, Float_Type, etc. Instead of
@@ -4190,14 +4191,14 @@
   leads to more readable and maintainable code. For example, simply
   looking at
 
-     c = a + b;
+          c = a + b;
 
   in isolation one can easily overlook the fact that a function such as
   vector_add may be getting executed. Moreover, in cases where the
   action is ambiguous such as Vector_Type*Vector_Type it may not be
   clear what
 
-          c = a*b;
+     c = a*b;
 
   means unless one knows exactly what choice was made when extending the
   * operator to the types. For this reason it may be wise to leave Vec-
@@ -4431,7 +4432,6 @@
   when a function encounters an error, instead of returning an error
   code, it simply gives up and throws an exception. This idea will be
   fleshed out in what follows.
-
   15.2.1.  Introduction to Exceptions
 
   Consider the write_to_file function used in the previous section but
@@ -4473,15 +4473,15 @@
   An simple exception handler may be created through the use of a try-
   catch statement, such as
 
-       try
-        {
-          write_to_file ("/tmp/foo", "bar");
-        }
-       catch OpenError:
-        {
-           message ("*** Warning: failed to open /tmp/foo.");
-        }
-       next_statement;
+            try
+             {
+               write_to_file ("/tmp/foo", "bar");
+             }
+            catch OpenError:
+             {
+                message ("*** Warning: failed to open /tmp/foo.");
+             }
+            next_statement;
 
   The above code works as follows: First the statement (or statements)
   inside the try-block are executed. As long as no exception occurs,
@@ -4545,7 +4545,6 @@
   still desirable for the file to be removed upon failure. In this
   scenario, next_statement should not get executed upon failure. This
   can be achieved as follows:
-
             try
              {
                write_to_file ("/tmp/foo", "bar");
@@ -4592,22 +4591,22 @@
   If it is desired to have information about the exception, then an
   alternative form of the try statement must be used:
 
-       try (e)
-       {
-          % try-block code
-       }
-       catch SomeException: { code ... }
+            try (e)
+            {
+               % try-block code
+            }
+            catch SomeException: { code ... }
 
   If an exception occurs while executing the code in the try-block, then
   the variable e will be assigned the value of the exception object. As
   a simple example, suppose that the file foo.sl consists of:
 
-            define invert_x (x)
-            {
-               if (x == 0)
-                 throw DivideByZeroError;
-               return 1/x;
-            }
+       define invert_x (x)
+       {
+          if (x == 0)
+            throw DivideByZeroError;
+          return 1/x;
+       }
 
   and that the code is called using
 
@@ -4642,14 +4641,14 @@
   To illustrate this form, suppose that invert_x is modified to accept
   an array object:
 
-      private define invert_x(x)
-      {
-         variable i = where (x == 0);
-         if (length (i))
-           throw DivideByZeroError,
-                 "Array contains elements that are zero", i;
-         return 1/x;
-      }
+           private define invert_x(x)
+           {
+              variable i = where (x == 0);
+              if (length (i))
+                throw DivideByZeroError,
+                      "Array contains elements that are zero", i;
+              return 1/x;
+           }
 
   In this case, the message field of the exception object will contain
   the string "Array contains elements that are zero" and the object
@@ -4939,6 +4938,7 @@
   The main difficulty with this approach is that it will not work for
   binary files, i.e., files that contain null characters. For such
   files, the file should be opened in binary mode via
+
              fp = fopen (file, "rb");
 
   and then the data read using the fread function:
@@ -4987,7 +4987,6 @@
   used to count the number of bytes in a file when that information is
   more readily accessible by another means. For example, it is
   preferable to get this information via the stat_file function:
-
             define count_chars_in_file (file)
             {
                variable st;
@@ -5242,14 +5241,14 @@
 
   A typical slsh script is be structured as
 
-          #!/usr/bin/env slsh
-             .
-             .
-          define slsh_main ()
-          {
-             .
-             .
-          }
+     #!/usr/bin/env slsh
+        .
+        .
+     define slsh_main ()
+     {
+        .
+        .
+     }
 
   The first line of the script Unix-specific and should be familiar to
   Unix users. Typically, the code before slsh_main will load any
@@ -5448,21 +5447,21 @@
   As a concrete example, consider the following contrived slsh script
   called buggy.sl:
 
-      define divide (a, b, i)
-      {
-         return a[i] / b;
-      }
-      define slsh_main ()
-      {
-         variable x = [1:5];
-         variable y = x*x;
-         variable i;
-         _for i (0, length(x), 1)
+           define divide (a, b, i)
            {
-              variable z = divide (x, y, i);
-              () = fprintf (stdout, "%g/%g = %g", x[i], y[i], z);
+              return a[i] / b;
            }
-      }
+           define slsh_main ()
+           {
+              variable x = [1:5];
+              variable y = x*x;
+              variable i;
+              _for i (0, length(x), 1)
+                {
+                   variable z = divide (x, y, i);
+                   () = fprintf (stdout, "%g/%g = %g", x[i], y[i], z);
+                }
+           }
 
   Running this via
 
@@ -5510,9 +5509,9 @@
   print the value of an expression or variable. Using it to display the
   value of x yields
 
-           (sldb) print x
-           Caught exception:Variable Uninitialized Error
-           (sldb)
+      (sldb) print x
+      Caught exception:Variable Uninitialized Error
+      (sldb)
 
   This is because x has not yet been assigned a value and will not be
   until line 9 has been executed. The next command may be used to exe-
@@ -5540,18 +5539,18 @@
   The list command may be used to get a list of the source code around
   the current line:
 
-      (sldb) list
-      5     return a[i] / b;
-      6  }
-      7  define slsh_main ()
-      8  {
-      9     variable x = [1:5];
-      10    variable y = x*x;
-      11    variable i;
-      12    _for i (0, length(x), 1)
-      13      {
-      14      variable z = divide (x, y, i);
-      15      () = fprintf (stdout, "%g/%g = %g", x[i], y[i], z);
+           (sldb) list
+           5     return a[i] / b;
+           6  }
+           7  define slsh_main ()
+           8  {
+           9     variable x = [1:5];
+           10    variable y = x*x;
+           11    variable i;
+           12    _for i (0, length(x), 1)
+           13      {
+           14      variable z = divide (x, y, i);
+           15      () = fprintf (stdout, "%g/%g = %g", x[i], y[i], z);
 
   The break function may be used to set a breakpoint. For example,
 
@@ -5634,17 +5633,17 @@
   to help isolate floating point exceptions. Consider the following
   example:
 
-       define solve_quadratic (a, b, c)
-       {
-          variable d = b^2 - 4.0*a*c;
-          variable x = -b + sqrt (d);
-          return x / (2.0*a);
-       }
-       define print_root (a, b, c)
-       {
-          vmessage ("%f %f %f %f\n", a, b, c, solve_quadratic (a,b,c));
-       }
-       print_root (1,2,3);
+            define solve_quadratic (a, b, c)
+            {
+               variable d = b^2 - 4.0*a*c;
+               variable x = -b + sqrt (d);
+               return x / (2.0*a);
+            }
+            define print_root (a, b, c)
+            {
+               vmessage ("%f %f %f %f\n", a, b, c, solve_quadratic (a,b,c));
+            }
+            print_root (1,2,3);
 
   Running it via slsh produces:
 
@@ -5652,14 +5651,14 @@
 
   Now run it in the debugger:
 
-            <top-level> at ./example.sl:12
-            11 print_root (1,2,3);
-            (sldb) watchfpu FE_INVALID
-            (sldb) cont
-            *** FPU exception bits set: FE_INVALID
-            Entering the debugger.
-            solve_quadratic at ./t.sl:4
-            4    variable x = -b + sqrt (d);
+       <top-level> at ./example.sl:12
+       11 print_root (1,2,3);
+       (sldb) watchfpu FE_INVALID
+       (sldb) cont
+       *** FPU exception bits set: FE_INVALID
+       Entering the debugger.
+       solve_quadratic at ./t.sl:4
+       4    variable x = -b + sqrt (d);
 
   This shows the the NaN was produced on line 4.
 
@@ -5790,7 +5789,7 @@
 
   A more complex pattern is
 
-    "\(\<[a-zA-Z]+\>\)[ ]+\1\>"
+         "\(\<[a-zA-Z]+\>\)[ ]+\1\>"
 
   which matches any word repeated consecutively. Note how the grouping
   operators \( and \) are used to define the text matched by the
@@ -5945,6 +5944,7 @@
   o  Short circuiting boolean operators || and && have been added to the
      languange. The use of orelse and andelse constructs are nolonger
      necessary nor encouraged.
+
   o  Qualifiers have been added to the language as a convenient and
      powerful mechanism to pass optional information to functions.
 
@@ -6053,10 +6053,11 @@
 
   o  Operator overloading for user-defined types.  For example it is
      possible to define a meaning to X+Y where X and Y are defined as
-           typedef struct { x, y, z } Vector;
-           define vector (x,y,z) { variable v = @Vector; v.x=x; v.y=y; v.z=z;}
-           X = vector (1,2,3);
-           Y = vector (4,5,6);
+
+      typedef struct { x, y, z } Vector;
+      define vector (x,y,z) { variable v = @Vector; v.x=x; v.y=y; v.z=z;}
+      X = vector (1,2,3);
+      Y = vector (4,5,6);
 
   o  Syntactic sugar for objected-oriented style method calls.  S-Lang 1
      code such as
@@ -6269,21 +6270,21 @@
 
      should be changed to:
 
-            variable e;
-            try (e)
-              {
-                 do_something ();
-                   .
-                   .
-              }
-            catch RunTimeError:
-              {
-                 cleanup_after_error ();
-              }
-            finally:
-              {
-                 cleanup_after_error ();
-              }
+                 variable e;
+                 try (e)
+                   {
+                      do_something ();
+                        .
+                        .
+                   }
+                 catch RunTimeError:
+                   {
+                      cleanup_after_error ();
+                   }
+                 finally:
+                   {
+                      cleanup_after_error ();
+                   }
 
      fread
         When reading Char_Type and UChar_Type objects the S-Lang 1
@@ -6443,24 +6444,24 @@
   such modifications or work under the terms of Section 1 above,
   provided that you also meet all of these conditions:
 
-      a) You must cause the modified files to carry prominent notices
-      stating that you changed the files and the date of any change.
+           a) You must cause the modified files to carry prominent notices
+           stating that you changed the files and the date of any change.
 
-      b) You must cause any work that you distribute or publish, that in
-      whole or in part contains or is derived from the Program or any
-      part thereof, to be licensed as a whole at no charge to all third
-      parties under the terms of this License.
+           b) You must cause any work that you distribute or publish, that in
+           whole or in part contains or is derived from the Program or any
+           part thereof, to be licensed as a whole at no charge to all third
+           parties under the terms of this License.
 
-      c) If the modified program normally reads commands interactively
-      when run, you must cause it, when started running for such
-      interactive use in the most ordinary way, to print or display an
-      announcement including an appropriate copyright notice and a
-      notice that there is no warranty (or else, saying that you provide
-      a warranty) and that users may redistribute the program under
-      these conditions, and telling the user how to view a copy of this
-      License.  (Exception: if the Program itself is interactive but
-      does not normally print such an announcement, your work based on
-      the Program is not required to print an announcement.)
+           c) If the modified program normally reads commands interactively
+           when run, you must cause it, when started running for such
+           interactive use in the most ordinary way, to print or display an
+           announcement including an appropriate copyright notice and a
+           notice that there is no warranty (or else, saying that you provide
+           a warranty) and that users may redistribute the program under
+           these conditions, and telling the user how to view a copy of this
+           License.  (Exception: if the Program itself is interactive but
+           does not normally print such an announcement, your work based on
+           the Program is not required to print an announcement.)
 
   These requirements apply to the modified work as a whole. If identifi-
   able sections of that work are not derived from the Program, and can
@@ -6631,6 +6632,7 @@
                             END OF TERMS AND CONDITIONS
 
   How to Apply These Terms to Your New Programs
+
   If you develop a new program, and you want it to be of the greatest
   possible use to the public, the best way to achieve this is to make it
   free software which everyone can redistribute and change under these
@@ -6641,22 +6643,22 @@
   convey the exclusion of warranty; and each file should have at least
   the "copyright" line and a pointer to where the full notice is found.
 
-           <one line to give the program's name and a brief idea of what it does.>
-           Copyright (C) 19yy  <name of author>
+      <one line to give the program's name and a brief idea of what it does.>
+      Copyright (C) 19yy  <name of author>
 
-           This program is free software; you can redistribute it and/or modify
-           it under the terms of the GNU General Public License as published by
-           the Free Software Foundation; either version 2 of the License, or
-           (at your option) any later version.
+      This program is free software; you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation; either version 2 of the License, or
+      (at your option) any later version.
 
-           This program is distributed in the hope that it will be useful,
-           but WITHOUT ANY WARRANTY; without even the implied warranty of
-           MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-           GNU General Public License for more details.
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
 
-           You should have received a copy of the GNU General Public License
-           along with this program; if not, write to the Free Software
-           Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+      You should have received a copy of the GNU General Public License
+      along with this program; if not, write to the Free Software
+      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
   Also add information on how to contact you by electronic and paper
   mail.
@@ -6695,40 +6697,40 @@
   This software makes use of the Unicode tables published by Unicode,
   Inc under the following terms:
 
-            COPYRIGHT AND PERMISSION NOTICE
+       COPYRIGHT AND PERMISSION NOTICE
 
-            Copyright (c) 1991-2009 Unicode, Inc. All rights reserved. Distributed
-            under the Terms of Use in http://www.unicode.org/copyright.html.
+       Copyright (c) 1991-2009 Unicode, Inc. All rights reserved. Distributed
+       under the Terms of Use in http://www.unicode.org/copyright.html.
 
-            Permission is hereby granted, free of charge, to any person
-            obtaining a copy of the Unicode data files and any associated
-            documentation (the "Data Files") or Unicode software and any
-            associated documentation (the "Software") to deal in the Data Files
-            or Software without restriction, including without limitation the
-            rights to use, copy, modify, merge, publish, distribute, and/or sell
-            copies of the Data Files or Software, and to permit persons to whom
-            the Data Files or Software are furnished to do so, provided that (a)
-            the above copyright notice(s) and this permission notice appear with
-            all copies of the Data Files or Software, (b) both the above
-            copyright notice(s) and this permission notice appear in associated
-            documentation, and (c) there is clear notice in each modified Data
-            File or in the Software as well as in the documentation associated
-            with the Data File(s) or Software that the data or software has been
-            modified.
+       Permission is hereby granted, free of charge, to any person
+       obtaining a copy of the Unicode data files and any associated
+       documentation (the "Data Files") or Unicode software and any
+       associated documentation (the "Software") to deal in the Data Files
+       or Software without restriction, including without limitation the
+       rights to use, copy, modify, merge, publish, distribute, and/or sell
+       copies of the Data Files or Software, and to permit persons to whom
+       the Data Files or Software are furnished to do so, provided that (a)
+       the above copyright notice(s) and this permission notice appear with
+       all copies of the Data Files or Software, (b) both the above
+       copyright notice(s) and this permission notice appear in associated
+       documentation, and (c) there is clear notice in each modified Data
+       File or in the Software as well as in the documentation associated
+       with the Data File(s) or Software that the data or software has been
+       modified.
 
-            THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY
-            OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-            WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-            NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE
-            COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR
-            ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY
-            DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
-            WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
-            ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
-            OF THE DATA FILES OR SOFTWARE.
+       THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY
+       OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+       WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+       NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE
+       COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR
+       ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY
+       DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+       WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+       ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+       OF THE DATA FILES OR SOFTWARE.
 
-            Except as contained in this notice, the name of a copyright holder
-            shall not be used in advertising or otherwise to promote the sale,
-            use or other dealings in these Data Files or Software without prior
-            written authorization of the copyright holder.
+       Except as contained in this notice, the name of a copyright holder
+       shall not be used in advertising or otherwise to promote the sale,
+       use or other dealings in these Data Files or Software without prior
+       written authorization of the copyright holder.
 

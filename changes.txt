@@ -3,7 +3,8 @@ Changes since 2.2.4
 1. src/slarray.c: Try to find a suitable multiplier for range arrays
    to avoid roundoff errors.  Using the multiplier avoids the
    [1:10:0.001] from having the element 1.1260000000000001.
-
+2. doc/tm/rtl/strops.tm: Correct typos in string_match documentation
+   (Manfred Hanke).
 
 Changes since 2.2.3
 1. src/slpack.c: Typo affecting 64 bit integers ('q' & 'Q') (Paul
