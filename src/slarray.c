@@ -2891,6 +2891,26 @@ static SLang_Array_Type *inline_implicit_int_array (SLindex_Type *xminptr, SLind
 #endif
 
 #if SLANG_HAS_FLOAT
+static double compute_range_multiplier (double xmin, double xmax, double dx)
+{
+   double multiplier = 1.0;
+
+   (void) xmax;
+   while (multiplier < 1e9)
+     {
+	double xmin1, dx1;
+
+	xmin1 = multiplier * xmin;
+	dx1 = multiplier * dx;
+
+	if ((xmin1 == (int)xmin1) && (dx1 == (int)dx1))
+	  return multiplier;
+	multiplier *= 10.0;
+     }
+   return 1.0;
+}
+
+
 static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 							 double *xminptr, double *xmaxptr, double *dxptr,
 							 int ntype, int nels)
@@ -2899,6 +2919,7 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
    SLang_Array_Type *at;
    SLindex_Type dims;
    double xmin, xmax, dx;
+   double multiplier = 1.0;
 
    if ((xminptr == NULL) || (xmaxptr == NULL))
      {
@@ -2963,7 +2984,8 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 		  return NULL;
 	       }
 
-	     last = xmin + (n-1)*dx;
+	     multiplier = compute_range_multiplier (xmin, xmax, dx);
+	     last = ((xmin*multiplier) + (n-1) * (dx*multiplier))/multiplier;
 
 	     if (dx > 0.0)
 	       {
@@ -2985,8 +3007,11 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 
 	ptr = (double *) at->data;
 
+	xmin *= multiplier;
+	dx *= multiplier;
+
 	for (i = 0; i < n; i++)
-	  ptr[i] = xmin + i * dx;
+	  ptr[i] = (xmin + i * dx)/multiplier;
 
 	/* Explicitly set the last element to xmax to avoid roundoff error */
 	if (ntype && (n > 1))
