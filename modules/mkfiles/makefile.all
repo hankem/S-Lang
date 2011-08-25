@@ -142,8 +142,8 @@ SLANGDIR = ..$(P)src$(P)$(OBJDIR)
 # ---------------------------------------------------------------------------
 # List of modules to compile.  Some/Most require additional libraries to be
 # installed.
-MODULES = slsmg rand csv
-# slsmg, rand, csv: no external dependencies
+MODULES = slsmg rand csv base64
+# slsmg, rand, csv base64: no external dependencies
 # iconv: iconv library
 # png:   png library
 # pcre: Ported to Win32 by GnuWin32 group.
@@ -165,6 +165,8 @@ rand:
 	$(MAKE) TARGET=rand TARGETLIBS=$(RANDLIBS) TARGETINCS=$(RANDINCS) build-target
 csv:
 	$(MAKE) TARGET=csv TARGETLIBS=$(CSVLIBS) TARGETINCS=$(CSVINCS) build-target
+base64:
+	$(MAKE) TARGET=base64 TARGETLIBS=$(BASE64LIBS) TARGETINCS=$(BASE64INCS) build-target
 pcre:
 	$(MAKE) TARGET=pcre TARGETLIBS=$(PCRELIBS) TARGETINCS=$(PCREINCS) build-target
 png:

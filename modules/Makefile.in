@@ -1,10 +1,10 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
   varray-module.so socket-module.so rand-module.so fork-module.so \
-  csv-module.so @PCRE_MODULE@ @PNG_MODULE@ \
+  csv-module.so base64-module.so @PCRE_MODULE@ @PNG_MODULE@ \
   @ICONV_MODULE@ @ONIG_MODULE@ @ZLIB_MODULE@ @SYSCONF_MODULE@
 SLFILES = slsmg termios select fcntl varray socket pcre png iconv \
-  onig rand csv zlib fork sysconf
+  onig rand csv zlib fork sysconf base64
 #---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
@@ -135,6 +135,9 @@ $(OBJDIR)/sysconf-module.so: sysconf-module.c config.h
 csv-module.so: $(OBJDIR) $(OBJDIR)/csv-module.so
 $(OBJDIR)/csv-module.so: csv-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/csv-module.c -o csv-module.so $(LIBS)
+base64-module.so: $(OBJDIR) $(OBJDIR)/base64-module.so
+$(OBJDIR)/base64-module.so: base64-module.c config.h
+	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/base64-module.c -o base64-module.so $(LIBS)
 
 # Note that Windows/Cygwin modules need execute permissions
 install: all

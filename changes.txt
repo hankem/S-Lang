@@ -5,6 +5,7 @@ Changes since 2.2.4
    [1:10:0.001] from having the element 1.1260000000000001.
 2. doc/tm/rtl/strops.tm: Correct typos in string_match documentation
    (Manfred Hanke).
+3. modules/base64-module.c: Added a base64 encoder module.
 
 Changes since 2.2.3
 1. src/slpack.c: Typo affecting 64 bit integers ('q' & 'Q') (Paul
