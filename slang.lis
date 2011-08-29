@@ -127,6 +127,13 @@
 @modules/mkfiles/README
 @modules/Makefile.in
 @modules/README
+@modules/base64-module.c
+@modules/base64.sl
+@modules/chksum-module.c
+@modules/chksum_sha1.c
+@modules/cchksum_md5.c
+@modules/chksum.h
+@modules/chksum.sl
 @modules/csv-module.c
 @modules/csv.sl
 @modules/fcntl-module.c
@@ -160,6 +167,8 @@
 @modules/zlib-module.c
 @modules/zlib.sl
 
+@modules/test/test_base64.sl
+@modules/test/test_chksum.sl
 @modules/test/test_csv.sl
 @modules/test/test_zlib.sl
 @modules/test/test_onig.sl

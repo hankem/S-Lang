@@ -1,10 +1,12 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
   varray-module.so socket-module.so rand-module.so fork-module.so \
-  csv-module.so base64-module.so @PCRE_MODULE@ @PNG_MODULE@ \
+  csv-module.so base64-module.so chksum-module.so @PCRE_MODULE@ @PNG_MODULE@ \
   @ICONV_MODULE@ @ONIG_MODULE@ @ZLIB_MODULE@ @SYSCONF_MODULE@
 SLFILES = slsmg termios select fcntl varray socket pcre png iconv \
-  onig rand csv zlib fork sysconf base64
+  onig rand csv zlib fork sysconf base64 chksum
+CHKSUM_OBJS = chksum-module.o chksum_md5.o chksum_sha1.o
+OBJDIR_CHKSUM_OBJS = $(OBJDIR)/chksum-module.o $(OBJDIR)/chksum_md5.o $(OBJDIR)/chksum_sha1.o
 #---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
@@ -138,6 +140,16 @@ $(OBJDIR)/csv-module.so: csv-module.c config.h
 base64-module.so: $(OBJDIR) $(OBJDIR)/base64-module.so
 $(OBJDIR)/base64-module.so: base64-module.c config.h
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/base64-module.c -o base64-module.so $(LIBS)
+#
+chksum-module.so: $(OBJDIR) $(OBJDIR)/chksum-module.so
+$(OBJDIR)/chksum-module.so: $(OBJDIR_CHKSUM_OBJS)
+	cd $(OBJDIR) && $(CC_SHARED) $(CHKSUM_OBJS) -o chksum-module.so $(LIBS)
+$(OBJDIR)/chksum-module.o: chksum-module.c chksum.h
+	cd $(OBJDIR) && $(CC_SHARED) -c $(INCS) $(SRCDIR)/chksum-module.c
+$(OBJDIR)/chksum_md5.o: chksum_md5.c chksum.h
+	cd $(OBJDIR) && $(CC_SHARED) -c $(INCS) $(SRCDIR)/chksum_md5.c
+$(OBJDIR)/chksum_sha1.o: chksum_sha1.c chksum.h
+	cd $(OBJDIR) && $(CC_SHARED) -c $(INCS) $(SRCDIR)/chksum_sha1.c
 
 # Note that Windows/Cygwin modules need execute permissions
 install: all
