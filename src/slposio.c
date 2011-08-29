@@ -1088,7 +1088,7 @@ static void destroy_fd_type (SLtype type, VOID_STAR ptr)
    (void) type;
 
    SLfile_free_fd (*(SLFile_FD_Type **) ptr);
-   e = _pSLerrno_errno;
+   _pSLerrno_errno = e;
 }
 
 static int fd_push (SLtype type, VOID_STAR v)

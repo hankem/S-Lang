@@ -139,12 +139,10 @@ static void mmap_array (void)
    size_t sizeof_type;
    size_t num_bytes;
    MMap_Type *m;
-   VOID_STAR data;
 
    m = NULL;
    a_dims = NULL;
    file = NULL;
-   data = NULL;
 
    if (-1 == SLang_pop_array_of_type (&a_dims, SLANG_ARRAY_INDEX_TYPE))
      return;

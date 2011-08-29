@@ -978,7 +978,6 @@ aget_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
    SLang_Array_Type *new_at;
    SLindex_Type num_elements;
    unsigned char *new_data, *src_data;
-   size_t sizeof_type;
    int is_ptr, is_range;
 
    if (-1 == coerse_array_to_linear (at))
@@ -1001,7 +1000,6 @@ aget_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
    src_data = (unsigned char *) at->data;
    new_data = (unsigned char *) new_at->data;
    num_elements = (SLindex_Type) at->num_elements;
-   sizeof_type = new_at->sizeof_type;
 
    if (num_elements < 0)
      {
@@ -1941,7 +1939,6 @@ static int
 static int
 aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 {
-   size_t sizeof_type;
    char *data_to_put, *dest_data;
    SLuindex_Type data_increment;
    SLindex_Type num_elements;
@@ -1958,8 +1955,6 @@ aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
    if ((is_range == 0)
        && (-1 == coerse_array_to_linear (ind_at)))
      return -1;
-
-   sizeof_type = at->sizeof_type;
 
    cl = at->cl;
 
@@ -2477,7 +2472,7 @@ static void qs_sort_array_internal (void *vobj, SLindex_Type n,
    save_vobj = QSort_Obj;
    QSort_Obj = vobj;
    qsort ((void *)indx, n, sizeof (SLindex_Type), sort_cmp);
-   QSort_Obj = vobj;
+   QSort_Obj = save_vobj;
 
    (void) SLang_push_array (ind_at, 1);
 }

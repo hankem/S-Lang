@@ -8,6 +8,7 @@ Changes since 2.2.4
 3. modules/base64-module.c: Added a base64 encoder module.
 4. modules/chksum-module.c: A module to compute md5, sha1, etc
    checksums.
+5. Removed a few unused variables from the code.
 
 Changes since 2.2.3
 1. src/slpack.c: Typo affecting 64 bit integers ('q' & 'Q') (Paul

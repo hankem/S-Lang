@@ -1020,7 +1020,7 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
    SLang_Object_Type *obj;
    SLang_Array_Type *ind_at;
    SLindex_Type indx, *idx_data;
-   SLuindex_Type i, num, list_len;
+   SLuindex_Type i, num;
    int ret;
 
    (void) type;
@@ -1042,7 +1042,6 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
    if (NULL == (new_list = allocate_list ()))
      goto free_and_return;
 
-   list_len = list->length;
    num = ind_at->num_elements;
    idx_data = (SLindex_Type *)ind_at->data;
    for (i = 0; i < num; i++)
@@ -1095,7 +1094,7 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
    SLang_Object_Type obj;
    SLang_Array_Type *ind_at;
    SLindex_Type indx, *idx_data;
-   SLuindex_Type i, num, list_len;
+   SLuindex_Type i, num;
    int ret;
 
    (void) type;
@@ -1123,7 +1122,6 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 
    idx_data = (SLindex_Type *)ind_at->data;
    num = ind_at->num_elements;
-   list_len = list->length;
 
    if (-1 == SLang_pop (&obj))
      {
