@@ -102,10 +102,10 @@
    _eqs (1, 1.0)           ===> 1
    _eqs ("a", 1)           ===> 0
    _eqs ([1,2], [1.0,2.0]) ===> 1
-\seealso{typeof, _eqs, __get_reference, __is_callable}
 \notes
    For testing sameness, use \ifun{__is_same}.
 \done
+\seealso{typeof, _eqs, __get_reference, __is_callable}
 
 \function{getenv}
 \synopsis{Get the value of an environment variable}
@@ -252,9 +252,9 @@
    __is_same (1, 1.0)       ===> 0
    __is_same ("a", 1)       ===> 0
    __is_same ([1,2], [1,2]) ===> 0
-\seealso{typeof, _eqs, __get_reference, __is_callable}
 \notes
    For testing equality, use \ifun{_eqs}.
+\seealso{typeof, _eqs, __get_reference, __is_callable}
 \done
 
 \function{putenv}

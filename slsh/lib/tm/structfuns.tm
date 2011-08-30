@@ -53,6 +53,11 @@
     s = struct { foo, bar };
     t = struct_combine (s, "baz");   % t = struct {foo, bar, baz};
 #v-
+\notes
+  The same effect can be achieved by using the dereference operator, e.g.,
+#v+
+    t = struct { @s, "baz" };
+#v-
 \seealso{get_struct_field_names}
 \done
 

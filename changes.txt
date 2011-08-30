@@ -9,6 +9,9 @@ Changes since 2.2.4
 4. modules/chksum-module.c: A module to compute md5, sha1, etc
    checksums.
 5. Removed a few unused variables from the code.
+6. Documentation updates and corrections by Agathoklis D. Hatzimanikas.
+
+{{{ Previous Versions
 
 Changes since 2.2.3
 1. src/slpack.c: Typo affecting 64 bit integers ('q' & 'Q') (Paul
@@ -47,8 +50,6 @@ Changes since 2.2.3
 19. Tweaked doc macros and rebuilt docs.
 20. src/slarray.c: Added a check for too small of a range array
     increment.
-
-{{{ Previous Versions
 
 Changes since 2.2.2
 1. src/sltermin.c: Added support for native terminfo binary layouts.

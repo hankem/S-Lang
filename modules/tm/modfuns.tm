@@ -125,4 +125,11 @@ comma-separated-value, tab-delimited files, etc.  Use
 \exmp{require("csv")} to load it.
 #i csvfuns.tm
 
+\chapter{Screen Management Module}
+The \module{slsmg} module provides access to SLsmg routines, which is
+an interface to platform indepented routines for manipulating the display
+on a terminal.
+It may be loaded using \exmp{require("slsmg")}.
+#i slsmg.tm
+
 \end{\documentstyle}

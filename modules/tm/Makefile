@@ -29,9 +29,12 @@ clean:
 	-rm -f *~ *.dvi *.log *.aux *.toc *.bak *.sgml
 distclean: clean
 	-rm -f *.html *.ps $(HLP_FILES)
-install: install-help install-html
+install: install-help
 install-help: $(HLP_FILES)
 	-mv $(HLP_FILES) ../help
+	@echo
+	@echo To install the html files, use make install-html
+	@echo
 install-html: html
 	-mv *.html ../../doc/html/
 .PHONY: iclean distclean install install-help install-html

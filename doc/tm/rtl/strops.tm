@@ -1176,11 +1176,8 @@
 #v-
   returns \exmp{"or no"}
 \notes
-  In many cases it is more convenient to use array indexing rather
-  than the \ifun{substr} function.  In fact, if UTF-8 mode is not in
-  effect, \exmp{substr(s,i+1,strlen(s))} is equivalent to
-  \exmp{s[[i:]]}.  Array indexing uses byte-semantics, not character
-  semantics assumed by the \ifun{substr} function.
+  This function assumes character semantics and not byte semantics.
+  Use the \ifun{substrbytes} function to extract bytes from a string.
 \seealso{is_substr, substrbytes, strlen}
 \done
 
@@ -1200,7 +1197,7 @@
   returns \exmp{"or no"}
 \notes
   In many cases it is more convenient to use array indexing rather
-  than the \ifun{substr} function.  In fact
+  than the \ifun{substrbytes} function.  In fact
   \exmp{substrbytes(s,i+1,-1)} is equivalent to
   \exmp{s[[i:]]}.
 

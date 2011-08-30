@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide (v2.2.4)
   John E. Davis <www.jedsoft.org>
-  Jun 28, 2011
+  Aug 30, 2011
   ____________________________________________________________
 
 
@@ -1216,7 +1216,7 @@
   SLang_init_tty. Before exiting the program, the function
   SLang_reset_tty must be called to restore the keyboard interface to
   its original state. Once initialized, the low-level SLang_getkey
-  function may be used to read simgle keyboard characters from the
+  function may be used to read single keyboard characters from the
   terminal. An application using the higher-level SLkp interface will
   read charcters using the SLkp_getkey function.
 
@@ -1866,7 +1866,7 @@
 
      void SLsmg_write_wrapped_string(SLuchar_Type *str, int r, int c,
         unsigned int dr, unsigned int dc, int fill)
-        The purpose of this function is two write a string str to a box
+        The purpose of this function is to write a string str to a box
         defined by rows and columns satisfying r<=row<r+dc and
         c<=column<c+dc. The string will be wrapped at the column
         boundaries of the box and truncated if its size exceeds to size

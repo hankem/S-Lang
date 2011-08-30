@@ -986,7 +986,7 @@ assoc_get_values
 
       variable a = Assoc_Type[Integer_Type];
 
-  The the following may be used to print the values of the array in
+  Then the following may be used to print the values of the array in
   ascending order:
 
       define print_sorted_values (a)
@@ -1003,7 +1003,7 @@ assoc_get_values
 
 
  SEE ALSO
-  assoc_get_values, assoc_key_exists, assoc_delete_key, array_sort
+  assoc_get_keys, assoc_key_exists, assoc_delete_key, array_sort
 
 --------------------------------------------------------------
 
@@ -4773,13 +4773,13 @@ _eqs
    _eqs ("a", 1)           ===> 0
    _eqs ([1,2], [1.0,2.0]) ===> 1
 
- SEE ALSO
-  typeof, _eqs, __get_reference, __is_callable
-
  NOTES
    For testing sameness, use `__is_same'.
 
 --------------------------------------------------------------
+
+ SEE ALSO
+  typeof, _eqs, __get_reference, __is_callable
 
 getenv
 
@@ -4987,11 +4987,11 @@ __is_same
    __is_same ("a", 1)       ===> 0
    __is_same ([1,2], [1,2]) ===> 0
 
- SEE ALSO
-  typeof, _eqs, __get_reference, __is_callable
-
  NOTES
    For testing equality, use `_eqs'.
+
+ SEE ALSO
+  typeof, _eqs, __get_reference, __is_callable
 
 --------------------------------------------------------------
 
@@ -7385,8 +7385,8 @@ fputs
        fp = fopen (file, "a");
        if (fp == NULL)
          throw OpenError, "Unable to open $file"$;
-       if ((-1 == fputs (s, fp))
-           or (-1 == fclose (fp)))
+       if ((-1 == fputs (str, fp))
+           || (-1 == fclose (fp)))
          throw WriteError, "Error writing to $file"$;
     }
 
@@ -9272,11 +9272,8 @@ substr
   returns `"or no"'
 
  NOTES
-  In many cases it is more convenient to use array indexing rather
-  than the `substr' function.  In fact, if UTF-8 mode is not in
-  effect, `substr(s,i+1,strlen(s))' is equivalent to
-  `s[[i:]]'.  Array indexing uses byte-semantics, not character
-  semantics assumed by the `substr' function.
+  This function assumes character semantics and not byte semantics.
+  Use the `substrbytes' function to extract bytes from a string.
 
  SEE ALSO
   is_substr, substrbytes, strlen
@@ -9306,7 +9303,7 @@ substrbytes
 
  NOTES
   In many cases it is more convenient to use array indexing rather
-  than the `substr' function.  In fact
+  than the `substrbytes' function.  In fact
   `substrbytes(s,i+1,-1)' is equivalent to
   `s[[i:]]'.
 

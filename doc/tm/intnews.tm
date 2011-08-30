@@ -17,7 +17,7 @@
   otherwise \em{expression = val2}.
 
 \item
-  The break and condition statements support an optional integer that
+  The break and continue statements support an optional integer that
   indicates how many loop levels the statement affects, e.g., the
   break statement in
 #v+

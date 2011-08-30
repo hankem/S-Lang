@@ -155,7 +155,7 @@
 
   Options whose value is optional:
 #v+
-    cmdopt_add (optobj, "f|foo", &v; type="string", optional=DLFT);
+    cmdopt_add (optobj, "f|foo", &v; type="string", optional=DFLT);
     cmdline: pgm -f ...            % set v to DFLT
     cmdline: pgm -fVAL ...         % set v to VAL
     cmdline: pgm --foo ...         % set v to DFLT

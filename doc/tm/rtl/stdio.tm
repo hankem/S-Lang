@@ -273,8 +273,8 @@
        fp = fopen (file, "a");
        if (fp == NULL)
          throw OpenError, "Unable to open $file"$;
-       if ((-1 == fputs (s, fp))
-           or (-1 == fclose (fp)))
+       if ((-1 == fputs (str, fp))
+           || (-1 == fclose (fp)))
          throw WriteError, "Error writing to $file"$;
     }
 #v-

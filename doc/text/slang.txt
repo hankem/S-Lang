@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2.4)
   John E. Davis <www.jedsoft.org>
-  Jun 28, 2011
+  Aug 30, 2011
   ____________________________________________________________
 
 
@@ -2586,8 +2586,8 @@
 
   When the derivative function is called, the local variable f will be a
   reference to the x_squared function. The x_squared function is called
-  is called with the specified parameters by dereferencing f with the
-  dereference operator.
+  with the specified parameters by dereferencing f with the dereference
+  operator.
 
   9.6.  Functions with a Variable Number of Arguments
 
@@ -3050,7 +3050,7 @@
 
            () = evalfile ("foo.sl", "foo");
 
-  In this case X, Y, and get_z will be placed in the foo namespace.
+  In this case X, Y, and set_z will be placed in the foo namespace.
   These objects may be accessed from outside foo.sl using the foo-> pre-
   fix, e.g.,
 
@@ -5179,10 +5179,11 @@
   A few comments about this example are in order. First of all, note
   that a new data type called UTMP_Type was created, although this was
   not really necessary. The file was opened in binary mode, but this too
-  was optional because under a Unix system where there is no distinction
-  between binary and text modes. The print_utmp function does not print
-  all of the structure fields. Finally, last but not least, the return
-  values from fprintf and fclose were handled by discarding them.
+  was optional because, for example, on a Unix system there is no dis-
+  tinction between binary and text modes. The print_utmp function does
+  not print all of the structure fields. Finally, last but not least,
+  the return values from fprintf and fclose were handled by discarding
+  them.
 
   19.  slsh
 
@@ -5847,7 +5848,7 @@
   If condition is non-zero, then expression = val1, otherwise expression
   = val2.
 
-  o  The break and condition statements support an optional integer that
+  o  The break and continue statements support an optional integer that
      indicates how many loop levels the statement affects, e.g., the
      break statement in
 

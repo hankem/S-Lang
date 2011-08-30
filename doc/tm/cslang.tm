@@ -1234,7 +1234,7 @@
   \verb{SLang_init_tty}. Before exiting the program, the function
   \verb{SLang_reset_tty} must be called to restore the keyboard
   interface to its original state.  Once initialized, the low-level
-  \verb{SLang_getkey} function may be used to read \em{simgle}
+  \verb{SLang_getkey} function may be used to read \em{single}
   keyboard characters from the terminal.  An application using the
   higher-level \grp{SLkp} interface will read charcters using the
   \verb{SLkp_getkey} function.
@@ -1944,7 +1944,7 @@
   \verb{SLsmg_write_wrapped_string}.
 
 \proto{void SLsmg_write_wrapped_string(SLuchar_Type *str, int r, int c, unsigned int dr, unsigned int dc, int fill)}
-  The purpose of this function is two write a string \verb{str} to a
+  The purpose of this function is to write a string \verb{str} to a
   box defined by rows and columns satisfying \verb{r<=row<r+dc} and
   \verb{c<=column<c+dc}. The string will be wrapped at the column
   boundaries of the box and truncated if its size exceeds to size of

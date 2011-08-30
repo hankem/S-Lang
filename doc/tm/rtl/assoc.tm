@@ -31,7 +31,7 @@
 #v+
       variable a = Assoc_Type[Integer_Type];
 #v-
-  The the following may be used to print the values of the array in
+  Then the following may be used to print the values of the array in
   ascending order:
 #v+
       define print_sorted_values (a)
@@ -46,7 +46,7 @@
            }
       }
 #v-
-\seealso{assoc_get_values, assoc_key_exists, assoc_delete_key, array_sort}
+\seealso{assoc_get_keys, assoc_key_exists, assoc_delete_key, array_sort}
 \done
 
 \function{assoc_key_exists}

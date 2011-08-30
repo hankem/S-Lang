@@ -2768,7 +2768,7 @@
 #v-
    When the \exmp{derivative} function is called, the local variable
    \exmp{f} will be a reference to the \exmp{x_squared} function. The
-   \exmp{x_squared} function is called is called with the specified
+   \exmp{x_squared} function is called with the specified
    parameters by dereferencing \exmp{f} with the dereference operator.
 
 #%}}}
@@ -3262,7 +3262,7 @@
 #v+
     () = evalfile ("foo.sl", "foo");
 #v-
- In this case \exmp{X}, \exmp{Y}, and \exmp{get_z} will be placed in the
+ In this case \exmp{X}, \exmp{Y}, and \exmp{set_z} will be placed in the
  \exmp{foo} namespace.  These objects may be accessed from outside
  \exmp{foo.sl} using the \exmp{foo->} prefix, e.g.,
 #v+
@@ -5539,11 +5539,11 @@
   A few comments about this example are in order.  First of all, note
   that a new data type called \exmp{UTMP_Type} was created, although
   this was not really necessary.  The file was opened in binary mode,
-  but this too was optional because under a Unix system where there is
-  no distinction between binary and text modes.  The \exmp{print_utmp}
-  function does not print all of the structure fields.  Finally, last
-  but not least, the return values from \sfun{fprintf} and \ifun{fclose}
-  were handled by discarding them.
+  but this too was optional because, for example, on a Unix system 
+  there is no distinction between binary and text modes.  The
+  \exmp{print_utmp} function does not print all of the structure
+  fields.  Finally, last but not least, the return values from
+  \sfun{fprintf} and \ifun{fclose} were handled by discarding them.
 
 #%}}}
 
