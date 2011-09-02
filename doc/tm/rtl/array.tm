@@ -81,24 +81,25 @@
 
 \function{array_map}
 \synopsis{Apply a function to each element of an array}
-\usage{Array_Type array_map (type, func, arg0, ...)}
+\usage{Array_Type array_map ([type, ...] func, args...)}
 #v+
-    DataType_Type type;
+    DataType_Type type, ...;
     Ref_Type func;
 #v-
 \description
-  The \ifun{array_map} function may be used to apply a function to each
-  element of an array and returns the resulting values as an array of
-  the specified type.  The \exmp{type} parameter indicates what kind of
-  array should be returned and generally corresponds to the return
-  type of the function.  The \exmp{arg0} parameter should be an array
-  and is used to determine the dimensions of the resulting array.  If
-  any subsequent arguments correspond to an array of the same size,
-  then those array elements will be passed in parallel with the first
-  arrays arguments.
+  The \ifun{array_map} function may be used to apply a function to
+  each element of an array and returns the resulting values as an
+  array of the specified type.  The \exmp{type} parameter indicates
+  what kind of array should be returned and generally corresponds to
+  the return type of the function.  If the function returns multiple
+  values, then the type of each return value must be given.  The first
+  array-valued argument is used to determine the dimensions of the
+  resulting array(s).  If any subsequent arguments correspond to an array
+  of the same size, then those array elements will be passed in
+  parallel with the elements of the first array argument.
 \example
   The first example illustrates how to apply the \ifun{strlen} function
-  to an array of strings:
+  to an array of strings.
 #v+
      S = ["", "Train", "Subway", "Car"];
      L = array_map (Integer_Type, &strlen, S);
@@ -122,6 +123,20 @@
      xfiles = array_map (String_Type, &strcat, files, exts);
      % ==> xfiles = ["slang.a", "slstring.b", "slarray.c"];
 #v-
+
+  Here is an example of its application to a function return two values:
+#v+
+    % a function returning a string and a floating point value
+    define artithmetic_and_geometric_mean(x, y)
+    {
+      return string(0.5*(x+y)), sqrt(x*y);
+    }
+
+    (a, g) = array_map2(String_Type, Double_Type,
+                        &artithmetic_and_geometric_mean, [0:4], [5:9]);
+    % a = ["2.5", "3.5", "4.5", "5.5", "6.5"];
+    % g = [0, sqrt(6), sqrt(14), sqrt(24), 6];
+#v-
 \notes
   Many mathematical functions already work transparently on arrays.
   For example, the following two statements produce identical results:
@@ -129,6 +144,10 @@
      B = sin (A);
      B = array_map (Double_Type, &sin, A);
 #v-
+\notes
+  A number of the string functions have been vectorized, including the
+  \ifun{strlen} function.  This means that there is no need to use the
+  \ifun{array_map} function with the \ifun{strlen} function.
 \seealso{array_info, strlen, strcat, sin}
 \done
 

@@ -112,26 +112,27 @@ array_map
   Apply a function to each element of an array
 
  USAGE
-  Array_Type array_map (type, func, arg0, ...)
+  Array_Type array_map ([type, ...] func, args...)
 
-    DataType_Type type;
+    DataType_Type type, ...;
     Ref_Type func;
 
 
  DESCRIPTION
-  The `array_map' function may be used to apply a function to each
-  element of an array and returns the resulting values as an array of
-  the specified type.  The `type' parameter indicates what kind of
-  array should be returned and generally corresponds to the return
-  type of the function.  The `arg0' parameter should be an array
-  and is used to determine the dimensions of the resulting array.  If
-  any subsequent arguments correspond to an array of the same size,
-  then those array elements will be passed in parallel with the first
-  arrays arguments.
+  The `array_map' function may be used to apply a function to
+  each element of an array and returns the resulting values as an
+  array of the specified type.  The `type' parameter indicates
+  what kind of array should be returned and generally corresponds to
+  the return type of the function.  If the function returns multiple
+  values, then the type of each return value must be given.  The first
+  array-valued argument is used to determine the dimensions of the
+  resulting array(s).  If any subsequent arguments correspond to an array
+  of the same size, then those array elements will be passed in
+  parallel with the elements of the first array argument.
 
  EXAMPLE
   The first example illustrates how to apply the `strlen' function
-  to an array of strings:
+  to an array of strings.
 
      S = ["", "Train", "Subway", "Car"];
      L = array_map (Integer_Type, &strlen, S);
@@ -156,6 +157,20 @@ array_map
      % ==> xfiles = ["slang.a", "slstring.b", "slarray.c"];
 
 
+  Here is an example of its application to a function return two values:
+
+    % a function returning a string and a floating point value
+    define artithmetic_and_geometric_mean(x, y)
+    {
+      return string(0.5*(x+y)), sqrt(x*y);
+    }
+
+    (a, g) = array_map2(String_Type, Double_Type,
+                        &artithmetic_and_geometric_mean, [0:4], [5:9]);
+    % a = ["2.5", "3.5", "4.5", "5.5", "6.5"];
+    % g = [0, sqrt(6), sqrt(14), sqrt(24), 6];
+
+
  NOTES
   Many mathematical functions already work transparently on arrays.
   For example, the following two statements produce identical results:
@@ -163,6 +178,11 @@ array_map
      B = sin (A);
      B = array_map (Double_Type, &sin, A);
 
+
+ NOTES
+  A number of the string functions have been vectorized, including the
+  `strlen' function.  This means that there is no need to use the
+  `array_map' function with the `strlen' function.
 
  SEE ALSO
   array_info, strlen, strcat, sin

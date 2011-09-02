@@ -10,6 +10,8 @@ Changes since 2.2.4
    checksums.
 5. Removed a few unused variables from the code.
 6. Documentation updates and corrections by Agathoklis D. Hatzimanikas.
+7. src/slarray.c: array_map enhanced to handle functions that return
+   multiple values (based upon a patch from Manfred Hanke).
 
 {{{ Previous Versions
 

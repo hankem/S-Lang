@@ -4293,154 +4293,266 @@ typedef struct
    char *addr;
 }
 Map_Arg_Type;
-/* Usage: array_map (Return-Type, func, args,....); */
-static void array_map (void)
+
+typedef struct
 {
-   Map_Arg_Type *args;
-   unsigned int num_args;
-   unsigned int i, i_control;
-   SLang_Name_Type *nt;
-   unsigned int num_elements;
+   SLtype type;
    SLang_Array_Type *at;
    char *addr;
-   SLtype type;
+}
+Map_Return_Type;
 
-   at = NULL;
-   args = NULL;
-   nt = NULL;
+static void free_arraymap_retvals (Map_Return_Type *r, unsigned int n)
+{
+   unsigned int i;
 
-   if (SLang_Num_Function_Args < 3)
+   if (r == NULL)
+     return;
+
+   for (i = 0; i < n; i++)
      {
-	_pSLang_verror (SL_INVALID_PARM,
-		      "Usage: array_map (Return-Type, &func, args...)");
-	SLdo_pop_n (SLang_Num_Function_Args);
-	return;
+	if (r[i].at != NULL)
+	  free_array (r[i].at);
      }
+   SLfree ((char *)r);
+}
 
-   num_args = (unsigned int)SLang_Num_Function_Args - 2;
-   args = (Map_Arg_Type *) _SLcalloc (num_args, sizeof (Map_Arg_Type));
-   if (args == NULL)
+static void free_arraymap_argvals (Map_Arg_Type *a, unsigned int n)
+{
+   unsigned int i;
+
+   if (a == NULL)
+     return;
+
+   for (i = 0; i < n; i++)
      {
-	SLdo_pop_n (SLang_Num_Function_Args);
-	return;
+	if (a[i].at != NULL)
+	  free_array (a[i].at);
      }
-   memset ((char *) args, 0, num_args * sizeof (Map_Arg_Type));
-   i = num_args;
-   i_control = 0;
-   while (i > 0)
+   SLfree ((char *)a);
+}
+
+static int pop_array_map_args (int num_arraymap_parms,
+			       Map_Return_Type **retvalsp, unsigned int *nretp,
+			       SLang_Name_Type **funcp,
+			       Map_Arg_Type **argvalsp, unsigned int *nargsp,
+			       SLang_Array_Type **at_controlp)
+{
+   Map_Return_Type *retvals = NULL;
+   Map_Arg_Type *argvals = NULL;
+   unsigned int i, nret, nargs;
+   SLang_Array_Type *at_control;
+   SLang_Name_Type *func = NULL;
+
+   if (-1 == SLreverse_stack (num_arraymap_parms))
+     return -1;
+
+   nret = 0;
+   while (nret < (unsigned int)num_arraymap_parms)
      {
-	i--;
-	if (SLANG_ARRAY_TYPE == SLang_peek_at_stack ())
+	int type;
+
+	if (-1 == (type = SLang_peek_at_stack_n (nret)))
+	  goto return_error;
+
+	if (type != SLANG_DATATYPE_TYPE)
+	  break;
+
+	nret++;
+     }
+   if (nret == 0)
+     retvals = NULL;
+   else
+     {
+	if (NULL == (retvals = (Map_Return_Type *)SLcalloc(nret,sizeof(Map_Return_Type))))
+	  goto return_error;
+
+	for (i = 0; i < nret; i++)
 	  {
-	     args[i].is_array = 1;
-	     i_control = i;
-	  }
-
-	if (-1 == SLang_pop_array (&args[i].at, 1))
-	  {
-	     SLdo_pop_n (i + 2);
-	     goto return_error;
+	     num_arraymap_parms--;
+	     if (-1 == SLang_pop_datatype (&retvals[i].type))
+	       goto return_error;
 	  }
      }
 
-   if (NULL == (nt = SLang_pop_function ()))
+   if (num_arraymap_parms != 0)
      {
-	SLdo_pop_n (1);
+	num_arraymap_parms--;
+	func = SLang_pop_function ();
+     }
+   if (func == NULL)
+     {
+	SLang_verror (SL_INVALID_PARM, "Expecting a reference to a function");
 	goto return_error;
      }
 
-   num_elements = args[i_control].at->num_elements;
-
-   if (-1 == SLang_pop_datatype (&type))
-     goto return_error;
-
-   if (type == SLANG_UNDEFINED_TYPE)   /* Void_Type */
-     at = NULL;
-   else
+   if (num_arraymap_parms == 0)
      {
-	at = args[i_control].at;
-
-	if (NULL == (at = SLang_create_array (type, 0, NULL, at->dims, at->num_dims)))
-	  goto return_error;
+	SLang_verror (SL_NUM_ARGS_ERROR, "array_map requires at least one function argument");
+	goto return_error;
      }
 
-   for (i = 0; i < num_args; i++)
+   nargs = num_arraymap_parms;
+   if (NULL == (argvals = (Map_Arg_Type *)SLcalloc (nargs, sizeof(Map_Arg_Type))))
+     goto return_error;
+
+   at_control = NULL;
+   for (i = 0; i < nargs; i++)
      {
-	SLang_Array_Type *ati = args[i].at;
+	SLang_Array_Type *at;
+
+	argvals[i].is_array = (SLANG_ARRAY_TYPE == SLang_peek_at_stack ());
+
+	num_arraymap_parms--;
+	if (-1 == SLang_pop_array (&at, 1))
+	  goto return_error;
+
+	if ((at_control == NULL) && (argvals[i].is_array))
+	  at_control = at;
+	argvals[i].at = at;
+	argvals[i].addr = (char *)at->data;
+     }
+
+   if (at_control == NULL)
+     at_control = argvals[0].at;
+
+   for (i = 0; i < nret; i++)
+     {
+	SLtype t = retvals[i].type;
+
+	if (t == SLANG_UNDEFINED_TYPE)   /* Void_Type */
+	  {
+	     retvals[i].at = NULL;
+	     retvals[i].addr = NULL;
+	  }
+	else
+	  {
+	     SLang_Array_Type *at;
+	     if (NULL == (at = SLang_create_array (t, 0, NULL, at_control->dims, at_control->num_dims)))
+	       goto return_error;
+	     retvals[i].at = at;
+	     retvals[i].addr = (char *)at->data;
+	  }
+     }
+
+   *nretp = nret;
+   *retvalsp = retvals;
+   *funcp = func;
+   *nargsp = nargs;
+   *argvalsp = argvals;
+   *at_controlp = at_control;
+   return 0;
+
+return_error:
+   (void) SLdo_pop_n (num_arraymap_parms);
+   free_arraymap_retvals (retvals, nret);
+   SLang_free_function (func);	       /* NULL ok */
+   free_arraymap_argvals (argvals, nargs);
+   return -1;
+}
+
+/* Usage: array_map ([Return-Type...,] &func, args...); */
+static void array_map (void)
+{
+   Map_Arg_Type *argvals;
+   Map_Return_Type *retvals;
+   unsigned int i, nrets, nargs;
+   SLang_Array_Type *at_control;
+   SLang_Name_Type *func;
+   unsigned int num_elements;
+   int num_arraymap_parms;
+
+   num_arraymap_parms = SLang_Num_Function_Args;
+   if (num_arraymap_parms < 2)
+     {
+	_pSLang_verror (SL_INVALID_PARM,
+		      "Usage: array_map ([Return-Type..,,] &func, args...)");
+	SLdo_pop_n (num_arraymap_parms);
+	return;
+     }
+
+   if (-1 == pop_array_map_args (num_arraymap_parms, &retvals, &nrets, &func,
+				 &argvals, &nargs, &at_control))
+     return;
+
+   num_elements = at_control->num_elements;
+
+   for (i = 0; i < nargs; i++)
+     {
+	SLang_Array_Type *ati = argvals[i].at;
 	/* FIXME: Priority = low: The actual dimensions should be compared. */
 	if (ati->num_elements == num_elements)
-	  args[i].increment = ati->sizeof_type;
-	/* memset already guarantees increment to be zero */
+	  argvals[i].increment = ati->sizeof_type;
+	else
+	  argvals[i].increment = 0;
 
 	if ((num_elements != 0)
 	    && (ati->num_elements == 0))
 	  {
 	     _pSLang_verror (SL_TypeMismatch_Error, "array_map: function argument %d of %d is an empty array",
-			   i+1, num_args);
+			   i+1, nargs);
 	     goto return_error;
 	  }
-
-	args[i].addr = (char *) ati->data;
      }
-
-   if (at == NULL)
-     addr = NULL;
-   else
-     addr = (char *)at->data;
 
    for (i = 0; i < num_elements; i++)
      {
 	unsigned int j;
+	Map_Return_Type *ret;
 
 	if (-1 == SLang_start_arg_list ())
 	  goto return_error;
 
-	for (j = 0; j < num_args; j++)
+	for (j = 0; j < nargs; j++)
 	  {
-	     if (-1 == push_element_at_addr (args[j].at,
-					     (VOID_STAR) args[j].addr,
+	     if (-1 == push_element_at_addr (argvals[j].at,
+					     (VOID_STAR) argvals[j].addr,
 					     1))
 	       {
 		  SLdo_pop_n (j);
 		  goto return_error;
 	       }
 
-	     args[j].addr += args[j].increment;
+	     argvals[j].addr += argvals[j].increment;
 	  }
 
 	if (-1 == SLang_end_arg_list ())
 	  {
-	     SLdo_pop_n (num_args);
+	     SLdo_pop_n (nargs);
 	     goto return_error;
 	  }
 
-	if (-1 == SLexecute_function (nt))
+	if (-1 == SLexecute_function (func))
 	  goto return_error;
 
-	if (at == NULL)
-	  continue;
+	ret = retvals + nrets;
+	while (ret > retvals)
+	  {
+	     SLang_Array_Type *at;
 
-	if (-1 == at->cl->cl_apop (type, (VOID_STAR) addr))
-	  goto return_error;
+	     ret--;
+	     if (NULL == (at = ret->at))
+	       continue;
 
-	addr += at->sizeof_type;
+	     if (-1 == at->cl->cl_apop (at->data_type, (VOID_STAR) ret->addr))
+	       goto return_error;
+
+	     ret->addr += at->sizeof_type;
+	  }
      }
 
-   if (at != NULL)
-     (void) SLang_push_array (at, 0);
+   for (i = 0; i < nrets; i++)
+     {
+	if (retvals[i].at != NULL)
+	  (void) SLang_push_array (retvals[i].at, 0);
+     }
 
    /* drop */
 
-   return_error:
-   free_array (at);
-   SLang_free_function (nt);
-   if (args != NULL)
-     {
-	for (i = 0; i < num_args; i++)
-	  free_array (args[i].at);
-
-	SLfree ((char *) args);
-     }
+return_error:
+   free_arraymap_argvals (argvals, nargs);
+   SLang_free_function (func);
+   free_arraymap_retvals (retvals, nrets);
 }
 
 static int push_array_shape (SLang_Array_Type *at)

@@ -153,6 +153,89 @@ if (neqs (SS, array_map (String_Type, &strcat, S, S))) failed ("array_map 2");
 SS = S + "--end";
 if (neqs (SS, array_map (String_Type, &strcat, S, "--end"))) failed ("array_map 3");
 
+private define array_map2_func ()
+{
+   variable args = __pop_list (_NARGS-1);
+   variable f = ();
+   variable r1, r2;
+   (r1, r2) = (@f)(__push_list(args));
+   return {r1, r2};
+}
+
+private define array_map2 ()
+{
+   variable args = __pop_list (_NARGS-3);
+   variable ret1, ret2, f;
+   (ret1, ret2, f) = ();
+   variable rlist = array_map (List_Type, &array_map2_func, f, __push_list(args));
+   %rlist is an array of lists
+   variable n = length (rlist);
+   variable t0 = typeof (rlist[0][0]), t1 = typeof (rlist[0][1]);
+   variable a0 = t0[n], a1 = t1[n];
+   _for (0, n-1, 1)
+     {
+	variable i = ();
+	a0[i] = rlist[i][0];
+	a1[i] = rlist[i][1];
+     }
+   return a0, a1;
+}
+
+private define sum_and_diff (x, y)
+{
+   return x+y, x-y;
+}
+
+private define count_func (x, ref)
+{
+   @ref++;
+}
+
+private define test_array_mapN ()
+{
+   variable s, d, s1, d1, x, y;
+   x = [1:10], y = [1:10];
+   (s,d) = array_map (Double_Type, Double_Type, &sum_and_diff, x, y);
+   (s1, d1) = array_map2 (Double_Type, Double_Type, &sum_and_diff, x, y);
+   if (neqs (s1,s) || neqs (d1, d))
+     failed ("array_map with 2 returns test 1");
+
+   x = [1:10], y = 1.0;
+   (s,d) = array_map (Double_Type, Double_Type, &sum_and_diff, x, y);
+   (s1, d1) = array_map2 (Double_Type, Double_Type, &sum_and_diff, x, y);
+   if (neqs (s1,s) || neqs (d1, d))
+     failed ("array_map with 2 returns test 2");
+
+   y = [1:10], x = 1.0;
+   (s,d) = array_map (Double_Type, Double_Type, &sum_and_diff, x, y);
+   (s1, d1) = array_map2 (Double_Type, Double_Type, &sum_and_diff, x, y);
+   if (neqs (s1,s) || neqs (d1, d))
+     failed ("array_map with 2 returns test 3");
+
+   x = [1:10];
+   s = array_map (Double_Type, &sin, x);
+   s1 = array_map (Void_Type, Double_Type, &sin, x);
+   if (neqs (s1,s))
+     failed ("array_map with 1 void return test 1");
+   s1 = array_map (Double_Type, Void_Type, &sin, x);
+   if (neqs (s1,s))
+     failed ("array_map with 1 void return test 2");
+
+   x = [1:10];
+   y = 0;
+   array_map (&count_func, x, &y);
+   if (y != length(x))
+     failed ("array_map with implicit void");
+
+   x = [1:10];
+   y = 0;
+   array_map (Void_Type, &count_func, x, &y);
+   if (y != length(x))
+     failed ("array_map with explicit void");
+}
+
+test_array_mapN ();
+
 #ifexists Double_Type
 S = [1:20:0.1];
 if (neqs (sin(S), array_map (Double_Type, &sin, S))) failed ("array_map 4");
