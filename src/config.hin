@@ -161,6 +161,8 @@
 #undef HAVE_FREXPF
 #undef HAVE_LDEXP
 #undef HAVE_LDEXPF
+#undef HAVE_SINCOS
+#undef HAVE_SINCOSF
 
 #undef HAVE_DIRENT_H
 #undef HAVE_SYS_NDIR_H

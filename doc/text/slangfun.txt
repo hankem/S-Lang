@@ -3533,7 +3533,7 @@ cos
   as an array.
 
  SEE ALSO
-  cos, atan, acosh, cosh
+  sin, atan, acosh, cosh, sincos
 
 --------------------------------------------------------------
 
@@ -4143,7 +4143,26 @@ sin
   as an array.
 
  SEE ALSO
-  cos, atan, acosh, cosh
+  cos, atan, acosh, cosh, sincos
+
+--------------------------------------------------------------
+
+sincos
+
+ SYNOPSIS
+  Compute the sine and cosine of a number
+
+ USAGE
+  (s, c) = sincos (x)
+
+ DESCRIPTION
+  The `sincos' function computes the sine and cosine of a
+  number and returns the result.  If its argument is an array,
+  the `sincos' function will be applied to each element
+  and the result returned as an array.
+
+ SEE ALSO
+  sin, cos
 
 --------------------------------------------------------------
 

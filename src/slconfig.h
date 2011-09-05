@@ -234,6 +234,8 @@ USA.
 #undef HAVE_FREXPF
 #define HAVE_LDEXP	1
 #undef HAVE_LDEXPF
+#undef HAVE_SINCOS
+#undef HAVE_SINCOSF
 
 #if defined(__WIN32__)
 # define isnan _isnan

@@ -116,7 +116,7 @@
   returns the result.  If its argument is an array, the
   \ifun{cos} function will be applied to each element and the result returned
   as an array.
-\seealso{cos, atan, acosh, cosh}
+\seealso{sin, atan, acosh, cosh, sincos}
 \done
 
 \function{cosh}
@@ -503,7 +503,18 @@
   returns the result.  If its argument is an array, the
   \ifun{sin} function will be applied to each element and the result returned
   as an array.
-\seealso{cos, atan, acosh, cosh}
+\seealso{cos, atan, acosh, cosh, sincos}
+\done
+
+\function{sincos}
+\synopsis{Compute the sine and cosine of a number}
+\usage{(s, c) = sincos (x)}
+\description
+  The \ifun{sincos} function computes the sine and cosine of a
+  number and returns the result.  If its argument is an array,
+  the \ifun{sincos} function will be applied to each element
+  and the result returned as an array.
+\seealso{sin, cos}
 \done
 
 \function{sinh}

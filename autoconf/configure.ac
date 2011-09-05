@@ -184,6 +184,8 @@ AC_CHECK_LIB(m, frexp, [AC_DEFINE(HAVE_FREXP,1,[Set to 1 if you have the frexp f
 AC_CHECK_LIB(m, frexpf, [AC_DEFINE(HAVE_FREXPF,1,[Set to 1 if you have the frexpf function])])
 AC_CHECK_LIB(m, ldexp, [AC_DEFINE(HAVE_LDEXP,1,[Set to 1 if you have the ldexp function])])
 AC_CHECK_LIB(m, ldexpf, [AC_DEFINE(HAVE_LDEXPF,1,[Set to 1 if you have the ldexpf function])])
+AC_CHECK_LIB(m, sincos, [AC_DEFINE(HAVE_SINCOS,1,[Set to 1 if you have the sincos function])])
+AC_CHECK_LIB(m, sincosf, [AC_DEFINE(HAVE_SINCOSF,1,[Set to 1 if you have the sincosf function])])
 AC_CHECK_LIB(m, feclearexcept, [AC_DEFINE(HAVE_FECLEAREXCEPT,1,[Set to 1 if you have the feclearexcept function])])
 AC_CHECK_LIB(m, fpsetsticky, [AC_DEFINE(HAVE_FPSETSTICKY,1,[Set to 1 if you have the fpsetsticky function])])
 

@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 */
 
+#define _GNU_SOURCE		       /* sincos */
 #include "slinclud.h"
-
 #include <float.h>
 #include <math.h>
 
@@ -2003,6 +2003,94 @@ free_and_return:
 }
 #endif				       /* HAVE_LDEXPF */
 
+
+#ifdef HAVE_SINCOSF
+# define SINCOSF(x, sp, cp) sincosf (x, sp, cp)
+#else
+# define SINCOSF(x, sp, cp) \
+   *(sp) = (float)sin(x); *(cp) = (float)cos(x)
+#endif
+#ifdef HAVE_SINCOS
+# define SINCOS(x, sp, cp) sincos (x, sp, cp)
+#else
+# define SINCOS(x, sp, cp) \
+   *(sp) = sin(x); *(cp) = cos(x)
+#endif
+
+static void sincos_intrin (void)
+{
+   Array_Or_Scalar_Type ast;
+   SLtype type;
+   SLang_Array_Type *s_at, *c_at;
+   SLuindex_Type num;
+
+   if (-1 == pop_array_or_scalar (&ast))
+     return;
+
+   if (ast.inc == 0)
+     {
+	if (ast.is_float)
+	  {
+	     float s, c;
+	     SINCOSF(ast.f, &s, &c);
+	     (void) SLang_push_float (s);
+	     (void) SLang_push_float (c);
+	  }
+	else
+	  {
+	     double s, c;
+	     SINCOS(ast.d, &s, &c);
+	     (void) SLang_push_double (s);
+	     (void) SLang_push_double (c);
+	  }
+	free_array_or_scalar (&ast);
+	return;
+     }
+
+   c_at = s_at = NULL;
+   num = ast.num;
+   type = ast.is_float ? SLANG_FLOAT_TYPE : SLANG_DOUBLE_TYPE;
+
+   s_at = SLang_create_array1(type, 0, NULL, ast.at->dims, ast.at->num_dims, 1);
+   if (s_at == NULL)
+     goto free_and_return;
+   c_at = SLang_create_array1(type, 0, NULL, ast.at->dims, ast.at->num_dims, 1);
+   if (c_at == NULL)
+     goto free_and_return;
+
+   if (ast.is_float)
+     {
+	SLuindex_Type i;
+	float *x = ast.fptr;
+	float *s = (float*) s_at->data;
+	float *c = (float*) c_at->data;
+	for (i=0; i<num; i++)
+	  {
+	     SINCOSF(x[i], s+i, c+i);
+	  }
+     }
+   else
+     {
+	SLuindex_Type i;
+	double *x = ast.dptr;
+	double *s = (double*) s_at->data;
+	double *c = (double*) c_at->data;
+	for (i=0; i<num; i++)
+	  {
+	     SINCOS (x[i], s+i, c+i);
+	  }
+     }
+
+   if (0 == SLang_push_array (s_at, 0))
+     (void) SLang_push_array (c_at, 0);
+
+   /* drop */
+free_and_return:
+   if (c_at != NULL) SLang_free_array (c_at);
+   if (s_at != NULL) SLang_free_array (s_at);
+   free_array_or_scalar (&ast);
+}
+
 static void fpu_clear_except_bits (void)
 {
    SLfpu_clear_except_bits ();
@@ -2075,6 +2163,7 @@ static SLang_Intrin_Fun_Type SLang_Math_Table [] =
 #ifdef HAVE_LDEXP
    MAKE_INTRINSIC_0("ldexp", ldexp_intrin, SLANG_VOID_TYPE),
 #endif
+   MAKE_INTRINSIC_0("sincos", sincos_intrin, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 
