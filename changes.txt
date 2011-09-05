@@ -16,6 +16,7 @@ Changes since 2.2.4
 9. src/slmath.c: Added sincos intrinsic (Manfred Hanke)
 10. doc/tm/rtl/array.tm: Changed an example used in the array_map
     documentation.
+11. More documentation updates/corrections (Agathoklis D. Hatzimanikas).
 
 {{{ Previous Versions
 

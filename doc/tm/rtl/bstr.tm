@@ -8,7 +8,7 @@
 \done
 
 \function{bstring_to_array}
-\synopsis{Convert a binary string to an array of characters}
+\synopsis{Convert a binary string to an array of bytes}
 \usage{UChar_Type[] bstring_to_array (BString_Type b)}
 \description
    The \ifun{bstring_to_array} function returns an array of unsigned

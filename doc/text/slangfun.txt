@@ -132,6 +132,10 @@ array_map
   of the same size, then those array elements will be passed in
   parallel with the elements of the first array argument.
 
+  To use `array_map' with functions that return no value, either
+  omit the `type' argument, or explicitly indicate that it
+  returns no value using the Void_Type type.
+
  EXAMPLE
   The first example illustrates how to apply the `strlen' function
   to an array of strings.
@@ -168,6 +172,14 @@ array_map
     (dims, ndims, types)
         = array_map (Array_Type, Int_Type, DataType_Type, &array_info, A);
     i = where (types == String_Type);
+
+
+   The `message' function prints a string and returns no value.
+   This example shows how it may be used to print an array of strings:
+
+     a = ["Line 1", "Line 2", "Line 3"];
+     array_map (&message, a);              % Form 1
+     array_map (Void_Type, &message, a);   % Form 2
 
 
  NOTES
@@ -449,8 +461,8 @@ init_char_array
 
  DESCRIPTION
   The `init_char_array' function may be used to initialize a
-  character array `a' by setting the elements of the array
-  `a' to the corresponding characters of the string `s'.
+  Char_Type array `a' by setting the elements of the array
+  `a' to the corresponding bytes of the string `s'.
 
  EXAMPLE
   The statements
@@ -459,11 +471,11 @@ init_char_array
      init_char_array (a, "HelloWorld");
 
    creates an character array and initializes its elements to the
-   characters in the string `"HelloWorld"'.
+   bytes in the string `"HelloWorld"'.
 
  NOTES
    The character array must be large enough to hold all the characters
-   of the initialization string.
+   of the initialization string.  This function uses byte-semantics.
 
  SEE ALSO
   bstring_to_array, strlen, strcat
@@ -1064,7 +1076,7 @@ array_to_bstring
 bstring_to_array
 
  SYNOPSIS
-  Convert a binary string to an array of characters
+  Convert a binary string to an array of bytes
 
  USAGE
   UChar_Type[] bstring_to_array (BString_Type b)
@@ -6585,8 +6597,8 @@ alarm
   place.
 
  EXAMPLE
-  This example shows demonstrates how the `alarm' function may be
-  used to read from a file within a specified amount of time:
+  This example demonstrates how the `alarm' function may be
+  used to read from `stdin' within a specified amount of time:
 
     define sigalrm_handler (sig)
     {
@@ -6594,17 +6606,20 @@ alarm
     }
     define read_or_timeout (secs)
     {
-       variable line, e;
-       variable fp = fopen ("/dev/tty", "r");
+       variable line, err;
        signal (SIGALRM, &sigalrm_handler);
+       () = fputs ("Enter some text> ", stdout); () = fflush (stdout);
        alarm (secs);
-       try (e)
+       try (err)
          {
-            () = fputs ("Enter some text> ", stdout); () = fflush (stdout);
-            if (-1 == fgets (&line, fp))
-              line = NULL;
+            if (-1 == fgets (&line, stdin))
+              throw ReadError, "Failed to read from stdin";
          }
-       catch IOError: { message (e.message); line = NULL; }
+       catch IOError:
+         {
+            message (err.message);
+            return NULL;
+         }
        return line;
     }
 
@@ -6725,9 +6740,7 @@ sigsuspend
   sigsuspend ([Array_Type signal_mask])
 
  DESCRIPTION
-  The
-sigsuspend
- function suspends the current process
+  The `sigsuspend' function suspends the current process
   until a signal is received.  An optional array argument may be
   passed to the function to specify a list of signals that should be
   temporarily blocked while waiting for a signal.

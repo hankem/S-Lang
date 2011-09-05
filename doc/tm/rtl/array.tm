@@ -98,6 +98,11 @@
   resulting array(s).  If any subsequent arguments correspond to an array
   of the same size, then those array elements will be passed in
   parallel with the elements of the first array argument.
+
+  To use \ifun{array_map} with functions that return no value, either
+  omit the \exmp{type} argument, or explicitly indicate that it
+  returns no value using the \dtype{Void_Type} type.
+
 \example
   The first example illustrates how to apply the \ifun{strlen} function
   to an array of strings.
@@ -134,6 +139,14 @@
     (dims, ndims, types)
         = array_map (Array_Type, Int_Type, DataType_Type, &array_info, A);
     i = where (types == String_Type);
+#v-
+
+   The \ifun{message} function prints a string and returns no value.
+   This example shows how it may be used to print an array of strings:
+#v+
+     a = ["Line 1", "Line 2", "Line 3"];
+     array_map (&message, a);              % Form 1
+     array_map (Void_Type, &message, a);   % Form 2
 #v-
 \notes
   Many mathematical functions already work transparently on arrays.
@@ -354,8 +367,8 @@
 \usage{init_char_array (Array_Type a, String_Type s)}
 \description
   The \ifun{init_char_array} function may be used to initialize a
-  character array \exmp{a} by setting the elements of the array
-  \exmp{a} to the corresponding characters of the string \exmp{s}.
+  Char_Type array \exmp{a} by setting the elements of the array
+  \exmp{a} to the corresponding bytes of the string \exmp{s}.
 \example
   The statements
 #v+
@@ -363,10 +376,10 @@
      init_char_array (a, "HelloWorld");
 #v-
    creates an character array and initializes its elements to the
-   characters in the string \exmp{"HelloWorld"}.
+   bytes in the string \exmp{"HelloWorld"}.
 \notes
    The character array must be large enough to hold all the characters
-   of the initialization string.
+   of the initialization string.  This function uses byte-semantics.
 \seealso{bstring_to_array, strlen, strcat}
 \done
 

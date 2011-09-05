@@ -10,8 +10,8 @@
   number of seconds remaining for a previously scheduled alarm to take
   place.
 \example
-  This example shows demonstrates how the \ifun{alarm} function may be
-  used to read from a file within a specified amount of time:
+  This example demonstrates how the \ifun{alarm} function may be
+  used to read from \ivar{stdin} within a specified amount of time:
 #v+
     define sigalrm_handler (sig)
     {
@@ -19,17 +19,20 @@
     }
     define read_or_timeout (secs)
     {
-       variable line, e;
-       variable fp = fopen ("/dev/tty", "r");
+       variable line, err;
        signal (SIGALRM, &sigalrm_handler);
+       () = fputs ("Enter some text> ", stdout); () = fflush (stdout);
        alarm (secs);
-       try (e)
+       try (err)
          {
-            () = fputs ("Enter some text> ", stdout); () = fflush (stdout);
-            if (-1 == fgets (&line, fp))
-              line = NULL;
+            if (-1 == fgets (&line, stdin))
+              throw ReadError, "Failed to read from stdin";
          }
-       catch IOError: { message (e.message); line = NULL; }
+       catch IOError:
+         {
+            message (err.message);
+            return NULL;
+         }
        return line;
     }
 #v-
@@ -123,7 +126,7 @@
 \synopsis{Suspend the process until a signal is delivered}
 \usage{sigsuspend ([Array_Type signal_mask])}
 \description
-  The \variable{sigsuspend} function suspends the current process
+  The \ifun{sigsuspend} function suspends the current process
   until a signal is received.  An optional array argument may be
   passed to the function to specify a list of signals that should be
   temporarily blocked while waiting for a signal.

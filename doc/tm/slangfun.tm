@@ -98,6 +98,9 @@ conforming \slang applications.  Those functions are described in
 \chapter{Low-level POSIX I/O functions}
 #i rtl/posio.tm
 
+\chapter{Signal Functions}
+#i rtl/signal.tm
+
 \chapter{Directory Functions}
 #i rtl/dir.tm
 
