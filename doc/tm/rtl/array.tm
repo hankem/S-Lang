@@ -81,7 +81,8 @@
 
 \function{array_map}
 \synopsis{Apply a function to each element of an array}
-\usage{Array_Type array_map ([type, ...] func, args...)}
+\usage{Array_Type array_map (type, func, args...)}
+\altusage{(Array_Type, ...) array_map (type, ..., func, args...)}
 #v+
     DataType_Type type, ...;
     Ref_Type func;
@@ -132,8 +133,8 @@
       return string(0.5*(x+y)), sqrt(x*y);
     }
 
-    (a, g) = array_map2(String_Type, Double_Type,
-                        &artithmetic_and_geometric_mean, [0:4], [5:9]);
+    (a, g) = array_map(String_Type, Double_Type,
+                       &artithmetic_and_geometric_mean, [0:4], [5:9]);
     % a = ["2.5", "3.5", "4.5", "5.5", "6.5"];
     % g = [0, sqrt(6), sqrt(14), sqrt(24), 6];
 #v-

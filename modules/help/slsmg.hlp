@@ -504,7 +504,6 @@ slsmg_define_color
   The `fg' and `bg' colors can be one of the following strings:
 
   "color0" or "black",      "color8"  or "gray",
-  "color0" or "black",      "color8"  or "gray",
   "color1" or "red",        "color9"  or "brightred",
   "color2" or "green",      "color10" or "brightgreen",
   "color3" or "brown",      "color11" or "yellow",

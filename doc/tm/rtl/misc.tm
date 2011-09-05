@@ -105,7 +105,7 @@
 \notes
    For testing sameness, use \ifun{__is_same}.
 \done
-\seealso{typeof, _eqs, __get_reference, __is_callable}
+\seealso{typeof, __is_same, __get_reference, __is_callable}
 
 \function{getenv}
 \synopsis{Get the value of an environment variable}

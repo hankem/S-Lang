@@ -143,7 +143,7 @@
   while it was active and also put the terminal's display in
   it's default state.
 \seealso{slsmg_init_smg}
- \done
+\done
 
 \function{slsmg_init_smg}
 \synopsis{Initialize the \var{SLsmg} routines}
@@ -309,7 +309,6 @@
   descriptor \exmp{obj} with a foreground and a background color.
   The \exmp{fg} and \exmp{bg} colors can be one of the following strings:
 #v+
-  "color0" or "black",      "color8"  or "gray",
   "color0" or "black",      "color8"  or "gray",
   "color1" or "red",        "color9"  or "brightred",
   "color2" or "green",      "color10" or "brightgreen",

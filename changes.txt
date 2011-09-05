@@ -12,6 +12,7 @@ Changes since 2.2.4
 6. Documentation updates and corrections by Agathoklis D. Hatzimanikas.
 7. src/slarray.c: array_map enhanced to handle functions that return
    multiple values (based upon a patch from Manfred Hanke).
+8. Documentation tweaks (Manfred Hanke).
 
 {{{ Previous Versions
 

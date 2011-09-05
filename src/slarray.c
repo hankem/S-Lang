@@ -4466,7 +4466,7 @@ static void array_map (void)
    if (num_arraymap_parms < 2)
      {
 	_pSLang_verror (SL_INVALID_PARM,
-		      "Usage: array_map ([Return-Type..,,] &func, args...)");
+		      "Usage: array_map ([Return-Types...,] &func, args...)");
 	SLdo_pop_n (num_arraymap_parms);
 	return;
      }
