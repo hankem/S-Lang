@@ -125,18 +125,15 @@
      % ==> xfiles = ["slang.a", "slstring.b", "slarray.c"];
 #v-
 
-  Here is an example of its application to a function return two values:
+  Here is an example of its application to a function that returns 3
+  values.  Suppose \exmp{A} is an array of arrays whose types and
+  sizes are arbitrary, and we wish to find the indices of \exmp{A}
+  that contain arrays of type \exmp{String_Type}.  For this purpose, the
+  \ifun{array_info} function will be used:
 #v+
-    % a function returning a string and a floating point value
-    define artithmetic_and_geometric_mean(x, y)
-    {
-      return string(0.5*(x+y)), sqrt(x*y);
-    }
-
-    (a, g) = array_map(String_Type, Double_Type,
-                       &artithmetic_and_geometric_mean, [0:4], [5:9]);
-    % a = ["2.5", "3.5", "4.5", "5.5", "6.5"];
-    % g = [0, sqrt(6), sqrt(14), sqrt(24), 6];
+    (dims, ndims, types)
+        = array_map (Array_Type, Int_Type, DataType_Type, &array_info, A);
+    i = where (types == String_Type);
 #v-
 \notes
   Many mathematical functions already work transparently on arrays.
