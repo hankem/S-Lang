@@ -17,6 +17,9 @@ Changes since 2.2.4
 10. doc/tm/rtl/array.tm: Changed an example used in the array_map
     documentation.
 11. More documentation updates/corrections (Agathoklis D. Hatzimanikas).
+12. src/slarray.c: Tweaked the code that computes the
+    array-range-multiplier to avoid agressive optimization by the
+    compiler.
 
 {{{ Previous Versions
 

@@ -2893,7 +2893,7 @@ static double compute_range_multiplier (double xmin, double xmax, double dx)
    (void) xmax;
    while (multiplier < 1e9)
      {
-	double xmin1, dx1;
+	volatile double xmin1, dx1;    /* avoid agressive compiler optimization */
 
 	xmin1 = multiplier * xmin;
 	dx1 = multiplier * dx;
@@ -3002,11 +3002,15 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 
 	ptr = (double *) at->data;
 
-	xmin *= multiplier;
-	dx *= multiplier;
-
-	for (i = 0; i < n; i++)
-	  ptr[i] = (xmin + i * dx)/multiplier;
+	if (multiplier != 1.0)
+	  {
+	     int ixmin = (int)(multiplier*xmin);
+	     int idx = (int)(multiplier*dx);
+	     for (i = 0; i < n; i++)
+	       ptr[i] = (ixmin + (double)i * idx)/multiplier;
+	  }
+	else for (i = 0; i < n; i++)
+	  ptr[i] = (xmin + i*dx);
 
 	/* Explicitly set the last element to xmax to avoid roundoff error */
 	if (ntype && (n > 1))
@@ -4340,7 +4344,7 @@ static int pop_array_map_args (int num_arraymap_parms,
 {
    Map_Return_Type *retvals = NULL;
    Map_Arg_Type *argvals = NULL;
-   unsigned int i, nret, nargs;
+   unsigned int i, nret, nargs=0;
    SLang_Array_Type *at_control;
    SLang_Name_Type *func = NULL;
 
