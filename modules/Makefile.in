@@ -178,7 +178,7 @@ install: all
 		$(INSTALL_DATA) $$i $(DEST_HELPDIR); \
 	done
 clean:
-	-cd $(OBJDIR) && /bin/rm -f $(MODULES)
+	-cd $(OBJDIR) && /bin/rm -f $(MODULES) $(CHKSUM_OBJS)
 	-/bin/rm -f *~
 distclean: clean
 	-/bin/rm -f Makefile
