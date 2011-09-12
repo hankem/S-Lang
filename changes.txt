@@ -20,6 +20,8 @@ Changes since 2.2.4
 12. src/slarray.c: Tweaked the code that computes the
     array-range-multiplier to avoid agressive optimization by the
     compiler.
+13. modules/rand.sl: The rand_int function was not working correctly
+    (Thomas Dauser).
 
 {{{ Previous Versions
 

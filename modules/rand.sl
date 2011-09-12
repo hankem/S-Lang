@@ -115,7 +115,7 @@ define rand_int ()
 
    variable r = call_rand_func (&rand_uniform, rt, num);
 
-   return nint(parms[0] + (parms[1] - parms[0])*__tmp(r));
+   return nint((parms[0]-0.5) + (parms[1] - parms[0] + 1)*__tmp(r));
 }
 
 define rand_exp ()
