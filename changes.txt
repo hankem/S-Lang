@@ -22,6 +22,8 @@ Changes since 2.2.4
     compiler.
 13. modules/rand.sl: The rand_int function was not working correctly
     (Thomas Dauser).
+14. modules/test/test_rand.sl: Added a simple statistical test for
+    rand_int (based upon an idea by Thomas Dauser).
 
 {{{ Previous Versions
 

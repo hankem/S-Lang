@@ -211,6 +211,27 @@ define test_rand_int ()
    test_generic (&rand_int, Int_Type, {x0, x1},
 		 0.5*(x0+x1), ((x1-x0+1)^2-1)/12.0, x0, x1,
 		 CLOSED_LOWER|CLOSED_UPPER);
+   variable n = 10000, s = sqrt(n);
+   x0 = -2, x1 = 2;
+   variable r = rand_int (x0, x1, (x1-x0+1)*n);
+   variable failed = 0;
+   _for (x0, x1, 1)
+     {
+	variable x = ();
+	variable i = where (x == r);
+	if (n-3*s < length(i) < n + 3*length(i))
+	  continue;
+	failed++;
+     }
+   if (failed)
+     {
+	() = fputs ("\
+***WARNING: rand_int produced random numbers outside the 3 sigma range.\n\
+            Run the test again, and if it fails with this warning then\n\
+            file a possible bug report.  This is a statistical test and will\n\
+            will produce false positives.\n",
+		    stderr);
+     }
 }
 
 define test_rand_exp ()
