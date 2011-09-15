@@ -21,6 +21,7 @@ USA.
 */
 
 #include "slinclud.h"
+#include <math.h>
 
 /* #define SL_APP_WANTS_FOREACH */
 #include "slang.h"
@@ -3004,8 +3005,8 @@ static SLang_Array_Type *inline_implicit_floating_array (SLtype type,
 
 	if (multiplier != 1.0)
 	  {
-	     int ixmin = (int)(multiplier*xmin);
-	     int idx = (int)(multiplier*dx);
+	     int ixmin = (floor)(multiplier*xmin+0.5);
+	     int idx = (floor)(multiplier*dx+0.5);
 	     for (i = 0; i < n; i++)
 	       ptr[i] = (ixmin + (double)i * idx)/multiplier;
 	  }

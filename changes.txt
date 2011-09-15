@@ -24,6 +24,8 @@ Changes since 2.2.4
     (Thomas Dauser).
 14. modules/test/test_rand.sl: Added a simple statistical test for
     rand_int (based upon an idea by Thomas Dauser).
+15. src/slarray.c: Change 12 introduced a truncation error for some
+    values.
 
 {{{ Previous Versions
 

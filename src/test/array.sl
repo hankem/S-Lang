@@ -1638,6 +1638,19 @@ private define test_linear_combination ()
 }
 test_linear_combination ();
 
+private define test_range_multiplier ()
+{
+   variable x0 = 1.7, x1 = 2.05, dx = 0.02;
+   variable a = [x0:x1:dx];
+   if (a[0] != x0)
+     failed ("range multiplier: first element is incorrect (%S vs %S", a[0], x0);
+   x0 = -1.7;
+   a = [x0:x1:dx];
+   if (a[0] != x0)
+     failed ("range multiplier: first element is incorrect (%S vs %S", a[0], x0);
+}
+test_range_multiplier ();
+
 print ("Ok\n");
 exit (0);
 
