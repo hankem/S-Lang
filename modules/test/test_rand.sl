@@ -219,7 +219,7 @@ define test_rand_int ()
      {
 	variable x = ();
 	variable i = where (x == r);
-	if (n-3*s < length(i) < n + 3*length(i))
+	if (n-3*s < length(i) < n+3*s)
 	  continue;
 	failed++;
      }
@@ -228,8 +228,8 @@ define test_rand_int ()
 	() = fputs ("\
 ***WARNING: rand_int produced random numbers outside the 3 sigma range.\n\
             Run the test again, and if it fails with this warning then\n\
-            file a possible bug report.  This is a statistical test and will\n\
-            will produce false positives.\n",
+            file a possible bug report.  This is a statistical test and can\n\
+            produce false positives a small fraction of the time.\n",
 		    stderr);
      }
 }
