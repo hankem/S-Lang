@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.7-3: Change ncurses5w-config to ncursesw5-config (Gilles Espinasse)
 dnl# 0.2.7-2: For the Makefile rules, use cd foo && bar instead of cd foo; bar
 dnl# 0.2.7-1: Use "$ARCH"elfobjs instead of elf"$ARCH"objs for better flexibility
 dnl# 0.2.7-0: Instead of expanding $ARCH at configure time, use \$ARCH for compile-time expansion
@@ -469,7 +470,7 @@ AC_DEFUN([JD_TERMCAP], dnl#{{{
 AC_PATH_PROG(nc5config, ncurses5-config, no)
 if test "$nc5config" = "no"
 then
-  AC_PATH_PROG(nc5config, ncurses5w-config, no)
+  AC_PATH_PROG(nc5config, ncursesw5-config, no)
 fi
 AC_MSG_CHECKING(for terminfo)
 if test "$nc5config" != "no"
