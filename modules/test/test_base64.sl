@@ -18,6 +18,24 @@ private define b64encode_string (str)
    return b;
 }
 
+private define b64decode_string (str, chunk, do_close)
+{
+   variable b = ""B;
+
+   variable b64 = _base64_decoder_new (&decode_callback, &b);
+   variable len = strbytelen (str);
+   variable i = 0;
+   if (chunk) while (i + chunk < len)
+     {
+	_base64_decoder_accumulate (b64, str[[i:i+chunk-1]]);
+	i += chunk;
+     }
+   _base64_decoder_accumulate (b64, str[[i:]]);
+   if (do_close) _base64_decoder_close (b64);
+
+   return b;
+}
+
 private variable Encode_Decode_Map =
 {
    "1", "MQ==",
@@ -35,12 +53,12 @@ private variable Encode_Decode_Map =
 define slsh_main ()
 {
    variable i, n = length (Encode_Decode_Map)/2;
-   variable failed = 0;
+   variable failed = 0, in, out, testout;
    _for i (0, n-1, 1)
      {
-	variable in = Encode_Decode_Map[2*i];
-	variable out = Encode_Decode_Map[2*i+1];
-	variable testout = b64encode_string (in);
+	in = Encode_Decode_Map[2*i];
+	out = Encode_Decode_Map[2*i+1];
+	testout = b64encode_string (in);
 
 	if (out == testout)
 	  continue;
@@ -48,6 +66,36 @@ define slsh_main ()
 	() = fprintf (stderr, "FAILED to encode %s, got %s instead of %s\n",
 		      in, testout, out);
 	failed++;
+     }
+
+   _for (0, 5, 1)
+     {
+	variable chunk = ();
+	_for i (0, n-1, 1)
+	  {
+	     out = Encode_Decode_Map[2*i];
+	     in = Encode_Decode_Map[2*i+1];
+	     testout = b64decode_string (in, chunk, 1);
+
+	     if (out == testout)
+	       {
+		  % test again, without the pad chars
+		  in = strtrans (in, "=", "");
+		  testout = b64decode_string (in, chunk, 1);
+		  if (out == testout)
+		    continue;
+	       }
+	     () = fprintf (stderr, "FAILED to decode %s, chunk=%d\n", in, chunk);
+	     failed++;
+	  }
+     }
+
+   % don't close -- test for leaks
+   _for i (0, n-1, 1)
+     {
+	out = Encode_Decode_Map[2*i];
+	in = Encode_Decode_Map[2*i+1];
+	testout = b64decode_string (in, chunk, 0);
      }
 
    if (failed)

@@ -29,6 +29,7 @@ Changes since 2.2.4
     values involving the range multiplier.
 17. autoconf/aclocal.m4: Change ncurses5w-config to ncursesw5-config
     (Gilles Espinasse).
+18. modules/base64-module.c: Added decoder.
 
 {{{ Previous Versions
 
