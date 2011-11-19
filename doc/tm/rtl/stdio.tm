@@ -364,7 +364,7 @@
 
 \function{fseek}
 \synopsis{Reposition a stdio stream}
-\usage{Integer_Type fseek (File_Type fp, LLong_Type ofs, Integer_Type whence}
+\usage{Integer_Type fseek (File_Type fp, LLong_Type ofs, Integer_Type whence)}
 \description
   The \ifun{fseek} function may be used to reposition the file position
   pointer associated with the open file stream \exmp{fp}. Specifically,

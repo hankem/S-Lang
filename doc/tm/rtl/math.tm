@@ -168,7 +168,7 @@
 
 \function{feqs}
 \synopsis{Test the approximate equality of two numbers}
-\usage{Char_Type feqs (a, b [,reldiff [,absdiff]]}
+\usage{Char_Type feqs (a, b [,reldiff [,absdiff]])}
 \description
  This function compares two floating point numbers \exmp{a} and
  \exmp{b}, and returns a non-zero value if they are equal to within a
@@ -190,7 +190,7 @@
 
 \function{fgteqs}
 \synopsis{Compare two numbers using specified tolerances}.
-\usage{Char_Type feqs (a, b [,reldiff [,absdiff]]}
+\usage{Char_Type fgteqs (a, b [,reldiff [,absdiff]])}
 \description
   This function is functionally equivalent to:
 #v+
@@ -212,7 +212,7 @@
 
 \function{flteqs}
 \synopsis{Compare two numbers using specified tolerances}.
-\usage{Char_Type feqs (a, b [,reldiff [,absdiff]]}
+\usage{Char_Type flteqs (a, b [,reldiff [,absdiff]])}
 \description
   This function is functionally equivalent to:
 #v+
@@ -224,7 +224,7 @@
 
 \function{fneqs}
 \synopsis{Test the approximate inequality of two numbers}
-\usage{Char_Type feqs (a, b [,reldiff [,absdiff]]}
+\usage{Char_Type fneqs (a, b [,reldiff [,absdiff]])}
 \description
   This function is functionally equivalent to:
 #v+

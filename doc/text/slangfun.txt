@@ -3631,7 +3631,7 @@ feqs
   Test the approximate equality of two numbers
 
  USAGE
-  Char_Type feqs (a, b [,reldiff [,absdiff]]
+  Char_Type feqs (a, b [,reldiff [,absdiff]])
 
  DESCRIPTION
  This function compares two floating point numbers `a' and
@@ -3662,7 +3662,7 @@ fgteqs
 .
 
  USAGE
-  Char_Type feqs (a, b [,reldiff [,absdiff]]
+  Char_Type fgteqs (a, b [,reldiff [,absdiff]])
 
  DESCRIPTION
   This function is functionally equivalent to:
@@ -3701,7 +3701,7 @@ flteqs
 .
 
  USAGE
-  Char_Type feqs (a, b [,reldiff [,absdiff]]
+  Char_Type flteqs (a, b [,reldiff [,absdiff]])
 
  DESCRIPTION
   This function is functionally equivalent to:
@@ -3721,7 +3721,7 @@ fneqs
   Test the approximate inequality of two numbers
 
  USAGE
-  Char_Type feqs (a, b [,reldiff [,absdiff]]
+  Char_Type fneqs (a, b [,reldiff [,absdiff]])
 
  DESCRIPTION
   This function is functionally equivalent to:
@@ -7563,7 +7563,7 @@ fseek
   Reposition a stdio stream
 
  USAGE
-  Integer_Type fseek (File_Type fp, LLong_Type ofs, Integer_Type whence
+  Integer_Type fseek (File_Type fp, LLong_Type ofs, Integer_Type whence)
 
  DESCRIPTION
   The `fseek' function may be used to reposition the file position
