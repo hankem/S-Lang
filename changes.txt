@@ -32,6 +32,8 @@ Changes since 2.2.4
 18. modules/base64-module.c: Added decoder.
 19. slsh/lib/sldbcore.sl: Only run the debugger from the pid that
     started it.  This avoids problems debugging scripts that call fork.
+20. src/slrline.c: SLrline_read_line will return NULL if getkey
+    returns SLANG_GETKEY_ERROR.
 
 {{{ Previous Versions
 

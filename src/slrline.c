@@ -1174,6 +1174,9 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 
 	if ((key == NULL) || (key->f.f == NULL))
 	  {
+	     if ((key == NULL) && (SLANG_GETKEY_ERROR == (unsigned int)SLang_Last_Key_Char))
+	       return NULL;
+
 	     rl_beep ();
 	     continue;
 	  }
