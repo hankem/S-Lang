@@ -137,10 +137,15 @@ private define new_ref_print (ref)
 
 private define generic_to_string (x)
 {
-   variable t = typeof (x);
-
-   if ((t == String_Type) or (t == BString_Type))
-     return make_printable_string (x);
+   switch (typeof (x))
+     {
+      case String_Type:
+	return make_printable_string (x);
+     }
+     {
+      case BString_Type:
+	return sprintf ("\"%S"\", x);
+     }
 
    return string (x);
 }

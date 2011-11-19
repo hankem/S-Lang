@@ -35,6 +35,8 @@ Changes since 2.2.4
 20. src/slrline.c: SLrline_read_line will return NULL if getkey
     returns SLANG_GETKEY_ERROR.
 21. doc/tm/rtl/*.tm: A few typos corrected (Manfred Hanke).
+22. slsh/lib/print.sl; print binary strings differently from regular
+    ones (Manfred Hanke).
 
 {{{ Previous Versions
 
