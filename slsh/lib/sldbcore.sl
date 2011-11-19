@@ -69,6 +69,7 @@ private variable Last_List_Line = 0;
 private variable Last_Cmd_Line = NULL;
 private variable Last_Cmd = NULL;
 private variable Prompt = "(SLdb) ";
+private variable Startup_PID = NULL;
 
 private define new_breakpoints ()
 {
@@ -723,6 +724,9 @@ private define eof_handler ()
 
 private define debug_hook (file, line)
 {
+   if (Startup_PID != getpid())
+     return;
+
    %variable file = e.file, line = e.line;
    variable e = __get_exception_info ();
    output ("Received %s error.  Entering the debugger\n", e.descr);
@@ -754,6 +758,7 @@ define sldb_enable ()
 % The namespace semantics are the same as that of require.
 define sldb ()
 {
+   Startup_PID = getpid ();
    sldb_initialize ();
 
    sldb_enable ();

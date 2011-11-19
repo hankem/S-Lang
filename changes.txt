@@ -30,6 +30,8 @@ Changes since 2.2.4
 17. autoconf/aclocal.m4: Change ncurses5w-config to ncursesw5-config
     (Gilles Espinasse).
 18. modules/base64-module.c: Added decoder.
+19. slsh/lib/sldbcore.sl: Only run the debugger from the pid that
+    started it.  This avoids problems debugging scripts that call fork.
 
 {{{ Previous Versions
 
