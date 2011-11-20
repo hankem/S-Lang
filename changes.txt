@@ -37,6 +37,7 @@ Changes since 2.2.4
 21. doc/tm/rtl/*.tm: A few typos corrected (Manfred Hanke).
 22. slsh/lib/print.sl; print binary strings differently from regular
     ones (Manfred Hanke).
+23. slsh/lib/print.sl: I introduced a typo in #21 (Pablo Cassatella).
 
 {{{ Previous Versions
 

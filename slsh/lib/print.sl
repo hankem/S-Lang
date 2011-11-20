@@ -144,7 +144,7 @@ private define generic_to_string (x)
      }
      {
       case BString_Type:
-	return sprintf ("\"%S"\", x);
+	return sprintf ("\"%S\"", x);
      }
 
    return string (x);
