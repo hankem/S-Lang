@@ -1279,11 +1279,16 @@
   provides the function \verb{Slang_set_abort_signal} to make it easy to
   facilitate this task.
 
-  The second parameter is used to specify whether or not flow control should
-  be used.  If this parameter is zero, flow control is enabled otherwise
-  it is disabled.  Disabling flow control is necessary to pass certain
+  The second parameter is used to specify whether or not flow control
+  should be used.  If this parameter is zero, flow control is enabled.
+  If the value is positive, flow control will be disabled. it is
+  disabled.  Disabling flow control is necessary to pass certain
   characters to the application (e.g., \key{Ctrl-S} and \key{Ctrl-Q}).
-  For some systems such as MSDOS, this parameter is meaningless.
+  Otherwise, the value is negative and the flow control behavior will
+  be inherited from the terminal.  The latter interpretation was added
+  to version 2.3.0 of the library; earlier versions disabled flow
+  control for both positive and negative values of this parameter. For
+  some systems such as MSDOS, this parameter is meaningless.
 
   The third parameter, \verb{opost}, is used to turn output processing on or
   off.  If \verb{opost} is zero, output processing is \em{not} turned on

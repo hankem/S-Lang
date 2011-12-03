@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide (v2.2.4)
   John E. Davis <www.jedsoft.org>
-  Nov 19, 2011
+  Dec 2, 2011
   ____________________________________________________________
 
 
@@ -1254,10 +1254,15 @@
   facilitate this task.
 
   The second parameter is used to specify whether or not flow control
-  should be used. If this parameter is zero, flow control is enabled
-  otherwise it is disabled. Disabling flow control is necessary to pass
-  certain characters to the application (e.g., Ctrl-S and Ctrl-Q).  For
-  some systems such as MSDOS, this parameter is meaningless.
+  should be used. If this parameter is zero, flow control is enabled.
+  If the value is positive, flow control will be disabled. it is
+  disabled. Disabling flow control is necessary to pass certain
+  characters to the application (e.g., Ctrl-S and Ctrl-Q).  Otherwise,
+  the value is negative and the flow control behavior will be inherited
+  from the terminal. The latter interpretation was added to version
+  2.3.0 of the library; earlier versions disabled flow control for both
+  positive and negative values of this parameter. For some systems such
+  as MSDOS, this parameter is meaningless.
 
   The third parameter, opost, is used to turn output processing on or
   off. If opost is zero, output processing is not turned on otherwise,
@@ -1310,17 +1315,17 @@
   This part of the initialization process for an application using this
   interface will look something like:
 
-        SLtt_get_terminfo ();
-        if (-1 == SLkp_init ())
-          {
-             SLang_doerror ("SLkp_init failed.");
-             exit (1);
-          }
-        if (-1 == SLang_init_tty (-1, 0, 1))
-          {
-             SLang_doerror ("SLang_init_tty failed.");
-             exit (1);
-          }
+             SLtt_get_terminfo ();
+             if (-1 == SLkp_init ())
+               {
+                  SLang_doerror ("SLkp_init failed.");
+                  exit (1);
+               }
+             if (-1 == SLang_init_tty (-1, 0, 1))
+               {
+                  SLang_doerror ("SLang_init_tty failed.");
+                  exit (1);
+               }
 
   It is important to check the return status of the SLkp_init function
   which can failed if it cannot allocate enough memory for the keymap.

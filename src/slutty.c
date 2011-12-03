@@ -272,6 +272,7 @@ static int TTY_Open = 0;
 # endif
 #endif
 
+/* If no_flow_control < 0, do not change the tty IXON bit */
 int SLang_init_tty (int abort_char, int no_flow_control, int opost)
 {
    TTY_Termio_Type newtty;
@@ -369,7 +370,10 @@ int SLang_init_tty (int abort_char, int no_flow_control, int opost)
 
    set_baud_rate (&newtty);
 
-   if (no_flow_control) newtty.c_iflag &= ~IXON; else newtty.c_iflag |= IXON;
+   if (no_flow_control > 0)
+     newtty.c_iflag &= ~IXON;
+   else if (no_flow_control == 0)
+     newtty.c_iflag |= IXON;
 
    newtty.c_cc[VEOF] = 1;
    newtty.c_cc[VMIN] = 1;

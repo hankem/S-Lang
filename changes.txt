@@ -38,6 +38,9 @@ Changes since 2.2.4
 22. slsh/lib/print.sl; print binary strings differently from regular
     ones (Manfred Hanke).
 23. slsh/lib/print.sl: I introduced a typo in #21 (Pablo Cassatella).
+24. src/slutty.c: if the flow control parameter to the SLang_init_tty
+    argument is negative, the terminal's flow control handling will
+    not be changed.
 
 {{{ Previous Versions
 
