@@ -41,6 +41,7 @@ Changes since 2.2.4
 24. src/slutty.c: if the flow control parameter to the SLang_init_tty
     argument is negative, the terminal's flow control handling will
     not be changed.
+25. src/slrline.c: Ammend #20 to return NULL if errno != EINTR.
 
 {{{ Previous Versions
 

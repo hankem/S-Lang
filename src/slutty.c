@@ -608,7 +608,10 @@ unsigned int _pSLsys_getkey (void)
 	if (errno == EINTR)
 	  {
 	     if (-1 == handle_interrupt ())
-	       return SLANG_GETKEY_ERROR;
+	       {
+		  errno = EINTR;
+		  return SLANG_GETKEY_ERROR;
+	       }
 
 	     if (SLKeyBoard_Quit)
 	       return SLang_Abort_Char;
@@ -638,7 +641,10 @@ unsigned int _pSLsys_getkey (void)
 	if (errno == EINTR)
 	  {
 	     if (-1 == handle_interrupt ())
-	       return SLANG_GETKEY_ERROR;
+	       {
+		  errno = EINTR;
+		  return SLANG_GETKEY_ERROR;
+	       }
 
 	     if (SLKeyBoard_Quit)
 	       return SLang_Abort_Char;
@@ -663,6 +669,7 @@ unsigned int _pSLsys_getkey (void)
 	if (errno == EIO)
 	  {
 	     _pSLang_verror (SL_Read_Error, "_pSLsys_getkey: EIO error");
+	     errno = EIO;
 	  }
 #endif
 	return SLANG_GETKEY_ERROR;

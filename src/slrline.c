@@ -21,6 +21,7 @@ USA.
 */
 
 #include "slinclud.h"
+#include <errno.h>
 
 #include "slang.h"
 #include "_slang.h"
@@ -1170,11 +1171,17 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
      {
 	SLrline_Type *save_rli = Active_Rline_Info;
 
+	errno = 0;
 	key = SLang_do_key (RL_Keymap, (int (*)(void)) rli->getkey);
 
 	if ((key == NULL) || (key->f.f == NULL))
 	  {
-	     if ((key == NULL) && (SLANG_GETKEY_ERROR == (unsigned int)SLang_Last_Key_Char))
+	     if ((key == NULL)
+		 && (SLANG_GETKEY_ERROR == (unsigned int)SLang_Last_Key_Char)
+#ifdef EINTR
+		 && (errno != EINTR)
+#endif
+		)
 	       return NULL;
 
 	     rl_beep ();
