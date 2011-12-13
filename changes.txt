@@ -42,6 +42,7 @@ Changes since 2.2.4
     argument is negative, the terminal's flow control handling will
     not be changed.
 25. src/slrline.c: Ammend #20 to return NULL if errno != EINTR.
+26. src/sldisply.c: Changed Termcap_Initalized -> Termcap_Initialized
 
 {{{ Previous Versions
 

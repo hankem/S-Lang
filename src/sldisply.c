@@ -2301,7 +2301,7 @@ static void get_color_info (void)
 
 #ifdef __unix__
 
-static int Termcap_Initalized = 0;
+static int Termcap_Initialized = 0;
 
 /* #define USE_TERMCAP 1 */
 #ifdef USE_TERMCAP
@@ -2363,7 +2363,7 @@ static char *tt_tgetstr (SLCONST char *cap)
    char area_buf[4096];
    char *area;
 #endif
-   if (Termcap_Initalized == 0)
+   if (Termcap_Initialized == 0)
      return NULL;
 
 #ifdef USE_TERMCAP
@@ -2409,7 +2409,7 @@ char *SLtt_tgetstr (SLFUTURE_CONST char *cap)
 
 static int tt_tgetnum (SLCONST char *s)
 {
-   if (Termcap_Initalized == 0)
+   if (Termcap_Initialized == 0)
      return -1;
 #ifdef USE_TERMCAP
    return tgetnum (s);
@@ -2425,7 +2425,7 @@ int SLtt_tgetnum (SLFUTURE_CONST char *s)
 
 static int tt_tgetflag (SLCONST char *s)
 {
-   if (Termcap_Initalized == 0)
+   if (Termcap_Initialized == 0)
      return -1;
 #ifdef USE_TERMCAP
    return tgetflag (s);
@@ -2547,6 +2547,8 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
    if (Terminfo != NULL)
      _pSLtt_tifreeent (Terminfo);
 
+   Termcap_Initialized = 0;	       /* resetting things */
+
    if (NULL == (Terminfo = _pSLtt_tigetent (term)))
      {
 	if (almost_vtxxx) /* Special cases. */
@@ -2566,7 +2568,7 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
    /* Termcap_String_Ptr = Termcap_String_Buf; */
 # endif				       /* NOT USE_TERMCAP */
 
-   Termcap_Initalized = 1;
+   Termcap_Initialized = 1;
 
    Cls_Str = tt_tgetstr ("cl");
    Abs_Curs_Pos_Str = tt_tgetstr ("cm");
