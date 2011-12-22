@@ -43,6 +43,8 @@ Changes since 2.2.4
     not be changed.
 25. src/slrline.c: Ammend #20 to return NULL if errno != EINTR.
 26. src/sldisply.c: Changed Termcap_Initalized -> Termcap_Initialized
+27. src/slarray.c: avoid an expensive memcpy when doing
+    an aget via an index array on a (b)string.  (Paul Boekholt).
 
 {{{ Previous Versions
 

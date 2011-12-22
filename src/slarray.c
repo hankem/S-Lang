@@ -1299,18 +1299,32 @@ fixup_dims:
    return ret;
 }
 
-static int push_string_as_array (unsigned char *s, unsigned int len)
+static void do_nothing (SLang_Array_Type *at)
+{
+   (void) at;
+}
+
+static int push_string_as_array (unsigned char *s, unsigned int len, int is_transient)
 {
    SLindex_Type ilen;
    SLang_Array_Type *at;
 
    ilen = (SLindex_Type) len;
 
-   at = SLang_create_array (SLANG_UCHAR_TYPE, 0, NULL, &ilen, 1);
-   if (at == NULL)
-     return -1;
+   if (is_transient)
+     {
+	if (NULL == (at = SLang_create_array (SLANG_UCHAR_TYPE, 0, s, &ilen, 1)))
+	  return -1;
+	at->free_fun = do_nothing;
+     }
+   else
+     {
+	if (NULL ==  (at = SLang_create_array (SLANG_UCHAR_TYPE, 0, NULL, &ilen, 1)))
+	  return -1;
 
-   memcpy ((char *)at->data, (char *)s, len);
+	memcpy ((char *)at->data, (char *)s, len);
+     }
+
    return SLang_push_array (at, 1);
 }
 
@@ -1405,18 +1419,20 @@ static int aget_from_array (unsigned int num_indices)
    int is_index_array, free_indices;
    unsigned int i;
 
+   /* Implementation note: The push_string_element function calls this with
+    * num_indices==1, and assumes that the pop_array call below will happen.
+    * No code should be added between these checks and the pop_array call.
+    */
    if (num_indices == 0)
      {
 	SLang_set_error (SL_Index_Error);
 	return -1;
      }
-
    if (num_indices > SLARRAY_MAX_DIMS)
      {
 	_pSLang_verror (SL_INVALID_PARM, "Number of dims must be less than %d", 1+SLARRAY_MAX_DIMS);
 	return -1;
      }
-
    if (-1 == pop_array (&at, 1))
      return -1;
 
@@ -1472,7 +1488,7 @@ static int push_string_element (SLtype type, unsigned char *s, unsigned int len)
 	char *str;
 
 	/* The indices are array values.  So, do this: */
-	if (-1 == push_string_as_array (s, len))
+	if (-1 == push_string_as_array (s, len, 1))
 	  return -1;
 
 	if (-1 == aget_from_array (1))
@@ -2679,7 +2695,7 @@ static void bstring_to_array (SLang_BString_Type *bs)
    if (NULL == (s = SLbstring_get_pointer (bs, &len)))
      (void) SLang_push_null ();
    else
-     (void) push_string_as_array (s, len);
+     (void) push_string_as_array (s, len, 0);
 }
 
 static void array_to_bstring (SLang_Array_Type *at)
