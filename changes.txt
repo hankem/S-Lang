@@ -45,6 +45,9 @@ Changes since 2.2.4
 26. src/sldisply.c: Changed Termcap_Initalized -> Termcap_Initialized
 27. src/slarray.c: avoid an expensive memcpy when doing
     an aget via an index array on a (b)string.  (Paul Boekholt).
+28. slsh/scripts/badlinks: Updated to use array_map and cmdopt
+    (Agathoklis D. Hatzimanikas).
+29. Some minor documentation tweaks (Agathoklis D. Hatzimanikas)
 
 {{{ Previous Versions
 

@@ -2193,7 +2193,7 @@
   Set this variable to the tab width that will be used when expanding tab
   characters.  The default is 8.
 
-  \verb{int SLsmg_Display_Eight_Bit}
+  \verb{int SLsmg_Display_Eight_Bit;}
   This variable determines how characters with the high bit set are to be
   output.  Specifically, a character with the high bit set with a value
   greater than or equal to this value is output as is; otherwise, it will be

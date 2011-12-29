@@ -615,6 +615,15 @@
       D[1] = &cos;
 #v-
 
+   \slang arrays also can be of \dtype{Any_Type}. An array of such a
+   type is capable of holding any object, e.g.,
+#v+
+      A = Any_Type [3];
+      A[0] = 1; A[1] = "string"; A[2] = (1 + 2i);
+#v-
+    Dereferencing an \dtype{Any_Type} object returns the actual object.  That
+    is, \exmp{@A[1]} produces \exmp{"string"}.
+
    The language also defines unary, binary, and mathematical
    operations on arrays.  For example, if \exmp{A} and \exmp{B} are
    integer arrays, then \exmp{A + B} is an array whose elements are

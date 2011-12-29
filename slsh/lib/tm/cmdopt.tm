@@ -10,7 +10,7 @@
   message, and the call \ifun{exit}.  If the error handler is \NULL,
   or it returns instead of calling exit, then an exception will be thrown.
 
-  The error hander must be defined to take a single string argument
+  The error handler must be defined to take a single string argument
   (the error message) and must return nothing.
 \example
 #v+

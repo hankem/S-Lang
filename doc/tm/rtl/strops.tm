@@ -329,7 +329,7 @@
 \notes
   The \ifun{set_float_format} function controls the format for the
   \exmp{S} conversion of floating point numbers.
-\seealso{string, sscanf, message, pack}
+\seealso{string, sscanf, message, pack, set_float_format}
 \done
 
 \function{sscanf}

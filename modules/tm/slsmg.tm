@@ -100,7 +100,7 @@
 \synopsis{Set the current color to 0}
 \usage{slsmg_normal_video ()}
 \description
-  The \var{SLsmg_normal_video} function sets the current color descriptor to \var{0}.
+  The \var{slsmg_normal_video} function sets the current color descriptor to \var{0}.
 \seealso{slsmg_set_color}
 \done
 
@@ -129,7 +129,7 @@
 \synopsis{Update physical screen}
 \usage{slsmg_refresh ()}
 \description
-  The \var{SLsmg_refresh} function updates the physical display to
+  The \var{slsmg_refresh} function updates the physical display to
   look like the virtual display.
 \seealso{slsmg_suspend_smg, slsmg_init_smg, slsmg_reset_smg}
 \done

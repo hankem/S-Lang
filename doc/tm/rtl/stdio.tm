@@ -1,6 +1,6 @@
 \function{clearerr}
 \synopsis{Clear the error of a file stream}
-\usage{clearerr (File_Type fp}
+\usage{clearerr (File_Type fp)}
 \description
   The \ifun{clearerr} function clears the error and end-of-file flags
   associated with the open file stream \exmp{fp}.

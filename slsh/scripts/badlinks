@@ -1,5 +1,34 @@
 #!/usr/bin/env slsh
 % Find links that point to non-existent files
+% Example:  find /usr -type d -exec badlinks '{}' \;
+require ("cmdopt");
+
+private variable
+VERSION = "0.1",
+  LICENSE = "GNU GPL version 3 or later";
+
+private define print_version ()
+{
+   () = fprintf (stdout, "%s (version %s)\nLicense: %s\n", __argv[0], VERSION, LICENSE);
+   exit (0);
+}
+
+private define print_usage ()
+{
+   () = fprintf (stdout, "Usage: %s [-h, --help] [--version] [dirs...]\n", __argv[0]);
+   exit (0);
+}
+
+private define _stat_file (file)
+{
+   if (NULL == stat_file (file) && ENOENT == errno)
+     {
+	() = fprintf (stdout, "Broken link found: %s  %s\n", file, errno_string (errno));
+#ifexists readlink
+	() = fprintf (stdout, "%s: points to %s\n", file, readlink (file));
+#endif
+     }
+}
 
 private define warn ()
 {
@@ -20,59 +49,27 @@ private define warn ()
 
 private define badlinks (dir)
 {
-   variable files, file;
-   variable st;
+   variable files = listdir (dir);
 
-   files = listdir (dir);
    if (files == NULL)
      {
-	warn (errno, dir);
+	() = fprintf (stderr, "%s: %s\n", dir, errno_string (errno));
 	return;
      }
 
-   foreach (files)
-     {
-	file = ();
-
-	file = path_concat (dir, file);
-	st = stat_file (file);
-	if (st != NULL)
-	  continue;
-
-	if (errno != ENOENT)
-	  {
-	     warn (errno, file);
-	     continue;
-	  }
-
-	if (-1 == fprintf (stdout, "%s\n", file))
-	  break;
-     }
+   files = array_map (String_Type, &path_concat, dir, files);
+   array_map (Void_Type, &_stat_file, files);
 }
 
-define main (argc, argv)
+define slsh_main ()
 {
-   if (argc > 1)
-     {
-	if (argv[1] == "--help")
-	  {
-	     () = fprintf (stdout, "Usage: %s [--help] [dirs....]\n",
-			   __argv[0]);
-	     exit (1);
-	  }
-     }
+   variable i, c = cmdopt_new ();
 
-   if (argc == 1)
-     {
-	badlinks (".");
-	exit (0);
-     }
+   c.add("h|help", &print_usage);
+   c.add("version", &print_version);
+   i = c.process (__argv, 1);
 
-   foreach (argv[[1:]])
-     badlinks ();
-
+   variable dir = (i < __argc) ? __argv[[i:]] : ["."];
+   array_map (Void_Type, &badlinks, dir);
    exit (0);
 }
-
-main (__argc, __argv);
-
