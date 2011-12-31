@@ -48,6 +48,7 @@ Changes since 2.2.4
 28. slsh/scripts/badlinks: Updated to use array_map and cmdopt
     (Agathoklis D. Hatzimanikas).
 29. Some minor documentation tweaks (Agathoklis D. Hatzimanikas)
+30. More doc tweaks (Agathoklis D. Hatzimanikas)
 
 {{{ Previous Versions
 

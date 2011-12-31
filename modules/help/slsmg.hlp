@@ -160,7 +160,7 @@ slsmg_normal_video
   slsmg_normal_video ()
 
  DESCRIPTION
-  The `SLsmg_normal_video' function sets the current color descriptor to `0'.
+  The `slsmg_normal_video' function sets the current color descriptor to `0'.
 
  SEE ALSO
   slsmg_set_color
@@ -209,7 +209,7 @@ slsmg_refresh
   slsmg_refresh ()
 
  DESCRIPTION
-  The `SLsmg_refresh' function updates the physical display to
+  The `slsmg_refresh' function updates the physical display to
   look like the virtual display.
 
  SEE ALSO

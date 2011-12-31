@@ -98,14 +98,16 @@
   are equal if they contain identical fields, and the corresponding
   values are equal.
 \example
+#v+
    _eqs (1, 1)             ===> 1
    _eqs (1, 1.0)           ===> 1
    _eqs ("a", 1)           ===> 0
    _eqs ([1,2], [1.0,2.0]) ===> 1
+#v-
 \notes
    For testing sameness, use \ifun{__is_same}.
-\done
 \seealso{typeof, __is_same, __get_reference, __is_callable}
+\done
 
 \function{getenv}
 \synopsis{Get the value of an environment variable}
@@ -200,11 +202,13 @@
   dereferencing the object.  It returns 1 if the argument is callable,
   or zero otherwise.
 \example
+#v+
    __is_callable (7)      ==> 0
    __is_callable (&sin)   ==> 1
    a = [&sin];
    __is_callable (a[0])   ==> 1
    __is_callable (&a[0])  ==> 0
+#v-
 \seealso{__is_numeric, is_defined}
 \done
 
@@ -218,6 +222,7 @@
   If the argument is an array, then the array type will be used for
   the test.
 \example
+#v+
    __is_numeric ("foo");  ==> 0
    __is_numeric ("0");    ==> 0
    __is_numeric (0);      ==> 1
@@ -225,6 +230,7 @@
    __is_numeric (2j);     ==> 3
    __is_numeric ([1,2]);  ==> 1
    __is_numeric ({1,2});  ==> 0
+#v-
 \seealso{typeof, __is_datatype_numeric}
 \done
 
@@ -248,10 +254,12 @@
   the arguments must match and the values of the objects must
   reference the same underlying object.
 \example
+#v+
    __is_same (1, 1)         ===> 1
    __is_same (1, 1.0)       ===> 0
    __is_same ("a", 1)       ===> 0
    __is_same ([1,2], [1,2]) ===> 0
+#v-
 \notes
    For testing equality, use \ifun{_eqs}.
 \seealso{typeof, _eqs, __get_reference, __is_callable}

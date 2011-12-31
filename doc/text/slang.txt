@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.2.4)
   John E. Davis <www.jedsoft.org>
-  Nov 19, 2011
+  Dec 31, 2011
   ____________________________________________________________
 
 
@@ -623,6 +623,15 @@
              D[0] = &sin;
              D[1] = &cos;
 
+  S-Lang arrays also can be of Any_Type. An array of such a type is
+  capable of holding any object, e.g.,
+
+             A = Any_Type [3];
+             A[0] = 1; A[1] = "string"; A[2] = (1 + 2i);
+
+  Dereferencing an Any_Type object returns the actual object. That is,
+  @A[1] produces "string".
+
   The language also defines unary, binary, and mathematical operations
   on arrays. For example, if A and B are integer arrays, then A + B is
   an array whose elements are the sum of the elements of A and B. A
@@ -634,17 +643,17 @@
 
   which is equivalent to the highly simplified C code:
 
-               double *X, *Y;
-               unsigned int i, n;
+          double *X, *Y;
+          unsigned int i, n;
 
-               n = (2 * PI) / 0.01 + 1;
-               X = (double *) malloc (n * sizeof (double));
-               Y = (double *) malloc (n * sizeof (double));
-               for (i = 0; i < n; i++)
-                 {
-                   X[i] = i * 0.01;
-                   Y[i] = 20 * sin (X[i]);
-                 }
+          n = (2 * PI) / 0.01 + 1;
+          X = (double *) malloc (n * sizeof (double));
+          Y = (double *) malloc (n * sizeof (double));
+          for (i = 0; i < n; i++)
+            {
+              X[i] = i * 0.01;
+              Y[i] = 20 * sin (X[i]);
+            }
 
   3.6.  Lists
 
@@ -686,26 +695,26 @@
   Note: S-Lang versions 2.1 and higher permit assignment statements
   within the structure definition, e.g.,
 
-             variable bill = struct
-             {
-                first_name = "Bill",
-                last_name = "Clinton",
-                age = 51
-             };
+        variable bill = struct
+        {
+           first_name = "Bill",
+           last_name = "Clinton",
+           age = 51
+        };
 
   A named structure is really a new data type and may be created using
   the typedef keyword:
 
-        typedef struct
-        {
-           first_name, last_name, age
-        }
-        Person_Type;
+             typedef struct
+             {
+                first_name, last_name, age
+             }
+             Person_Type;
 
-        variable bill = @Person_Type;
-        bill.first_name = "Bill";
-        bill.last_name = "Clinton";
-        bill.age = 51;
+             variable bill = @Person_Type;
+             bill.first_name = "Bill";
+             bill.last_name = "Clinton";
+             bill.age = 51;
 
   One advantage of creating a new type is that array elements of such
   types are automatically initialized to instances of the type. For
@@ -733,15 +742,15 @@
   The creation and initialization of a structure may be facilitated by a
   function such as
 
-             define create_person (first, last, age)
-             {
-                 variable person = @Person_Type;
-                 person.first_name = first;
-                 person.last_name = last;
-                 person.age = age;
-                 return person;
-             }
-             variable Bill = create_person ("Bill", "Clinton", 51);
+        define create_person (first, last, age)
+        {
+            variable person = @Person_Type;
+            person.first_name = first;
+            person.last_name = last;
+            person.age = age;
+            return person;
+        }
+        variable Bill = create_person ("Bill", "Clinton", 51);
 
   Other common uses of structures is the creation of linked lists,
   binary trees, etc. For more information about these and other features

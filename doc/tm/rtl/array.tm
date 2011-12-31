@@ -640,6 +640,17 @@
   are equivalent, but the latter form is preferred since it executes
   about twice as fast as the former.
 
+  The \ifun{where} function can also be used with relational operators
+  and with the boolean binary \exmp{or} and \exmp{and} operators, e.g.,
+#v+
+     a = where (array == "a string");
+     a = where (array <= 5);
+     a = where (2 <= array <= 10);
+     a = where ((array == "a string") or (array == "another string"));
+#v-
+  Using in the last example the short-circuiting \exmp{||} and
+  \exmp{&&} operators, will result in a \exc{TypeMismatchError} exception.
+
   Although this function may appear to be simple or even trivial, it
   is arguably one of the most important and powerful functions for
   manipulating arrays.

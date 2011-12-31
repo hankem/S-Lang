@@ -2,13 +2,13 @@
 \synopsis{Suspend screen management}
 \usage{slsmg_suspend_smg ()}
 \description
-  The \var{slsmg_suspend_smg} function can be used to suspend the state of the
+  The \ifun{slsmg_suspend_smg} function can be used to suspend the state of the
   screen management facility during suspension of the program.  Use of
   this function will reset the display back to its default state.  The
-  funtion \var{slsmg_resume_smg} should be called after suspension.
+  funtion \ifun{slsmg_resume_smg} should be called after suspension.
 
-  This function is similar to \var{slsmg_reset_smg} except that the
-  state of the display prior to calling \var{slsmg_suspend_smg} is saved.
+  This function is similar to \ifun{slsmg_reset_smg} except that the
+  state of the display prior to calling \ifun{slsmg_suspend_smg} is saved.
 \seealso{slsmg_resume_smg, slsmg_reset_smg}
 \done
 
@@ -16,9 +16,9 @@
 \synopsis{Resume screen management}
 \usage{slsmg_resume_smg ()}
 \description
-  The \var{slsmg_resume_smg} function should be called after
-  \var{slsmg_suspend_smg} to redraw the display exactly like it was
-  before \var{slsmg_suspend_smg} was called.
+  The \ifun{slsmg_resume_smg} function should be called after
+  \ifun{slsmg_suspend_smg} to redraw the display exactly like it was
+  before \ifun{slsmg_suspend_smg} was called.
 \seealso{slsmg_suspend_smg}
 \done
 
@@ -26,7 +26,7 @@
 \synopsis{Erase to the end of the row}
 \usage{slsmg_erase_eol ()}
 \description
-  The \var{slsmg_erase_eol} function erases all characters from the current
+  The \ifun{slsmg_erase_eol} function erases all characters from the current
   position to the end of the line.  The newly created space is given
   the color of the current color.  This function has no effect on the
   position of the virtual cursor.
@@ -37,7 +37,7 @@
 \synopsis{Move the virtual cursor}
 \usage{slsmg_gotorc (Integer_Type r, c)}
 \description
-  The \var{slsmg_gotorc} function moves the virtual cursor to the row
+  The \ifun{slsmg_gotorc} function moves the virtual cursor to the row
   \var{r} and column \var{c}.  The first row and first column is
   specified by \exmp{r = 0} and \exmp{c = 0}.
 \seealso{slsmg_refresh}
@@ -47,7 +47,7 @@
 \synopsis{Erase to the end of the screen}
 \usage{slsmg_erase_eos ()}
 \description
-  The \var{slsmg_erase_eos} function is like \var{slsmg_erase_eol}
+  The \ifun{slsmg_erase_eos} function is like \ifun{slsmg_erase_eol}
   except that it erases all text from the current position to the
   end of the display.  The current color will be used to set the
   background of the erased area.
@@ -66,10 +66,10 @@
 \synopsis{Set the current color}
 \usage{slsmg_set_color (Integer_Type c)}
 \description
-  The \var{slsmg_set_color} function is used to set the current
+  The \ifun{slsmg_set_color} function is used to set the current
   color.  The parameter \var{c} is a color object descriptor.
   Actual foreground and background colors may be associated with a
-  color descriptor via the \var{slsmg_define_color} function.
+  color descriptor via the \ifun{slsmg_define_color} function.
 \example
   This example defines color \exmp{7} to be green foreground on black
   background and then displays some text in this color:
@@ -100,7 +100,7 @@
 \synopsis{Set the current color to 0}
 \usage{slsmg_normal_video ()}
 \description
-  The \var{slsmg_normal_video} function sets the current color descriptor to \var{0}.
+  The \ifun{slsmg_normal_video} function sets the current color descriptor to \var{0}.
 \seealso{slsmg_set_color}
 \done
 
@@ -112,9 +112,9 @@
 \synopsis{Clear the virtual display}
 \usage{slsmg_cls ()}
 \description
-  The \var{slsmg_cls} function erases the virtual display using
+  The \ifun{slsmg_cls} function erases the virtual display using
   the current color.  This will cause the physical display to get
-  cleared the next time \var{slsmg_refresh} is called.
+  cleared the next time \ifun{slsmg_refresh} is called.
 \notes
   This function is not the same as
 #v+
@@ -129,7 +129,7 @@
 \synopsis{Update physical screen}
 \usage{slsmg_refresh ()}
 \description
-  The \var{slsmg_refresh} function updates the physical display to
+  The \ifun{slsmg_refresh} function updates the physical display to
   look like the virtual display.
 \seealso{slsmg_suspend_smg, slsmg_init_smg, slsmg_reset_smg}
 \done
@@ -138,7 +138,7 @@
 \synopsis{Reset the \var{SLsmg} routines}
 \usage{slsmg_reset_smg ()}
 \description
-  The \var{slsmg_reset_smg} function resets the \var{SLsmg}
+  The \ifun{slsmg_reset_smg} function resets the \var{SLsmg}
   screen management routines by freeing all memory allocated
   while it was active and also put the terminal's display in
   it's default state.
@@ -149,7 +149,7 @@
 \synopsis{Initialize the \var{SLsmg} routines}
 \usage{slsmg_init_smg ()}
 \description
-  The \var{slsmg_init_smg} function initializes the \var{SLsmg} screen
+  The \ifun{slsmg_init_smg} function initializes the \var{SLsmg} screen
   management routines.   Specifically, this function allocates space
   for the virtual display and puts the terminal's physical display in
   the proper state.
@@ -165,7 +165,7 @@
 \synopsis{Write the first n characters of a string on the display}
 \usage{slsmg_write_nstring (String_Type s, Integer_Type len)}
 \description
-  The \var{slsmg_write_nstring} function writes the first \var{n}
+  The \ifun{slsmg_write_nstring} function writes the first \var{n}
   characters of \var{s} to this virtual display.  If the length of
   the string \var{s} is less than \var{n}, the spaces will used until
   \var{n} characters have been written.  \var{s} can be \var{NULL}, in
@@ -177,7 +177,7 @@
 \synopsis{Write a string to the display with wrapping}
 \usage{slsmg_write_wrapped_string (String_Type s, Integer_Type r, c, dr, dc, fill)}
 \description
-  The \var{slsmg_write_wrapped_string} function writes the
+  The \ifun{slsmg_write_wrapped_string} function writes the
   string \var{s} to the virtual display.  The string will be confined
   to the rectangular region whose upper right corner is at row \var{r}
   and column \var{c}, and consists of \var{nr} rows and \var{nc} columns.
@@ -194,7 +194,7 @@
 \synopsis{Get the character at the current position on the virtual display}
 \usage{Integer_Type slsmg_char_at ()}
 \description
-  The \var{slsmg_char_at} function returns the character and its color
+  The \ifun{slsmg_char_at} function returns the character and its color
   at the current position on the virtual display.
 \done
 
@@ -202,7 +202,7 @@
 \synopsis{Set the origin of the virtual display}
 \usage{slsmg_set_screen_start (Integer_Type r, c)}
 \description
-  The \var{slsmg_set_screen_start} function sets the origin of
+  The \ifun{slsmg_set_screen_start} function sets the origin of
   the virtual display to the row \var{r} and the column \var{c}.
 \seealso{slsmg_init_smg}
 \done
@@ -211,7 +211,7 @@
 \synopsis{Draw a horizontal line}
 \usage{slsmg_draw_hline (Integer_Type len)}
 \description
-  The \var{slsmg_draw_hline} function draws a horizontal line of
+  The \ifun{slsmg_draw_hline} function draws a horizontal line of
   length \var{len} on the virtual display.  The position of the
   virtual cursor is left at the end of the line.
 \seealso{slsmg_draw_vline}
@@ -221,7 +221,7 @@
 \synopsis{Draw a vertical line}
 \usage{slsmg_draw_vline (Integer_Type len)}
 \description
-  The \var{slsmg_draw_vline} function draws a vertical line of
+  The \ifun{slsmg_draw_vline} function draws a vertical line of
   length \var{len} on the virtual display.  The position of the
   virtual cursor is left at the end of the line.
 \done
@@ -230,7 +230,7 @@
 \synopsis{Draw an object from the alternate character set}
 \usage{slsmg_draw_object (Integer_Type r, c, obj)}
 \description
-  The \var{slsmg_draw_object} function may be used to place the object
+  The \ifun{slsmg_draw_object} function may be used to place the object
   specified by \var{obj} at row \var{r} and column \var{c}.  The
   object is really a character from the alternate character set and
   may be specified using one of the following constants:
@@ -255,8 +255,8 @@
 \synopsis{Draw a box on the virtual display}
 \usage{slsmg_draw_box (Integer_Type r, c, dr, dc)}
 \description
-  The \var{slsmg_draw_box} function uses the \var{slsmg_draw_hline} and
-  \var{slsmg_draw_vline} functions to draw a rectangular box on the
+  The \ifun{slsmg_draw_box} function uses the \ifun{slsmg_draw_hline} and
+  \ifun{slsmg_draw_vline} functions to draw a rectangular box on the
   virtual display.  The box's upper left corner is placed at row
   \var{r} and column \var{c}.  The length and width of the box is
   specified by \var{dr} and \var{dc}, respectively.
@@ -267,7 +267,7 @@
 \synopsis{Get the column of the virtual cursor}
 \usage{Integer_Type slsmg_get_column ()}
 \description
-  The \var{slsmg_get_column} function returns the current column of
+  The \ifun{slsmg_get_column} function returns the current column of
   the virtual cursor on the virtual display.
 \seealso{slsmg_get_row, slsmg_gotorc}
 \done
@@ -276,7 +276,7 @@
 \synopsis{Get the row of the virtual cursor}
 \usage{Integer_Type slsmg_get_row ()}
 \description
-  The \var{slsmg_get_row} function returns the current row of the
+  The \ifun{slsmg_get_row} function returns the current row of the
   virtual cursor on the virtual display.
 \seealso{slsmg_get_column, slsmg_gotorc}
 \done
@@ -285,7 +285,7 @@
 \synopsis{Move the virtual cursor forward n columns}
 \usage{slsmg_forward (Integer_Type n)}
 \description
-  The \var{slsmg_forward} function moves the virtual cursor forward
+  The \ifun{slsmg_forward} function moves the virtual cursor forward
   \var{n} columns.
 \seealso{slsmg_gotorc}
 \done
@@ -294,7 +294,7 @@
 \synopsis{Change the color of a specifed region}
 \usage{slsmg_set_color_in_region (Integer_Type color, r, c, dr, dc)}
 \description
-  The \var{slsmg_set_color_in_region} function may be used to
+  The \ifun{slsmg_set_color_in_region} function may be used to
   change the color of a rectangular region whose upper left corner
   is given by (\var{r},\var{c}), and whose height and width is given
   by \var{dr} and \var{dc}, respectively.  The color of the region
@@ -305,7 +305,7 @@
 \function{slsmg_define_color}
 \usage{slsmg_define_color (Integer_Type obj, String_Type fg, bg)}
 \description
-  The \var{slsmg_define_color} function associates the color
+  The \ifun{slsmg_define_color} function associates the color
   descriptor \exmp{obj} with a foreground and a background color.
   The \exmp{fg} and \exmp{bg} colors can be one of the following strings:
 #v+

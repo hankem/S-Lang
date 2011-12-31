@@ -163,7 +163,7 @@
 \synopsis{Read lines as an array from an open file}
 \usage{String_Type[] fgetslines (File_Type fp [,Int_Type num])}
 \description
-  The \ifun{fgetslines} function reads lines a specified number of
+  The \ifun{fgetslines} function reads a specified number of
   lines as an array of strings from the file associated with the
   file pointer \exmp{fp}.  If the number of lines to be read is left
   unspecified, the function will return the rest of the lines in the

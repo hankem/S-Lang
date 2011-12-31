@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide (v2.2.4)
   John E. Davis <www.jedsoft.org>
-  Dec 2, 2011
+  Dec 31, 2011
   ____________________________________________________________
 
 
@@ -2099,7 +2099,7 @@
   int SLsmg_Tab_Width; Set this variable to the tab width that will be
   used when expanding tab characters. The default is 8.
 
-  int SLsmg_Display_Eight_Bit This variable determines how characters
+  int SLsmg_Display_Eight_Bit; This variable determines how characters
   with the high bit set are to be output. Specifically, a character with
   the high bit set with a value greater than or equal to this value is
   output as is; otherwise, it will be output in a 7-bit representation.

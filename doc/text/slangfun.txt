@@ -850,6 +850,17 @@ where
   are equivalent, but the latter form is preferred since it executes
   about twice as fast as the former.
 
+  The `where' function can also be used with relational operators
+  and with the boolean binary `or' and `and' operators, e.g.,
+
+     a = where (array == "a string");
+     a = where (array <= 5);
+     a = where (2 <= array <= 10);
+     a = where ((array == "a string") or (array == "another string"));
+
+  Using in the last example the short-circuiting `||' and
+  `&&' operators, will result in a `TypeMismatchError' exception.
+
   Although this function may appear to be simple or even trivial, it
   is arguably one of the most important and powerful functions for
   manipulating arrays.
@@ -4818,18 +4829,20 @@ _eqs
   values are equal.
 
  EXAMPLE
+
    _eqs (1, 1)             ===> 1
    _eqs (1, 1.0)           ===> 1
    _eqs ("a", 1)           ===> 0
    _eqs ([1,2], [1.0,2.0]) ===> 1
 
+
  NOTES
    For testing sameness, use `__is_same'.
 
---------------------------------------------------------------
-
  SEE ALSO
   typeof, __is_same, __get_reference, __is_callable
+
+--------------------------------------------------------------
 
 getenv
 
@@ -4958,11 +4971,13 @@ __is_callable
   or zero otherwise.
 
  EXAMPLE
+
    __is_callable (7)      ==> 0
    __is_callable (&sin)   ==> 1
    a = [&sin];
    __is_callable (a[0])   ==> 1
    __is_callable (&a[0])  ==> 0
+
 
  SEE ALSO
   __is_numeric, is_defined
@@ -4985,6 +5000,7 @@ __is_numeric
   the test.
 
  EXAMPLE
+
    __is_numeric ("foo");  ==> 0
    __is_numeric ("0");    ==> 0
    __is_numeric (0);      ==> 1
@@ -4992,6 +5008,7 @@ __is_numeric
    __is_numeric (2j);     ==> 3
    __is_numeric ([1,2]);  ==> 1
    __is_numeric ({1,2});  ==> 0
+
 
  SEE ALSO
   typeof, __is_datatype_numeric
@@ -5032,10 +5049,12 @@ __is_same
   reference the same underlying object.
 
  EXAMPLE
+
    __is_same (1, 1)         ===> 1
    __is_same (1, 1.0)       ===> 0
    __is_same ("a", 1)       ===> 0
    __is_same ([1,2], [1,2]) ===> 0
+
 
  NOTES
    For testing equality, use `_eqs'.
@@ -7074,7 +7093,7 @@ clearerr
   Clear the error of a file stream
 
  USAGE
-  clearerr (File_Type fp
+  clearerr (File_Type fp)
 
  DESCRIPTION
   The `clearerr' function clears the error and end-of-file flags
@@ -7298,7 +7317,7 @@ fgetslines
   String_Type[] fgetslines (File_Type fp [,Int_Type num])
 
  DESCRIPTION
-  The `fgetslines' function reads lines a specified number of
+  The `fgetslines' function reads a specified number of
   lines as an array of strings from the file associated with the
   file pointer `fp'.  If the number of lines to be read is left
   unspecified, the function will return the rest of the lines in the
@@ -8129,7 +8148,7 @@ sprintf
   `S' conversion of floating point numbers.
 
  SEE ALSO
-  string, sscanf, message, pack
+  string, sscanf, message, pack, set_float_format
 
 --------------------------------------------------------------
 
