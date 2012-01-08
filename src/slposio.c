@@ -794,22 +794,23 @@ static void posix_fdopen (SLFile_FD_Type *f, char *mode)
    f->stdio_mmt_list = elem;
 }
 
-static _pSLc_off_t_Type posix_lseek (SLFile_FD_Type *f, _pSLc_off_t_Type *ofs, int *whence)
+static void posix_lseek (SLFile_FD_Type *f, _pSLc_off_t_Type *ofs, int *whence)
 {
    _pSLc_off_t_Type status;
    int fd;
 
-   if (-1 == get_fd (f, &fd))
-     return -1;
+   if (-1 == (status = get_fd (f, &fd)))
+     goto the_return;
 
    while (-1 == (status = lseek (fd, *ofs, *whence)))
      {
-	if (is_interrupt (errno, 1))
-	  continue;
-	return -1;
+	if (0 == is_interrupt (errno, 1))
+	  break;
      }
 
-   return status;
+the_return:
+
+   (void) SLANG_PUSH_OFF_T (status);
 }
 
 static int pop_fd (int *fdp, SLFile_FD_Type **fp, SLang_MMT_Type **mmtp)
@@ -996,7 +997,7 @@ static SLang_Intrin_Fun_Type Fd_Name_Table [] =
    MAKE_INTRINSIC_0("isatty", posix_isatty, I),
    MAKE_INTRINSIC_0("open", posix_open, V),
    MAKE_INTRINSIC_3("read", posix_read, V, F, R, U),
-   MAKE_INTRINSIC_3("lseek", posix_lseek, SLANG_C_OFF_T_TYPE, F, SLANG_C_OFF_T_TYPE, I),
+   MAKE_INTRINSIC_3("lseek", posix_lseek, V, F, SLANG_C_OFF_T_TYPE, I),
    MAKE_INTRINSIC_2("fdopen", posix_fdopen, V, F, S),
    MAKE_INTRINSIC_2("write", posix_write, V, F, B),
    MAKE_INTRINSIC_1("dup_fd", posix_dup, V, F),

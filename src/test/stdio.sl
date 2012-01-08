@@ -91,6 +91,21 @@ define run_tests (some_text, read_fun, write_fun, length_fun)
      failed ("fread for 100 extra bytes");
 
    if (-1 == fclose (fp)) failed ("fclose after tests");
+
+   variable fd = open (file, O_RDONLY);
+   if (fd == NULL)
+     failed ("open %s failed", file);
+
+   variable ofs = (@length_fun)(some_text) - 1;
+   if (ofs != lseek (fd, ofs, SEEK_SET))
+     failed ("lseek failed to return %S", ofs);
+   if (1 != read (fd, &new_text, 1))
+     failed ("read failed after lseek");
+   if (new_text[0] != some_text[-1])
+     failed ("read failed to read the correct byte after lseek: 0x%X vs 0x%X",
+	    new_text[0], some_text[-1]);
+   () = close (fd);
+
    () = remove (file);
    if (stat_file (file) != NULL) failed ("remove");
 }
