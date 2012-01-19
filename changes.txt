@@ -50,6 +50,8 @@ Changes since 2.2.4
 29. Some minor documentation tweaks (Agathoklis D. Hatzimanikas)
 30. More doc tweaks (Agathoklis D. Hatzimanikas)
 31. src/slposio.c: lseek was not working properly.
+32. slsh/scripts/badlinks: Changed from GPLv3 to GPLv2 with permission
+    from Agathoklis Hatzimanikas.
 
 {{{ Previous Versions
 

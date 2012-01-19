@@ -5,7 +5,7 @@ require ("cmdopt");
 
 private variable
 VERSION = "0.1",
-  LICENSE = "GNU GPL version 3 or later";
+  LICENSE = "GNU GPL version 2 or later";
 
 private define print_version ()
 {
