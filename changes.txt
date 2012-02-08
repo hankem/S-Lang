@@ -52,6 +52,9 @@ Changes since 2.2.4
 31. src/slposio.c: lseek was not working properly.
 32. slsh/scripts/badlinks: Changed from GPLv3 to GPLv2 with permission
     from Agathoklis Hatzimanikas.
+33. src/slscanf.c: Call strtod in a locale where the decimal point is
+    ".".  This works around problems associated with modules that
+    change the locale.
 
 {{{ Previous Versions
 

@@ -155,6 +155,7 @@ getpriority setpriority \
 setvbuf \
 utime utimes \
 ttyname ttyname_r \
+newlocale strtod_l localeconv \
 )
 
 if test x"$ac_cv_func_socketpair" != x"yes"; then

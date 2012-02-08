@@ -41,6 +41,8 @@
 #undef HAVE_MEMCPY
 
 #undef HAVE_SETLOCALE
+#undef HAVE_NEWLOCALE
+#undef HAVE_LOCALECONV
 #undef HAVE_LOCALE_H
 #undef HAVE_LANGINFO_H
 #undef HAVE_NL_LANGINFO_CODESET
@@ -57,6 +59,7 @@
 #undef HAVE_STRTOD
 #undef HAVE_ATOLL
 #undef HAVE_STRTOLL
+#undef HAVE_STRTOD_L
 
 /* define if you have fcntl.h */
 #undef HAVE_FCNTL_H

@@ -20,10 +20,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 */
 
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif
 #include "slinclud.h"
 #include <ctype.h>
 #include <math.h>
 #include <errno.h>
+
+#ifdef HAVE_LOCALE_H
+# include <locale.h>
+#endif
 
 #include "slang.h"
 #include "_slang.h"
@@ -133,6 +140,71 @@ static int parse_ushort (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, un
 }
 
 #if SLANG_HAS_FLOAT
+/* See <pubs.opengroup.org> for information about locale_t, newlocale, etc.
+ * The usage below is based on the opengroup manpages.
+ */
+#if defined(HAVE_STRTOD_L) && defined(HAVE_NEWLOCALE)
+static locale_t C_Locale = (locale_t) 0;
+#endif
+static int do_strtod (char *buf, int sign, double *xp)
+{
+   char *old_locale = NULL;
+
+#if defined(HAVE_STRTOD_L) && defined(HAVE_NEWLOCALE) && defined(LC_ALL_MASK)
+   if (C_Locale != (locale_t) 0)
+     {
+	*xp = sign * strtod_l (buf, NULL, C_Locale);
+	return 1;
+     }
+
+   C_Locale = newlocale (LC_ALL_MASK, "C", (locale_t) 0);
+   if (C_Locale != (locale_t) 0)
+     {
+	*xp = sign * strtod_l (buf, NULL, C_Locale);
+	return 1;
+     }
+
+   /* drop */
+#endif
+#if defined(HAVE_LOCALECONV)
+     {
+	struct lconv *l;
+	if ((NULL != (l = localeconv ()))
+	    && (l->decimal_point[0] == '.'))
+	  goto call_strtod;
+     }
+#endif
+#if defined(HAVE_SETLOCALE)
+   old_locale = setlocale (LC_NUMERIC, NULL);
+
+   /* old_locale may point to a static area.  Copy it */
+   if (old_locale != NULL)
+     {
+	old_locale = SLmake_string (old_locale);
+	if (old_locale == NULL)
+	  return 0;
+
+	(void) setlocale (LC_NUMERIC, "C");
+     }
+#endif
+
+call_strtod:
+
+#ifdef HAVE_STRTOD
+   *xp = sign * strtod (buf, NULL);
+#else
+   *xp = sign * atof (buf);
+#endif
+#if defined(HAVE_SETLOCALE)
+   if (old_locale != NULL)
+     {
+	(void) setlocale (LC_NUMERIC, old_locale);
+	SLfree (old_locale);
+     }
+#endif
+   return 1;
+}
+
 /*
  * In an ideal world, strtod would be the correct function to use.  However,
  * there may be problems relying on this function because some systems do
@@ -317,13 +389,7 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 
    *sp = s;
 
-   /* fprintf (stdout, "buf='%s'\n", buf); */
-#ifdef HAVE_STRTOD
-   *d = sign * strtod (buf, NULL);
-#else
-   *d = sign * atof (buf);
-#endif
-   return 1;
+   return do_strtod (buf, sign, d);
 }
 
 static int parse_float (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, float *d)

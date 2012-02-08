@@ -5224,6 +5224,7 @@ getpriority setpriority \
 setvbuf \
 utime utimes \
 ttyname ttyname_r \
+newlocale strtod_l localeconv \
 
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
