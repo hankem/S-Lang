@@ -55,6 +55,7 @@ Changes since 2.2.4
 33. src/slscanf.c: Call strtod in a locale where the decimal point is
     ".".  This works around problems associated with modules that
     change the locale.
+34. src/slscanf.c: include <xlocale.h> if available.
 
 {{{ Previous Versions
 

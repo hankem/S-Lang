@@ -23,6 +23,10 @@ USA.
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
 #endif
+#ifndef __EXTENSIONS__
+# define __EXTENSIONS__
+#endif
+
 #include "slinclud.h"
 #include <ctype.h>
 #include <math.h>
@@ -30,6 +34,10 @@ USA.
 
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
+#endif
+
+#ifdef HAVE_XLOCALE_H
+# include <xlocale.h>
 #endif
 
 #include "slang.h"

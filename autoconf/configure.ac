@@ -80,6 +80,7 @@ memory.h \
 termios.h \
 malloc.h \
 locale.h \
+xlocale.h \
 langinfo.h \
 fcntl.h \
 sys/fcntl.h \
