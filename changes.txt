@@ -56,6 +56,8 @@ Changes since 2.2.4
     ".".  This works around problems associated with modules that
     change the locale.
 34. src/slscanf.c: include <xlocale.h> if available.
+35. src/slscanf.c: Avoid the use of setlocale and simply copy the
+    locale's decimal point before calling strtod (Paul Boekholt).
 
 {{{ Previous Versions
 
