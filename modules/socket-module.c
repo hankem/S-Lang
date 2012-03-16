@@ -595,7 +595,7 @@ static Socket_Type *accept_af_inet (Socket_Type *s, unsigned int nrefs, SLang_Re
    s1 = perform_accept (s, (struct sockaddr *)&s_in, &addr_len);
 
    if ((s1 == NULL) || (nrefs == 0))
-     return NULL;
+     return s1;
 
    if (nrefs == 2)
      {

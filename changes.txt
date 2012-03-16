@@ -58,6 +58,9 @@ Changes since 2.2.4
 34. src/slscanf.c: include <xlocale.h> if available.
 35. src/slscanf.c: Avoid the use of setlocale and simply copy the
     locale's decimal point before calling strtod (Paul Boekholt).
+36. modules/socket-module.c: NULL was being returned when accept was
+    called with a single argument (Fixes bug reported by Arik
+    Mitschang).
 
 {{{ Previous Versions
 
