@@ -35,6 +35,10 @@ USA.
 #include <string.h>
 #include <slang.h>
 
+/* WCONTINUED is not defined on Hurd, in waitflags.h. */
+#ifndef WCONTINUED
+# define WCONTINUED 0		       /* Debian patch used 8, but 0 is safer */
+#endif
 SLANG_MODULE(fork);
 
 static int fork_intrinsic (void)

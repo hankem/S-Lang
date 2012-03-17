@@ -63,6 +63,8 @@ Changes since 2.2.4
     Mitschang).
 37. src/slwclut.c: A logic error was causing strtrans to function
     improperly for some UTF-8 encoded strings.
+38. src/fork-module.c: If WCONTINUED is not defined, define it to be 0
+    (from debian patch).
 
 {{{ Previous Versions
 
