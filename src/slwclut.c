@@ -1252,9 +1252,13 @@ SLuchar_Type *SLuchar_apply_char_map (SLwchar_Map_Type *map, SLuchar_Type *str)
 	unsigned int encoded_len;
 
 	w_in = (SLwchar_Type) *str;
+	if (w_in < 0x80)
+	  str++;
+	else if (NULL == (str = _pSLinterp_decode_wchar (str, str_max, &w_in)))
+	  goto return_error;
+
 	if (w_in < 0x100)
 	  {
-	     str++;
 	     w_out = chmap[w_in];
 	     if ((w_out < 0x80) && (outptr < output_max))
 	       {
@@ -1264,9 +1268,6 @@ SLuchar_Type *SLuchar_apply_char_map (SLwchar_Map_Type *map, SLuchar_Type *str)
 	  }
 	else
 	  {
-	     if (NULL == (str = _pSLinterp_decode_wchar (str, str_max, &w_in)))
-	       goto return_error;
-
 	     if (-1 == SLwchar_apply_char_map (map, &w_in, &w_out, 1))
 	       goto return_error;
 	  }
