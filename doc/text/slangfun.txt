@@ -1148,6 +1148,35 @@ count_byte_occurrences
 
 --------------------------------------------------------------
 
+is_substrbytes
+
+ SYNOPSIS
+  test if a binary string contains a series of bytes
+
+ USAGE
+  Int_Type is_substrbytes (a, b [,ofs])
+
+ DESCRIPTION
+This function may be used to see if the binary string `a'
+contains the byte-sequence given by the binary string `b'.  If
+`b' is contained in `a', then a ones-based offset of the
+first occurance of `b' in `a' is returned.  Otherwise, the
+function will return 0 to indicate that `a' does not contain
+`b'.
+
+An optional 1-based parameter `ofs' may be passed to the function
+to indicate where in `a' the search is to start.  The returned
+value is still a 1-based offset from the beginning of `a' where
+`b' is located.
+
+ NOTES
+  Support for the optional argument was added in version 2.3.0.
+
+ SEE ALSO
+  is_substr, count_byte_occurrences
+
+--------------------------------------------------------------
+
 pack
 
  SYNOPSIS

@@ -640,8 +640,8 @@ static unsigned int count_byte_occurrences (SLang_BString_Type *b, unsigned char
    return n;
 }
 
-/* returns the character position of substring in a string or null */
-static int issubbytes (SLang_BString_Type *as, SLang_BString_Type *bs)
+/* returns the 1-based byte offset of substring in a string, or 0 */
+static int issubbytes_1 (SLang_BString_Type *as, SLang_BString_Type *bs, unsigned int ofs0)
 {
    unsigned int lena, lenb;
    unsigned char *a, *b, *amax, *bmax, *astart;
@@ -651,6 +651,14 @@ static int issubbytes (SLang_BString_Type *as, SLang_BString_Type *bs)
    b = BS_GET_POINTER(bs);
    lena = as->len;
    lenb = bs->len;
+
+   if (ofs0)
+     {
+	if (lena < ofs0)
+	  return 0;
+	lena -= ofs0;
+	a += ofs0;
+     }
 
    if ((lenb > lena) || (lenb == 0))
      return 0;
@@ -675,12 +683,42 @@ static int issubbytes (SLang_BString_Type *as, SLang_BString_Type *bs)
 	     b++;
 	  }
 	if (b == bmax)
-	  return (a0 - astart);
+	  return ofs0 + (a0 - astart);
 
 	a = a0;
 	b = b0;
      }
    return 0;
+}
+
+static SLindex_Type issubbytes (void)
+{
+   SLang_BString_Type *a, *b;
+   SLindex_Type ofs = 0;
+
+   if (SLang_Num_Function_Args == 3)
+     {
+	if (-1 == SLang_pop_array_index (&ofs))
+	  return -1;
+	if (ofs <= 0)
+	  {
+	     SLang_verror (SL_InvalidParm_Error, "1-based offset must be greater than 0");
+	     return -1;
+	  }
+	ofs--;
+     }
+   if (-1 == SLang_pop_bstring (&b))
+     return 0;
+   if (0 == SLang_pop_bstring (&a))
+     {
+	SLuindex_Type uofs = issubbytes_1 (a, b, (SLuindex_Type) ofs);
+	/* 1-based upon return */
+
+	ofs = (SLindex_Type) uofs;
+	SLbstring_free (b);
+     }
+   SLbstring_free (a);
+   return ofs;
 }
 
 static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
@@ -692,7 +730,7 @@ static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
    MAKE_INTRINSIC_2("unpack", _pSLunpack, SLANG_VOID_TYPE, SLANG_STRING_TYPE, SLANG_BSTRING_TYPE),
    MAKE_INTRINSIC_1("pad_pack_format", _pSLpack_pad_format, SLANG_VOID_TYPE, SLANG_STRING_TYPE),
    MAKE_INTRINSIC_1("sizeof_pack", _pSLpack_compute_size, SLANG_UINT_TYPE, SLANG_STRING_TYPE),
-   MAKE_INTRINSIC_2("is_substrbytes", issubbytes, SLANG_INT_TYPE, SLANG_BSTRING_TYPE, SLANG_BSTRING_TYPE),
+   MAKE_INTRINSIC_0("is_substrbytes", issubbytes, SLANG_ARRAY_INDEX_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

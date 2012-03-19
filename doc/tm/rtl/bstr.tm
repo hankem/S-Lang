@@ -45,6 +45,27 @@
 \seealso{count_char_occurrences}
 \done
 
+
+\function{is_substrbytes}
+\synopsis{test if a binary string contains a series of bytes}
+\usage{Int_Type is_substrbytes (a, b [,ofs])}
+\description
+This function may be used to see if the binary string \exmp{a}
+contains the byte-sequence given by the binary string \exmp{b}.  If
+\exmp{b} is contained in \exmp{a}, then a ones-based offset of the
+first occurance of \exmp{b} in \exmp{a} is returned.  Otherwise, the
+function will return 0 to indicate that \exmp{a} does not contain
+\exmp{b}.
+
+An optional 1-based parameter \exmp{ofs} may be passed to the function
+to indicate where in \exmp{a} the search is to start.  The returned
+value is still a 1-based offset from the beginning of \exmp{a} where
+\exmp{b} is located.
+\notes
+  Support for the optional argument was added in version 2.3.0.
+\seealso{is_substr, count_byte_occurrences}
+\done
+
 \function{pack}
 \synopsis{Pack objects into a binary string}
 \usage{BString_Type pack (String_Type fmt, ...)}

@@ -65,6 +65,8 @@ Changes since 2.2.4
     improperly for some UTF-8 encoded strings.
 38. src/fork-module.c: If WCONTINUED is not defined, define it to be 0
     (from debian patch).
+39. src/slbstr.c: Added support for an optional offset parameter to
+    is_substrbytes.
 
 {{{ Previous Versions
 

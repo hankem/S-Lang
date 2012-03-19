@@ -58,6 +58,12 @@ define test_is_substrbytes (a, b, ans)
    variable x = is_substrbytes (a, b);
    if (ans != x)
      failed ("%d != (%d = is_substrbytes (%S, %S))", ans, x, a, b);
+   if (ans > 1)
+     {
+	x = is_substrbytes (a, b, ans-1);
+	if (ans != x)
+	  failed ("%d != (%d = is_substrbytes (%S, %S, %S))", ans, x, a, b, ans-1);
+     }
 }
 test_is_substrbytes ("hello", "o", 5);
 test_is_substrbytes ("hello", "x", 0);
@@ -78,6 +84,8 @@ test_is_substrbytes ("\0x", "\0xy", 0);
 test_is_substrbytes ("", "\0xy", 0);
 test_is_substrbytes ("", "\0x", 0);
 test_is_substrbytes ("", "\0", 0);
+test_is_substrbytes ("eefdefg", "efg", 5);
+
 
 print ("Ok\n");
 exit (0);
