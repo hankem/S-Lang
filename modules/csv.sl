@@ -416,6 +416,8 @@ Qualifiers:\n\
 
    if (names != NULL)
      {
+	if (typeof (names) == List_Type)
+	  names = list_to_array (names);
 	str = _csv_encode_row (encoder, names, flags);
 	if (-1 == fputs (str, fp))
 	  throw WriteError, "Write to CSV file failed";

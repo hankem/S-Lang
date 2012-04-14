@@ -67,6 +67,8 @@ Changes since 2.2.4
     (from debian patch).
 39. src/slbstr.c: Added support for an optional offset parameter to
     is_substrbytes.
+40. modules/csv.sl: Allow the "names" qualifier to be a list in
+    addition to an array.
 
 {{{ Previous Versions
 
