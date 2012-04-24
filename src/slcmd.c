@@ -124,20 +124,20 @@ static int allocate_arg_space (SLcmd_Cmd_Table_Type *table, int argc, unsigned i
      }
    else space += 32;
 
-   if (NULL == (p = SLrealloc ((char *)table->string_args, space * sizeof (char *))))
+   if (NULL == (p = (char *)SLrealloc ((char *)table->string_args, space * sizeof (char *))))
      return -1;
    table->string_args = (SLFUTURE_CONST char **)p;
    table->string_args [argc] = NULL;
 
-   if (NULL == (p = SLrealloc ((char *)table->int_args, space * sizeof (int))))
+   if (NULL == (p = (char *)SLrealloc ((char *)table->int_args, space * sizeof (int))))
      return -1;
    table->int_args = (int *)p;
 
-   if (NULL == (p = SLrealloc ((char *)table->double_args, space * sizeof (double))))
+   if (NULL == (p = (char *)SLrealloc ((char *)table->double_args, space * sizeof (double))))
      return -1;
    table->double_args = (double *)p;
 
-   if (NULL == (p = SLrealloc ((char *)table->arg_type, space * sizeof (SLtype))))
+   if (NULL == (p = (char *)SLrealloc ((char *)table->arg_type, space * sizeof (SLtype))))
      return -1;
    table->arg_type = (SLtype *)p;
 

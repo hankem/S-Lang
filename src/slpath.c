@@ -364,7 +364,7 @@ char *SLpath_dircat (SLFUTURE_CONST char *dir, SLFUTURE_CONST char *name)
 #endif
 
    len = dirlen + strlen (name) + 2;
-   if (NULL == (file = SLmalloc (len)))
+   if (NULL == (file = (char *)SLmalloc (len)))
      return NULL;
 
    strcpy (file, dir);
@@ -482,7 +482,7 @@ char *SLpath_find_file_in_path (SLFUTURE_CONST char *path, SLFUTURE_CONST char *
    if (this_path_len > max_path_len) max_path_len = this_path_len;
    max_path_len++;
 
-   if (NULL == (dir = SLmalloc (max_path_len)))
+   if (NULL == (dir = (char *)SLmalloc (max_path_len)))
      return NULL;
 
    nth = 0;

@@ -248,7 +248,7 @@ static int str_replace_cmd_1 (char *orig, char *match, char *rep, unsigned int m
    rep_len = strlen (rep);
 
    new_len = (strlen (orig) - num_replaces * match_len) + num_replaces * rep_len;
-   new_str = SLmalloc (new_len + 1);
+   new_str = (char *)SLmalloc (new_len + 1);
    if (new_str == NULL)
      return -1;
 
@@ -587,7 +587,7 @@ static void str_quote_string_cmd (char *str, char *quotes, SLwchar_Type *slash_p
      }
    len++;			       /* null terminate */
 
-   if (NULL == (q = SLmalloc(len)))
+   if (NULL == (q = (char *)SLmalloc(len)))
      {
 	SLwchar_free_lut (lut);
 	return;
@@ -1901,8 +1901,8 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	if (len + dlen >= malloc_len)
 	  {
 	     malloc_len = len + dlen;
-	     if (out == NULL) outp = SLmalloc(malloc_len + 1);
-	     else outp = SLrealloc(out, malloc_len + 1);
+	     if (out == NULL) outp = (char *)SLmalloc(malloc_len + 1);
+	     else outp = (char *)SLrealloc(out, malloc_len + 1);
 	     if (NULL == outp)
 	       return out;
 	     out = outp;
@@ -2204,7 +2204,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 
    if (out != NULL)
      {
-	outp = SLrealloc (out, (unsigned int) (outp - out) + 1);
+	outp = (char *)SLrealloc (out, (unsigned int) (outp - out) + 1);
 	if (outp != NULL) out = outp;
      }
 
@@ -2566,7 +2566,7 @@ static char *create_delimited_string (char **list, unsigned int n,
    if (num > 1)
      len += (num - 1) * dlen;
 
-   if (NULL == (str = SLmalloc (len)))
+   if (NULL == (str = (char *)SLmalloc (len)))
      return NULL;
 
    *str = 0;
@@ -2721,7 +2721,7 @@ static void glob_to_regexp (char *glob)
    char ch;
 
    len = _pSLstring_bytelen (glob);
-   pat = SLmalloc (2*len + 8);
+   pat = (char *)SLmalloc (2*len + 8);
    if (pat == NULL)
      return;
 

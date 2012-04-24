@@ -685,7 +685,7 @@ void _pSLunpack (char *format, SLang_BString_Type *bs)
 	else
 	  len = get_unpadded_strlen ((char *)b, ft.pad, ft.repeat);
 
-	str = SLmalloc (len + 1);
+	str = (char *)SLmalloc (len + 1);
 	if (str == NULL)
 	  return;
 	memcpy ((char *) str, (char *)b, len);
@@ -743,7 +743,7 @@ void _pSLpack_pad_format (char *format)
     * I cannot see how this will be overrun
     */
    max_len = 4 * (strlen (format) + 1);
-   if (NULL == (buf = SLmalloc (max_len + 1)))
+   if (NULL == (buf = (char *)SLmalloc (max_len + 1)))
      return;
 
    b = buf;

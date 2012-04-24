@@ -640,7 +640,7 @@ extern char *_pSLcreate_via_alloced_slstring (char *, unsigned int);
 extern void _pSLunallocate_slstring (char *, unsigned int);
 extern int _pSLpush_alloced_slstring (char *, unsigned int);
 
-extern unsigned int _pSLstring_bytelen (SLstr_Type *);
+extern unsigned int _pSLstring_bytelen (SLCONST SLstr_Type *);
 extern void _pSLang_free_slstring (SLstr_Type *);   /* slstring required and assumed */
 extern unsigned long _pSLstring_get_hash (SLstr_Type *s);   /* slstring required */
 
@@ -768,7 +768,7 @@ extern int _pSLcall_debug_hook (SLFUTURE_CONST char *file, int linenum);
 extern char *_pSLstring_dup_hashed_string (SLCONST char *, unsigned long);
 extern unsigned long _pSLcompute_string_hash (SLCONST char *);
 extern char *_pSLstring_make_hashed_string (SLCONST char *, unsigned int, unsigned long *);
-extern void _pSLfree_hashed_string (char *, unsigned int, unsigned long);
+extern void _pSLfree_hashed_string (SLCONST char *, unsigned int, unsigned long);
 unsigned long _pSLstring_hash (SLCONST unsigned char *, SLCONST unsigned char *);
 extern int _pSLinit_slcomplex (void);
 
@@ -1071,8 +1071,8 @@ extern SLFUTURE_CONST char *_pSLdefines[];
 #define SL_ERRNO_NOT_IMPLEMENTED	0x7FFF
 extern int _pSLerrno_errno;
 extern int _pSLerrno_init (void);
-extern char *_SLcalloc (unsigned int, unsigned int);
-extern char *_SLrecalloc (char *, unsigned int, unsigned int);
+extern SLFUTURE_VOID *_SLcalloc (unsigned int, unsigned int);
+extern SLFUTURE_VOID *_SLrecalloc (SLFUTURE_VOID *, unsigned int, unsigned int);
 
 extern int _pSLstdio_fdopen (char *, int, char *);
 extern void _pSLfclose_fdopen_fp (SLang_MMT_Type *);
@@ -1192,7 +1192,7 @@ _pSLang_Token_Type;
 
 /* return token type or EOF_TOKEN upon error */
 extern _pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *, _pSLtok_Type,
-						   SLFUTURE_CONST char *, unsigned int);
+						   SLCONST char *, unsigned int);
 
 extern void _pSLcompile (_pSLang_Token_Type *);
 extern void (*_pSLcompile_ptr)(_pSLang_Token_Type *);

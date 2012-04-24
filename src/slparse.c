@@ -2582,7 +2582,7 @@ static int combine_namespace_tokens (_pSLang_Token_Type *a, _pSLang_Token_Type *
    lena = strlen (sa);
    lenb = strlen (sb);
 
-   sc = SLmalloc (lena + lenb + 3);
+   sc = (char *)SLmalloc (lena + lenb + 3);
    if (sc == NULL)
      return -1;
 

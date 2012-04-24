@@ -130,33 +130,33 @@ static int check_memory (unsigned char *p, SLCONST char *what)
    return 0;
 }
 
-void SLdebug_free (char *p)
+void SLdebug_free (SLFUTURE_VOID *p)
 {
    if (p == NULL) return;
    if (-1 == check_memory ((unsigned char *) p, "FREE")) return;
 
-   SLFREE (p - Chunk);
+   SLFREE ((char*)p - Chunk);
 }
 
-char *SLdebug_malloc (unsigned long n)
+SLFUTURE_VOID *SLdebug_malloc (unsigned long n)
 {
    char *p;
 
    if ((p = (char *) SLMALLOC (n + 2 * Chunk)) == NULL) return NULL;
 
    fixup ((unsigned char *) p, n, "MALLOC");
-   return p + Chunk;
+   return (SLFUTURE_VOID *)(p + Chunk);
 }
 
-char *SLdebug_realloc (char *p, unsigned long n)
+SLFUTURE_VOID *SLdebug_realloc (SLFUTURE_VOID *p, unsigned long n)
 {
    if (-1 == check_memory ((unsigned char *) p, "REALLOC")) return NULL;
-   if ((p = (char *) SLREALLOC (p - Chunk, n + 2 * Chunk)) == NULL) return NULL;
+   if ((p = (char *) SLREALLOC ((char*)p - Chunk, n + 2 * Chunk)) == NULL) return NULL;
    fixup ((unsigned char *) p, n, "REALLOC");
-   return p + Chunk;
+   return (SLFUTURE_VOID *) ((char*)p + Chunk);
 }
 
-char *SLdebug_calloc (unsigned long n, unsigned long size)
+SLFUTURE_VOID *SLdebug_calloc (unsigned long n, unsigned long size)
 {
    char *p;
    int m;
@@ -166,6 +166,6 @@ char *SLdebug_calloc (unsigned long n, unsigned long size)
 
    if ((p = (char *) SLCALLOC (n + m + m, size)) == NULL) return NULL;
    fixup ((unsigned char *) p, size * n, "CALLOC");
-   return p + Chunk;
+   return (SLFUTURE_VOID *)(p + Chunk);
 }
 

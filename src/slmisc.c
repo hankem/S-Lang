@@ -49,7 +49,7 @@ char *SLmake_nstring (SLFUTURE_CONST char *str, unsigned int n)
 {
    char *ptr;
 
-   if (NULL == (ptr = SLmalloc(n + 1)))
+   if (NULL == (ptr = (char *)SLmalloc(n + 1)))
      {
 	return NULL;
      }

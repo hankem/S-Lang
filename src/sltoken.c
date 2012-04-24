@@ -61,7 +61,7 @@ static int next_input_line (void)
 
 static void free_slstring_token_val (_pSLang_Token_Type *tok)
 {
-   char *s = tok->v.s_val;
+   SLCONST char *s = tok->v.s_val;
    if (s != NULL)
      {
 	_pSLfree_hashed_string (s, strlen(s), tok->hash);
@@ -74,7 +74,7 @@ static void free_static_sval_token (_pSLang_Token_Type *tok)
 }
 
 _pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *tok, _pSLtok_Type type,
-					    char *s, unsigned int len)
+					    SLCONST char *s, unsigned int len)
 {
    if (NULL == (tok->v.s_val = _pSLstring_make_hashed_string (s, len, &tok->hash)))
      return tok->type = EOF_TOKEN;
@@ -1142,7 +1142,7 @@ static _pSLang_Multiline_String_Type *
 	num++;
      }
 
-   if (NULL == (buf = SLmalloc (len+1)))
+   if (NULL == (buf = (char *)SLmalloc (len+1)))
      {
 	SLfree ((char *) m);
 	return NULL;
@@ -1814,7 +1814,7 @@ int SLns_load_file (SLFUTURE_CONST char *f, SLFUTURE_CONST char *ns_name)
 
    if (fp == NULL)
      _pSLang_verror (SL_OBJ_NOPEN, "Unable to open %s", name);
-   else if (NULL != (buf = SLmalloc (MAX_FILE_LINE_LEN + 1)))
+   else if (NULL != (buf = (char *)SLmalloc (MAX_FILE_LINE_LEN + 1)))
      {
 	client_data.fp = fp;
 	client_data.buf = buf;

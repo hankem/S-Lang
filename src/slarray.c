@@ -5099,7 +5099,7 @@ SLang_Array_Type *SLang_duplicate_array (SLang_Array_Type *at)
    num_elements = at->num_elements;
    sizeof_type = at->sizeof_type;
 
-   if (NULL == (data = _SLcalloc (num_elements, sizeof_type)))
+   if (NULL == (data = (char *)_SLcalloc (num_elements, sizeof_type)))
      return NULL;
 
    size = num_elements * sizeof_type;

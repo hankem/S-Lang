@@ -134,7 +134,7 @@ static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
    inn = (size_t) bstrlen;
 
    bufn = outn = 2*inn + 2;
-   if (NULL == (buf = SLmalloc(bufn)))
+   if (NULL == (buf = (char *)SLmalloc(bufn)))
      return;
 
    outstr = buf;
@@ -176,7 +176,7 @@ static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
 		  outdelta = outstr - buf;
 		  outn += bufn;
 		  bufn += bufn;
-		  p = SLrealloc(buf, bufn);
+		  p = (char *)SLrealloc(buf, bufn);
 		  if (p == NULL)
 		    goto error;
 		  buf = p;

@@ -396,13 +396,13 @@ static void posix_read (SLFile_FD_Type *f, SLang_Ref_Type *ref, unsigned int *nb
    b = NULL;
 
    len = *nbytes;
-   if ((NULL == (b = SLmalloc (len + 1)))
+   if ((NULL == (b = (char *)SLmalloc (len + 1)))
        || (-1 == do_read (f, b, &len)))
      goto return_error;
 
    if (len != *nbytes)
      {
-	char *b1 = SLrealloc (b, len + 1);
+	char *b1 = (char *)SLrealloc (b, len + 1);
 	if (b1 == NULL)
 	  goto return_error;
 	b = b1;

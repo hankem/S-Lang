@@ -201,7 +201,7 @@ static int decode_csv_row (CSV_Type *csv, int flags)
 	       value_size *= 2;
 	     else value_size += 8192;
 
-	     new_value = SLrealloc (value, value_size);
+	     new_value = (char *)SLrealloc (value, value_size);
 	     if (new_value == NULL)
 	       goto return_error;
 	     value = new_value;
@@ -401,7 +401,7 @@ static char *csv_encode (CSV_Type *csv,
      size += nfields-1;		       /* for delimiters */
    size += 3;			       /* for CRLF\0 */
 
-   fieldflags = SLmalloc(nfields+1);
+   fieldflags = (char *)SLmalloc(nfields+1);
    if (fieldflags == NULL)
      return NULL;
 
@@ -456,7 +456,7 @@ static char *csv_encode (CSV_Type *csv,
 	  }
      }
 
-   if (NULL == (encoded_str = SLmalloc (size)))
+   if (NULL == (encoded_str = (char *)SLmalloc (size)))
      {
 	SLfree (fieldflags);
 	return NULL;

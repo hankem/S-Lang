@@ -500,7 +500,7 @@ static int read_one_line (FILE *fp, char **strp, unsigned int *lenp, int trim_tr
 	     break;
 	  }
 
-	if (NULL == (new_str = SLrealloc (str, len + dlen + 1)))
+	if (NULL == (new_str = (char *)SLrealloc (str, len + dlen + 1)))
 	  {
 	     SLfree (str);
 	     return -1;
@@ -752,7 +752,7 @@ static int check_ferror_and_realloc (FILE *fp, int ret, char **strp, unsigned in
      {
 	char *new_s;
 	unsigned int nbytes = num_read * sizeof_type;
-	new_s = SLrealloc (*strp, nbytes + 1);
+	new_s = (char *)SLrealloc (*strp, nbytes + 1);
 	if (new_s == NULL)
 	  ret = -1;
 	else
@@ -771,7 +771,7 @@ static void stdio_fread_bytes (SLang_Ref_Type *ref, unsigned int *num_wantedp, S
    if (NULL == (fp = check_fp (t, SL_READ)))
      goto the_return;
 
-   if (NULL == (buf = SLmalloc (num_wanted + 1)))
+   if (NULL == (buf = (char *)SLmalloc (num_wanted + 1)))
      goto the_return;
 
    while (num_read < num_wanted)
@@ -849,7 +849,7 @@ static void stdio_fread (SLang_Ref_Type *ref, int *data_typep, unsigned int *num
    num_to_read = *num_elemns;
    nbytes = (unsigned int) num_to_read * sizeof_type;
 
-   s = SLmalloc (nbytes + 1);
+   s = (char *)SLmalloc (nbytes + 1);
    if (s == NULL)
      goto the_return;
 
@@ -1091,7 +1091,7 @@ static int stdio_setvbuf (SL_File_Table_Type *t, int *modep, int *sizep)
      {
 	if (size == 0) size = BUFSIZ;
 
-	if (NULL == (newbuf = SLmalloc (size)))
+	if (NULL == (newbuf = (char *)SLmalloc (size)))
 	  return -1;
 	errno = 0;
 	status = setvbuf (fp, newbuf, *modep, size);

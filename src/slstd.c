@@ -451,7 +451,7 @@ static int get_doc_string (char *file, char *topic)
 	if (ch == '-') break;
 
 	len = strlen (line);
-	if (NULL == (new_str = SLrealloc (str, str_len + len + 1)))
+	if (NULL == (new_str = (char *)SLrealloc (str, str_len + len + 1)))
 	  {
 	     SLfree (str);
 	     str = NULL;

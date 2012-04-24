@@ -2913,14 +2913,14 @@ static char *nt_ref_string (VOID_STAR vdata)
        && (0 != strcmp (ns->namespace_name, "Global")))
      {
 	unsigned int dlen = strlen (ns->namespace_name);
-	s = SLmalloc (len + dlen + 4);
+	s = (char *)SLmalloc (len + dlen + 4);
 	if (s == NULL)
 	  return NULL;
 	(void) sprintf (s, "&%s->%s", ns->namespace_name, name);
 	return s;
      }
 
-   if (NULL == (s = SLmalloc (len + 2)))
+   if (NULL == (s = (char *)SLmalloc (len + 2)))
      return NULL;
 
    *s = '&';
@@ -5003,7 +5003,7 @@ int _pSLang_parse_dollar_string (SLFUTURE_CONST char *str, char ***argvp, unsign
 	     continue;
 	  }
      }
-   fmt = SLmalloc (len+1);
+   fmt = (char *)SLmalloc (len+1);
    if (fmt == NULL)
      return -1;
 

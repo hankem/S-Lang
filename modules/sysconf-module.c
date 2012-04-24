@@ -1106,7 +1106,7 @@ static void confstr_intrinsic (void)
 	return;
      }
 
-   if (NULL == (bufstr = SLmalloc (len)))
+   if (NULL == (bufstr = (char *)SLmalloc (len)))
      return;
 
    errno = 0;

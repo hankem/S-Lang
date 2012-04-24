@@ -383,7 +383,7 @@ static Host_Addr_Info_Type *alloc_host_addr_info (unsigned int num, int h_length
 
    /* We need memory to hold num (char *) addresses + num*h_length bytes */
    nbytes = num * sizeof(char *) + num * h_length;
-   if (NULL == (buf = SLmalloc (nbytes)))
+   if (NULL == (buf = (char *)SLmalloc (nbytes)))
      {
 	SLfree ((char *)hinfo);
 	return NULL;

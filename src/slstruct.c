@@ -400,7 +400,7 @@ static int pop_to_struct_field (_pSLang_Struct_Type *s, SLCONST char *name)
 static int merge_struct_fields (SLCONST char *atname, _pSLang_Struct_Type *a, _pSLang_Struct_Type *b)
 {
    unsigned int i, j;
-   char **new_names;
+   SLFUTURE_CONST char **new_names;
    _pSLstruct_Field_Type *f, *fmax, *new_fields;
    _pSLstruct_Field_Type *atfield;
    unsigned int num_before, num_insert, num_after, new_num;
@@ -418,7 +418,7 @@ static int merge_struct_fields (SLCONST char *atname, _pSLang_Struct_Type *a, _p
    if (b != NULL)
      {
 	unsigned int nb = b->nfields;
-	new_names = (char **)_SLcalloc (nb, sizeof (char *));
+	new_names = (SLFUTURE_CONST char **)_SLcalloc (nb, sizeof (char *));
 	if (new_names == NULL)
 	  return -1;
 

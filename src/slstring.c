@@ -67,7 +67,7 @@ static void cache_string (SLstring_Type *sls)
 }
 
 _INLINE_
-static void uncache_string (char *s)
+static void uncache_string (SLCONST char *s)
 {
    Cached_String_Type *cs;
 
@@ -475,7 +475,7 @@ static void free_sls_string (SLstring_Type *sls)
 }
 
 _INLINE_
-static void free_long_string (char *s, unsigned long hash)
+static void free_long_string (SLCONST char *s, unsigned long hash)
 {
    SLstring_Type *sls;
 
@@ -500,7 +500,7 @@ static void free_long_string (char *s, unsigned long hash)
 }
 
 /* This routine may be passed NULL-- it is not an error. */
-void SLang_free_slstring (char *s)
+void SLang_free_slstring (SLCONST char *s)
 {
    unsigned long hash;
    unsigned int len;
@@ -556,7 +556,7 @@ char *SLang_create_slstring (SLFUTURE_CONST char *s)
    return create_nstring (s, strlen (s), &hash);
 }
 
-void _pSLfree_hashed_string (char *s, unsigned int len, unsigned long hash)
+void _pSLfree_hashed_string (SLCONST char *s, unsigned int len, unsigned long hash)
 {
    if ((s == NULL) || (len < 2)) return;
    free_long_string (s, hash);
@@ -654,7 +654,7 @@ char *SLang_concat_slstrings (char *a, char *b)
 }
 
 /* This routine is assumed to work even if s is not an slstring */
-unsigned int _pSLstring_bytelen (SLstr_Type *s)
+unsigned int _pSLstring_bytelen (SLCONST SLstr_Type *s)
 {
 #if SLANG_OPTIMIZE_FOR_SPEED
    Cached_String_Type *cs;

@@ -222,6 +222,12 @@ typedef unsigned char *VOID_STAR;
 # define SLFUTURE_CONST
 #endif
 
+#ifdef ENABLE_SLFUTURE_VOID
+# define SLFUTURE_VOID void
+#else
+# define SLFUTURE_VOID char
+#endif
+
 typedef int (*FVOID_STAR)(void);
 
 #if defined(__MSDOS__) && defined(__BORLANDC__)
@@ -256,10 +262,10 @@ typedef int (*FVOID_STAR)(void);
 # define SL_EXTERN extern SL_IMPORT
 #endif
 
-SL_EXTERN char *SLdebug_malloc (unsigned long);
-SL_EXTERN char *SLdebug_calloc (unsigned long, unsigned long);
-SL_EXTERN char *SLdebug_realloc (char *, unsigned long);
-SL_EXTERN void SLdebug_free (char *);
+SL_EXTERN SLFUTURE_VOID *SLdebug_malloc (unsigned long);
+SL_EXTERN SLFUTURE_VOID *SLdebug_calloc (unsigned long, unsigned long);
+SL_EXTERN SLFUTURE_VOID *SLdebug_realloc (SLFUTURE_VOID *, unsigned long);
+SL_EXTERN void SLdebug_free (SLFUTURE_VOID *);
 SL_EXTERN void SLmalloc_dump_statistics (void);
 SL_EXTERN char *SLstrcpy(register char *, register char *);
 SL_EXTERN int SLstrcmp(register char *, register char *);
@@ -284,7 +290,7 @@ SL_EXTERN int SLang_push_strlen_type (SLstrlen_Type);
  */
 SL_EXTERN SLstr_Type *SLang_create_nslstring (SLFUTURE_CONST char *, SLstrlen_Type);
 SL_EXTERN SLstr_Type *SLang_create_slstring (SLFUTURE_CONST char *);
-SL_EXTERN void SLang_free_slstring (SLstr_Type *);    /* handles NULL */
+SL_EXTERN void SLang_free_slstring (SLCONST SLstr_Type *);    /* handles NULL */
 SL_EXTERN int SLang_pop_slstring (SLstr_Type **);   /* free with SLang_free_slstring */
 SL_EXTERN SLstr_Type *SLang_concat_slstrings (SLstr_Type *a, SLstr_Type *b);
 
@@ -1318,10 +1324,10 @@ SL_EXTERN void SLbstring_free (SLang_BString_Type *);
 SL_EXTERN int SLang_pop_bstring (SLang_BString_Type **);
 SL_EXTERN int SLang_push_bstring (SLang_BString_Type *);
 
-SL_EXTERN char *SLmalloc (unsigned int);
-SL_EXTERN char *SLcalloc (unsigned int, unsigned int);
-SL_EXTERN void SLfree(char *);	       /* This function handles NULL */
-SL_EXTERN char *SLrealloc (char *, unsigned int);
+SL_EXTERN SLFUTURE_VOID *SLmalloc (unsigned int);
+SL_EXTERN SLFUTURE_VOID *SLcalloc (unsigned int, unsigned int);
+SL_EXTERN void SLfree(SLFUTURE_VOID *);	       /* This function handles NULL */
+SL_EXTERN SLFUTURE_VOID *SLrealloc (SLFUTURE_VOID *, unsigned int);
 
 SL_EXTERN char *SLcurrent_time_string (void);
 
