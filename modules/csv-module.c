@@ -151,7 +151,6 @@ static int store_value (Values_Array_Type *va, char *value)
 	} \
    }
 
-
 static int decode_csv_row (CSV_Type *csv, int flags)
 {
    char *line;
@@ -170,7 +169,7 @@ static int decode_csv_row (CSV_Type *csv, int flags)
 	SLang_verror (SL_InvalidParm_Error, "CSV decoder object has no read callback function");
 	return -1;
      }
-	
+
    if (-1 == init_values_array_type (&av))
      return -1;
 
@@ -233,7 +232,7 @@ static int decode_csv_row (CSV_Type *csv, int flags)
 		  SLang_verror (SL_Data_Error, "Misplaced quote character inside a csv field");
 		  goto return_error;
 	       }
-	     else 
+	     else
 	       {
 		  in_quote = 1;
 		  is_quoted = 1;
@@ -438,7 +437,7 @@ static char *csv_encode (CSV_Type *csv,
 
 	     if ((unsigned char)ch > ' ')
 	       continue;
-		  
+
 	     if (ch == '\n')
 	       {
 		  size++;	       /* for \r */
@@ -624,7 +623,6 @@ static int register_csv_type (void)
    return 0;
 }
 
-   
 int init_csv_module_ns (char *ns_name)
 {
    SLang_NameSpace_Type *ns = SLns_create_namespace (ns_name);

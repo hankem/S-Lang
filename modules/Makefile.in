@@ -1,10 +1,11 @@
 # -*- sh -*-
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
   varray-module.so socket-module.so rand-module.so fork-module.so \
-  csv-module.so base64-module.so chksum-module.so @PCRE_MODULE@ @PNG_MODULE@ \
-  @ICONV_MODULE@ @ONIG_MODULE@ @ZLIB_MODULE@ @SYSCONF_MODULE@
+  csv-module.so base64-module.so chksum-module.so histogram-module.so \
+  stats-module.so \
+  @PCRE_MODULE@ @PNG_MODULE@ @ICONV_MODULE@ @ONIG_MODULE@ @ZLIB_MODULE@ @SYSCONF_MODULE@
 SLFILES = slsmg termios select fcntl varray socket pcre png iconv \
-  onig rand csv zlib fork sysconf base64 chksum
+  onig rand csv zlib fork sysconf base64 chksum histogram stats
 CHKSUM_OBJS = chksum-module.o chksum_md5.o chksum_sha1.o
 OBJDIR_CHKSUM_OBJS = $(OBJDIR)/chksum-module.o $(OBJDIR)/chksum_md5.o $(OBJDIR)/chksum_sha1.o
 #---------------------------------------------------------------------------
@@ -150,7 +151,14 @@ $(OBJDIR)/chksum_md5.o: chksum_md5.c chksum.h
 	cd $(OBJDIR) && $(CC_SHARED) -c $(INCS) $(SRCDIR)/chksum_md5.c
 $(OBJDIR)/chksum_sha1.o: chksum_sha1.c chksum.h
 	cd $(OBJDIR) && $(CC_SHARED) -c $(INCS) $(SRCDIR)/chksum_sha1.c
-
+#
+histogram-module.so: $(OBJDIR) $(OBJDIR)/histogram-module.so
+$(OBJDIR)/histogram-module.so: histogram-module.c histogram-module.inc
+	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/histogram-module.c -o histogram-module.so $(LIBS)
+stats-module.so: $(OBJDIR) $(OBJDIR)/stats-module.so
+$(OBJDIR)/stats-module.so: stats-module.c stats-module.inc
+	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/stats-module.c -o stats-module.so $(LIBS)
+#
 # Note that Windows/Cygwin modules need execute permissions
 install: all
 	-$(MKINSDIR) $(DEST_MODULEDIR)
@@ -179,7 +187,7 @@ install: all
 	done
 clean:
 	-cd $(OBJDIR) && /bin/rm -f $(MODULES) $(CHKSUM_OBJS)
-	-/bin/rm -f *~
+	-/bin/rm -f *~ */*~
 distclean: clean
 	-/bin/rm -f Makefile
 

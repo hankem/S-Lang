@@ -207,7 +207,6 @@ static int b64_encode_accumulate (Base64_Type *b64, unsigned char *line, unsigne
    return 0;
 }
 
-
 static void b64_encoder_accumulate_intrin (Base64_Type *b64, SLang_BString_Type *bstr)
 {
    unsigned char *data;
@@ -287,7 +286,6 @@ static int b64_decode_quartet (Base64_Type *b64, unsigned char *str4)
    unsigned char bytes_buf[3], *bytes;
    unsigned int bad;
    unsigned int n;
-
 
    if (0xFF == (b0 = Base64_Decode_Map[str4[0]]))
      {
@@ -463,7 +461,6 @@ close_decoder:
    b64_partial_free (b64);
    b64->flags |= B64_CLOSED;
 }
-
 
 static void new_b64_type (int type)
 {

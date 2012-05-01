@@ -409,7 +409,7 @@ Qualifiers:\n\
    _for i (1, ncols-1, 1)
      {
 	if (nrows != length(data[i]))
-	  throw InvalidParmError, "Data columns must be the length";
+	  throw InvalidParmError, "CSV data columns must be the same length";
      }
 
    variable str, encoder = csv.encoder;

@@ -271,7 +271,6 @@ static void uint32_to_uchar (uint32 *u, unsigned int num, unsigned char *buf)
      }
 }
 
-
 static int sha1_close (SLChksum_Type *sha1, unsigned char *digest)
 {
    unsigned char num_bits_buf[8];
@@ -316,7 +315,6 @@ SLChksum_Type *_pSLchksum_sha1_new (char *name)
 
    return sha1;
 }
-
 
 #if 0
 int main (int argc, char **argv)

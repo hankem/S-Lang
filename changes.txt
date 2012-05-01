@@ -72,6 +72,7 @@ Changes since 2.2.4
 41. *.c/*.h: provide a path for a future change in the
     return value of the malloc/free functions.  Now they process char*
     pointers but this will be changed to void* in the future.
+42. modules/: Merged stats and histogram modules into the distribution.
 
 {{{ Previous Versions
 

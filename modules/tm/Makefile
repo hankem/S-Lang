@@ -10,7 +10,7 @@ TM2SGML = tmexpand
 SGML2HTML = sgml2html
 
 HLP_FILES = pngfuns.hlp pcrefuns.hlp sockfuns.hlp onigfuns.hlp \
-  randfuns.hlp forkfuns.hlp csvfuns.hlp slsmg.hlp
+  randfuns.hlp forkfuns.hlp csvfuns.hlp slsmg.hlp histfuns.hlp statsfuns.hlp
 
 all: help-files
 help-files: $(HLP_FILES)

@@ -142,8 +142,8 @@ SLANGDIR = ..$(P)src$(P)$(OBJDIR)
 # ---------------------------------------------------------------------------
 # List of modules to compile.  Some/Most require additional libraries to be
 # installed.
-MODULES = slsmg rand csv base64
-# slsmg, rand, csv base64: no external dependencies
+MODULES = slsmg rand csv base64 histogram stats
+# slsmg, rand, csv base64 histogram stats: no external dependencies
 # iconv: iconv library
 # png:   png library
 # pcre: Ported to Win32 by GnuWin32 group.
@@ -175,6 +175,10 @@ zlib:
 	$(MAKE) TARGET=zlib TARGETLIBS=$(ZLIBLIBS) TARGETINCS=$(ZLIBINCS) build-target
 varray:
 	$(MAKE) TARGET=varray TARGETLIBS=$(VARRAYLIBS) TARGETINCS=$(VARRAYINCS) build-target
+histogram:
+	$(MAKE) TARGET=histogram TARGETLIBS=$(HISTOGRAMLIBS) TARGETINCS=$(HISTOGRAMINCS) build-target
+stats:
+	$(MAKE) TARGET=stats TARGETLIBS=$(STATSLIBS) TARGETINCS=$(STATSINCS) build-target
 #
 build-target: $(TARGET_DLL)
 $(TARGET_DLL): $(TARGET_OBJ)

@@ -58,7 +58,7 @@
 \linuxdoc
 \begin{\documentstyle}
 
-\title S-Lang Module Reference (version 2.2)
+\title S-Lang Module Reference (version 2.3)
 \author John E. Davis <www.jedsoft.org>
 \date \__today__
 
@@ -124,6 +124,16 @@ This module allows a \slang script to read and write
 comma-separated-value, tab-delimited files, etc.  Use
 \exmp{require("csv")} to load it.
 #i csvfuns.tm
+
+\chapter{Histogram Module}
+This module has several functions for creating and manipulating
+histograms (binned data).  Use \exmp{require("histogram")} to load it.
+#i histfuns.tm
+
+\chapter{Stats Module}
+This module has has a number of statistics functions. Use
+\exmp{require("stats")} to load it.
+#i histfuns.tm
 
 \chapter{Screen Management Module}
 The \module{slsmg} module provides access to SLsmg routines, which is

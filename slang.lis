@@ -140,6 +140,9 @@
 @modules/fcntl.sl
 @modules/fork.sl
 @modules/fork-module.c
+@modules/histogram.sl
+@modules/histogram-module.inc
+@modules/histogram-module.c
 @modules/onig-module.c
 @modules/onig.sl
 @modules/pcre-module.c
@@ -152,6 +155,9 @@
 @modules/select.sl
 @modules/slsmg-module.c
 @modules/slsmg.sl
+@modules/stats.sl
+@modules/stats-module.c
+@modules/stats-module.inc
 @modules/sysconf-module.c
 @modules/sysconf.sl
 @modules/termios-module.c
@@ -173,6 +179,8 @@
 @modules/test/test_zlib.sl
 @modules/test/test_onig.sl
 @modules/test/test_rand.sl
+@modules/test/test_hist.sl
+@modules/test/test_stats.sl
 
 @modules/tm/pcrefuns.tm
 @modules/tm/pngfuns.tm
@@ -180,6 +188,8 @@
 @modules/tm/onigfuns.tm
 @modules/tm/randfuns.tm
 @modules/tm/forkfuns.tm
+@modules/tm/histfuns.tm
+@modules/tm/statsfuns.tm
 @modules/tm/Makefile
 @modules/tm/modfuns.tm
 @modules/tm/csvfuns.tm

@@ -51,7 +51,6 @@ static Chksum_Def_Type Chksum_Table[] =
    {NULL, NULL}
 };
 
-
 static Chksum_Def_Type *lookup_chksum (char *name)
 {
    Chksum_Def_Type *t = Chksum_Table;
