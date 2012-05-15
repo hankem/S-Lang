@@ -894,28 +894,38 @@ static void free_array_or_scalar (Array_Or_Scalar_Type *ast)
 static int pop_array_or_scalar (Array_Or_Scalar_Type *ast)
 {
    SLang_Array_Type *at;
+   SLtype dtype;
 
    ast->at = NULL;
    ast->inc = 0;
    ast->num = 1;
-   switch (SLang_peek_at_stack1 ())
+   switch (_pSLang_peek_at_stack2 (&dtype))
      {
       case -1:
 	return -1;
 
-      case SLANG_FLOAT_TYPE:
-	ast->is_float = 1;
-	if (SLang_peek_at_stack () == SLANG_ARRAY_TYPE)
+      case SLANG_ARRAY_TYPE:
+	if (dtype == SLANG_FLOAT_TYPE)
 	  {
 	     if (-1 == SLang_pop_array_of_type (&at, SLANG_FLOAT_TYPE))
 	       return -1;
+	     ast->is_float = 1;
 	     ast->fptr = (float *) at->data;
-	     ast->inc = 1;
-	     ast->num = at->num_elements;
-	     ast->at = at;
-	     return 0;
 	  }
+	else
+	  {
+	     if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
+	       return -1;
+	     ast->is_float = 0;
+	     ast->dptr = (double *) at->data;
+	  }
+	ast->inc = 1;
+	ast->num = at->num_elements;
+	ast->at = at;
+	return 0;
 
+      case SLANG_FLOAT_TYPE:
+	ast->is_float = 1;
 	ast->fptr = &ast->f;
 	if (-1 == SLang_pop_float (ast->fptr))
 	  return -1;
@@ -923,17 +933,6 @@ static int pop_array_or_scalar (Array_Or_Scalar_Type *ast)
 
       default:
 	ast->is_float = 0;
-	if (SLang_peek_at_stack () == SLANG_ARRAY_TYPE)
-	  {
-	     if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
-	       return -1;
-	     ast->dptr = (double *) at->data;
-	     ast->inc = 1;
-	     ast->num = at->num_elements;
-	     ast->at = at;
-	     return 0;
-	  }
-
 	ast->dptr = &ast->d;
 	if (-1 == SLang_pop_double (ast->dptr))
 	  return -1;
@@ -1735,19 +1734,17 @@ static void nint_intrin (void)
    double x;
    SLang_Array_Type *at, *bt;
    int (*at_to_int_fun)(SLang_Array_Type *, SLang_Array_Type *);
+   SLtype dtype;
 
-   if (SLang_peek_at_stack () != SLANG_ARRAY_TYPE)
+   if (SLANG_ARRAY_TYPE != _pSLang_peek_at_stack2 (&dtype))
      {
 	if (-1 == SLang_pop_double (&x))
 	  return;
 	(void) SLang_push_int (do_nint (x));
 	return;
      }
-   switch (SLang_peek_at_stack1 ())
+   switch (dtype)
      {
-      case -1:
-	return;
-
       case SLANG_INT_TYPE:
 	return;
 
@@ -1792,10 +1789,24 @@ static void frexp_intrin (void)
    int e, *ep;
    SLuindex_Type i, imax;
    SLang_Array_Type *at, *bt, *et;
+   SLtype dtype;
 
-   switch (SLang_peek_at_stack ())
+   switch (_pSLang_peek_at_stack2 (&dtype))
      {
       case SLANG_ARRAY_TYPE:
+	switch (dtype)
+	  {
+	   case SLANG_FLOAT_TYPE:
+	     if (-1 == SLang_pop_array_of_type (&at, SLANG_FLOAT_TYPE))
+	       return;
+	     break;
+
+	   default:
+	   case SLANG_DOUBLE_TYPE:
+	     if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
+	       return;
+	     break;
+	  }
 	break;
 
       case SLANG_FLOAT_TYPE:
@@ -1814,20 +1825,6 @@ static void frexp_intrin (void)
 	(void) SLang_push_double (d);
 	(void) SLang_push_int (e);
 	return;
-     }
-
-   switch (SLang_peek_at_stack1 ())
-     {
-      case SLANG_FLOAT_TYPE:
-	if (-1 == SLang_pop_array_of_type (&at, SLANG_FLOAT_TYPE))
-	  return;
-	break;
-
-      default:
-      case SLANG_DOUBLE_TYPE:
-	if (-1 == SLang_pop_array_of_type (&at, SLANG_DOUBLE_TYPE))
-	  return;
-	break;
      }
 
    if (NULL == (bt = SLang_create_array1 (at->data_type, 0, NULL, at->dims, at->num_dims, 1)))

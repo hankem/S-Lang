@@ -81,6 +81,9 @@ Changes since 2.2.4
     SLANG_MAX_RECURSIVE_DEPTH.
 45. modules/cmaps/: Added 3 perceptually balanced color maps derived
     from matlab code by Matteo Niccoli under the BSD license.
+46. src/slmath.c: Use _pSLang_peek_at_stack2 instead of the combination
+    SLang_peek_at_stack and SLang_peek_at_stack1.  This change
+    provides a bit more performnce.
 
 {{{ Previous Versions
 
