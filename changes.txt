@@ -76,6 +76,9 @@ Changes since 2.2.4
 43. modules/stats-module.c: removed a couple of unused variables.
     Also modules/test/test_*.sl updated to use modules in the $(ARCH)objs
     subdir.
+44. src/slang.c: Local_Variable_Stack is now dynamically allocated,
+    and the value of SLANG_MAX_LOCAL_STACK made to scale with
+    SLANG_MAX_RECURSIVE_DEPTH.
 
 {{{ Previous Versions
 

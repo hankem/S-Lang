@@ -223,9 +223,9 @@ static SLang_Object_Type *Run_Stack;
 static SLang_Object_Type *Stack_Pointer;
 static SLang_Object_Type *Stack_Pointer_Max;
 
-/* Might want to increase this. */
-static SLang_Object_Type Local_Variable_Stack[SLANG_MAX_LOCAL_STACK];
-static SLang_Object_Type *Local_Variable_Frame = Local_Variable_Stack;
+static SLang_Object_Type *Local_Variable_Stack;
+static SLang_Object_Type *Local_Variable_Stack_Max;
+static SLang_Object_Type *Local_Variable_Frame;   /* points into Local_Variable_Stack */
 
 #define INTERRUPT_ERROR		0x01
 #define INTERRUPT_SIGNAL	0x02
@@ -4406,7 +4406,7 @@ static void execute_slang_fun (_pSLang_Function_Type *fun, unsigned int linenum)
    /* set new stack frame */
    lvf = frame = Local_Variable_Frame;
    i = n_locals;
-   if ((lvf + i) >= Local_Variable_Stack + SLANG_MAX_LOCAL_STACK)
+   if ((lvf + i) >= Local_Variable_Stack_Max)
      {
 	_pSLang_verror(SL_STACK_OVERFLOW, "%s: Local Variable Stack Overflow",
 		     fun->name);
@@ -10279,6 +10279,7 @@ static void free_stacks (void)
 #if SLANG_HAS_QUALIFIERS
    SLfree ((char *)Function_Qualifiers_Stack); Function_Qualifiers_Stack = NULL;
 #endif
+   SLfree ((char *)Local_Variable_Stack); Local_Variable_Stack = NULL;
 }
 
 static void delete_interpreter (void)
@@ -10337,6 +10338,12 @@ static int init_interpreter (void)
      goto return_error;
    Frame_Pointer_Depth = 0;
    Frame_Pointer = Run_Stack;
+
+   Local_Variable_Stack = (SLang_Object_Type *) _SLcalloc (SLANG_MAX_LOCAL_STACK, sizeof(SLang_Object_Type));
+   if (Local_Variable_Stack == NULL)
+     goto return_error;
+   Local_Variable_Frame = Local_Variable_Stack;
+   Local_Variable_Stack_Max = Local_Variable_Stack + SLANG_MAX_LOCAL_STACK;
 
 #if SLANG_HAS_QUALIFIERS
    Function_Qualifiers_Stack = (SLang_Struct_Type **) SLcalloc (SLANG_MAX_RECURSIVE_DEPTH, sizeof (SLang_Struct_Type *));
