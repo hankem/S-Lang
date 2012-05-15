@@ -1,4 +1,6 @@
-require("./onig.sl");
+prepend_to_slang_load_path (".");
+set_import_module_path ("./${ARCH}objs:"$+get_import_module_path ());
+require("onig.sl");
 
 private define exec (syntax, pattern, astr)
 {

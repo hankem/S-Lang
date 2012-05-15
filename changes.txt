@@ -73,6 +73,9 @@ Changes since 2.2.4
     return value of the malloc/free functions.  Now they process char*
     pointers but this will be changed to void* in the future.
 42. modules/: Merged stats and histogram modules into the distribution.
+43. modules/stats-module.c: removed a couple of unused variables.
+    Also modules/test/test_*.sl updated to use modules in the $(ARCH)objs
+    subdir.
 
 {{{ Previous Versions
 

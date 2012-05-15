@@ -4,7 +4,6 @@
 static int MEAN_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
 {
    GENERIC_TYPE *x, *xmax;
-   double sum;
    double c, m, err;
 
    x = (GENERIC_TYPE *) xp;
@@ -21,7 +20,6 @@ static int MEAN_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID
 	return 0;
      }
    
-   sum = 0.0;
    err = 0.0;
    m = c;
 

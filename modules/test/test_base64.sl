@@ -1,5 +1,5 @@
 prepend_to_slang_load_path (".");
-set_import_module_path ("./objs:" + get_import_module_path ());
+set_import_module_path ("./${ARCH}objs:"$+get_import_module_path ());
 require ("base64");
 
 private define decode_callback (strp, buf)

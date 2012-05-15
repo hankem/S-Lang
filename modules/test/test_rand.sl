@@ -1,5 +1,5 @@
 prepend_to_slang_load_path (".");
-set_import_module_path (".:" + get_import_module_path ());
+set_import_module_path ("./${ARCH}objs:"$+get_import_module_path ());
 require("rand.sl");
 
 private variable CLOSED_UPPER = 1;

@@ -1,7 +1,6 @@
-private variable MODULE_NAME = "stats";
 prepend_to_slang_load_path (".");
-set_import_module_path (".:"+get_import_module_path ());
-require (MODULE_NAME);
+set_import_module_path ("./${ARCH}objs:"$+get_import_module_path ());
+require ("stats.sl");
 
 private define test_chisqr_test ()
 {

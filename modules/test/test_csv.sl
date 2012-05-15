@@ -1,3 +1,5 @@
+prepend_to_slang_load_path (".");
+set_import_module_path ("./objs:" + get_import_module_path ());
 require ("csv");
 
 private variable Table = struct {author = {}, title = {}, sample = {}};
