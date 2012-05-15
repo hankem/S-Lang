@@ -79,6 +79,8 @@ Changes since 2.2.4
 44. src/slang.c: Local_Variable_Stack is now dynamically allocated,
     and the value of SLANG_MAX_LOCAL_STACK made to scale with
     SLANG_MAX_RECURSIVE_DEPTH.
+45. modules/cmaps/: Added 3 perceptually balanced color maps derived
+    from matlab code by Matteo Niccoli under the BSD license.
 
 {{{ Previous Versions
 

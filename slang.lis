@@ -236,6 +236,9 @@
 @modules/cmaps/ds9b.map
 @modules/cmaps/ds9sls.map
 @modules/cmaps/coolwarm.map
+@modules/cmaps/cubicl.map
+@modules/cmaps/cubicyf.map
+@modules/cmaps/edge.map
 #
 
 @slang.lis
