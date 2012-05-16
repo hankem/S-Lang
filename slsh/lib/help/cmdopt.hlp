@@ -15,7 +15,7 @@ cmdopt_new
   message, and the call `exit'.  If the error handler is NULL,
   or it returns instead of calling exit, then an exception will be thrown.
 
-  The error hander must be defined to take a single string argument
+  The error handler must be defined to take a single string argument
   (the error message) and must return nothing.
 
  EXAMPLE
@@ -179,7 +179,7 @@ cmdopt_add
 
   Options whose value is optional:
 
-    cmdopt_add (optobj, "f|foo", &v; type="string", optional=DLFT);
+    cmdopt_add (optobj, "f|foo", &v; type="string", optional=DFLT);
     cmdline: pgm -f ...            % set v to DFLT
     cmdline: pgm -fVAL ...         % set v to VAL
     cmdline: pgm --foo ...         % set v to DFLT

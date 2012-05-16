@@ -259,6 +259,7 @@
 @slsh/lib/autoload.sl
 @slsh/lib/require.sl
 @slsh/lib/glob.sl
+@slsh/lib/fswalk.sl
 @slsh/lib/stkcheck.sl
 @slsh/lib/slshrl.sl
 @slsh/lib/sldb.sl
@@ -283,6 +284,7 @@
 
 @slsh/lib/help/arrayfuns.hlp
 @slsh/lib/help/glob.hlp
+@slsh/lib/help/fswalk.hlp
 @slsh/lib/help/require.hlp
 @slsh/lib/help/structfuns.hlp
 @slsh/lib/help/cmdopt.hlp
@@ -295,6 +297,7 @@
 @slsh/lib/tm/Makefile
 @slsh/lib/tm/arrayfuns.tm
 @slsh/lib/tm/glob.tm
+@slsh/lib/tm/fswalk.tm
 @slsh/lib/tm/require.tm
 @slsh/lib/tm/structfuns.tm
 @slsh/lib/tm/cmdopt.tm

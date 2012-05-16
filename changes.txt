@@ -84,6 +84,8 @@ Changes since 2.2.4
 46. src/slmath.c: Use _pSLang_peek_at_stack2 instead of the combination
     SLang_peek_at_stack and SLang_peek_at_stack1.  This change
     provides a bit more performnce.
+47. slsh/lib/fswalk.sl: Functions here facilitate walking the
+    filesystem.
 
 {{{ Previous Versions
 

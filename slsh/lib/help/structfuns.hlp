@@ -68,6 +68,12 @@ struct_combine
     t = struct_combine (s, "baz");   % t = struct {foo, bar, baz};
 
 
+ NOTES
+  The same effect can be achieved by using the dereference operator, e.g.,
+
+    t = struct { @s, "baz" };
+
+
  SEE ALSO
   get_struct_field_names
 

@@ -6,7 +6,7 @@
 TMEXPAND = tmexpand
 
 HLP_FILES = arrayfuns.hlp glob.hlp require.hlp structfuns.hlp cmdopt.hlp \
-            readascii.hlp profile.hlp print.hlp process.hlp setfuns.hlp
+ readascii.hlp profile.hlp print.hlp process.hlp setfuns.hlp fswalk.hlp
 
 all: help-files
 help-files: $(HLP_FILES)
