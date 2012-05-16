@@ -17,6 +17,6 @@ glob
 
 
  SEE ALSO
-  glob_to_regexp
+  glob_to_regexp, fswalk_new
 
 --------------------------------------------------------------

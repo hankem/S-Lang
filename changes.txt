@@ -86,6 +86,7 @@ Changes since 2.2.4
     provides a bit more performnce.
 47. slsh/lib/fswalk.sl: Functions here facilitate walking the
     filesystem.
+48. Some doc updates.
 
 {{{ Previous Versions
 

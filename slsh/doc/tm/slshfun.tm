@@ -77,12 +77,16 @@ code.
 These functions are defined in the \file{cmdopt.sl} file.
 #i ../../lib/tm/cmdopt.tm
 
-\chapter{Filename Globbing Functions}
-These functions are defined \file{glob.sl}.
+\chapter{Filename Globbing and Related Functions}
+The \sfun{glob} function is defined \file{glob.sl}.  The
+\sfun{fswalk_new} may be used for more generic filesystem processing.
+It is defined in \file{fswalk.sl}.
 #i ../../lib/tm/glob.tm
+#i ../../lib/tm/fswalk.tm
 
 \chapter{Reading Text-formated Data Files}
-These functions are defined in \file{readascii.sl}.
+These functions are defined in \file{readascii.sl}.  For comma or
+tab-delimited files, consider useing the CSV module.
 #i ../../lib/tm/readascii.tm
 
 \chapter{Structure Functions}

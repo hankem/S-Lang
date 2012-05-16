@@ -9,5 +9,5 @@
 #v+
    files = glob ("*.c", "*.h");
 #v-
-\seealso{glob_to_regexp}
+\seealso{glob_to_regexp, fswalk_new}
 \done
