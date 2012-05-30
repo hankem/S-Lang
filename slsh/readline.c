@@ -712,6 +712,24 @@ static void init_readline_intrinsic (char *appname)
    (void) init_readline (appname);
 }
 
+/* The values returned by this function are meaningful only after readline
+ * has been used once.
+ */
+static void get_screen_size (void)
+{
+   int rows, cols;
+
+#if USE_SLANG_READLINE
+   rows = SLtt_Screen_Rows;
+   cols = SLtt_Screen_Cols;
+#else
+   rl_get_screen_size (&rows, &cols);
+#endif
+
+   (void) SLang_push_int (rows);
+   (void) SLang_push_int (cols);
+}
+
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
    MAKE_INTRINSIC_0("__rline_init_tty", init_tty, VOID_TYPE),
@@ -722,6 +740,7 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_S("slsh_readline_noecho", readline_noecho_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_0("slsh_set_prompt_hook", set_prompt_hook, VOID_TYPE),
    MAKE_INTRINSIC_0("slsh_get_prompt_hook", get_prompt_hook, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_get_screen_size", get_screen_size, VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

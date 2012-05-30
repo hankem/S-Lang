@@ -86,7 +86,7 @@ public define slsh_help ()
    variable help = slsh_get_doc_string (name);
    if (help != NULL)
      {
-	() = fprintf (stdout, "%s\n", help);
+	print (help; noescape);
 	return;
      }
    () = fprintf (stdout, "*** No help on %s\n", name);

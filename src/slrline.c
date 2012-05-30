@@ -49,7 +49,7 @@ struct _pSLrline_Type
    unsigned int len;			       /* current line size */
 
    /* display variables */
-   unsigned int edit_width;		       /* length of display field */
+   unsigned int edit_width;		       /* #cols of display field */
    int curs_pos;			       /* current column */
    int start_column;		       /* column offset of display */
    unsigned int hscroll;		       /* amount to use for horiz scroll */
@@ -1538,7 +1538,7 @@ static int check_window_size_and_redraw (SLrline_Type *rli, RLine_SMG_Update_Typ
        || (s->num_screen_rows != SLtt_Screen_Rows))
      {
 	SLsmg_reinit_smg ();
-	s->num_screen_cols = SLtt_Screen_Cols;
+	rli->edit_width = s->num_screen_cols = SLtt_Screen_Cols;
 	s->num_screen_rows = SLtt_Screen_Rows;
 	SLrline_redraw (rli);
 	return 1;
@@ -1646,7 +1646,7 @@ static int try_smg_multiline_mode (SLrline_Type *rli)
    rli->update_postread_hook = rline_smg_postread;
    rli->update_display_width_changed_hook = rline_smg_display_width_changed;
 
-   cd->num_screen_cols = SLtt_Screen_Cols;
+   rli->edit_width = cd->num_screen_cols = SLtt_Screen_Cols;
    cd->num_screen_rows = SLtt_Screen_Rows;
 
    if (-1 == _pSLsmg_init_smg_cmdline ())

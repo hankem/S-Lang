@@ -87,6 +87,9 @@ Changes since 2.2.4
 47. slsh/lib/fswalk.sl: Functions here facilitate walking the
     filesystem.
 48. Some doc updates.
+49. slsh/: Using help at the prompt will invoke the pager if the
+    number of lines is longer than the screen size.  This required add
+    an slsh-specific intrinsic that returns the number of rows.
 
 {{{ Previous Versions
 
