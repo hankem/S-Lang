@@ -727,7 +727,7 @@ define spearman_r ()
    variable cx = sum(gties_x*(gties_x*gties_x-1.0));
    variable cy = sum(gties_y*(gties_y*gties_y-1.0));
 
-   variable den = n*(n*n-1);
+   variable den = double(n) * (n+1.0) * (n-1.0);
 
    variable r = (1.0 - 6.0*(d+(cx+cy)/12.0)/den)
      / sqrt((1.0-cx/den)*(1.0-cy/den));
