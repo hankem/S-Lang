@@ -218,9 +218,16 @@
  line processed (after skipping any lines implied by the
  \exmp{skiplines} and \exmp{comment} qualifiers) will be regarded as
  the header.
+
+ If the \exmp{rdb} qualifier is present, then assume that the file is
+ in the so-called RDB file format.  This is a tab-delimited format
+ that consists of a line that contains the names of the fields,
+ followed by a line that specifies the data types of the columns.
+
 \example
 #v+
    data = csv_readcol ("mirror.csv" ;comment="#", has_header, delim='|');
+   data = csv_readcol ("foo.rdb" ; rdb);
 #v-
 \seealso{csv_decoder_new, csv.readcol, csv.readrow, csv.writecol, csv_encoder_new}
 \done
@@ -267,6 +274,7 @@
 \qualifier{quote}{character used for the quoting fields}{'"'}
 \qualifier{quoteall}{Quote all field values}
 \qualifier{quotesome}{Quote only those fields where quoting is necessary}
+\qualifier{rdb}{Write in an rdb-style TAB delimited format}
 
   Unless the \exmp{noheader} qualifier is given, a header containing
   the names of the columns will be written if either the \exmp{names}
@@ -321,6 +329,7 @@
 \qualifier{noheader}{Do not write a header to the file}
 \qualifier{quoteall}{Quote all field values}
 \qualifier{quotesome}{Quote only those fields where quoting is necessary}
+\qualifier{rdb}{Write in an rdb-style TAB delimited format}
 
   Unless the \exmp{noheader} qualifier is given, a header containing
   the names of the columns will be written if either the \exmp{names}

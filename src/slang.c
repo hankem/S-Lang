@@ -7596,6 +7596,7 @@ SLang_Name_Type *SLang_get_fun_from_ref (SLang_Ref_Type *ref)
    return NULL;
 }
 
+/* This function shall never run if there is an error */
 int SLexecute_function (SLang_Name_Type *nt)
 {
    unsigned char type;

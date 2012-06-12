@@ -255,9 +255,15 @@ csv_readcol
  `skiplines' and `comment' qualifiers) will be regarded as
  the header.
 
+ If the `rdb' qualifier is present, then assume that the file is
+ in the so-called RDB file format.  This is a tab-delimited format
+ that consists of a line that contains the names of the fields,
+ followed by a line that specifies the data types of the columns.
+
  EXAMPLE
 
    data = csv_readcol ("mirror.csv" ;comment="#", has_header, delim='|');
+   data = csv_readcol ("foo.rdb" ; rdb);
 
 
  SEE ALSO
@@ -324,6 +330,7 @@ csv_writecol
   ; quote: character used for the quoting fields (default: '"')
   ; quoteall: Quote all field values
   ; quotesome: Quote only those fields where quoting is necessary
+  ; rdb: Write in an rdb-style TAB delimited format
 
   Unless the `noheader' qualifier is given, a header containing
   the names of the columns will be written if either the `names'
@@ -388,6 +395,7 @@ csv.writecol
   ; noheader: Do not write a header to the file
   ; quoteall: Quote all field values
   ; quotesome: Quote only those fields where quoting is necessary
+  ; rdb: Write in an rdb-style TAB delimited format
 
   Unless the `noheader' qualifier is given, a header containing
   the names of the columns will be written if either the `names'

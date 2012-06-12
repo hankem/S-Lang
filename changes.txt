@@ -92,6 +92,8 @@ Changes since 2.2.4
     an slsh-specific intrinsic that returns the number of rows.
 50. modules/stats.sl: Avoid integer overflow when computing Spearman's
     rank correlation (Victoria Grinberg).
+51. modules/csv.sl; Added support for RDB tab-delimited files via the
+    ";rdb" qualifier.
 
 {{{ Previous Versions
 
