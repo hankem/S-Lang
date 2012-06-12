@@ -19,7 +19,7 @@ static int MEAN_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID
 	*(MEAN_RESULT_TYPE *)yp = (MEAN_RESULT_TYPE) c;
 	return 0;
      }
-   
+
    err = 0.0;
    m = c;
 
@@ -40,7 +40,7 @@ static int MEAN_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID
 #endif
 
 #ifdef STDDEV_FUNCTION
-static int 
+static int
 STDDEV_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR s)
 {
    unsigned int i, n;
@@ -65,13 +65,14 @@ STDDEV_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR s)
 	n++;
      }
    variance_i += err;
-   if (num > 1)
-     variance_i = sqrt (variance_i / (num - 1));
+   n--;
+   if (n > 1)
+     variance_i = sqrt (variance_i / (n - 1));
    else
      variance_i = 0.0;
 
    *(STDDEV_RESULT_TYPE *)s = (STDDEV_RESULT_TYPE) variance_i;
-   
+
    return 0;
 }
 #undef STDDEV_RESULT_TYPE
@@ -108,17 +109,17 @@ static int NC_MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num,
         if (ai > max) max = ai;
     }
 
-   while (1) 
+   while (1)
      {
 	less = 0; greater = 0; equal = 0;
 	guess = (min+max)/2;
         maxltguess = min;
         mingtguess = max;
-	
-        for (i=0; i < num; i += inc) 
+
+        for (i=0; i < num; i += inc)
 	  {
 	     GENERIC_TYPE ai = a[i];
-	     if (ai<guess) 
+	     if (ai<guess)
 	       {
 		  less++;
 		  if (ai>maxltguess) maxltguess = ai;
@@ -129,22 +130,22 @@ static int NC_MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num,
 		  greater++;
 		  if (a[i] < mingtguess) mingtguess = ai;
 		  continue;
-	       } 
+	       }
 	     equal++;
 	  }
         if ((less <= m) && (greater <= m))
 	  break;
 
-        if (less > greater) 
+        if (less > greater)
 	  max = maxltguess;
-        else 
+        else
 	  min = mingtguess;
      }
-   if (less >= m) 
+   if (less >= m)
      guess = maxltguess;
    else if (less + equal < m)
      guess = mingtguess;
-   
+
    *(GENERIC_TYPE *)y = guess;
    return 0;
 }
@@ -152,7 +153,7 @@ static int NC_MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num,
 #endif
 
 #ifdef MEDIAN_FUNCTION
-static int 
+static int
 MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num, VOID_STAR y)
 {
    GENERIC_TYPE *aa = (GENERIC_TYPE *) ap;
@@ -186,24 +187,24 @@ MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num, VOID_STAR y)
 	aa += inc;
      }
 
-   if (n & 1) 
-     k = n/2; 
-   else 
+   if (n & 1)
+     k = n/2;
+   else
      k = n/2 - 1;
 
-   l = 0; 
+   l = 0;
    m = n - 1;
-   
+
    while (l < m)
      {
         GENERIC_TYPE x = a[k];
         i = l;
         j = m ;
-        do 
+        do
 	  {
 	     while (a[i] < x) i++;
 	     while (x < a[j]) j--;
-	     if (i <= j) 
+	     if (i <= j)
 	       {
 		  GENERIC_TYPE tmp = a[i];
 		  a[i] = a[j];
@@ -211,7 +212,7 @@ MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num, VOID_STAR y)
 		  i++;
 		  j--;
 	       }
-	  } 
+	  }
 	while (i<=j);
 
         if (j < k) l=i;

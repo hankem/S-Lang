@@ -94,6 +94,8 @@ Changes since 2.2.4
     rank correlation (Victoria Grinberg).
 51. modules/csv.sl; Added support for RDB tab-delimited files via the
     ";rdb" qualifier.
+52. modules/stats-module.c: The stddev function was computing an
+    incorrectly normalized value when passed the optional dims argument.
 
 {{{ Previous Versions
 

@@ -373,6 +373,21 @@ private define test_mean_stddev ()
 	() = fprintf (stderr, "stddev, found %g, expected %g\n", x1, x2);
 	nfailed++;
      }
+
+   variable a = Double_Type [length(XData), 3];
+   a[*,0] = XData; a[*,1] = XData; a[*,2] = XData;
+   x2 = stddev (a, 0);
+   if (length (x2) != 3)
+     {
+	() = fprintf (stderr, "stddev(a,0): expected an array of 3, got %d\n",
+		      length (x2));
+	nfailed++;
+     }
+   if ((x2[0] != x1) || (x2[1] != x1) || (x2[2] != x1))
+     {
+	() = fprintf (stderr, "stddev(a,0) produced incorrect values\n");
+	nfailed++;
+     }
    return nfailed;
 }
 
