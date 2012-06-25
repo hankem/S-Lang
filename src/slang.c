@@ -1080,7 +1080,7 @@ int _pSLang_get_qualifiers_intrin (SLang_Struct_Type **qp)
 }
 
 /* This may be called from intrinsic functions */
-int _pSLang_qualifier_exists (SLCONST char *name)
+int SLang_qualifier_exists (SLCONST char *name)
 {
    if (Function_Qualifiers == NULL)
      return 0;
@@ -1088,62 +1088,140 @@ int _pSLang_qualifier_exists (SLCONST char *name)
    return (NULL != _pSLstruct_get_field_value (Function_Qualifiers, name));
 }
 
-int _pSLang_get_int_qualifier (SLCONST char *name, int *p, int def)
+/* returns -1 upon error, 0 if qualifier does not exist,
+ * 1 if qualifier exists and has correct type,
+ * 2 if qualifier had to be converted to requested type.
+ * If 1, then use the first object pointer but do not free it.
+ * If 2, then use the second object pointer and free it.
+ */
+static int check_qualifier (SLCONST char *name, SLtype t,
+			    SLang_Object_Type **op, SLang_Object_Type *o)
 {
    SLang_Object_Type *objp;
 
    if ((Function_Qualifiers == NULL)
-       || (NULL == (objp = _pSLstruct_get_field_value (Function_Qualifiers, name))))
+       || (NULL == (objp = _pSLstruct_get_field_value (Function_Qualifiers, name)))
+       || (objp->o_data_type == SLANG_NULL_TYPE)
+      )
      {
-	*p = def;
+	*op = NULL;
 	return 0;
      }
-   if (objp->o_data_type == SLANG_INT_TYPE)
+
+   if (objp->o_data_type == t)
+     {
+	*op = objp;
+	return 1;
+     }
+
+   if (-1 == _pSLpush_slang_obj (objp))
+     return -1;
+
+   if (-1 == pop_object_of_type (t, o, 0))
+     {
+	SLang_verror (0, "Expecting '%s' qualifier to be %s",
+		      name, SLclass_get_datatype_name (t));
+	return -1;
+     }
+   return 2;
+}
+
+int SLang_get_int_qualifier (SLCONST char *name, int *p, int def)
+{
+   SLang_Object_Type *objp;
+   SLang_Object_Type obj;
+   int status;
+
+   status = check_qualifier (name, SLANG_INT_TYPE, &objp, &obj);
+   if (status <= 0)
+     {
+	*p = def;
+	return status;
+     }
+   if (status == 1)
      {
 	*p = objp->v.int_val;
 	return 0;
      }
-   if ((-1 == _pSLpush_slang_obj (objp))
-       || (-1 == pop_int (p)))
-     {
-	SLang_verror (0, "Expecting '%s' qualifier to be an integer", name);
-	return -1;
-     }
+   *p = obj.v.int_val;
+   /* SLang_free_object (&obj); not necessary for scalars */
    return 0;
 }
 
-int _pSLang_get_string_qualifier (SLCONST char *name, char **p, SLFUTURE_CONST char *def)
+int SLang_get_long_qualifier (SLCONST char *name, long *p, long def)
 {
    SLang_Object_Type *objp;
+   SLang_Object_Type obj;
+   int status;
 
-   if ((Function_Qualifiers == NULL)
-       || (NULL == (objp = _pSLstruct_get_field_value (Function_Qualifiers, name))))
+   status = check_qualifier (name, SLANG_LONG_TYPE, &objp, &obj);
+   if (status <= 0)
      {
-	if (def == NULL)
-	  {
-	     *p = NULL;
-	     return 0;
-	  }
-
-	if (NULL == (*p = SLang_create_slstring (def)))
-	  return -1;
-
+	*p = def;
+	return status;
+     }
+   if (status == 1)
+     {
+	*p = objp->v.long_val;
 	return 0;
      }
+   *p = obj.v.long_val;
+   /* SLang_free_object (&obj); not necessary for scalars */
+   return 0;
+}
 
-   if (objp->o_data_type == SLANG_STRING_TYPE)
+#if SLANG_HAS_FLOAT
+int SLang_get_double_qualifier (SLCONST char *name, double *p, double def)
+{
+   SLang_Object_Type *objp;
+   SLang_Object_Type obj;
+   int status;
+
+   status = check_qualifier (name, SLANG_DOUBLE_TYPE, &objp, &obj);
+   if (status <= 0)
+     {
+	*p = def;
+	return status;
+     }
+   if (status == 1)
+     {
+	*p = objp->v.double_val;
+	return 0;
+     }
+   *p = obj.v.double_val;
+   /* SLang_free_object (&obj); not necessary for scalars */
+   return 0;
+}
+#endif
+
+int SLang_get_string_qualifier (SLCONST char *name, char **p, SLFUTURE_CONST char *def)
+{
+   SLang_Object_Type *objp;
+   SLang_Object_Type obj;
+   int status;
+
+   status = check_qualifier (name, SLANG_STRING_TYPE, &objp, &obj);
+   if (status <= 0)
+     {
+	if (status == 0)
+	  {
+	     if ((def != NULL)
+		 && (NULL == (def = SLang_create_slstring (def))))
+	       status = -1;
+	     else *p = def;
+	  }
+	return status;
+     }
+
+   if (status == 1)
      {
 	if (NULL == (*p = SLang_create_slstring (objp->v.s_val)))
 	  return -1;
 	return 0;
      }
 
-   if ((-1 == _pSLpush_slang_obj (objp))
-       || (-1 == SLang_pop_slstring (p)))
-     {
-	SLang_verror (0, "Expecting '%s' qualifier to be a string", name);
-	return -1;
-     }
+   *p = obj.v.s_val;
+   /* SLang_free_object (&obj); not necessary, since we own v.s_val */
    return 0;
 }
 #endif

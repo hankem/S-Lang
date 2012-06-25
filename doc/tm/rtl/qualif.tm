@@ -30,8 +30,60 @@
     }
     echo ("hello"; use_stderr);  % writes hello to stderr
 #v-
- In this case, no value was provided for the \exmp{use_stderr}
- qualifier: it exists but has a value of \exmp{NULL}.
+
+ Prior to version 2.3.0, the \ifun{qualifier} function would always
+ return \NULL for qualifiers without values.  This behavior was
+ changed in version 2.3.0 such that a qualifier without a value
+ assigned will be implicitely given a default value of 1 instead of
+ \NULL.  That is, in versions 2.3.0 and later,
+#v+
+   echo ("hello"; use_stderr);
+   echo ("hello"; use_stderr=1);
+#v-
+ are equivalent forms, whereas in versions prior to 2.3.0,
+#v+
+   echo ("hello"; use_stderr);
+   echo ("hello"; use_stderr=NULL);
+#v-
+ are the same.
+
+ The semantic change introduced in version 2.3.0 simplifies some
+ common uses of the qualifier function.  For example, consider the
+ following version of the \exmp{echo} function:
+#v+
+    define echo (text)
+    {
+       variable fp = stdout;
+       if (qualifier ("use_stderr"))
+         fp = stderr;
+       () = fputs (text, fp);
+    }
+    echo ("hello"; use_stderr);     % write hello to stderr
+    echo ("world"; use_stderr=1);   % writes world to stderr
+    echo ("goodbye"; use_stderr=0); % writes goodbye to stdout
+#v-
+  Using versions 2.3.0 and later, both \exmp{"hello"} and
+  \exmp{"world"} will be written to \exmp{stderr} since they are
+  equivalent forms.  However, on versions prior to 2.3.0,
+  \exmp{"hello"} would be written to \exmp{stdout} since no value was
+  assigned to the \exmp{use_stderr} qualifier, resulting in \NULL being
+  returned from the \ifun{qualifier} function, and \NULL evaluates to
+  false in a boolean context.
+
+  To achive the same effect with earler versions of the interpreter
+  both the \ifun{qualifier} and \ifun{qualifier_exists} functions
+  were required:
+#v+
+    define echo (text)
+    {
+       variable fp = stdout;
+       if (qualifier_exists ("use_stderr")
+           && (0 != qualifier ("use_stderr")))
+         fp = stderr;
+       () = fputs (text, fp);
+    }
+#v-
+  Note that this form also works with version 2.3.0 and later.
 \seealso{qualifier_exists, __qualifiers}
 \done
 

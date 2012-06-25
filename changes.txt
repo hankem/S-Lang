@@ -96,6 +96,24 @@ Changes since 2.2.4
     ";rdb" qualifier.
 52. modules/stats-module.c: The stddev function was computing an
     incorrectly normalized value when passed the optional dims argument.
+53. src/slang.h: The following qualifier functions were added to the
+    public API:
+
+       SLang_qualifier_exists;
+       SLang_get_int_qualifier;
+       SLang_get_long_qualifier;
+       SLang_get_double_qualifier;
+       SLang_get_string_qualifier;
+
+    These functions may be used to create intrinsic functions that use
+    qualifiers.
+54. The previous change necessitated a minor change in the qualifier
+    semantics such that qualifiers that are created with no value
+    assigned are implicitly given a value of 1.  That is, foo(arg;q)
+    and foo(arg;q=1) are now equivalent forms.  Previously, foo(arg;q)
+    and foo(and;q=NULL) were equivalent.  Experience has shown that
+    the new semantics result in simpler code.  This change should not
+    break any existing interpreter scripts.
 
 {{{ Previous Versions
 

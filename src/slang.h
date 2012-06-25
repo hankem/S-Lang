@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-52"
+#define SLANG_VERSION_STRING "pre2.3.0-54"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1375,6 +1375,16 @@ typedef double (*SLang_To_Double_Fun_Type)(VOID_STAR);
 SL_EXTERN SLang_To_Double_Fun_Type SLarith_get_to_double_fun (SLtype, unsigned int *);
 
 SL_EXTERN int SLang_set_argc_argv (int, char **);
+
+/*}}}*/
+
+/*{{{ Qualifier Functions */
+
+extern int SLang_qualifier_exists (SLCONST char *name);
+extern int SLang_get_int_qualifier (SLCONST char *name, int *val, int defval);
+extern int SLang_get_long_qualifier (SLCONST char *name, long *val, long defval);
+extern int SLang_get_double_qualifier (SLCONST char *name, double *val, double defval);
+extern int SLang_get_string_qualifier (SLCONST char *name, char **val, SLFUTURE_CONST char *defval);
 
 /*}}}*/
 

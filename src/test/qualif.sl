@@ -237,6 +237,82 @@ private define test_qualifiers_in_methods ()
 }
 test_qualifiers_in_methods ();
 
+private define test_empty_qualifiers (qval, defval)
+{
+   variable q;
+
+   q = qualifier ("foo");
+   if (q != qval)
+     failed ("test_empty_qualifiers 1");
+
+   q = qualifier ("foo", defval);
+   if (qval == NULL)
+     {
+	if (q != defval)
+	  {
+	     failed ("test_empty_qualifiers 2");
+	  }
+     }
+   else if (q != qval)
+     failed ("test_empty_qualifiers 3");
+}
+test_empty_qualifiers (2100, 3100; foo=2100);
+test_empty_qualifiers (2100, 3100; foo=2100, bar="x");
+test_empty_qualifiers (2100, 3100; bar="x", foo=2100);
+test_empty_qualifiers (1, 3100; foo);
+test_empty_qualifiers (1, 3100; foo,);
+test_empty_qualifiers (1, 3100; bar,foo,);
+test_empty_qualifiers (1, 3100; foo, bar="x");
+test_empty_qualifiers (NULL, 3100);
+
+private define check_intrinsic_qualifier (func, qval, defval)
+{
+   variable val;
+
+   if (qval == NULL)
+     {
+	val = (@func)("foo", defval);
+	if (val != defval)
+	  failed ("%S(%S,%S) returned %S instead of %S",
+		  func, "foo", defval, val, defval);
+
+	% The integer 1 will get assigned to a qualifier without
+	% a value.  So, do not use this with strings
+	if (func == &check_intrin_string_qualifier)
+	  return;
+
+	val = (@func)("foo", defval; foo);
+	if (val != 1)
+	  failed ("%S(%S,%S; foo) returned %S instead of %S",
+		  func, "foo", defval, val, defval);
+	return;
+     }
+   val = (@func)("foo", defval; foo=qval);
+   if (val != qval)
+     failed ("%S(%S,%S ;%S=%S) returned %S instead of %S",
+	     func, "foo", defval, "foo", qval, val, qval);
+}
+
+private define test_intrinsic_qualifiers ()
+{
+   check_intrinsic_qualifier (&check_intrin_int_qualifier, 2718, 3141);
+   check_intrinsic_qualifier (&check_intrin_int_qualifier, NULL, 3141);
+   check_intrinsic_qualifier (&check_intrin_int_qualifier, 2718h, 3141);
+
+   check_intrinsic_qualifier (&check_intrin_long_qualifier, NULL, 3141L);
+   check_intrinsic_qualifier (&check_intrin_long_qualifier, 2718, 3141L);
+   check_intrinsic_qualifier (&check_intrin_long_qualifier, 2718h, 3141L);
+
+   check_intrinsic_qualifier (&check_intrin_double_qualifier, NULL, 3.141);
+   check_intrinsic_qualifier (&check_intrin_double_qualifier, 2.718, 3.141);
+   check_intrinsic_qualifier (&check_intrin_double_qualifier, 2718, 3.141);
+
+   check_intrinsic_qualifier (&check_intrin_string_qualifier, NULL, "3.141");
+   check_intrinsic_qualifier (&check_intrin_string_qualifier, "2.718", "3.141");
+   check_intrinsic_qualifier (&check_intrin_string_qualifier, "2718"B, "3.141");
+}
+test_intrinsic_qualifiers ();
+
 print ("Ok\n");
 
 exit (0);

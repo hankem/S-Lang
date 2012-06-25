@@ -1845,7 +1845,7 @@ static int prefix_token_sval_field (_pSLang_Token_Type *tok, char *prefix)
  * generates:  foo_expr_tokens "foo" bar_expr_tokens "bar" ...
  */
 static _pSLang_Token_Type *
-  handle_struct_assign_list (_pSLang_Token_Type *ctok, int assign_ok, unsigned int *nassignp)
+  handle_struct_assign_list (_pSLang_Token_Type *ctok, int assign_ok, int is_qualifier, unsigned int *nassignp)
 {
    _pSLang_Token_Type *name_list_root = NULL;
    _pSLang_Token_Type *name_list_tail = NULL;
@@ -1892,11 +1892,28 @@ static _pSLang_Token_Type *
 
 	n++;
 
-	if ((COMMA_TOKEN == get_token (ctok))
-	    && (is_deref == 0))
+	(void) get_token (ctok);
+
+	if (is_deref == 0)
 	  {
-	     get_token (ctok);
-	     continue;
+	     if (is_qualifier && assign_ok
+		 && (ctok->type != ASSIGN_TOKEN))
+	       {
+		  if (is_qualifier && assign_ok)
+		    {
+		       /* funct (...; foo,) ==> func(...; foo=1) */
+		       if ((-1 == append_int_as_token (1))
+			   || (-1 == append_copy_of_string_token (new_tok)))
+			 break;
+		       m++;
+		    }
+	       }
+
+	     if (COMMA_TOKEN == ctok->type)
+	       {
+		  get_token (ctok);
+		  continue;
+	       }
 	  }
 
 	if (assign_ok == 0)
@@ -1947,12 +1964,12 @@ static _pSLang_Token_Type *
    return name_list_root;
 }
 
-static int handle_struct_fields (_pSLang_Token_Type *ctok, int assign_ok)
+static int handle_struct_fields (_pSLang_Token_Type *ctok, int assign_ok, int is_qualifier)
 {
    _pSLang_Token_Type *name_list, *next;
    unsigned int n, m;
 
-   if (NULL == (name_list = handle_struct_assign_list (ctok, assign_ok, &m)))
+   if (NULL == (name_list = handle_struct_assign_list (ctok, assign_ok, is_qualifier, &m)))
      return -1;
 
    n = 0;
@@ -2006,7 +2023,7 @@ static void struct_declaration (_pSLang_Token_Type *ctok, int assign_ok)
      }
    get_token (ctok);
 
-   if (-1 == handle_struct_fields (ctok, assign_ok))
+   if (-1 == handle_struct_fields (ctok, assign_ok, 0))
      return;
 
    if (ctok->type != CBRACE_TOKEN)
@@ -3048,7 +3065,7 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 		    }
 		  else if (ctok->type == CPAREN_TOKEN)
 		    break;	       /* foo (args;) */
-		  else if (-1 == handle_struct_fields (ctok, 1))
+		  else if (-1 == handle_struct_fields (ctok, 1, 1))
 		    return;
 
 		  append_token_of_type (QUALIFIER_TOKEN);

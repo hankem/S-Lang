@@ -701,3 +701,12 @@ SLANG2.2.3 {
 		SLtt_tgoto;
 		SLtt_tputs;
 } SLANG2.2.1;
+SLANG2.3.0 {
+	global:
+		SLang_qualifier_exists;
+		SLang_get_int_qualifier;
+		SLang_get_long_qualifier;
+		SLang_get_double_qualifier;
+		SLang_get_string_qualifier;
+} SLANG2.2.1;
+

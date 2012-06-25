@@ -2552,12 +2552,12 @@ static void array_sort_intrin (void)
    int use_qsort = 0;
    char *method;
 
-   if (-1 == _pSLang_get_int_qualifier ("dir", &dir, 1))
+   if (-1 == SLang_get_int_qualifier ("dir", &dir, 1))
      return;
    dir = (dir >= 0) ? 1 : -1;
    use_qsort = (Default_Sort_Method == SORT_METHOD_QSORT);
-   if (_pSLang_qualifier_exists ("qsort")) use_qsort = 1;
-   if (-1 == _pSLang_get_string_qualifier ("method", &method, NULL))
+   if (SLang_qualifier_exists ("qsort")) use_qsort = 1;
+   if (-1 == SLang_get_string_qualifier ("method", &method, NULL))
      return;
    if (method != NULL)
      {

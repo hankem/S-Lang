@@ -271,11 +271,48 @@ static int add_test_classes (void)
    return 0;
 }
 
+static void check_intrin_string_qualifier (char *name, char *def)
+{
+   char *s;
+   if (-1 == SLang_get_string_qualifier (name, &s, def))
+     return;
+   SLang_push_string (s);
+   SLang_free_slstring (s);
+}
+
+static void check_intrin_double_qualifier (char *name, double *def)
+{
+   double q;
+   if (-1 == SLang_get_double_qualifier (name, &q, *def))
+     return;
+   SLang_push_double (q);
+}
+
+static void check_intrin_int_qualifier (char *name, int *def)
+{
+   int q;
+   if (-1 == SLang_get_int_qualifier (name, &q, *def))
+     return;
+   SLang_push_int (q);
+}
+
+static void check_intrin_long_qualifier (char *name, long *def)
+{
+   long q;
+   if (-1 == SLang_get_long_qualifier (name, &q, *def))
+     return;
+   SLang_push_long (q);
+}
+
 static void fake_import (char *);
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
    MAKE_INTRINSIC_S("fake_import", fake_import, VOID_TYPE),
    MAKE_INTRINSIC_I("exit", c_exit, VOID_TYPE),
+   MAKE_INTRINSIC_2("check_intrin_int_qualifier", check_intrin_int_qualifier, VOID_TYPE, SLANG_STRING_TYPE, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_2("check_intrin_long_qualifier", check_intrin_long_qualifier, VOID_TYPE, SLANG_STRING_TYPE, SLANG_LONG_TYPE),
+   MAKE_INTRINSIC_2("check_intrin_double_qualifier", check_intrin_double_qualifier, VOID_TYPE, SLANG_STRING_TYPE, SLANG_DOUBLE_TYPE),
+   MAKE_INTRINSIC_2("check_intrin_string_qualifier", check_intrin_string_qualifier, VOID_TYPE, SLANG_STRING_TYPE, SLANG_STRING_TYPE),
    MAKE_INTRINSIC_1("test_char_return", test_char_return, SLANG_CHAR_TYPE, SLANG_CHAR_TYPE),
    MAKE_INTRINSIC_1("test_short_return", test_short_return, SLANG_SHORT_TYPE, SLANG_SHORT_TYPE),
    MAKE_INTRINSIC_1("test_int_return", test_int_return, SLANG_INT_TYPE, SLANG_INT_TYPE),
