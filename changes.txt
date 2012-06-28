@@ -114,6 +114,7 @@ Changes since 2.2.4
     and foo(and;q=NULL) were equivalent.  Experience has shown that
     the new semantics result in simpler code.  This change should not
     break any existing interpreter scripts.
+55. Backed out change #54 because it did break some scripts.
 
 {{{ Previous Versions
 

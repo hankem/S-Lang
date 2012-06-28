@@ -237,6 +237,8 @@ private define test_qualifiers_in_methods ()
 }
 test_qualifiers_in_methods ();
 
+#iffalse
+% tests pre2.3.0-54
 private define test_empty_qualifiers (qval, defval)
 {
    variable q;
@@ -264,6 +266,7 @@ test_empty_qualifiers (1, 3100; foo,);
 test_empty_qualifiers (1, 3100; bar,foo,);
 test_empty_qualifiers (1, 3100; foo, bar="x");
 test_empty_qualifiers (NULL, 3100);
+#endif
 
 private define check_intrinsic_qualifier (func, qval, defval)
 {
@@ -280,11 +283,13 @@ private define check_intrinsic_qualifier (func, qval, defval)
 	% a value.  So, do not use this with strings
 	if (func == &check_intrin_string_qualifier)
 	  return;
-
+#iffalse
+	% pre2.3.0-54 semantics
 	val = (@func)("foo", defval; foo);
 	if (val != 1)
 	  failed ("%S(%S,%S; foo) returned %S instead of %S",
 		  func, "foo", defval, val, defval);
+#endif
 	return;
      }
    val = (@func)("foo", defval; foo=qval);
