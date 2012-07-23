@@ -115,6 +115,9 @@ Changes since 2.2.4
     the new semantics result in simpler code.  This change should not
     break any existing interpreter scripts.
 55. Backed out change #54 because it did break some scripts.
+56. src/util/mkslarith2.sl: Used "signed char" instead of "char" to
+    avoid problems with systems that assume unsigned characters.
+    (RongQing Li).
 
 {{{ Previous Versions
 
