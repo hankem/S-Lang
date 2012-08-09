@@ -1,24 +1,24 @@
 /* -*- mode: C; mode: fold; -*- */
 /*
-Copyright (C) 2006-2011 John E. Davis
-
-This file is part of the S-Lang Library.
-
-The S-Lang Library is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.
-
-The S-Lang Library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-USA.
-*/
+ Copyright (C) 2006-2012 John E. Davis
+ *
+ This file is part of the S-Lang Library.
+ *
+ The S-Lang Library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ *
+ The S-Lang Library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+ *
+ You should have received a copy of the GNU General Public License
+ along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ USA.
+ */
 
 /* This file was derived from the code in SLtcp.c distributed with slsh */
 
@@ -402,13 +402,13 @@ static Host_Addr_Info_Type *alloc_host_addr_info (unsigned int num, int h_length
 }
 
 /* glibc removed the h_addr compat macro, which messes up the logic below. */
-#ifndef h_addr
-# ifdef __GNUC_PREREQ
-#  if __GNUC_PREREQ(2,8)
-#   define h_addr "unused"	       /* define it, but do not use it */
+# ifndef h_addr
+#  ifdef __GNUC_PREREQ
+#   if __GNUC_PREREQ(2,8)
+#    define h_addr "unused"	       /* define it, but do not use it */
+#   endif
 #  endif
 # endif
-#endif
 
 static Host_Addr_Info_Type *get_host_addr_info (char *host)
 {
@@ -416,15 +416,15 @@ static Host_Addr_Info_Type *get_host_addr_info (char *host)
    Host_Addr_Info_Type *hinfo;
    struct hostent *hp;
    unsigned int max_retries;
-#ifndef h_addr
+# ifndef h_addr
    char *fake_h_addr_list[2];
-#endif
+# endif
    char **h_addr_list;
    unsigned int i, num;
 
-#ifndef INADDR_NONE
-# define INADDR_NONE ((in_addr_t)(-1))
-#endif
+# ifndef INADDR_NONE
+#  define INADDR_NONE ((in_addr_t)(-1))
+# endif
    if ((isdigit (*host))
        && (INADDR_NONE != (addr = inet_addr (host))))
      {
@@ -439,25 +439,25 @@ static Host_Addr_Info_Type *get_host_addr_info (char *host)
    max_retries = 3;
    while (NULL == (hp = gethostbyname (host)))
      {
-#ifdef TRY_AGAIN
+# ifdef TRY_AGAIN
 	max_retries--;
 	if (max_retries && (h_errno == TRY_AGAIN))
 	  {
 	     sleep (1);
 	     continue;
 	  }
-#endif
+# endif
 	throw_herror ("gethostbyname", h_errno);
 	return NULL;
      }
-#ifndef h_addr
+# ifndef h_addr
    /* Older interface.  There is only one address, so fake a list */
    h_addr_list = fake_h_addr_list;
    h_addr_list [0] = hp->h_addr;
    h_addr_list [1] = NULL;
-#else
+# else
    h_addr_list = hp->h_addr_list;
-#endif
+# endif
 
    /* Now count the number of addresses */
    num = 0;
@@ -466,11 +466,11 @@ static Host_Addr_Info_Type *get_host_addr_info (char *host)
 
    if (num == 0)
      {
-#ifdef NO_DATA
+# ifdef NO_DATA
 	throw_herror ("gethostbyname", NO_DATA);
-#else
+# else
 	throw_herror ("gethostbyname", NO_ADDRESS);
-#endif
+# endif
 	return NULL;
      }
 
@@ -504,11 +504,11 @@ static int connect_af_inet (Socket_Type *s, int nargs)
 
    if (hinfo->h_addrtype != AF_INET)
      {
-#ifdef AF_INET6
+# ifdef AF_INET6
 	if (hinfo->h_addrtype == AF_INET6)
 	  SLang_verror (SL_NOT_IMPLEMENTED, "AF_INET6 not implemented");
 	else
-#endif
+# endif
 	  SLang_verror (SocketError, "Unknown socket family for host %s", host);
 	SLang_free_slstring (host);
 	free_host_addr_info (hinfo);
@@ -554,11 +554,11 @@ static int bind_af_inet (Socket_Type *s, int nargs)
 
    if (hinfo->h_addrtype != AF_INET)
      {
-#ifdef AF_INET6
+# ifdef AF_INET6
 	if (hinfo->h_addrtype == AF_INET6)
 	  SLang_verror (SL_NOT_IMPLEMENTED, "AF_INET6 not implemented");
 	else
-#endif
+# endif
 	  SLang_verror (SocketError, "Unknown socket family for host %s", host);
 	SLang_free_slstring (host);
 	free_host_addr_info (hinfo);
@@ -634,12 +634,12 @@ static Socket_Type *accept_af_inet (Socket_Type *s, unsigned int nrefs, SLang_Re
 static Domain_Methods_Type Domain_Methods_Table [] =
 {
 #if defined(PF_UNIX) && defined(AF_UNIX)
-     {PF_UNIX, connect_af_unix, bind_af_unix, accept_af_unix, free_af_unix},
+   {PF_UNIX, connect_af_unix, bind_af_unix, accept_af_unix, free_af_unix},
 #endif
 #if defined(PF_INET) && defined(AF_INET)
-     {PF_INET, connect_af_inet, bind_af_inet, accept_af_inet, NULL},
+   {PF_INET, connect_af_inet, bind_af_inet, accept_af_inet, NULL},
 #endif
-     {0, NULL, NULL, NULL, NULL}
+   {0, NULL, NULL, NULL, NULL}
 };
 
 static Domain_Methods_Type *lookup_domain_methods (int domain)
@@ -953,7 +953,7 @@ static void accept_intrin (void)
 
    /* drop */
 
-   free_return:
+free_return:
    for (i = 0; i < nargs; i++)
      {
 	if (refs[i] != NULL)
@@ -1104,130 +1104,207 @@ static int get_linger_sockopt (Socket_Type *s, int level, int optname)
 #ifdef SOL_SOCKET
 static SockOpt_Type SO_Option_Table[] =
 {
-#ifdef SO_KEEPALIVE
-     {SO_KEEPALIVE, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_OOBINLINE
-     {SO_OOBINLINE, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_RCVLOWAT
-     {SO_RCVLOWAT, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_SNDLOWAT
-     {SO_SNDLOWAT, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_BSDCOMPAT
-     {SO_BSDCOMPAT, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_PASSCRED
-     {SO_PASSCRED, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_BINDTODEVICE
-     {SO_BINDTODEVICE, set_str_sockopt, get_str_sockopt},
-#endif
-#ifdef SO_DEBUG
-     {SO_DEBUG, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_REUSEADDR
-     {SO_REUSEADDR, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_TYPE
-     {SO_TYPE, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_ACCEPTCONN
-     {SO_ACCEPTCONN, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_DONTROUTE
-     {SO_DONTROUTE, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_BROADCAST
-     {SO_BROADCAST, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_SNDBUF
-     {SO_SNDBUF, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_RCVBUF
-     {SO_RCVBUF, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_PRIORITY
-     {SO_PRIORITY, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef SO_ERROR
-     {SO_ERROR, NULL, get_int_sockopt},
-#endif
-#ifdef SO_PEERCRED
-     /* {SO_PEERCRED, NULL, get_peercred_sockopt}, */
-#endif
-#ifdef SO_RCVTIMEO
-     {SO_RCVTIMEO, set_timeval_sockopt, get_timeval_sockopt},
-#endif
-#ifdef SO_SNDTIMEO
-     {SO_SNDTIMEO, set_timeval_sockopt, get_timeval_sockopt},
-#endif
-#ifdef SO_LINGER
-     {SO_LINGER, set_linger_sockopt, get_linger_sockopt},
-#endif
+# ifdef SO_KEEPALIVE
+   {SO_KEEPALIVE, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_OOBINLINE
+   {SO_OOBINLINE, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_RCVLOWAT
+   {SO_RCVLOWAT, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_SNDLOWAT
+   {SO_SNDLOWAT, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_BSDCOMPAT
+   {SO_BSDCOMPAT, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_PASSCRED
+   {SO_PASSCRED, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_BINDTODEVICE
+   {SO_BINDTODEVICE, set_str_sockopt, get_str_sockopt},
+# endif
+# ifdef SO_DEBUG
+   {SO_DEBUG, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_REUSEADDR
+   {SO_REUSEADDR, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_TYPE
+   {SO_TYPE, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_ACCEPTCONN
+   {SO_ACCEPTCONN, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_DONTROUTE
+   {SO_DONTROUTE, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_BROADCAST
+   {SO_BROADCAST, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_SNDBUF
+   {SO_SNDBUF, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_RCVBUF
+   {SO_RCVBUF, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_PRIORITY
+   {SO_PRIORITY, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef SO_ERROR
+   {SO_ERROR, NULL, get_int_sockopt},
+# endif
+# ifdef SO_PEERCRED
+   /* {SO_PEERCRED, NULL, get_peercred_sockopt}, */
+# endif
+# ifdef SO_RCVTIMEO
+   {SO_RCVTIMEO, set_timeval_sockopt, get_timeval_sockopt},
+# endif
+# ifdef SO_SNDTIMEO
+   {SO_SNDTIMEO, set_timeval_sockopt, get_timeval_sockopt},
+# endif
+# ifdef SO_LINGER
+   {SO_LINGER, set_linger_sockopt, get_linger_sockopt},
+# endif
 
-     {-1, NULL, NULL}
+   {-1, NULL, NULL}
 };
 #endif				       /* SOL_SOCKET */
+
+#if defined(IP_ADD_MEMBERSHIP) /* either add or drop same args */
+static int set_multicast_sockopt (Socket_Type *s, int level, int option)
+{
+   struct ip_mreq group;
+   char *multi;
+   char *local = NULL;
+   Host_Addr_Info_Type *multi_info = NULL;
+   Host_Addr_Info_Type *local_info = NULL;
+   int ret = -1;
+
+   if (-1 == SLang_pop_slstring(&multi))
+     return -1;
+
+   if (5 == SLang_Num_Function_Args)
+     {
+	if (-1 == SLang_pop_slstring(&local))
+	  {
+	     SLang_free_slstring (multi);
+	     return -1;
+	  }
+     }
+
+   if (NULL == (multi_info = get_host_addr_info (multi)))
+     goto free_and_return;
+
+   if (local != NULL)
+     {
+	if (NULL == (local_info = get_host_addr_info (local)))
+	  goto free_and_return;
+
+	memcpy ((char *) &group.imr_interface.s_addr, local_info->h_addr_list[0], local_info->h_length);
+     }
+   else
+     {
+	group.imr_interface.s_addr = INADDR_ANY;
+     }
+   memcpy ((char *) &group.imr_multiaddr.s_addr, multi_info->h_addr_list[0], multi_info->h_length);
+
+   ret = do_setsockopt (s->fd, level, option, (void *)&group, sizeof(group));
+
+free_and_return:
+
+   SLang_free_slstring(multi);
+   if (NULL != local)
+     SLang_free_slstring(local);
+   free_host_addr_info (multi_info);
+   if (NULL != local_info)
+     free_host_addr_info (local_info);
+
+   return ret;
+}
+#endif
+
+#if defined(IP_MULTICAST_IF)
+static int set_multicast_if_sockopt (Socket_Type *s, int level, int option)
+{
+   struct in_addr iface;
+   char *local;
+   Host_Addr_Info_Type *local_info;
+
+   if (-1 == SLang_pop_slstring(&local))
+     return -1;
+
+   if (NULL == (local_info = get_host_addr_info (local)))
+     {
+	SLang_free_slstring (local);
+	return -1;
+     }
+   memcpy ((char *) &iface.s_addr, local_info->h_addr_list[0], local_info->h_length);
+
+   SLang_free_slstring(local);
+   free_host_addr_info (local_info);
+
+   return do_setsockopt (s->fd, level, option, (void *)&iface, sizeof(iface));
+}
+#endif
 
 #ifdef SOL_IP
 static SockOpt_Type IP_Option_Table[] =
 {
-#ifdef IP_OPTIONS
-     /* {IP_OPTIONS, NULL, NULL}, */
-#endif
-#ifdef IP_PKTINFO
-     /* {IP_PKTINFO, NULL, NULL}, */
-#endif
-#ifdef IP_RECVTOS
-     /* {IP_RECVTOS, NULL, NULL}, */
-#endif
-#ifdef IP_RECVTTL
-     /* {IP_RECVTTL, NULL, NULL}, */
-#endif
-#ifdef IP_RECVOPTS
-     /* {IP_RECVOPTS, NULL, NULL}, */
-#endif
-#ifdef IP_TOS
-     /* {IP_TOS, set_int_sockopt, get_int_sockopt}, */
-#endif
-#ifdef IP_TTL
-     {IP_TTL, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef IP_HDRINCL
-     {IP_HDRINCL, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef IP_RECVERR
-     /* {IP_RECVERR, set_int_sockopt, get_int_sockopt}, */
-#endif
-#ifdef IP_MTU_DISCOVER
-     /* {IP_MTU_DISCOVER, set_int_sockopt, get_int_sockopt}, */
-#endif
-#ifdef IP_MTU
-     {IP_MTU_DISCOVER, NULL, get_int_sockopt},
-#endif
-#ifdef IP_ROUTER_ALERT
-     {IP_ROUTER_ALERT, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef IP_MULTICAST_TTL
-     {IP_MULTICAST_TTL, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef IP_MULTICAST_LOOP
-     {IP_MULTICAST_LOOP, set_int_sockopt, get_int_sockopt},
-#endif
-#ifdef IP_ADD_MEMBERSHIP
-     /* {IP_ADD_MEMBERSHIP, NULL, NULL}, */
-#endif
-#ifdef IP_DROP_MEMBERSHIP
-     /* {IP_DROP_MEMBERSHIP, NULL, NULL}, */
-#endif
-#ifdef IP_MULTICAST_IF
-     /* {IP_MULTICAST_IF, NULL, NULL}, */
-#endif
+# ifdef IP_OPTIONS
+   /* {IP_OPTIONS, NULL, NULL}, */
+# endif
+# ifdef IP_PKTINFO
+   /* {IP_PKTINFO, NULL, NULL}, */
+# endif
+# ifdef IP_RECVTOS
+   /* {IP_RECVTOS, NULL, NULL}, */
+# endif
+# ifdef IP_RECVTTL
+   /* {IP_RECVTTL, NULL, NULL}, */
+# endif
+# ifdef IP_RECVOPTS
+   /* {IP_RECVOPTS, NULL, NULL}, */
+# endif
+# ifdef IP_TOS
+   /* {IP_TOS, set_int_sockopt, get_int_sockopt}, */
+# endif
+# ifdef IP_TTL
+   {IP_TTL, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef IP_HDRINCL
+   {IP_HDRINCL, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef IP_RECVERR
+   /* {IP_RECVERR, set_int_sockopt, get_int_sockopt}, */
+# endif
+# ifdef IP_MTU_DISCOVER
+   /* {IP_MTU_DISCOVER, set_int_sockopt, get_int_sockopt}, */
+# endif
+# ifdef IP_MTU
+   {IP_MTU_DISCOVER, NULL, get_int_sockopt},
+# endif
+# ifdef IP_ROUTER_ALERT
+   {IP_ROUTER_ALERT, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef IP_MULTICAST_TTL
+   {IP_MULTICAST_TTL, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef IP_MULTICAST_LOOP
+   {IP_MULTICAST_LOOP, set_int_sockopt, get_int_sockopt},
+# endif
+# ifdef IP_ADD_MEMBERSHIP
+   {IP_ADD_MEMBERSHIP, set_multicast_sockopt, NULL},
+# endif
+# ifdef IP_DROP_MEMBERSHIP
+   {IP_DROP_MEMBERSHIP, set_multicast_sockopt, NULL},
+# endif
+# ifdef IP_MULTICAST_IF
+   {IP_MULTICAST_IF, set_multicast_if_sockopt, NULL},
+# endif
 
-     {-1, NULL, NULL}
+   {-1, NULL, NULL}
 };
 #endif				       /* SOL_IP */
 /* Usage: get/setsockopt (socket, level, optname, value) */
@@ -1238,7 +1315,7 @@ static void getset_sockopt (int set)
    int level, optname;
    SockOpt_Type *table;
 
-   if (-1 == SLreverse_stack (3+set))
+   if (-1 == SLreverse_stack (SLang_Num_Function_Args))
      return;
 
    if (NULL == (s = pop_socket (&f)))
@@ -1286,11 +1363,11 @@ static void getset_sockopt (int set)
      }
 
    /* drop */
-   free_return:
+free_return:
    SLfile_free_fd (f);
    return;
 
-   not_implemented_error:
+not_implemented_error:
    SLang_verror (SL_NotImplemented_Error, "get/setsockopt option %d is not supported at level %d", optname, level);
    SLfile_free_fd (f);
 }
@@ -1346,7 +1423,7 @@ static SLang_IConstant_Type Module_IConstants [] =
    MAKE_ICONSTANT("SOCK_PACKET", SOCK_PACKET),
 #endif
 
-/* Domains  */
+   /* Domains  */
 #ifdef PF_UNIX
    MAKE_ICONSTANT("PF_UNIX", PF_UNIX),
 #endif
@@ -1480,6 +1557,9 @@ static SLang_IConstant_Type Module_IConstants [] =
 # ifdef IP_RECVTOS
    MAKE_ICONSTANT("IP_RECVTOS", IP_RECVTOS),
 # endif
+# ifdef IPPROTO_IP
+   MAKE_ICONSTANT("IPPROTO_IP", IPPROTO_IP),
+# endif
 #endif				       /* SOL_IP */
 
    SLANG_END_ICONST_TABLE
@@ -1504,8 +1584,8 @@ int init_socket_module_ns (char *ns_name)
    if (NULL == (ns = SLns_create_namespace (ns_name)))
      return -1;
 
-    if ((-1 == SLns_add_intrin_fun_table (ns, Module_Intrinsics, NULL))
-        || (-1 == SLns_add_iconstant_table (ns, Module_IConstants, NULL)))
+   if ((-1 == SLns_add_intrin_fun_table (ns, Module_Intrinsics, NULL))
+       || (-1 == SLns_add_iconstant_table (ns, Module_IConstants, NULL)))
      return -1;
 
    if (-1 == SLns_add_intrinsic_variable(ns, "h_errno", (VOID_STAR)&Module_H_Errno, SLANG_INT_TYPE, 1))

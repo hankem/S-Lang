@@ -118,6 +118,8 @@ Changes since 2.2.4
 56. src/util/mkslarith2.sl: Used "signed char" instead of "char" to
     avoid problems with systems that assume unsigned characters.
     (RongQing Li).
+57. modules/socket-module.c: Added support for socket credentials
+    (Arik Mitschang).
 
 {{{ Previous Versions
 
