@@ -32,6 +32,10 @@ USA.
 # include <sys/wait.h>
 #endif
 
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+
 #include "slang.h"
 #include "_slang.h"
 
@@ -686,6 +690,103 @@ static void sigprocmask_intrinsic (void)
 
 #endif
 
+#if defined(HAVE_GETITIMER) || defined(HAVE_SETITIMER)
+static double timeval_to_double (struct timeval *tv)
+{
+   return tv->tv_sec + (double) tv->tv_usec * 1e-6;
+}
+
+static void double_to_timeval (double t, struct timeval *tv)
+{
+   if (t < 0.0)
+     t = 0.0;
+   tv->tv_sec = (long) t;
+   tv->tv_usec = (long) ((t - (long)t) * 1e6);
+}
+
+# ifdef HAVE_GETITIMER
+static void getitimer_intrinsic (int *wp)
+{
+   struct itimerval it;
+
+   if (-1 == getitimer (*wp, &it))
+     {
+	SLerrno_set_errno (errno);
+	SLang_verror (SL_OS_Error, "getitimer failed: %s", SLerrno_strerror (errno));
+	return;
+     }
+   (void) SLang_push_double (timeval_to_double (&it.it_value));
+   (void) SLang_push_double (timeval_to_double (&it.it_interval));
+}
+# endif
+# ifdef HAVE_SETITIMER
+static void setitimer_intrinsic (void)
+{
+   SLang_Ref_Type *interval_ref = NULL, *value_ref = NULL;
+   int w;
+   struct itimerval new_value, old_value;
+   double interval = 0.0, value;
+   int argc = SLang_Num_Function_Args;
+
+   if (SLang_peek_at_stack () == SLANG_REF_TYPE)
+     {
+	if (-1 == SLang_pop_ref (&value_ref))
+	  return;
+	argc--;
+	if (SLang_peek_at_stack() == SLANG_REF_TYPE)
+	  {
+	     interval_ref = value_ref;
+	     if (-1 == SLang_pop_ref (&value_ref))
+	       goto free_and_return;
+	     argc--;
+	  }
+     }
+
+   switch (argc)
+     {
+      case 3:
+	if (-1 == SLang_pop_double (&interval))
+	  goto free_and_return;
+	/* drop */
+      case 2:
+      default:
+	if ((-1 == SLang_pop_double (&value))
+	    || (-1 == SLang_pop_int (&w)))
+	  goto free_and_return;
+     }
+
+   double_to_timeval (interval, &new_value.it_interval);
+   double_to_timeval (value, &new_value.it_value);
+
+   if (-1 == setitimer (w, &new_value, &old_value))
+     {
+	SLerrno_set_errno (errno);
+	SLang_verror (SL_OS_Error, "setitimer failed: %s", SLerrno_strerror (errno));
+	goto free_and_return;
+     }
+
+   if (value_ref != NULL)
+     {
+	value = timeval_to_double (&old_value.it_value);
+	if (-1 == SLang_assign_to_ref (value_ref, SLANG_DOUBLE_TYPE, &value))
+	  goto free_and_return;
+     }
+   if (interval_ref != NULL)
+     {
+	interval = timeval_to_double (&old_value.it_interval);
+	if (-1 == SLang_assign_to_ref (interval_ref, SLANG_DOUBLE_TYPE, &interval))
+	  goto free_and_return;
+     }
+
+free_and_return:
+   if (value_ref != NULL)
+     SLang_free_ref (value_ref);
+   if (interval_ref != NULL)
+     SLang_free_ref (interval_ref);
+}
+# endif
+#endif
+
 static SLang_IConstant_Type IConsts [] =
 {
 #ifdef SLANG_POSIX_SIGNALS
@@ -696,6 +797,15 @@ static SLang_IConstant_Type IConsts [] =
    MAKE_ICONSTANT("SIG_IGN", SIG_IGN_CONSTANT),
    MAKE_ICONSTANT("SIG_DFL", SIG_DFL_CONSTANT),
    MAKE_ICONSTANT("SIG_APP", SIG_APP_CONSTANT),
+#ifdef ITIMER_REAL
+   MAKE_ICONSTANT("ITIMER_REAL", ITIMER_REAL),
+#endif
+#ifdef ITIMER_VIRTUAL
+   MAKE_ICONSTANT("ITIMER_VIRTUAL", ITIMER_VIRTUAL),
+#endif
+#ifdef ITIMER_PROF
+   MAKE_ICONSTANT("ITIMER_PROF", ITIMER_PROF),
+#endif
    SLANG_END_ICONST_TABLE
 };
 
@@ -703,6 +813,12 @@ static SLang_Intrin_Fun_Type Intrin_Table [] =
 {
    MAKE_INTRINSIC_0("signal", signal_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("alarm", alarm_intrinsic, SLANG_VOID_TYPE),
+#ifdef HAVE_SETITIMER
+   MAKE_INTRINSIC_0("setitimer", setitimer_intrinsic, SLANG_VOID_TYPE),
+#endif
+#ifdef HAVE_GETITIMER
+   MAKE_INTRINSIC_1("getitimer", getitimer_intrinsic, SLANG_VOID_TYPE, SLANG_INT_TYPE),
+#endif
    MAKE_INTRINSIC_0("sigsuspend", sigsuspend_intrinsic, SLANG_VOID_TYPE),
 #ifdef SLANG_POSIX_SIGNALS
    MAKE_INTRINSIC_0("sigprocmask", sigprocmask_intrinsic, SLANG_VOID_TYPE),

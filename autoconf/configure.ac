@@ -141,6 +141,7 @@ mmap \
 chown popen mkfifo \
 atexit on_exit umask uname \
 times gmtime mktime gettimeofday \
+getitimer setitimer \
 gmtime_r ctime_r localtime_r \
 strtod atoll strtoll \
 issetugid \

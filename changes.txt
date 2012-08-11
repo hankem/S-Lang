@@ -120,6 +120,8 @@ Changes since 2.2.4
     (RongQing Li).
 57. modules/socket-module.c: Added support for socket credentials
     (Arik Mitschang).
+58. src/signal.c: Added support for interval timers via the
+    get/setitimer functions.
 
 {{{ Previous Versions
 

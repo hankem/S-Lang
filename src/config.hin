@@ -83,6 +83,8 @@
 #undef HAVE_UTIME
 #undef HAVE_UTIMES
 
+#undef HAVE_GETITIMER
+#undef HAVE_SETITIMER
 #undef HAVE_SYS_MMAN_H
 
 #undef HAVE_SYS_RESOURCE_H

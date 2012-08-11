@@ -6682,7 +6682,82 @@ alarm
   handler for `SIGALRM'.
 
  SEE ALSO
-  signal, sleep
+  signal, sleep, setitimer, getitimer
+
+--------------------------------------------------------------
+
+getitimer
+
+ SYNOPSIS
+  Get the value of an interval timer
+
+ USAGE
+  (secs, period) = getitimer (Int_Type timer)
+
+ DESCRIPTION
+  This function returns the value of the specified interval timer as a
+  pair of double precision values: `period' and `secs'.
+
+  The value of `secs' indicates the number of seconds
+  remaining before the timer expires.  A value of 0 for
+  `secs' indicates that the timer is inactive.
+  The value of `period' indicates the periodicity of the timer.
+  That is, when the timer goes off, it will automatically be reset to
+  go off again after `period' seconds.
+
+  There are 3 interval timers available: ITIMER_REAL,
+  ITIMER_VIRTUAL, and ITIMER_PROF.
+
+  The ITIMER_REAL timer operates in real time and when the time
+  elapses, a SIGALRM will be sent to the process.
+
+  The ITIMER_VIRTUAL timer operates in the virtual time of the
+  process; that is, when process is actively running.  When it
+  elapses, SIGVTALRM will be sent to the process.
+
+  The ITIMER_PROF operates when the process is actively
+  running, or when the kernel is performing a task on behalf of the
+  process.  It sends a SIGPROF signal to the process.
+
+ NOTES
+  The interaction between these timers and the `sleep' and
+  `alarm' functions is OS dependent.
+
+  The resolution of a timer is system dependent; typical values are on
+  the order of milliseconds.
+
+ SEE ALSO
+  setitimer, alarm, signal
+
+--------------------------------------------------------------
+
+setitimer
+
+ SYNOPSIS
+  Set the value of an interval timer
+
+ USAGE
+  setitimer (Int_Type timer, secs [, period] [,&old_secs, &old_period])
+
+ DESCRIPTION
+  This function sets the value of a specified interval timer, and
+  optionally returns the previous value.  The value of the
+  `timer' argument must be one of the 3 interval timers
+  ITIMER_REAL, ITIMER_VIRTUAL, or ITIMER_PROF.
+  See the documentation for the `getitimer' function for
+  information about the semantics of these timers.
+
+  The value of the `secs' parameter specifies the expiration time
+  for the timer.  If this value is 0, the timer will be disabled.
+  Unless a non-zero value for the optional `period' parameter is
+  given, the timer will be disabled after it expires.  Otherwise,
+  the timer will reset to go off with a period of `period' seconds.
+
+  The final two optional arguments are references to variables that
+  will be set to the previous values associated with the timer.
+
+ SEE ALSO
+  getitimer, alarm, signal
 
 --------------------------------------------------------------
 

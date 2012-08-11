@@ -2,14 +2,14 @@ _debug_info = 1; () = evalfile ("inc.sl");
 
 testing_feature ("signals\n");
 
-static variable Signal = 0;
+private variable Signal = 0;
 
-static define handle_hup (sig)
+private define handle_hup (sig)
 {
    Signal = sig;
 }
 
-static define test_signal (sig, func, old_func)
+private define test_signal (sig, func, old_func)
 {
    variable old;
    signal (sig, func, &old);
@@ -24,7 +24,7 @@ test_signal (SIGHUP, SIG_DFL, SIG_DFL);
 test_signal (SIGHUP, SIG_IGN, SIG_DFL);
 test_signal (SIGHUP, &handle_hup, SIG_IGN);
 
-static define test_signal (sig, func)
+private define test_signal (sig, func)
 {
    Signal = 0;
    signal (sig, func);
@@ -39,18 +39,18 @@ static define test_signal (sig, func)
      failed ("signal %d not caught, count=%d", sig, count);
 }
 
-static define sigalrm_handler (sig)
+private define sigalrm_handler (sig)
 {
    if (sig != SIGALRM)
      failed ("alarm");
    throw MathError;
 }
-
 signal (SIGALRM, &sigalrm_handler);
-static define test_sigalarm ()
+
+private define test_sigalarm ()
 {
-   print ("\tPausing for 3 seconds for alarm test");
-   alarm (3);
+   print ("\tPausing for 2 seconds for alarm test");
+   alarm (2);
    try
      {
 	while (1)
@@ -63,14 +63,48 @@ static define test_sigalarm ()
    print ("\n");
 }
 
-static define sigint_handler (sig)
+private define test_getsetitimer ()
+{
+#ifexists setitimer
+   % check syntax
+   signal (SIGALRM, SIG_IGN);
+   variable interval = 10.0, value = 3.1, old_interval, old_value;
+   setitimer (ITIMER_REAL, value, interval);
+   setitimer (ITIMER_REAL, value, interval, &old_value, &old_interval);
+   if (abs (old_interval-interval) > 0.1)   %  adjust for timer resolution
+     failed ("setitimer: unexpected old interval");
+   (old_value, old_interval) = getitimer (ITIMER_REAL);
+   if (abs (old_interval-interval) > 0.1)   %  adjust for timer resolution
+     failed ("getitimer: unexpected old interval");
+
+   setitimer (ITIMER_REAL, interval, value, &old_interval);
+
+   signal (SIGALRM, &sigalrm_handler);
+   print ("\tPausing for 2.5 seconds for setitmer test");
+   setitimer (ITIMER_REAL, 2.5, 2.5);
+   try
+     {
+	while (1)
+	  {
+	     sleep (1);
+	     print (".");
+	  }
+     }
+   catch MathError:
+     {
+	setitimer (ITIMER_REAL, 0);
+     }
+   print ("\n");
+}
+
+private define sigint_handler (sig)
 {
    if (sig != SIGINT)
      failed ("sigint_handler");
    throw UserBreakError;
 }
 
-static define test_sigsuspend ()
+private define test_sigsuspend ()
 {
    signal (SIGINT, &sigint_handler);
    print ("\tNow try pressing ^C in next 5 seconds...");
@@ -82,7 +116,7 @@ static define test_sigsuspend ()
    print ("\n");
 }
 
-static define test_sigprocmask ()
+private define test_sigprocmask ()
 {
    variable oldmask, origmask;
    sigprocmask (SIG_SETMASK, SIGHUP, &origmask);
@@ -109,6 +143,7 @@ static define test_sigprocmask ()
 
 test_signal (SIGHUP, &handle_hup);
 test_sigalarm ();
+test_getsetitimer ();
 test_sigsuspend ();
 test_sigprocmask ();
 
