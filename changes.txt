@@ -122,6 +122,7 @@ Changes since 2.2.4
     (Arik Mitschang).
 58. src/signal.c: Added support for interval timers via the
     get/setitimer functions.
+59. src/test/signal.sl: Missing #endif (Paul Boekholt)
 
 {{{ Previous Versions
 

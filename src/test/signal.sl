@@ -80,7 +80,7 @@ private define test_getsetitimer ()
    setitimer (ITIMER_REAL, interval, value, &old_interval);
 
    signal (SIGALRM, &sigalrm_handler);
-   print ("\tPausing for 2.5 seconds for setitmer test");
+   print ("\tPausing for 2.5 seconds for setitimer test");
    setitimer (ITIMER_REAL, 2.5, 2.5);
    try
      {
@@ -95,6 +95,7 @@ private define test_getsetitimer ()
 	setitimer (ITIMER_REAL, 0);
      }
    print ("\n");
+#endif
 }
 
 private define sigint_handler (sig)
