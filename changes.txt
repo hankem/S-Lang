@@ -123,6 +123,8 @@ Changes since 2.2.4
 58. src/signal.c: Added support for interval timers via the
     get/setitimer functions.
 59. src/test/signal.sl: Missing #endif (Paul Boekholt)
+60. autoconf/slang.pc: Allow prefix and exec_prefix to be different
+    (Diab Jerius).
 
 {{{ Previous Versions
 
