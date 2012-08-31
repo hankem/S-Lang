@@ -125,6 +125,8 @@ Changes since 2.2.4
 59. src/test/signal.sl: Missing #endif (Paul Boekholt)
 60. autoconf/slang.pc: Allow prefix and exec_prefix to be different
     (Diab Jerius).
+61. src/sltoken.c: Use an unsigned cast when calling putc to
+    work-around what looks like a VMS C library bug bug.
 
 {{{ Previous Versions
 

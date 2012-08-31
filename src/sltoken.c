@@ -2224,7 +2224,7 @@ static int bytecomp_write_data (SLCONST char *buf, unsigned int len)
 	     clen = 0;
 	  }
 
-	if (EOF == putc (*buf, fp))
+	if (EOF == putc ((unsigned char)*buf, fp))
 	  {
 	     SLang_set_error (SL_IO_WRITE_ERROR);
 	     return -1;
