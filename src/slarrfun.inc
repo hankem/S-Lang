@@ -626,6 +626,170 @@ static int PROD_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID
 #undef PROD_RESULT_TYPE
 #endif
 
+#ifdef WHEREFIRSTMAX_FUNC
+static int WHEREFIRSTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+{
+   GENERIC_TYPE *x, *xmax;
+   SLuindex_Type i, imax;
+   GENERIC_TYPE maxval;
+
+   if (-1 == check_for_empty_array ("wherefirstmax", num))
+     return -1;
+
+   x = (GENERIC_TYPE *) xp;
+   xmax = x + num;
+
+# ifdef IS_NAN_FUNCTION
+   i = 0;
+   do
+     {
+	maxval = x[i];
+	imax = i;
+	i += inc;
+     }
+   while (IS_NAN_FUNCTION(maxval) && (i < num));
+# else
+   maxval = x[0];
+   imax = 0;
+# endif
+
+   for (i = imax+inc; i < num; i += inc)
+     {
+	if (maxval < x[i])
+	  {
+	     imax = i;
+	     maxval = x[i];
+	  }
+     }
+   *(SLuindex_Type *)yp = imax;
+   return 0;
+}
+# undef WHEREFIRSTMAX_FUNC
+#endif
+
+#ifdef WHERELASTMAX_FUNC
+static int WHERELASTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+{
+   GENERIC_TYPE *x, *xmax;
+   SLuindex_Type i, imax;
+   GENERIC_TYPE maxval;
+
+   if (-1 == check_for_empty_array ("wherelastmax", num))
+     return -1;
+
+   x = (GENERIC_TYPE *) xp;
+   xmax = x + num;
+
+# ifdef IS_NAN_FUNCTION
+   i = 0;
+   do
+     {
+	maxval = x[i];
+	imax = i;
+	i += inc;
+     }
+   while (IS_NAN_FUNCTION(maxval) && (i < num));
+# else
+   maxval = x[0];
+   imax = 0;
+# endif
+
+   for (i = imax+inc; i < num; i += inc)
+     {
+	if (maxval <= x[i])
+	  {
+	     imax = i;
+	     maxval = x[i];
+	  }
+     }
+   *(SLuindex_Type *)yp = imax;
+   return 0;
+}
+# undef WHERELASTMAX_FUNC
+#endif
+
+#ifdef WHEREFIRSTMIN_FUNC
+static int WHEREFIRSTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+{
+   GENERIC_TYPE *x, *xmax;
+   SLuindex_Type i, imin;
+   GENERIC_TYPE minval;
+
+   if (-1 == check_for_empty_array ("wherefirstmin", num))
+     return -1;
+
+   x = (GENERIC_TYPE *) xp;
+   xmax = x + num;
+
+# ifdef IS_NAN_FUNCTION
+   i = 0;
+   do
+     {
+	minval = x[i];
+	imin = i;
+	i += inc;
+     }
+   while (IS_NAN_FUNCTION(minval) && (i < num));
+# else
+   minval = x[0];
+   imin = 0;
+# endif
+
+   for (i = imin+inc; i < num; i += inc)
+     {
+	if (minval > x[i])
+	  {
+	     imin = i;
+	     minval = x[i];
+	  }
+     }
+   *(SLuindex_Type *)yp = imin;
+   return 0;
+}
+# undef WHEREFIRSTMIN_FUNC
+#endif
+
+#ifdef WHERELASTMIN_FUNC
+static int WHERELASTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+{
+   GENERIC_TYPE *x, *xmax;
+   SLuindex_Type i, imin;
+   GENERIC_TYPE minval;
+
+   if (-1 == check_for_empty_array ("wherefirstmin", num))
+     return -1;
+
+   x = (GENERIC_TYPE *) xp;
+   xmax = x + num;
+
+# ifdef IS_NAN_FUNCTION
+   i = 0;
+   do
+     {
+	minval = x[i];
+	imin = i;
+	i += inc;
+     }
+   while (IS_NAN_FUNCTION(minval) && (i < num));
+# else
+   minval = x[0];
+   imin = 0;
+# endif
+
+   for (i = imin+inc; i < num; i += inc)
+     {
+	if (minval >= x[i])
+	  {
+	     imin = i;
+	     minval = x[i];
+	  }
+     }
+   *(SLuindex_Type *)yp = imin;
+   return 0;
+}
+# undef WHERELASTMIN_FUNC
+#endif
+
 #ifdef GENERIC_TYPE
 # undef GENERIC_TYPE
 #endif

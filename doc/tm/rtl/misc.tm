@@ -212,6 +212,17 @@
 \seealso{__is_numeric, is_defined}
 \done
 
+\function{__is_datatype_numeric}
+\synopsis{Determine whether or not a type is a numeric type}
+\usage{Int_Type __is_datatype_numeric (DataType_Type type)}
+\description
+  This function may be used to determine if the specified datatype
+  represents a numeric type.  It returns \0 if the datatype does not
+  represents a numeric type; otherwise it returns 1 for an
+  integer type, 2 for a floating point type, and 3 for a complex type.
+\seealso{typeof, __is_numeric, __is_callable}
+\done
+
 \function{__is_numeric}
 \synopsis{Determine whether or not an object is a numeric type}
 \usage{Int_Type __is_numeric (obj)}
@@ -232,17 +243,6 @@
    __is_numeric ({1,2});  ==> 0
 #v-
 \seealso{typeof, __is_datatype_numeric}
-\done
-
-\function{__is_datatype_numeric}
-\synopsis{Determine whether or not a type is a numeric type}
-\usage{Int_Type __is_datatype_numeric (DataType_Type type)}
-\description
-  This function may be used to determine if the specified datatype
-  represents a numeric type.  It returns \0 if the datatype does not
-  represents a numeric type; otherwise it returns 1 for an
-  integer type, 2 for a floating point type, and 3 for a complex type.
-\seealso{typeof, __is_numeric, __is_callable}
 \done
 
 \function{__is_same}
@@ -312,21 +312,6 @@
 \seealso{strbytelen, strlen, strcharlen}
 \done
 
-\function{__uninitialize}
-\synopsis{Uninitialize a variable}
-\usage{__uninitialize (Ref_Type x)}
-\description
-  The \ifun{__uninitialize} function may be used to uninitialize the
-  variable referenced by the parameter \exmp{x}.
-\example
-  The following two lines are equivalent:
-#v+
-     () = __tmp(z);
-     __uninitialize (&z);
-#v-
-\seealso{__tmp, __is_initialized}
-\done
-
 \function{__tmp}
 \synopsis{Returns the value of a variable and uninitialize the variable}
 \usage{__tmp (x)}
@@ -349,6 +334,21 @@
       __tmp(sin(x));
 #v-
 \seealso{__uninitialize, __is_initialized}
+\done
+
+\function{__uninitialize}
+\synopsis{Uninitialize a variable}
+\usage{__uninitialize (Ref_Type x)}
+\description
+  The \ifun{__uninitialize} function may be used to uninitialize the
+  variable referenced by the parameter \exmp{x}.
+\example
+  The following two lines are equivalent:
+#v+
+     () = __tmp(z);
+     __uninitialize (&z);
+#v-
+\seealso{__tmp, __is_initialized}
 \done
 
 \function{use_namespace}

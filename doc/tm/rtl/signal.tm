@@ -47,7 +47,6 @@
 \seealso{signal, sleep, setitimer, getitimer}
 \done
 
-
 \function{getitimer}
 \synopsis{Get the value of an interval timer}
 \usage{(secs, period) = getitimer (Int_Type timer)}

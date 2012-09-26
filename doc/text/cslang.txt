@@ -1,6 +1,6 @@
   S-Lang Library C Programmer's Guide (v2.2.4)
   John E. Davis <www.jedsoft.org>
-  Jul 16, 2012
+  Dec 31, 2011
   ____________________________________________________________
 
 
@@ -527,16 +527,16 @@
   create a table of SLang_Intrin_Fun_Type objects and add the table via
   the SLadd_intrin_fun_table function. The table will look like:
 
-           SLang_Intrin_Fun_Type My_Intrinsics [] =
-           {
-            /* table entries */
-             MAKE_INTRINSIC_N(...),
-             MAKE_INTRINSIC_N(...),
-                   .
-                   .
-             MAKE_INTRINSIC_N(...),
-             SLANG_END_INTRIN_FUN_TABLE
-           };
+      SLang_Intrin_Fun_Type My_Intrinsics [] =
+      {
+       /* table entries */
+        MAKE_INTRINSIC_N(...),
+        MAKE_INTRINSIC_N(...),
+              .
+              .
+        MAKE_INTRINSIC_N(...),
+        SLANG_END_INTRIN_FUN_TABLE
+      };
 
   Construction of the table entries may be facilitated using a set of
   MAKE_INTRINSIC macros defined in slang.h. The main macro is called
@@ -573,10 +573,10 @@
              }
 
   Please note that there is no need to load a given table more than
-  once, and it is considered to be an error on the part of the applica-
-  tion it adds the same table multiple times. For performance reasons,
-  no checking is performed by the library to see if a table has already
-  been added.
+  once, and it is considered to be an error on the part of the
+  application it adds the same table multiple times. For performance
+  reasons, no checking is performed by the library to see if a table has
+  already been added.
 
   Earlier it was mentioned that intrinsics may be added to a specified
   namespace. To this end, one must first get a pointer to the namespace
@@ -614,24 +614,24 @@
   It is useful to extend this function to take an arbitray number of
   arguments and return the lesser. Consider the following variant:
 
-           double intrin_min_n (int *num_ptr)
+      double intrin_min_n (int *num_ptr)
+      {
+         double min_value, x;
+         unsigned int num = (unsigned int) *num_ptr;
+
+         if (-1 == SLang_pop_double (&min_value))
+           return 0.0;
+         num--;
+
+         while (num > 0)
            {
-              double min_value, x;
-              unsigned int num = (unsigned int) *num_ptr;
-
-              if (-1 == SLang_pop_double (&min_value))
-                return 0.0;
               num--;
-
-              while (num > 0)
-                {
-                   num--;
-                   if (-1 == SLang_pop_double (&x))
-                     return 0.0;
-                   if (x < min_value) min_value = x;
-                }
-              return min_value;
+              if (-1 == SLang_pop_double (&x))
+                return 0.0;
+              if (x < min_value) min_value = x;
            }
+         return min_value;
+      }
 
   Here the number to compare is passed to the function and the actual
   numbers are removed from the stack via the SLang_pop_double function.
@@ -655,25 +655,25 @@
   An intrinsic function can query the value of the variable
   SLang_Num_Function_Args to obtain the necessary information:
 
-           double intrin_min (void)
+      double intrin_min (void)
+      {
+         double min_value, x;
+
+         unsigned int num = SLang_Num_Function_Args;
+
+         if (-1 == SLang_pop_double (&min_value, NULL, NULL))
+           return 0.0;
+         num--;
+
+         while (num > 0)
            {
-              double min_value, x;
-
-              unsigned int num = SLang_Num_Function_Args;
-
-              if (-1 == SLang_pop_double (&min_value, NULL, NULL))
-                return 0.0;
               num--;
-
-              while (num > 0)
-                {
-                   num--;
-                   if (-1 == SLang_pop_double (&x, NULL, NULL))
-                     return 0.0;
-                   if (x < min_value) min_value = x;
-                }
-              return min_value;
+              if (-1 == SLang_pop_double (&x, NULL, NULL))
+                return 0.0;
+              if (x < min_value) min_value = x;
            }
+         return min_value;
+      }
 
   This may be declared as an intrinsic using:
 
@@ -700,9 +700,9 @@
   One can make it known to the interpreter as I_Variable via a statement
   such as
 
-            if (-1 == SLadd_intrinsic_variable ("I_Variable", &I,
-                                                 SLANG_INT_TYPE, 0))
-              exit (EXIT_FAILURE);
+       if (-1 == SLadd_intrinsic_variable ("I_Variable", &I,
+                                            SLANG_INT_TYPE, 0))
+         exit (EXIT_FAILURE);
 
   Similarly, if S is declared as
 
@@ -734,20 +734,20 @@
   One should not make the mistake of trying to use the same address for
   different variables as the following example illustrates:
 
-            int do_not_try_this (void)
-            {
-               static char *names[3] = {"larry", "curly", "moe"};
-               unsigned int i;
+       int do_not_try_this (void)
+       {
+          static char *names[3] = {"larry", "curly", "moe"};
+          unsigned int i;
 
-               for (i = 0; i < 3; i++)
-                 {
-                    int value;
-                    if (-1 == SLadd_intrinsic_variable (names[i], (VOID_STAR) &value,
-                                                        SLANG_INT_TYPE, 1))
-                      return -1;
-                 }
-               return 0;
+          for (i = 0; i < 3; i++)
+            {
+               int value;
+               if (-1 == SLadd_intrinsic_variable (names[i], (VOID_STAR) &value,
+                                                   SLANG_INT_TYPE, 1))
+                 return -1;
             }
+          return 0;
+       }
 
   Not only does this piece of code create intrinsic variables that use
   the same address, it also uses the address of a local variable that
@@ -845,7 +845,7 @@
   the array element was passed and not the value of the array element
   itself. That is,
 
-           SLang_set_array_element (at, &i, seasons[i])
+      SLang_set_array_element (at, &i, seasons[i])
 
   was not used. The return value from this function was also checked
   because it too could also fail.
@@ -952,25 +952,25 @@
   create and return a structure with a string and integer field to the
   interpreter's stack:
 
-           int push_struct_example (char *string_value, int int_value)
-           {
-              char *field_names[2];
-              SLtype field_types[2];
-              VOID_STAR field_values[2];
+      int push_struct_example (char *string_value, int int_value)
+      {
+         char *field_names[2];
+         SLtype field_types[2];
+         VOID_STAR field_values[2];
 
-              field_names[0] = "string_field";
-              field_types[0] = SLANG_STRING_TYPE;
-              field_values[0] = &string_value;
+         field_names[0] = "string_field";
+         field_types[0] = SLANG_STRING_TYPE;
+         field_values[0] = &string_value;
 
-              field_names[1] = "int_field";
-              field_types[1] = SLANG_INT_TYPE;
-              field_values[1] = &int_value;
+         field_names[1] = "int_field";
+         field_types[1] = SLANG_INT_TYPE;
+         field_values[1] = &int_value;
 
-              if (-1 == SLstruct_create_struct (2, field_names,
-                                                   field_types, field_values))
-                return -1;
-              return 0;
-           }
+         if (-1 == SLstruct_create_struct (2, field_names,
+                                              field_types, field_values))
+           return -1;
+         return 0;
+      }
 
   Here, SLstruct_create_struct is used to push a structure with the
   specified field names and values onto the interpreter's stack.
@@ -1401,40 +1401,40 @@
   Here is a simple example that reads keys from the terminal until one
   presses Ctrl-G or until 5 seconds have gone by with no input:
 
-             #include <stdio.h>
-             #include <slang.h>
-             int main ()
+        #include <stdio.h>
+        #include <slang.h>
+        int main ()
+        {
+           int abort_char = 7;  /* For MSDOS, use 34 as scan code */
+           unsigned int ch;
+
+           if (-1 == SLang_init_tty (abort_char, 0, 1))
              {
-                int abort_char = 7;  /* For MSDOS, use 34 as scan code */
-                unsigned int ch;
-
-                if (-1 == SLang_init_tty (abort_char, 0, 1))
-                  {
-                     fprintf (stderr, "Unable to initialize the terminal.\n");
-                     exit (-1);
-                  }
-                SLang_set_abort_signal (NULL);
-                while (1)
-                  {
-                     fputs ("\nPress any key.  To quit, press Ctrl-G: ", stdout);
-                     fflush (stdout);
-                     if (SLang_input_pending (50) == 0)  /* 50/10 seconds */
-                       {
-                          fputs ("Waited too long! Bye\n", stdout);
-                          break;
-                       }
-
-                     ch = SLang_getkey ();
-                     if (SLang_get_error () == SL_UserBreak_Error)
-                       {
-                          fputs ("Ctrl-G pressed!  Bye\n", stdout);
-                          break;
-                       }
-                     putc ((int) ch, stdout);
-                  }
-                SLang_reset_tty ();
-                return 0;
+                fprintf (stderr, "Unable to initialize the terminal.\n");
+                exit (-1);
              }
+           SLang_set_abort_signal (NULL);
+           while (1)
+             {
+                fputs ("\nPress any key.  To quit, press Ctrl-G: ", stdout);
+                fflush (stdout);
+                if (SLang_input_pending (50) == 0)  /* 50/10 seconds */
+                  {
+                     fputs ("Waited too long! Bye\n", stdout);
+                     break;
+                  }
+
+                ch = SLang_getkey ();
+                if (SLang_get_error () == SL_UserBreak_Error)
+                  {
+                     fputs ("Ctrl-G pressed!  Bye\n", stdout);
+                     break;
+                  }
+                putc ((int) ch, stdout);
+             }
+           SLang_reset_tty ();
+           return 0;
+        }
 
   6.6.  Reading Keyboard Input with SLkp_getkey
 
@@ -1458,7 +1458,6 @@
   of these keysyms are represented as macros defined in the slang.h
   include file. For example, the up arrow key corresponds to the keysym
   whose value is SL_KEY_UP.
-
   Since it is possible for the user to enter a character sequence that
   does not correspond to any key. If this happens, the special keysym
   SL_KEY_ERR will be returned.
@@ -1696,7 +1695,7 @@
   should be called to shutdown the display system. This function has the
   prototype
 
-             void SLsmg_reset_smg (void);
+        void SLsmg_reset_smg (void);
 
   This will deallocate any memory allocated for the virtual screen and
   reset the terminal's display.
@@ -1738,33 +1737,33 @@
   handler. The following code illustrates the main ideas involved in
   handling such events:
 
-            static volatile int Screen_Size_Changed;
-            static sigwinch_handler (int sig)
-            {
-               Screen_Size_Changed = 1;
-               SLsignal (SIGWINCH, sigwinch_handler);
-            }
+       static volatile int Screen_Size_Changed;
+       static sigwinch_handler (int sig)
+       {
+          Screen_Size_Changed = 1;
+          SLsignal (SIGWINCH, sigwinch_handler);
+       }
 
-            int main (int argc, char **argv)
+       int main (int argc, char **argv)
+       {
+          SLsignal (SIGWINCH, sigwinch_handler);
+          SLsmg_init_smg ();
+            .
+            .
+          /* Now enter main loop */
+          while (not_done)
             {
-               SLsignal (SIGWINCH, sigwinch_handler);
-               SLsmg_init_smg ();
-                 .
-                 .
-               /* Now enter main loop */
-               while (not_done)
+               if (Screen_Size_Changed)
                  {
-                    if (Screen_Size_Changed)
-                      {
-                         SLtt_get_screen_size ();
-                         SLsmg_reinit_smg ();
-                         redraw_display ();
-                      }
-                    .
-                    .
+                    SLtt_get_screen_size ();
+                    SLsmg_reinit_smg ();
+                    redraw_display ();
                  }
-              return 0;
+               .
+               .
             }
+         return 0;
+       }
 
   8.4.  SLsmg Functions
 
@@ -1791,7 +1790,6 @@
 
   It is possible to change the origin of the coordinate system by using
   the function SLsmg_set_screen_start with prototype:
-
             void SLsmg_set_screen_start (int *r, int *c);
 
   This function takes pointers to the new values of the first row and
@@ -1915,7 +1913,6 @@
   this problem than other screen management libraries an explanation of
   this approach is given here. This approach has been motivated by
   experience with programs that require some sort of screen management.
-
   Most programs that use SLsmg are composed of specific textual objects
   or objects made up of line drawing characters. For example, consider
   an application with a menu bar with drop down menus. The menus might
@@ -2040,7 +2037,6 @@
         If flag is non-zero, subsequent write functions will use
         characters from the alternate character set. If flag is zero,
         the default, or, ordinary character set will be used.
-
      void SLsmg_draw_hline (int len);
         Draw a horizontal line from the current position to the column
         that is len characters to the right.
@@ -2100,7 +2096,6 @@
   columns of the physical display. If either of these numbers changes,
   the functions SLsmg_reset_smg and SLsmg_init_smg should be called
   again so that the SLsmg routines can re-adjust to the new size.
-
   int SLsmg_Tab_Width; Set this variable to the tab width that will be
   used when expanding tab characters. The default is 8.
 
@@ -2183,8 +2178,8 @@
   The S-Lang library provides two functions for blocking and unblocking
   the above signals:
 
-           int SLsig_block_signals (void);
-           int SLsig_unblock_signals (void);
+      int SLsig_block_signals (void);
+      int SLsig_unblock_signals (void);
 
   It should be noted that for every call to SLsig_block_signals, a cor-
   responding call should be made to SLsig_unblock_signals, e.g.,
@@ -2317,11 +2312,11 @@
 
   New functions include:
 
-            SLregexp_compile
-            SLregexp_free
-            SLregexp_match
-            SLregexp_nth_match
-            SLregexp_get_hints
+       SLregexp_compile
+       SLregexp_free
+       SLregexp_match
+       SLregexp_nth_match
+       SLregexp_get_hints
 
   The plan is to migrate to the use of the PCRE regular expressions for
   version 2.2. As such, you may find it convenient to adopt the PCRE
@@ -2366,11 +2361,11 @@
 
   Then change it to:
 
-             SLprep_Type *pt;
-             pt = SLprep_new ();
-                .
-                .
-             SLprep_delete (pt);
+        SLprep_Type *pt;
+        pt = SLprep_new ();
+           .
+           .
+        SLprep_delete (pt);
 
   A.7.  Functions dealing with the interpreter C API
 
@@ -2703,22 +2698,22 @@
   convey the exclusion of warranty; and each file should have at least
   the "copyright" line and a pointer to where the full notice is found.
 
-           <one line to give the program's name and a brief idea of what it does.>
-           Copyright (C) 19yy  <name of author>
+      <one line to give the program's name and a brief idea of what it does.>
+      Copyright (C) 19yy  <name of author>
 
-           This program is free software; you can redistribute it and/or modify
-           it under the terms of the GNU General Public License as published by
-           the Free Software Foundation; either version 2 of the License, or
-           (at your option) any later version.
+      This program is free software; you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation; either version 2 of the License, or
+      (at your option) any later version.
 
-           This program is distributed in the hope that it will be useful,
-           but WITHOUT ANY WARRANTY; without even the implied warranty of
-           MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-           GNU General Public License for more details.
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
 
-           You should have received a copy of the GNU General Public License
-           along with this program; if not, write to the Free Software
-           Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+      You should have received a copy of the GNU General Public License
+      along with this program; if not, write to the Free Software
+      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
   Also add information on how to contact you by electronic and paper
   mail.
@@ -2757,40 +2752,40 @@
   This software makes use of the Unicode tables published by Unicode,
   Inc under the following terms:
 
-            COPYRIGHT AND PERMISSION NOTICE
+       COPYRIGHT AND PERMISSION NOTICE
 
-            Copyright (c) 1991-2009 Unicode, Inc. All rights reserved. Distributed
-            under the Terms of Use in http://www.unicode.org/copyright.html.
+       Copyright (c) 1991-2009 Unicode, Inc. All rights reserved. Distributed
+       under the Terms of Use in http://www.unicode.org/copyright.html.
 
-            Permission is hereby granted, free of charge, to any person
-            obtaining a copy of the Unicode data files and any associated
-            documentation (the "Data Files") or Unicode software and any
-            associated documentation (the "Software") to deal in the Data Files
-            or Software without restriction, including without limitation the
-            rights to use, copy, modify, merge, publish, distribute, and/or sell
-            copies of the Data Files or Software, and to permit persons to whom
-            the Data Files or Software are furnished to do so, provided that (a)
-            the above copyright notice(s) and this permission notice appear with
-            all copies of the Data Files or Software, (b) both the above
-            copyright notice(s) and this permission notice appear in associated
-            documentation, and (c) there is clear notice in each modified Data
-            File or in the Software as well as in the documentation associated
-            with the Data File(s) or Software that the data or software has been
-            modified.
+       Permission is hereby granted, free of charge, to any person
+       obtaining a copy of the Unicode data files and any associated
+       documentation (the "Data Files") or Unicode software and any
+       associated documentation (the "Software") to deal in the Data Files
+       or Software without restriction, including without limitation the
+       rights to use, copy, modify, merge, publish, distribute, and/or sell
+       copies of the Data Files or Software, and to permit persons to whom
+       the Data Files or Software are furnished to do so, provided that (a)
+       the above copyright notice(s) and this permission notice appear with
+       all copies of the Data Files or Software, (b) both the above
+       copyright notice(s) and this permission notice appear in associated
+       documentation, and (c) there is clear notice in each modified Data
+       File or in the Software as well as in the documentation associated
+       with the Data File(s) or Software that the data or software has been
+       modified.
 
-            THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY
-            OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-            WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-            NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE
-            COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR
-            ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY
-            DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
-            WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
-            ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
-            OF THE DATA FILES OR SOFTWARE.
+       THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY
+       OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+       WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+       NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE
+       COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR
+       ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY
+       DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+       WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+       ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+       OF THE DATA FILES OR SOFTWARE.
 
-            Except as contained in this notice, the name of a copyright holder
-            shall not be used in advertising or otherwise to promote the sale,
-            use or other dealings in these Data Files or Software without prior
-            written authorization of the copyright holder.
+       Except as contained in this notice, the name of a copyright holder
+       shall not be used in advertising or otherwise to promote the sale,
+       use or other dealings in these Data Files or Software without prior
+       written authorization of the copyright holder.
 

@@ -11,17 +11,6 @@
 \seealso{rline_eolp, rline_get_point, rline_get_line}
 \done
 
-\function{rline_eolp}
-\synopsis{Test of the editing point is at the end of the line}
-\usage{Int_Type rline_eolp()}
-\description
-  The \ifun{rline_bolp} function returns a non-zero value if the
-  current editing position is at the end of the line.
-\notes
- \notes_comment
-\seealso{rline_bolp, rline_get_point, rline_get_line}
-\done
-
 \function{rline_call}
 \synopsis{Invoke an internal readline function}
 \usage{rline_call (String_Type func)}
@@ -50,6 +39,28 @@
 \notes
  \notes_comment
 \seealso{rline_ins, rline_setkey}
+\done
+
+\function{rline_eolp}
+\synopsis{Test of the editing point is at the end of the line}
+\usage{Int_Type rline_eolp()}
+\description
+  The \ifun{rline_bolp} function returns a non-zero value if the
+  current editing position is at the end of the line.
+\notes
+ \notes_comment
+\seealso{rline_bolp, rline_get_point, rline_get_line}
+\done
+
+\function{rline_getkey}
+\synopsis{Obtain the next byte in the readline input stream}
+\usage{Int_Type rline_getkey ()}
+\description
+  This function returns the next byte in the readline input stream.
+  If no byte is available, the function will wait until one is.
+\notes
+ \notes_comment
+\seealso{rline_input_pending, rline_setkey}
 \done
 
 \function{rline_get_edit_width}
@@ -95,17 +106,6 @@
 \seealso{rline_set_point}
 \done
 
-\function{rline_getkey}
-\synopsis{Obtain the next byte in the readline input stream}
-\usage{Int_Type rline_getkey ()}
-\description
-  This function returns the next byte in the readline input stream.
-  If no byte is available, the function will wait until one is.
-\notes
- \notes_comment
-\seealso{rline_input_pending, rline_setkey}
-\done
-
 \function{rline_input_pending}
 \synopsis{Test to see if readline input is available for reading}
 \usage{Int_Type rline_input_pending (Int_Type tsecs)}
@@ -127,39 +127,6 @@
 \notes
  \notes_comment
 \seealso{rline_set_line, rline_del}
-\done
-
-\function{rline_set_history}
-\synopsis{Replace the current history list with a new one}
-\usage{rline_set_history (Array_Type lines)}
-\description
-  The \ifun{rline_set_history} function replaces the current history
-  by the specified array of strings.
-\notes
- \notes_comment
-\seealso{rline_get_history}
-\done
-
-\function{rline_set_line}
-\synopsis{Replace the current line with a new one}
-\usage{rline_set_line (String_Type line)}
-\description
-  The \ifun{rline_set_line} function replaces the line being edited by
-  the specified one.
-\notes
- \notes_comment
-\seealso{rline_get_line}
-\done
-
-\function{rline_set_point}
-\synopsis{Move the current editing position to another}
-\usage{rline_set_point (Int_Type ofs)}
-\description
- The \ifun{rline_set_point} function sets the editing point to the
- specified byte-offset from the beginning of the line.
-\notes
- \notes_comment
-\seealso{rline_get_point}
 \done
 
 \function{rline_setkey}
@@ -196,15 +163,47 @@
 \seealso{rline_unsetkey}
 \done
 
-\function{rline_unsetkey}
-\synopsis{Unset a key binding from the readline keymap}
-\usage{rline_unsetkey (String_Type keyseq)}
+\function{rline_set_completion_callback}
+\synopsis{Set the function to be used for completion at the readline prompt}
+\usage{rline_set_completion_callback (Ref_Type func)}
 \description
-  The \ifun{rline_unsetkey} function unbinds the specified key sequence
-  from the readline keymap.
+  This function sets the callback function to be used for completion at the
+  readline prompt.  The callback function must be defined to accept
+  two values, the first being a string containing the text of the line
+  being edited, and an integer giving the position of the byte-offset
+  into the string where completion was requested.
+
+  The callback function must return two values: an array giving the
+  list of possible completion strings, and an integer giving the byte
+  offset into the string of the start of the text to be completed.
+\example
+  See completion-callback function defined in the \slsh library file
+  \exmp{rline/complete.sl}.
 \notes
  \notes_comment
-\seealso{rline_setkey}
+\seealso{rline_set_list_completions_callback}
+\done
+
+\function{rline_set_history}
+\synopsis{Replace the current history list with a new one}
+\usage{rline_set_history (Array_Type lines)}
+\description
+  The \ifun{rline_set_history} function replaces the current history
+  by the specified array of strings.
+\notes
+ \notes_comment
+\seealso{rline_get_history}
+\done
+
+\function{rline_set_line}
+\synopsis{Replace the current line with a new one}
+\usage{rline_set_line (String_Type line)}
+\description
+  The \ifun{rline_set_line} function replaces the line being edited by
+  the specified one.
+\notes
+ \notes_comment
+\seealso{rline_get_line}
 \done
 
 \function{rline_set_list_completions_callback}
@@ -230,23 +229,25 @@
 \seealso{rline_set_completion_callback}
 \done
 
-\function{rline_set_completion_callback}
-\synopsis{Set the function to be used for completion at the readline prompt}
-\usage{rline_set_completion_callback (Ref_Type func)}
+\function{rline_set_point}
+\synopsis{Move the current editing position to another}
+\usage{rline_set_point (Int_Type ofs)}
 \description
-  This function sets the callback function to be used for completion at the
-  readline prompt.  The callback function must be defined to accept
-  two values, the first being a string containing the text of the line
-  being edited, and an integer giving the position of the byte-offset
-  into the string where completion was requested.
-
-  The callback function must return two values: an array giving the
-  list of possible completion strings, and an integer giving the byte
-  offset into the string of the start of the text to be completed.
-\example
-  See completion-callback function defined in the \slsh library file
-  \exmp{rline/complete.sl}.
+ The \ifun{rline_set_point} function sets the editing point to the
+ specified byte-offset from the beginning of the line.
 \notes
  \notes_comment
-\seealso{rline_set_list_completions_callback}
+\seealso{rline_get_point}
 \done
+
+\function{rline_unsetkey}
+\synopsis{Unset a key binding from the readline keymap}
+\usage{rline_unsetkey (String_Type keyseq)}
+\description
+  The \ifun{rline_unsetkey} function unbinds the specified key sequence
+  from the readline keymap.
+\notes
+ \notes_comment
+\seealso{rline_setkey}
+\done
+

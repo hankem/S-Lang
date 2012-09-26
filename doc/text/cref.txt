@@ -1,6 +1,6 @@
   The S-Lang C Library Reference
   John E. Davis <www.jedsoft.org>
-  Aug 30, 2011
+  Jun 28, 2011
   ____________________________________________________________
 
 
@@ -29,7 +29,6 @@
 
       See Also
         SLutf8_skip_chars, SLutf8_bskip_char, SLutf8_strlen
-
   1.2.  SLutf8_skip_chars
 
       Synopsis
@@ -87,10 +86,10 @@
         SLuchar_Type *SLutf8_bskip_chars (umin, u, num, dnum,
         ignore_combining)
 
-             SLuchar_Type *umin, *u;
-             unsigned int num;
-             unsigned int *dnum;
-             int ignore_combining;
+        SLuchar_Type *umin, *u;
+        unsigned int num;
+        unsigned int *dnum;
+        int ignore_combining;
 
       Description
         This functions attempts to skip backward past num UTF-8 encoded
@@ -140,9 +139,9 @@
       Usage
         SLuchar_Type *SLutf8_encode (w, u, ulen)
 
-             SLwchar_Type w;
-             SLuchar_Type *u;
-             unsigned int ulen;
+        SLwchar_Type w;
+        SLuchar_Type *u;
+        unsigned int ulen;
 
       Description
         This function UTF-8 encodes the Unicode character represented by
@@ -253,7 +252,6 @@
         SLang_free_slstring when it is nolonger needed. If the function
         encounters an invalid of illegal byte sequence, then the byte-
         sequence will be copied as as-is.
-
       See Also
         SLutf8_strlow, SLwchar_toupper
 
@@ -313,7 +311,6 @@
 
       Synopsis
         Compare two UTF-8 encoded sequences
-
       Usage
         int SLutf8_compare (a, amax, b, bmax, nchars, case_sensitive)
 
@@ -498,7 +495,6 @@
       Notes
         If the library is not in UTF-8 mode, then the current locale
         will be used.
-
       See Also
         SLwchar_isspace, SLwchar_isalpha, SLwchar_isxdigit,
         SLwchar_isprint
@@ -624,7 +620,6 @@
       See Also
         SLwchar_islower, SLwchar_isspace, SLwchar_isalpha,
         SLwchar_isdigit
-
   2.15.  SLwchar_isxdigit
 
       Synopsis
@@ -741,8 +736,8 @@
       Usage
         SLuchar_Type SLsearch_forward (st, pmin, pstart, pmax)
 
-             SLsearch_Type *st;
-             SLuchar_Type *pmin, *pstart, *pmax;
+        SLsearch_Type *st;
+        SLuchar_Type *pmin, *pstart, *pmax;
 
       Description
         The SLsearch_forward function searches backward in the buffer
@@ -1105,7 +1100,6 @@
         SLsmg_write_nchars writes at most n characters from the string s
         to the display. If the length of s is less than n, the whole
         length of the string will get written.
-
         This function differs from SLsmg_write_nstring in that
         SLsmg_write_nstring will pad the string to write exactly n
         characters. SLsmg_write_nchars does not perform any padding.
@@ -1702,8 +1696,8 @@
       Usage
         int SLclass_set_destroy_function (cl, destroy_fun)
 
-              SLang_Class_Type *cl
-              void (*destroy_fun) (SLtype, VOID_STAR);
+         SLang_Class_Type *cl
+         void (*destroy_fun) (SLtype, VOID_STAR);
 
       Description
         SLclass_set_destroy_function is used to set the destroy callback
@@ -1870,7 +1864,6 @@
 
       See Also
         SLang_object_from_mmt, SLang_push_mmt, SLang_free_mmt
-
   5.14.  SLang_push_mmt
 
       Synopsis
@@ -1997,7 +1990,7 @@
       Notes
         If the hook SLang_Load_File_Hook declared as
 
-                int (*SLang_Load_File_Hook)(char *);
+           int (*SLang_Load_File_Hook)(char *);
 
      is non-NULL, the function point to by it will be used to load the
      file. For example, the jed editor uses this hook to load files via
@@ -2173,14 +2166,14 @@
 
       Example
 
-                define print_string (void)
-                {
-                   char *s;
-                   if (-1 == SLpop_string (&s))
-                     return;
-                   fputs (s, stdout);
-                   SLfree (s);
-                }
+           define print_string (void)
+           {
+              char *s;
+              if (-1 == SLpop_string (&s))
+                return;
+              fputs (s, stdout);
+              SLfree (s);
+           }
 
       Notes
         This function should not be confused with SLang_pop_slstring,
@@ -2233,14 +2226,14 @@
 
       Example
 
-             void print_string (void)
-             {
-                char *s;
-                if (-1 == SLang_pop_slstring (&s))
-                  return;
-                fprintf (stdout, "%s\n", s);
-                SLang_free_slstring (s);
-             }
+        void print_string (void)
+        {
+           char *s;
+           if (-1 == SLang_pop_slstring (&s))
+             return;
+           fprintf (stdout, "%s\n", s);
+           SLang_free_slstring (s);
+        }
 
       Notes
         SLang_free_slstring is the preferred function for popping
@@ -2527,30 +2520,30 @@
      "my_fun". A better way that is much faster is to use SLexe-
      cute_function:
 
-                int sum_a_function (char *fname, double *result)
-                {
-                   double sum, x, y;
-                   SLang_Name_Type *nt;
+           int sum_a_function (char *fname, double *result)
+           {
+              double sum, x, y;
+              SLang_Name_Type *nt;
 
-                   if (NULL == (nt = SLang_get_function (fname)))
+              if (NULL == (nt = SLang_get_function (fname)))
+                return -1;
+
+              sum = 0;
+              for (x = 0; x < 10.0; x += 0.1)
+                {
+                   SLang_start_arg_list ();
+                   if (-1 == SLang_push_double (x))
+                     return -1;
+                   SLang_end_arg_list ();
+                   if (-1 == SLexecute_function (nt))
+                     return -1;
+                   if (-1 == SLang_pop_double (&y))
                      return -1;
 
-                   sum = 0;
-                   for (x = 0; x < 10.0; x += 0.1)
-                     {
-                        SLang_start_arg_list ();
-                        if (-1 == SLang_push_double (x))
-                          return -1;
-                        SLang_end_arg_list ();
-                        if (-1 == SLexecute_function (nt))
-                          return -1;
-                        if (-1 == SLang_pop_double (&y))
-                          return -1;
-
-                        sum += y;
-                     }
-                   return sum;
+                   sum += y;
                 }
+              return sum;
+           }
 
      Although not necessary in this case, SLang_start_arg_list and
      SLang_end_arg_list were used to provide the function with informa-
@@ -2644,10 +2637,10 @@
       Usage
         int SLadd_intrinsic_function (name, f, type, nargs, ...)
 
-              char *name
-              FVOID_STAR f
-              SLtype type
-              unsigned int nargs
+         char *name
+         FVOID_STAR f
+         SLtype type
+         unsigned int nargs
 
       Description
         The SLadd_intrinsic_function function may be used to add a new
@@ -2928,7 +2921,7 @@
         ctime to obtain a string representation of the current date and
         time in the form
 
-               "Wed Dec 10 12:50:28 1997"
+          "Wed Dec 10 12:50:28 1997"
 
      However, unlike the ctime function, a newline character is not
      present in the string.
@@ -2982,28 +2975,28 @@
         strings as follows. For conciseness, all malloc error checking
         has been omitted.
 
-              int list_to_array (char *list, char delim, char ***ap)
+         int list_to_array (char *list, char delim, char ***ap)
+         {
+            unsigned int nth;
+            char **a;
+            char buf[1024];
+
+            /* Determine the size of the array */
+            nth = 0;
+            while (0 == SLextract_list_element (list, nth, delim, buf, sizeof(buf)))
+              nth++;
+
+            ap = (char **) SLmalloc ((nth + 1) * sizeof (char **));
+            nth = 0;
+            while (0 == SLextract_list_element (list, nth, delim, buf, sizeof(buf)))
               {
-                 unsigned int nth;
-                 char **a;
-                 char buf[1024];
-
-                 /* Determine the size of the array */
-                 nth = 0;
-                 while (0 == SLextract_list_element (list, nth, delim, buf, sizeof(buf)))
-                   nth++;
-
-                 ap = (char **) SLmalloc ((nth + 1) * sizeof (char **));
-                 nth = 0;
-                 while (0 == SLextract_list_element (list, nth, delim, buf, sizeof(buf)))
-                   {
-                       a[nth] = SLmake_string (buf);
-                       nth++;
-                   }
-                 a[nth] = NULL;
-                 *ap = a;
-                 return 0;
+                  a[nth] = SLmake_string (buf);
+                  nth++;
               }
+            a[nth] = NULL;
+            *ap = a;
+            return 0;
+         }
 
       See Also
         SLmalloc, SLmake_string
@@ -3158,7 +3151,6 @@
         returned by either of these functions. If one needs to modify a
         string, the functions SLmake_string or SLmake_nstring should be
         used instead.
-
       See Also
         SLang_free_slstring, SLang_create_slstring, SLmake_nstring
 
@@ -3222,7 +3214,6 @@
         A hashed string can only be freed using SLang_free_slstring.
         Never use free or SLfree to free a hashed string, otherwise
         memory corruption will result.
-
       See Also
         SLang_free_slstring, SLang_create_slstring
 
@@ -3531,7 +3522,6 @@
 
       Usage
         int SLang_input_pending (int tsecs)
-
       Description
         SLang_input_pending may be used to see if an input character is
         available to be read without causing SLang_getkey to block.  It
@@ -3694,24 +3684,24 @@
         the keymap, otherwise it returns a pointer to an object of type
         SLang_Key_Type, which is defined in slang.h as
 
-               #define SLANG_MAX_KEYMAP_KEY_SEQ 14
-               typedef struct SLang_Key_Type
-               {
-                 struct SLang_Key_Type *next;
-                 union
-                 {
-                    char *s;
-                    FVOID_STAR f;
-                    unsigned int keysym;
-                 }
-                 f;
-                 unsigned char type;             /* type of function */
-               #define SLKEY_F_INTERPRET  0x01
-               #define SLKEY_F_INTRINSIC  0x02
-               #define SLKEY_F_KEYSYM     0x03
-                 unsigned char str[SLANG_MAX_KEYMAP_KEY_SEQ + 1];/* key sequence */
-               }
-          SLang_Key_Type;
+          #define SLANG_MAX_KEYMAP_KEY_SEQ 14
+          typedef struct SLang_Key_Type
+          {
+            struct SLang_Key_Type *next;
+            union
+            {
+               char *s;
+               FVOID_STAR f;
+               unsigned int keysym;
+            }
+            f;
+            unsigned char type;             /* type of function */
+          #define SLKEY_F_INTERPRET  0x01
+          #define SLKEY_F_INTRINSIC  0x02
+          #define SLKEY_F_KEYSYM     0x03
+            unsigned char str[SLANG_MAX_KEYMAP_KEY_SEQ + 1];/* key sequence */
+          }
+     SLang_Key_Type;
 
      The type field specifies which field of the union f should be used.
      If type is SLKEY_F_INTERPRET, then f.s is a string that should be
@@ -3751,7 +3741,6 @@
 
       Usage
         SLKeyMap_List_Type *SLang_find_keymap (char *keymap_name);
-
       Description
         The SLang_find_keymap function searches through the list of
         keymaps looking for one whose name is keymap_name. If a matching
@@ -4597,7 +4586,6 @@
 
       Synopsis
         ??
-
       Usage
         void SLtt_set_color_fgbg (int, SLtt_Char_Type, SLtt_Char_Type);
 
@@ -4722,7 +4710,6 @@
 
       See Also
         ??
-
   12.64.  int SLscroll_pagedown (SLscroll_Window_Type *);
 
       Synopsis
@@ -4968,7 +4955,6 @@
 
       Synopsis
         ??
-
       Usage
         double *SLcomplex_cos (double *, double *);
 

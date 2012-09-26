@@ -102,6 +102,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define ALL_FUNCTION all_floats
 #define IS_NAN_FUNCTION _pSLmath_isnan
 #define ABS_FUNCTION fabs
+#define WHEREFIRSTMIN_FUNC wherefirstmin_float
+#define WHEREFIRSTMAX_FUNC wherefirstmax_float
+#define WHERELASTMIN_FUNC wherelastmin_float
+#define WHERELASTMAX_FUNC wherelastmax_float
 #include "slarrfun.inc"
 
 /* -------------- DOUBLE --------------------- */
@@ -130,6 +134,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define ALL_FUNCTION all_doubles
 #define IS_NAN_FUNCTION _pSLmath_isnan
 #define ABS_FUNCTION fabs
+#define WHEREFIRSTMIN_FUNC wherefirstmin_double
+#define WHEREFIRSTMAX_FUNC wherefirstmax_double
+#define WHERELASTMIN_FUNC wherelastmin_double
+#define WHERELASTMAX_FUNC wherelastmax_double
 #include "slarrfun.inc"
 
 #define GENERIC_TYPE_A double
@@ -169,6 +177,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define ANY_FUNCTION any_ints
 #define ALL_FUNCTION all_ints
 #define ABS_FUNCTION abs
+#define WHEREFIRSTMIN_FUNC wherefirstmin_int
+#define WHEREFIRSTMAX_FUNC wherefirstmax_int
+#define WHERELASTMIN_FUNC wherelastmin_int
+#define WHERELASTMAX_FUNC wherelastmax_int
 #include "slarrfun.inc"
 
 /* -------------- UNSIGNED INT --------------------- */
@@ -180,6 +192,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define MAX_FUNCTION max_uints
 #define ANY_FUNCTION any_uints
 #define ALL_FUNCTION all_uints
+#define WHEREFIRSTMIN_FUNC wherefirstmin_uint
+#define WHEREFIRSTMAX_FUNC wherefirstmax_uint
+#define WHERELASTMIN_FUNC wherelastmin_uint
+#define WHERELASTMAX_FUNC wherelastmax_uint
 #include "slarrfun.inc"
 
 #if SIZEOF_LONG != SIZEOF_INT
@@ -198,6 +214,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define ANY_FUNCTION any_longs
 # define ALL_FUNCTION all_longs
 # define ABS_FUNCTION labs
+# define WHEREFIRSTMIN_FUNC wherefirstmin_long
+# define WHEREFIRSTMAX_FUNC wherefirstmax_long
+# define WHERELASTMIN_FUNC wherelastmin_long
+# define WHERELASTMAX_FUNC wherelastmax_long
 # include "slarrfun.inc"
 /* -------------- UNSIGNED LONG --------------------- */
 # define GENERIC_TYPE unsigned long
@@ -208,6 +228,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define MAX_FUNCTION max_ulongs
 # define ANY_FUNCTION any_ulongs
 # define ALL_FUNCTION all_ulongs
+# define WHEREFIRSTMIN_FUNC wherefirstmin_ulong
+# define WHEREFIRSTMAX_FUNC wherefirstmax_ulong
+# define WHERELASTMIN_FUNC wherelastmin_ulong
+# define WHERELASTMAX_FUNC wherelastmax_ulong
 # include "slarrfun.inc"
 #else
 # define transpose_longs transpose_ints
@@ -226,6 +250,14 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define any_ulongs any_uints
 # define all_longs all_ints
 # define all_ulongs all_uints
+# define wherefirstmax_long wherefirstmax_int
+# define wherefirstmin_long wherefirstmin_int
+# define wherelastmin_long wherelastmin_int
+# define wherelastmax_long wherelastmax_int
+# define wherefirstmax_ulong wherefirstmax_uint
+# define wherefirstmin_ulong wherefirstmin_uint
+# define wherelastmin_ulong wherelastmin_uint
+# define wherelastmax_ulong wherelastmax_uint
 #endif
 
 #if SIZEOF_SHORT != SIZEOF_INT
@@ -242,6 +274,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define ANY_FUNCTION any_shorts
 # define ALL_FUNCTION all_shorts
 # define ABS_FUNCTION abs
+# define WHEREFIRSTMIN_FUNC wherefirstmin_short
+# define WHEREFIRSTMAX_FUNC wherefirstmax_short
+# define WHERELASTMIN_FUNC wherelastmin_short
+# define WHERELASTMAX_FUNC wherelastmax_short
 # include "slarrfun.inc"
 /* -------------- UNSIGNED SHORT --------------------- */
 # define GENERIC_TYPE unsigned short
@@ -252,6 +288,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define MAX_FUNCTION max_ushorts
 # define ANY_FUNCTION any_ushorts
 # define ALL_FUNCTION all_ushorts
+# define WHEREFIRSTMIN_FUNC wherefirstmin_ushort
+# define WHEREFIRSTMAX_FUNC wherefirstmax_ushort
+# define WHERELASTMIN_FUNC wherelastmin_ushort
+# define WHERELASTMAX_FUNC wherelastmax_ushort
 # include "slarrfun.inc"
 #else
 # define transpose_shorts transpose_ints
@@ -269,6 +309,14 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # define any_ushorts any_uints
 # define all_shorts all_ints
 # define all_ushorts all_uints
+# define wherefirstmax_short wherefirstmax_int
+# define wherefirstmin_short wherefirstmin_int
+# define wherelastmin_short wherelastmin_int
+# define wherelastmax_short wherelastmax_int
+# define wherefirstmax_ushort wherefirstmax_uint
+# define wherefirstmin_ushort wherefirstmin_uint
+# define wherelastmin_ushort wherelastmin_uint
+# define wherelastmax_ushort wherelastmax_uint
 #endif
 
 /* -------------- CHAR --------------------- */
@@ -284,6 +332,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define ANY_FUNCTION any_chars
 #define ALL_FUNCTION all_chars
 #define ABS_FUNCTION abs
+#define WHEREFIRSTMIN_FUNC wherefirstmin_char
+#define WHEREFIRSTMAX_FUNC wherefirstmax_char
+#define WHERELASTMIN_FUNC wherelastmin_char
+#define WHERELASTMAX_FUNC wherelastmax_char
 #include "slarrfun.inc"
 /* -------------- UNSIGNED CHAR --------------------- */
 #define GENERIC_TYPE unsigned char
@@ -294,6 +346,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #define MAX_FUNCTION max_uchars
 #define ANY_FUNCTION any_uchars
 #define ALL_FUNCTION all_uchars
+#define WHEREFIRSTMIN_FUNC wherefirstmin_uchar
+#define WHEREFIRSTMAX_FUNC wherefirstmax_uchar
+#define WHERELASTMIN_FUNC wherelastmin_uchar
+#define WHERELASTMAX_FUNC wherelastmax_uchar
 #include "slarrfun.inc"
 
 #ifdef HAVE_LONG_LONG
@@ -308,6 +364,10 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #  define ANY_FUNCTION any_llongs
 #  define ALL_FUNCTION all_llongs
 #  define ABS_FUNCTION(x) (((x)>=0)?(x):-(x))
+#  define WHEREFIRSTMIN_FUNC wherefirstmin_llong
+#  define WHEREFIRSTMAX_FUNC wherefirstmax_llong
+#  define WHERELASTMIN_FUNC wherelastmin_llong
+#  define WHERELASTMAX_FUNC wherelastmax_llong
 #  include "slarrfun.inc"
 /* -------------- UNSIGNED LONG --------------------- */
 #  define GENERIC_TYPE unsigned long long
@@ -315,11 +375,15 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #  define MAX_FUNCTION max_ullongs
 #  define ANY_FUNCTION any_ullongs
 #  define ALL_FUNCTION all_ullongs
+#  define WHEREFIRSTMIN_FUNC wherefirstmin_ullong
+#  define WHEREFIRSTMAX_FUNC wherefirstmax_ullong
+#  define WHERELASTMIN_FUNC wherelastmin_ullong
+#  define WHERELASTMAX_FUNC wherelastmax_ullong
 #  include "slarrfun.inc"
 # else
 #  define transpose_llongs transpose_longs
 #  define min_llongs min_longs
-#  define minabs_llongs minabs_llongs
+#  define minabs_llongs minabs_longs
 #  define min_ullongs min_ullongs
 #  define max_llongs max_llongs
 #  define maxabs_llongs maxabs_llongs
@@ -328,6 +392,14 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #  define any_ullongs any_ullongs
 #  define all_llongs all_llongs
 #  define all_ullongs all_ullongs
+#  define wherefirstmax_llong wherefirstmax_long
+#  define wherefirstmin_llong wherefirstmin_long
+#  define wherelastmin_llong wherelastmin_long
+#  define wherelastmax_llong wherelastmax_long
+#  define wherefirstmax_ullong wherefirstmax_ulong
+#  define wherefirstmin_ullong wherefirstmin_ulong
+#  define wherelastmin_ullong wherelastmin_ulong
+#  define wherelastmax_ullong wherelastmax_ulong
 # endif
 #endif				       /* HAVE_LONG_LONG */
 
@@ -1150,6 +1222,122 @@ array_max (void)
    (void) SLarray_contract_array (Array_Max_Funs);
 }
 
+/* The wherexxx funcions do not support the optional dim argument */
+#define DO_WHEREXXX_YYY(what, tbl) \
+   if (SLang_Num_Function_Args != 1) \
+       _pSLang_verror (SL_USAGE_ERROR, "Usage: idx = %s(array)", what); \
+   else \
+     (void) SLarray_contract_array (tbl);
+
+static SLCONST SLarray_Contract_Type Array_WhereFirstMin_Funs [] =
+{
+   {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_char},
+   {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_uchar},
+   {SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_short},
+   {SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_ushort},
+   {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_int},
+   {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_uint},
+   {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_long},
+   {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_ulong},
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
+   {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_llong},
+   {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_ullong},
+#endif
+#if SLANG_HAS_FLOAT
+   {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_float},
+   {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmin_double},
+#endif
+     {0, 0, 0, NULL}
+};
+
+static void
+array_wherefirstmin (void)
+{
+   DO_WHEREXXX_YYY("wherefirstmin", Array_WhereFirstMin_Funs);
+}
+
+static SLCONST SLarray_Contract_Type Array_WhereFirstMax_Funs [] =
+{
+   {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_char},
+   {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_uchar},
+   {SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_short},
+   {SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_ushort},
+   {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_int},
+   {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_uint},
+   {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_long},
+   {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_ulong},
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
+   {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_llong},
+   {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_ullong},
+#endif
+#if SLANG_HAS_FLOAT
+   {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_float},
+   {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherefirstmax_double},
+#endif
+     {0, 0, 0, NULL}
+};
+
+static void
+array_wherefirstmax (void)
+{
+   DO_WHEREXXX_YYY ("wherefirstmax", Array_WhereFirstMax_Funs);
+}
+
+static SLCONST SLarray_Contract_Type Array_WhereLastMin_Funs [] =
+{
+   {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_char},
+   {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_uchar},
+   {SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_short},
+   {SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_ushort},
+   {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_int},
+   {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_uint},
+   {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_long},
+   {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_ulong},
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
+   {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_llong},
+   {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_ullong},
+#endif
+#if SLANG_HAS_FLOAT
+   {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_float},
+   {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmin_double},
+#endif
+     {0, 0, 0, NULL}
+};
+
+static void
+array_wherelastmin (void)
+{
+   DO_WHEREXXX_YYY ("wherelastmin", Array_WhereLastMin_Funs);
+}
+
+static SLCONST SLarray_Contract_Type Array_WhereLastMax_Funs [] =
+{
+   {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_char},
+   {SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_uchar},
+   {SLANG_SHORT_TYPE, SLANG_SHORT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_short},
+   {SLANG_USHORT_TYPE, SLANG_USHORT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_ushort},
+   {SLANG_INT_TYPE, SLANG_INT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_int},
+   {SLANG_UINT_TYPE, SLANG_UINT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_uint},
+   {SLANG_LONG_TYPE, SLANG_LONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_long},
+   {SLANG_ULONG_TYPE, SLANG_ULONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_ulong},
+#if defined(HAVE_LONG_LONG) && (SIZEOF_LONG_LONG != SIZEOF_LONG)
+   {SLANG_LLONG_TYPE, SLANG_LLONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_llong},
+   {SLANG_ULLONG_TYPE, SLANG_ULLONG_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_ullong},
+#endif
+#if SLANG_HAS_FLOAT
+   {SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_float},
+   {SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE, SLANG_ARRAY_INDEX_TYPE, (SLarray_Contract_Fun_Type *) wherelastmax_double},
+#endif
+     {0, 0, 0, NULL}
+};
+
+static void
+array_wherelastmax (void)
+{
+   DO_WHEREXXX_YYY ("wherelastmax", Array_WhereLastMax_Funs);
+}
+
+
 static SLCONST SLarray_Contract_Type Array_Maxabs_Funs [] =
 {
      {SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, SLANG_CHAR_TYPE, (SLarray_Contract_Fun_Type *) maxabs_chars},
@@ -1580,6 +1768,11 @@ static SLang_Intrin_Fun_Type Array_Fun_Table [] =
    MAKE_INTRINSIC_0("minabs", array_minabs, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("any", array_any, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("all", array_all, SLANG_VOID_TYPE),
+
+   MAKE_INTRINSIC_0("wherefirstmin", array_wherefirstmin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherefirstmax", array_wherefirstmax, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherelastmin", array_wherelastmin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherelastmax", array_wherelastmax, SLANG_VOID_TYPE),
 
    MAKE_INTRINSIC_0("__get_innerprod_block_size", get_innerprod_block_size, SLANG_INT_TYPE),
    MAKE_INTRINSIC_I("__set_innerprod_block_size", set_innerprod_block_size, SLANG_VOID_TYPE),

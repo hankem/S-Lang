@@ -1651,6 +1651,50 @@ private define test_range_multiplier ()
 }
 test_range_multiplier ();
 
+private define test_wherefirstlast_minmax (a)
+{
+   foreach ([
+#ifexists Double_Type
+	     Double_Type, Float_Type,
+#endif
+#ifexists LLong_Type
+	     LLong_Type, ULLong_Type,
+#endif
+	     Long_Type, ULong_Type, Int_Type, UInt_Type,
+	     Short_Type, UShort_Type, Char_Type, UChar_Type,
+	    ])
+     {
+	variable type = ();
+	variable b = typecast (a, type);
+
+	variable i;
+	i = wherefirst (b == min(b));
+	if (i != wherefirstmin (b))
+	  failed ("wherefirstmin on %S", type, b);
+
+	i = wherefirst (b == max(b));
+	if (i != wherefirstmax (b))
+	  failed ("wherefirstmax on %S", type, b);
+
+	i = wherelast (b == min(b));
+	if (i != wherelastmin (b))
+	  failed ("wherelastmin on %S", type, b);
+
+	i = wherelast (b == max(b));
+	if (i != wherelastmax (b))
+	  failed ("wherelastmax on %S", type, b);
+     }
+}
+
+test_wherefirstlast_minmax (1);
+test_wherefirstlast_minmax ([1]);
+test_wherefirstlast_minmax ([-1,1]);
+test_wherefirstlast_minmax ([-1,1,-1]);
+test_wherefirstlast_minmax ([-1,1,-1,1]);
+test_wherefirstlast_minmax ([-1,1,-1,1,0]);
+test_wherefirstlast_minmax ([-1,1,-1,1,0,1,2,3]);
+test_wherefirstlast_minmax ([-1,1,-1,1,0,1,2,3,0]);
+
 print ("Ok\n");
 exit (0);
 

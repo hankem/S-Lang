@@ -45,7 +45,6 @@
 \seealso{count_char_occurrences}
 \done
 
-
 \function{is_substrbytes}
 \synopsis{test if a binary string contains a series of bytes}
 \usage{Int_Type is_substrbytes (a, b [,ofs])}

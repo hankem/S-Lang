@@ -890,23 +890,6 @@ where
 
 --------------------------------------------------------------
 
-wherenot
-
- SYNOPSIS
-  Get indices where a numeric array is 0
-
- USAGE
-  Array_Type wherenot (Array_Type)
-
- DESCRIPTION
-  This function is equivalent to `where(not a)'.  See the
-  documentation for `where' for more information.
-
- SEE ALSO
-  where, wherefirst, wherelast
-
---------------------------------------------------------------
-
 wherefirst
 
  SYNOPSIS
@@ -936,7 +919,49 @@ wherefirst
 
 
  SEE ALSO
-  where, wherelast
+  where, wherelast, wherfirstmin, wherfirstmax
+
+--------------------------------------------------------------
+
+wherefirstmax
+
+ SYNOPSIS
+  Get the index of the first maximum array value
+
+ USAGE
+  Int_Type wherefirstmax (Array_Type a)
+
+ DESCRIPTION
+This function is equivalent to
+
+   index = wherefirst (a == max(a));
+
+It executes about 3 times faster, and does not require the creation of
+temporary arrays.
+
+ SEE ALSO
+  wherefirst, wherefirstmax, wherelastmin, min, max
+
+--------------------------------------------------------------
+
+wherefirstmin
+
+ SYNOPSIS
+  Get the index of the first minimum array value
+
+ USAGE
+  Int_Type wherefirstmin (Array_Type a)
+
+ DESCRIPTION
+This function is equivalent to
+
+   index = wherefirst (a == min(a));
+
+It executes about 3 times faster, and does not require the creation of
+temporary arrays.
+
+ SEE ALSO
+  wherefirst, wherelastmin, wherefirstmax, min, max
 
 --------------------------------------------------------------
 
@@ -958,7 +983,7 @@ wherelast
  NOTES
   The single parameter version of this function is equivalent to
 
-     define wherefirst (a)
+     define wherelast (a)
      {
         variable i = where (a);
         if (length(i))
@@ -969,7 +994,66 @@ wherelast
 
 
  SEE ALSO
-  where, wherefirst
+  where, wherefirst, wherelastmin, wherelastmax
+
+--------------------------------------------------------------
+
+wherelastmax
+
+ SYNOPSIS
+  Get the index of the last maximum array value
+
+ USAGE
+  Int_Type wherelastmax (Array_Type a)
+
+ DESCRIPTION
+This function is equivalent to
+
+   index = wherelast (a == max(a));
+
+It executes about 3 times faster, and does not require the creation of
+temporary arrays.
+
+ SEE ALSO
+  wherelast, wherefirstmin, wherelastmin, min, max
+
+--------------------------------------------------------------
+
+wherelastmin
+
+ SYNOPSIS
+  Get the index of the last minimum array value
+
+ USAGE
+  Int_Type wherelastmin (Array_Type a)
+
+ DESCRIPTION
+This function is equivalent to
+
+   index = wherelast (a == min(a));
+
+It executes about 3 times faster, and does not require the creation of
+temporary arrays.
+
+ SEE ALSO
+  wherelast, wherefirstmin, wherelastmax, min, max
+
+--------------------------------------------------------------
+
+wherenot
+
+ SYNOPSIS
+  Get indices where a numeric array is 0
+
+ USAGE
+  Array_Type wherenot (Array_Type)
+
+ DESCRIPTION
+  This function is equivalent to `where(not a)'.  See the
+  documentation for `where' for more information.
+
+ SEE ALSO
+  where, wherefirst, wherelast
 
 --------------------------------------------------------------
 
@@ -1402,6 +1486,48 @@ Assoc_Type
 
 --------------------------------------------------------------
 
+File_Type
+
+ SYNOPSIS
+  A type representing a C stdio object
+
+ DESCRIPTION
+  An File_Type is the interpreter's representation of a C
+  stdio FILE object and is usually created using the `fopen'
+  function, i.e.,
+
+    fp = fopen ("file.dat", "r");
+
+  Functions that utilize the File_Type include:
+
+    fopen
+    fclose
+    fgets
+    fputs
+    ferror
+    feof
+    fflush
+    fprintf
+    fseek
+    ftell
+    fread
+    fwrite
+    fread_bytes
+
+  The `foreach' construct may be used with File_Type
+  objects via one of the following forms:
+
+   foreach line (fp) {...}
+   foreach byte (A) using ("char") { ... }   % read bytes
+   foreach line (A) using ("line") { ... }   % read lines (default)
+   foreach line (A) using ("wsline") { ... } % whitespace stripped from lines
+
+
+ SEE ALSO
+  List_Type, Array_Type, Struct_Type
+
+--------------------------------------------------------------
+
 List_Type
 
  SYNOPSIS
@@ -1604,48 +1730,6 @@ Struct_Type
 
 --------------------------------------------------------------
 
-File_Type
-
- SYNOPSIS
-  A type representing a C stdio object
-
- DESCRIPTION
-  An File_Type is the interpreter's representation of a C
-  stdio FILE object and is usually created using the `fopen'
-  function, i.e.,
-
-    fp = fopen ("file.dat", "r");
-
-  Functions that utilize the File_Type include:
-
-    fopen
-    fclose
-    fgets
-    fputs
-    ferror
-    feof
-    fflush
-    fprintf
-    fseek
-    ftell
-    fread
-    fwrite
-    fread_bytes
-
-  The `foreach' construct may be used with File_Type
-  objects via one of the following forms:
-
-   foreach line (fp) {...}
-   foreach byte (A) using ("char") { ... }   % read bytes
-   foreach line (A) using ("line") { ... }   % read lines (default)
-   foreach line (A) using ("wsline") { ... } % whitespace stripped from lines
-
-
- SEE ALSO
-  List_Type, Array_Type, Struct_Type
-
---------------------------------------------------------------
-
 _bofeof_info
 
  SYNOPSIS
@@ -1775,6 +1859,57 @@ _clear_error
 
  SEE ALSO
   _trace_function, _slangtrace, _traceback
+
+--------------------------------------------------------------
+
+_get_frame_info
+
+ SYNOPSIS
+  Get information about a stack frame
+
+ USAGE
+  Struct_Type _get_frame_info (Integer_Type depth)
+
+ DESCRIPTION
+  `_get_frame_info' returns a structure with information about
+  the function call stack from of depth `depth'. The structure
+  contains the following fields:
+
+    file: The file that contains the code of the stack frame.
+    line: The line number the file the stack frame is in.
+    function: the name of the function containing the code of the stack
+      frame; it might be NULL if the code isn't inside a function.
+    locals: Array of String_Type containing the names of variables local
+      to the stack frame; it might be NULL if the stack frame doesn't
+      belong to a function.
+    namespace: The namespace the code of this stack frame is in.
+
+
+ SEE ALSO
+  _get_frame_variable, _use_frame_namespace
+
+--------------------------------------------------------------
+
+_get_frame_variable
+
+ SYNOPSIS
+  Get the value of a variable local to a stack frame
+
+ USAGE
+  Any_Type _get_frame_variable (Integer_Type depth, String_Type name)
+
+ DESCRIPTION
+  This function returns value of the variable `name' in the stack
+  frame at depth `depth'.  This might not only be a local variable but
+  also variables from outer scopes, e.g., a variable private to the
+  namespace.
+
+  If no variable with this name is found an `UndefinedNameError'
+  will be thrown.  An `VariableUninitializedError' will be
+  generated if the variable has no value.
+
+ SEE ALSO
+  _get_frame_info, _use_frame_namespace
 
 --------------------------------------------------------------
 
@@ -1969,57 +2104,6 @@ _trace_function
 
  SEE ALSO
   _slangtrace, _traceback
-
---------------------------------------------------------------
-
-_get_frame_info
-
- SYNOPSIS
-  Get information about a stack frame
-
- USAGE
-  Struct_Type _get_frame_info (Integer_Type depth)
-
- DESCRIPTION
-  `_get_frame_info' returns a structure with information about
-  the function call stack from of depth `depth'. The structure
-  contains the following fields:
-
-    file: The file that contains the code of the stack frame.
-    line: The line number the file the stack frame is in.
-    function: the name of the function containing the code of the stack
-      frame; it might be NULL if the code isn't inside a function.
-    locals: Array of String_Type containing the names of variables local
-      to the stack frame; it might be NULL if the stack frame doesn't
-      belong to a function.
-    namespace: The namespace the code of this stack frame is in.
-
-
- SEE ALSO
-  _get_frame_variable, _use_frame_namespace
-
---------------------------------------------------------------
-
-_get_frame_variable
-
- SYNOPSIS
-  Get the value of a variable local to a stack frame
-
- USAGE
-  Any_Type _get_frame_variable (Integer_Type depth, String_Type name)
-
- DESCRIPTION
-  This function returns value of the variable `name' in the stack
-  frame at depth `depth'.  This might not only be a local variable but
-  also variables from outer scopes, e.g., a variable private to the
-  namespace.
-
-  If no variable with this name is found an `UndefinedNameError'
-  will be thrown.  An `VariableUninitializedError' will be
-  generated if the variable has no value.
-
- SEE ALSO
-  _get_frame_info, _use_frame_namespace
 
 --------------------------------------------------------------
 
@@ -3903,6 +3987,60 @@ isnan
 
 --------------------------------------------------------------
 
+_isneg
+
+ SYNOPSIS
+  Test if a number is less than 0
+
+ USAGE
+  Char_Type _isneg(x)
+
+ DESCRIPTION
+  This function returns 1 if a number is less than 0, and zero
+  otherwise.  If the argument is an array, then the corresponding
+  array of boolean (Char_Type) values will be returned.
+
+ SEE ALSO
+  _ispos, _isnonneg
+
+--------------------------------------------------------------
+
+_isnonneg
+
+ SYNOPSIS
+  Test if a number is greater than or equal to 0
+
+ USAGE
+  Char_Type _isnonneg(x)
+
+ DESCRIPTION
+  This function returns 1 if a number is greater or equal to 0, and zero
+  otherwise.  If the argument is an array, then the corresponding
+  array of boolean (Char_Type) values will be returned.
+
+ SEE ALSO
+  _isneg, _isnonneg
+
+--------------------------------------------------------------
+
+_ispos
+
+ SYNOPSIS
+  Test if a number is greater than 0
+
+ USAGE
+  Char_Type _ispos(x)
+
+ DESCRIPTION
+  This function returns 1 if a number is greater than 0, and zero
+  otherwise.  If the argument is an array, then the corresponding
+  array of boolean (Char_Type) values will be returned.
+
+ SEE ALSO
+  _isneg, _isnonneg
+
+--------------------------------------------------------------
+
 log
 
  SYNOPSIS
@@ -4313,60 +4451,6 @@ tanh
 
  SEE ALSO
   cos, atan, acosh, cosh
-
---------------------------------------------------------------
-
-_ispos
-
- SYNOPSIS
-  Test if a number is greater than 0
-
- USAGE
-  Char_Type _ispos(x)
-
- DESCRIPTION
-  This function returns 1 if a number is greater than 0, and zero
-  otherwise.  If the argument is an array, then the corresponding
-  array of boolean (Char_Type) values will be returned.
-
- SEE ALSO
-  _isneg, _isnonneg
-
---------------------------------------------------------------
-
-_isneg
-
- SYNOPSIS
-  Test if a number is less than 0
-
- USAGE
-  Char_Type _isneg(x)
-
- DESCRIPTION
-  This function returns 1 if a number is less than 0, and zero
-  otherwise.  If the argument is an array, then the corresponding
-  array of boolean (Char_Type) values will be returned.
-
- SEE ALSO
-  _ispos, _isnonneg
-
---------------------------------------------------------------
-
-_isnonneg
-
- SYNOPSIS
-  Test if a number is greater than or equal to 0
-
- USAGE
-  Char_Type _isnonneg(x)
-
- DESCRIPTION
-  This function returns 1 if a number is greater or equal to 0, and zero
-  otherwise.  If the argument is an array, then the corresponding
-  array of boolean (Char_Type) values will be returned.
-
- SEE ALSO
-  _isneg, _isnonneg
 
 --------------------------------------------------------------
 
@@ -5013,6 +5097,25 @@ __is_callable
 
 --------------------------------------------------------------
 
+__is_datatype_numeric
+
+ SYNOPSIS
+  Determine whether or not a type is a numeric type
+
+ USAGE
+  Int_Type __is_datatype_numeric (DataType_Type type)
+
+ DESCRIPTION
+  This function may be used to determine if the specified datatype
+  represents a numeric type.  It returns 0 if the datatype does not
+  represents a numeric type; otherwise it returns 1 for an
+  integer type, 2 for a floating point type, and 3 for a complex type.
+
+ SEE ALSO
+  typeof, __is_numeric, __is_callable
+
+--------------------------------------------------------------
+
 __is_numeric
 
  SYNOPSIS
@@ -5041,25 +5144,6 @@ __is_numeric
 
  SEE ALSO
   typeof, __is_datatype_numeric
-
---------------------------------------------------------------
-
-__is_datatype_numeric
-
- SYNOPSIS
-  Determine whether or not a type is a numeric type
-
- USAGE
-  Int_Type __is_datatype_numeric (DataType_Type type)
-
- DESCRIPTION
-  This function may be used to determine if the specified datatype
-  represents a numeric type.  It returns 0 if the datatype does not
-  represents a numeric type; otherwise it returns 1 for an
-  integer type, 2 for a floating point type, and 3 for a complex type.
-
- SEE ALSO
-  typeof, __is_numeric, __is_callable
 
 --------------------------------------------------------------
 
@@ -5167,30 +5251,6 @@ _slang_utf8_ok
 
 --------------------------------------------------------------
 
-__uninitialize
-
- SYNOPSIS
-  Uninitialize a variable
-
- USAGE
-  __uninitialize (Ref_Type x)
-
- DESCRIPTION
-  The `__uninitialize' function may be used to uninitialize the
-  variable referenced by the parameter `x'.
-
- EXAMPLE
-  The following two lines are equivalent:
-
-     () = __tmp(z);
-     __uninitialize (&z);
-
-
- SEE ALSO
-  __tmp, __is_initialized
-
---------------------------------------------------------------
-
 __tmp
 
  SYNOPSIS
@@ -5222,6 +5282,30 @@ __tmp
 
  SEE ALSO
   __uninitialize, __is_initialized
+
+--------------------------------------------------------------
+
+__uninitialize
+
+ SYNOPSIS
+  Uninitialize a variable
+
+ USAGE
+  __uninitialize (Ref_Type x)
+
+ DESCRIPTION
+  The `__uninitialize' function may be used to uninitialize the
+  variable referenced by the parameter `x'.
+
+ EXAMPLE
+  The following two lines are equivalent:
+
+     () = __tmp(z);
+     __uninitialize (&z);
+
+
+ SEE ALSO
+  __tmp, __is_initialized
 
 --------------------------------------------------------------
 
@@ -6233,26 +6317,6 @@ rline_bolp
 
 --------------------------------------------------------------
 
-rline_eolp
-
- SYNOPSIS
-  Test of the editing point is at the end of the line
-
- USAGE
-  Int_Type rline_eolp()
-
- DESCRIPTION
-  The `rline_bolp' function returns a non-zero value if the
-  current editing position is at the end of the line.
-
- NOTES
- This function is part of the S-Lang readline interface.
-
- SEE ALSO
-  rline_bolp, rline_get_point, rline_get_line
-
---------------------------------------------------------------
-
 rline_call
 
  SYNOPSIS
@@ -6298,6 +6362,46 @@ rline_del
 
  SEE ALSO
   rline_ins, rline_setkey
+
+--------------------------------------------------------------
+
+rline_eolp
+
+ SYNOPSIS
+  Test of the editing point is at the end of the line
+
+ USAGE
+  Int_Type rline_eolp()
+
+ DESCRIPTION
+  The `rline_bolp' function returns a non-zero value if the
+  current editing position is at the end of the line.
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_bolp, rline_get_point, rline_get_line
+
+--------------------------------------------------------------
+
+rline_getkey
+
+ SYNOPSIS
+  Obtain the next byte in the readline input stream
+
+ USAGE
+  Int_Type rline_getkey ()
+
+ DESCRIPTION
+  This function returns the next byte in the readline input stream.
+  If no byte is available, the function will wait until one is.
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_input_pending, rline_setkey
 
 --------------------------------------------------------------
 
@@ -6380,26 +6484,6 @@ rline_get_point
 
 --------------------------------------------------------------
 
-rline_getkey
-
- SYNOPSIS
-  Obtain the next byte in the readline input stream
-
- USAGE
-  Int_Type rline_getkey ()
-
- DESCRIPTION
-  This function returns the next byte in the readline input stream.
-  If no byte is available, the function will wait until one is.
-
- NOTES
- This function is part of the S-Lang readline interface.
-
- SEE ALSO
-  rline_input_pending, rline_setkey
-
---------------------------------------------------------------
-
 rline_input_pending
 
  SYNOPSIS
@@ -6438,66 +6522,6 @@ rline_ins
 
  SEE ALSO
   rline_set_line, rline_del
-
---------------------------------------------------------------
-
-rline_set_history
-
- SYNOPSIS
-  Replace the current history list with a new one
-
- USAGE
-  rline_set_history (Array_Type lines)
-
- DESCRIPTION
-  The `rline_set_history' function replaces the current history
-  by the specified array of strings.
-
- NOTES
- This function is part of the S-Lang readline interface.
-
- SEE ALSO
-  rline_get_history
-
---------------------------------------------------------------
-
-rline_set_line
-
- SYNOPSIS
-  Replace the current line with a new one
-
- USAGE
-  rline_set_line (String_Type line)
-
- DESCRIPTION
-  The `rline_set_line' function replaces the line being edited by
-  the specified one.
-
- NOTES
- This function is part of the S-Lang readline interface.
-
- SEE ALSO
-  rline_get_line
-
---------------------------------------------------------------
-
-rline_set_point
-
- SYNOPSIS
-  Move the current editing position to another
-
- USAGE
-  rline_set_point (Int_Type ofs)
-
- DESCRIPTION
- The `rline_set_point' function sets the editing point to the
- specified byte-offset from the beginning of the line.
-
- NOTES
- This function is part of the S-Lang readline interface.
-
- SEE ALSO
-  rline_get_point
 
 --------------------------------------------------------------
 
@@ -6544,23 +6568,74 @@ rline_setkey
 
 --------------------------------------------------------------
 
-rline_unsetkey
+rline_set_completion_callback
 
  SYNOPSIS
-  Unset a key binding from the readline keymap
+  Set the function to be used for completion at the readline prompt
 
  USAGE
-  rline_unsetkey (String_Type keyseq)
+  rline_set_completion_callback (Ref_Type func)
 
  DESCRIPTION
-  The `rline_unsetkey' function unbinds the specified key sequence
-  from the readline keymap.
+  This function sets the callback function to be used for completion at the
+  readline prompt.  The callback function must be defined to accept
+  two values, the first being a string containing the text of the line
+  being edited, and an integer giving the position of the byte-offset
+  into the string where completion was requested.
+
+  The callback function must return two values: an array giving the
+  list of possible completion strings, and an integer giving the byte
+  offset into the string of the start of the text to be completed.
+
+ EXAMPLE
+  See completion-callback function defined in the `slsh' library file
+  `rline/complete.sl'.
 
  NOTES
  This function is part of the S-Lang readline interface.
 
  SEE ALSO
-  rline_setkey
+  rline_set_list_completions_callback
+
+--------------------------------------------------------------
+
+rline_set_history
+
+ SYNOPSIS
+  Replace the current history list with a new one
+
+ USAGE
+  rline_set_history (Array_Type lines)
+
+ DESCRIPTION
+  The `rline_set_history' function replaces the current history
+  by the specified array of strings.
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_get_history
+
+--------------------------------------------------------------
+
+rline_set_line
+
+ SYNOPSIS
+  Replace the current line with a new one
+
+ USAGE
+  rline_set_line (String_Type line)
+
+ DESCRIPTION
+  The `rline_set_line' function replaces the line being edited by
+  the specified one.
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_get_line
 
 --------------------------------------------------------------
 
@@ -6596,34 +6671,43 @@ rline_set_list_completions_callback
 
 --------------------------------------------------------------
 
-rline_set_completion_callback
+rline_set_point
 
  SYNOPSIS
-  Set the function to be used for completion at the readline prompt
+  Move the current editing position to another
 
  USAGE
-  rline_set_completion_callback (Ref_Type func)
+  rline_set_point (Int_Type ofs)
 
  DESCRIPTION
-  This function sets the callback function to be used for completion at the
-  readline prompt.  The callback function must be defined to accept
-  two values, the first being a string containing the text of the line
-  being edited, and an integer giving the position of the byte-offset
-  into the string where completion was requested.
-
-  The callback function must return two values: an array giving the
-  list of possible completion strings, and an integer giving the byte
-  offset into the string of the start of the text to be completed.
-
- EXAMPLE
-  See completion-callback function defined in the `slsh' library file
-  `rline/complete.sl'.
+ The `rline_set_point' function sets the editing point to the
+ specified byte-offset from the beginning of the line.
 
  NOTES
  This function is part of the S-Lang readline interface.
 
  SEE ALSO
-  rline_set_list_completions_callback
+  rline_get_point
+
+--------------------------------------------------------------
+
+rline_unsetkey
+
+ SYNOPSIS
+  Unset a key binding from the readline keymap
+
+ USAGE
+  rline_unsetkey (String_Type keyseq)
+
+ DESCRIPTION
+  The `rline_unsetkey' function unbinds the specified key sequence
+  from the readline keymap.
+
+ NOTES
+ This function is part of the S-Lang readline interface.
+
+ SEE ALSO
+  rline_setkey
 
 --------------------------------------------------------------
 

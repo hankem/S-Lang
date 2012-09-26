@@ -675,15 +675,6 @@
 \seealso{wherefirst, wherelast, wherenot, array_info, array_shape, _isnull}
 \done
 
-\function{wherenot}
-\synopsis{Get indices where a numeric array is 0}
-\usage{Array_Type wherenot (Array_Type)}
-\description
-  This function is equivalent to \exmp{where(not a)}.  See the
-  documentation for \ifun{where} for more information.
-\seealso{where, wherefirst, wherelast}
-\done
-
 \function{wherefirst}
 \synopsis{Get the index of the first non-zero array element}
 \usage{Int_Type wherefirst (Array_Type a [,start_index])}
@@ -705,7 +696,33 @@
           return NULL;
      }
 #v-
-\seealso{where, wherelast}
+\seealso{where, wherelast, wherfirstmin, wherfirstmax}
+\done
+
+\function{wherefirstmax}
+\synopsis{Get the index of the first maximum array value}
+\usage{Int_Type wherefirstmax (Array_Type a)}
+\description
+This function is equivalent to
+#v+
+   index = wherefirst (a == max(a));
+#v-
+It executes about 3 times faster, and does not require the creation of
+temporary arrays.
+\seealso{wherefirst, wherefirstmax, wherelastmin, min, max}
+\done
+
+\function{wherefirstmin}
+\synopsis{Get the index of the first minimum array value}
+\usage{Int_Type wherefirstmin (Array_Type a)}
+\description
+This function is equivalent to
+#v+
+   index = wherefirst (a == min(a));
+#v-
+It executes about 3 times faster, and does not require the creation of
+temporary arrays.
+\seealso{wherefirst, wherelastmin, wherefirstmax, min, max}
 \done
 
 \function{wherelast}
@@ -720,7 +737,7 @@
 \notes
   The single parameter version of this function is equivalent to
 #v+
-     define wherefirst (a)
+     define wherelast (a)
      {
         variable i = where (a);
         if (length(i))
@@ -729,6 +746,41 @@
           return NULL;
      }
 #v-
-\seealso{where, wherefirst}
+\seealso{where, wherefirst, wherelastmin, wherelastmax}
+\done
+
+\function{wherelastmax}
+\synopsis{Get the index of the last maximum array value}
+\usage{Int_Type wherelastmax (Array_Type a)}
+\description
+This function is equivalent to
+#v+
+   index = wherelast (a == max(a));
+#v-
+It executes about 3 times faster, and does not require the creation of
+temporary arrays.
+\seealso{wherelast, wherefirstmin, wherelastmin, min, max}
+\done
+
+\function{wherelastmin}
+\synopsis{Get the index of the last minimum array value}
+\usage{Int_Type wherelastmin (Array_Type a)}
+\description
+This function is equivalent to
+#v+
+   index = wherelast (a == min(a));
+#v-
+It executes about 3 times faster, and does not require the creation of
+temporary arrays.
+\seealso{wherelast, wherefirstmin, wherelastmax, min, max}
+\done
+
+\function{wherenot}
+\synopsis{Get indices where a numeric array is 0}
+\usage{Array_Type wherenot (Array_Type)}
+\description
+  This function is equivalent to \exmp{where(not a)}.  See the
+  documentation for \ifun{where} for more information.
+\seealso{where, wherefirst, wherelast}
 \done
 
