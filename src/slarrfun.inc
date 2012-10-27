@@ -629,7 +629,7 @@ static int PROD_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID
 #ifdef WHEREFIRSTMAX_FUNC
 static int WHEREFIRSTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
 {
-   GENERIC_TYPE *x, *xmax;
+   GENERIC_TYPE *x;
    SLuindex_Type i, imax;
    GENERIC_TYPE maxval;
 
@@ -637,7 +637,6 @@ static int WHEREFIRSTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num,
      return -1;
 
    x = (GENERIC_TYPE *) xp;
-   xmax = x + num;
 
 # ifdef IS_NAN_FUNCTION
    i = 0;
@@ -670,7 +669,7 @@ static int WHEREFIRSTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num,
 #ifdef WHERELASTMAX_FUNC
 static int WHERELASTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
 {
-   GENERIC_TYPE *x, *xmax;
+   GENERIC_TYPE *x;
    SLuindex_Type i, imax;
    GENERIC_TYPE maxval;
 
@@ -678,7 +677,6 @@ static int WHERELASTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, 
      return -1;
 
    x = (GENERIC_TYPE *) xp;
-   xmax = x + num;
 
 # ifdef IS_NAN_FUNCTION
    i = 0;
@@ -711,7 +709,7 @@ static int WHERELASTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, 
 #ifdef WHEREFIRSTMIN_FUNC
 static int WHEREFIRSTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
 {
-   GENERIC_TYPE *x, *xmax;
+   GENERIC_TYPE *x;
    SLuindex_Type i, imin;
    GENERIC_TYPE minval;
 
@@ -719,7 +717,6 @@ static int WHEREFIRSTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num,
      return -1;
 
    x = (GENERIC_TYPE *) xp;
-   xmax = x + num;
 
 # ifdef IS_NAN_FUNCTION
    i = 0;
@@ -752,7 +749,7 @@ static int WHEREFIRSTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num,
 #ifdef WHERELASTMIN_FUNC
 static int WHERELASTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
 {
-   GENERIC_TYPE *x, *xmax;
+   GENERIC_TYPE *x;
    SLuindex_Type i, imin;
    GENERIC_TYPE minval;
 
@@ -760,7 +757,6 @@ static int WHERELASTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, 
      return -1;
 
    x = (GENERIC_TYPE *) xp;
-   xmax = x + num;
 
 # ifdef IS_NAN_FUNCTION
    i = 0;

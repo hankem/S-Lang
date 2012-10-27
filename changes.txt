@@ -129,6 +129,8 @@ Changes since 2.2.4
     work-around what looks like a VMS C library bug bug.
 62. src/slarrfun.c: Added wherefirstmin/max and wherelastmin/max
     functions.
+63. src/slarrfun.inc: Removed an unused variable from the
+    wherefirst/last/min/max functions.
 
 {{{ Previous Versions
 
