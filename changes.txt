@@ -134,6 +134,8 @@ Changes since 2.2.4
 64. src/slcommon.c: find_interrupt_hook was not setting the prevp
     variable causing some hooks to become lost during calls to
     SLang_remove_interrupt_hook.
+65. src/slrline.c,slsh/readline.c: Added support for SLrline
+    callbacks.  See the slsh docs for details.
 
 {{{ Previous Versions
 

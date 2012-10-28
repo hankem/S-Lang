@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-64"
+#define SLANG_VERSION_STRING "pre2.3.0-65"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1584,6 +1584,16 @@ SL_EXTERN int SLrline_set_update_hook (SLrline_Type *,
 					     SLFUTURE_CONST char *buf, unsigned int len,
 					     unsigned int point, VOID_STAR client_data),
 				    VOID_STAR client_data);
+/* free update_hook client_data */
+SL_EXTERN void SLrline_set_free_update_cb (SLrline_Type *, void (*)(SLrline_Type *, VOID_STAR));
+SL_EXTERN int SLrline_get_update_client_data (SLrline_Type *, VOID_STAR *);
+
+/* These functions are passed a pointer to the update_hook client_data */
+SL_EXTERN void SLrline_set_update_clear_cb(SLrline_Type *, void (*)(SLrline_Type *, VOID_STAR));
+SL_EXTERN void SLrline_set_update_preread_cb (SLrline_Type *, void (*)(SLrline_Type *, VOID_STAR));
+SL_EXTERN void SLrline_set_update_postread_cb (SLrline_Type *, void (*)(SLrline_Type *, VOID_STAR));
+SL_EXTERN void SLrline_set_update_width_cb (SLrline_Type *, void (*)(SLrline_Type *, int, VOID_STAR));
+SL_EXTERN int SLrline_get_update_client_data (SLrline_Type *, VOID_STAR *);
 
 SL_EXTERN SLkeymap_Type *SLrline_get_keymap (SLrline_Type *);
 

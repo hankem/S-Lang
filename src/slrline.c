@@ -1806,6 +1806,50 @@ int SLrline_set_update_hook (SLrline_Type *rli,
    return 0;
 }
 
+int SLrline_get_update_client_data (SLrline_Type *rli, VOID_STAR *cdp)
+{
+   if (rli == NULL)
+     return -1;
+   *cdp = rli->update_client_data;
+   return 0;
+}
+
+void SLrline_set_free_update_cb (SLrline_Type *rli,
+				 void (*fun)(SLrline_Type *, VOID_STAR))
+{
+   if (rli != NULL)
+     rli->update_free_update_data_hook = fun;
+}
+
+void SLrline_set_update_clear_cb (SLrline_Type *rli,
+				   void (*fun)(SLrline_Type *, VOID_STAR))
+{
+   if (rli != NULL)
+     rli->update_clear_hook = fun;
+}
+
+void SLrline_set_update_preread_cb (SLrline_Type *rli,
+				   void (*fun)(SLrline_Type *, VOID_STAR))
+{
+   if (rli != NULL)
+     rli->update_preread_hook = fun;
+}
+
+void SLrline_set_update_postread_cb (SLrline_Type *rli,
+				     void (*fun)(SLrline_Type *, VOID_STAR))
+{
+   if (rli != NULL)
+     rli->update_postread_hook = fun;
+}
+
+void SLrline_set_update_width_cb (SLrline_Type *rli,
+				  void (*fun)(SLrline_Type *, int, VOID_STAR))
+{
+   if (rli != NULL)
+     rli->update_display_width_changed_hook = fun;
+}
+
+
 char *SLrline_get_line (SLrline_Type *rli)
 {
    if (rli == NULL)

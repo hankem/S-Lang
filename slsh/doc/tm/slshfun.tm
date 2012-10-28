@@ -38,7 +38,7 @@
 \linuxdoc
 \begin{\documentstyle}
 
-\title SLSH Library Reference (version 2.2.0)
+\title SLSH Library Reference (version 2.3.0)
 \author John E. Davis <www.jedsoft.org>
 \date \__today__
 
@@ -49,12 +49,13 @@
 #d doc_root_url http://www.jedsoft.org/slang/doc
 #d ifun_doc_url \doc_root_url/html/slangfun.html
 
-This document describes the functions that are part of the \slsh
-library.  These functions are written in \slang and make use of
-lower-level intrinsic functions that are described in the
-\href{\ifun_doc_url}{Intrinsic Function Reference Manual}.
+This document describes both the \slsh intrinsic functions and the
+\slsh library functions.  The latter functions are written in \slang
+and make use of lower-level intrinsic functions that are described in
+the \href{\ifun_doc_url}{Intrinsic Function Reference Manual}.
 As the \slsh library functions make no use of \slsh intrinsics, they
-may be used by any conforming \slang application.
+may be used by any conforming \slang application.  The \slsh intrinsic
+functions are specific to \slsh.
 
 Before a particular \slsh library function may be used, the file that
 defines the function must first be loaded.  The recommended mechanism
@@ -115,5 +116,8 @@ These functions manipulate arrays and lists as sets.
 
 \chapter{Miscellaneous Functions}
 #i ../../lib/tm/print.tm
+
+\chapter{SLSH intrinsic functions}
+#i slshifun.tm
 
 \end{\documentstyle}

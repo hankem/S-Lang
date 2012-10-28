@@ -708,5 +708,11 @@ SLANG2.3.0 {
 		SLang_get_long_qualifier;
 		SLang_get_double_qualifier;
 		SLang_get_string_qualifier;
+		SLrline_set_free_update_cb;
+		SLrline_set_update_clear_cb;
+		SLrline_set_update_preread_cb;
+		SLrline_set_update_postread_cb;
+		SLrline_set_update_width_cb;
+		SLrline_get_update_client_data;
 } SLANG2.2.1;
 

@@ -36,7 +36,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.8.6-0";
+static char *Slsh_Version = "0.9.0-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -189,6 +189,10 @@ static void at_exit (SLang_Ref_Type *ref)
 
 static void c_exit (int status)
 {
+   /* Clear the error to allow exit hooks to run */
+   if (SLang_get_error ())
+     SLang_restart (1);
+
    while (AtExit_Hooks != NULL)
      {
 	AtExit_Type *next = AtExit_Hooks->next;

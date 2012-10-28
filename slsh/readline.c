@@ -61,7 +61,17 @@ USA.
 static int Use_Readline;
 static int Slsh_Quit = 0;
 static SLang_Load_Type *Readline_Load_Object;
-static SLang_RLine_Info_Type *Rline_Info;
+
+typedef struct
+{
+#if USE_SLANG_READLINE
+   SLrline_Type *rli;
+#endif
+   int output_newline;
+}
+Slsh_Readline_Type;
+
+static Slsh_Readline_Type *Default_Readline_Info;
 
 static int open_readline (char *);
 static void close_readline (void);
@@ -90,30 +100,71 @@ static void reset_tty (void)
    SLsignal (SIGINT, last_sig_sigint);
 }
 
-#else
+#else				       /* ifdef USE_GNU_READLINE */
 
-static SLang_RLine_Info_Type *Active_Rline_Info;
+static Slsh_Readline_Type *Active_Rline_Info;
 
 # if SYSTEM_SUPPORTS_SIGNALS
 static void (*last_sig_sigtstp) (int);
 
-static void sig_sigtstp (int sig)
+#  define USE_SIGTSTP_INTERRUPT 1
+#  if USE_SIGTSTP_INTERRUPT
+static int Want_Suspension = 0;
+#  endif
+
+static void suspend_slsh (void)
 {
-   (void) sig;
-   SLsig_block_signals ();
    reset_tty ();
-   kill(getpid(),SIGSTOP);
+   (void) SLang_run_hooks ("slsh_readline_suspend_before_hook", 0);
+   kill (0, SIGSTOP);
+   (void) SLang_run_hooks ("slsh_readline_suspend_after_hook", 0);
    init_tty ();
    if (Active_Rline_Info != NULL)
      {
-	SLrline_set_display_width (Active_Rline_Info, SLtt_Screen_Cols);
-	SLrline_redraw (Active_Rline_Info);
+	SLsig_block_signals ();
+	SLrline_set_display_width (Active_Rline_Info->rli, SLtt_Screen_Cols);
+	SLrline_redraw (Active_Rline_Info->rli);
+	SLsig_unblock_signals ();
      }
-   SLsig_unblock_signals ();
 }
-# endif
 
-#ifdef SIGWINCH
+static int sigtstp_interrupt_hook (VOID_STAR unused)
+{
+   (void) unused;
+   if (Want_Suspension)
+     {
+	Want_Suspension = 0;
+	suspend_slsh ();
+     }
+   return 0;
+}
+
+static void sig_sigtstp (int sig)
+{
+   sig = errno;
+#  if USE_SIGTSTP_INTERRUPT
+   Want_Suspension = 1;
+#  else
+   suspend_slsh ();
+#  endif
+   (void) SLsignal (sig, sig_sigtstp);
+   errno = sig;
+}
+
+static void init_sigtstp (void)
+{
+   (void) SLang_add_interrupt_hook (sigtstp_interrupt_hook, NULL);
+   last_sig_sigtstp = SLsignal (SIGTSTP, sig_sigtstp);
+}
+static void deinit_sigtstp (void)
+{
+   SLsignal (SIGTSTP, last_sig_sigtstp);
+   (void) SLang_remove_interrupt_hook (sigtstp_interrupt_hook, NULL);
+}
+
+# endif				       /* SYSTEM_SUPPORTS_SIGNALS */
+
+# ifdef SIGWINCH
 static int Want_Window_Size_Change = 0;
 static void sig_winch_handler (int sig)
 {
@@ -132,19 +183,19 @@ static int screen_size_changed_hook (VOID_STAR cd_unused)
 	if (Active_Rline_Info != NULL)
 	  {
 	     SLtt_get_screen_size ();
-	     SLrline_set_display_width (Active_Rline_Info, SLtt_Screen_Cols);
+	     SLrline_set_display_width (Active_Rline_Info->rli, SLtt_Screen_Cols);
 	  }
      }
    return 0;
 }
-#endif
+# endif
 
 static int add_sigwinch_handlers (void)
 {
-#ifdef SIGWINCH
+# ifdef SIGWINCH
    (void) SLang_add_interrupt_hook (screen_size_changed_hook, NULL);
    (void) SLsignal_intr (SIGWINCH, sig_winch_handler);
-#endif
+# endif
    return 0;
 }
 
@@ -160,13 +211,15 @@ static int TTY_Inited = 0;
 static void init_tty (void)
 {
    int abort_char = 3;
-   if (TTY_Inited)
-     return;
+
    TTY_Inited++;
+   if (TTY_Inited > 1)
+     return;
+
 # if SYSTEM_SUPPORTS_SIGNALS
    SLsig_block_signals ();
    SLang_TT_Read_FD = fileno (stdin);
-   last_sig_sigtstp = SLsignal (SIGTSTP, sig_sigtstp);
+   init_sigtstp ();
 # endif
 # ifdef REAL_UNIX_SYSTEM
    abort_char = -1;		       /* determine from tty */
@@ -175,7 +228,7 @@ static void init_tty (void)
    if (-1 == SLang_init_tty (abort_char, 1, 1))   /* opost was 0 */
      {
 # if SYSTEM_SUPPORTS_SIGNALS
-	SLsignal (SIGTSTP, last_sig_sigtstp);
+	deinit_sigtstp ();
 	SLsig_unblock_signals ();
 # endif
 	SLang_exit_error ("Error initializing terminal.");
@@ -198,47 +251,79 @@ static void reset_tty (void)
 {
    if (TTY_Inited == 0)
      return;
-   TTY_Inited = 0;
+
+   TTY_Inited--;
+
+   if (TTY_Inited)
+     return;
+
 # if SYSTEM_SUPPORTS_SIGNALS
    SLsig_block_signals ();
-   SLsignal (SIGTSTP, last_sig_sigtstp);
+   deinit_sigtstp ();
 # endif
    SLang_reset_tty ();
 # if SYSTEM_SUPPORTS_SIGNALS
    SLsig_unblock_signals ();
 # endif
-   /* Add a \r here to work around what I believe is a solaris kernel bug.
-    * The terminal is being reset by SLang_reset_tty which uses TCSADRAIN
-    * option.  However, that is not supposed to affect output after that
-    * call is made (like the output below), but it does.
-    */
-   fputs ("\r\n", stdout);
-   fflush (stdout);
 }
-#endif
+#endif				       /* ifdef USE_GNU_READLINE else */
 
-static void close_readline ()
+static void close_readline (void)
 {
-#if USE_SLANG_READLINE
-   if (Rline_Info != NULL)
+   if (Default_Readline_Info != NULL)
      {
-	SLrline_close (Rline_Info);
-	Rline_Info = NULL;
-     }
+#if USE_SLANG_READLINE
+	SLrline_close (Default_Readline_Info->rli);
 #endif
+	SLfree ((char *) Default_Readline_Info);
+	Default_Readline_Info = NULL;
+     }
 }
+
+static void close_slsh_readline (Slsh_Readline_Type *sri)
+{
+   if (sri == NULL)
+     return;
+#if USE_SLANG_READLINE
+   if (sri->rli != NULL)
+     SLrline_close (sri->rli);
+#endif
+   SLfree ((char *) sri);
+}
+
+static Slsh_Readline_Type *open_slsh_readline (char *name, unsigned int flags)
+{
+   Slsh_Readline_Type *sri;
+
+   if (NULL == (sri = (Slsh_Readline_Type *)SLmalloc (sizeof (Slsh_Readline_Type))))
+     return NULL;
+   memset ((char *)sri, 0, sizeof (Slsh_Readline_Type));
+
+#if USE_SLANG_READLINE
+   if (name == NULL)
+     sri->rli = SLrline_open (SLtt_Screen_Cols, flags);
+   else
+     sri->rli = SLrline_open2 (name, SLtt_Screen_Cols, flags);
+
+   if (sri->rli == NULL)
+     {
+	SLfree ((char *)sri);
+	return NULL;
+     }
+   sri->output_newline = 1;
+#endif
+   return sri;
+}
+
 
 static int open_readline (char *name)
 {
-#if USE_GNU_READLINE
-   return 0;
-#else
    unsigned int flags = SL_RLINE_BLINK_MATCH|SL_RLINE_USE_MULTILINE;
    close_readline ();
-   if (NULL == (Rline_Info = SLrline_open2 (name, SLtt_Screen_Cols, flags)))
+   Default_Readline_Info = open_slsh_readline (name, flags);
+   if (Default_Readline_Info == NULL)
      return -1;
    return 0;
-#endif
 }
 
 #if USE_GNU_READLINE
@@ -247,67 +332,72 @@ static void redisplay_dummy (void)
 }
 #endif
 
-static char *read_input_line (SLang_RLine_Info_Type *rline, char *prompt, int noecho)
+static char *read_with_no_readline (char *prompt, int noecho)
 {
    char *line;
 #ifdef REAL_UNIX_SYSTEM
    int stdin_is_noecho = 0;
 #endif
+   char buf[1024];
+   char *b;
+
+   fprintf (stdout, "%s", prompt); fflush (stdout);
+   if (noecho)
+     {
+#ifdef REAL_UNIX_SYSTEM
+	if (isatty (fileno(stdin)))
+	  {
+	     (void) SLsystem ("stty -echo");   /* yuk */
+	     stdin_is_noecho = 1;
+	  }
+#endif
+     }
+
+   line = buf;
+   while (NULL == fgets (buf, sizeof (buf), stdin))
+     {
+#ifdef EINTR
+	if (errno == EINTR)
+	  {
+	     if (-1 == SLang_handle_interrupt ())
+	       {
+		  line = NULL;
+		  break;
+	       }
+	     continue;
+	  }
+#endif
+	line = NULL;
+	break;
+     }
+#ifdef REAL_UNIX_SYSTEM
+   if (stdin_is_noecho)
+     (void) SLsystem ("stty echo");
+#endif
+   if (line == NULL)
+     return NULL;
+
+   /* Remove the final newline */
+   b = line;
+   while (*b && (*b != '\n'))
+     b++;
+   *b = 0;
+
+   return SLmake_string (line);
+}
+
+static char *read_input_line (Slsh_Readline_Type *sri, char *prompt, int noecho)
+{
+   char *line;
 
    if (Use_Readline == 0)
-     {
-	char buf[1024];
-	char *b;
+     return read_with_no_readline (prompt, noecho);
 
-	fprintf (stdout, "%s", prompt); fflush (stdout);
-	if (noecho)
-	  {
-#ifdef REAL_UNIX_SYSTEM
-	     if (isatty (fileno(stdin)))
-	       {
-		  (void) SLsystem ("stty -echo");   /* yuk */
-		  stdin_is_noecho = 1;
-	       }
-#endif
-	  }
-
-	line = buf;
-	while (NULL == fgets (buf, sizeof (buf), stdin))
-	  {
-#ifdef EINTR
-	     if (errno == EINTR)
-	       {
-		  if (-1 == SLang_handle_interrupt ())
-		    {
-		       line = NULL;
-		       break;
-		    }
-		  continue;
-	       }
-#endif
-	     line = NULL;
-	     break;
-	  }
-#ifdef REAL_UNIX_SYSTEM
-	if (stdin_is_noecho)
-	  (void) SLsystem ("stty echo");
-#endif
-	if (line == NULL)
-	  return NULL;
-
-	/* Remove the final newline */
-	b = line;
-	while (*b && (*b != '\n'))
-	  b++;
-	*b = 0;
-
-	return SLmake_string (line);
-     }
 #if SYSTEM_SUPPORTS_SIGNALS
    init_tty ();
 #endif
 #if USE_GNU_READLINE
-   (void) rline;
+   (void) sri;
    if (noecho == 0)
      rl_redisplay_function = rl_redisplay;
    else
@@ -320,23 +410,23 @@ static char *read_input_line (SLang_RLine_Info_Type *rline, char *prompt, int no
    rl_redisplay_function = rl_redisplay;
 #else
    SLtt_get_screen_size ();
-   SLrline_set_display_width (rline, SLtt_Screen_Cols);
+   SLrline_set_display_width (sri->rli, SLtt_Screen_Cols);
    (void) add_sigwinch_handlers ();
-   Active_Rline_Info = rline;
-   (void) SLrline_set_echo (rline, (noecho == 0));
-   line = SLrline_read_line (rline, prompt, NULL);
+   Active_Rline_Info = sri;
+   (void) SLrline_set_echo (sri->rli, (noecho == 0));
+   line = SLrline_read_line (sri->rli, prompt, NULL);
    Active_Rline_Info = NULL;
 #endif
 #if SYSTEM_SUPPORTS_SIGNALS
    reset_tty ();
-#else
-   fputs ("\r\n", stdout);
-   fflush (stdout);
 #endif
+   if (sri->output_newline)
+     fputs ("\r\n", stdout);
+   fflush (stdout);
    return line;
 }
 
-static int save_input_line (SLang_RLine_Info_Type *rline, char *line)
+static int save_input_line (Slsh_Readline_Type *rline, char *line)
 {
    char *p;
 
@@ -354,7 +444,7 @@ static int save_input_line (SLang_RLine_Info_Type *rline, char *line)
    add_history(line);
    return 0;
 #else
-   return SLrline_save_line (rline);
+   return SLrline_save_line (rline->rli);
 #endif
 }
 
@@ -424,7 +514,8 @@ static char *get_input_line (SLang_Load_Type *x)
 	  }
      }
 
-   line = read_input_line (Rline_Info, prompt, 0);
+   line = read_input_line (Default_Readline_Info, prompt, 0);
+
    if (free_prompt)
      SLang_free_slstring (prompt);
 
@@ -444,7 +535,7 @@ static char *get_input_line (SLang_Load_Type *x)
    /* This hook is used mainly for logging input */
    (void) SLang_run_hooks ("slsh_interactive_after_hook", 1, line);
 
-   (void) save_input_line (Rline_Info, line);
+   (void) save_input_line (Default_Readline_Info, line);
 
    return line;
 }
@@ -510,6 +601,8 @@ static void close_interactive (void)
    Readline_Load_Object = NULL;
 #if !SYSTEM_SUPPORTS_SIGNALS
    reset_tty ();
+   fputs ("\r\n", stdout);
+   fflush (stdout);
 #endif
 }
 
@@ -604,53 +697,55 @@ int slsh_interactive (void)
    return 0;
 }
 
-static SLang_RLine_Info_Type *Intrinsic_Rline_Info;
+static Slsh_Readline_Type *Intrinsic_Rline_Info;
+
 #if USE_SLANG_READLINE
 static void close_intrinsic_readline (void)
 {
    if (Intrinsic_Rline_Info != NULL)
      {
-	SLrline_close (Intrinsic_Rline_Info);
+	SLrline_close (Intrinsic_Rline_Info->rli);
+	SLfree ((char *) Intrinsic_Rline_Info);
 	Intrinsic_Rline_Info = NULL;
      }
 }
 #endif
 
-static int readline_intrinsic_internal (SLang_RLine_Info_Type *rli, char *prompt, int noecho)
+static int readline_intrinsic_internal (Slsh_Readline_Type *sri, char *prompt, int noecho)
 {
    char *line;
 
-   if (rli == NULL)
-     rli = Intrinsic_Rline_Info;
+   if (sri == NULL)
+     sri = Intrinsic_Rline_Info;
 
 #if USE_SLANG_READLINE
-   if ((rli == NULL) && Use_Readline)
+   if ((sri == NULL) && Use_Readline)
      {
-	Intrinsic_Rline_Info = SLrline_open (SLtt_Screen_Cols, SL_RLINE_BLINK_MATCH);
+	Intrinsic_Rline_Info = open_slsh_readline (NULL, SL_RLINE_BLINK_MATCH);
 	if (Intrinsic_Rline_Info == NULL)
 	  return -1;
 	(void) SLang_add_cleanup_function (close_intrinsic_readline);
-	rli = Intrinsic_Rline_Info;
+	sri = Intrinsic_Rline_Info;
      }
 #endif
    enable_keyboard_interrupt ();
 
-   line = read_input_line (rli, prompt, noecho);
+   line = read_input_line (sri, prompt, noecho);
    if (noecho == 0)
-     (void) save_input_line (rli, line);
+     (void) save_input_line (sri, line);
    (void) SLang_push_malloced_string (line);
    return 0;
 }
 
 static int Rline_Type_Id = 0;
 
-static SLang_MMT_Type *pop_rli_type (SLang_RLine_Info_Type **rlip)
+static SLang_MMT_Type *pop_sri_type (Slsh_Readline_Type **srip)
 {
    SLang_MMT_Type *mmt;
 
    if (NULL == (mmt = SLang_pop_mmt (Rline_Type_Id)))
      return NULL;
-   if (NULL == (*rlip = (SLang_RLine_Info_Type *)SLang_object_from_mmt (mmt)))
+   if (NULL == (*srip = (Slsh_Readline_Type *)SLang_object_from_mmt (mmt)))
      {
 	SLang_free_mmt (mmt);
 	return NULL;
@@ -660,15 +755,15 @@ static SLang_MMT_Type *pop_rli_type (SLang_RLine_Info_Type **rlip)
 
 static void readline_intrinsic (char *prompt)
 {
-   SLang_RLine_Info_Type *rli = NULL;
+   Slsh_Readline_Type *sri = NULL;
    SLang_MMT_Type *mmt = NULL;
 
    if (SLang_Num_Function_Args == 2)
      {
-	if (NULL == (mmt = pop_rli_type (&rli)))
+	if (NULL == (mmt = pop_sri_type (&sri)))
 	  return;
      }
-   (void) readline_intrinsic_internal (rli, prompt, 0);
+   (void) readline_intrinsic_internal (sri, prompt, 0);
 
    if (mmt != NULL)
      SLang_free_mmt (mmt);
@@ -676,30 +771,30 @@ static void readline_intrinsic (char *prompt)
 
 static void readline_noecho_intrinsic (char *prompt)
 {
-   SLang_RLine_Info_Type *rli = NULL;
+   Slsh_Readline_Type *sri = NULL;
    SLang_MMT_Type *mmt = NULL;
 
    if (SLang_Num_Function_Args == 2)
      {
-	if (NULL == (mmt = pop_rli_type (&rli)))
+	if (NULL == (mmt = pop_sri_type (&sri)))
 	  return;
      }
-   (void) readline_intrinsic_internal (rli, prompt, 1);
+   (void) readline_intrinsic_internal (sri, prompt, 1);
    if (mmt != NULL)
      SLang_free_mmt (mmt);
 }
 
 static void new_slrline_intrinsic (char *name)
 {
-   SLang_RLine_Info_Type *rli;
+   Slsh_Readline_Type *sri;
    SLang_MMT_Type *mmt;
 
-   if (NULL == (rli = SLrline_open2 (name, SLtt_Screen_Cols, SL_RLINE_BLINK_MATCH)))
+   if (NULL == (sri = open_slsh_readline (name, SL_RLINE_BLINK_MATCH)))
      return;
 
-   if (NULL == (mmt = SLang_create_mmt (Rline_Type_Id, (VOID_STAR) rli)))
+   if (NULL == (mmt = SLang_create_mmt (Rline_Type_Id, (VOID_STAR) sri)))
      {
-	SLrline_close (rli);
+	close_slsh_readline (sri);
 	return;
      }
 
@@ -730,6 +825,209 @@ static void get_screen_size (void)
    (void) SLang_push_int (cols);
 }
 
+#if USE_SLANG_READLINE
+typedef struct
+{
+   SLang_MMT_Type *mmt;
+   Slsh_Readline_Type *sri;
+   SLang_Name_Type *update_hook;
+   SLang_Any_Type *cd;
+   SLang_Name_Type *clear_cb;
+   SLang_Name_Type *preread_cb;
+   SLang_Name_Type *postread_cb;
+   SLang_Name_Type *width_cb;
+}
+Rline_CB_Type;
+
+static int call_simple_update_cb (SLang_Name_Type *f, Rline_CB_Type *cb, int *opt)
+{
+   if (f == NULL)
+     return 0;
+
+   if (-1 == SLang_start_arg_list ())
+     return -1;
+   if ((-1 == SLang_push_mmt (cb->mmt))
+       || ((opt != NULL) && (-1 == SLang_push_int (*opt)))
+       || ((cb->cd != NULL) && (-1 == SLang_push_anytype (cb->cd))))
+     {
+	(void) SLang_end_arg_list ();
+	return -1;
+     }
+   return SLexecute_function (f);
+}
+
+static void rline_update_clear_cb (SLrline_Type *rli, VOID_STAR cd)
+{
+   Rline_CB_Type *cb = (Rline_CB_Type *)cd;
+   (void) rli;
+   (void) call_simple_update_cb (cb->clear_cb, cb, NULL);
+}
+
+static void rline_update_preread_cb (SLrline_Type *rli, VOID_STAR cd)
+{
+   Rline_CB_Type *cb = (Rline_CB_Type *)cd;
+   (void) rli;
+   (void) call_simple_update_cb (cb->preread_cb, cb, NULL);
+}
+
+static void rline_update_postread_cb (SLrline_Type *rli, VOID_STAR cd)
+{
+   Rline_CB_Type *cb = (Rline_CB_Type *)cd;
+   (void) rli;
+   (void) call_simple_update_cb (cb->postread_cb, cb, NULL);
+}
+
+static void rline_update_width_cb (SLrline_Type *rli, int w, VOID_STAR cd)
+{
+   Rline_CB_Type *cb = (Rline_CB_Type *)cd;
+   (void) rli;
+   (void) call_simple_update_cb (cb->width_cb, cb, &w);
+}
+
+static void free_cb_info (Rline_CB_Type *cb)
+{
+   if (cb == NULL)
+     return;
+   if (cb->mmt != NULL) SLang_free_mmt (cb->mmt);
+   if (cb->update_hook != NULL) SLang_free_function (cb->update_hook);
+   if (cb->clear_cb != NULL) SLang_free_function (cb->clear_cb);
+   if (cb->preread_cb != NULL) SLang_free_function (cb->preread_cb);
+   if (cb->postread_cb != NULL) SLang_free_function (cb->postread_cb);
+   if (cb->width_cb != NULL) SLang_free_function (cb->width_cb);
+   if (cb->cd != NULL) SLang_free_anytype (cb->cd);
+   SLfree ((char *)cb);
+}
+
+static void rline_call_update_hook (SLrline_Type *rli,
+				    SLFUTURE_CONST char *prompt,
+				    SLFUTURE_CONST char *buf,
+				    unsigned int len,
+				    unsigned int point, VOID_STAR cd)
+{
+   Rline_CB_Type *cb;
+
+   (void) rli; (void) len;
+   cb = (Rline_CB_Type *)cd;
+
+   if (-1 == SLang_start_arg_list ())
+     return;
+
+   if ((-1 == SLang_push_mmt (cb->mmt))
+       || (-1 == SLang_push_string (prompt))
+       || (-1 == SLang_push_string (buf))
+       || (-1 == SLang_push_int ((int) point))
+       || ((cb->cd != NULL) && (-1 == SLang_push_anytype (cb->cd))))
+     {
+	(void) SLang_end_arg_list ();
+	return;
+     }
+
+   (void) SLexecute_function (cb->update_hook);
+}
+
+static void free_rli_update_data_cb (SLrline_Type *rli, VOID_STAR cd)
+{
+   (void) rli;
+   if (cd != NULL)
+     free_cb_info ((Rline_CB_Type *)cd);
+}
+
+static void set_rline_update_hook (void)
+{
+   Rline_CB_Type *cb;
+   SLrline_Type *rli;
+
+   if (NULL == (cb = (Rline_CB_Type *)SLmalloc(sizeof(Rline_CB_Type))))
+     return;
+   memset ((char *)cb, 0, sizeof(Rline_CB_Type));
+
+   switch (SLang_Num_Function_Args)
+     {
+      default:
+	SLang_verror (SL_Usage_Error, "Usage: rline_set_update_hook (rli [,&hook [,clientdata]]);");
+	return;
+
+      case 3:
+	if (-1 == SLang_pop_anytype (&cb->cd))
+	  return;
+
+      case 2:
+	if (NULL == (cb->update_hook = SLang_pop_function ()))
+	  goto free_and_return;
+
+      case 1:
+	if (NULL == (cb->mmt = pop_sri_type (&cb->sri)))
+	  goto free_and_return;
+     }
+
+   cb->sri->output_newline = 0;
+   rli = cb->sri->rli;
+
+   SLrline_set_update_clear_cb (rli, rline_update_clear_cb);
+   SLrline_set_update_preread_cb (rli, rline_update_preread_cb);
+   SLrline_set_update_postread_cb (rli, rline_update_postread_cb);
+   SLrline_set_update_width_cb (rli, rline_update_width_cb);
+
+   if (0 == SLrline_set_update_hook (rli, rline_call_update_hook, (VOID_STAR)cb))
+     {
+	SLrline_set_free_update_cb (rli, free_rli_update_data_cb);
+	return;
+     }
+
+   /* drop */
+free_and_return:
+   free_cb_info (cb);
+}
+
+static int pop_set_rline_cb_args (SLang_MMT_Type **mmtp,
+				  Rline_CB_Type **cbp, SLang_Name_Type **ntp)
+{
+   SLang_Name_Type *nt;
+   Slsh_Readline_Type *sri;
+   SLang_MMT_Type *mmt;
+
+   if (SLang_peek_at_stack () == SLANG_NULL_TYPE)
+     nt = NULL;
+   else if (NULL == (nt = SLang_pop_function ()))
+     return -1;
+
+   if (NULL == (mmt = pop_sri_type (&sri)))
+     {
+	if (nt != NULL)
+	  SLang_free_function (nt);
+	return -1;
+     }
+   if (-1 == SLrline_get_update_client_data (sri->rli, (VOID_STAR *)cbp))
+     {
+	SLang_free_mmt (mmt);
+	if (nt == NULL) SLang_free_function (nt);
+	return -1;
+     }
+   *mmtp = mmt;
+   *ntp = nt;
+   return 0;
+}
+
+#define SET_RLINE_UPDATE_XXX_CB(fun, _xxx) \
+   static void fun (void) \
+   { \
+      SLang_MMT_Type *mmt; \
+      SLang_Name_Type *nt; \
+      Rline_CB_Type *cb; \
+      \
+      if (-1 == pop_set_rline_cb_args (&mmt, &cb, &nt)) \
+	return; \
+      SLang_free_function (cb->_xxx); \
+      cb->_xxx = nt; \
+      SLang_free_mmt (mmt); \
+   }
+
+SET_RLINE_UPDATE_XXX_CB (set_rline_update_clear_cb, clear_cb)
+SET_RLINE_UPDATE_XXX_CB (set_rline_update_preread_cb, preread_cb)
+SET_RLINE_UPDATE_XXX_CB (set_rline_update_postread_cb, postread_cb)
+SET_RLINE_UPDATE_XXX_CB (set_rline_update_width_cb, width_cb)
+#endif				       /* USE_SLANG_READLINE */
+
 static SLang_Intrin_Fun_Type Intrinsics [] =
 {
    MAKE_INTRINSIC_0("__rline_init_tty", init_tty, VOID_TYPE),
@@ -741,17 +1039,20 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_0("slsh_set_prompt_hook", set_prompt_hook, VOID_TYPE),
    MAKE_INTRINSIC_0("slsh_get_prompt_hook", get_prompt_hook, VOID_TYPE),
    MAKE_INTRINSIC_0("slsh_get_screen_size", get_screen_size, VOID_TYPE),
+#if USE_SLANG_READLINE
+   MAKE_INTRINSIC_0("slsh_set_readline_update_hook", set_rline_update_hook, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_set_update_clear_cb", set_rline_update_clear_cb, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_set_update_preread_cb", set_rline_update_preread_cb, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_set_update_postread_cb", set_rline_update_postread_cb, VOID_TYPE),
+   MAKE_INTRINSIC_0("slsh_set_update_width_cb", set_rline_update_width_cb, VOID_TYPE),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 
 static void destroy_rline (SLtype type, VOID_STAR f)
 {
-   SLang_RLine_Info_Type *rli;
    (void) type;
-
-   rli = (SLang_RLine_Info_Type *) f;
-   if (rli != NULL)
-     SLrline_close (rli);
+   close_slsh_readline ((Slsh_Readline_Type *) f);
 }
 
 static int register_rline_type (void)
@@ -770,7 +1071,7 @@ static int register_rline_type (void)
    /* By registering as SLANG_VOID_TYPE, slang will dynamically allocate a
     * type.
     */
-   if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE, sizeof (SLang_RLine_Info_Type*), SLANG_CLASS_TYPE_MMT))
+   if (-1 == SLclass_register_class (cl, SLANG_VOID_TYPE, sizeof (Slsh_Readline_Type*), SLANG_CLASS_TYPE_MMT))
      return -1;
 
    Rline_Type_Id = SLclass_get_class_id (cl);
