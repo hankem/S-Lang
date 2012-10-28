@@ -290,6 +290,7 @@ static Interrupt_Hook_Type *
 	       *prevp = prev;
 	     return h;
 	  }
+	prev = h;
 	h = h->next;
      }
    return NULL;

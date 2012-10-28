@@ -131,6 +131,9 @@ Changes since 2.2.4
     functions.
 63. src/slarrfun.inc: Removed an unused variable from the
     wherefirst/last/min/max functions.
+64. src/slcommon.c: find_interrupt_hook was not setting the prevp
+    variable causing some hooks to become lost during calls to
+    SLang_remove_interrupt_hook.
 
 {{{ Previous Versions
 
