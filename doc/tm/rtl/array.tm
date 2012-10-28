@@ -27,7 +27,7 @@
 #v+
       [0,1]
 #v-
-\seealso{where, any}
+\seealso{where, any, wherediff}
 \done
 
 \function{any}
@@ -53,7 +53,7 @@
 #v+
       0        0       1       0       0
 #v-
-\seealso{where, all}
+\seealso{all, where, wherediff}
 \done
 
 \function{array_info}
@@ -672,7 +672,34 @@
   corresponding elements of \exmp{X}.
 \notes
   Support for the optional argument was added to version 2.1.0.
-\seealso{wherefirst, wherelast, wherenot, array_info, array_shape, _isnull}
+\seealso{wherefirst, wherelast, wherenot, wherediff, array_info, array_shape, _isnull}
+\done
+
+\function{wherediff}
+\synopsis{Get the indices where adjacent elements differ}
+\usage{Array_Type wherediff (Array_Type A [, Ref_Type jp])}
+\description
+  This function returns an array of the indices where adjacent
+  elements of the array \exmp{A} differ.  If the optional second
+  argument is given, it must be a reference to a variable whose value
+  will be set to the complement indices (those where adjacient
+  elements are the same).
+
+  The returned array of indices will consist of those elements
+  \exmp{i} where \exmp{A[i] != A[i-1]}.  Since no element preceeds the
+  0th element, \exmp{A[0]} differs from its non-existing
+  preceeding element; hence the index \exmp{0} will a member of the
+  returned array.
+\example
+  Suppose that \exmp{A = [1, 1, 3, 0, 0, 4, 7, 7]}.  Then,
+#v+
+     i = wherediff (A, &j);
+#v-
+  will result in \exmp{i = [0, 2, 3, 5, 6]} and \exmp{j = [1, 4, 7]}.
+\notes
+  Higher dimensional arrays are treated as a 1-d array of contiguous
+  elements.
+\seealso{where, wherenot}
 \done
 
 \function{wherefirst}
@@ -781,6 +808,6 @@ temporary arrays.
 \description
   This function is equivalent to \exmp{where(not a)}.  See the
   documentation for \ifun{where} for more information.
-\seealso{where, wherefirst, wherelast}
+\seealso{where, wherediff, wherefirst, wherelast}
 \done
 

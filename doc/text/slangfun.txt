@@ -35,7 +35,7 @@ all
 
 
  SEE ALSO
-  where, any
+  where, any, wherediff
 
 --------------------------------------------------------------
 
@@ -70,7 +70,7 @@ any
 
 
  SEE ALSO
-  where, all
+  all, where, wherediff
 
 --------------------------------------------------------------
 
@@ -886,7 +886,44 @@ where
   Support for the optional argument was added to version 2.1.0.
 
  SEE ALSO
-  wherefirst, wherelast, wherenot, array_info, array_shape, _isnull
+  wherefirst, wherelast, wherenot, wherediff, array_info, array_shape, _isnull
+
+--------------------------------------------------------------
+
+wherediff
+
+ SYNOPSIS
+  Get the indices where adjacent elements differ
+
+ USAGE
+  Array_Type wherediff (Array_Type A [, Ref_Type jp])
+
+ DESCRIPTION
+  This function returns an array of the indices where adjacent
+  elements of the array `A' differ.  If the optional second
+  argument is given, it must be a reference to a variable whose value
+  will be set to the complement indices (those where adjacient
+  elements are the same).
+
+  The returned array of indices will consist of those elements
+  `i' where `A[i] != A[i-1]'.  Since no element preceeds the
+  0th element, `A[0]' differs from its non-existing
+  preceeding element; hence the index `0' will a member of the
+  returned array.
+
+ EXAMPLE
+  Suppose that `A = [1, 1, 3, 0, 0, 4, 7, 7]'.  Then,
+
+     i = wherediff (A, &j);
+
+  will result in `i = [0, 2, 3, 5, 6]' and `j = [1, 4, 7]'.
+
+ NOTES
+  Higher dimensional arrays are treated as a 1-d array of contiguous
+  elements.
+
+ SEE ALSO
+  where, wherenot
 
 --------------------------------------------------------------
 
@@ -1053,7 +1090,7 @@ wherenot
   documentation for `where' for more information.
 
  SEE ALSO
-  where, wherefirst, wherelast
+  where, wherediff, wherefirst, wherelast
 
 --------------------------------------------------------------
 

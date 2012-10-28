@@ -4182,6 +4182,123 @@ static void array_wherenot (void)
    array_where_intern (0);
 }
 
+static void array_wherediff (void)
+{
+   char *data, *isdiff;
+   size_t sizeof_type;
+   SLang_Class_Type *cl;
+   SLuindex_Type i, num;
+   SLindex_Type numdiff, *idx_ptr;
+   SLang_Array_Type *at;
+   SLang_Ref_Type *ref = NULL;
+
+   if (SLang_Num_Function_Args == 2)
+     {
+	if (-1 == SLang_pop_ref (&ref))
+	  return;
+     }
+
+   if (-1 == SLang_pop_array (&at, 1))
+     {
+	SLang_free_ref (ref);
+	return;
+     }
+   num = at->num_elements;
+   if (NULL == (isdiff = (char *) SLmalloc (num+1)))
+     goto free_and_return;
+
+   sizeof_type = at->sizeof_type;
+   data = (char *) at->data;
+
+   if (num == 0)
+     numdiff = 0;
+   else
+     {
+	isdiff[0] = 1;
+	numdiff = 1;
+     }
+
+   cl = at->cl;
+
+   if (0 == (at->flags & SLARR_DATA_VALUE_IS_POINTER))
+     {
+	for (i = 1; i < num; i++)
+	  {
+	     char *lastdata = data;
+	     data += sizeof_type;
+	     isdiff[i] = (0 != memcmp (data, lastdata, sizeof_type));
+	     numdiff += isdiff[i];
+	  }
+     }
+   else
+     {
+	VOID_STAR *ptr;
+
+	if (NULL == cl->cl_cmp)
+	  {
+	     _pSLang_verror (SL_NOT_IMPLEMENTED,
+			     "%s does not have a comparision function defined",
+			     cl->cl_name);
+	     goto free_and_return;
+	  }
+	ptr = (VOID_STAR *)at->data;
+	for (i = 1; i < num; i++)
+	  {
+	     VOID_STAR *last_ptr = ptr;
+	     ptr++;
+	     if ((*ptr == NULL) || (*last_ptr == NULL))
+	       isdiff[i] = (*ptr != *last_ptr);
+	     else
+	       {
+		  int cmp;
+		  if (-1 == cl->cl_cmp (at->data_type, ptr, last_ptr, &cmp))
+		    goto free_and_return;
+
+		  isdiff[i] = (cmp != 0);
+	       }
+	     numdiff += isdiff[i];
+	  }
+     }
+
+   SLang_free_array (at);
+   at = SLang_create_array1 (SLANG_ARRAY_INDEX_TYPE, 0, NULL, &numdiff, 1, 1);
+   if (at == NULL)
+     goto free_and_return;
+
+   idx_ptr = (SLindex_Type *) at->data;
+   for (i = 0; i < num; i++)
+     {
+	if (isdiff[i]) *idx_ptr++ = i;
+     }
+   if (-1 == SLang_push_array (at, 0))
+     goto free_and_return;
+
+   if (ref != NULL)
+     {
+	SLindex_Type numsame;
+	numsame = (SLindex_Type)num - numdiff;
+
+	SLang_free_array (at);	       /* already pushed, reuse variable */
+	at = SLang_create_array1 (SLANG_ARRAY_INDEX_TYPE, 0, NULL, &numsame, 1, 1);
+	if (at == NULL)
+	  goto free_and_return;
+	idx_ptr = (SLindex_Type *) at->data;
+	for (i = 0; i < num; i++)
+	  {
+	     if (isdiff[i] == 0) *idx_ptr++ = i;
+	  }
+	(void) SLang_assign_to_ref (ref, SLANG_ARRAY_TYPE, &at);
+	/* drop */
+     }
+
+free_and_return:
+
+   SLfree (isdiff);	       /* NULL ok */
+   SLang_free_array (at);
+   if (ref != NULL)
+     SLang_free_ref (ref);
+}
+
 /* Up to the caller to ensure that ind_at is an index array */
 static int do_array_reshape (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 {
@@ -4758,6 +4875,7 @@ static SLang_Intrin_Fun_Type Array_Table [] =
    MAKE_INTRINSIC_0("wherenot", array_wherenot, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("wherefirst", array_where_first, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("wherelast", array_where_last, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherediff", array_wherediff, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("reshape", array_reshape, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_reshape", _array_reshape, SLANG_VOID_TYPE),
 #if 0

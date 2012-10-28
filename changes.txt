@@ -136,6 +136,8 @@ Changes since 2.2.4
     SLang_remove_interrupt_hook.
 65. src/slrline.c,slsh/readline.c: Added support for SLrline
     callbacks.  See the slsh docs for details.
+66. src/slarray.c: Added wherediff intrinsic.  This returns an array
+    of indices where adjacent elements of an array differ. 
 
 {{{ Previous Versions
 
