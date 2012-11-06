@@ -326,13 +326,13 @@ static int rl_quote_insert (SLrline_Type *This_RLI)
    int err = _pSLang_Error;
    _pSLang_Error = 0;
    SLang_Last_Key_Char = (*This_RLI->getkey)();
-   rl_self_insert (This_RLI);
    if (_pSLang_Error == SL_USER_BREAK)
      {
 	SLKeyBoard_Quit = 0;
-	_pSLang_Error = 0;
+	SLang_Last_Key_Char = SLang_Abort_Char;
      }
-   else _pSLang_Error = err;
+   SLang_set_error (err);
+   rl_self_insert (This_RLI);
    return 0;
 }
 
@@ -1260,6 +1260,7 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 
 static int rl_abort (SLrline_Type *This_RLI)
 {
+   SLang_set_error (SL_USER_BREAK);
    This_RLI->quit = RLINE_QUIT_ABORT;
    return 0;
 }

@@ -143,6 +143,9 @@ Changes since 2.2.4
     function for large values.  Also, the poisson_cdf function now
     uses the Wilson and Hilferty normal approximation for values of
     lambda greater than 1000.
+68. src/slrline.c: Use the SLang_set_error function instead of
+    manipulating the _pSLang_Error variable.  Also, changed the readline
+    "kbd_quit" function to throw a UserBreakError.
 
 {{{ Previous Versions
 
