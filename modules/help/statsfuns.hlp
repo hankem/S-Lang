@@ -193,8 +193,10 @@ poisson_cdf
   cdf = poisson_cdf (Double_Type m, Int_Type k)
 
  DESCRIPTION
- This function computes the CDF for the Poisson probability distribution
- parameterized by the value `m'.
+ This function computes the CDF for the Poisson probability
+ distribution parameterized by the value `m'.  For values of
+ `m>100' and `abs(m-k)<sqrt(m)', the Wilson and Hilferty
+ asymptotic approximation is used.
 
  SEE ALSO
   chisqr_cdf

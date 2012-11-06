@@ -122,8 +122,10 @@
 \synopsis{Compute the Poisson CDF}
 \usage{cdf = poisson_cdf (Double_Type m, Int_Type k)}
 \description
- This function computes the CDF for the Poisson probability distribution
- parameterized by the value \exmp{m}.
+ This function computes the CDF for the Poisson probability
+ distribution parameterized by the value \exmp{m}.  For values of
+ \exmp{m>100} and \exmp{abs(m-k)<sqrt(m)}, the Wilson and Hilferty
+ asymptotic approximation is used.
 \seealso{chisqr_cdf}
 \done
 

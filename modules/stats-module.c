@@ -304,8 +304,8 @@ static double mann_whitney_cdf (unsigned int m, unsigned int n, unsigned int s) 
  * sci.math.num-analysis article <6potip$l56@sjx-ixn4.ix.netcom.com>.
  */
 
-#define NUM_COEFFS 10		       /* make this even */
-static double Param = NUM_COEFFS + 0.840;
+#define NUM_COEFFS 18		       /* make this even */
+static double Param = NUM_COEFFS + 1;  /* 0.840 */
 /* determined empirically using the driver in main at end of the file. */
 
 static double Coeffs[NUM_COEFFS+1];
@@ -373,9 +373,10 @@ static double JDMlog_gamma (double x)
  */
 static double JDMlog_gamma_star (double a, double x)
 {
-   double c_n, xn;
    double sum;
    int n;
+   double cnxn;
+   double eps = 2.220446049250313e-16;
 
    if (a == 0.0)
      return 0.0;
@@ -385,18 +386,16 @@ static double JDMlog_gamma_star (double a, double x)
 	/* FIXME!!! Handle a < 0 */
      }
 
-   c_n = 1.0 / a;
-   xn = 1.0;
-   sum = c_n * xn;
+   cnxn = 1.0 / a;
+   sum = cnxn;
    n = 0;
-   while (n < 500)
+   while (n < 5000)
      {
 	n++;
-	c_n /= (a + n);
-	if (c_n == 0.0)
+	cnxn *= x/(a+n);
+	if (cnxn < sum*eps)
 	  break;
-	xn *= x;		       /* may overflow */
-	sum += c_n * xn;
+	sum += cnxn;
      }
 
    return log (sum) - x - JDMlog_gamma (a);
@@ -431,7 +430,7 @@ static double JDMlog_CapGamma (double a, double x)
    double a1, a0, b0, b1;
    double f;
    double renorm_factor;
-   double eps = 1e-14;
+   double eps = 2.220446049250313e-16;
    int n;
 
    if (x <= 0.0)
@@ -447,7 +446,7 @@ static double JDMlog_CapGamma (double a, double x)
    f = a1 * renorm_factor;
    n = 1;
 
-   if (renorm_factor != 0.0) while (n < 500)
+   if (renorm_factor != 0.0) while (n < 5000)
      {
 	double f1, aa;
 
@@ -492,7 +491,7 @@ static double JDMincomplete_gamma (double a, double x)
    if (a <= 0.0)
      return log(a);
 
-   if (x > a)
+   if (x >= a)
      return 1.0 - exp (JDMlog_CapGamma (a,x) - JDMlog_gamma (a));
 
    return exp (a * log(x) + JDMlog_gamma_star (a, x));
@@ -616,18 +615,39 @@ static int incbeta (double x, double a, double b, double *result)
 /* See A&S 6.5.13
  *
  * This computes: \sum_{0<=k<=n} lambda^k/k! exp(-lambda)
- * From A&S 6.5.3, this is just 1-P(n+1,lambda)
+ * From A&S 6.5.13, this is just 1-P(n+1,lambda)
  */
-static double poisson_cdf_intrin (double *lambda, int *np)
+static double poisson_cdf_intrin (double *lambdap, int *np)
 {
    int n = *np;
+   double lambda = *lambdap;
+
    if (n < 0)
      return 0.0;
 
-   return 1.0 - JDMincomplete_gamma ((double)(n + 1), *lambda);
+   n = n+1;
+   if (lambda > 1000.0)
+     {
+	double dn = sqrt(n);
+	if (fabs(lambda - n) < dn)
+	  {
+	     /* Wilson and Hilferty, 1951 */
+	     double c = pow (lambda/n, 1.0/3.0);
+	     double mu = 1.0-1.0/(9.0*n);
+	     double s = 1.0/(3*dn);
+
+	     return 0.5 * (1 - erf((c-mu)/s/sqrt(2.0)));
+	  }
+	/* drop */
+     }
+
+
+   return 1.0 - JDMincomplete_gamma ((double)n, lambda);
 }
 
-/* P(X^2 < chisqr) */
+/* P(X^2 < chisqr)
+ * A&S 26.4.19
+ */
 static double chisqr_cdf_intrin (int *dofp, double *chisqrp)
 {
    int dof = *dofp;

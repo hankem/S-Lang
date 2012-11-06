@@ -490,6 +490,36 @@ private define test_student_t ()
    return nfailed;
 }
 
+private define check_poisson_cdf (m, k, p)
+{
+   variable p1 = poisson_cdf (m, k);
+   if (fneqs (p, p1, 1e-6))
+     {
+	() = fprintf (stderr, "poisson_cdf(%S,%S) returned %S, expected %S, diff=%S\n",
+		      m, k, p1, p, abs(p-p1));
+	return 1;
+     }
+   return 0;
+}
+
+private define test_poisson_cdf ()
+{
+   variable failed = 0;
+
+   % The CDFs were computed from http://www.xuru.org/
+   failed += check_poisson_cdf (6, 12, 0.991172516482);
+   failed += check_poisson_cdf (245, 300, 0.999702001313651);
+   failed += check_poisson_cdf (245, 345, 0.9999999993);
+   failed += check_poisson_cdf (345, 245, 8.407230482e-9);
+   failed += check_poisson_cdf (500.0, 500, 0.5118911217);
+   failed += check_poisson_cdf (500.0, 450, 0.01240835055);
+   failed += check_poisson_cdf (50000.0, 50000, 0.501189413);
+   failed += check_poisson_cdf (50000.0, 49900, 0.3283840695);
+   failed += check_poisson_cdf (50000.0, 50500, 0.9873021349);
+
+   return failed;
+}
+
 define slsh_main ()
 {
    variable nfailed, total_failed = 0;
@@ -543,6 +573,10 @@ define slsh_main ()
    if (nfailed)
      () = fprintf (stdout, "testing Student t_tests: %d failures\n", nfailed);
    total_failed += nfailed;
+
+   nfailed = test_poisson_cdf ();
+   if (nfailed)
+     () = fprintf (stdout, "testing poisson_cdf: %d failures\n", nfailed);
 
    exit (total_failed > 0);
 }

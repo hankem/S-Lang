@@ -137,7 +137,12 @@ Changes since 2.2.4
 65. src/slrline.c,slsh/readline.c: Added support for SLrline
     callbacks.  See the slsh docs for details.
 66. src/slarray.c: Added wherediff intrinsic.  This returns an array
-    of indices where adjacent elements of an array differ. 
+    of indices where adjacent elements of an array differ.
+67. modules/stats-module.c: Rewrote the log_gamma_star function to
+    avoid double precision overflows when computing the poisson_cdf
+    function for large values.  Also, the poisson_cdf function now
+    uses the Wilson and Hilferty normal approximation for values of
+    lambda greater than 1000.
 
 {{{ Previous Versions
 
