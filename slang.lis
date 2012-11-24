@@ -369,6 +369,8 @@
 @src/mkfiles/makefile.all
 @src/mkfiles/mkmake.c
 *src/mkfiles/mkmake.exe
+*src/mkfiles/mkmake16.exe
+@src/mkfiles/mk_mkmake.bat
 @src/modules.unx
 @src/pcconf.c
 @src/sl-feat.h

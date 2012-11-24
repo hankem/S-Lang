@@ -1,4 +1,11 @@
 -*- text -*-
+
+*** UPDATE: 2012-23-11: The mkmake.exe program described here used to
+   be an MSDOS 16 bit executable.  It has now been updated to a WIN32
+   executable.  The old 16 bit executable has been renamed to
+   mkmake16.exe.  The mk_mkmake.bat file may be used to build the
+   executable.
+
 Due to various incompatibilities between various make programs for PC
 systems as well as differing notions of what the path separator should
 be, I have decided that the best and most maintainable approach is to

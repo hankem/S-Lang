@@ -146,6 +146,8 @@ Changes since 2.2.4
 68. src/slrline.c: Use the SLang_set_error function instead of
     manipulating the _pSLang_Error variable.  Also, changed the readline
     "kbd_quit" function to throw a UserBreakError.
+69. src/mkfiles/mkmake.exe: Compiled as a win32 executable.  The old
+    16bit DOS version was renamed to mkmake16.exe.
 
 {{{ Previous Versions
 
