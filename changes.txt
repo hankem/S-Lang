@@ -152,6 +152,9 @@ Changes since 2.2.4
 71. mkfiles/: Added the /y option to the DOS copy command to avoid
     being prompted to overwriting files when installing on a windows
     system.
+72. win32-specific changes: Additional makefile tweaks.  Also, permit
+    "./foo" to represent a "relatively-absolute" filename on
+    DOS/Windows.
 
 {{{ Previous Versions
 

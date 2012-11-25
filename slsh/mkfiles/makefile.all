@@ -122,7 +122,7 @@ LINK_CMD = $(CC) -ml -L$(SLANGLIB) -e$(TARGET) /P=4096 @$(RSPFILE) slang.lib
 COMPILE_DEPS =
 TARGET_DEPS =
 RM = del
-COPY = copy
+COPY = copy /y
 #}}}
 ! endif
 #}}}
@@ -150,7 +150,7 @@ DEF_FILE = $(OBJDIR)\slsh.def
 TARGET_DEPS = $(MSWSHELL_EXE) $(DEF_FILE)
 COMPILE_DEPS =
 RM = del
-COPY = copy
+COPY = copy /y
 #}}}
 ! endif
 #}}}
@@ -178,7 +178,7 @@ DEF_FILE =
 TARGET_DEPS = $(RSPFILE2)
 COMPILE_DEPS =
 RM = del
-COPY = copy
+COPY = copy /y
 #}}}
 ! elifdef VC #{{{
 # Makefile for slang as Win32 GUI using nmake under Visual C.
@@ -199,7 +199,7 @@ RES_FILE = $(OBJDIR)\slsh.res
 TARGET_DEPS = $(RES_FILE)
 COMPILE_DEPS = $(COMPILE_RSP)
 RM = del
-COPY = copy
+COPY = copy /y
 LINK_CMD = link -out:$(OBJDIR)$(P)slsh.exe /SUBSYSTEM:console @$(RSPFILE) $(RES_FILE)
 # This needs changing for Windows NT on non-Intel processors
 CPU = _X86_
@@ -272,7 +272,7 @@ LINK_CMD = wcl386 -fe=$(TARGET) $(OBJS) $(SLANGLIB) -k150000 # -lvideo
 TARGET_DEPS =
 COMPILE_DEPS =
 RM = del
-COPY = copy
+COPY = copy /y
 #}}}
 ! elifdef ICC #{{{
 CC = icc
@@ -290,7 +290,7 @@ LINK_CMD = $(CC) -Fe$(TARGET) $(OBJS) $(SLANGLIB)
 TARGET_DEPS =
 COMPILE_DEPS =
 RM = del
-COPY = copy
+COPY = copy /y
 #}}}
 ! endif
 #}}}
@@ -395,7 +395,7 @@ $(OBJDIR)$(P)readline.$(O) : $(SRCDIR)$(P)readline.c $(COMPILE_DEPS)
 	$(COMPILE_CMD)$(OBJDIR)$(P)readline.$(O) $(SRCDIR)$(P)readline.c
 
 clean:
-	cd $(OBJDIR) && $(RM) *.$(O) *.exe
+	-cd $(OBJDIR) && $(RM) *.$(O) *.exe
 
 !endif   #NOT HELP
 

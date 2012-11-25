@@ -117,7 +117,7 @@ RSP_POSTFIX = &
 COMPILE_CMD = $(CC) -c $(CFLAGS) -o#  <-- no tailing space
 LIBDEPS = $(RSPFILE)
 TOUCH = touch
-COPY = copy
+COPY = copy /y
 #}}} BCC
 !  endif #ifdef BCC elifdef DJGPP
 ! endif #MSDOS
@@ -143,7 +143,7 @@ LIBDEPS = $(RSPFILE)
 # This needs changing for Windows NT on non-Intel processors
 TOUCH = wtouch
 RM = del
-COPY = copy
+COPY = copy /y
 !  else
 CC = bcc
 CFLAGS = -G- -H -N -w -ml -Dmsdos -DMSWINDOWS -W
@@ -159,7 +159,7 @@ RSP_POSTFIX = &#
 COMPILE_CMD = $(CC) -c $(CFLAGS) -o#
 LIBDEPS = $(RSPFILE)
 TOUCH = touch
-COPY = copy
+COPY = copy /y
 !  endif #}}}
 ! endif #WIN16
 ! ifdef OS2
@@ -193,7 +193,7 @@ RSP_PREFIX = +-
 RSP_POSTFIX =
 LIBDEPS = $(RSPFILE)
 TOUCH = wtouch
-COPY = copy
+COPY = copy /y
 RM = del
 #}}}
 !  elifdef ICC #{{{
@@ -211,7 +211,7 @@ RSP_PREFIX =
 TMP1=A
 # Hack to get ^&
 RSP_POSTFIX = $(TMP1:A=^^)&
-COPY = copy
+COPY = copy /y
 RM=del
 TOUCH=echo
 #}}}
@@ -237,7 +237,7 @@ LIBDEPS = $(RSPFILE) $(OBJDIR)\comp.rsp
 CPU = _X86_
 RM = del
 TOUCH = touch
-COPY = copy
+COPY = copy /y
 #}}}
 !  elifdef BCC #{{{
 CC = bcc32
@@ -260,7 +260,7 @@ RSP_POSTFIX = &
 COMPILE_CMD = $(CC) -c $(CFLAGS) -o
 LIBDEPS = $(RSPFILE)
 TOUCH = touch
-COPY = copy
+COPY = copy /y
 
 #}}}
 !  elifdef CYGWIN32 #{{{
@@ -310,7 +310,7 @@ COPY = cp
 AR_CR = $(TOOL_PREFIX)ar crv
 RANLIB = $(TOOL_PREFIX)ranlib
 
-#COPY = copy
+#COPY = copy /y
 #}}}
 !  elifdef WCC #{{{
 # Watcom makefile for slang
@@ -336,7 +336,7 @@ LIBDEPS = $(RSPFILE)
 CPU = _X86_
 TOUCH = wtouch
 RM = del
-COPY = copy
+COPY = copy /y
 #}}}
 !  endif    #ifdef VC elifdef BCC ... elifdef MINGW32
 ! endif #WIN32
@@ -749,6 +749,6 @@ $(OBJDIR)$(P)slw32tty.$(O) : $(SRCDIR)$(P)slw32tty.c $(CONFIG_H)
 !endif
 
 clean:
-	cd $(OBJDIR) && $(RM) *.$(O) *.dll *.a
+	-cd $(OBJDIR) && $(RM) *.$(O) *.dll *.a
 #
 !endif   #NOT HELP

@@ -164,7 +164,7 @@ $(OBJDIR) :
 	-$(MKINSDIR) $(OBJDIR)
 $(ELFDIR) :
 	-$(MKINSDIR) $(ELFDIR)
-$(CONFIG_H) : sysconf.h
+$(CONFIG_H) : sysconf.h Makefile
 	-$(CP) sysconf.h $(CONFIG_H)
 terminfo.inc: $(TERMINFO_INC) Makefile
 	-$(CP) $(TERMINFO_INC) terminfo.inc

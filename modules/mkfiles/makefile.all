@@ -72,7 +72,7 @@ P = \\
 O = obj # Object extension
 OBJDIR = mw32objs# Location of objects
 RM = del
-COPY = copy
+COPY = copy /y
 TARGET_C = $(TARGET)-module.c
 TARGET_DLL = $(TARGET)-module.dll
 TARGET_OBJ = $(TARGET)-module.$(O)
@@ -114,7 +114,7 @@ COPY = cp
 !  else
 CFLAGS = -DWIN32 -O2 $(WFLAGS) $(DLL_FLAGS)
 RM = del
-COPY = copy
+COPY = copy /y
 !  endif
 TARGET_C = $(TARGET)-module.c
 TARGET_DLL = $(TARGET)-module.dll
@@ -189,7 +189,7 @@ $(TARGET_OBJ): $(TARGET_C)
 $(OBJDIR) :
 	-mkdir $(OBJDIR)
 clean:
-	$(RM) *.$(O)
+	-$(RM) *.$(O)
 #
 .PHONY: $(MODULES) build-target
 !endif   #NOT HELP

@@ -436,7 +436,11 @@ static int is_relatively_absolute (SLFUTURE_CONST char *file)
 #else
    if (*file == '.') file++;
    if (*file == '.') file++;
-   return (*file == PATH_SEP);
+   return ((*file == PATH_SEP)
+# if defined(IBMPC_SYSTEM)
+	   || (*file == '/')
+# endif
+	   );
 #endif
 }
 
