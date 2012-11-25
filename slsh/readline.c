@@ -430,6 +430,9 @@ static int save_input_line (Slsh_Readline_Type *rline, char *line)
 {
    char *p;
 
+   if (Use_Readline == 0)
+     return 0;
+
    if (line == NULL)
      return 0;
 
