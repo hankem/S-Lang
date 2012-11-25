@@ -38,7 +38,7 @@ private define install_file (file, dir)
    dir = convert_path (dir);
    file = convert_path (file);
 
-   run_cmd ("copy $file $dir"$);
+   run_cmd ("copy /y $file $dir"$);
 }
 
 private define install_files (pat, dir)
@@ -183,4 +183,3 @@ define slsh_main ()
    install_slsh (root, confdir, objdir);
    install_modules (root);
 }
-

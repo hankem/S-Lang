@@ -26,10 +26,10 @@ clean:
 #
 # Note the use of X- below.  Windows regards '=' as a commandline whitespace
 # character and needs to be quoted.  However I have not been able to figure
-# out how to do that in the econtext of the mingw32-make command parser.
+# out how to do that in the context of the mingw32-make command parser.
 # As a major hack, I added the X- prefix and modified mkfiles/install.sl
 # to remove the X-.
 install: all
-	mkfiles/runslsh.bat -i mkfiles/install.sl --destdir="X-$(DESTDIR)" --prefix="$(PREFIX)" install
+	mkfiles/runslsh.bat mkfiles/install.sl --destdir="X-$(DESTDIR)" --prefix="$(PREFIX)" install
 #
 .PHONY: all install clean
