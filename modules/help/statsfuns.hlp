@@ -100,6 +100,10 @@ stddev
   taken.  The default is to compute the standard deviation of all the
   elements.
 
+ NOTES
+  This function returns the unbiased N-1 form of the sample standard
+  deviation.
+
  SEE ALSO
   mean, median, kurtosis, skewness
 
@@ -712,5 +716,25 @@ spearman_r
 
  SEE ALSO
   kendall_tau, pearson_r
+
+--------------------------------------------------------------
+
+correlation
+
+ SYNOPSIS
+  Compute the sample correlation between two datasets
+
+ USAGE
+  c = correlation (x, y)
+
+ DESCRIPTION
+  This function computes Pearson's sample correlation coefficient
+  between 2 arrays.  It is assumed that the standard deviation of each
+  array is finite and non-zero.  The returned value falls in the
+  range -1 to 1, with -1 indicating that the data are anti-correlated,
+  and +1 indicating that the data are completely correlated.
+
+ SEE ALSO
+  covariance, stdddev
 
 --------------------------------------------------------------

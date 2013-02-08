@@ -155,6 +155,7 @@ Changes since 2.2.4
 72. win32-specific changes: Additional makefile tweaks.  Also, permit
     "./foo" to represent a "relatively-absolute" filename on
     DOS/Windows.
+73. modules/stats.sl: Added the correlation function.
 
 {{{ Previous Versions
 

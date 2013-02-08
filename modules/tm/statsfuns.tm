@@ -68,6 +68,9 @@
   specify the dimension over which the standard-deviation it to be
   taken.  The default is to compute the standard deviation of all the
   elements.
+\notes
+  This function returns the unbiased N-1 form of the sample standard
+  deviation.
 \seealso{mean, median, kurtosis, skewness}
 \done
 
@@ -456,5 +459,17 @@
    side=">"       Perform a right-tailed test
 #v-
 \seealso{kendall_tau, pearson_r}
+\done
+
+\function{correlation}
+\synopsis{Compute the sample correlation between two datasets}
+\usage{c = correlation (x, y)}
+\description
+  This function computes Pearson's sample correlation coefficient
+  between 2 arrays.  It is assumed that the standard deviation of each
+  array is finite and non-zero.  The returned value falls in the
+  range -1 to 1, with -1 indicating that the data are anti-correlated,
+  and +1 indicating that the data are completely correlated.
+\seealso{covariance, stdddev}
 \done
 

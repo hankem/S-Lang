@@ -13,6 +13,7 @@ import ("stats");
 %   spearman_r       Two-sample Spearman rank test
 %   kendall_tau      Two-sample Kendall tau
 %   pearson_r        Pearson's r correlation test
+%   correlation      2 sample correlation
 %   z_test
 %   skewness
 %   kurtosis
@@ -69,6 +70,7 @@ define sample_mean ()
    return mean (__push_args(args));
 }
 
+% These functions return the biased stddev
 define sample_stddev ()
 {
    variable x = ();
@@ -76,7 +78,6 @@ define sample_stddev ()
    return stddev(x) * sqrt((n-1.0)/n);
 }
 
-% This function returns the biased stddev
 private define get_mean_stddev (x)
 {
    variable m = mean(x);
@@ -802,6 +803,18 @@ define pearson_r ()
    variable df = length(x)-2;
    r = sqrt(df)*r/sqrt(1-r*r);
    return map_cdf_to_pval (student_t_cdf (r, df) ;; __qualifiers);
+}
+
+define correlation ()
+{
+   if (_NARGS != 2)
+     usage ("c = correlation (X, Y);");
+   variable x, y; (x,y) = ();
+   variable n = length(x);
+   if (n != length(y))
+     throw InvalidParmError, "Arrays must be the same length";
+   variable mx = mean(x), sx = stddev(x), my = mean(y), sy = stddev(y);
+   return sum ((x-mx)*(y-my))/((n-1)*sx*sy);
 }
 
 provide ("stats");
