@@ -3930,7 +3930,7 @@ static int array_eqs_method (SLtype a_type, VOID_STAR ap, SLtype b_type, VOID_ST
    return is_eqs;
 }
 
-static void is_null_intrinsic (SLang_Array_Type *at)
+static void is_null_intrinsic_intern (SLang_Array_Type *at)
 {
    SLang_Array_Type *bt;
 
@@ -3938,7 +3938,9 @@ static void is_null_intrinsic (SLang_Array_Type *at)
    if (bt == NULL)
      return;
 
-   if (at->flags & SLARR_DATA_VALUE_IS_POINTER)
+   if (at->data_type == SLANG_NULL_TYPE)
+     memset ((char *)bt->data, 1, bt->num_elements);
+   else if (at->flags & SLARR_DATA_VALUE_IS_POINTER)
      {
 	char *cdata, *cdata_max;
 	char **data;
@@ -3964,6 +3966,29 @@ static void is_null_intrinsic (SLang_Array_Type *at)
      }
 
    SLang_push_array (bt, 1);
+}
+
+static void is_null_intrinsic (void)
+{
+   char ret = 0;
+   SLang_Array_Type *at;
+
+   switch (SLang_peek_at_stack ())
+     {
+      case SLANG_ARRAY_TYPE:
+	if (-1 == SLang_pop_array (&at, 0))
+	  return;
+	is_null_intrinsic_intern (at);
+	free_array (at);
+	break;
+
+      case SLANG_NULL_TYPE:
+	ret = 1;
+	/* drop */
+      default:
+	(void) SLdo_pop();
+	(void) SLang_push_char (ret);
+     }
 }
 
 static SLang_Array_Type *pop_bool_array (void)
@@ -4868,7 +4893,7 @@ static SLang_Intrin_Fun_Type Array_Table [] =
    MAKE_INTRINSIC_1("array_to_bstring", array_to_bstring, SLANG_VOID_TYPE, SLANG_ARRAY_TYPE),
    MAKE_INTRINSIC_1("bstring_to_array", bstring_to_array, SLANG_VOID_TYPE, SLANG_BSTRING_TYPE),
    MAKE_INTRINSIC("init_char_array", init_char_array, SLANG_VOID_TYPE, 0),
-   MAKE_INTRINSIC_1("_isnull", is_null_intrinsic, SLANG_VOID_TYPE, SLANG_ARRAY_TYPE),
+   MAKE_INTRINSIC_0("_isnull", is_null_intrinsic, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("array_info", array_info, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("array_shape", array_shape, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("where", array_where, SLANG_VOID_TYPE),

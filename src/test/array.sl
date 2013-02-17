@@ -548,6 +548,12 @@ if ((length(where(_isnull(A))) != 2)
      or (where (_isnull(A))[1] != 5))
   failed ("_isnull: %S", where(_isnull(A))[1] != 5);
 
+A = NULL; if (_isnull(A) == 0) failed ("_isnull(NULL)");
+A = Null_Type[10];
+ifnot (all(_isnull (A))) failed ("_isnull(Null_Type[10])");
+if (length (_isnull(A)) != length(A)) failed ("length _isnull(Null_Type[10])");
+
+A = String_Type[10];
 A[*] = "a";
 if ("aaaaaaaaaa" != strjoin (A, ""))
   failed ("A[5]=a");
@@ -561,6 +567,8 @@ A[*] = "a";
 A[1] = NULL;
 if (length (where (A != String_Type[10])) != 9)
   failed ("A != String_Type[10]");
+
+
 
 private define test_indexing_with_1_index ()
 {
