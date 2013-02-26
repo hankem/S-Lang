@@ -1286,13 +1286,56 @@ static void loop_block (_pSLang_Token_Type *ctok)
    compile_token_of_type (CBRACE_TOKEN);
 }
 
+/* It is important that the caller wrap this with push_token_list/compile_token_list */
+static int simple_expressions_with_paren (_pSLang_Token_Type *ctok)
+{
+   int n = 0;
+
+   if (ctok->type != OPAREN_TOKEN)
+     {
+	_pSLparse_error(SL_SYNTAX_ERROR, "Expecting (", ctok, 0);
+	return -1;
+     }
+
+   (void) get_token (ctok);
+   while (_pSLang_Error == 0)
+     {
+	if (ctok->type == COMMA_TOKEN)
+	  {
+	     _pSLparse_error (SL_SYNTAX_ERROR, "Misplaced ','", ctok, 0);
+	     return -1;
+	  }
+
+	simple_expression (ctok);
+	n++;
+
+	if (ctok->type == CPAREN_TOKEN)
+	  {
+	     if (-1 == get_token (ctok))
+	       return -1;
+
+	     return n;
+	  }
+	if (ctok->type != COMMA_TOKEN)
+	  {
+	     _pSLparse_error (SL_SYNTAX_ERROR, "Expecting a ',' or ')'", ctok, 0);
+	     return -1;
+	  }
+	(void) get_token (ctok);
+     }
+
+   return -1;
+}
+
 static void handle_for_statement (_pSLang_Token_Type *ctok)
 {
    _pSLang_Token_Type tok_buf;
    _pSLang_Token_Type *ident_token = NULL;
+   int n;
 #if SLANG_HAS_BOSEOS
    int eos;
 #endif
+
    if (ctok->type == IDENT_TOKEN)
      {
 	tok_buf = *ctok;
@@ -1303,7 +1346,25 @@ static void handle_for_statement (_pSLang_Token_Type *ctok)
 #if SLANG_HAS_BOSEOS
    eos = compile_bos(ctok, 2);
 #endif
-   expression_with_parenthesis (ctok);
+
+   if (NULL == push_token_list ())
+     return;
+
+   if (-1 == (n = simple_expressions_with_paren (ctok)))
+     return;
+
+   if (n == 2)			       /* _for (a, b) */
+     {
+	n++;
+	append_int_as_token (1);
+     }
+   if (n != 3)
+     {
+	_pSLparse_error (SL_SYNTAX_ERROR, "Invalid number of control variables in _for statement", ctok, 1);
+	return;
+     }
+   (void) compile_token_list ();
+
 #if SLANG_HAS_BOSEOS
    if (eos) compile_eos ();
 #endif

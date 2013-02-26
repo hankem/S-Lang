@@ -157,6 +157,8 @@ Changes since 2.2.4
     DOS/Windows.
 73. modules/stats.sl: Added the correlation function.
 74. src/slarray.c: _isnull was not handling Null_Type arrays.
+75. src/slparse.c: If the _for statement contains two control
+    variables instead of 3, assume the third is 1.
 
 {{{ Previous Versions
 
