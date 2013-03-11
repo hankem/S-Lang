@@ -232,10 +232,10 @@ static int execvp_intrin (void)
 
 static int execve_intrin (void)
 {
-   if (SLang_Num_Function_Args != 2)
-     SLang_verror (SL_Usage_Error, "Usage: ret = execvp(path, argv[]);");
+   if (SLang_Num_Function_Args != 3)
+     SLang_verror (SL_Usage_Error, "Usage: ret = execve(path, argv[], env[]);");
 
-   return exec_what (CALL_EXECVE, 0);
+   return exec_what (CALL_EXECVE, 1);
 }
 
 static void _exit_intrin (int *s)
