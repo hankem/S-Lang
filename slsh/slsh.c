@@ -36,7 +36,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.9.0-0";
+static char *Slsh_Version = "0.9.0-1";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 

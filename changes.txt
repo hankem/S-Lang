@@ -161,6 +161,8 @@ Changes since 2.2.4
     variables instead of 3, assume the third is 1.
 76. modules/fork-module.c: The execve_intrin was not functioning
     properly (Agathoklis D. Hatzimanikas).
+77. slsh/readline.c: Check to see if an update_hook has been set
+    before adding callbacks to it.
 
 
 {{{ Previous Versions

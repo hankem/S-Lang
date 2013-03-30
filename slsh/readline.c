@@ -1001,14 +1001,23 @@ static int pop_set_rline_cb_args (SLang_MMT_Type **mmtp,
 	return -1;
      }
    if (-1 == SLrline_get_update_client_data (sri->rli, (VOID_STAR *)cbp))
+     goto return_error;
+
+   if (*cbp == NULL)
      {
-	SLang_free_mmt (mmt);
-	if (nt == NULL) SLang_free_function (nt);
-	return -1;
+	SLang_verror (SL_Application_Error, "\
+Attempt to define an rline update callback without first creating a readline_update_hook");
+	goto return_error;
      }
+
    *mmtp = mmt;
    *ntp = nt;
    return 0;
+
+return_error:
+   SLang_free_mmt (mmt);
+   if (nt == NULL) SLang_free_function (nt);
+   return -1;
 }
 
 #define SET_RLINE_UPDATE_XXX_CB(fun, _xxx) \
