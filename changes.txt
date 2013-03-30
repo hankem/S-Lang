@@ -163,6 +163,7 @@ Changes since 2.2.4
     properly (Agathoklis D. Hatzimanikas).
 77. slsh/readline.c: Check to see if an update_hook has been set
     before adding callbacks to it.
+78. modules/csv.sl: Add support for empty field names.
 
 
 {{{ Previous Versions

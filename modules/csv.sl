@@ -86,9 +86,18 @@ private define fixup_header_names (names)
      return names;
 
    names = strlow (names);
-   %names = strtrans (names, "\\,", "_");
+   variable i = where (names == "");
+   names[i] = array_map (String_Type, &sprintf, "col%d", i+1);
+
    names = strtrans (names, "^\\w", "_");
    names = strcompress (names, "_");
+
+   _for i (0, length(names)-1, 1)
+     {
+	if ('0' <= names[i][0] <= '9')
+	  names[i] = "_" + names[i];
+     }
+
    return names;
 }
 
