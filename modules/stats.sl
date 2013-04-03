@@ -615,7 +615,7 @@ define welch_t_test ()
      (x,y,tref) = ();
    else
      {
-	usage ("p = welch_t_test2 (X, Y [,&t] [; qualifiers]);  %% Student's 2 sample t-test\n"
+	usage ("p = welch_t_test2 (X, Y [,&t] [; qualifiers]);  %% Welch's 2 sample t-test\n"
 	       + "Qualifiers:\n"
 	       + " side=\"<\" | \">\""
 	      );
