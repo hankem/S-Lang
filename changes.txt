@@ -172,6 +172,9 @@ Changes since 2.2.4
       Integer_Type x=1
       String_Type y="foo"
 
+80. slsh/lib/print.sl: If the string form of the object ends in a
+    newline, do not write another.
+
 {{{ Previous Versions
 
 Changes since 2.2.3

@@ -386,7 +386,8 @@ define print ()
 
 	if (-1 != device.puts (x))
 	  {
-	     () = device.puts ("\n");
+	     if (x[-1] != '\n')
+	       () = device.puts ("\n");
 	  }
      }
    finally
