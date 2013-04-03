@@ -515,7 +515,8 @@ private define debugger_input_loop ()
 	variable e;
 	try (e)
 	  {
-	     deinit_sigint_handler ();
+	     %deinit_sigint_handler ();
+	     init_sigint_handler ();
 	     Debugger_Step = 0;
 
 	     if (Current_Frame > max_frame)

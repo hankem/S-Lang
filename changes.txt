@@ -176,6 +176,8 @@ Changes since 2.2.4
     newline, do not write another.
 81. modules/stats.sl: The usage message for Welch's t-test referred to
     Student's form.
+82. slsh/lib/sldbcore.sl: When entering the debugger_input_loop,
+    initialize the SIGINT handler.
 
 {{{ Previous Versions
 
