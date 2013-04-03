@@ -164,7 +164,13 @@ Changes since 2.2.4
 77. slsh/readline.c: Check to see if an update_hook has been set
     before adding callbacks to it.
 78. modules/csv.sl: Add support for empty field names.
+79. slsh/lib/slshrl.sl: Added "who" interactive command that shows the
+    names and values of all variables/functions defined at the prompt:
 
+      slsh> x = 1; y = "foo";
+      slsh> who;
+      Integer_Type x=1
+      String_Type y="foo"
 
 {{{ Previous Versions
 

@@ -64,6 +64,8 @@ private define generic_help ()
       "    stop logging input",
       "  save_input (<optional-file>);",
       "    save all previous input to a file (default: slsh.log)",
+      "  who;",
+      "    show a list of locally defined variables and functions",
       "  quit;"
       ];
 
@@ -91,6 +93,50 @@ public define slsh_help ()
      }
    () = fprintf (stdout, "*** No help on %s\n", name);
    slsh_apropos (name);
+}
+
+public define slsh_who ()
+{
+   variable a, name, obj;
+   variable pat;
+
+   if (_NARGS == 0)
+     "";
+
+   pat = ();
+
+   variable names = _apropos ("", pat, 8);     %  user defined variable
+   foreach (names[array_sort (names)])    %  user defined variable
+     {
+	name = ();
+	variable type;
+	obj = __get_reference (name);
+	if (__is_initialized (obj))
+	  {
+	     obj = @obj;
+	     type = typeof (obj);
+	  }
+	else
+	  {
+	     type = Undefined_Type;
+	     obj = "";
+	  }
+
+	if ((type == String_Type) || (type == BString_Type))
+	  print (obj, &obj);
+
+	variable txt = sprintf ("%S %S=%S", type, name, obj);
+	if (strlen(txt) > 79)
+	  txt = substr (txt, 1, 76) + "...";
+	message (txt);
+     }
+
+   names = _apropos ("", pat, 2);     %  user defined function
+   foreach (names[array_sort(names)])
+     {
+	name = ();
+	vmessage ("function %s()", name);
+     }
 }
 
 private variable Append_Semicolon = 0;
@@ -188,10 +234,10 @@ public define slsh_interactive_massage_hook (input)
 	if (length (s) == 0)
 	  return input;
 	s0 = s[0];
-	if ((s0 == "exit") and (length (s)==1))
+	if ((s0 == "exit") && (length (s)==1))
 	  usage ("Try 'quit' to exit");
 
-	if ((s0 != "help") and (s0 != "apropos") and (s0 != "quit"))
+	if (all (s0 != ["help", "apropos", "quit", "who"]))
 	  return maybe_append_semicolon (input);
      }
    else
@@ -219,6 +265,9 @@ public define slsh_interactive_massage_hook (input)
 
 	if (s0 == "quit")
 	  return "exit(0);";
+
+	if (s0 == "who")
+	  return "slsh_who();";
 
 	return input;
      }
