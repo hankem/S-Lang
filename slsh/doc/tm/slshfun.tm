@@ -100,6 +100,11 @@ additional functions described here are defined in
 \file{arrayfuns.sl}.
 #i ../../lib/tm/arrayfuns.tm
 
+\chapter{List Functions and List-based Data Structures}
+The file \file{arrayfuns.sl} includes functions for manipulating
+lists.  It also includes some list-based data structures such as heaps.
+#i ../../lib/tm/listfuns.tm
+
 \chapter{Subprocess Functions}
 These functions in \file{process.sl} facilitate the creation of
 subprocesses and pipelines.

@@ -13,7 +13,7 @@
   return from function.
 
   The algorithm used was derived from the DPPERM function, which is
-  part of the SLATEC packages.  See
+  part of the SLATEC package.  See
   \url{http://gams.nist.gov/cgi-bin/serve.cgi/Package/SLATEC}.
 \seealso{array_reverse, array_swap}
 \done
