@@ -178,6 +178,8 @@ Changes since 2.2.4
     Student's form.
 82. slsh/lib/sldbcore.sl: When entering the debugger_input_loop,
     initialize the SIGINT handler.
+83. slsh/lib/arrayfuns.sl: New function: rearrange, which may be used
+    to perform an in-place rearrangement of an array or list.
 
 {{{ Previous Versions
 

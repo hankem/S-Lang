@@ -1,3 +1,23 @@
+
+\function{rearrange}
+\synopsis{Rearrange the elements of a 1-d array or list.}
+\usage{rearrange (A, indices)}
+\description
+  This function performs an in-place rearrangment of the the elements
+  of an array according to the specified permutation, represented by
+  the \exmp{indices} argument.  The \exmp{indices} array is assumed to
+  contain unique integers in the range \exmp{[0,length(A)-1]}.
+\notes
+  The function modifies the elemnts of the \exmp{indices} array while
+  it performs the rearrangement.  The values will get restored upon
+  return from function.
+
+  The algorithm used was derived from the DPPERM function, which is
+  part of the SLATEC packages.  See
+  \url{http://gams.nist.gov/cgi-bin/serve.cgi/Package/SLATEC}.
+\seealso{array_reverse, array_swap}
+\done
+
 \function{reverse}
 \synopsis{Reverse the elements of a 1-d array}
 \usage{Array_Type reverse (Array_Type A)}
