@@ -97,7 +97,7 @@ private define heap_pop (h)
    return obj;
 }
 
-private variable heap_peek (h)
+private define heap_peek (h)
 {
    return h.list[0];
 }

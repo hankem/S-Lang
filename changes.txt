@@ -183,6 +183,7 @@ Changes since 2.2.4
 84. slsh/lib/listfuns.sl: New file that includes various functions
     dealing with lists and list-based data structures.  Currently this
     includes list_sort and a heap object.
+85. slsh/lib/listfuns.sl: heap_peek was improperly declared.
 
 {{{ Previous Versions
 
