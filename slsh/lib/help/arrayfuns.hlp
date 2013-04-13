@@ -13,7 +13,7 @@ rearrange
   contain unique integers in the range `[0,length(A)-1]'.
 
  NOTES
-  The function modifies the elemnts of the `indices' array while
+  The function modifies the elements of the `indices' array while
   it performs the rearrangement.  The values will get restored upon
   return from function.
 

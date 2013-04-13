@@ -8,7 +8,7 @@
   the \exmp{indices} argument.  The \exmp{indices} array is assumed to
   contain unique integers in the range \exmp{[0,length(A)-1]}.
 \notes
-  The function modifies the elemnts of the \exmp{indices} array while
+  The function modifies the elements of the \exmp{indices} array while
   it performs the rearrangement.  The values will get restored upon
   return from function.
 
