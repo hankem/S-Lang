@@ -298,7 +298,7 @@ SL_EXTERN void SLang_free_slstring (SLCONST SLstr_Type *);    /* handles NULL */
 SL_EXTERN int SLang_pop_slstring (SLstr_Type **);   /* free with SLang_free_slstring */
 SL_EXTERN SLstr_Type *SLang_concat_slstrings (SLstr_Type *a, SLstr_Type *b);
 
-SL_EXTERN void SLstring_dump_stats (void);
+/* SL_EXTERN void SLstring_dump_stats (void);  // is not (yet?) defined by S-Lang library */
 
 /*{{{ UTF-8 and Wide Char support */
 
@@ -598,10 +598,10 @@ SL_EXTERN int SLns_add_math_unary_table (SLang_NameSpace_Type *, SLang_Math_Unar
 SL_EXTERN int SLns_add_hconstant_table (SLang_NameSpace_Type *, SLang_HConstant_Type *, SLFUTURE_CONST char *);
 SL_EXTERN int SLns_add_iconstant_table (SLang_NameSpace_Type *, SLang_IConstant_Type *, SLFUTURE_CONST char *);
 SL_EXTERN int SLns_add_lconstant_table (SLang_NameSpace_Type *, SLang_LConstant_Type *, SLFUTURE_CONST char *);
-SL_EXTERN int SLns_add_fconstant_table (SLang_NameSpace_Type *, SLang_FConstant_Type *, SLFUTURE_CONST char *);
+/* SL_EXTERN int SLns_add_fconstant_table (SLang_NameSpace_Type *, SLang_FConstant_Type *, SLFUTURE_CONST char *);  // is not (yet?) defined by S-Lang library */
 SL_EXTERN int SLns_add_dconstant_table (SLang_NameSpace_Type *, SLang_DConstant_Type *, SLFUTURE_CONST char *);
 #ifdef HAVE_LONG_LONG
-SL_EXTERN int SLns_add_llconstant_table (SLang_NameSpace_Type *, SLang_LLConstant_Type *, SLFUTURE_CONST char *);
+/* SL_EXTERN int SLns_add_llconstant_table (SLang_NameSpace_Type *, SLang_LLConstant_Type *, SLFUTURE_CONST char *);  // is not (yet?) defined by S-Lang library */
 #endif
 SL_EXTERN int SLns_add_istruct_table (SLang_NameSpace_Type *, SLang_IStruct_Field_Type *, VOID_STAR, SLFUTURE_CONST char *);
 
@@ -714,7 +714,7 @@ SL_EXTERN int SLang_pop_long_long (long long *);
 SL_EXTERN int SLang_push_long_long (long long);
 SL_EXTERN int SLang_pop_ulong_long (unsigned long long *);
 SL_EXTERN int SLang_push_ulong_long (unsigned long long);
-SL_EXTERN int SLclass_pop_llong_obj (SLtype, long long *);
+/* SL_EXTERN int SLclass_pop_llong_obj (SLtype, long long *);  // is not (yet?) defined by S-Lang library */
 SL_EXTERN int SLclass_push_llong_obj (SLtype, long long);
 #endif
 
