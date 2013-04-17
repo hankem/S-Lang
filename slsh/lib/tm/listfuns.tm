@@ -28,9 +28,9 @@
   The \exmp{cmp} qualifier specifies the function used to comparison
   operation for two elements of an array.  Its value must be a
   reference to a function that accepts two arguments representing the
-  objects to be compared.  It must an +1 , 0, or -1 if the value of
-  the first argument is greater, equal to, or less than the value of
-  the second, respectively.
+  objects to be compared.  It must return a positive integer, 0, or
+  a negative integer if the value of the first argument is greater
+  than, equal to, or less than the value of the second, respectively.
 
 #v+
     inplace[=1]
@@ -71,7 +71,7 @@
   Keep in mind that a list can contain a heterogeneous collection of
   object where there is no predefined comparison operation.  For
   example, there may be no natural way to compare an integer to a
-  string.   For a heterogeneous list, a comparison function must be
+  string.  For a heterogeneous list, a comparison function must be
   provided.
 \seealso{array_sort, rearrange}
 \done
@@ -158,7 +158,6 @@
 \notes
   Generally speaking, a list will require the specification of a
   comparison function unless the list consists solely of elements that
-  may be compared using the \exmp{>}, \exmp{<}, and \exmp{==}
-  operators.
+  may be compared using the \exmp{>}, \exmp{<}, and \exmp{==} operators.
 \seealso{list_sort, list_new}
 \done
