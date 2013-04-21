@@ -157,7 +157,7 @@ install: slsh install_directories install_lib_files install_rline_files \
 clean:
 	-/bin/rm -f *~ $(OBJDIR)/slsh.o $(OBJDIR)/readline.o $(OBJDIR)/slsh $(OBJDIR)/slsh_exe scripts/*~ lib/*~
 distclean: clean
-	-/bin/rm -f Makefile
+	-/bin/rm -f Makefile config.h
 #
 .PHONY: all clean distclean symlinks slsh install install_directories \
   install_lib_files install_rline_files install_scripts install_help \

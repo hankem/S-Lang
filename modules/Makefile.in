@@ -177,6 +177,6 @@ clean:
 	-cd $(OBJDIR) && /bin/rm -f $(MODULES) $(CHKSUM_OBJS)
 	-/bin/rm -f *~ */*~
 distclean: clean
-	-/bin/rm -f Makefile
+	-/bin/rm -f Makefile config.h
 
 .PHONY: clean distclean all install runtests

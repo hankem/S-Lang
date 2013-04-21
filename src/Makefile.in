@@ -225,8 +225,9 @@ clean: elf-clean
 	-$(RM) *~ "#"*
 	-$(RM) $(OBJDIR)/*
 	-$(RM) $(ELFDIR)/*
+	@cd test $(MAKE) clean
 distclean: clean
-	-$(RM_R) $(OBJDIR) $(ELFDIR) Makefile sysconf.h $(CONFIG_H)
+	-$(RM_R) $(OBJDIR) $(ELFDIR) Makefile sysconf.h $(CONFIG_H) terminfo.inc
 
 # The symlinks target is for my own private use.  It simply creates the object
 # directory as a symbolic link to a local disk instead of an NFS mounted one.
