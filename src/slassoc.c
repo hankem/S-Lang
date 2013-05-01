@@ -135,7 +135,6 @@ static int resize_table (SLang_Assoc_Array_Type *a)
    _pSLAssoc_Array_Element_Type *new_es;
 
    num_occupied = a->num_occupied - a->num_deleted;
-   new_table_len = a->table_len;
 
    if (num_occupied == 0)
      num_occupied = (MIN_TABLE_SIZE >> 1);
@@ -197,10 +196,14 @@ static void delete_assoc_array (SLang_Assoc_Array_Type *a)
 {
    _pSLAssoc_Array_Element_Type *e, *emax;
 #if SLANG_OPTIMIZE_FOR_SPEED
-   int is_scalar_type = a->is_scalar_type;
+   int is_scalar_type;
 #endif
 
    if (a == NULL) return;
+
+#if SLANG_OPTIMIZE_FOR_SPEED
+   is_scalar_type = a->is_scalar_type;
+#endif
 
    e = a->elements;
    if (e != NULL)
