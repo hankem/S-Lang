@@ -470,7 +470,7 @@ static int queue_message (_pSLerr_Error_Queue_Type *q, char *msg, int msg_type)
 
 static void print_error (int msg_type, SLFUTURE_CONST char *err)
 {
-   unsigned int len;
+   SLstrlen_Type len;
 
    switch (msg_type)
      {
@@ -538,9 +538,9 @@ static void print_queue (void)
 char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q, int type)
 {
    Error_Message_Type *m;
-   unsigned int len;
+   SLstrlen_Type len;
    char *err, *err1, *err_max;
-   int nl_len;
+   SLstrlen_Type nl_len;
 
    if ((q == NULL)
        && (NULL == (q = Default_Error_Queue)))
@@ -571,7 +571,7 @@ char *_pSLerr_get_error_from_queue (_pSLerr_Error_Queue_Type *q, int type)
      {
 	if (m->msg_type == type)
 	  {
-	     unsigned int dlen = strlen (m->msg);
+	     SLstrlen_Type dlen = strlen (m->msg);
 	     strcpy (err1, m->msg);
 	     err1 += dlen;
 	     if (nl_len && (err1 != err_max))

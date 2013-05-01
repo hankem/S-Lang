@@ -30,7 +30,7 @@ struct _pSLRegexp_Type
    /* These must be set by calling routine. */
    unsigned char *pat;		       /* regular expression pattern */
    unsigned char *buf;		       /* buffer for compiled regexp */
-   unsigned int buf_len;	       /* length of buffer */
+   size_t buf_len;		       /* length of buffer */
    int case_sensitive;		       /* 1 if match is case sensitive  */
 
    /* The rest are set by SLang_regexp_compile */
@@ -39,9 +39,9 @@ struct _pSLRegexp_Type
    int must_match_bol;		       /* true if it must match beginning of line */
    unsigned char must_match_str[16];   /* 15 char null term substring */
    int osearch;			       /* 1 if ordinary search suffices */
-   unsigned int min_length;	       /* minimum length the match must be */
-   int beg_matches[10];		       /* offset of start of \( */
-   unsigned int end_matches[10];       /* length of nth submatch
+   size_t min_length;		       /* minimum length the match must be */
+   ssize_t beg_matches[10];	       /* offset of start of \( */
+   size_t end_matches[10];	       /* length of nth submatch
 					* Note that the entire match corresponds
 					* to \0
 					*/
@@ -91,27 +91,28 @@ typedef struct
 {
    SLRegexp_Type *reg;
    SLCONST unsigned char *str;
-   unsigned int len;
+   SLstrlen_Type len;
    char closed_paren_matches[10];
    int open_paren_number;
 }
 Re_Context_Type;
 
-static SLCONST unsigned char *do_nth_match (Re_Context_Type *ctx, int n, SLCONST unsigned char *str, SLCONST unsigned char *estr)
+static SLCONST unsigned char *do_nth_match (Re_Context_Type *ctx, int idx, SLCONST unsigned char *str, SLCONST unsigned char *estr)
 {
    SLCONST unsigned char *bpos;
+   size_t m;
 
-   if (ctx->closed_paren_matches[n] == 0)
+   if (ctx->closed_paren_matches[idx] == 0)
      return NULL;
 
-   bpos = ctx->reg->beg_matches[n] + ctx->str;
-   n = ctx->reg->end_matches[n];
-   if (n == 0) return(str);
-   if (n > (int) (estr - str)) return (NULL);
+   bpos = ctx->reg->beg_matches[idx] + ctx->str;
+   m = ctx->reg->end_matches[idx];
+   if (m == 0) return(str);
+   if (str + m > estr) return (NULL);
 
    /* This needs fixed for case sensitive match */
-   if (0 != strncmp((char *) str, (char *) bpos, (unsigned int) n)) return (NULL);
-   str += n;
+   if (0 != strncmp((char *) str, (char *) bpos, m)) return (NULL);
+   str += m;
    return (str);
 }
 
@@ -153,7 +154,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 
 	   case OPAREN:
 	     ctx->open_paren_number++;
-	     ctx->reg->beg_matches[ctx->open_paren_number] = (int) (str - ctx->str);
+	     ctx->reg->beg_matches[ctx->open_paren_number] = (str - ctx->str);
 	     break;
 	   case CPAREN:
 	     n = ctx->open_paren_number;
@@ -165,7 +166,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 		       continue;
 		    }
 		  ctx->closed_paren_matches[n] = 1;
-		  ctx->reg->end_matches[n] = (unsigned int) (str - (ctx->str + ctx->reg->beg_matches[n]));
+		  ctx->reg->end_matches[n] = (str - (ctx->str + ctx->reg->beg_matches[n]));
 		  break;
 	       }
 	     break;
@@ -442,8 +443,8 @@ fixup_beg_end_matches (Re_Context_Type *ctx, SLRegexp_Type *r,
      }
    else
      {
-	r->beg_matches[0] = (int) (str - ctx->str);
-	r->end_matches[0] = (unsigned int) (epos - str);
+	r->beg_matches[0] = (str - ctx->str);
+	r->end_matches[0] = (epos - str);
      }
 
    for (i = 1; i < 10; i++)
@@ -457,7 +458,7 @@ fixup_beg_end_matches (Re_Context_Type *ctx, SLRegexp_Type *r,
 }
 
 static void init_re_context (Re_Context_Type *ctx, SLRegexp_Type *reg,
-			     SLCONST unsigned char *str, unsigned int len)
+			     SLCONST unsigned char *str, SLstrlen_Type len)
 {
    memset ((char *) ctx, 0, sizeof (Re_Context_Type));
    ctx->reg = reg;
@@ -466,7 +467,7 @@ static void init_re_context (Re_Context_Type *ctx, SLRegexp_Type *reg,
 }
 
 static SLCONST unsigned char *regexp_match(SLCONST unsigned char *str,
-					   unsigned int len, SLRegexp_Type *reg)
+					   SLstrlen_Type len, SLRegexp_Type *reg)
 {
    unsigned char c = 0;
    SLCONST unsigned char *estr = str + len;
@@ -534,7 +535,7 @@ static SLCONST unsigned char *regexp_match(SLCONST unsigned char *str,
    return NULL;
 }
 
-char *SLregexp_match (SLRegexp_Type *reg, SLFUTURE_CONST char *str, unsigned int len)
+char *SLregexp_match (SLRegexp_Type *reg, SLFUTURE_CONST char *str, SLstrlen_Type len)
 {
    return (char *) regexp_match ((SLCONST unsigned char *)str, len, reg);
 }
@@ -986,7 +987,7 @@ char *SLregexp_quote_string (SLFUTURE_CONST char *re, char *buf, unsigned int bu
 }
 
 int SLregexp_nth_match (SLRegexp_Type *reg, unsigned int nth,
-			unsigned int *ofsp, unsigned int *lenp)
+			SLstrlen_Type *ofsp, SLstrlen_Type *lenp)
 {
    if (nth >= 10)
      {
@@ -997,9 +998,9 @@ int SLregexp_nth_match (SLRegexp_Type *reg, unsigned int nth,
      return -1;
 
    if (ofsp != NULL)
-     *ofsp = (unsigned int) reg->beg_matches[nth];
+     *ofsp = reg->beg_matches[nth];
    if (lenp != NULL)
-     *lenp = (unsigned int) reg->end_matches[nth];
+     *lenp = reg->end_matches[nth];
 
    return 0;
 }

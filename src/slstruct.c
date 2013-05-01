@@ -912,16 +912,16 @@ static int struct_unary_result (int op, SLtype t, SLtype *result)
    return 1;
 }
 
-static int check_struct_array (SLtype t, SLang_Struct_Type **sp, unsigned int n)
+static int check_struct_array (SLtype t, SLang_Struct_Type **sp, SLuindex_Type n)
 {
-   unsigned int i;
+   SLuindex_Type i;
 
    for (i = 0; i < n; i++)
      {
 	if (sp[i] == NULL)
 	  {
-	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED, "%s[%u] not initialized for binary/unary operation",
-			   SLclass_get_datatype_name(t), i);
+	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED, "%s[%lu] not initialized for binary/unary operation",
+			   SLclass_get_datatype_name(t), (unsigned long) i);
 	     return -1;
 	  }
        }
@@ -933,12 +933,12 @@ static int struct_unary (int op, SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 {
    SLang_Struct_Type **sa;
    Unary_Op_Info_Type *ui;
-   unsigned int i;
+   SLuindex_Type i;
    SLtype result_type;
    SLang_Name_Type *function;
    SLang_Class_Type *bcl;
    int (*apop) (SLtype, VOID_STAR);
-   unsigned int binc;
+   size_t binc;
 
    if (NULL == (ui = find_unary_info (op, a_type)))
      {
@@ -1031,17 +1031,17 @@ static int any_binary_this_result (int op, SLtype a, SLtype b, SLtype *result)
 }
 
 static int do_struct_binary (SLang_Name_Type *function,
-			     SLang_Class_Type *cla, VOID_STAR ap, unsigned int na,
-			     SLang_Class_Type *clb, VOID_STAR bp, unsigned int nb,
+			     SLang_Class_Type *cla, VOID_STAR ap, SLuindex_Type na,
+			     SLang_Class_Type *clb, VOID_STAR bp, SLuindex_Type nb,
 			     SLang_Class_Type *clc, VOID_STAR cp)
 {
-   unsigned int i;
+   SLuindex_Type i;
    SLtype a_type, b_type, c_type;
    int (*cpop) (SLtype, VOID_STAR);
    int (*apush) (SLtype, VOID_STAR);
    int (*bpush) (SLtype, VOID_STAR);
-   unsigned int ainc, binc, cinc;
-   unsigned int num;
+   size_t ainc, binc, cinc;
+   SLuindex_Type num;
 
    if (na == 1) ainc = 0; else ainc = cla->cl_sizeof_type;
    if (nb == 1) binc = 0; else binc = clb->cl_sizeof_type;
@@ -1512,7 +1512,7 @@ static int typecast_method (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
    SLang_Class_Type *acl, *bcl;
    int (*apush) (SLtype, VOID_STAR);
    int (*bpop) (SLtype, VOID_STAR);
-   unsigned int ainc, binc;
+   size_t ainc, binc;
    SLang_Name_Type *f;
 
    if (NULL == (si = find_struct_info (a_type, 1)))
@@ -2162,7 +2162,7 @@ void _pSLstruct_pop_args (int *np)
 void _pSLstruct_push_args (SLang_Array_Type *at)
 {
    _pSLang_Struct_Type **sp;
-   unsigned int num;
+   SLuindex_Type num;
 
    if (at->data_type != SLANG_STRUCT_TYPE)
      {

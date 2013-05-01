@@ -112,7 +112,7 @@ static int NC_MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num,
    while (1)
      {
 	less = 0; greater = 0; equal = 0;
-	guess = (min+max)/2;
+	guess = min/2 + max/2;
         maxltguess = min;
         mingtguess = max;
 

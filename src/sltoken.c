@@ -74,7 +74,7 @@ static void free_static_sval_token (_pSLang_Token_Type *tok)
 }
 
 _pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *tok, _pSLtok_Type type,
-					    SLCONST char *s, unsigned int len)
+					    SLCONST char *s, SLstrlen_Type len)
 {
    if (NULL == (tok->v.s_val = _pSLstring_make_hashed_string (s, len, &tok->hash)))
      return tok->type = EOF_TOKEN;
@@ -1737,7 +1737,7 @@ static char *read_from_file (SLang_Load_Type *x)
    buf = fgets (c->buf, MAX_FILE_LINE_LEN+1, c->fp);
    if (buf != NULL)
      {
-	unsigned int num;
+	size_t num;
 
 	num = strlen (buf);
 	if ((num == MAX_FILE_LINE_LEN)
@@ -2312,7 +2312,7 @@ static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
 static void byte_compile_token (_pSLang_Token_Type *tok)
 {
    unsigned char buf [SL_MAX_TOKEN_LEN + 4], *buf_max;
-   unsigned int len;
+   SLstrlen_Type len;
    char *b3;
    int is_escaped;
    unsigned char *s;

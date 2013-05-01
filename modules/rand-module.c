@@ -1019,7 +1019,7 @@ static int do_xxxrand (int argc, SLtype type,
 /* The calling syntax for the generators is:
  *   rand_foo ([Rand_Type,] args... [,num]);
  */
-static int check_stack_args (int num_args, int num_parms, char *usage, int *nargsp)
+static int check_stack_args (int num_args, int num_parms, SLFUTURE_CONST char *usage, int *nargsp)
 {
    if ((num_args < num_parms) || (num_args > num_parms + 2))
      goto usage_error;
@@ -1050,7 +1050,7 @@ usage_error:
 
 static void urand_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_uniform ([Rand_Type] [num])";
+   SLFUTURE_CONST char *usage = "r = rand_uniform ([Rand_Type] [num])";
    int is_scalar;
    int nargs;
    double d;
@@ -1070,7 +1070,7 @@ static void urand_intrin (void) /*{{{*/
 
 static void urand_pos_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_uniform_pos ([Rand_Type] [num])";
+   SLFUTURE_CONST char *usage = "r = rand_uniform_pos ([Rand_Type] [num])";
    int is_scalar;
    int nargs;
    double d;
@@ -1090,7 +1090,7 @@ static void urand_pos_intrin (void) /*{{{*/
 
 static void rand_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand ([Rand_Type] [num])";
+   SLFUTURE_CONST char *usage = "r = rand ([Rand_Type] [num])";
    int is_scalar;
    int nargs;
    uint32 u;
@@ -1109,7 +1109,7 @@ static void rand_intrin (void) /*{{{*/
 
 static void rand_gauss_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_gauss ([Rand_Type,] sigma [,num])";
+   SLFUTURE_CONST char *usage = "r = rand_gauss ([Rand_Type,] sigma [,num])";
    int is_scalar;
    double d, sigma;
    int nargs;
@@ -1133,7 +1133,7 @@ static void rand_gauss_intrin (void) /*{{{*/
 
 static void rand_beta_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_beta ([Rand_Type,] a, b [,num])";
+   SLFUTURE_CONST char *usage = "r = rand_beta ([Rand_Type,] a, b [,num])";
    int is_scalar;
    double d;
    double parms[2];
@@ -1164,7 +1164,7 @@ static void rand_beta_intrin (void) /*{{{*/
 
 static void rand_cauchy_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_cauchy ([Rand_Type,] gamma, [,num])";
+   SLFUTURE_CONST char *usage = "r = rand_cauchy ([Rand_Type,] gamma, [,num])";
    int is_scalar;
    double d;
    double a;
@@ -1190,7 +1190,7 @@ static void rand_cauchy_intrin (void) /*{{{*/
 
 static void rand_geometric_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_geometric ([Rand_Type,] p, [,num])";
+   SLFUTURE_CONST char *usage = "r = rand_geometric ([Rand_Type,] p, [,num])";
    int is_scalar;
    double p;
    unsigned int d;
@@ -1220,7 +1220,7 @@ static void rand_geometric_intrin (void) /*{{{*/
 
 static void rand_poisson_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_poisson ([Rand_Type,] mu [,num])";
+   SLFUTURE_CONST char *usage = "r = rand_poisson ([Rand_Type,] mu [,num])";
    unsigned int p;
    int is_scalar;
    int nargs;
@@ -1248,7 +1248,7 @@ static void rand_poisson_intrin (void) /*{{{*/
 
 static void rand_gamma_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_gamma([Rand_Type,] k, theta [,num])";
+   SLFUTURE_CONST char *usage = "r = rand_gamma([Rand_Type,] k, theta [,num])";
    int is_scalar, nargs;
    double parms[2];
    double p, k, theta;
@@ -1281,7 +1281,7 @@ static void rand_gamma_intrin (void) /*{{{*/
 
 static void rand_binomial_intrin (void) /*{{{*/
 {
-   char *usage = "r = rand_binomial ([Rand_Type,] p, n [,num])";
+   SLFUTURE_CONST char *usage = "r = rand_binomial ([Rand_Type,] p, n [,num])";
    int is_scalar, nargs;
    Binomial_Parms_Type bp;
    unsigned int u;

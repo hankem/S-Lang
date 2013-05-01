@@ -40,7 +40,7 @@ SLANG_MODULE(varray);
 
 typedef struct
 {
-   off_t size_mmapped;
+   size_t size_mmapped;
    VOID_STAR addr;
    VOID_STAR data;
 }
@@ -64,7 +64,7 @@ static void unmmap_array (SLang_Array_Type *at)
    at->client_data = NULL;
 }
 
-static MMap_Type *mmap_file (char *file, off_t offset, size_t num_bytes)
+static MMap_Type *mmap_file (char *file, size_t offset, size_t num_bytes)
 {
    FILE *fp;
    int fd;
@@ -110,6 +110,7 @@ static MMap_Type *mmap_file (char *file, off_t offset, size_t num_bytes)
    return m;
 }
 
+#if 0
 static int pop_off_t (off_t *op)
 {
 #if defined(HAVE_LONG_LONG) && (SIZEOF_OFF_T == SIZEOF_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG)
@@ -119,6 +120,20 @@ static int pop_off_t (off_t *op)
    if (-1 == SLang_pop_long (&ofs))
      return -1;
    *op = (off_t) ofs;
+   return 0;
+#endif
+}
+#endif
+
+static int pop_size_t (size_t *sp)
+{
+#if defined(HAVE_LONG_LONG) && (SIZEOF_SIZE_T == SIZEOF_LONG_LONG) && (SIZEOF_LONG_LONG > SIZEOF_LONG)
+   return SLang_pop_ulong_long (sp);
+#else
+   unsigned long s;
+   if (-1 == SLang_pop_ulong (&s))
+     return -1;
+   *sp = (size_t) s;
    return 0;
 #endif
 }
@@ -135,7 +150,7 @@ static void mmap_array (void)
    unsigned int num_dims;
    unsigned int i;
    SLuindex_Type num_elements;
-   off_t offset;
+   size_t offset;
    size_t sizeof_type;
    size_t num_bytes;
    MMap_Type *m;
@@ -208,7 +223,7 @@ static void mmap_array (void)
 
    num_bytes = sizeof_type * num_elements;
 
-   if (-1 == pop_off_t (&offset))
+   if (-1 == pop_size_t (&offset))
      goto return_error;
 
    if (-1 == SLang_pop_slstring (&file))

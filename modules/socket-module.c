@@ -125,7 +125,7 @@ static int close_socket (int);
 
 static int Module_H_Errno = 0;
 
-static char *herror_to_string (int h)
+static SLFUTURE_CONST char *herror_to_string (int h)
 {
 #ifdef HOST_NOT_FOUND
    if (h == HOST_NOT_FOUND)
@@ -155,13 +155,13 @@ static char *herror_to_string (int h)
    return "Unknown h_error";
 }
 
-static void throw_herror (char *what, int h)
+static void throw_herror (SLFUTURE_CONST char *what, int h)
 {
    Module_H_Errno = h;
    SLang_verror (SocketHerrnoError, "%s: %s", what, herror_to_string(h));
 }
 
-static void throw_errno_error (char *what, int e)
+static void throw_errno_error (SLFUTURE_CONST char *what, int e)
 {
    SLerrno_set_errno (e);
    SLang_verror (SocketError, "%s: %s", what, SLerrno_strerror (e));
@@ -331,7 +331,7 @@ static Socket_Type *accept_af_unix (Socket_Type *s, unsigned int nrefs, SLang_Re
 /*}}}*/
 
 #if defined(PF_INET) && defined(AF_INET) /*{{{*/
-static int pop_host_port (char *what, int nargs, char **hostp, int *portp)
+static int pop_host_port (SLFUTURE_CONST char *what, int nargs, char **hostp, int *portp)
 {
    char *host;
    int port;
@@ -373,7 +373,7 @@ static void free_host_addr_info (Host_Addr_Info_Type *hinfo)
 static Host_Addr_Info_Type *alloc_host_addr_info (unsigned int num, int h_length)
 {
    Host_Addr_Info_Type *hinfo;
-   unsigned int nbytes;
+   size_t nbytes;
    char *buf;
    unsigned int i;
 

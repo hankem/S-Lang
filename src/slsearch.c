@@ -47,9 +47,9 @@ USA.
 typedef struct
 {
    SLuchar_Type *key;
-   unsigned int key_len;
-   unsigned int fskip_table[256];
-   unsigned int bskip_table[256];
+   size_t key_len;
+   size_t fskip_table[256];
+   size_t bskip_table[256];
 }
 BoyerMoore_Search_Type;
 
@@ -57,8 +57,8 @@ typedef struct
 {
    SLuchar_Type **lower_chars;
    SLuchar_Type **upper_chars;
-   unsigned int nlower_chars;
-   unsigned int nupper_chars;
+   SLstrlen_Type nlower_chars;
+   SLstrlen_Type nupper_chars;
    SLsearch_Type *st;
 }
 BruteForce_Search_Type;
@@ -68,7 +68,7 @@ struct _pSLsearch_Type
    SLuchar_Type *(*search_fun)(SLsearch_Type *, SLuchar_Type *, SLuchar_Type *, SLuchar_Type *, int);
    void (*free_fun) (SLsearch_Type *);
    int flags;
-   unsigned int match_len;
+   size_t match_len;
    union
      {
         BoyerMoore_Search_Type bm;
@@ -83,9 +83,9 @@ static SLuchar_Type *
 {
    register unsigned char char1;
    unsigned char *pos;
-   unsigned int *skip_table;
+   size_t *skip_table;
    SLuchar_Type *key;
-   unsigned int key_len;
+   SLstrlen_Type key_len;
    int case_fold;
    BoyerMoore_Search_Type *bm;
 
@@ -108,8 +108,8 @@ static SLuchar_Type *
    while(1)
      {
 	SLuchar_Type ch;
-	unsigned int dbeg;
-        unsigned int j;
+	SLstrlen_Type dbeg;
+        SLstrlen_Type j;
 
         while (beg < end)
           {
@@ -148,11 +148,11 @@ static SLuchar_Type *
                       SLuchar_Type *beg, SLuchar_Type *start, SLuchar_Type *end)
 {
    SLuchar_Type char1;
-   unsigned int j, ofs;
-   unsigned int key_len;
+   SLstrlen_Type j, ofs;
+   SLstrlen_Type key_len;
    SLuchar_Type *key;
    int case_fold;
-   unsigned int *skip_table;
+   size_t *skip_table;
    BoyerMoore_Search_Type *bm;
 
    st->match_len = 0;
@@ -222,8 +222,8 @@ static SLuchar_Type *bm_search (SLsearch_Type *st,
 /* Return value, if non-NULL returns pointer to the end of the string */
 static SLuchar_Type *
   looking_at_bf (SLuchar_Type *pmin, SLuchar_Type *pmax,
-                 SLuchar_Type **lower_chars, unsigned int nlower_chars,
-                 SLuchar_Type **upper_chars, unsigned int nupper_chars)
+                 SLuchar_Type **lower_chars, SLstrlen_Type nlower_chars,
+                 SLuchar_Type **upper_chars, SLstrlen_Type nupper_chars)
 
 {
    unsigned int n;
@@ -281,7 +281,7 @@ static SLuchar_Type *
    SLuchar_Type chup, chlo;
    SLuchar_Type **upper_chars;
    SLuchar_Type **lower_chars;
-   unsigned int nupper_chars, nlower_chars;
+   SLstrlen_Type nupper_chars, nlower_chars;
 
    bf_st = st->s.bf.st;
    upper_chars = st->s.bf.upper_chars;
@@ -345,7 +345,7 @@ static SLuchar_Type *
    SLuchar_Type chup, chlo;
    SLuchar_Type **upper_chars;
    SLuchar_Type **lower_chars;
-   unsigned int nupper_chars, nlower_chars;
+   SLstrlen_Type nupper_chars, nlower_chars;
 
    bf_st = st->s.bf.st;
    upper_chars = st->s.bf.upper_chars;
@@ -436,8 +436,8 @@ SLuchar_Type *SLsearch_backward (SLsearch_Type *st, SLuchar_Type *pmin,
 
 static int Case_Tables_Ok;
 
-static void init_skip_table (SLuchar_Type *key, unsigned int key_len,
-			     unsigned int *skip_table, int dir, int flags)
+static void init_skip_table (SLuchar_Type *key, SLstrlen_Type key_len,
+			     size_t *skip_table, int dir, int flags)
 {
    unsigned int i;
 
@@ -467,7 +467,7 @@ static void bm_free (SLsearch_Type *st)
 
 static void bf_free (SLsearch_Type *st)
 {
-   unsigned int i, n;
+   SLstrlen_Type i, n;
    SLuchar_Type **a;
 
    if (NULL != (a = st->s.bf.lower_chars))
@@ -487,7 +487,7 @@ static void bf_free (SLsearch_Type *st)
      }
 }
 
-unsigned int SLsearch_match_len (SLsearch_Type *st)
+SLstrlen_Type SLsearch_match_len (SLsearch_Type *st)
 {
    if (st == NULL)
      return 0;
@@ -508,7 +508,7 @@ void SLsearch_delete (SLsearch_Type *st)
 static SLsearch_Type *bm_open_search (SLuchar_Type *key, int flags)
 {
    SLsearch_Type *st;
-   unsigned int keylen;
+   size_t keylen;
 
    keylen = strlen ((char *)key);
    if (NULL == (st = (SLsearch_Type *)SLcalloc (1, sizeof (SLsearch_Type))))
@@ -553,7 +553,7 @@ static SLsearch_Type *bm_open_search (SLuchar_Type *key, int flags)
    return st;
 }
 
-static int is_bm_ok (SLuchar_Type *key, unsigned int len, SLuchar_Type **non_ascii)
+static int is_bm_ok (SLuchar_Type *key, SLstrlen_Type len, SLuchar_Type **non_ascii)
 {
    SLuchar_Type *keymax;
 
@@ -574,11 +574,11 @@ static int is_bm_ok (SLuchar_Type *key, unsigned int len, SLuchar_Type **non_asc
    return 1;
 }
 
-static SLuchar_Type **make_string_array (SLuchar_Type *u, unsigned int len, unsigned int *nump)
+static SLuchar_Type **make_string_array (SLuchar_Type *u, SLstrlen_Type len, SLuindex_Type *nump)
 {
    SLuchar_Type *umax;
    SLuchar_Type **a;
-   unsigned int num, i;
+   SLuindex_Type num, i;
    int ignore_combining = 0;
 
    num = SLutf8_strlen (u, ignore_combining);
@@ -610,7 +610,7 @@ SLsearch_Type *SLsearch_new (SLuchar_Type *key, int flags)
 {
    SLsearch_Type *st, *bf_st;
    SLuchar_Type *key_upper, *key_lower, *non_ascii;
-   unsigned int len, upper_len, lower_len;
+   size_t len, upper_len, lower_len;
 
    if (Case_Tables_Ok == 0)
      SLang_init_case_tables ();

@@ -109,12 +109,12 @@ static int extract_token (SLFUTURE_CONST char **strptr, char *buf)
    return 1;
 }
 
-static int allocate_arg_space (SLcmd_Cmd_Table_Type *table, int argc, unsigned int *space_ptr)
+static int allocate_arg_space (SLcmd_Cmd_Table_Type *table, SLstrlen_Type argc, SLstrlen_Type *space_ptr)
 {
-   unsigned int space = *space_ptr;
+   SLstrlen_Type space = *space_ptr;
    char *p;
 
-   if (argc + 1 < (int) space)
+   if (argc + 1 < space)
      return 0;
 
    if (space > 128)
@@ -153,9 +153,9 @@ int SLcmd_execute_string (SLFUTURE_CONST char *str, SLcmd_Cmd_Table_Type *table)
    int token_present;
    int i;
    int status;
-   unsigned int len;
+   SLstrlen_Type len;
    int argc;
-   unsigned int space;
+   SLstrlen_Type space;
 
    table->argc = 0;
    table->string_args = NULL;

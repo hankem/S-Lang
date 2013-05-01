@@ -219,7 +219,7 @@ static int str_replace_cmd_1 (char *orig, char *match, char *rep, unsigned int m
 			      char **new_strp) /*{{{*/
 {
    char *s, *t, *new_str;
-   unsigned int rep_len, match_len, new_len;
+   size_t rep_len, match_len, new_len;
    unsigned int num_replaces;
 
    *new_strp = NULL;
@@ -432,7 +432,7 @@ static void str_uncomment_string_cmd (char *str, char *b, char *e) /*{{{*/
 {
    SLuchar_Type *s, *smax, *bmax, *emax;
    SLwchar_Lut_Type *lut;
-   unsigned int len, elen, blen;
+   size_t len, elen, blen;
    SLuchar_Type *etable;
    SLuchar_Type *b1, *e1;
    int ignore_combining = 0;
@@ -546,7 +546,7 @@ static void str_quote_string_cmd (char *str, char *quotes, SLwchar_Type *slash_p
 {
    char *q, *q1;
    int slash;
-   unsigned int len;
+   size_t len;
    SLwchar_Lut_Type *lut;
    SLuchar_Type slash_utf8 [SLUTF8_MAX_MBLEN+1];
    SLuchar_Type *s, *smax;
@@ -626,10 +626,10 @@ static void str_quote_string_cmd (char *str, char *quotes, SLwchar_Type *slash_p
 static void subbytes_cmd (SLstr_Type *a, int *n_ptr, int *m_ptr) /*{{{*/
 {
    int m;
-   unsigned int n;
-   unsigned int lena;
+   size_t n;
+   size_t lena;
 
-   n = (unsigned int) (*n_ptr - 1);
+   n = (*n_ptr - 1);
    m = *m_ptr;
 
    lena = _pSLstring_bytelen (a);
@@ -692,13 +692,13 @@ static void substr_cmd (SLstr_Type *a, int *n_ptr, int *m_ptr) /*{{{*/
 static void strbytesub_cmd (int *nptr, char *chp)
 {
    char *a;
-   unsigned int n;
-   unsigned int lena;
+   size_t n;
+   size_t lena;
 
    if (-1 == SLpop_string (&a))
      return;
 
-   n = (unsigned int) (*nptr-1);
+   n = (*nptr-1);
    lena = strlen (a);
 
    if (n >= lena)
@@ -717,9 +717,9 @@ static void strbytesub_cmd (int *nptr, char *chp)
 static void strsub_cmd (int *nptr, SLwchar_Type *mptr) /*{{{*/
 {
    char *a;
-   unsigned int n;
+   size_t n;
    SLwchar_Type m;
-   unsigned int lena;
+   size_t lena;
    int ignore_combining = 0;
 
    if (-1 == SLpop_string (&a))
@@ -730,7 +730,7 @@ static void strsub_cmd (int *nptr, SLwchar_Type *mptr) /*{{{*/
 
    lena = STRLEN (a, ignore_combining);
 
-   if ((n == 0) || (lena < (unsigned int) n))
+   if ((n == 0) || (lena < n))
      {
 	SLang_set_error (SL_INVALID_PARM);
 	SLfree(a);
@@ -1403,7 +1403,7 @@ static void strtrim_end_vintrin (void)
 
 static char *func_strup (char *str, void *cd)
 {
-   unsigned int i, len;
+   size_t i, len;
    unsigned char *a;
 
    (void) cd;
@@ -1433,7 +1433,7 @@ static void strup_vintrin (void)
 
 static char *func_strlow (char *str, void *cd)
 {
-   unsigned int i, len;
+   size_t i, len;
    unsigned char *a;
 
    (void) cd;
@@ -1664,7 +1664,7 @@ static char *func_str_delete_chars (char *str, void *cd)
    while (t != tmax)
      {
 	SLuchar_Type *t1;
-	unsigned int len;
+	size_t len;
 
 	t1 = SLwchar_skip_range (lut, t, tmax, ignore_combining, invert);
 	if (t1 == NULL)
@@ -1768,7 +1768,7 @@ static char *func_strcompress (char *str, void *cd) /*{{{*/
    char *c;
    Strcompress_CD_Type *info;
    SLuchar_Type *s, *beg, *end;
-   unsigned int len, pref_len;
+   size_t len, pref_len;
    SLwchar_Lut_Type *lut;
    int ignore_combining = 0;
 
@@ -1875,7 +1875,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 #ifdef HAVE_LONG_LONG
    long long llong_var;
 #endif
-   unsigned int len = 0, malloc_len = 0, dlen;
+   size_t len = 0, malloc_len = 0, dlen;
    int do_free;
    unsigned int guess_size;
 #if SLANG_HAS_FLOAT
@@ -2360,7 +2360,7 @@ static int is_list_element_cmd (char *list, char *elem, SLwchar_Type *delim_ptr)
 {
    SLuchar_Type delim_utf8[SLUTF8_MAX_MBLEN+1];
    unsigned int delim_len;
-   unsigned int elem_len;
+   size_t elem_len;
    int n;
 
    if (NULL == _pSLinterp_encode_wchar (*delim_ptr, delim_utf8, &delim_len))
@@ -2374,7 +2374,7 @@ static int is_list_element_cmd (char *list, char *elem, SLwchar_Type *delim_ptr)
 
    while (1)
      {
-	unsigned int len;
+	size_t len;
 	char *list_end = strstr (list, (char *)delim_utf8);
 
 	if (list_end == NULL)
@@ -2402,8 +2402,8 @@ static unsigned int Regexp_Match_Byte_Offset;
 static int string_match_internal (char *str, char *pat, int n) /*{{{*/
 {
    char *match;
-   unsigned int len;
-   unsigned int byte_offset;
+   size_t len;
+   size_t byte_offset;
 
    if (Regexp != NULL)
      {
@@ -2466,7 +2466,7 @@ static int string_match_cmd (void)
 
 static int string_match_nth_cmd (int *nptr) /*{{{*/
 {
-   unsigned int ofs, len;
+   SLuindex_Type ofs, len;
 
    if (Regexp == NULL)
      {
@@ -2492,9 +2492,9 @@ static int string_match_nth_cmd (int *nptr) /*{{{*/
 static int string_matches_internal (char *str, char *pat, int n)
 {
    int status;
-   unsigned int i;
-   unsigned int lens[10];
-   unsigned int offsets[10];
+   SLuindex_Type i;
+   SLstrlen_Type lens[10];
+   SLstrlen_Type offsets[10];
    char **strs;
    SLindex_Type num;
    SLang_Array_Type *at;
@@ -2545,12 +2545,12 @@ static void string_matches_cmd (void)
 }
 
 /* UTF-8 ok */
-static char *create_delimited_string (char **list, unsigned int n,
+static char *create_delimited_string (char **list, size_t n,
 				      char *delim)
 {
-   unsigned int len, dlen;
-   unsigned int i;
-   unsigned int num;
+   size_t len, dlen;
+   size_t i;
+   size_t num;
    char *str, *s;
 
    len = 1;			       /* allow room for \0 char */
@@ -2575,7 +2575,7 @@ static char *create_delimited_string (char **list, unsigned int n,
 
    while (num > 1)
      {
-	unsigned int len2;
+	size_t len2;
 
 	while (list[i] == NULL)
 	  i++;
@@ -2646,7 +2646,7 @@ static void strjoin_cmd (void)
    if (SLang_Num_Function_Args == 1)
      {
 	free_delim = 0;
-	delim = "";
+	delim = (char *)"";
      }
    else
      {

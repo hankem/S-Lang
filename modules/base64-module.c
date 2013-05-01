@@ -210,7 +210,7 @@ static int b64_encode_accumulate (Base64_Type *b64, unsigned char *line, unsigne
 static void b64_encoder_accumulate_intrin (Base64_Type *b64, SLang_BString_Type *bstr)
 {
    unsigned char *data;
-   unsigned int len;
+   SLstrlen_Type len;
 
    if (-1 == check_b64_type (b64, B64_TYPE_ENCODER, 1))
      return;
@@ -363,7 +363,7 @@ return_error:
    return -1;
 }
 
-static void b64_decoder_accumulate_intrin (Base64_Type *b64, char *str)
+static void b64_decoder_accumulate_intrin (Base64_Type *b64, SLFUTURE_CONST char *str)
 {
    unsigned int i;
    unsigned char ch;
@@ -445,7 +445,7 @@ static void b64_decoder_accumulate_intrin (Base64_Type *b64, char *str)
 
 static void b64_decoder_close_intrin (Base64_Type *b64)
 {
-   char *pad = "====";
+   SLFUTURE_CONST char *pad = "====";
 
    if (-1 == check_b64_type (b64, B64_TYPE_DECODER, 0))
      goto close_decoder;

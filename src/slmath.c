@@ -20,7 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 */
 
-#define _GNU_SOURCE		       /* sincos */
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE		       /* sincos */
+#endif
 #include "slinclud.h"
 #include <float.h>
 #include <math.h>
@@ -760,8 +762,8 @@ static int complex_math_op (int op,
 			    VOID_STAR bp)
 {
    double *a, *b;
-   unsigned int i;
-   unsigned int na2 = na * 2;
+   SLuindex_Type i;
+   SLuindex_Type na2 = na * 2;
    double *(*fun) (double *, double *);
    char *c;
 
@@ -844,7 +846,7 @@ static int complex_math_op (int op,
 	c = (char *) bp;
 	for (i = 0; i < na; i++)
 	  {
-	     unsigned int j = 2*i;
+	     SLuindex_Type j = 2*i;
 	     c[i] = (char) (ISINF_FUN(a[j]) || ISINF_FUN(a[j+1]));
 	  }
 	return 1;
@@ -852,7 +854,7 @@ static int complex_math_op (int op,
 	c = (char *) bp;
 	for (i = 0; i < na; i++)
 	  {
-	     unsigned int j = 2*i;
+	     SLuindex_Type j = 2*i;
 	     c[i] = (char) (ISNAN_FUN(a[j]) || ISNAN_FUN(a[j+1]));
 	  }
 	return 1;
@@ -997,7 +999,7 @@ static int do_dd_fun (double (*f)(double, double),
    double *c = c_ast->dptr;
    unsigned int a_inc = a_ast->inc;
    unsigned int b_inc = b_ast->inc;
-   unsigned int i, n = c_ast->num;
+   SLuindex_Type i, n = c_ast->num;
 
    for (i = 0; i < n; i++)
      {
@@ -1018,7 +1020,7 @@ static int do_ff_fun (double (*f)(double, double),
    float *c = c_ast->fptr;
    unsigned int a_inc = a_ast->inc;
    unsigned int b_inc = b_ast->inc;
-   unsigned int i, n = c_ast->num;
+   SLuindex_Type i, n = c_ast->num;
 
    for (i = 0; i < n; i++)
      {
@@ -1039,7 +1041,7 @@ static int do_fd_fun (double (*f)(double, double),
    double *c = c_ast->dptr;
    unsigned int a_inc = a_ast->inc;
    unsigned int b_inc = b_ast->inc;
-   unsigned int i, n = c_ast->num;
+   SLuindex_Type i, n = c_ast->num;
 
    for (i = 0; i < n; i++)
      {
@@ -1060,7 +1062,7 @@ static int do_df_fun (double (*f)(double, double),
    double *c = c_ast->dptr;
    unsigned int a_inc = a_ast->inc;
    unsigned int b_inc = b_ast->inc;
-   unsigned int i, n = c_ast->num;
+   SLuindex_Type i, n = c_ast->num;
 
    for (i = 0; i < n; i++)
      {
@@ -1155,7 +1157,7 @@ static int do_binary_function_on_nargs (double (*f)(double, double), int num)
 static void hypot_fun (void)
 {
    Array_Or_Scalar_Type ast;
-   unsigned int num;
+   SLuindex_Type num;
 
    if (SLang_Num_Function_Args >= 2)
      {
@@ -1177,7 +1179,7 @@ static void hypot_fun (void)
      {
 	float *f = ast.fptr;
 	double sum, esum, max;
-	unsigned int i, imax;
+	SLuindex_Type i, imax;
 
 	max = fabs((double)*f);
 	imax = 0;
@@ -1462,7 +1464,7 @@ static int do_c_dd_fun (int (*f)(double, double, VOID_STAR),
    char *c = c_ast->cptr;
    unsigned int a_inc = a_ast->inc;
    unsigned int b_inc = b_ast->inc;
-   unsigned int i, n = c_ast->num;
+   SLuindex_Type i, n = c_ast->num;
 
    for (i = 0; i < n; i++)
      {
@@ -1484,7 +1486,7 @@ static int do_c_ff_fun (int (*f)(double, double, VOID_STAR),
    char *c = c_ast->cptr;
    unsigned int a_inc = a_ast->inc;
    unsigned int b_inc = b_ast->inc;
-   unsigned int i, n = c_ast->num;
+   SLuindex_Type i, n = c_ast->num;
 
    for (i = 0; i < n; i++)
      {
@@ -1506,7 +1508,7 @@ static int do_c_fd_fun (int (*f)(double, double, VOID_STAR),
    char *c = c_ast->cptr;
    unsigned int a_inc = a_ast->inc;
    unsigned int b_inc = b_ast->inc;
-   unsigned int i, n = c_ast->num;
+   SLuindex_Type i, n = c_ast->num;
 
    for (i = 0; i < n; i++)
      {
@@ -1528,7 +1530,7 @@ static int do_c_df_fun (int (*f)(double, double, VOID_STAR),
    char *c = c_ast->cptr;
    unsigned int a_inc = a_ast->inc;
    unsigned int b_inc = b_ast->inc;
-   unsigned int i, n = c_ast->num;
+   SLuindex_Type i, n = c_ast->num;
 
    for (i = 0; i < n; i++)
      {
@@ -1699,7 +1701,7 @@ static int do_nint (double x)
 
 static int float_to_nint (SLang_Array_Type *at, SLang_Array_Type *bt)
 {
-   unsigned int n, i;
+   SLuindex_Type n, i;
    int *ip;
    float *fp;
 
@@ -1715,7 +1717,7 @@ static int float_to_nint (SLang_Array_Type *at, SLang_Array_Type *bt)
 
 static int double_to_nint (SLang_Array_Type *at, SLang_Array_Type *bt)
 {
-   unsigned int n, i;
+   SLuindex_Type n, i;
    int *ip;
    double *dp;
 

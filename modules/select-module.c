@@ -19,7 +19,7 @@ static int pop_fd_set (SLang_Array_Type **ats,
 		       fd_set **fd_set_p, fd_set *fd_set_buf,
 		       int *max_n)
 {
-   unsigned int num, i;
+   SLuindex_Type num, i;
    SLang_Array_Type *at;
    SLFile_FD_Type **f;
 

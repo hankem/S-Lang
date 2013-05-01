@@ -252,9 +252,9 @@ scalar_vector_bin_op (int op,
 {
    char *c;
    char *a, *b;
-   unsigned int da, db;
-   unsigned int n, n_max;
-   unsigned int data_type_len;
+   size_t da, db;
+   SLuindex_Type n, n_max;
+   size_t data_type_len;
    SLang_Class_Type *cl;
 
    (void) b_type;
@@ -278,7 +278,7 @@ scalar_vector_bin_op (int op,
       case SLANG_NE:
 	for (n = 0; n < n_max; n++)
 	  {
-	     c[n] = (0 != SLMEMCMP(a, b, data_type_len));
+	     c[n] = (0 != memcmp (a, b, data_type_len));
 	     a += da; b += db;
 	  }
 	break;
@@ -286,7 +286,7 @@ scalar_vector_bin_op (int op,
       case SLANG_EQ:
 	for (n = 0; n < n_max; n++)
 	  {
-	     c[n] = (0 == SLMEMCMP(a, b, data_type_len));
+	     c[n] = (0 == memcmp (a, b, data_type_len));
 	     a += da; b += db;
 	  }
 	break;
@@ -295,9 +295,9 @@ scalar_vector_bin_op (int op,
 }
 
 static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
-			 unsigned int desired, unsigned int *actual)
+			 SLstrlen_Type desired, SLstrlen_Type *actual)
 {
-   unsigned int n;
+   size_t n;
    char *buf = (char *)ptr;
    size_t desired_bytes, actual_bytes;
    size_t size = _pSLclass_get_class (type)->cl_sizeof_type;
@@ -340,9 +340,9 @@ static int scalar_fread (SLtype type, FILE *fp, VOID_STAR ptr,
 }
 
 static int scalar_fwrite (SLtype type, FILE *fp, VOID_STAR ptr,
-			 unsigned int desired, unsigned int *actual)
+			  SLstrlen_Type desired, SLstrlen_Type *actual)
 {
-   unsigned int n;
+   size_t n;
    char *buf = (char *)ptr;
    size_t desired_bytes, actual_bytes;
    size_t size = _pSLclass_get_class (type)->cl_sizeof_type;
@@ -537,9 +537,9 @@ use_cmp_bin_op (int op,
 {
    int *c;
    char *a, *b;
-   unsigned int da, db;
-   unsigned int n, n_max;
-   unsigned int data_type_len;
+   SLuindex_Type da, db;
+   SLuindex_Type n, n_max;
+   size_t data_type_len;
    SLang_Class_Type *cl;
    int (*cmp)(SLtype, VOID_STAR, VOID_STAR, int *);
 
@@ -626,7 +626,7 @@ use_cmp_bin_op (int op,
 int _pSLclass_is_same_obj (SLang_Object_Type *a, SLang_Object_Type *b)
 {
    SLang_Class_Type *cl;
-   unsigned int sizeof_type;
+   size_t sizeof_type;
 
    if (a->o_data_type != b->o_data_type)
      return 0;
@@ -885,7 +885,7 @@ int SLclass_create_synonym (SLFUTURE_CONST char *name, SLtype type)
 
 int SLclass_register_class (SLang_Class_Type *cl, SLtype type, unsigned int type_size, SLclass_Type class_type)
 {
-   Class_Table_Type *t;
+   Class_Table_Type *t = NULL;
    SLang_Class_Type **clp;
    char *name;
    int can_binop = 1;		       /* scalar_vector_bin_op should work

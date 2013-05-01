@@ -627,7 +627,7 @@ unsigned int _pSLsys_getkey (void)
 
    while (1)
      {
-	int status = read(SLang_TT_Read_FD, (char *) &c, 1);
+	ssize_t status = read(SLang_TT_Read_FD, (char *) &c, 1);
 
 	if (status > 0)
 	  break;

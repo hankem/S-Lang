@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-85"
+#define SLANG_VERSION_STRING "pre2.3.0-86"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -278,10 +278,14 @@ SL_EXTERN int SLmemcmp (char *, char *, int);
 
 /*}}}*/
 
-/* SLstrings */
-typedef char SLstr_Type;
 typedef unsigned int SLstrlen_Type;    /* Eventually this will become size_t */
 #define SLANG_STRLEN_TYPE SLANG_UINT_TYPE
+typedef int SLindex_Type;
+typedef unsigned int SLuindex_Type;
+#define SLANG_ARRAY_INDEX_TYPE SLANG_INT_TYPE
+
+/* SLstrings */
+typedef char SLstr_Type;
 SL_EXTERN int SLang_pop_strlen_type (SLstrlen_Type *);
 SL_EXTERN int SLang_push_strlen_type (SLstrlen_Type);
 
@@ -674,9 +678,6 @@ SL_EXTERN int SLang_generate_debug_info (int);
 # define _PROTO(x) ()
 #endif
 
-typedef int SLindex_Type;
-typedef unsigned int SLuindex_Type;
-#define SLANG_ARRAY_INDEX_TYPE SLANG_INT_TYPE
 SL_EXTERN int SLang_pop_array_index (SLindex_Type *);
 SL_EXTERN int SLang_push_array_index (SLindex_Type);
 
@@ -1296,7 +1297,7 @@ SL_EXTERN int SLstruct_create_struct (unsigned int,
 SL_EXTERN int SLang_add_cleanup_function (void (*)(void));
 
 SL_EXTERN char *SLmake_string (SLFUTURE_CONST char *);
-SL_EXTERN char *SLmake_nstring (SLFUTURE_CONST char *, unsigned int);
+SL_EXTERN char *SLmake_nstring (SLFUTURE_CONST char *, SLstrlen_Type);
 /* Returns a null terminated string made from the first n characters of the
  * string.
  */
@@ -1306,16 +1307,16 @@ SL_EXTERN char *SLmake_nstring (SLFUTURE_CONST char *, unsigned int);
  * to get a pointer and length.
  */
 typedef struct _pSLang_BString_Type SLang_BString_Type;
-SL_EXTERN unsigned char *SLbstring_get_pointer (SLang_BString_Type *, unsigned int *);
+SL_EXTERN unsigned char *SLbstring_get_pointer (SLang_BString_Type *, SLstrlen_Type *);
 
 SL_EXTERN SLang_BString_Type *SLbstring_dup (SLang_BString_Type *);
-SL_EXTERN SLang_BString_Type *SLbstring_create (unsigned char *, unsigned int);
+SL_EXTERN SLang_BString_Type *SLbstring_create (unsigned char *, SLstrlen_Type);
 
 /* The create_malloced function used the first argument which is assumed
  * to be a pointer to a len + 1 malloced string.  The extra byte is for
  * \0 termination.
  */
-SL_EXTERN SLang_BString_Type *SLbstring_create_malloced (unsigned char *, unsigned int, int);
+SL_EXTERN SLang_BString_Type *SLbstring_create_malloced (unsigned char *, SLstrlen_Type, int);
 
 /* Create a bstring from an slstring */
 SL_EXTERN SLang_BString_Type *SLbstring_create_slstring (SLFUTURE_CONST char *);
@@ -1324,10 +1325,10 @@ SL_EXTERN void SLbstring_free (SLang_BString_Type *);
 SL_EXTERN int SLang_pop_bstring (SLang_BString_Type **);
 SL_EXTERN int SLang_push_bstring (SLang_BString_Type *);
 
-SL_EXTERN SLFUTURE_VOID *SLmalloc (unsigned int);
-SL_EXTERN SLFUTURE_VOID *SLcalloc (unsigned int, unsigned int);
+SL_EXTERN SLFUTURE_VOID *SLmalloc (SLstrlen_Type);
+SL_EXTERN SLFUTURE_VOID *SLcalloc (SLstrlen_Type, SLstrlen_Type);
 SL_EXTERN void SLfree(SLFUTURE_VOID *);	       /* This function handles NULL */
-SL_EXTERN SLFUTURE_VOID *SLrealloc (SLFUTURE_VOID *, unsigned int);
+SL_EXTERN SLFUTURE_VOID *SLrealloc (SLFUTURE_VOID *, SLstrlen_Type);
 
 SL_EXTERN char *SLcurrent_time_string (void);
 
@@ -2355,8 +2356,8 @@ SL_EXTERN SLRegexp_Type *SLregexp_compile (SLFUTURE_CONST char *pattern, unsigne
 #define SLREGEXP_UTF8		0x10
 
 SL_EXTERN void SLregexp_free (SLRegexp_Type *);
-SL_EXTERN char *SLregexp_match (SLRegexp_Type *compiled_regexp, SLFUTURE_CONST char *str, unsigned int len);
-SL_EXTERN int SLregexp_nth_match (SLRegexp_Type *, unsigned int nth, unsigned int *ofsp, unsigned int *lenp);
+SL_EXTERN char *SLregexp_match (SLRegexp_Type *compiled_regexp, SLFUTURE_CONST char *str, SLstrlen_Type len);
+SL_EXTERN int SLregexp_nth_match (SLRegexp_Type *, unsigned int nth, SLstrlen_Type *ofsp, SLstrlen_Type *lenp);
 
 SL_EXTERN int SLregexp_get_hints (SLRegexp_Type *, unsigned int *flagsp);
 #define SLREGEXP_HINT_BOL		0x01   /* pattern must match bol */
@@ -2405,7 +2406,7 @@ SL_EXTERN SLuchar_Type *SLsearch_forward (SLsearch_Type *st,
                                         SLuchar_Type *pmin, SLuchar_Type *pmax);
 SL_EXTERN SLuchar_Type *SLsearch_backward (SLsearch_Type *st,
                                          SLuchar_Type *pmin, SLuchar_Type *pstart, SLuchar_Type *pmax);
-SL_EXTERN unsigned int SLsearch_match_len (SLsearch_Type *);
+SL_EXTERN SLstrlen_Type SLsearch_match_len (SLsearch_Type *);
 
 /*}}}*/
 

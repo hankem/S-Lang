@@ -15,6 +15,7 @@ import ("stats");
 %   pearson_r        Pearson's r correlation test
 %   correlation      2 sample correlation
 %   z_test
+%   f_test2          2 sample F test
 %   skewness
 %   kurtosis
 %

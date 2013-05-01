@@ -68,7 +68,7 @@ int _pSLang_push_slstring (char *s)
 }
 
 /* Frees s upon error */
-int _pSLpush_alloced_slstring (char *s, unsigned int len)
+int _pSLpush_alloced_slstring (char *s, size_t len)
 {
    if (NULL == (s = _pSLcreate_via_alloced_slstring (s, len)))
      return -1;
@@ -174,7 +174,7 @@ string_string_bin_op (int op,
 {
    char *ic;
    char **a, **b, **c;
-   unsigned int n, n_max;
+   SLuindex_Type n, n_max;
    unsigned int da, db;
 
    (void) a_type;
@@ -193,7 +193,7 @@ string_string_bin_op (int op,
        {
 	  if ((*a == NULL) || (*b == NULL))
 	    {
-	       _pSLang_verror (SL_VARIABLE_UNINITIALIZED, "String element[%u] not initialized for binary operation", n);
+	       _pSLang_verror (SL_VARIABLE_UNINITIALIZED, "String element[%lu] not initialized for binary operation", (unsigned long)n);
 	       return -1;
 	    }
 	  a += da; b += db;
@@ -284,7 +284,7 @@ string_string_bin_op (int op,
    return_error:
    if (c != NULL)
      {
-	unsigned int nn;
+	SLuindex_Type nn;
 	for (nn = 0; nn < n; nn++)
 	  {
 	     SLang_free_slstring (c[nn]);
@@ -801,8 +801,8 @@ int _pSLanytype_typecast (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 {
    SLang_Class_Type *cl;
    SLang_Any_Type **any;
-   unsigned int i;
-   unsigned int sizeof_type;
+   SLuindex_Type i;
+   size_t sizeof_type;
 
    (void) b_type;
 

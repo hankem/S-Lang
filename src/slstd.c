@@ -378,7 +378,7 @@ static int get_doc_string (char *file, char *topic)
 {
    FILE *fp;
    char line[1024];
-   unsigned int topic_len, str_len;
+   size_t topic_len, str_len;
    char *str;
    char ch;
 
@@ -443,7 +443,7 @@ static int get_doc_string (char *file, char *topic)
 
    while (NULL != fgets (line, sizeof (line), fp))
      {
-	unsigned int len;
+	size_t len;
 	char *new_str;
 
 	ch = *line;
@@ -500,7 +500,7 @@ static void get_doc_files_intrin (void)
 static void set_doc_files_intrin (void)
 {
    SLang_Array_Type *at;
-   unsigned int i, num;
+   size_t i, num;
    char **data;
 
    if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
@@ -559,8 +559,8 @@ static void get_doc_string_intrin (char *topic)
 static int push_string_array_elements (SLang_Array_Type *at)
 {
    char **strs;
-   unsigned int num;
-   unsigned int i;
+   size_t num;
+   size_t i;
 
    if (at == NULL)
      return -1;

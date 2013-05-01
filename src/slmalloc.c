@@ -159,7 +159,7 @@ SLFUTURE_VOID *SLdebug_realloc (SLFUTURE_VOID *p, unsigned long n)
 SLFUTURE_VOID *SLdebug_calloc (unsigned long n, unsigned long size)
 {
    char *p;
-   int m;
+   unsigned int m;
 
    /* This is tough -- hope this is a good assumption!! */
    if (size >= Chunk) m = 1; else m = Chunk;

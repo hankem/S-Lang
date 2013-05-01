@@ -14,12 +14,12 @@
  */
 
 #ifdef HISTOGRAM_1D
-static int HISTOGRAM_1D (PTS_TYPE *pts, unsigned int npts,
-			 BIN_EDGES_TYPE *bin_edges, unsigned int nbins,
-			 unsigned int *histogram,
-			 int *reverse_indices)
+static int HISTOGRAM_1D (PTS_TYPE *pts, SLuindex_Type npts,
+			 BIN_EDGES_TYPE *bin_edges, SLuindex_Type nbins,
+			 HistData_Type *histogram,
+			 SLindex_Type *reverse_indices)
 {
-   unsigned int i, nbins_m1;
+   SLuindex_Type i, nbins_m1;
    double xlo, xhi, dx;
 
    if (nbins == 0)
@@ -42,7 +42,7 @@ static int HISTOGRAM_1D (PTS_TYPE *pts, unsigned int npts,
    for (i = 0; i < npts; i++)
      {
 	PTS_TYPE val = pts[i];
-	unsigned int j;
+	SLuindex_Type j;
 
 	if (
 #if CHECK_NANS
@@ -56,14 +56,14 @@ static int HISTOGRAM_1D (PTS_TYPE *pts, unsigned int npts,
 	else
 	  {
 	     /* Try linear interpolation since many grids will be linear */
-	     j = (unsigned int) (((val - xlo)/dx)*nbins_m1);
+	     j = (SLuindex_Type) (((val - xlo)/dx)*nbins_m1);
 	     if (j == nbins_m1) j--;
 	     if ((bin_edges[j] > val) || (val >= bin_edges[j+1]))
 	       j = BINARY_SEARCH (val, bin_edges, nbins);
 	  }
 	histogram[j] += 1;
 	if (reverse_indices != NULL)
-	  reverse_indices[i] = (int) j;
+	  reverse_indices[i] = (SLindex_Type) j;
      }
    return 0;
 }
@@ -71,13 +71,13 @@ static int HISTOGRAM_1D (PTS_TYPE *pts, unsigned int npts,
 #endif				       /* HISTOGRAM_1D */
 
 #ifdef HISTOGRAM_2D
-static int HISTOGRAM_2D (PTS_TYPE *xpts, PTS_TYPE *ypts, unsigned int npts,
-			 BIN_EDGES_TYPE *xbin_edges, unsigned int nxbins, 
-			 BIN_EDGES_TYPE *ybin_edges, unsigned int nybins,
-			 unsigned int *histogram,
-			 int *reverse_indices)
+static int HISTOGRAM_2D (PTS_TYPE *xpts, PTS_TYPE *ypts, SLuindex_Type npts,
+			 BIN_EDGES_TYPE *xbin_edges, SLuindex_Type nxbins, 
+			 BIN_EDGES_TYPE *ybin_edges, SLuindex_Type nybins,
+			 HistData_Type *histogram,
+			 SLindex_Type *reverse_indices)
 {
-   unsigned int i, nxbins_m1, nybins_m1;
+   SLuindex_Type i, nxbins_m1, nybins_m1;
    double xlo, xhi, dx;
    double ylo, yhi, dy;
 
@@ -110,7 +110,7 @@ static int HISTOGRAM_2D (PTS_TYPE *xpts, PTS_TYPE *ypts, unsigned int npts,
      {
 	PTS_TYPE xval = xpts[i];
 	PTS_TYPE yval = ypts[i];
-	unsigned int jx, jy, j;
+	SLuindex_Type jx, jy, j;
 
 	if (
 #if CHECK_NANS
@@ -124,7 +124,7 @@ static int HISTOGRAM_2D (PTS_TYPE *xpts, PTS_TYPE *ypts, unsigned int npts,
 	else
 	  {
 	     /* Try linear interpolation since many grids will be linear */
-	     jx = (unsigned int) (((xval - xlo)/dx)*nxbins_m1);
+	     jx = (SLuindex_Type) (((xval - xlo)/dx)*nxbins_m1);
 	     if (jx == nxbins_m1) jx--;
 	     if ((xbin_edges[jx] > xval) || (xval >= xbin_edges[jx+1]))
 	       jx = BINARY_SEARCH (xval, xbin_edges, nxbins);
@@ -135,7 +135,7 @@ static int HISTOGRAM_2D (PTS_TYPE *xpts, PTS_TYPE *ypts, unsigned int npts,
 	else
 	  {
 	     /* Try linear interpolation since many grids will be linear */
-	     jy = (unsigned int) (((yval - ylo)/dy)*nybins_m1);
+	     jy = (SLuindex_Type) (((yval - ylo)/dy)*nybins_m1);
 	     if (jy == nybins_m1) jy--;
 	     if ((ybin_edges[jy] > yval) || (yval >= ybin_edges[jy+1]))
 	       jy = BINARY_SEARCH (yval, ybin_edges, nybins);
@@ -152,12 +152,12 @@ static int HISTOGRAM_2D (PTS_TYPE *xpts, PTS_TYPE *ypts, unsigned int npts,
 #endif
 
 #ifdef HISTOGRAM_REBIN
-static int HISTOGRAM_REBIN (double *new_grid, unsigned int new_n,
-			    double *old_grid, PTS_TYPE *old_h, unsigned int old_n,
+static int HISTOGRAM_REBIN (double *new_grid, SLuindex_Type new_n,
+			    double *old_grid, PTS_TYPE *old_h, SLuindex_Type old_n,
 			    PTS_TYPE *new_h)
 {
-   unsigned int i, imax;
-   unsigned int j, jmax;
+   SLuindex_Type i, imax;
+   SLuindex_Type j, jmax;
    double *old_left, *old_right, *new_left, *new_right;
 
    if ((new_n == 0) || (old_n == 0))

@@ -177,7 +177,7 @@ static int _pcre_exec (void)
    SLang_MMT_Type *mmt;
    char *str;
    SLang_BString_Type *bstr = NULL;
-   unsigned int len;
+   SLstrlen_Type len;
    int pos = 0;
    int options = 0;
    int ret = -1;
@@ -233,7 +233,7 @@ free_and_return:
 }
 
 static int get_nth_start_stop (PCRE_Type *pt, unsigned int n,
-			       unsigned int *a, unsigned int *b)
+			       SLstrlen_Type *a, SLstrlen_Type *b)
 {
    int start, stop;
 
@@ -252,7 +252,7 @@ static int get_nth_start_stop (PCRE_Type *pt, unsigned int n,
 
 static void _pcre_nth_match (PCRE_Type *pt, int *np)
 {
-   unsigned int start, stop;
+   SLuindex_Type start, stop;
    SLang_Array_Type *at;
    SLindex_Type two = 2;
    int *data;
@@ -274,8 +274,8 @@ static void _pcre_nth_match (PCRE_Type *pt, int *np)
 
 static void _pcre_nth_substr (PCRE_Type *pt, char *str, int *np)
 {
-   unsigned int start, stop;
-   unsigned int len;
+   SLstrlen_Type start, stop;
+   SLstrlen_Type len;
 
    len = strlen (str);
 
@@ -312,12 +312,12 @@ static void _pcre_nth_substr (PCRE_Type *pt, char *str, int *np)
 static char *_slang_to_pcre (char *slpattern)
 {
    char *pattern, *p, *s;
-   unsigned int len;
+   SLstrlen_Type len;
    int in_bracket;
    char ch;
 
    len = strlen (slpattern);
-   pattern = SLmalloc (3*len + 1);
+   pattern = (char *)SLmalloc (3*len + 1);
    if (pattern == NULL)
      return NULL;
 

@@ -369,7 +369,7 @@ static char stat_is_cmd (char *what, int *mode_ptr)
 static void readlink_cmd (char *s)
 {
    char buf[2048];
-   int n;
+   ssize_t n;
 
    while ((-1 == (n = readlink (s, buf, sizeof (buf)-1)))
 	  && is_interrupt (errno))
@@ -456,7 +456,7 @@ static int chown_cmd (char *file, int *owner, int *group)
 static void fixup_dir (char *dir)
 {
 #ifndef VMS
-   int n;
+   ssize_t n;
 
    if ((n = strlen(dir)) > 1)
      {

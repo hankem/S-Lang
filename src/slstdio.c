@@ -128,10 +128,10 @@ static int handle_errno (int e)
  * EOF.  It says nothing about how many bytes were sucessfully written.  Sigh.
  * So, use fwrite instead.
  */
-static int signal_safe_fputs (char *buf, FILE *fp)
+static ssize_t signal_safe_fputs (char *buf, FILE *fp)
 {
-   unsigned int len;
-   unsigned int num_written;
+   size_t len;
+   size_t num_written;
 
    len = strlen (buf);
    num_written = 0;
@@ -469,11 +469,11 @@ static int stdio_fclose (void)
    return ret;
 }
 
-static int read_one_line (FILE *fp, char **strp, unsigned int *lenp, int trim_trailing)
+static int read_one_line (FILE *fp, char **strp, SLstrlen_Type *lenp, int trim_trailing)
 {
    char buf[512];
    char *str;
-   unsigned int len;
+   size_t len;
 
    *strp = NULL;
    len = 0;
@@ -481,7 +481,7 @@ static int read_one_line (FILE *fp, char **strp, unsigned int *lenp, int trim_tr
 
    while (-1 != signal_safe_fgets (buf, sizeof (buf), fp))
      {
-	unsigned int dlen;
+	size_t dlen;
 	char *new_str;
 	int done_flag;
 
@@ -545,7 +545,7 @@ static int read_one_line (FILE *fp, char **strp, unsigned int *lenp, int trim_tr
 static int stdio_fgets (SLang_Ref_Type *ref, SL_File_Table_Type *t)
 {
    char *s;
-   unsigned int len;
+   SLstrlen_Type len;
    FILE *fp;
    int status;
 
@@ -590,7 +590,7 @@ static void stdio_fgetslines_internal (FILE *fp, unsigned int n)
      {
 	int status;
 	char *line;
-	unsigned int len;
+	SLstrlen_Type len;
 
 	status = read_one_line (fp, &line, &len, 0);
 	if (status == -1)
@@ -764,7 +764,7 @@ static int check_ferror_and_realloc (FILE *fp, int ret, char **strp, unsigned in
 static void stdio_fread_bytes (SLang_Ref_Type *ref, unsigned int *num_wantedp, SL_File_Table_Type *t)
 {
    FILE *fp;
-   unsigned int num_read = 0, num_wanted = *num_wantedp;
+   size_t num_read = 0, num_wanted = *num_wantedp;
    int ret = -1;
    char *buf = NULL;
    SLang_BString_Type *bs;
@@ -776,7 +776,7 @@ static void stdio_fread_bytes (SLang_Ref_Type *ref, unsigned int *num_wantedp, S
 
    while (num_read < num_wanted)
      {
-	unsigned int dnum;
+	size_t dnum;
 
 	dnum = fread (buf + num_read, sizeof(char), num_wanted-num_read, fp);
 	num_read += dnum;
@@ -811,10 +811,10 @@ static void stdio_fread (SLang_Ref_Type *ref, int *data_typep, unsigned int *num
    char *s;
    FILE *fp;
    int ret;
-   unsigned int num_read, num_to_read;
-   unsigned int nbytes;
+   SLstrlen_Type num_read, num_to_read;
+   SLstrlen_Type nbytes;
    SLang_Class_Type *cl;
-   unsigned int sizeof_type;
+   size_t sizeof_type;
    int data_type;
 
    /* FIXME: priority = low : I should add some mechanism to support
@@ -847,7 +847,7 @@ static void stdio_fread (SLang_Ref_Type *ref, int *data_typep, unsigned int *num
    sizeof_type = cl->cl_sizeof_type;
 
    num_to_read = *num_elemns;
-   nbytes = (unsigned int) num_to_read * sizeof_type;
+   nbytes = num_to_read * sizeof_type;
 
    s = (char *)SLmalloc (nbytes + 1);
    if (s == NULL)
@@ -890,7 +890,7 @@ static void stdio_fwrite (SL_File_Table_Type *t)
 {
    FILE *fp;
    unsigned char *s;
-   unsigned int num_to_write, num_write;
+   SLstrlen_Type num_to_write, num_write;
    int ret;
    SLang_BString_Type *b;
    SLang_Array_Type *at;
@@ -1287,7 +1287,7 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 {
    int status;
    int ch;
-   unsigned int len;
+   SLuindex_Type len;
    char *s;
 
    (void) type;

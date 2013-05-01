@@ -46,11 +46,11 @@ struct _pSLang_BString_Type
 #define BS_GET_POINTER(b) \
    (((b)->ptr_type != IS_BSTRING) ? (b)->v.ptr : (b)->v.bytes)
 
-static SLang_BString_Type *create_bstring_of_type (char *bytes, unsigned int len, int type)
+static SLang_BString_Type *create_bstring_of_type (char *bytes, size_t len, int type)
 {
    SLang_BString_Type *b;
-   unsigned int size;
-   unsigned int malloced_len = len;
+   size_t size;
+   size_t malloced_len = len;
 
    size = sizeof(SLang_BString_Type);
    if (type == IS_BSTRING)
@@ -106,14 +106,14 @@ static SLang_BString_Type *create_bstring_of_type (char *bytes, unsigned int len
 }
 
 SLang_BString_Type *
-SLbstring_create (unsigned char *bytes, unsigned int len)
+SLbstring_create (unsigned char *bytes, SLstrlen_Type len)
 {
    return create_bstring_of_type ((char *)bytes, len, IS_BSTRING);
 }
 
 /* Note that ptr must be len + 1 bytes long for \0 termination */
 SLang_BString_Type *
-SLbstring_create_malloced (unsigned char *ptr, unsigned int len, int free_on_error)
+SLbstring_create_malloced (unsigned char *ptr, SLstrlen_Type len, int free_on_error)
 {
    SLang_BString_Type *b;
 
@@ -144,7 +144,7 @@ SLang_BString_Type *SLbstring_dup (SLang_BString_Type *b)
    return b;
 }
 
-unsigned char *SLbstring_get_pointer (SLang_BString_Type *b, unsigned int *len)
+unsigned char *SLbstring_get_pointer (SLang_BString_Type *b, SLstrlen_Type *len)
 {
    if (b == NULL)
      {
@@ -254,7 +254,7 @@ static int compare_bstrings (SLang_BString_Type *a, SLang_BString_Type *b)
 static SLang_BString_Type *
 concat_bstrings (SLang_BString_Type *a, SLang_BString_Type *b)
 {
-   unsigned int len;
+   SLuindex_Type len;
    SLang_BString_Type *c;
    char *bytes;
 
@@ -286,9 +286,9 @@ concat_bstrings (SLang_BString_Type *a, SLang_BString_Type *b)
    return c;
 }
 
-static void free_n_bstrings (SLang_BString_Type **a, unsigned int n)
+static void free_n_bstrings (SLang_BString_Type **a, SLuindex_Type n)
 {
-   unsigned int i;
+   SLuindex_Type i;
 
    if (a == NULL) return;
 
@@ -307,7 +307,7 @@ bstring_bstring_bin_op (int op,
 {
    char *ic;
    SLang_BString_Type **a, **b, **c;
-   unsigned int n, n_max;
+   SLuindex_Type n, n_max;
    unsigned int da, db;
 
    (void) a_type;
@@ -325,7 +325,7 @@ bstring_bstring_bin_op (int op,
 	if ((*a == NULL) || (*b == NULL))
 	  {
 	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED,
-			   "Binary string element[%u] not initialized for binary operation", n);
+			   "Binary string element[%lu] not initialized for binary operation", (unsigned long)n);
 	     return -1;
 	  }
 	a += da; b += db;
@@ -418,9 +418,9 @@ bstring_bstring_bin_op (int op,
  * is called by the binary op routines for why.
  */
 static SLang_BString_Type **
-make_n_bstrings (SLang_BString_Type **b, char **a, unsigned int n, int ptr_type)
+make_n_bstrings (SLang_BString_Type **b, char **a, SLuindex_Type n, int ptr_type)
 {
-   unsigned int i;
+   SLuindex_Type i;
    int malloc_flag;
 
    malloc_flag = 0;
@@ -748,7 +748,7 @@ _pSLbstring_foreach_open (SLtype type, unsigned int num)
    SLang_Foreach_Context_Type *c;
    int using_chars = 0;
    SLang_BString_Type *bstr;
-   unsigned int len;
+   SLstrlen_Type len;
 
    (void) type;
 

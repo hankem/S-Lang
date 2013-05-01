@@ -169,7 +169,7 @@ int SLutf8_enable (int mode)
  * and the library malloc function returns NULL, then malloc will be retried
  * using 1 byte.
  */
-SLFUTURE_VOID *SLmalloc (unsigned int len)
+SLFUTURE_VOID *SLmalloc (SLstrlen_Type len)
 {
    SLFUTURE_VOID *p;
 
@@ -187,7 +187,7 @@ void SLfree (SLFUTURE_VOID *p)
    if (p != NULL) SLFREE_FUN (p);
 }
 
-SLFUTURE_VOID *SLrealloc (SLFUTURE_VOID *p, unsigned int len)
+SLFUTURE_VOID *SLrealloc (SLFUTURE_VOID *p, SLstrlen_Type len)
 {
    if (len == 0)
      {
@@ -205,7 +205,7 @@ SLFUTURE_VOID *SLrealloc (SLFUTURE_VOID *p, unsigned int len)
    return p;
 }
 
-SLFUTURE_VOID *_SLrecalloc (SLFUTURE_VOID *p, unsigned int nelems, unsigned int len)
+SLFUTURE_VOID *_SLrecalloc (SLFUTURE_VOID *p, SLstrlen_Type nelems, SLstrlen_Type len)
 {
    unsigned int nlen = nelems * len;
 
@@ -217,9 +217,9 @@ SLFUTURE_VOID *_SLrecalloc (SLFUTURE_VOID *p, unsigned int nelems, unsigned int 
    return SLrealloc (p, nlen);
 }
 
-SLFUTURE_VOID *_SLcalloc (unsigned int nelems, unsigned int len)
+SLFUTURE_VOID *_SLcalloc (SLstrlen_Type nelems, SLstrlen_Type len)
 {
-   unsigned int nlen = nelems * len;
+   SLstrlen_Type nlen = nelems * len;
 
    if (nelems && (nlen/nelems != len))
      {
@@ -229,7 +229,7 @@ SLFUTURE_VOID *_SLcalloc (unsigned int nelems, unsigned int len)
    return SLmalloc (nlen);
 }
 
-SLFUTURE_VOID *SLcalloc (unsigned int nelems, unsigned int len)
+SLFUTURE_VOID *SLcalloc (SLstrlen_Type nelems, SLstrlen_Type len)
 {
    SLFUTURE_VOID *p = _SLcalloc (nelems, len);
    if (p != NULL) memset (p, 0, len*nelems);

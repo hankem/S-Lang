@@ -583,7 +583,7 @@ static int
 transfer_element (SLang_Class_Type *cl, VOID_STAR dest_data,
 		  SLang_Object_Type *obj)
 {
-   unsigned int sizeof_type;
+   size_t sizeof_type;
    VOID_STAR src_data;
 
 #if USE_NEW_ANYTYPE_CODE

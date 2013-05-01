@@ -504,6 +504,7 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
    unsigned char *buf, *b;
    unsigned char *t;
    int len;
+   SLstrlen_Type ulen;
 
    if (SLtt_Try_Termcap == 0) return -1;
 #if 1
@@ -541,8 +542,8 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
      }
 
    /* malloc some extra space just in case it is needed. */
-   len = strlen ((char *) termcap) + 256;
-   if (NULL == (buf = (unsigned char *) SLmalloc ((unsigned int) len)))
+   ulen = strlen ((char *) termcap) + 256;
+   if (NULL == (buf = (unsigned char *) SLmalloc (ulen)))
      return -1;
 
    b = buf;
@@ -646,7 +647,7 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
 	b1[2] = (unsigned char) len;    /* replace the # by the length */
 	t++;
      }
-   ti->num_numbers = (int) (b - ti->numbers);
+   ti->num_numbers = (b - ti->numbers);
 
    /* Now process the flags. */
    t = termcap;
@@ -664,7 +665,7 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
 	t += 3;
 	b += 2;
      }
-   ti->boolean_section_size = (int) (b - ti->boolean_flags);
+   ti->boolean_section_size = (b - ti->boolean_flags);
    ti->flags = SLTERMCAP;
    return 0;
 }

@@ -284,7 +284,7 @@ static int do_close (SLFile_FD_Type *f)
      }
 }
 
-static int do_write (SLFile_FD_Type *f, char *buf, unsigned int *nump)
+static int do_write (SLFile_FD_Type *f, char *buf, SLstrlen_Type *nump)
 {
    int fd;
 
@@ -296,7 +296,7 @@ static int do_write (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 
    while (1)
      {
-	int num;
+	ssize_t num;
 
 	errno = 0;
 	if (f->write != NULL)
@@ -374,7 +374,7 @@ static int posix_close (SLFile_FD_Type *f)
 /* Usage: Uint write (f, buf); */
 static void posix_write (SLFile_FD_Type *f, SLang_BString_Type *bstr)
 {
-   unsigned int len;
+   SLstrlen_Type len;
    char *p;
 
    if ((NULL == (p = (char *)SLbstring_get_pointer (bstr, &len)))

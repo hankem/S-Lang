@@ -31,7 +31,7 @@ static int Chksum_Type_Id = 0;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    SLChksum_Type *(*create)(char *);
 }
 Chksum_Def_Type;
@@ -168,7 +168,7 @@ static void chksum_close (Chksum_Object_Type *obj)
 static void chksum_accumulate (Chksum_Object_Type *obj, SLang_BString_Type *b)
 {
    SLChksum_Type *c;
-   unsigned int len;
+   SLstrlen_Type len;
    unsigned char *s;
 
    if (NULL == (c = obj->c))

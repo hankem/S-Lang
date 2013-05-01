@@ -275,9 +275,9 @@ int _pSLusleep (unsigned long usecs)
 
 int SLtt_flush_output (void)
 {
-   int nwrite = 0;
-   unsigned int total;
-   int n = (int) (Output_Bufferp - Output_Buffer);
+   ssize_t nwrite = 0;
+   size_t total;
+   size_t n = (Output_Bufferp - Output_Buffer);
 
    SLtt_Num_Chars_Output += n;
 
@@ -315,22 +315,22 @@ int SLtt_flush_output (void)
 }
 
 int SLtt_Baud_Rate = 0;
-static void tt_write(SLCONST char *str, unsigned int n)
+static void tt_write(SLCONST char *str, SLstrlen_Type n)
 {
    static unsigned long last_time;
-   static int total;
+   static SLstrlen_Type total;
    unsigned long now;
-   unsigned int ndiff;
+   size_t ndiff;
 
    if ((str == NULL) || (n == 0)) return;
    total += n;
 
    while (1)
      {
-	ndiff = MAX_OUTPUT_BUFFER_SIZE - (int) (Output_Bufferp - Output_Buffer);
+	ndiff = MAX_OUTPUT_BUFFER_SIZE - (Output_Bufferp - Output_Buffer);
 	if (ndiff < n)
 	  {
-	     SLMEMCPY ((char *) Output_Bufferp, str, ndiff);
+	     memcpy ((char *) Output_Bufferp, str, ndiff);
 	     Output_Bufferp += ndiff;
 	     SLtt_flush_output ();
 	     n -= ndiff;
@@ -338,14 +338,14 @@ static void tt_write(SLCONST char *str, unsigned int n)
 	  }
 	else
 	  {
-	     SLMEMCPY ((char *) Output_Bufferp, str, n);
+	     memcpy ((char *) Output_Bufferp, str, n);
 	     Output_Bufferp += n;
 	     break;
 	  }
      }
 
    if (((SLtt_Baud_Rate > 150) && (SLtt_Baud_Rate <= 9600))
-       && (10 * total > SLtt_Baud_Rate))
+       && (10 * total > (unsigned int)SLtt_Baud_Rate))
      {
 	total = 0;
 	if ((now = (unsigned long) time(NULL)) - last_time <= 1)
@@ -1044,7 +1044,7 @@ static void del_eol (void)
      }
 
    if ((Del_Eol_Str != NULL)
-       && (Can_Background_Color_Erase || ((Current_Fgbg & ~0xFF) == 0)))
+       && (Can_Background_Color_Erase || ((Current_Fgbg & ~0xFFU) == 0)))
      {
 	tt_write_string(Del_Eol_Str);
 	return;
@@ -1600,7 +1600,7 @@ static int bce_colors_eq (SLsmg_Color_Type ca, SLsmg_Color_Type cb, int just_bg)
  */
 static void write_string_with_care (SLCONST char *str)
 {
-   unsigned int len;
+   SLstrlen_Type len;
 
    if (str == NULL) return;
 
@@ -1628,7 +1628,7 @@ static void write_string_with_care (SLCONST char *str)
 	       if (SLtt_Screen_Cols > Cursor_c)
 	         {
 		    char *p;
-		    nchars = SLtt_Screen_Cols - Cursor_c - 1;
+		    nchars = (SLstrlen_Type)(SLtt_Screen_Cols - Cursor_c - 1);
 		    p = (char *)SLutf8_skip_chars((SLuchar_Type *) str, (SLuchar_Type *)(str + len), nchars, NULL, 1);
 		    len = p - str;
 		 }
@@ -2471,7 +2471,7 @@ void SLtt_get_terminfo (void)
 
    term = getenv ("TERM");
    if (term == NULL)
-     SLang_exit_error("TERM environment variable needs set.");
+     SLang_exit_error("%s", "TERM environment variable needs set.");
 
    if (0 == (status = SLtt_initialize (term)))
      return;

@@ -30,14 +30,14 @@ USA.
 
 SLANG_MODULE(png);
 
-static char *Module_Version_String = "0.1.1";
+static SLFUTURE_CONST char *Module_Version_String = "0.1.1";
 #define MODULE_VERSION_NUMBER  (0*10000 + 1*100 + 1)
 
 /*{{{ Byte-swapping routines */
 
 static int Is_Little_Endian;
 
-static void byte_swap32 (unsigned char *p, unsigned char *t, unsigned int n)
+static void byte_swap32 (unsigned char *p, unsigned char *t, SLuindex_Type n)
 {
    unsigned char *pmax, ch;
 
@@ -57,7 +57,7 @@ static void byte_swap32 (unsigned char *p, unsigned char *t, unsigned int n)
      }
 }
 
-static void byte_swap16 (unsigned char *p, unsigned char *t, unsigned int n)
+static void byte_swap16 (unsigned char *p, unsigned char *t, SLuindex_Type n)
 {
    unsigned char *pmax, ch;
 

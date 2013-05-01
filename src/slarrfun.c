@@ -36,10 +36,10 @@ static int next_transposed_index (SLindex_Type *dims, SLindex_Type *max_dims, un
 
    for (i = 0; i < (int) num_dims; i++)
      {
-	int dims_i;
+	SLindex_Type dims_i;
 
 	dims_i = dims [i] + 1;
-	if (dims_i != (int) max_dims [i])
+	if (dims_i != max_dims [i])
 	  {
 	     dims [i] = dims_i;
 	     return 0;
@@ -501,7 +501,7 @@ static void array_transpose (SLang_Array_Type *at)
 
 #if SLANG_HAS_FLOAT
 static int get_inner_product_parms (SLang_Array_Type *a, int *dp,
-				    unsigned int *loops, unsigned int *other)
+				    SLuindex_Type *loops, SLuindex_Type *other)
 {
    int num_dims;
    int d;
@@ -548,14 +548,14 @@ static void do_inner_product (void)
 {
    SLang_Array_Type *a, *b, *c;
    void (*fun)(SLang_Array_Type *, SLang_Array_Type *, SLang_Array_Type *,
-	       unsigned int, unsigned int, unsigned int, unsigned int,
-	       unsigned int);
+	       SLuindex_Type, SLuindex_Type, SLuindex_Type, SLuindex_Type,
+	       SLuindex_Type);
    SLtype c_type;
    SLindex_Type dims[SLARRAY_MAX_DIMS];
    int status;
-   unsigned int a_loops, b_loops, b_inc, a_stride;
+   SLuindex_Type a_loops, b_loops, b_inc, a_stride;
    int ai_dims, i, j;
-   unsigned int num_dims, a_num_dims, b_num_dims;
+   SLuindex_Type num_dims, a_num_dims, b_num_dims;
    int ai, bi;
 
    /* The result of a inner_product will be either a float, double, or

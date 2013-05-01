@@ -43,15 +43,15 @@ static SLang_Array_Type *TRANSPOSE_2D_ARRAY (SLang_Array_Type *at, SLang_Array_T
 
 static void INNERPROD_FUNCTION
   (SLang_Array_Type *at, SLang_Array_Type *bt, SLang_Array_Type *ct,
-   unsigned int a_loops, unsigned int a_stride,
-   unsigned int b_loops, unsigned int b_inc,
-   unsigned int inner_loops)
+   SLuindex_Type a_loops, SLuindex_Type a_stride,
+   SLuindex_Type b_loops, SLuindex_Type b_inc,
+   SLuindex_Type inner_loops)
 {
    GENERIC_TYPE_A *a;
    GENERIC_TYPE_B *b;
    GENERIC_TYPE_C *c;
-   unsigned int kmin;
-   unsigned int block = Inner_Prod_Block_Size;
+   SLuindex_Type kmin;
+   SLuindex_Type block = Inner_Prod_Block_Size;
 
    block *= sizeof (double)/sizeof(GENERIC_TYPE_B);
 
@@ -61,21 +61,21 @@ static void INNERPROD_FUNCTION
 #if 1
    for (kmin = 0; kmin < inner_loops; kmin += block)
      {
-	unsigned int jmin;
-	unsigned int kmax = kmin + block;
+	SLuindex_Type jmin;
+	SLuindex_Type kmax = kmin + block;
 	if (kmax > inner_loops) kmax = inner_loops;
 
 	for (jmin = 0; jmin < b_loops; jmin += block)
 	  {
-	     unsigned int i;
-	     unsigned int jmax = jmin + block;
+	     SLuindex_Type i;
+	     SLuindex_Type jmax = jmin + block;
 	     if (jmax > b_loops) jmax = b_loops;
 
 	     for (i = 0; i < a_loops; i++)
 	       {
 		  GENERIC_TYPE_A *aa = a + i * a_stride;
 		  GENERIC_TYPE_C *cc = c + i * b_loops;
-		  unsigned int k;
+		  SLuindex_Type k;
 
 		  for (k = kmin; k < kmax; k++)
 		    {
@@ -83,13 +83,13 @@ static void INNERPROD_FUNCTION
 
 		       if (x != 0.0)
 			 {
-			    unsigned int j;
+			    SLuindex_Type j;
 			    GENERIC_TYPE_B *bb = b + b_inc*k;
 
 			    j = jmin;
 			    if (j + 8 < jmax)
 			      {
-				 unsigned int jmax1 = jmax - 8;
+				 SLuindex_Type jmax1 = jmax - 8;
 				 while (j < jmax1)
 				   {
 				      cc[j] += x * bb[j]; j++;
@@ -115,7 +115,7 @@ static void INNERPROD_FUNCTION
    while (a_loops--)
      {
 	GENERIC_TYPE_B *bb;
-	unsigned int j;
+	SLuindex_Type j;
 
 	bb = b;
 
@@ -125,7 +125,7 @@ static void INNERPROD_FUNCTION
 
 	     if (x != 0.0)
 	       {
-		  unsigned int k;
+		  SLuindex_Type k;
 
 		  for (k = 0; k < b_loops; k++)
 		    c[k] += x * bb[k];
@@ -147,9 +147,9 @@ static void INNERPROD_FUNCTION
 #ifdef INNERPROD_COMPLEX_A
 static void INNERPROD_COMPLEX_A
   (SLang_Array_Type *at, SLang_Array_Type *bt, SLang_Array_Type *ct,
-   unsigned int a_loops, unsigned int a_stride,
-   unsigned int b_loops, unsigned int b_inc,
-   unsigned int inner_loops)
+   SLuindex_Type a_loops, SLuindex_Type a_stride,
+   SLuindex_Type b_loops, SLuindex_Type b_inc,
+   SLuindex_Type inner_loops)
 {
    double *a;
    GENERIC_TYPE *b;
@@ -164,7 +164,7 @@ static void INNERPROD_COMPLEX_A
    while (a_loops--)
      {
 	GENERIC_TYPE *bb;
-	unsigned int bb_loops;
+	SLuindex_Type bb_loops;
 
 	bb = b;
 	bb_loops = b_loops;
@@ -173,7 +173,7 @@ static void INNERPROD_COMPLEX_A
 	  {
 	     double real_sum;
 	     double imag_sum;
-	     unsigned int iloops;
+	     SLuindex_Type iloops;
 	     double *aa;
 	     GENERIC_TYPE *bbb;
 
@@ -202,9 +202,9 @@ static void INNERPROD_COMPLEX_A
 
 static void INNERPROD_A_COMPLEX
   (SLang_Array_Type *at, SLang_Array_Type *bt, SLang_Array_Type *ct,
-   unsigned int a_loops, unsigned int a_stride,
-   unsigned int b_loops, unsigned int b_inc,
-   unsigned int inner_loops)
+   SLuindex_Type a_loops, SLuindex_Type a_stride,
+   SLuindex_Type b_loops, SLuindex_Type b_inc,
+   SLuindex_Type inner_loops)
 {
    GENERIC_TYPE *a;
    double *b;
@@ -219,7 +219,7 @@ static void INNERPROD_A_COMPLEX
    while (a_loops--)
      {
 	double *bb;
-	unsigned int bb_loops;
+	SLuindex_Type bb_loops;
 
 	bb = b;
 	bb_loops = b_loops;
@@ -228,7 +228,7 @@ static void INNERPROD_A_COMPLEX
 	  {
 	     double real_sum;
 	     double imag_sum;
-	     unsigned int iloops;
+	     SLuindex_Type iloops;
 	     GENERIC_TYPE *aa;
 	     double *bbb;
 
@@ -262,9 +262,9 @@ static void INNERPROD_A_COMPLEX
 #ifdef INNERPROD_COMPLEX_COMPLEX
 static void INNERPROD_COMPLEX_COMPLEX
   (SLang_Array_Type *at, SLang_Array_Type *bt, SLang_Array_Type *ct,
-   unsigned int a_loops, unsigned int a_stride,
-   unsigned int b_loops, unsigned int b_inc,
-   unsigned int inner_loops)
+   SLuindex_Type a_loops, SLuindex_Type a_stride,
+   SLuindex_Type b_loops, SLuindex_Type b_inc,
+   SLuindex_Type inner_loops)
 {
    double *a;
    double *b;
@@ -280,7 +280,7 @@ static void INNERPROD_COMPLEX_COMPLEX
    while (a_loops--)
      {
 	double *bb;
-	unsigned int bb_loops;
+	SLuindex_Type bb_loops;
 
 	bb = b;
 	bb_loops = b_loops;
@@ -289,7 +289,7 @@ static void INNERPROD_COMPLEX_COMPLEX
 	  {
 	     double real_sum;
 	     double imag_sum;
-	     unsigned int iloops;
+	     SLuindex_Type iloops;
 	     double *aa;
 	     double *bbb;
 
@@ -320,7 +320,7 @@ static void INNERPROD_COMPLEX_COMPLEX
 
 #ifdef SUM_FUNCTION
 #if SLANG_HAS_FLOAT
-static int SUM_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+static int SUM_FUNCTION (VOID_STAR xp, SLuindex_Type inc, SLuindex_Type num, VOID_STAR yp)
 {
    GENERIC_TYPE *x, *xmax;
    double sum, sumerr;
@@ -347,7 +347,7 @@ static int SUM_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_
 
 #ifdef SUMSQ_FUNCTION
 #if SLANG_HAS_FLOAT
-static int SUMSQ_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+static int SUMSQ_FUNCTION (VOID_STAR xp, SLuindex_Type inc, SLuindex_Type num, VOID_STAR yp)
 {
    GENERIC_TYPE *x, *xmax;
    double sum, sumerr;
@@ -375,9 +375,9 @@ static int SUMSQ_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOI
 
 #ifdef MIN_FUNCTION
 static int
-MIN_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
+MIN_FUNCTION (VOID_STAR ip, SLuindex_Type inc, SLuindex_Type num, VOID_STAR sp)
 {
-   unsigned int n, n0;
+   SLuindex_Type n, n0;
    GENERIC_TYPE m;
    GENERIC_TYPE *i = (GENERIC_TYPE *)ip;
 
@@ -408,9 +408,9 @@ MIN_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 
 #ifdef MINABS_FUNCTION
 static int
-MINABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
+MINABS_FUNCTION (VOID_STAR ip, SLuindex_Type inc, SLuindex_Type num, VOID_STAR sp)
 {
-   unsigned int n, n0;
+   SLuindex_Type n, n0;
    GENERIC_TYPE m;
    GENERIC_TYPE *i = (GENERIC_TYPE *)ip;
 
@@ -441,9 +441,9 @@ MINABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR sp)
 
 #ifdef MAX_FUNCTION
 static int
-MAX_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
+MAX_FUNCTION (VOID_STAR ip, SLuindex_Type inc, SLuindex_Type num, VOID_STAR s)
 {
-   unsigned int n, n0;
+   SLuindex_Type n, n0;
    GENERIC_TYPE m;
    GENERIC_TYPE *i = (GENERIC_TYPE *) ip;
 
@@ -474,9 +474,9 @@ MAX_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
 
 #ifdef MAXABS_FUNCTION
 static int
-MAXABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
+MAXABS_FUNCTION (VOID_STAR ip, SLuindex_Type inc, SLuindex_Type num, VOID_STAR s)
 {
-   unsigned int n, n0;
+   SLuindex_Type n, n0;
    GENERIC_TYPE m;
    GENERIC_TYPE *i = (GENERIC_TYPE *) ip;
 
@@ -507,9 +507,9 @@ MAXABS_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
 
 #ifdef ANY_FUNCTION
 static int
-ANY_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
+ANY_FUNCTION (VOID_STAR ip, SLuindex_Type inc, SLuindex_Type num, VOID_STAR s)
 {
-   unsigned int n;
+   SLuindex_Type n;
    GENERIC_TYPE *i = (GENERIC_TYPE *) ip;
 
    for (n = 0; n < num; n += inc)
@@ -531,9 +531,9 @@ ANY_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
 
 #ifdef ALL_FUNCTION
 static int
-ALL_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
+ALL_FUNCTION (VOID_STAR ip, SLuindex_Type inc, SLuindex_Type num, VOID_STAR s)
 {
-   unsigned int n;
+   SLuindex_Type n;
    GENERIC_TYPE *i = (GENERIC_TYPE *) ip;
 
    if (num == 0)
@@ -566,8 +566,8 @@ ALL_FUNCTION (VOID_STAR ip, unsigned int inc, unsigned int num, VOID_STAR s)
 #ifdef CUMSUM_FUNCTION
 #ifdef SLANG_HAS_FLOAT
 static int
-CUMSUM_FUNCTION (SLtype xtype, VOID_STAR xp, unsigned int inc,
-		 unsigned int num,
+CUMSUM_FUNCTION (SLtype xtype, VOID_STAR xp, SLuindex_Type inc,
+		 SLuindex_Type num,
 		 SLtype ytype, VOID_STAR yp, VOID_STAR clientdata)
 {
    GENERIC_TYPE *x, *xmax;
@@ -604,7 +604,7 @@ CUMSUM_FUNCTION (SLtype xtype, VOID_STAR xp, unsigned int inc,
 
 #ifdef PROD_FUNCTION
 #if SLANG_HAS_FLOAT
-static int PROD_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+static int PROD_FUNCTION (VOID_STAR xp, SLuindex_Type inc, SLuindex_Type num, VOID_STAR yp)
 {
    GENERIC_TYPE *x, *xmax;
    double prod;
@@ -627,7 +627,7 @@ static int PROD_FUNCTION (VOID_STAR xp, unsigned int inc, unsigned int num, VOID
 #endif
 
 #ifdef WHEREFIRSTMAX_FUNC
-static int WHEREFIRSTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+static int WHEREFIRSTMAX_FUNC (VOID_STAR xp, SLuindex_Type inc, SLuindex_Type num, VOID_STAR yp)
 {
    GENERIC_TYPE *x;
    SLuindex_Type i, imax;
@@ -667,7 +667,7 @@ static int WHEREFIRSTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num,
 #endif
 
 #ifdef WHERELASTMAX_FUNC
-static int WHERELASTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+static int WHERELASTMAX_FUNC (VOID_STAR xp, SLuindex_Type inc, SLuindex_Type num, VOID_STAR yp)
 {
    GENERIC_TYPE *x;
    SLuindex_Type i, imax;
@@ -707,7 +707,7 @@ static int WHERELASTMAX_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, 
 #endif
 
 #ifdef WHEREFIRSTMIN_FUNC
-static int WHEREFIRSTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+static int WHEREFIRSTMIN_FUNC (VOID_STAR xp, SLuindex_Type inc, SLuindex_Type num, VOID_STAR yp)
 {
    GENERIC_TYPE *x;
    SLuindex_Type i, imin;
@@ -747,7 +747,7 @@ static int WHEREFIRSTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num,
 #endif
 
 #ifdef WHERELASTMIN_FUNC
-static int WHERELASTMIN_FUNC (VOID_STAR xp, unsigned int inc, unsigned int num, VOID_STAR yp)
+static int WHERELASTMIN_FUNC (VOID_STAR xp, SLuindex_Type inc, SLuindex_Type num, VOID_STAR yp)
 {
    GENERIC_TYPE *x;
    SLuindex_Type i, imin;

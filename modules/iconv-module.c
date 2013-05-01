@@ -127,7 +127,7 @@ static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
    char *outstr;
    size_t inn, outn, bufn;
    size_t fail = (size_t)-1;
-   unsigned int bstrlen;
+   SLstrlen_Type bstrlen;
 
    if (NULL == (instr = (char ICONV_CONST *)SLbstring_get_pointer(bstr, &bstrlen)))
      return;
@@ -171,7 +171,7 @@ static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
 	   case E2BIG:
 	       {
 		  char *p;
-		  int outdelta;
+		  long outdelta;
 
 		  outdelta = outstr - buf;
 		  outn += bufn;

@@ -143,14 +143,14 @@ static SLtype Alias_Map [MAX_ARITHMETIC_TYPES];
  */
 
 #define DEFUN_1(f,from_type,to_type) \
-static void f (to_type *y, from_type *x, unsigned int n) \
+static void f (to_type *y, from_type *x, SLuindex_Type n) \
 { \
-   unsigned int i; \
+   SLuindex_Type i; \
    for (i = 0; i < n; i++) y[i] = (to_type) x[i]; \
 }
 
 #define DEFUN_2(f,from_type,to_type,copy_fun) \
-static VOID_STAR f (VOID_STAR xp, unsigned int n) \
+static VOID_STAR f (VOID_STAR xp, SLuindex_Type n) \
 { \
    from_type *x; \
    to_type *y; \
@@ -159,7 +159,7 @@ static VOID_STAR f (VOID_STAR xp, unsigned int n) \
    copy_fun (y, x, n); \
    return (VOID_STAR) y; \
 }
-typedef VOID_STAR (*Convert_Fun_Type)(VOID_STAR, unsigned int);
+typedef VOID_STAR (*Convert_Fun_Type)(VOID_STAR, SLuindex_Type);
 
 #if SLANG_HAS_FLOAT
 #define TO_DOUBLE_FUN(name,type) \
@@ -793,11 +793,19 @@ int SLang_push_ulong_long (unsigned long long i)
 
 int SLang_pop_strlen_type (SLstrlen_Type *ip)
 {
+#if SLANG_STRLEN_TYPE == SLANG_UINT_TYPE
    return SLang_pop_uint (ip);
+#else
+   return SLang_pop_ulong (ip);
+#endif
 }
 int SLang_push_strlen_type (SLstrlen_Type i)
 {
+#if SLANG_STRLEN_TYPE == SLANG_UINT_TYPE
    return SLang_push_uint (i);
+#else
+   return SLang_push_ulong (i);
+#endif
 }
 
 _INLINE_

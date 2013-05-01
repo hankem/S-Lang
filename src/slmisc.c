@@ -45,7 +45,7 @@ char *SLmake_string (SLFUTURE_CONST char *str)
    return SLmake_nstring(str, strlen (str));
 }
 
-char *SLmake_nstring (SLFUTURE_CONST char *str, unsigned int n)
+char *SLmake_nstring (SLFUTURE_CONST char *str, SLstrlen_Type n)
 {
    char *ptr;
 

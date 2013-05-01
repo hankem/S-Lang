@@ -1208,7 +1208,7 @@ int SLang_get_string_qualifier (SLCONST char *name, char **p, SLFUTURE_CONST cha
 	     if ((def != NULL)
 		 && (NULL == (def = SLang_create_slstring (def))))
 	       status = -1;
-	     else *p = def;
+	     else *p = (char *)def;
 	  }
 	return status;
      }
@@ -2977,7 +2977,7 @@ static char *nt_ref_string (VOID_STAR vdata)
    SLang_NameSpace_Type *ns;
    SLang_Name_Type *nt = *(SLang_Name_Type **)vdata;
    SLCONST char *name;
-   unsigned int len;
+   SLstrlen_Type len;
    char *s;
 
    ns = _pSLns_find_object_namespace (nt);
@@ -2990,7 +2990,7 @@ static char *nt_ref_string (VOID_STAR vdata)
    if ((ns->namespace_name != NULL)
        && (0 != strcmp (ns->namespace_name, "Global")))
      {
-	unsigned int dlen = strlen (ns->namespace_name);
+	SLstrlen_Type dlen = strlen (ns->namespace_name);
 	s = (char *)SLmalloc (len + dlen + 4);
 	if (s == NULL)
 	  return NULL;

@@ -63,7 +63,7 @@ private define test_accumulate (name, str, chksum)
    return 0;
 }
 
-define slsh_main ()
+private define run_tests ()
 {
    variable failed = 0;
    foreach (assoc_get_keys (Chksum_Map))
@@ -90,8 +90,13 @@ define slsh_main ()
 	failed += test_accumulate ("sha1", key, sha1);
      }
 
+   return failed;
+}
+
+define slsh_main ()
+{
+   variable failed = run_tests ();
    if (failed)
      exit (1);
-
    exit (0);
 }

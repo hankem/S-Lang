@@ -338,7 +338,7 @@ static Posix_Char_Class_Type Posix_Char_Class_Table [] =
 static int is_posix_charclass (SLuchar_Type **up, SLuchar_Type *umax, SLwchar_Type *char_classp)
 {
    SLuchar_Type *u, *u1;
-   unsigned int len;
+   size_t len;
    Posix_Char_Class_Type *p;
 
    u = *up;
@@ -1201,7 +1201,7 @@ SLuchar_Type *SLuchar_apply_char_map (SLwchar_Map_Type *map, SLuchar_Type *str)
    SLuchar_Type *str_max;
    SLuchar_Type *output, *output_max, *outptr;
    int use_chmap;
-   unsigned int len;
+   size_t len;
    SLwchar_Type *chmap;
 
    if ((map == NULL) || (str == NULL))

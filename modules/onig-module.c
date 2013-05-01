@@ -156,26 +156,27 @@ static void throw_onig_error (int err_code, OnigErrorInfo *einfo)
  */
 typedef struct
 {
-   char *name;
-   VOID_STAR ptr;
+   SLFUTURE_CONST char *name;
+   /* VOID_STAR ptr; */
+   void *ptr;
 }
 Name_Map_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    OnigSyntaxType *syn;
 }
 Syntax_Table_Map_Type;
 
 typedef struct
 {
-   char *name;
+   SLFUTURE_CONST char *name;
    OnigEncodingType *encoding;
 }
 Encoding_Table_Map_Type;
 
-static VOID_STAR pop_onig_name_ptr (Name_Map_Type *map, char *onig_object)
+static VOID_STAR pop_onig_name_ptr (Name_Map_Type *map, SLFUTURE_CONST char *onig_object)
 {
    char *str;
 
@@ -541,7 +542,7 @@ static int do_onig_search (void)
       case SLANG_BSTRING_TYPE:
       default:
 	  {
-	     unsigned int len;
+	     SLstrlen_Type len;
 
 	     if (-1 == SLang_pop_bstring(&bstr))
 	       return -1;
@@ -594,7 +595,7 @@ free_and_return:
 }
 
 static int get_nth_start_stop (Onig_Type *o, unsigned int n,
-			       unsigned int *a, unsigned int *b)
+			       SLstrlen_Type *a, SLstrlen_Type *b)
 {
    if (o->match_pos < 0)
      {
@@ -604,14 +605,14 @@ static int get_nth_start_stop (Onig_Type *o, unsigned int n,
    if (n >= (unsigned int) o->region->num_regs)
      return -1;
 
-   *a = (unsigned int) o->region->beg[n];
-   *b = (unsigned int) o->region->end[n];
+   *a = (SLstrlen_Type) o->region->beg[n];
+   *b = (SLstrlen_Type) o->region->end[n];
    return 0;
 }
 
 static void nth_match (Onig_Type *o, int *np)
 {
-   unsigned int start, stop;
+   SLstrlen_Type start, stop;
    SLang_Array_Type *at;
    SLindex_Type two = 2;
    int *data;
@@ -633,8 +634,8 @@ static void nth_match (Onig_Type *o, int *np)
 
 static void nth_substr (Onig_Type *o, char *str, int *np)
 {
-   unsigned int start, stop;
-   unsigned int len;
+   SLstrlen_Type start, stop;
+   SLstrlen_Type len;
 
    len = strlen (str);
 

@@ -927,7 +927,7 @@ static void binomial_intrin (void)
 {
    unsigned int n, k, i;
    double f;
-   int dims;
+   SLindex_Type dims;
    SLang_Array_Type *at;
    double *data;
 
@@ -943,7 +943,7 @@ static void binomial_intrin (void)
    if (-1 == SLang_pop_uint (&n))
      return;
 
-   dims = (int) (n+1);
+   dims = (SLindex_Type) (n+1);
    if (NULL == (at = SLang_create_array (SLANG_DOUBLE_TYPE, 0, NULL, &dims, 1)))
      return;
 
@@ -1017,7 +1017,7 @@ static SLang_Intrin_Fun_Type Module_Intrinsics [] =
    SLANG_END_INTRIN_FUN_TABLE
 };
 
-static char *Module_Version_String = MODULE_VERSION_STRING;
+static SLFUTURE_CONST char *Module_Version_String = MODULE_VERSION_STRING;
 static SLang_Intrin_Var_Type Module_Variables [] =
 {
    MAKE_VARIABLE("_stats_module_version_string", &Module_Version_String, SLANG_STRING_TYPE, 1),

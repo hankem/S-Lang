@@ -73,9 +73,6 @@ Slsh_Readline_Type;
 
 static Slsh_Readline_Type *Default_Readline_Info;
 
-static int open_readline (char *);
-static void close_readline (void);
-
 static void init_tty (void);
 static void reset_tty (void);
 
@@ -291,7 +288,7 @@ static void close_slsh_readline (Slsh_Readline_Type *sri)
    SLfree ((char *) sri);
 }
 
-static Slsh_Readline_Type *open_slsh_readline (char *name, unsigned int flags)
+static Slsh_Readline_Type *open_slsh_readline (SLFUTURE_CONST char *name, unsigned int flags)
 {
    Slsh_Readline_Type *sri;
 
@@ -316,7 +313,7 @@ static Slsh_Readline_Type *open_slsh_readline (char *name, unsigned int flags)
 }
 
 
-static int open_readline (char *name)
+static int open_readline (SLFUTURE_CONST char *name)
 {
    unsigned int flags = SL_RLINE_BLINK_MATCH|SL_RLINE_USE_MULTILINE;
    close_readline ();
@@ -503,9 +500,9 @@ static char *get_input_line (SLang_Load_Type *x)
 	free_prompt = 1;
      }
    else if (parse_level == 0)
-     prompt = "slsh> ";
+     prompt = (char *) "slsh> ";
    else
-     prompt = "       ";
+     prompt = (char *) "       ";
 
    if (parse_level == 0)
      {

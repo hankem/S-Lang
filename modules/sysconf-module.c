@@ -44,7 +44,7 @@ Name_Map_Type;
 
 static const Name_Map_Type *lookup_name (const Name_Map_Type *map, char *name)
 {
-   unsigned int len = strlen (name);
+   SLstrlen_Type len = strlen (name);
    while (map->namelen != 0)
      {
 	if ((map->namelen == len)

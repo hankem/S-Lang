@@ -1873,10 +1873,10 @@ static void free_token_linked_list (_pSLang_Token_Type *tok)
 }
 
 /* This works with any string-like token */
-static int prefix_token_sval_field (_pSLang_Token_Type *tok, char *prefix)
+static int prefix_token_sval_field (_pSLang_Token_Type *tok, SLFUTURE_CONST char *prefix)
 {
    char buf[2*SL_MAX_TOKEN_LEN];
-   unsigned int len, prefix_len;
+   size_t len, prefix_len;
 
    prefix_len = strlen (prefix);
    len = _pSLstring_bytelen (tok->v.s_val);   /* sign */
@@ -2628,7 +2628,7 @@ static int combine_namespace_tokens (_pSLang_Token_Type *a, _pSLang_Token_Type *
 {
    SLFUTURE_CONST char *sa, *sb;
    char *sc;
-   unsigned int lena, lenb;
+   size_t lena, lenb;
    unsigned long hash;
 
    /* This is somewhat of a hack.  Combine the TWO identifier names

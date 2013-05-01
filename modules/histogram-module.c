@@ -2,6 +2,7 @@
 
 /*
   Copyright (c) 2003-2007 Massachusetts Institute of Technology
+  Copyright (c) 2013-2013 John E. Davis <jed@jedsoft.org>
 
   This software was developed by the MIT Center for Space Research
   under contract SV1-61010 from the Smithsonian Institution.
@@ -48,16 +49,19 @@ SLANG_MODULE(histogram);
 #define MODULE_VERSION_STRING	"0.4.0"
 #define MODULE_VERSION_NUMBER	400
 
+typedef unsigned int HistData_Type;
+#define HISTDATA_TYPE SLANG_UINT_TYPE
+
 static const char *Module_Version_String = MODULE_VERSION_STRING;
 
 #ifndef HAVE_ISNAN
 # define isnan(x) (x != x)
 #endif
 
-static int check_grid (double *x, unsigned int n)
+static int check_grid (double *x, SLuindex_Type n)
 {
    double xlo;
-   unsigned int i;
+   SLuindex_Type i;
 
    if (n == 0)
      return 0;
@@ -79,15 +83,15 @@ static int check_grid (double *x, unsigned int n)
      }
    return 0;
 
-   return_error:
+return_error:
    SLang_verror (SL_INVALID_PARM, "Invalid grid: Expecting one in increasing order");
    return -1;
 }
 
-static unsigned int double_binary_search (double x, double *xp, unsigned int n)
+static SLuindex_Type double_binary_search (double x, double *xp, SLuindex_Type n)
 {
-   unsigned int n0, n1, n2;
-   /* unsigned int j; */
+   SLuindex_Type n0, n1, n2;
+   /* SLuindex_Type j; */
    double xp0, xp1;
 
    if (n < 2)
@@ -98,7 +102,7 @@ static unsigned int double_binary_search (double x, double *xp, unsigned int n)
    if (x >= (xp1 = xp[n-1]))
      return n-1;
 #if 0
-   j = (unsigned int) (((x - xp0)/(xp1 - xp0))*(n-1));
+   j = (SLuindex_Type) (((x - xp0)/(xp1 - xp0))*(n-1));
    if (j < n)
      {
 	if (x >= xp[j])
@@ -126,6 +130,15 @@ static unsigned int double_binary_search (double x, double *xp, unsigned int n)
 
    while (n1 > n0 + 1)
      {
+	/* Note: since n1 > n0+1, then n1 >= n0+2, and n0+n1 >= 2*n0+2
+	 * ==> n2 = (n0+n1)/2 >= n0+1.
+	 * ==> n2 > n0
+	 * Also, n1 >= n0+2 ==> n1-2 >= n0 ==> 2*n1 - 2 >= (n0+n1)
+	 * ==> n2 = (n0+n1)/2 <= n1-1  ==> n2+1 <= n1
+	 * ==> n2 < n1
+	 * Hence, n0 < n1 < n2.  This means that the interval determined
+	 * by the following code will become smaller.
+	 */
 	n2 = (n0 + n1) / 2;
 	if (xp[n2] > x)
 	  n1 = n2;
@@ -168,13 +181,13 @@ static unsigned int double_binary_search (double x, double *xp, unsigned int n)
 #define CHECK_NANS 1
 #include "histogram-module.inc"
 
-static int uc_fast_hist_1d (unsigned char *pts, unsigned int npts,
-			    double *bin_edges, unsigned int nbins,
-			    unsigned int *histogram)
+static int uc_fast_hist_1d (unsigned char *pts, SLuindex_Type npts,
+			    double *bin_edges, SLuindex_Type nbins,
+			    HistData_Type *histogram)
 {
-   unsigned int h[256];
-   unsigned int i;
-   unsigned int nbins_m1;
+   HistData_Type h[256];
+   SLuindex_Type i;
+   SLuindex_Type nbins_m1;
 
    if (nbins == 0)
      return 0;
@@ -192,7 +205,7 @@ static int uc_fast_hist_1d (unsigned char *pts, unsigned int npts,
    for (i = 0; i < nbins_m1; i++)
      {
 	double x0, x1;
-	unsigned int ix0;
+	SLuindex_Type ix0;
 
 	x1 = bin_edges[i+1];
 	if (x1 <= 0.0)
@@ -201,15 +214,15 @@ static int uc_fast_hist_1d (unsigned char *pts, unsigned int npts,
 	x0 = bin_edges[i];
 	if (x0 < 0.0)
 	  x0 = 0.0;
-	ix0 = (unsigned int) ceil (x0);
+	ix0 = (SLuindex_Type) ceil (x0);
 
 	while (i < nbins_m1)
 	  {
-	     unsigned int ix1;
-	     unsigned int j, jmax;
+	     SLuindex_Type ix1;
+	     SLuindex_Type j, jmax;
 
 	     x1 = bin_edges[i+1];
-	     ix1 = (unsigned int) ceil (x1);
+	     ix1 = (SLuindex_Type) ceil (x1);
 	     jmax = ix1;
 	     if (jmax > 256) jmax = 256;
 
@@ -228,7 +241,7 @@ static int uc_fast_hist_1d (unsigned char *pts, unsigned int npts,
    if (bin_edges[nbins_m1] < 0)
      i = 0;
    else
-     i = (unsigned int) ceil (bin_edges[nbins_m1]);
+     i = (SLuindex_Type) ceil (bin_edges[nbins_m1]);
 
    while (i < 256)
      {
@@ -238,28 +251,28 @@ static int uc_fast_hist_1d (unsigned char *pts, unsigned int npts,
    return 0;
 }
 
-static SLang_Array_Type *convert_reverse_indices (int *r, unsigned int num_r, SLang_Array_Type *h)
+static SLang_Array_Type *convert_reverse_indices (SLindex_Type *r, SLuindex_Type num_r, SLang_Array_Type *h)
 {
    SLang_Array_Type *new_r;
    SLang_Array_Type **new_r_data;
-   unsigned int i, num_h;
-   int *lens;
+   SLuindex_Type i, num_h;
+   SLindex_Type *lens;
 
    if (NULL == (new_r = SLang_create_array (SLANG_ARRAY_TYPE, 0, NULL, h->dims, h->num_dims)))
      return NULL;
 
    num_h = h->num_elements;
 
-   if (NULL == (lens = (int *)SLmalloc (num_h * sizeof (int))))
+   if (NULL == (lens = (SLindex_Type *)SLmalloc (num_h * sizeof (SLindex_Type))))
      {
 	SLang_free_array (new_r);
 	return NULL;
      }
-   memset ((char *)lens, 0, num_h*sizeof(int));
+   memset ((char *)lens, 0, num_h*sizeof(SLindex_Type));
 
    for (i = 0; i < num_r; i++)
      {
-	int r_i = r[i];
+	SLindex_Type r_i = r[i];
 
 	if (r_i >= 0)
 	  lens[r_i]++;
@@ -268,7 +281,7 @@ static SLang_Array_Type *convert_reverse_indices (int *r, unsigned int num_r, SL
    new_r_data = (SLang_Array_Type **) new_r->data;
    for (i = 0; i < num_h; i++)
      {
-	if (NULL == (new_r_data[i] = SLang_create_array (SLANG_INT_TYPE, 0, NULL, &lens[i], 1)))
+	if (NULL == (new_r_data[i] = SLang_create_array (SLANG_ARRAY_INDEX_TYPE, 0, NULL, &lens[i], 1)))
 	  goto return_error;
 
 	lens[i] = 0;
@@ -277,14 +290,14 @@ static SLang_Array_Type *convert_reverse_indices (int *r, unsigned int num_r, SL
    for (i = 0; i < num_r; i++)
      {
 	SLang_Array_Type *at;
-	int r_i = r[i];
+	SLindex_Type r_i = r[i];
 
 	if (r_i < 0)
 	  continue;
 
 	at = new_r_data[r_i];
 
-	((int *)at->data)[lens[r_i]] = i;
+	((SLindex_Type *)at->data)[lens[r_i]] = i;
 	lens[r_i]++;
      }
 
@@ -424,12 +437,12 @@ static int pop_hist2d_pts_array (SLang_Array_Type **atxp,
    return 0;
 }
 
-static int *alloc_reverse_indices (unsigned int num)
+static SLindex_Type *alloc_reverse_indices (SLuindex_Type num)
 {
-   unsigned int i;
-   int *r;
+   SLuindex_Type i;
+   SLindex_Type *r;
 
-   if (NULL == (r = (int *) SLmalloc ((num + 1) * sizeof(int))))
+   if (NULL == (r = (SLindex_Type *) SLmalloc ((num + 1) * sizeof(SLindex_Type))))
      return NULL;
 
    for (i = 0; i < num; i++)
@@ -442,7 +455,7 @@ static void hist1d (void)
 {
    SLang_Array_Type *edges_at, *hist_at, *pts_at, *indices_at;
    SLang_Ref_Type *ref;
-   int *rev_indices;
+   SLindex_Type *rev_indices;
    int status, type, has_hist = 0;
 
    ref = NULL;
@@ -499,7 +512,7 @@ static void hist1d (void)
 
    if (has_hist)
      {
-	if (-1 == SLang_pop_array_of_type (&hist_at, SLANG_INT_TYPE))
+	if (-1 == SLang_pop_array_of_type (&hist_at, HISTDATA_TYPE))
 	  goto free_and_return;
 	if (hist_at->flags & SLARR_DATA_VALUE_IS_READ_ONLY)
 	  {
@@ -515,7 +528,7 @@ static void hist1d (void)
      }
    else
      {
-	if (NULL == (hist_at = SLang_create_array (SLANG_INT_TYPE, 0, NULL, edges_at->dims, 1)))
+	if (NULL == (hist_at = SLang_create_array (HISTDATA_TYPE, 0, NULL, edges_at->dims, 1)))
 	  goto free_and_return;
 	/* hist_at->data is already initialized to 0 */
      }
@@ -530,28 +543,28 @@ static void hist1d (void)
 	if (rev_indices == NULL)
 	  status = uc_fast_hist_1d ((unsigned char *)pts_at->data, pts_at->num_elements,
 				    (double *)edges_at->data, edges_at->num_elements,
-				    (unsigned int *) hist_at->data);
+				    (HistData_Type *) hist_at->data);
 	else status = uc_histogram_1d ((unsigned char *)pts_at->data, pts_at->num_elements,
 				       (double *)edges_at->data, edges_at->num_elements,
-				       (unsigned int *) hist_at->data, rev_indices);
+				       (HistData_Type *) hist_at->data, rev_indices);
 	break;
 
       case SLANG_INT_TYPE:
 	status = i_histogram_1d ((int *)pts_at->data, pts_at->num_elements,
 				 (double *)edges_at->data, edges_at->num_elements,
-				 (unsigned int *) hist_at->data, rev_indices);
+				 (HistData_Type *) hist_at->data, rev_indices);
 	break;
 
       case SLANG_FLOAT_TYPE:
 	status = f_histogram_1d ((float *)pts_at->data, pts_at->num_elements,
 				 (double *)edges_at->data, edges_at->num_elements,
-				 (unsigned int *) hist_at->data, rev_indices);
+				 (HistData_Type *) hist_at->data, rev_indices);
 	break;
 
       case SLANG_DOUBLE_TYPE:
 	status = d_histogram_1d ((double *)pts_at->data, pts_at->num_elements,
 				 (double *)edges_at->data, edges_at->num_elements,
-				 (unsigned int *) hist_at->data, rev_indices);
+				 (HistData_Type *) hist_at->data, rev_indices);
 	break;
 
       default:
@@ -588,10 +601,10 @@ static void hist2d (void)
    SLang_Array_Type *xedges_at, *yedges_at, *xpts_at, *ypts_at;
    SLang_Array_Type *hist_at, *indices_at;
    SLang_Ref_Type *ref;
-   int *rev_indices;
+   SLindex_Type *rev_indices;
    int has_hist = 0;
    int type;
-   int dims[2];
+   SLindex_Type dims[2];
 
    ref = NULL;
    switch (SLang_Num_Function_Args)
@@ -685,14 +698,14 @@ static void hist2d (void)
 	if (-1 == uc_histogram_2d ((unsigned char *)xpts_at->data, (unsigned char *)ypts_at->data, ypts_at->num_elements,
 				   (double *)xedges_at->data, xedges_at->num_elements,
 				   (double *)yedges_at->data, yedges_at->num_elements,
-				   (unsigned int *) hist_at->data, rev_indices))
+				   (HistData_Type *) hist_at->data, rev_indices))
 	  goto free_and_return;
 
       case SLANG_INT_TYPE:
 	if (-1 == i_histogram_2d ((int *)xpts_at->data, (int *)ypts_at->data, ypts_at->num_elements,
 				  (double *)xedges_at->data, xedges_at->num_elements,
 				  (double *)yedges_at->data, yedges_at->num_elements,
-				  (unsigned int *) hist_at->data, rev_indices))
+				  (HistData_Type *) hist_at->data, rev_indices))
 	  goto free_and_return;
 	break;
 
@@ -700,7 +713,7 @@ static void hist2d (void)
 	if (-1 == f_histogram_2d ((float *)xpts_at->data, (float *)ypts_at->data, ypts_at->num_elements,
 				  (double *)xedges_at->data, xedges_at->num_elements,
 				  (double *)yedges_at->data, yedges_at->num_elements,
-				  (unsigned int *) hist_at->data, rev_indices))
+				  (HistData_Type *) hist_at->data, rev_indices))
 	  goto free_and_return;
 	break;
 
@@ -708,7 +721,7 @@ static void hist2d (void)
 	if (-1 == d_histogram_2d ((double *)xpts_at->data, (double *)ypts_at->data, ypts_at->num_elements,
 				  (double *)xedges_at->data, xedges_at->num_elements,
 				  (double *)yedges_at->data, yedges_at->num_elements,
-				  (unsigned int *) hist_at->data, rev_indices))
+				  (HistData_Type *) hist_at->data, rev_indices))
 	  goto free_and_return;
 	break;
 
@@ -746,8 +759,8 @@ static void binary_search_intrin (void)
    SLang_Array_Type *xt;
    SLang_Array_Type *at_ind;
    double x, *xp, *yp;
-   unsigned int i, num_indices, num;
-   int ind, *indices;
+   SLuindex_Type i, num_indices, num;
+   SLindex_Type ind, *indices;
 
    if (SLang_Num_Function_Args != 2)
      {
@@ -774,7 +787,7 @@ static void binary_search_intrin (void)
 	  }
 	xp = (double *) xt->data;
 	num_indices = xt->num_elements;
-	indices = (int *)at_ind->data;
+	indices = (SLindex_Type *)at_ind->data;
      }
 #if SLANG_VERSION < 20000
    else if (0 == SLang_pop_double (&x, NULL, NULL))
@@ -813,14 +826,14 @@ static void binary_search_intrin (void)
    if (at_ind != NULL)
      (void) SLang_push_array (at_ind, 1);
    else
-     (void) SLang_push_integer (indices[0]);
+     (void) SLang_push_array_index (indices[0]);
 }
 
 /* Usage: h_new = rebin (new_grid, old_grid, h_old); */
 static void hist1d_rebin (void)
 {
    SLang_Array_Type *grid_old, *h_old, *grid_new, *h_new;
-   int old_num_bins, new_num_bins;
+   SLindex_Type old_num_bins, new_num_bins;
 
    if (SLang_Num_Function_Args != 3)
      {
@@ -849,8 +862,8 @@ static void hist1d_rebin (void)
 	return;
      }
 
-   if (0 == d_hist1d_rebin ((double *)grid_new->data, (unsigned int) new_num_bins,
-			    (double *)grid_old->data, (double *)h_old->data, (unsigned int) old_num_bins,
+   if (0 == d_hist1d_rebin ((double *)grid_new->data, (SLuindex_Type) new_num_bins,
+			    (double *)grid_old->data, (double *)h_old->data, (SLuindex_Type) old_num_bins,
 			    (double *)h_new->data))
      (void) SLang_push_array (h_new, 0);
 

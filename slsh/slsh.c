@@ -36,7 +36,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static char *Slsh_Version = "0.9.0-1";
+static SLFUTURE_CONST char *Slsh_Version = "0.9.0-2";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -312,7 +312,7 @@ static char *get_win32_root (void)
 
 static int Verbose_Loading;
 
-static int try_to_load_file (char *path, char *file, char *ns)
+static int try_to_load_file (SLFUTURE_CONST char *path, char *file, char *ns)
 {
    int status;
 
@@ -336,7 +336,7 @@ static int try_to_load_file (char *path, char *file, char *ns)
 
 static int load_startup_file (int is_interactive)
 {
-   char *dir;
+   SLFUTURE_CONST char *dir;
    int status;
 
    dir = getenv (SLSH_CONF_DIR_ENV);
@@ -349,7 +349,7 @@ static int load_startup_file (int is_interactive)
 	dir = SLSH_CONF_DIR;
 	if (dir != NULL)
 	  {
-	     status = try_to_load_file (dir, SLSHRC_FILE, NULL);
+	     status = try_to_load_file (dir, (char *)SLSHRC_FILE, NULL);
 	     if (status == -1)
 	       return -1;
 	     if (status == 1)
@@ -365,7 +365,7 @@ static int load_startup_file (int is_interactive)
 #endif
      }
 
-   if (-1 == (status = try_to_load_file (dir, SLSHRC_FILE, NULL)))
+   if (-1 == (status = try_to_load_file (dir, (char *)SLSHRC_FILE, NULL)))
      return -1;
 
    if ((status == 0)
@@ -398,7 +398,7 @@ static int is_script (char *file)
 
 static int setup_paths (void)
 {
-   char *libpath;
+   SLFUTURE_CONST char *libpath;
 
    if (NULL == (libpath = getenv (SLSH_PATH_ENV)))
      {
@@ -474,7 +474,7 @@ static void output_version (void)
 static int output_copyright (void)
 {
    output_version ();
-   fprintf (stdout, "Copyright (C) 2005-2011 John E. Davis <jed@jedsoft.org>\r\n");
+   fprintf (stdout, "Copyright (C) 2005-2013 John E. Davis <jed@jedsoft.org>\r\n");
    fprintf (stdout, "This is free software with ABSOLUTELY NO WARRANTY.\r\n");
    fprintf (stdout, "\n");
 
@@ -490,7 +490,7 @@ static void version (void)
 int main (int argc, char **argv)
 {
    char *file = NULL;
-   char *init_file = USER_SLSHRC;
+   SLFUTURE_CONST char *init_file = USER_SLSHRC;
    char *init_file_dir;
    int exit_val;
    int is_interactive = 0;
@@ -683,7 +683,7 @@ int main (int argc, char **argv)
      return 1;
 
    if ((init_file != NULL)
-       && (-1 == try_to_load_file (init_file_dir, init_file, NULL)))
+       && (-1 == try_to_load_file (init_file_dir, (char *)init_file, NULL)))
      return SLang_get_error ();
 
    if ((file != NULL)

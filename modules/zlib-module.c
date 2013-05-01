@@ -31,7 +31,7 @@ USA.
 
 SLANG_MODULE(zlib);
 
-static char *Module_Version_String = "0.1.0";
+static SLFUTURE_CONST char *Module_Version_String = "0.1.0";
 #define MODULE_VERSION_NUMBER  (0*10000 + 1*100 + 0)
 
 typedef struct
@@ -44,9 +44,9 @@ typedef struct
    z_stream zs;
 
 #define DEFAULT_START_BUFLEN 0x4000
-   unsigned int start_buflen;
+   SLstrlen_Type start_buflen;
 #define DEFAULT_BUFLEN_INC 0x4000
-   unsigned int dbuflen;
+   SLstrlen_Type dbuflen;
    int windowbits;
 }
 ZLib_Type;
@@ -153,12 +153,12 @@ static int init_deflate_object (ZLib_Type *z,
 }
 
 static int run_deflate (ZLib_Type *z, int flush,
-			unsigned char *str, unsigned int len,
-			unsigned char **bufp, unsigned int *totalp)
+			unsigned char *str, SLstrlen_Type len,
+			unsigned char **bufp, SLstrlen_Type *totalp)
 {
    z_stream *zs;
    unsigned char *buf;
-   unsigned int buflen;
+   SLstrlen_Type buflen;
 
    zs = &z->zs;
 
@@ -177,7 +177,7 @@ static int run_deflate (ZLib_Type *z, int flush,
 
    while (1)
      {
-	unsigned int total;
+	SLstrlen_Type total;
 	int ret;
 
 	ret = deflate (zs, flush);
@@ -215,7 +215,7 @@ static int run_deflate (ZLib_Type *z, int flush,
 	if (zs->avail_out == 0)
 	  {
 	     unsigned char *new_buf;
-	     unsigned int dbuflen = z->dbuflen;
+	     SLstrlen_Type dbuflen = z->dbuflen;
 	     buflen += dbuflen;
 	     new_buf = (unsigned char *)SLrealloc ((char *) buf, buflen+1);
 	     if (new_buf == NULL)
@@ -238,7 +238,7 @@ static void deflate_intrin (ZLib_Type *zp, SLang_BString_Type *inbstr, int *flus
 {
    SLang_BString_Type *outbstr;
    unsigned char *inbuf, *outbuf;
-   unsigned int inlen, outlen;
+   SLstrlen_Type inlen, outlen;
 
    if (-1 == check_deflate_object (zp))
      return;
@@ -270,7 +270,7 @@ static void deflate_reset_intrin (ZLib_Type *z)
 static void deflate_flush_intrin (ZLib_Type *z, int *flush)
 {
    unsigned char *buf;
-   unsigned int len;
+   SLstrlen_Type len;
    SLang_BString_Type *bstr;
 
    if (-1 == check_deflate_object (z))
@@ -322,12 +322,12 @@ static void deflate_new_intrin (int *level, int *method, int *wbits,
 }
 
 static int run_inflate (ZLib_Type *z, int flush,
-			unsigned char *str, unsigned int len,
-			unsigned char **bufp, unsigned int *totalp)
+			unsigned char *str, SLstrlen_Type len,
+			unsigned char **bufp, SLstrlen_Type *totalp)
 {
    z_stream *zs;
    unsigned char *buf;
-   unsigned int buflen;
+   SLstrlen_Type buflen;
 
    zs = &z->zs;
    zs->next_in = str;
@@ -360,7 +360,7 @@ static int run_inflate (ZLib_Type *z, int flush,
 
    while (1)
      {
-	unsigned int total;
+	SLstrlen_Type total;
 	int ret;
 
 	ret = inflate (zs, flush);
@@ -398,7 +398,7 @@ static int run_inflate (ZLib_Type *z, int flush,
 	if (zs->avail_out == 0)
 	  {
 	     unsigned char *new_buf;
-	     unsigned int dbuflen = z->dbuflen;
+	     SLstrlen_Type dbuflen = z->dbuflen;
 	     buflen += dbuflen;
 	     new_buf = (unsigned char *)SLrealloc ((char *) buf, buflen+1);
 	     if (new_buf == NULL)
@@ -421,7 +421,7 @@ static void inflate_intrin (ZLib_Type *zp, SLang_BString_Type *inbstr, int *flus
 {
    SLang_BString_Type *outbstr;
    unsigned char *inbuf, *outbuf;
-   unsigned int inlen, outlen;
+   SLstrlen_Type inlen, outlen;
 
    if (-1 == check_inflate_object (zp))
      return;
@@ -491,7 +491,7 @@ static void inflate_reset_intrin (ZLib_Type *z)
 static void inflate_flush_intrin (ZLib_Type *z, int *flush)
 {
    unsigned char *buf;
-   unsigned int len;
+   SLstrlen_Type len;
    SLang_BString_Type *bstr;
 
    if (-1 == check_inflate_object (z))

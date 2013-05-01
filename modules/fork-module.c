@@ -116,7 +116,7 @@ static char **pop_argv (SLang_Array_Type **atp)
 {
    SLang_Array_Type *at;
    char **argv;
-   unsigned int i, num, argc;
+   SLuindex_Type i, num, argc;
    char **strp;
 
    *atp = NULL;
