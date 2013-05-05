@@ -40,8 +40,6 @@ USA.
  *    copy (list)
  */
 
-typedef struct _pSLang_List_Type SLang_List_Type;
-
 #define CHUNK_SIZE 128
 
 typedef struct _Chunk_Type
@@ -550,7 +548,7 @@ static void list_append_elem (void)
    SLang_free_mmt (mmt);
 }
 
-static int push_list (SLang_List_Type *list)
+int SLang_push_list (SLang_List_Type *list, int free_flag)
 {
    SLang_MMT_Type *mmt;
    if (NULL == (mmt = SLang_create_mmt (SLANG_LIST_TYPE, (VOID_STAR) list)))
@@ -558,13 +556,19 @@ static int push_list (SLang_List_Type *list)
 	delete_list (list);
 	return -1;
      }
-
+   if (! free_flag)
+     mmt->count = 1;  // SLang_create_mmt created mmt with reference count == 0
    if (-1 == SLang_push_mmt (mmt))
      {
 	SLang_free_mmt (mmt);
 	return -1;
      }
    return 0;
+}
+
+static int push_list (SLang_List_Type *list)
+{
+   return SLang_push_list (list, 1);
 }
 
 static void list_new (void)
@@ -1255,3 +1259,46 @@ int _pSLang_init_sllist (void)
    return 0;
 }
 
+SLang_List_Type *SLang_create_list ()
+{
+   return allocate_list ();
+}
+
+int SLang_list_append (SLang_List_Type *list, SLtype type, VOID_STAR value, int indx)
+{
+   SLang_Object_Type obj;
+   if ((-1 == SLang_push_value (type, value))
+       || (-1 == SLang_pop (&obj)))
+     return -1;
+
+   if (indx < 0)
+     indx += list->length;
+
+   return insert_element (list, &obj, indx+1);
+}
+
+int SLang_list_insert (SLang_List_Type *list, SLtype type, VOID_STAR value, int indx)
+{
+   SLang_Object_Type obj;
+   if ((-1 == SLang_push_value (type, value))
+       || (-1 == SLang_pop (&obj)))
+     return -1;
+
+   if (indx < 0)
+     indx += list->length;
+
+   return insert_element (list, &obj, indx);
+}
+
+int SLang_pop_list (SLang_List_Type **list)
+{
+   SLang_MMT_Type *mmt;
+   int ret = pop_list (&mmt, list);
+   SLang_free_mmt (mmt);
+   return ret;
+}
+
+void SLang_free_list (SLang_List_Type* list)
+{
+   delete_list (list);
+}

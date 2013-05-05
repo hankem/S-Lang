@@ -43,7 +43,7 @@ typedef struct _pSLAssoc_Array_Element_Type
 }
 _pSLAssoc_Array_Element_Type;
 
-typedef struct
+typedef struct _pSLang_Assoc_Array_Type
 {
    _pSLAssoc_Array_Element_Type *elements;
    unsigned int table_len;
@@ -58,7 +58,7 @@ typedef struct
    int is_scalar_type;
 #endif
 }
-SLang_Assoc_Array_Type;
+_pSLang_Assoc_Array_Type;
 
 static int HASH_AGAIN (SLCONST char *str, SLhash_Type hash, unsigned int table_len)
 {
@@ -309,15 +309,28 @@ static void assoc_destroy (SLtype type, VOID_STAR ptr)
    delete_assoc_array ((SLang_Assoc_Array_Type *) ptr);
 }
 
+static int pop_assoc (SLang_Assoc_Array_Type **assoc, SLang_MMT_Type **mmt)
+{
+   /* if (NULL == (*mmt = SLang_pop_mmt (SLANG_ASSOC_TYPE))) */
+   if (-1 == SLclass_pop_ptr_obj (SLANG_ASSOC_TYPE, (VOID_STAR *) mmt))
+     {
+        *assoc = NULL;
+        return -1;
+     }
+
+   /* *assoc = (SLang_Assoc_Array_Type *) SLang_object_from_mmt (*mmt); */
+   *assoc = (SLang_Assoc_Array_Type *) (*mmt)->user_data;
+
+   return 0;
+}
+
 static int pop_index (unsigned int num_indices,
                       SLang_MMT_Type **mmt,
                       SLang_Assoc_Array_Type **a,
                       SLstr_Type **str, SLhash_Type *hashp)
 {
-   /* if (NULL == (*mmt = SLang_pop_mmt (SLANG_ASSOC_TYPE))) */
-   if (-1 == SLclass_pop_ptr_obj (SLANG_ASSOC_TYPE, (VOID_STAR *) mmt))
+   if (-1 == pop_assoc (a, mmt))
      {
-	*a = NULL;
 	*str = NULL;
 	return -1;
      }
@@ -334,29 +347,15 @@ static int pop_index (unsigned int num_indices,
 	return -1;
      }
 
-   /* *a = (SLang_Assoc_Array_Type *) SLang_object_from_mmt (*mmt); */
-   *a = (SLang_Assoc_Array_Type *) (*mmt)->user_data;
    *hashp = _pSLstring_get_hash (*str);
 
    return 0;
 }
 
-int _pSLassoc_aget (SLtype type, unsigned int num_indices)
+static int push_assoc_element (SLang_Assoc_Array_Type *a, SLstr_Type *str, SLhash_Type hash)
 {
-   unsigned long hash;
-   SLang_MMT_Type *mmt;
-   SLstr_Type *str;
-   _pSLAssoc_Array_Element_Type *e;
-   SLang_Assoc_Array_Type *a;
+   _pSLAssoc_Array_Element_Type *e = find_element (a, str, hash);
    SLang_Object_Type *obj;
-   int ret;
-
-   (void) type;
-
-   if (-1 == pop_index (num_indices, &mmt, &a, &str, &hash))
-     return -1;
-
-   e = find_element (a, str, hash);
 
    if (e == NULL)
      {
@@ -364,23 +363,36 @@ int _pSLassoc_aget (SLtype type, unsigned int num_indices)
 	  obj = &a->default_value;
 	else
 	  {
-	     ret = -1;
 	     _pSLang_verror (SL_INTRINSIC_ERROR,
 			   "No such element in Assoc Array: %s", str);
-	     goto free_and_return;
+	     return -1;
 	  }
-
      }
-   else obj = &e->value;
+   else
+     obj = &e->value;
 
 #if SLANG_OPTIMIZE_FOR_SPEED
    if (a->is_scalar_type)
-     ret = SLang_push (obj);
+     return SLang_push (obj);
    else
 #endif
-     ret = _pSLpush_slang_obj (obj);
+     return _pSLpush_slang_obj (obj);
+}
 
-   free_and_return:
+int _pSLassoc_aget (SLtype type, unsigned int num_indices)
+{
+   SLhash_Type hash;
+   SLang_MMT_Type *mmt;
+   SLstr_Type *str;
+   SLang_Assoc_Array_Type *a;
+   int ret;
+
+   (void) type;
+
+   if (-1 == pop_index (num_indices, &mmt, &a, &str, &hash))
+     return -1;
+
+   ret = push_assoc_element (a, str, hash);
 
    _pSLang_free_slstring (str);
    SLang_free_mmt (mmt);
@@ -532,19 +544,7 @@ static int assoc_anew (SLtype type, unsigned int num_dims)
    if (a == NULL)
      return -1;
 
-   if (NULL == (mmt = SLang_create_mmt (SLANG_ASSOC_TYPE, (VOID_STAR) a)))
-     {
-	delete_assoc_array (a);
-	return -1;
-     }
-
-   if (-1 == SLang_push_mmt (mmt))
-     {
-	SLang_free_mmt (mmt);
-	return -1;
-     }
-
-   return 0;
+   return SLang_push_assoc (a, 1);
 }
 
 static void assoc_get_keys (SLang_Assoc_Array_Type *a)
@@ -863,3 +863,74 @@ int SLang_init_slassoc (void)
    return 0;
 }
 
+SLang_Assoc_Array_Type *SLang_create_assoc (SLtype type, VOID_STAR default_value)
+{
+   int has_default_value = (default_value != NULL);
+
+   if (has_default_value
+       && -1 == (SLang_push_value (type, default_value)))
+     return NULL;
+
+   return alloc_assoc_array (type, has_default_value);
+}
+
+int SLang_assoc_put (SLang_Assoc_Array_Type *assoc, SLstr_Type *key, SLtype type, VOID_STAR value)
+{
+   SLhash_Type hash = _pSLstring_get_hash (key);
+
+   if ((-1 == SLang_push_value (type, value))
+       || (NULL == assoc_aput (assoc, NULL, key, hash)))
+     return -1;
+
+   return 0;
+}
+
+int SLang_assoc_get (SLang_Assoc_Array_Type *assoc, SLstr_Type *key, SLtype *type, VOID_STAR *value)
+{
+   SLhash_Type hash = _pSLstring_get_hash (key);
+
+   if ((-1 == push_assoc_element (assoc, key, hash))
+       || (-1 == (*type = SLang_peek_at_stack ())))
+     return -1;
+
+   return SLang_pop_value (*type, *value);
+}
+
+int SLang_push_assoc (SLang_Assoc_Array_Type *assoc, int free_flag)
+{
+   SLang_MMT_Type *mmt;
+
+   if (assoc == NULL)
+     return -1;
+
+   if (NULL == (mmt = SLang_create_mmt (SLANG_ASSOC_TYPE, assoc)))
+     {
+        delete_assoc_array (assoc);
+        return -1;
+     }
+   if (! free_flag)
+     mmt->count = 1;  // SLang_create_mmt created mmt with reference count == 0
+   if (-1 == SLang_push_mmt (mmt))
+     {
+        SLang_free_mmt (mmt);
+        return -1;
+     }
+
+   return 0;
+}
+
+int SLang_pop_assoc (SLang_Assoc_Array_Type **assoc)
+{
+   SLang_MMT_Type *mmt;
+
+   if (-1 == pop_assoc (assoc, &mmt))
+     return -1;
+   SLang_free_mmt (mmt);
+
+   return 0;
+}
+
+void SLang_free_assoc (SLang_Assoc_Array_Type* assoc)
+{
+   delete_assoc_array (assoc);
+}

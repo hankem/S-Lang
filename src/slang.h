@@ -686,6 +686,22 @@ SL_EXTERN void SLang_free_struct (SLang_Struct_Type *);
 SL_EXTERN int SLang_push_struct (SLang_Struct_Type *);
 SL_EXTERN int SLang_pop_struct (SLang_Struct_Type **);
 
+typedef struct _pSLang_Assoc_Array_Type SLang_Assoc_Array_Type;
+SL_EXTERN SLang_Assoc_Array_Type *SLang_create_assoc (SLtype, VOID_STAR);
+SL_EXTERN int SLang_assoc_put (SLang_Assoc_Array_Type *, SLstr_Type *, SLtype, VOID_STAR);
+SL_EXTERN int SLang_assoc_get (SLang_Assoc_Array_Type *, SLstr_Type *, SLtype *, VOID_STAR *);
+SL_EXTERN int SLang_push_assoc (SLang_Assoc_Array_Type *, int);
+SL_EXTERN int SLang_pop_assoc (SLang_Assoc_Array_Type **);
+SL_EXTERN void SLang_free_assoc (SLang_Assoc_Array_Type *);
+
+typedef struct _pSLang_List_Type SLang_List_Type;
+SL_EXTERN SLang_List_Type *SLang_create_list ();
+SL_EXTERN int SLang_list_append (SLang_List_Type *, SLtype, VOID_STAR, int);
+SL_EXTERN int SLang_list_insert (SLang_List_Type *, SLtype, VOID_STAR, int);
+SL_EXTERN int SLang_push_list (SLang_List_Type *, int);
+SL_EXTERN int SLang_pop_list (SLang_List_Type **);
+SL_EXTERN void SLang_free_list (SLang_List_Type *);
+
 typedef struct _pSLang_Foreach_Context_Type SLang_Foreach_Context_Type;
 
 typedef struct _pSLang_Class_Type SLang_Class_Type;
@@ -1200,6 +1216,7 @@ SL_EXTERN void SLang_free_value (SLtype type, VOID_STAR);
 
 typedef struct _pSLang_Object_Type SLang_Any_Type;
 
+SL_EXTERN VOID_STAR SLang_alloc_anytype ();
 SL_EXTERN int SLang_pop_anytype (SLang_Any_Type **);
 SL_EXTERN int SLang_push_anytype (SLang_Any_Type *);
 SL_EXTERN void SLang_free_anytype (SLang_Any_Type *);

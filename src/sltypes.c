@@ -830,11 +830,16 @@ int _pSLanytype_typecast (SLtype a_type, VOID_STAR ap, SLuindex_Type na,
    return 1;
 }
 
+VOID_STAR SLang_alloc_anytype (void)
+{
+   return SLmalloc (sizeof (SLang_Object_Type));
+}
+
 int SLang_pop_anytype (SLang_Any_Type **any)
 {
    SLang_Object_Type *obj;
 
-   if (NULL == (obj = (SLang_Object_Type *) SLmalloc (sizeof (SLang_Object_Type))))
+   if (NULL == (obj = (SLang_Object_Type *) SLang_alloc_anytype ()))
      {
 	*any = NULL;
 	return -1;
