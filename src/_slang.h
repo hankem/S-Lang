@@ -577,6 +577,8 @@ typedef struct _pSLang_Struct_Type
 }
 _pSLang_Struct_Type;
 
+typedef unsigned long SLhash_Type;
+
 extern int _pSLstruct_init (void);
 extern int _pSLstruct_define_struct (void);
 extern int _pSLstruct_define_struct2 (void);
@@ -637,7 +639,7 @@ extern int _pSLpush_alloced_slstring (char *, size_t);
 
 extern size_t _pSLstring_bytelen (SLCONST SLstr_Type *);
 extern void _pSLang_free_slstring (SLstr_Type *);   /* slstring required and assumed */
-extern unsigned long _pSLstring_get_hash (SLstr_Type *s);   /* slstring required */
+extern SLhash_Type _pSLstring_get_hash (SLstr_Type *s);   /* slstring required */
 
 typedef struct
 {
@@ -709,8 +711,8 @@ extern SLFUTURE_CONST char *_pSLang_cur_namespace_intrinsic (void);
 extern SLang_Array_Type *_pSLang_apropos (SLFUTURE_CONST char *, SLFUTURE_CONST char *, unsigned int);
 extern void _pSLang_implements_intrinsic (SLFUTURE_CONST char *);
 extern SLang_Array_Type *_pSLns_list_namespaces (void);
-extern SLang_Name_Type *_pSLns_locate_hashed_name (SLang_NameSpace_Type *, SLCONST char *, unsigned long);
-extern int _pSLns_add_hashed_name (SLang_NameSpace_Type *, SLang_Name_Type *, unsigned long);
+extern SLang_Name_Type *_pSLns_locate_hashed_name (SLang_NameSpace_Type *, SLCONST char *, SLhash_Type);
+extern int _pSLns_add_hashed_name (SLang_NameSpace_Type *, SLang_Name_Type *, SLhash_Type);
 extern SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt);
 extern SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *, SLCONST char *);
 extern SLang_NameSpace_Type *_pSLns_get_private_namespace (SLFUTURE_CONST char *name, SLFUTURE_CONST char *nsname);
@@ -760,11 +762,11 @@ extern int _pSLcall_debug_hook (SLFUTURE_CONST char *file, int linenum);
 /* extern int _pSLcall_debug_hook (char *file, int linenum, char *funct); */
 #endif
 
-extern char *_pSLstring_dup_hashed_string (SLCONST char *, unsigned long);
-extern unsigned long _pSLcompute_string_hash (SLCONST char *);
-extern char *_pSLstring_make_hashed_string (SLCONST char *, SLstrlen_Type, unsigned long *);
-extern void _pSLfree_hashed_string (SLCONST char *, size_t, unsigned long);
-unsigned long _pSLstring_hash (SLCONST unsigned char *, SLCONST unsigned char *);
+extern char *_pSLstring_dup_hashed_string (SLCONST char *, SLhash_Type);
+extern SLhash_Type _pSLcompute_string_hash (SLCONST char *);
+extern char *_pSLstring_make_hashed_string (SLCONST char *, SLstrlen_Type, SLhash_Type *);
+extern void _pSLfree_hashed_string (SLCONST char *, size_t, SLhash_Type);
+SLhash_Type _pSLstring_hash (SLCONST unsigned char *, SLCONST unsigned char *);
 extern int _pSLinit_slcomplex (void);
 
 extern int _pSLang_init_slstrops (void);
@@ -1138,7 +1140,7 @@ typedef struct
 	SLFUTURE_CONST char *s_val;		       /* (SLstring) concatenated strings */
 	SLang_BString_Type *b_val;     /* concatenated bstrings */
      } v;
-   unsigned long hash;		       /* for v.s_val */
+   SLhash_Type hash;		       /* for v.s_val */
    unsigned int len;		       /* length of v.?_val */
 }
 _pSLang_Multiline_String_Type;

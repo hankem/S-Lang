@@ -28,7 +28,7 @@ typedef struct _pSLstring_Type
 {
    struct _pSLstring_Type *next;
    unsigned int ref_count;
-   unsigned long hash;
+   SLhash_Type hash;
    size_t len;
    char bytes [1];
 }
@@ -102,7 +102,7 @@ static void uncache_string (SLCONST char *s)
 }
 
 _INLINE_
-unsigned long _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *smax)
+SLhash_Type _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *smax)
 {
    register _pSLuint32_Type a,b,c;
    unsigned int length = (unsigned int)(smax - s);
@@ -142,7 +142,7 @@ unsigned long _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *
    mix(a,b,c);
 
    /*-------------------------------------------- report the result */
-   return (unsigned long) c;
+   return (SLhash_Type) c;
 }
 #else
 _INLINE_
@@ -177,7 +177,7 @@ unsigned long _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char *
    return h;
 }
 #endif
-unsigned long _pSLcompute_string_hash (SLCONST char *s)
+SLhash_Type _pSLcompute_string_hash (SLCONST char *s)
 {
 #if SLANG_OPTIMIZE_FOR_SPEED
    Cached_String_Type *cs;
@@ -190,7 +190,7 @@ unsigned long _pSLcompute_string_hash (SLCONST char *s)
 }
 
 _INLINE_
-static SLstring_Type *find_slstring (SLCONST char *s, unsigned long hash)
+static SLstring_Type *find_slstring (SLCONST char *s, SLhash_Type hash)
 {
    SLstring_Type *sls, *prev;
    size_t idx = MAP_HASH_TO_INDEX(hash);
@@ -225,7 +225,7 @@ static SLstring_Type *find_slstring (SLCONST char *s, unsigned long hash)
 
 _INLINE_
 /* This routine works with any (long) string */
-static SLstring_Type *find_string (SLCONST char *s, unsigned int len, unsigned long hash)
+static SLstring_Type *find_string (SLCONST char *s, unsigned int len, SLhash_Type hash)
 {
    SLstring_Type *sls;
 
@@ -301,7 +301,7 @@ static void free_sls (SLstring_Type *sls)
 }
 
 _INLINE_
-static char *create_long_string (SLCONST char *s, size_t len, unsigned long hash)
+static char *create_long_string (SLCONST char *s, size_t len, SLhash_Type hash)
 {
    SLstring_Type *sls;
 
@@ -353,9 +353,9 @@ static char *create_short_string (SLCONST char *s, unsigned int len)
 
 /* s cannot be NULL */
 _INLINE_
-static SLstr_Type *create_nstring (SLCONST char *s, size_t len, unsigned long *hash_ptr)
+static SLstr_Type *create_nstring (SLCONST char *s, size_t len, SLhash_Type *hash_ptr)
 {
-   unsigned long hash;
+   SLhash_Type hash;
 
    if (len < 2)
      return create_short_string (s, len);
@@ -368,15 +368,15 @@ static SLstr_Type *create_nstring (SLCONST char *s, size_t len, unsigned long *h
 
 SLstr_Type *SLang_create_nslstring (SLFUTURE_CONST char *s, SLstrlen_Type len)
 {
-   unsigned long hash;
+   SLhash_Type hash;
    if (s == NULL)
      return NULL;
    return create_nstring (s, len, &hash);
 }
 
-char *_pSLstring_make_hashed_string (SLCONST char *s, SLstrlen_Type len, unsigned long *hashptr)
+char *_pSLstring_make_hashed_string (SLCONST char *s, SLstrlen_Type len, SLhash_Type *hashptr)
 {
-   unsigned long hash;
+   SLhash_Type hash;
 
    if (s == NULL) return NULL;
 
@@ -389,7 +389,7 @@ char *_pSLstring_make_hashed_string (SLCONST char *s, SLstrlen_Type len, unsigne
    return create_long_string (s, len, hash);
 }
 
-char *_pSLstring_dup_hashed_string (SLCONST char *s, unsigned long hash)
+char *_pSLstring_dup_hashed_string (SLCONST char *s, SLhash_Type hash)
 {
    size_t len;
 #if SLANG_OPTIMIZE_FOR_SPEED
@@ -451,7 +451,7 @@ SLCONST char *_pSLstring_dup_slstring (SLCONST char *s)
 static void free_sls_string (SLstring_Type *sls)
 {
    SLstring_Type *sls1, *prev;
-   unsigned long hash = sls->hash;
+   SLhash_Type hash = sls->hash;
 
    hash = MAP_HASH_TO_INDEX(hash);
 
@@ -475,7 +475,7 @@ static void free_sls_string (SLstring_Type *sls)
 }
 
 _INLINE_
-static void free_long_string (SLCONST char *s, unsigned long hash)
+static void free_long_string (SLCONST char *s, SLhash_Type hash)
 {
    SLstring_Type *sls;
 
@@ -502,7 +502,7 @@ static void free_long_string (SLCONST char *s, unsigned long hash)
 /* This routine may be passed NULL-- it is not an error. */
 void SLang_free_slstring (SLCONST char *s)
 {
-   unsigned long hash;
+   SLhash_Type hash;
    size_t len;
 #if SLANG_OPTIMIZE_FOR_SPEED
    Cached_String_Type *cs;
@@ -538,7 +538,7 @@ void SLang_free_slstring (SLCONST char *s)
 
 char *SLang_create_slstring (SLFUTURE_CONST char *s)
 {
-   unsigned long hash;
+   SLhash_Type hash;
 #if SLANG_OPTIMIZE_FOR_SPEED
    Cached_String_Type *cs;
 #endif
@@ -556,7 +556,7 @@ char *SLang_create_slstring (SLFUTURE_CONST char *s)
    return create_nstring (s, strlen (s), &hash);
 }
 
-void _pSLfree_hashed_string (SLCONST char *s, size_t len, unsigned long hash)
+void _pSLfree_hashed_string (SLCONST char *s, size_t len, SLhash_Type hash)
 {
    if ((s == NULL) || (len < 2)) return;
    free_long_string (s, hash);
@@ -587,7 +587,7 @@ void _pSLunallocate_slstring (char *s, size_t len)
 /* frees s upon error */
 char *_pSLcreate_via_alloced_slstring (char *s, size_t len)
 {
-   unsigned long hash;
+   SLhash_Type hash;
    SLstring_Type *sls;
 
    if (s == NULL)
@@ -708,7 +708,7 @@ void _pSLang_free_slstring (SLstr_Type *s)
 }
 
 /* An SLstring is required */
-unsigned long _pSLstring_get_hash (SLstr_Type *s)
+SLhash_Type _pSLstring_get_hash (SLstr_Type *s)
 {
    SLstring_Type *sls;
 

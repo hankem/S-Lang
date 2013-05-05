@@ -37,8 +37,8 @@ static SLFUTURE_CONST char *Deleted_Key = "*deleted*";
 
 typedef struct _pSLAssoc_Array_Element_Type
 {
-   SLFUTURE_CONST char *key;		       /* slstring */
-   unsigned long hash;
+   SLFUTURE_CONST char *key;                   /* slstring */
+   SLhash_Type hash;
    SLang_Object_Type value;
 }
 _pSLAssoc_Array_Element_Type;
@@ -60,7 +60,7 @@ typedef struct
 }
 SLang_Assoc_Array_Type;
 
-static int HASH_AGAIN (SLCONST char *str, unsigned long hash, unsigned int table_len)
+static int HASH_AGAIN (SLCONST char *str, SLhash_Type hash, unsigned int table_len)
 {
    int h;
    (void) table_len; (void) str;
@@ -71,7 +71,7 @@ static int HASH_AGAIN (SLCONST char *str, unsigned long hash, unsigned int table
 }
 
 static _pSLAssoc_Array_Element_Type *
-find_element (SLang_Assoc_Array_Type *a, char *str, unsigned long hash)
+find_element (SLang_Assoc_Array_Type *a, char *str, SLhash_Type hash)
 {
    int i, c;
    _pSLAssoc_Array_Element_Type *e, *elements;
@@ -105,7 +105,7 @@ find_element (SLang_Assoc_Array_Type *a, char *str, unsigned long hash)
 
 static _pSLAssoc_Array_Element_Type *
 find_empty_element (_pSLAssoc_Array_Element_Type *elements, unsigned int table_len,
-		    SLCONST char *str, unsigned long hash)
+                    SLCONST char *str, SLhash_Type hash)
 {
    int i, c;
    _pSLAssoc_Array_Element_Type *e;
@@ -268,7 +268,7 @@ static SLang_Assoc_Array_Type *alloc_assoc_array (SLtype type, int has_default_v
    return a;
 }
 
-static _pSLAssoc_Array_Element_Type *store_object (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e, SLstr_Type *s, unsigned long hash, SLang_Object_Type *obj)
+static _pSLAssoc_Array_Element_Type *store_object (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e, SLstr_Type *s, SLhash_Type hash, SLang_Object_Type *obj)
 {
    if ((e != NULL)
        || (NULL != (e = find_element (a, s, hash))))
@@ -307,9 +307,9 @@ static void assoc_destroy (SLtype type, VOID_STAR ptr)
 }
 
 static int pop_index (unsigned int num_indices,
-		      SLang_MMT_Type **mmt,
-		      SLang_Assoc_Array_Type **a,
-		      SLstr_Type **str, unsigned long *hashp)
+                      SLang_MMT_Type **mmt,
+                      SLang_Assoc_Array_Type **a,
+                      SLstr_Type **str, SLhash_Type *hashp)
 {
    /* if (NULL == (*mmt = SLang_pop_mmt (SLANG_ASSOC_TYPE))) */
    if (-1 == SLclass_pop_ptr_obj (SLANG_ASSOC_TYPE, (VOID_STAR *) mmt))
@@ -387,7 +387,7 @@ int _pSLassoc_aget (SLtype type, unsigned int num_indices)
 _INLINE_
 static _pSLAssoc_Array_Element_Type *
   assoc_aput (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e,
-	      SLstr_Type *str, unsigned long hash)
+              SLstr_Type *str, SLhash_Type hash)
 {
    SLang_Object_Type obj;
 
@@ -418,7 +418,7 @@ int _pSLassoc_aput (SLtype type, unsigned int num_indices)
    SLstr_Type *str;
    SLang_Assoc_Array_Type *a;
    int ret;
-   unsigned long hash;
+   SLhash_Type hash;
 
    (void) type;
 
@@ -438,7 +438,7 @@ int _pSLassoc_aput (SLtype type, unsigned int num_indices)
 
 int _pSLassoc_inc_value (unsigned int num_indices, int inc)
 {
-   unsigned long hash;
+   SLhash_Type hash;
    SLang_MMT_Type *mmt;
    SLstr_Type *str;
    _pSLAssoc_Array_Element_Type *e;
