@@ -189,6 +189,8 @@ Changes since 2.2.4
     will become a long.  This change lays some of that groundwork.
     Similarly, I added SLFUTURE_CONST here and there.  Neither of
     these changes break binary compatibility nor affect the API.
+87. src/slarrfun.c: The prod function for complex numbers had a sign
+    error.
 
 {{{ Previous Versions
 

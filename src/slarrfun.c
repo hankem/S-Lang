@@ -1086,7 +1086,7 @@ static int prod_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID_
 	double a = sr, b = si;
 	double c = z[0], d = z[1];
 	sr = (a*c-b*d);
-	si = (b*c-a*d);
+	si = (b*c+a*d);
 	z += inc;
      }
    s = (double *)sp;

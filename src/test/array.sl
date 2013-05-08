@@ -1703,6 +1703,47 @@ test_wherefirstlast_minmax ([-1,1,-1,1,0]);
 test_wherefirstlast_minmax ([-1,1,-1,1,0,1,2,3]);
 test_wherefirstlast_minmax ([-1,1,-1,1,0,1,2,3,0]);
 
+private define test_prod (a)
+{
+   variable p = prod (a);
+   variable p1 = 1.0;
+   foreach (a)
+     {
+	variable aa = ();
+	p1 *= aa;
+     }
+   if (p1 == p)
+     return;
+#ifexists Complex_Type
+   if (_typeof (a) == Complex_Type)
+     {
+	if (feqs (Real(p), Real(p1)) && feqs (Imag(p), Imag(p1)))
+	  return;
+     }
+   else
+#endif
+     {
+	if (feqs (p, p1))
+	  return;
+     }
+
+   failed ("prod(%S) produced %S, expected %S", a, p, p1);
+}
+test_prod ([1]);
+test_prod ([1:5]);
+test_prod ([1.0]);
+test_prod ([1.0f]);
+test_prod ([1:5]*1.0);
+test_prod ([1:5]*1.0f);
+test_prod ([1h, 2h]);
+#ifexists LLong_Type
+test_prod ([1LL]);
+test_prod ([1:5]*1LL);
+#ifexists Complex_Type
+test_prod ([1+0i]);
+test_prod ([1:5] + 1i*[2:6]);
+#endif
+
 print ("Ok\n");
 exit (0);
 
