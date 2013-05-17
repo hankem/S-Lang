@@ -85,6 +85,10 @@ private define fixup_header_names (names)
    if (_typeof(names) != String_Type)
      return names;
 
+   variable is_scalar = (typeof (names) != Array_Type);
+   if (is_scalar)
+     names = [names];
+
    names = strlow (names);
    variable i = where (names == "");
    names[i] = array_map (String_Type, &sprintf, "col%d", i+1);
@@ -98,6 +102,7 @@ private define fixup_header_names (names)
 	  names[i] = "_" + names[i];
      }
 
+   if (is_scalar) names = names[0];
    return names;
 }
 
