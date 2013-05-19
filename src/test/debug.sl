@@ -1,4 +1,4 @@
-_debug_info = 1; () = evalfile ("inc.sl");
+() = evalfile ("inc.sl");
 
 testing_feature ("debugger support");
 #ifnexists _set_frame_variable

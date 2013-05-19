@@ -1,5 +1,5 @@
 #ifeval define crazy (x,y,z,w) {return 1;} crazy (0,0,0,0);
-_debug_info = 1; () = evalfile ("inc.sl");
+() = evalfile ("inc.sl");
 #else
 failed("#else");
 #endif

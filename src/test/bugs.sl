@@ -1,4 +1,4 @@
-_debug_info = 1; () = evalfile ("inc.sl");
+() = evalfile ("inc.sl");
 print ("Known Bugs or not yet implemented features:\n");
 implements ("bugs");
 

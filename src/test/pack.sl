@@ -1,4 +1,4 @@
-_debug_info = 1; () = evalfile ("inc.sl");
+() = evalfile ("inc.sl");
 
 testing_feature ("pack and unpack functions");
 

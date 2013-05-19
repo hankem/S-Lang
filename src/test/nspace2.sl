@@ -17,7 +17,7 @@ define func ()
 }
 #else
 variable This_Namespace;
-_debug_info = 1; () = evalfile ("inc.sl");
+() = evalfile ("inc.sl");
 
 testing_feature ("more NameSpace routines");
 This_Namespace = "NS1";

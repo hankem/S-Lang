@@ -1,5 +1,5 @@
 % This is also a good test to perform leak checking on.
-_debug_info = 1; () = evalfile ("inc.sl");
+() = evalfile ("inc.sl");
 
 testing_feature ("recursive function modifications");
 

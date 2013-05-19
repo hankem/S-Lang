@@ -1,9 +1,7 @@
-_debug_info = 1;
 variable X = Any_Type[1];
 X[0] = "foo";
 
 % a print function
-_debug_info = 1;
 set_float_format ("%.32e");
 define p(obj)
 {

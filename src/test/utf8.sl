@@ -1,4 +1,4 @@
-_debug_info = 1; () = evalfile ("inc.sl");
+() = evalfile ("inc.sl");
 
 #ifeval (0 == _slang_utf8_ok)
 %#stop
