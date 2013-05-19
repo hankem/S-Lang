@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <slang.h>
 #include <math.h>
+
+#include "inc.c"
 
 #include "../sl-feat.h"
 
@@ -12,13 +12,6 @@
 # define HAVE_FPSETMASK 1
 #endif
 #endif
-
-static int Ignore_Exit = 0;
-static void c_exit (int *code)
-{
-   if (Ignore_Exit == 0)
-     exit (*code);
-}
 
 static char test_char_return (char *x)
 {
