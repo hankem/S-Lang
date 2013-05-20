@@ -1,21 +1,5 @@
-prepend_to_slang_load_path (".");
-set_import_module_path ("./${ARCH}objs:"$+get_import_module_path ());
+() = evalfile ("./test.sl");
 require ("histogram");
-
-private define print (x)
-{
-   x = string (x);
-   () = fputs (x, stdout);
-   () = fflush (stdout);
-}
-
-private define failed ()
-{
-   variable s = __pop_args (_NARGS);
-   s = sprintf (__push_args(s));
-   () = fprintf (stderr, "Failed: %s\n", s);
-   exit (1);
-}
 
 private variable Random_Number = _time ();
 private define urand_1 (x)
@@ -132,7 +116,7 @@ define test_hist2d (num, nr, nc) %{{{
    % all data points got binned
    variable i = where ((r >= gr[0]) and (c >= gc[0]));
    if (sum(img) != length(i))
-     failed ("Failed:  wrong histogram sum");
+     failed ("histogram sum");
 
    % the reverse indices include every point
    _for (0, nr-1, 1)
@@ -219,6 +203,8 @@ private define test_rebin (new_grid, old_grid, input_h, sum_ok, expected)
 
 define slsh_main ()
 {
+   testing_module ("hist");
+
    variable g0 = [0,1,2,3,4,5,6];
    variable h0 = [1,2,3,4,5,6,7];
 
@@ -238,4 +224,6 @@ define slsh_main ()
    test_rebin (Double_Type[0], g0, h0, 0, Double_Type[0]);
    test_rebin ([1:10], [1,5,10], [1,2,3], 1,
 	       [0.25,0.25,0.25,0.25,0.4,0.4,0.4,0.4,0.4,3]);
+
+   end_test ();
 }

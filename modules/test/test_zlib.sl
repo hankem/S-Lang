@@ -1,6 +1,5 @@
-require ("./zlib.sl");
-
-private variable Failed = 0;
+() = evalfile("./test.sl");
+require ("zlib");
 
 private define silly_deflate (str)
 {
@@ -34,28 +33,27 @@ define test_zlib (str0)
    variable str1 = zlib_inflate (zstr);
    if (str1 != str0)
      {
-	() = fprintf (stderr, "Failed to deflate/inflate %s\n", str0);
-	Failed++;
+	failed ("to deflate/inflate %s", str0);
 	return;
      }
    variable zstr1 = silly_deflate (str0);
    if (zstr1 != zstr)
      {
-	() = fprintf (stderr, "Failed to deflate %s via multiple calls", str0);
-	Failed++;
+	failed ("to deflate %s via multiple calls", str0);
 	return;
      }
    str1 = silly_inflate (zstr1);
    if (str1 != str0)
      {
-	() = fprintf (stderr, "Failed to inflate %s via multiple calls", str0);
-	Failed++;
+	failed ("to inflate %s via multiple calls", str0);
 	return;
      }
 }
 
 define slsh_main ()
 {
+   testing_module ("zlib");
+
    test_zlib ("");
    test_zlib ("\0");
    test_zlib ("\0\0\0");
@@ -68,5 +66,6 @@ define slsh_main ()
    test_zlib ("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
    test_zlib ("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
    test_zlib ("\0ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
-   exit (Failed);
+
+   end_test ();
 }

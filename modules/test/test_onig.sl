@@ -1,5 +1,4 @@
-prepend_to_slang_load_path (".");
-set_import_module_path ("./${ARCH}objs:"$+get_import_module_path ());
+() = evalfile ("./test.sl");
 require("onig.sl");
 
 private define exec (syntax, pattern, astr)
@@ -12,17 +11,18 @@ private define exec (syntax, pattern, astr)
 	for (i = 0; i < r; i++)
 	  {
 	     variable nth = onig_nth_match (reg, i);
+#ifdef DEBUG
 	     () = fprintf(stderr, "%d: (%d-%d)\n", i, nth[0], nth[1]);
+#endif
 	  }
      }
    else
-     {
-	() = fprintf(stderr, "search fail\n");
-     }
+     failed ("search fail");
 }
 
 define slsh_main ()
 {
+   testing_module ("onig");
 
    exec("perl",
 	"\\p{XDigit}\\P{XDigit}\\p{^XDigit}\\P{^XDigit}\\p{XDigit}",
@@ -35,8 +35,12 @@ define slsh_main ()
 	"abc def* e+ g?ddd[a-rvvv] (vv){3,7}hv\\dvv(?:aczui ss)\\W\\w$",
 	"abc def* e+ g?ddd[a-rvvv] (vv){3,7}hv\\dvv(?:aczui ss)\\W\\w$");
 
+#ifdef DEBUG
    message ("Supported syntaxes:");
    array_map (Void_Type, &message, onig_get_syntaxes());
    message ("Supported encodings:");
-   %array_map (Void_Type, &message, onig_get_encodings());
+   array_map (Void_Type, &message, onig_get_encodings());
+#endif
+
+   end_test ();
 }

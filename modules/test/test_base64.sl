@@ -1,5 +1,4 @@
-prepend_to_slang_load_path (".");
-set_import_module_path ("./${ARCH}objs:"$+get_import_module_path ());
+() = evalfile ("./test.sl");
 require ("base64");
 
 private define decode_callback (strp, buf)
@@ -52,20 +51,18 @@ private variable Encode_Decode_Map =
 
 define slsh_main ()
 {
+   testing_module ("base64");
+
    variable i, n = length (Encode_Decode_Map)/2;
-   variable failed = 0, in, out, testout;
+   variable in, out, testout;
    _for i (0, n-1, 1)
      {
 	in = Encode_Decode_Map[2*i];
 	out = Encode_Decode_Map[2*i+1];
 	testout = b64encode_string (in);
 
-	if (out == testout)
-	  continue;
-
-	() = fprintf (stderr, "FAILED to encode %s, got %s instead of %s\n",
-		      in, testout, out);
-	failed++;
+	if (out != testout)
+	  failed ("to encode %s, got %s instead of %s", in, testout, out);
      }
 
    _for (0, 5, 1)
@@ -85,8 +82,7 @@ define slsh_main ()
 		  if (out == testout)
 		    continue;
 	       }
-	     () = fprintf (stderr, "FAILED to decode %s, chunk=%d\n", in, chunk);
-	     failed++;
+	     failed ("to decode %s, chunk=%d", in, chunk);
 	  }
      }
 
@@ -98,8 +94,5 @@ define slsh_main ()
 	testout = b64decode_string (in, chunk, 0);
      }
 
-   if (failed)
-     exit (1);
-
-   exit (0);
+   end_test ();
 }

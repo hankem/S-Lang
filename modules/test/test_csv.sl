@@ -1,5 +1,4 @@
-prepend_to_slang_load_path (".");
-set_import_module_path ("./objs:" + get_import_module_path ());
+() = evalfile ("./test.sl");
 require ("csv");
 
 private variable Table = struct {author = {}, title = {}, sample = {}};
@@ -26,7 +25,7 @@ He will not go behind his father's saying,\n\
 And he likes having thought of it so well\n\
 He says again, \"Good fences make good neighbors.\"");
 
-define slsh_main ()
+private define test_csv ()
 {
    variable file = sprintf ("/tmp/testcsv-%ld.csv", _time() mod getpid());
    csv_writecol (file, Table);
@@ -37,8 +36,8 @@ define slsh_main ()
 
    if (any(names != get_struct_field_names (table)))
      {
-	() = fprintf (stderr, "csv_read/write failed to produce a table with the expected column names\n");
-	exit (1);
+	failed ("csv_read/write failed to produce a table with the expected column names");
+	return;
      }
 
    foreach (names)
@@ -46,27 +45,35 @@ define slsh_main ()
 	variable name = ();
 	ifnot (_eqs(get_struct_field (table, name), get_struct_field (table, name)))
 	  {
-	     fprintf (stderr, "column %S entries are not equal\n", name);
-	     exit (1);
+	     failed ("column %S entries are not equal", name);
+	     return;
 	  }
      }
 
    table = csv_readcol (file, 1, 3; has_header);
    if (any(names[[1,3]-1] != get_struct_field_names (table)))
      {
-	() = fprintf (stderr, "csv_read/write failed to produce a table with the expected column names\n");
-	exit (1);
+	failed ("csv_read/write failed to produce a table with the expected column names");
+	return;
      }
    foreach (get_struct_field_names (table))
      {
 	name = ();
 	ifnot (_eqs(get_struct_field (table, name), get_struct_field (table, name)))
 	  {
-	     fprintf (stderr, "column %S entries are not equal\n", name);
-	     exit (1);
+	     failed ("column %S entries are not equal", name);
+	     return;
 	  }
      }
-   
+
    () = remove (file);
 }
 
+define slsh_main ()
+{
+   testing_module ("csv");
+
+   test_csv ();
+
+   end_test ();
+}

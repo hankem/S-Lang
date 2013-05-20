@@ -1,5 +1,4 @@
-prepend_to_slang_load_path (".");
-set_import_module_path ("./${ARCH}objs:"$+get_import_module_path ());
+() = evalfile ("./test.sl");
 require ("chksum");
 
 private variable Chksum_Map = Assoc_Type[];
@@ -53,19 +52,15 @@ private define test_accumulate (name, str, chksum)
 	     c.accumulate (s10);
 	     c.accumulate (s11);
 	     if (chksum != c.close ())
-	       {
-		  () = fprintf (stderr, "Failed to compute %s for the partition '%s', '%s', '%s'\n",
-			       name, s0, s10, s11);
-		  return 1;
-	       }
+	       failed ("Failed to compute %s for the partition '%s', '%s', '%s'", name, s0, s10, s11);
 	  }
      }
-   return 0;
 }
 
-private define run_tests ()
+define slsh_main ()
 {
-   variable failed = 0;
+   testing_module ("chksum");
+
    foreach (assoc_get_keys (Chksum_Map))
      {
 	variable key = ();
@@ -73,30 +68,16 @@ private define run_tests ()
 
 	variable md5 = md5sum (key);
 	if (md5 != s.md5)
-	  {
-	     () = fprintf (stderr, "MD5 failure for %s, got %s instead of %s\n",
-		      key, md5, s.md5);
-	     failed++;
-	  }
-	failed += test_accumulate ("md5", key, md5);
+	  failed ("MD5 failure for %s, got %s instead of %s", key, md5, s.md5);
+
+	test_accumulate ("md5", key, md5);
 
 	variable sha1 = sha1sum (key);
 	if (sha1 != s.sha1)
-	  {
-	     () = fprintf (stderr, "SHA1 failure for %s, got %s instead of %s\n",
-		      key, sha1, s.sha1);
-	     failed++;
-	  }
-	failed += test_accumulate ("sha1", key, sha1);
+	  failed ("SHA1 failure for %s, got %s instead of %s", key, sha1, s.sha1);
+
+	test_accumulate ("sha1", key, sha1);
      }
 
-   return failed;
-}
-
-define slsh_main ()
-{
-   variable failed = run_tests ();
-   if (failed)
-     exit (1);
-   exit (0);
+   end_test ();
 }

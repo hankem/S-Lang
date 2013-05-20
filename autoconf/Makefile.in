@@ -1,4 +1,4 @@
-# -*- sh -*-
+# -*- make -*-
 
 #This is a UNIX-only makefile.  For other systems, get a makefile from
 #src/mkfiles/
@@ -57,8 +57,10 @@ elf: makefiles slang.pc
 	cd modules; $(MAKE) all
 	@echo Use make install to install it.
 runtests:
-	cd src; $(MAKE) static
-	cd src; $(MAKE) runtests
+	@failed=0; \
+	cd src; $(MAKE) runtests || failed=1; cd ..; \
+	cd modules; $(MAKE) runtests || failed=1; cd ..; \
+	exit $$failed
 check: runtests
 
 demos:

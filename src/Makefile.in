@@ -214,7 +214,7 @@ install: install-all
 #---------------------------------------------------------------------------
 # Tests
 #---------------------------------------------------------------------------
-runtests: $(OBJDIR_NORMAL_LIB)
+runtests: $(OBJDIR_NORMAL_LIB) static
 	cd test; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" OTHERLIBS="$(OTHERLIBS)" SLANGLIB="$(OBJDIR)"
 #---------------------------------------------------------------------------
 # Housekeeping

@@ -22,8 +22,7 @@ define slsh_main ()
 	return;
      }
 
-   message(`
-Running tests:`);
+   message ("\nRunning tests:\n");
    variable test;
    foreach test (__argv[[1:]])
      if (string_matches (test, `\.slc?$`) != NULL)
