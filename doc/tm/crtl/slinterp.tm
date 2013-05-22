@@ -429,7 +429,7 @@
   a new file whose filename is equivalent to the one specified by
   \var{fn}, except that a \var{'c'} is appended to the name.  For
   example, if \var{fn} is set to \exmp{init.sl}, then the new file
-  will have the name exmp{init.slc}.  The meaning of the second
+  will have the name \exmp{init.slc}.  The meaning of the second
   parameter, \var{reserved}, is reserved for future use.  For now, set
   it to \var{0}.
 
