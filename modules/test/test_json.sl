@@ -178,10 +178,16 @@ private define test_nested_object () %{{{
 
 % test_escaped_strings %{{{
 
+% The test below puts the strings into an object:
+
 private define expect_string (key, expected_value)
 {
-   % The test below puts the strings into an object:
    expect_json_object_with_key (key, expected_value, String_Type);
+}
+
+private define expect_bstring (key, expected_value)
+{
+   expect_json_object_with_key (key, expected_value, BString_Type);
 }
 
 private define test_escaped_strings ()
@@ -199,7 +205,8 @@ private define test_escaped_strings ()
        "Unicode example" : "\u0040",
        "Kaizen"          : "\u6539\u5584",
        "Schr\u00f6dinger": "\u0131\u0127 \u2202\u2044\u2202t = \u0124",
-       "Unicode range"   : "\u0001 - \uFFFF = \uffff"
+       "Unicode range"   : "\u0001 - \uFFFF = \uffff",
+       "bstring with 0"  : "binary strings may even contain \u0000 characters"
      }
    `);
 
@@ -216,6 +223,7 @@ private define test_escaped_strings ()
    expect_string ("Kaizen"          , "改善");  % == "\u{6539}\u{5584}"
    expect_string ("Schrödinger"     , "ıħ ∂⁄∂t = Ĥ");  % == "\u{0131}\u{0127} \u{2202}\u{2044}\u{2202}t = \u{0124}"
    expect_string ("Unicode range"   , "\x01 - \u{FFFF} = \u{FFFF}");
+   expect_bstring ("bstring with 0" , "binary strings may even contain \x00 characters"B);
 }
 %}}}
 

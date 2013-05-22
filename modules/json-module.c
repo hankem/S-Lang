@@ -104,7 +104,7 @@ static int parse_hex_digit (char ch) /*{{{*/
 }
 /*}}}*/
 
-static char *parse_4_hex_digits (char *s, unsigned int *new_string_len, char *new_string) /*{{{*/
+static char *parse_4_hex_digits (char *s, unsigned int *new_string_len, char *new_string, int *is_binary_string) /*{{{*/
 {
    int d1, d2, d3, d4;
    SLwchar_Type wchar;
@@ -121,6 +121,9 @@ static char *parse_4_hex_digits (char *s, unsigned int *new_string_len, char *ne
      }
 
    wchar = (d1 << 12) + (d2 << 8) + (d3 << 4) + d4;
+   if (wchar == 0 && is_binary_string)
+     *is_binary_string = 1;
+
    u = new_string ? (SLuchar_Type*)new_string : buf;
    *new_string_len += SLutf8_encode (wchar, u, BUFLEN) - u;
 #undef BUFLEN
@@ -159,7 +162,7 @@ static int parse_string_length_and_move_ptr (Parse_Type *p) /*{{{*/
 		  new_string_len++;
 		  break;
 		case 'u':
-		  if (NULL == (s = parse_4_hex_digits (s, &new_string_len, NULL)))
+		  if (NULL == (s = parse_4_hex_digits (s, &new_string_len, NULL, NULL)))
 		    return -1;
 		  break;
 		default:
@@ -176,9 +179,10 @@ static int parse_string_length_and_move_ptr (Parse_Type *p) /*{{{*/
 }
 /*}}}*/
 
-static char *parse_string (Parse_Type *p) /*{{{*/
+static char *parse_string (Parse_Type *p, unsigned int *bstring_len) /*{{{*/
 {
    char *s = p->ptr;
+   int is_binary_string = 0;
    unsigned int new_string_len = parse_string_length_and_move_ptr (p);
    char *new_string = -1 == new_string_len ? NULL : SLmalloc (new_string_len + 1);
    unsigned int new_string_pos = 0;
@@ -216,12 +220,16 @@ static char *parse_string (Parse_Type *p) /*{{{*/
 	   case 't':
 	     new_string[new_string_pos++] = '\t'; break;
 	   case 'u':
-	     if (NULL != (s = parse_4_hex_digits (s, &new_string_pos, new_string + new_string_pos)))
+	     if (NULL != (s = parse_4_hex_digits (s, &new_string_pos, new_string + new_string_pos, &is_binary_string)))
 	       break;  // else drop
 	   default:
 	     goto return_appplication_error;
 	  }
      }
+
+   if (is_binary_string && bstring_len)
+     *bstring_len = new_string_len;
+
    new_string[new_string_pos] = 0;
    return new_string;
 
@@ -236,13 +244,31 @@ return_appplication_error:
 
 static int parse_and_push_string (Parse_Type *p) /*{{{*/
 {
-   char *s = parse_string (p);
-   if ((s == NULL)
-       || (-1 == SLang_push_string (s)))
+   unsigned int bstring_len = 0;
+   char *s = parse_string (p, &bstring_len);
+   if (s == NULL)
+     return -1;
+
+   if (bstring_len)
      {
+	SLang_BString_Type *bstr = SLbstring_create (s, bstring_len);
 	SLfree (s);
-	return -1;
+	if ((NULL == bstr)
+	    || (-1 == SLang_push_bstring (bstr)))
+	  {
+	     SLbstring_free (bstr);
+	     return -1;
+	  }
      }
+   else
+     {
+	if (-1 == SLang_push_malloced_string (s))
+	  {
+	     SLfree (s);
+	     return -1;
+	  }
+     }
+
    return 0;
 }
 /*}}}*/
@@ -365,7 +391,7 @@ static int parse_and_push_object (Parse_Type *p, int toplevel) /*{{{*/
 	       goto return_error;
 	    }
 
-	  keyword = SLang_create_slstring (parse_string (p));
+	  keyword = SLang_create_slstring (parse_string (p, NULL));  // ignoring binary strings
 	  if (keyword == NULL)
 	    goto return_error;
 
