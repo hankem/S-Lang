@@ -2,12 +2,12 @@
 MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
   varray-module.so socket-module.so rand-module.so fork-module.so \
   csv-module.so base64-module.so chksum-module.so histogram-module.so \
-  stats-module.so \
+  stats-module.so json-module.so \
   @PCRE_MODULE@ @PNG_MODULE@ @ICONV_MODULE@ @ONIG_MODULE@ @ZLIB_MODULE@ @SYSCONF_MODULE@
 SLFILES = slsmg termios select fcntl varray socket pcre png iconv \
-  onig rand csv zlib fork sysconf base64 chksum histogram stats
+  onig rand csv zlib fork sysconf base64 chksum histogram stats json
 TEST_SCRIPTS = test_rand.sl test_csv.sl test_base64.sl test_chksum.sl \
-  test_hist.sl test_stats.sl
+  test_hist.sl test_stats.sl test_json.sl
 CHKSUM_OBJS = chksum-module.o chksum_md5.o chksum_sha1.o
 OBJDIR_CHKSUM_OBJS = $(OBJDIR)/chksum-module.o $(OBJDIR)/chksum_md5.o $(OBJDIR)/chksum_sha1.o
 #---------------------------------------------------------------------------
@@ -160,6 +160,9 @@ $(OBJDIR)/histogram-module.so: histogram-module.c histogram-module.inc
 stats-module.so: $(OBJDIR) $(OBJDIR)/stats-module.so
 $(OBJDIR)/stats-module.so: stats-module.c stats-module.inc
 	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/stats-module.c -o stats-module.so $(LIBS)
+json-module.so: $(OBJDIR) $(OBJDIR)/json-module.so
+$(OBJDIR)/json-module.so: json-module.c
+	cd $(OBJDIR) && $(CC_SHARED) $(INCS) $(SRCDIR)/json-module.c -o json-module.so $(LIBS)
 #
 # Note that Windows/Cygwin modules need execute permissions
 install: all
