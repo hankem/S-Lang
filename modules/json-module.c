@@ -43,7 +43,7 @@ static char* json_module_version_string = "pre-0.2.0";
  * these map onto a list (List_Type) in S-Lang.
  *
  * Since S-Lang has no separate boolean type,
- * true|false are represented as 1|0 of Char_Type.
+ * true|false are represented as 1|0 of UChar_Type.
  */
 
 #define BEGIN_ARRAY	 '['
@@ -317,12 +317,12 @@ static int parse_and_push_literal (Parse_Type *p) /*{{{*/
    if (*s == 't' && s[1]=='r' && s[2]=='u' && s[3]=='e')
      {
 	p->ptr += 4;
-	return SLang_push_char (1);  // true
+	return SLang_push_uchar (1);  // true
      }
    else if (*s == 'f' && s[1]=='a' && s[2]=='l' && s[3]=='s' && s[4]=='e')
      {
 	p->ptr += 5;
-	return SLang_push_char (0);  // false
+	return SLang_push_uchar (0);  // false
      }
    else if (*s == 'n' && s[1]=='u' && s[2]=='l' && s[3]=='l')
      {

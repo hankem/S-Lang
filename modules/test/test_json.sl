@@ -63,8 +63,8 @@ private define test_simple_object () %{{{
    expect_json_object_with_key ("integer", 42, Long_Type);
    expect_json_object_with_key ("long", 1234567890123456789L, Long_Type);
    expect_json_object_with_key ("double", 6.022e+22, Double_Type);
-   expect_json_object_with_key ("true", 1, Char_Type);
-   expect_json_object_with_key ("false", 0, Char_Type);
+   expect_json_object_with_key ("true", 1, UChar_Type);
+   expect_json_object_with_key ("false", 0, UChar_Type);
    expect_json_object_with_key ("null", NULL, Null_Type);
 }
 %}}}
