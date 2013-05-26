@@ -139,7 +139,7 @@ $(OBJDIR)/histogram-module.so: histogram-module.c histogram-module.inc
 	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
 $(OBJDIR)/stats-module.so: stats-module.c stats-module.inc
 	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/json-module.so: json-module.c
+$(OBJDIR)/json-module.so: json-module.c json-module.inc
 	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
 #
 # Note that Windows/Cygwin modules need execute permissions

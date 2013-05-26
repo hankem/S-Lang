@@ -5,13 +5,15 @@ require ("json");
 
 private variable json;
 
+% test_parse %{{{
+
 private define expect_json_object_with_key (key, expected_value, expected_type)
 {
    expect_assoc_key_value (json, key, expected_value);
    expect_type (json[key], expected_type);
 }
 
-private define test_empty_array () %{{{
+private define test_parse_empty_array () %{{{
 {
    foreach json ({ "[]", "  \n\t[  \n\t \t\n ]\t\n " })
      {
@@ -22,7 +24,7 @@ private define test_empty_array () %{{{
 }
 %}}}
 
-private define test_empty_object () %{{{
+private define test_parse_empty_object () %{{{
 {
    foreach json ({ "{}", "  \n\t{  \n\t \t\n }\t\n " })
      {
@@ -33,7 +35,7 @@ private define test_empty_object () %{{{
 }
 %}}}
 
-private define test_simple_array () %{{{
+private define test_parse_simple_array () %{{{
 {
    json = json_parse ("[1, 2 ,\t\r\n 3]");
    expect_type (json, List_Type);
@@ -43,7 +45,7 @@ private define test_simple_array () %{{{
 }
 %}}}
 
-private define test_simple_object () %{{{
+private define test_parse_simple_object () %{{{
 {
    json = json_parse (`
      {
@@ -71,7 +73,7 @@ private define test_simple_object () %{{{
 }
 %}}}
 
-private define test_heterogenous_array () %{{{
+private define test_parse_heterogenous_array () %{{{
 {
    json = json_parse (`
      [
@@ -106,7 +108,7 @@ private define test_heterogenous_array () %{{{
 }
 %}}}
 
-private define test_nested_object () %{{{
+private define test_parse_nested_object () %{{{
 {
    json = json_parse (`
      {
@@ -178,7 +180,7 @@ private define test_nested_object () %{{{
 }
 %}}}
 
-% test_escaped_strings %{{{
+% test_parse_escaped_strings %{{{
 
 % The test below puts the strings into an object:
 
@@ -192,7 +194,7 @@ private define expect_bstring (key, expected_value)
    expect_json_object_with_key (key, expected_value, BString_Type);
 }
 
-private define test_escaped_strings ()
+private define test_parse_escaped_strings ()
 {
    json = json_parse (`
      {
@@ -214,7 +216,7 @@ private define test_escaped_strings ()
 
    expect_type (json, Assoc_Type);
    expect_string ("quotation mark"  , `"`);
-   expect_string ("reverse solidus" , `\`);
+   expect_string ("reverse solidus" , "\\");
    expect_string ("solidus"         , "/");
    expect_string ("backspace"       , "\b");
    expect_string ("form feed"       , "\f");
@@ -229,21 +231,13 @@ private define test_escaped_strings ()
 }
 %}}}
 
-% test_errors %{{{
+% test_parse_errors %{{{
 
 private variable describe_char_regex = "'.' = 0x[0-9A-F][0-9A-F]";
 
-private variable json_text_to_parse;
-
-private define do_parse_json_text()
-{
-   json_parse (json_text_to_parse);
-}
-
 private define expect_Json_Parse_Error_while_parsing_method (obj, json_text)
 {
-   json_text_to_parse = json_text;
-   expect_error (&do_parse_json_text, Json_Parse_Error, obj.expected_error_message);
+   expect_error (Json_Parse_Error, obj.expected_error_message, &json_parse, json_text);
    return obj;  % for method chaining
 }
 
@@ -255,7 +249,7 @@ private define expect_Json_Parse_Error (expected_error_message)
    };
 }
 
-private define test_errors_due_to_structure ()
+private define test_parse_errors_due_to_structure ()
 {
    ()=expect_Json_Parse_Error ("empty input string")
      .while_parsing ("");
@@ -274,7 +268,7 @@ private define test_errors_due_to_structure ()
      .while_parsing (" [ this_is_not_a_value_either ] ");
 }
 
-private define test_errors_with_strings ()
+private define test_parse_errors_with_strings ()
 {
    ()=expect_Json_Parse_Error ("Unexpected end of input seen while parsing a JSON string")
      .while_parsing (`[ "missing quotation mark ]`);
@@ -290,7 +284,7 @@ private define test_errors_with_strings ()
      .while_parsing (`[ "\u123`);
 }
 
-private define test_errors_with_arrays ()
+private define test_parse_errors_with_arrays ()
 {
    ()=expect_Json_Parse_Error ("Expected ',' or ']' while parsing a JSON array, found $describe_char_regex"$)
      .while_parsing ("[ 1 2 ]")
@@ -303,7 +297,7 @@ private define test_errors_with_arrays ()
      .while_parsing ("[1] 2");
 }
 
-private define test_errors_with_objects ()
+private define test_parse_errors_with_objects ()
 {
    ()=expect_Json_Parse_Error ("Expected a string while parsing a JSON object, found $describe_char_regex"$)
      .while_parsing (`{ 1 }`)
@@ -323,27 +317,206 @@ private define test_errors_with_objects ()
      .while_parsing (`{ "one" : 1 } 2`);
 }
 
-private define test_errors ()
+private define test_parse_errors ()
 {
-   test_errors_due_to_structure ();
-   test_errors_with_strings ();
-   test_errors_with_arrays ();
-   test_errors_with_objects ();
+   test_parse_errors_due_to_structure ();
+   test_parse_errors_with_strings ();
+   test_parse_errors_with_arrays ();
+   test_parse_errors_with_objects ();
+}
+%}}}
+
+private define test_parse ()
+{
+   test_parse_empty_array ();
+   test_parse_empty_object ();
+   test_parse_simple_array ();
+   test_parse_simple_object ();
+   test_parse_heterogenous_array ();
+   test_parse_nested_object ();
+   test_parse_escaped_strings ();
+   test_parse_errors ();
+}
+%}}}
+
+% test_generate %{{{
+
+private define test_generate_empty_array () %{{{
+{
+   expect_value (json_generate ({}), `[]`);
+}
+%}}}
+
+private define test_generate_empty_object () %{{{
+{
+   json = Assoc_Type[];
+   expect_value (json_generate (json), `{}`);
+}
+%}}}
+
+private define test_generate_simple_array () %{{{
+{
+   json = json_generate ({ 1L, 2L, 3L, "Hello", "World!" });
+   expect_value (json, `[
+  1,
+  2,
+  3,
+  "Hello",
+  "World!"
+]`);
+}
+%}}}
+
+private define test_generate_simple_object () %{{{
+{
+   variable object = Assoc_Type[];
+   object["i"] = 1L;
+   object["x"] = 10L;
+   json = Assoc_Type[];
+   json["object"] = object;
+   json["array"]  = { 1, 2, 3};
+   json["string"] = "stringvalue";
+   json["long"]   = 2147483647;
+#ifeval is_defined("LLONG_MAX")
+   json["llong"]  = 9223372036854775807LL;
+#endif
+   json["double"] = 6.022e+22;
+   json["true"]   = '\1';
+   json["false"]  = '\0';
+   json["null"]   = NULL;
+   expect_value (json_generate (json; sort), `{
+  "array": [
+    1,
+    2,
+    3
+  ],
+  "double": 6.022e+22,
+  "false": false,`
+#ifeval is_defined("LLONG_MAX")
++`
+  "llong": 9223372036854775807,`
+#endif
++`
+  "long": 2147483647,
+  "null": null,
+  "object": {
+    "i": 1,
+    "x": 10
+  },
+  "string": "stringvalue",
+  "true": true
+}`);
+}
+%}}}
+
+private define test_generate_escaped_strings () %{{{
+{
+   json = {
+     `" \ /`,
+     "\b \f \n \r \t",
+     "\u{1234}",
+     "Oh, la, la\u{0300}",
+     "\x00 \x01 ... \x1F \x20 \x21 ... \u{0080} \u{0081} ... \u{D7FF}"B,
+     "\u{D800} ... \u{DFFF}, \u{FFFE} & \u{FFFF}",  % illegal in normal UTF-8
+     "\u{D834}\u{DD1E}"  % example from ietf.org/rfc/rfc4627.txt
+   };
+   expect_value (json_generate (json), `[
+  "\" \\ /",
+  "\b \f \n \r \t",
+  "\u1234",
+  "Oh, la, la\u0300",
+  "\u0000 \u0001 ... \u001F   ! ... \u0080 \u0081 ... \uD7FF",
+  "\uD800 ... \uDFFF, \uFFFE & \uFFFF",
+  "\uD834\uDD1E"
+]`);
+}
+%}}}
+
+private define test_generate_optional_whitespace () %{{{
+{
+   variable object = Assoc_Type[];
+   object["three"] = 3;
+   json = { 1, { 2, object, 4 } };
+   variable expected_json_text =
+`[
+  1,
+  [
+    2,
+    {
+      "three": 3
+    },
+    4
+  ]
+]`;
+  expect_value (json_generate (json),
+                expected_json_text);
+  expect_value (json_generate (json; pre_vsep="", post_vsep="\n  ", pre_nsep="", post_nsep=" "),
+                expected_json_text);
+  expect_value (json_generate (json; pre_vsep="none", post_vsep="newline\n two blanks", pre_nsep="none", post_nsep="non-whitespace ignored"),
+                expected_json_text);
+  expect_value (json_generate (json; pre_vsep="", post_vsep="", pre_nsep="", post_nsep=""),
+                `[1,[2,{"three":3},4]]`);
+  expect_value (json_generate (json; pre_vsep=" ", post_vsep="\n    ", pre_nsep="\t", post_nsep="  "),
+`[
+    1 ,
+    [
+        2 ,
+        {
+            "three"\t:  3
+        } ,
+        4
+    ]
+]`Q);
+}
+%}}}
+
+% test_generate_object_with_sorted_keys () %{{{
+
+private define cmp_keys_by_int_value (key1, key2)
+{
+   variable i1 = integer (key1),  i2 = integer (key2);
+   return (i1 < i2) ? -1 : (i1 > i2);
+}
+
+private define test_generate_object_with_sorted_keys ()
+{
+   json = Assoc_Type[];
+   json["1"]   = "I";
+   json["50"]  = "L";
+   json["100"] = "C";
+   json["10"]  = "X";
+   json["5"]   = "V";
+   expect_value (json_generate (json; post_nsep="", post_vsep=" ", sort=&cmp_keys_by_int_value),
+		 `{ "1":"I", "5":"V", "10":"X", "50":"L", "100":"C" }`);
+}
+%}}}
+
+private define test_generate_errors () %{{{
+{
+   expect_error (Json_Invalid_Json_Error, `invalid boolean value '\\123'; only '\\000' and '\\001' are allowed`,
+		 &json_generate, { '\123' });
+   expect_error (Json_Invalid_Json_Error, "Struct_Type does not represent a JSON data structure",
+		 &json_generate, struct { invalid_type });
+}
+%}}}
+
+private define test_generate ()
+{
+   test_generate_empty_array ();
+   test_generate_empty_object ();
+   test_generate_simple_array ();
+   test_generate_simple_object ();
+   test_generate_escaped_strings ();
+   test_generate_optional_whitespace ();
+   test_generate_object_with_sorted_keys ();
+   test_generate_errors ();
 }
 %}}}
 
 define slsh_main ()
 {
    testing_module ("json");
-
-   test_empty_array ();
-   test_empty_object ();
-   test_simple_array ();
-   test_simple_object ();
-   test_heterogenous_array ();
-   test_nested_object ();
-   test_escaped_strings ();
-   test_errors ();
-
+   test_parse ();
+   test_generate ();
    end_test ();
 }
