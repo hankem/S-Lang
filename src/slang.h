@@ -695,7 +695,7 @@ SL_EXTERN int SLang_pop_assoc (SLang_Assoc_Array_Type **);
 SL_EXTERN void SLang_free_assoc (SLang_Assoc_Array_Type *);
 
 typedef struct _pSLang_List_Type SLang_List_Type;
-SL_EXTERN SLang_List_Type *SLang_create_list ();
+SL_EXTERN SLang_List_Type *SLang_create_list (void);
 SL_EXTERN int SLang_list_append (SLang_List_Type *, SLtype, VOID_STAR, int);
 SL_EXTERN int SLang_list_insert (SLang_List_Type *, SLtype, VOID_STAR, int);
 SL_EXTERN int SLang_push_list (SLang_List_Type *, int);
@@ -1215,8 +1215,7 @@ SL_EXTERN int SLang_pop_value (SLtype type, VOID_STAR);
 SL_EXTERN void SLang_free_value (SLtype type, VOID_STAR);
 
 typedef struct _pSLang_Object_Type SLang_Any_Type;
-
-SL_EXTERN VOID_STAR SLang_alloc_anytype ();
+SL_EXTERN VOID_STAR SLang_alloc_anytype (void);
 SL_EXTERN int SLang_pop_anytype (SLang_Any_Type **);
 SL_EXTERN int SLang_push_anytype (SLang_Any_Type *);
 SL_EXTERN void SLang_free_anytype (SLang_Any_Type *);
