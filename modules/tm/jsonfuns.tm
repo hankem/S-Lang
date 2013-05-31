@@ -11,7 +11,7 @@
     object    Assoc_Type
     array     List_Type
     string    String_Type or BString_Type
-    number    Long_Type or Double_Type
+    number    (L)Long_Type or Double_Type
     `true'    UChar_Type ('\1')
     `false'   UChar_Type ('\0')
     `null'    Null_Type

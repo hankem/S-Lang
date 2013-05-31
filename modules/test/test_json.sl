@@ -47,21 +47,23 @@ private define test_simple_object () %{{{
 {
    json = json_parse (`
      {
-       "string"  : "stringvalue",
-       "integer" : 42,
-       "long"    : 1234567890123456789,
-       "double"  : 6.022e+22,
-       "true"    : true,
-       "false"   : false,
-       "null"    : null
+       "string" : "stringvalue",
+       "long"   : 2147483647,
+       "llong"  : 9223372036854775807,
+       "double" : 6.022e+22,
+       "true"   : true,
+       "false"  : false,
+       "null"   : null
      }
    `);
 
    expect_type (json, Assoc_Type);
    expect_size (json, 7);
    expect_json_object_with_key ("string", "stringvalue", String_Type);
-   expect_json_object_with_key ("integer", 42, Long_Type);
-   expect_json_object_with_key ("long", 1234567890123456789L, Long_Type);
+   expect_json_object_with_key ("long", 2147483647, LLong_Type);
+#ifeval is_defined("LLONG_MAX")
+   expect_json_object_with_key ("llong", 9223372036854775807LL, LLong_Type);
+#endif
    expect_json_object_with_key ("double", 6.022e+22, Double_Type);
    expect_json_object_with_key ("true", 1, UChar_Type);
    expect_json_object_with_key ("false", 0, UChar_Type);

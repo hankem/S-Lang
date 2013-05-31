@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <slang.h>
+#include "config.h"
 
 SLANG_MODULE(json);
 
@@ -301,8 +302,12 @@ static int parse_and_push_number (Parse_Type *p) /*{{{*/
 
    ch = *s;
    *s = 0;
-   result = is_int
-	  ? SLang_push_long (atol (p->ptr))
+   result = is_int ?
+#ifdef HAVE_LONG_LONG
+	    SLang_push_long_long (atoll (p->ptr))
+#else
+	    SLang_push_long (atol (p->ptr))
+#endif
 	  : SLang_push_double (atof (p->ptr));
    *s = ch;
    p->ptr = s;
