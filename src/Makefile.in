@@ -225,7 +225,7 @@ clean: elf-clean
 	-$(RM) *~ "#"*
 	-$(RM) $(OBJDIR)/*
 	-$(RM) $(ELFDIR)/*
-	@cd test $(MAKE) clean
+	@cd test; $(MAKE) clean
 distclean: clean
 	-$(RM_R) $(OBJDIR) $(ELFDIR) Makefile sysconf.h $(CONFIG_H) terminfo.inc
 
