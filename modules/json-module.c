@@ -9,7 +9,7 @@ SLANG_MODULE(json);
 #define JSON_MODULE_VERSION_NUMBER 200
 static char* json_module_version_string = "pre-0.2.0";
 
-// JSON grammar based upon json.org & ietf.org/rfc/rfc4627.txt /*{{{*/
+/*{{{ JSON grammar based upon json.org & ietf.org/rfc/rfc4627.txt */
 /*
  * object:
  *   { }
@@ -104,7 +104,7 @@ static int parse_hex_digit (char ch) /*{{{*/
 }
 /*}}}*/
 
-static char *parse_4_hex_digits (char *s, unsigned int *new_string_len, char *new_string, int *is_binary_string) /*{{{*/
+static char *parse_4_hex_digits (char *s, unsigned int *new_string_len, char *new_string, int *is_binary_stringp) /*{{{*/
 {
    int d1, d2, d3, d4;
    SLwchar_Type wchar;
@@ -116,13 +116,13 @@ static char *parse_4_hex_digits (char *s, unsigned int *new_string_len, char *ne
        || (-1 == (d3 = parse_hex_digit (s[2])))
        || (-1 == (d4 = parse_hex_digit (s[3]))))
      {
-	SLang_verror (Json_Parse_Error, "Illegal Unicode escape sequence in JSON string: \\u%c%c%c%c", s[0], s[1], s[2], s[3]);	 // may contain '\000'
+	SLang_verror (Json_Parse_Error, "Illegal Unicode escape sequence in JSON string: \\u%c%c%c%c", s[0], s[1], s[2], s[3]);	 /* may contain '\000' */
 	return NULL;
      }
 
    wchar = (d1 << 12) + (d2 << 8) + (d3 << 4) + d4;
-   if (wchar == 0 && is_binary_string)
-     *is_binary_string = 1;
+   if (is_binary_stringp != NULL)
+     *is_binary_stringp = (wchar == 0);
 
    u = new_string ? (SLuchar_Type*)new_string : buf;
    *new_string_len += SLutf8_encode (wchar, u, BUFLEN) - u;
@@ -132,12 +132,13 @@ static char *parse_4_hex_digits (char *s, unsigned int *new_string_len, char *ne
 }
 /*}}}*/
 
-static int parse_string_length_and_move_ptr (Parse_Type *p) /*{{{*/
+static int parse_string_length_and_move_ptr (Parse_Type *p, unsigned int *lenp) /*{{{*/
 {
    unsigned int new_string_len = 0;
    char *s = p->ptr;
    char ch;
 
+   *lenp = 0;
    while ((ch = *s++) != STRING_DELIMITER)
      {
 	if (ch == 0)
@@ -145,12 +146,12 @@ static int parse_string_length_and_move_ptr (Parse_Type *p) /*{{{*/
 	     SLang_verror (Json_Parse_Error, "Unexpected end of input seen while parsing a JSON string");
 	     return -1;
 	  }
-	else if ((unsigned char)ch < 32)
+	if ((unsigned char)ch < 32)
 	  {
-	     SLang_verror (Json_Parse_Error, "Control character 0x%02X in JSON string must be escaped", (unsigned char)ch);
+	     SLang_verror (Json_Parse_Error, "Control character 0x%02X in JSON string must be escaped", (unsigned int)ch);
 	     return -1;
 	  }
-	else if (ch == ESCAPE_CHARACTER)
+	if (ch == ESCAPE_CHARACTER)
 	  {
 	     ch = *s++;
 	     switch (ch)
@@ -173,22 +174,26 @@ static int parse_string_length_and_move_ptr (Parse_Type *p) /*{{{*/
 	else
 	  new_string_len++;
      }
-   p->ptr = s;
 
-   return new_string_len;
+   p->ptr = s;
+   *lenp = new_string_len;
+   return 0;
 }
 /*}}}*/
 
-static char *parse_string (Parse_Type *p, unsigned int *bstring_len) /*{{{*/
+static char *parse_string (Parse_Type *p, unsigned int *bstring_lenp) /*{{{*/
 {
-   char *s = p->ptr;
+   char *s, *new_string;
+   unsigned int new_string_pos, new_string_len;
    int is_binary_string = 0;
-   unsigned int new_string_len = parse_string_length_and_move_ptr (p);
-   char *new_string = -1 == new_string_len ? NULL : SLmalloc (new_string_len + 1);
-   unsigned int new_string_pos = 0;
 
-   if (NULL == new_string)
+   s = p->ptr;
+
+   if ((-1 == parse_string_length_and_move_ptr (p, &new_string_len))
+       || (NULL == (new_string = SLmalloc (new_string_len + 1))))
      return NULL;
+
+   new_string_pos = 0;
 
    while (new_string_pos < new_string_len)
      {
@@ -221,21 +226,22 @@ static char *parse_string (Parse_Type *p, unsigned int *bstring_len) /*{{{*/
 	     new_string[new_string_pos++] = '\t'; break;
 	   case 'u':
 	     if (NULL != (s = parse_4_hex_digits (s, &new_string_pos, new_string + new_string_pos, &is_binary_string)))
-	       break;  // else drop
+	       break;  /* else drop */
 	   default:
 	     goto return_appplication_error;
 	  }
      }
 
-   if (is_binary_string && bstring_len)
-     *bstring_len = new_string_len;
+   if (bstring_lenp != NULL)
+     *bstring_lenp = (is_binary_string ? new_string_len : 0);
 
    new_string[new_string_pos] = 0;
    return new_string;
 
 return_appplication_error:
-   // Since any JSon_Parse_Error should already have been recognized
-   // (by parse_string_length_and_move_ptr), something must be wrong here.
+   /* Since any JSon_Parse_Error should already have been recognized
+    * (by parse_string_length_and_move_ptr), something must be wrong here.
+    */
    SLang_verror (SL_Application_Error, "JSON string being parsed appears to be changing");
    SLfree (new_string);
    return NULL;
@@ -244,32 +250,27 @@ return_appplication_error:
 
 static int parse_and_push_string (Parse_Type *p) /*{{{*/
 {
-   unsigned int bstring_len = 0;
-   char *s = parse_string (p, &bstring_len);
-   if (s == NULL)
+   unsigned int bstring_len;
+   char *s;
+
+   if (NULL == (s = parse_string (p, &bstring_len)))
      return -1;
 
    if (bstring_len)
      {
-	SLang_BString_Type *bstr = SLbstring_create (s, bstring_len);
-	SLfree (s);
-	if ((NULL == bstr)
-	    || (-1 == SLang_push_bstring (bstr)))
-	  {
-	     SLbstring_free (bstr);
-	     return -1;
-	  }
-     }
-   else
-     {
-	if (-1 == SLang_push_malloced_string (s))
-	  {
-	     SLfree (s);
-	     return -1;
-	  }
+	SLang_BString_Type *bstr;
+	int status;
+
+	if (NULL == (bstr = SLbstring_create_malloced ((unsigned char *)s, bstring_len, 1)))
+	  return -1;
+	/* s now belongs to bstr */
+
+	status = SLang_push_bstring (bstr);
+	SLbstring_free (bstr);
+	return status;
      }
 
-   return 0;
+   return SLang_push_malloced_string (s);   /* frees s upon return */
 }
 /*}}}*/
 
@@ -314,17 +315,19 @@ static int parse_and_push_literal (Parse_Type *p) /*{{{*/
 {
    char *s = p->ptr;
 
-   if (*s == 't' && s[1]=='r' && s[2]=='u' && s[3]=='e')
+   if (0 == strncmp (s, "true", 4))
      {
 	p->ptr += 4;
-	return SLang_push_uchar (1);  // true
+	return SLang_push_uchar (1);
      }
-   else if (*s == 'f' && s[1]=='a' && s[2]=='l' && s[3]=='s' && s[4]=='e')
+
+   if (0 == strncmp (s, "false", 5))
      {
 	p->ptr += 5;
-	return SLang_push_uchar (0);  // false
+	return SLang_push_uchar (0);
      }
-   else if (*s == 'n' && s[1]=='u' && s[2]=='l' && s[3]=='l')
+
+   if (0 == strncmp (s, "null", 4))
      {
 	p->ptr += 4;
 	return SLang_push_null ();
@@ -372,59 +375,61 @@ static int parse_and_push_value (Parse_Type *p, int only_toplevel_values) /*{{{*
 
 static int parse_and_push_object (Parse_Type *p, int toplevel) /*{{{*/
 {
-   SLang_Assoc_Array_Type *assoc = SLang_create_assoc (SLANG_ANY_TYPE, NULL);
-   char *keyword;
-   SLtype type;
-   VOID_STAR value = assoc == NULL ? NULL : SLang_alloc_anytype ();
+   SLang_Assoc_Array_Type *assoc;
 
-   if (value == NULL)
-     goto return_error;
+   if (NULL == (assoc = SLang_create_assoc (SLANG_ANY_TYPE, 0)))
+     return -1;
 
    skip_white (p);
-   if (! looking_at (p, END_OBJECT))
-     do
-       {
-	  skip_white (p);
-	  if (! skip_char (p, STRING_DELIMITER))
-	    {
-	       SLang_verror (Json_Parse_Error, "Expected a string while parsing a JSON object, found " DESCRIBE_CHAR_FMT, DESCRIBE_CHAR(*p->ptr));
-	       goto return_error;
-	    }
+   if (! looking_at (p, END_OBJECT)) do
+     {
+	char *keyword;
+	char *str;
 
-	  keyword = SLang_create_slstring (parse_string (p, NULL));  // ignoring binary strings
-	  if (keyword == NULL)
-	    goto return_error;
+	skip_white (p);
+	if (! skip_char (p, STRING_DELIMITER))
+	  {
+	     SLang_verror (Json_Parse_Error, "Expected a string while parsing a JSON object, found " DESCRIBE_CHAR_FMT, DESCRIBE_CHAR(*p->ptr));
+	     goto return_error;
+	  }
 
-	  skip_white (p);
-	  if (! skip_char (p, NAME_SEPARATOR))
-	    {
-	       SLang_verror (Json_Parse_Error, "Expected a '%c' while parsing a JSON object, found " DESCRIBE_CHAR_FMT,
-			     NAME_SEPARATOR, DESCRIBE_CHAR(*p->ptr));
-	       SLang_free_slstring (keyword);
-	       goto return_error;
-	    }
+	str = parse_string (p, NULL);  /* ignoring binary strings */
+	if (str == NULL)
+	  goto return_error;
 
-	  if ((-1 == parse_and_push_value (p, 0))
-	      || (-1 == (type = SLang_peek_at_stack ()))
-	      || (-1 == SLang_pop_value (type, value))
-	      || (-1 == SLang_assoc_put (assoc, keyword, type, value)))
-	    {
-	       SLang_free_slstring (keyword);
-	       goto return_error;
-	    }
-	  SLang_free_slstring (keyword);
+	keyword = SLang_create_slstring (str);
+	SLfree (str);
 
-	  skip_white (p);
-       }
-     while (skip_char (p, VALUE_SEPARATOR));
-   SLfree (value);
-   value = NULL;  // prevent value from being freed a second time
+	if (keyword == NULL)
+	  goto return_error;
+
+	skip_white (p);
+	if (! skip_char (p, NAME_SEPARATOR))
+	  {
+	     SLang_verror (Json_Parse_Error, "Expected a '%c' while parsing a JSON object, found " DESCRIBE_CHAR_FMT,
+			   NAME_SEPARATOR, DESCRIBE_CHAR(*p->ptr));
+	     SLang_free_slstring (keyword);
+	     goto return_error;
+	  }
+
+	if ((-1 == parse_and_push_value (p, 0))
+	    || (-1 == SLang_assoc_put (assoc, keyword)))
+	  {
+	     SLang_free_slstring (keyword);
+	     goto return_error;
+	  }
+
+	SLang_free_slstring (keyword);
+	skip_white (p);
+     }
+   while (skip_char (p, VALUE_SEPARATOR));
 
    if (skip_char (p, END_OBJECT))
      {
 	skip_white (p);
 	if (! toplevel || looking_at (p, 0))
 	  return SLang_push_assoc (assoc, 1);
+
 	SLang_verror (Json_Parse_Error, "Expected end of input after parsing JSON object, found " DESCRIBE_CHAR_FMT, DESCRIBE_CHAR(*p->ptr));
      }
    else
@@ -437,7 +442,6 @@ static int parse_and_push_object (Parse_Type *p, int toplevel) /*{{{*/
      }
 
 return_error:
-   SLfree (value);
    SLang_free_assoc (assoc);
    return -1;
 }
@@ -446,32 +450,23 @@ return_error:
 static int parse_and_push_array (Parse_Type *p, int toplevel) /*{{{*/
 {
    SLang_List_Type *list = SLang_create_list ();
-   SLtype type;
-   VOID_STAR value = list == NULL ? NULL : SLang_alloc_anytype ();
-   if (value == NULL)
-     goto return_error;
 
    skip_white (p);
-   if (! looking_at (p, END_ARRAY))
-     do
-       {
-	  if ((-1 == parse_and_push_value (p, 0))
-	      || (-1 == (type = SLang_peek_at_stack ()))
-	      || (-1 == SLang_pop_value (type, value))
-	      || (-1 == SLang_list_append (list, type, value, -1))
-	     )
-	    goto return_error;
-	  skip_white (p);
-       }
-     while (skip_char (p, VALUE_SEPARATOR));
-   SLfree (value);
-   value = NULL;  // prevent value from being freed a second time
+   if (! looking_at (p, END_ARRAY)) do
+     {
+	if ((-1 == parse_and_push_value (p, 0))
+	    || (-1 == SLang_list_append (list, -1)))
+	  goto return_error;
+	skip_white (p);
+     }
+   while (skip_char (p, VALUE_SEPARATOR));
 
    if (skip_char (p, END_ARRAY))
      {
 	skip_white (p);
 	if (! toplevel || looking_at (p, 0))
 	  return SLang_push_list (list, 1);
+
 	SLang_verror (Json_Parse_Error, "Expected end of input after parsing JSON array, found " DESCRIBE_CHAR_FMT, DESCRIBE_CHAR(*p->ptr));
      }
    else
@@ -484,7 +479,6 @@ static int parse_and_push_array (Parse_Type *p, int toplevel) /*{{{*/
      }
 
 return_error:
-   SLfree (value);
    SLang_free_list (list);
    return -1;
 }
@@ -506,11 +500,16 @@ static void parse_start (char *input_string) /*{{{*/
 
 static void json_parse (void) /*{{{*/
 {
-   char* buffer;
-   if (-1 == SLpop_string (&buffer))
-     SLang_verror (SL_InvalidParm_Error, "usage: json_parse (String_Type json)");
-   else
-     parse_start (buffer);
+   char *buffer;
+
+   if ((SLang_Num_Function_Args != 1)
+       || (-1 == SLpop_string (&buffer)))
+     {
+	SLang_verror (SL_Usage_Error, "Usage: json_parse (String_Type json)");
+	return;
+     }
+   parse_start (buffer);
+   SLfree (buffer);
 }
 /*}}}*/
 
