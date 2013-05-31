@@ -879,29 +879,23 @@ int SLang_init_slassoc (void)
    return 0;
 }
 
-SLang_Assoc_Array_Type *SLang_create_assoc (SLtype type, VOID_STAR default_value)
+SLang_Assoc_Array_Type *SLang_create_assoc (SLtype type, int has_default_value)
 {
-   int has_default_value = (default_value != NULL);
-
-   if (has_default_value
-       && -1 == (SLang_push_value (type, default_value)))
-     return NULL;
-
+   if (type == SLANG_VOID_TYPE) type = SLANG_ANY_TYPE;
    return alloc_assoc_array (type, has_default_value);
 }
 
-int SLang_assoc_put (SLang_Assoc_Array_Type *assoc, SLstr_Type *key, SLtype type, VOID_STAR value)
+int SLang_assoc_put (SLang_Assoc_Array_Type *assoc, SLstr_Type *key)
 {
    SLhash_Type hash = _pSLstring_get_hash (key);
 
-   if ((-1 == SLang_push_value (type, value))
-       || (NULL == assoc_aput (assoc, NULL, key, hash)))
+   if (NULL == assoc_aput (assoc, NULL, key, hash))
      return -1;
 
    return 0;
 }
 
-int SLang_assoc_get (SLang_Assoc_Array_Type *assoc, SLstr_Type *key, SLtype *sltypep, VOID_STAR *value)
+int SLang_assoc_get (SLang_Assoc_Array_Type *assoc, SLstr_Type *key, SLtype *typep)
 {
    int type;
    SLhash_Type hash = _pSLstring_get_hash (key);
@@ -910,8 +904,10 @@ int SLang_assoc_get (SLang_Assoc_Array_Type *assoc, SLstr_Type *key, SLtype *slt
        || (-1 == (type = SLang_peek_at_stack ())))
      return -1;
 
-   *sltypep = (SLtype) type;
-   return SLang_pop_value (*sltypep, *value);
+   if (typep != NULL)
+     *typep = (SLtype) type;
+
+   return 0;
 }
 
 int SLang_push_assoc (SLang_Assoc_Array_Type *assoc, int free_flag)
