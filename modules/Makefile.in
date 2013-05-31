@@ -16,6 +16,7 @@ LDFLAGS		= @LDFLAGS@
 CC_SHARED 	= @CC_SHARED@
 CONFIG_DIR	= @CONFIG_DIR@
 SRCDIR		= $(CONFIG_DIR)/modules
+CONFIG_H        = $(SRCDIR)/config.h
 OBJDIR		= $(ARCH)objs
 ELFDIR          = @ELFDIR@
 #---------------------------------------------------------------------------
@@ -83,65 +84,74 @@ RPATH = @RPATH@
 
 LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) $(DL_LIB) @M_LIB@
 INCS = $(SLANG_SRCINC)
+COMPILE_CMD = $(CC_SHARED) $(INCS) $(LIBS)
 #---------------------------------------------------------------------------
-all: $(OBJDIR) $(addprefix $(OBJDIR)/, $(MODULES))
-
-config.h: ../src/config.h
-	cp $< $@
+all: $(OBJDIR)/Makefile
+	cd $(OBJDIR) && $(MAKE) $(MODULES)
+$(CONFIG_H): $(CONFIG_DIR)/src/config.h
+	cp $(CONFIG_DIR)/src/config.h $(CONFIG_H)
 $(OBJDIR):
 	-$(MKINSDIR) $(OBJDIR)
+$(OBJDIR)/Makefile: $(OBJDIR)
+	cp Makefile $(OBJDIR)
+
 #
-$(OBJDIR)/slsmg-module.so: slsmg-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/rand-module.so: rand-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/newt-module.so: newt-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ -lnewt $(LIBS)
-$(OBJDIR)/termios-module.so: termios-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/select-module.so: select-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/fcntl-module.so: fcntl-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/varray-module.so: varray-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/pcre-module.so: pcre-module.c config.h
-	$(CC_SHARED) $(INCS) $(PCRE_INC) $(SRCDIR)/$< -o $@ $(PCRE_LIB) $(LIBS)
-$(OBJDIR)/onig-module.so: onig-module.c config.h
-	$(CC_SHARED) $(INCS) $(ONIG_INC) $(SRCDIR)/$< -o $@ $(ONIG_LIB) $(LIBS)
-$(OBJDIR)/png-module.so: png-module.c config.h
-	$(CC_SHARED) $(INCS) $(PNG_INC) $(SRCDIR)/$< -o $@ $(PNG_LIB) $(LIBS)
-$(OBJDIR)/socket-module.so: socket-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(SOCKET_LIBS) $(LIBS)
-$(OBJDIR)/iconv-module.so: iconv-module.c config.h
-	$(CC_SHARED) $(INCS) $(ICONV_INC) $(SRCDIR)/$< -o $@ $(ICONV_LIB) $(LIBS)
-$(OBJDIR)/zlib-module.so: zlib-module.c config.h
-	$(CC_SHARED) $(INCS) $(ZLIB_INC) $(SRCDIR)/$< -o $@ $(ZLIB_LIB) $(LIBS)
-$(OBJDIR)/fork-module.so: fork-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/sysconf-module.so: sysconf-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/csv-module.so: csv-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/base64-module.so: base64-module.c config.h
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
+# These (and only these) targets are supposed to be built only in $(OBJDIR):
 #
-$(OBJDIR)/chksum-module.so: $(addprefix $(OBJDIR)/, $(CHKSUM_OBJS))
-	$(CC_SHARED) $^ -o $@ $(LIBS)
-$(OBJDIR)/chksum-module.o: chksum-module.c chksum.h
-	$(CC_SHARED) -c $(INCS) $(SRCDIR)/$< -o $@
-$(OBJDIR)/chksum_md5.o: chksum_md5.c chksum.h
-	$(CC_SHARED) -c $(INCS) $(SRCDIR)/$< -o $@
-$(OBJDIR)/chksum_sha1.o: chksum_sha1.c chksum.h
-	$(CC_SHARED) -c $(INCS) $(SRCDIR)/$< -o $@
+slsmg-module.so: $(SRCDIR)/slsmg-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/slsmg-module.c -o slsmg-module.so
+rand-module.so: $(SRCDIR)/rand-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/rand-module.c -o rand-module.so
+newt-module.so: $(SRCDIR)/newt-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/newt-module.c -o newt-module.so -lnewt
+termios-module.so: $(SRCDIR)/termios-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/termios-module.c -o termios-module.so
+select-module.so: $(SRCDIR)/select-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/select-module.c -o select-module.so
+fcntl-module.so: $(SRCDIR)/fcntl-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/fcntl-module.c -o fcntl-module.so
+varray-module.so: $(SRCDIR)/varray-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/varray-module.c -o varray-module.so
+pcre-module.so: $(SRCDIR)/pcre-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(PCRE_INC) $(SRCDIR)/pcre-module.c -o pcre-module.so $(PCRE_LIB)
+onig-module.so: $(SRCDIR)/onig-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(ONIG_INC) $(SRCDIR)/onig-module.c -o onig-module.so $(ONIG_LIB)
+png-module.so: $(SRCDIR)/png-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(PNG_INC) $(SRCDIR)/png-module.c -o png-module.so $(PNG_LIB)
+socket-module.so: $(SRCDIR)/socket-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/socket-module.c -o socket-module.so $(SOCKET_LIBS)
+iconv-module.so: $(SRCDIR)/iconv-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(ICONV_INC) $(SRCDIR)/iconv-module.c -o iconv-module.so $(ICONV_LIB)
+zlib-module.so: $(SRCDIR)/zlib-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(ZLIB_INC) $(SRCDIR)/zlib-module.c -o zlib-module.so $(ZLIB_LIB)
+fork-module.so: $(SRCDIR)/fork-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/fork-module.c -o fork-module.so
+sysconf-module.so: $(SRCDIR)/sysconf-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/sysconf-module.c -o sysconf-module.so
+csv-module.so: $(SRCDIR)/csv-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/csv-module.c -o csv-module.so
+base64-module.so: $(SRCDIR)/base64-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/base64-module.c -o base64-module.so
 #
-$(OBJDIR)/histogram-module.so: histogram-module.c histogram-module.inc
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/stats-module.so: stats-module.c stats-module.inc
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
-$(OBJDIR)/json-module.so: json-module.c json-module.inc
-	$(CC_SHARED) $(INCS) $(SRCDIR)/$< -o $@ $(LIBS)
+chksum-module.so: $(CHKSUM_OBJS)
+	$(COMPILE_CMD) $(CHKSUM_OBJS) -o chksum-module.so
+chksum-module.o: $(SRCDIR)/chksum-module.c $(SRCDIR)/chksum.h
+	$(COMPILE_CMD) -c $(SRCDIR)/chksum-module.c
+chksum_md5.o: $(SRCDIR)/chksum_md5.c $(SRCDIR)/chksum.h
+	$(COMPILE_CMD) -c $(SRCDIR)/chksum_md5.c
+chksum_sha1.o: $(SRCDIR)/chksum_sha1.c $(SRCDIR)/chksum.h
+	$(COMPILE_CMD) -c $(SRCDIR)/chksum_sha1.c
 #
+histogram-module.so: $(SRCDIR)/histogram-module.c $(SRCDIR)/histogram-module.inc
+	$(COMPILE_CMD) $(SRCDIR)/histogram-module.c -o histogram-module.so
+stats-module.so: $(SRCDIR)/stats-module.c $(SRCDIR)/stats-module.inc
+	$(COMPILE_CMD) $(SRCDIR)/stats-module.c -o stats-module.so
+json-module.so: $(SRCDIR)/json-module.c $(SRCDIR)/json-module.inc $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/json-module.c -o json-module.so
+#
+# </targets to be built in $(OBJDIR)>
+#
+
 # Note that Windows/Cygwin modules need execute permissions
 install: all
 	-$(MKINSDIR) $(DEST_MODULEDIR)
@@ -177,6 +187,6 @@ clean:
 	-cd $(OBJDIR) && /bin/rm -f $(MODULES) $(CHKSUM_OBJS)
 	-/bin/rm -f *~ */*~
 distclean: clean
-	-/bin/rm -f Makefile config.h
+	-/bin/rm -f Makefile $(OBJDIR)/Makefile $(CONFIG_H)
 
 .PHONY: clean distclean all install runtests
