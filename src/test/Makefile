@@ -15,7 +15,7 @@ SLANGINC = ..
 SLANGLIB = ../$(ARCH)objs
 OTHERLIBS = -lm
 
-run_tests: $(TEST_PGM)
+runtests: $(TEST_PGM)
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -26,7 +26,7 @@ run_tests: $(TEST_PGM)
 	done
 	touch sltest.c
 
-run_tests_slc: $(TEST_PGM)
+runtests_slc: $(TEST_PGM)
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -37,7 +37,7 @@ run_tests_slc: $(TEST_PGM)
 	done
 	touch sltest.c
 
-memcheck_run_tests: $(TEST_PGM)
+memcheck_runtests: $(TEST_PGM)
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -50,7 +50,7 @@ memcheck_run_tests: $(TEST_PGM)
 	done
 	touch sltest.c
 
-memcheck_run_tests_slc: $(TEST_PGM)
+memcheck_runtests_slc: $(TEST_PGM)
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -61,8 +61,8 @@ memcheck_run_tests_slc: $(TEST_PGM)
 	done
 	touch sltest.c
 
-all: run_tests run_tests_slc
-memcheck: memcheck_run_tests memcheck_run_tests_slc
+all: runtests runtests_slc
+memcheck: memcheck_runtests memcheck_runtests_slc
 
 sltest: sltest.c $(SLANGLIB)/libslang.a
 	$(CC) $(CFLAGS) $(LDFLAGS) sltest.c -o sltest -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)

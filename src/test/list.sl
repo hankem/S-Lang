@@ -276,6 +276,33 @@ private define test_append_join ()
 }
 test_append_join ();
 
+private define test_api_list ()
+{
+   variable list = {"string", 10,
+      PI, 3i,
+      &failed, [1:10], Struct_Type[12], Assoc_Type[]};
+
+   variable clist = api_create_list (__push_list (list));
+   if (length (clist) != length (list))
+     failed ("api_create_list length test");
+
+   variable i;
+   _for i (0, length(list)-1, 1)
+     {
+	ifnot (__is_same (clist[i], list[i]))
+	  failed ("api_create_list __is_same test: %S != %S",
+		  clist[i], list[i]);
+     }
+   api_list_insert (clist, 0, "start");
+   api_list_append (clist, -1, "end");
+   if (clist[0] != "start")
+     failed ("api_list_insert");
+   if (clist[-1] != "end")
+     failed ("api_list_append");
+}
+
+loop (10) test_api_list ();
+
 print ("Ok\n");
 
 exit (0);

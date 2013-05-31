@@ -174,6 +174,57 @@ define test_arith ()
 }
 test_arith ();
 
+private define check_api_values (a, key_value_pairs)
+{
+   variable key, value, v, i;
+
+   _for i (0, length(key_value_pairs)-1, 2)
+     {
+	key = key_value_pairs[i];
+	value = key_value_pairs[i+1];
+
+	v = api_assoc_get (a, key);
+	ifnot (__is_same (value, v))
+	  {
+	     failed ("api_assoc_get (key=%S) produced %S, expected %S",
+		     key, v, value);
+	  }
+     }
+}
+
+private define test_api ()
+{
+   variable i, key, value, v;
+
+   variable key_value_pairs =
+     {
+	"foo", 1,
+	"bar", PI,
+	"complex", 2+3i,
+	"string", "foobar",
+	"array", [1,2,3,4],
+	"struct", struct {foo, bar},
+     };
+   variable a = api_create_asssoc (__push_list (key_value_pairs));
+
+   loop (10) check_api_values (a, key_value_pairs);
+
+   _for i (1, length(key_value_pairs)-1, 2)
+     {
+	key_value_pairs[i] = string (key_value_pairs[i]);
+     }
+
+   variable default_value = "*default*";
+   a = api_create_asssoc (__push_list (key_value_pairs), default_value);
+
+   list_join (key_value_pairs,
+	      {"bla", default_value, "blabla", default_value});
+
+   loop (10) check_api_values (a, key_value_pairs);
+}
+
+test_api ();
+
 print ("Ok\n");
 
 exit (0);
