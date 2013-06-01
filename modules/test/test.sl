@@ -1,5 +1,7 @@
+#<already-handled-by-runtest.sh>
 prepend_to_slang_load_path ("..");
 set_import_module_path ("../${ARCH}objs:"$ + get_import_module_path ());
+#</already-handled-by-runtest.sh>
 
 define testing_module (m)
 {

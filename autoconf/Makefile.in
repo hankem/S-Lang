@@ -56,7 +56,7 @@ elf: makefiles slang.pc
 	cd slsh; $(MAKE) all
 	cd modules; $(MAKE) all
 	@echo Use make install to install it.
-runtests:
+runtests: all
 	@failed=0; \
 	cd src; $(MAKE) runtests || failed=1; cd ..; \
 	cd modules; $(MAKE) runtests || failed=1; cd ..; \

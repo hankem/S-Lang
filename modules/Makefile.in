@@ -182,7 +182,7 @@ runtests: all
 	@test_scripts="$(TEST_SCRIPTS)"; \
 	test -z "@ONIG_MODULE@" || test_scripts="$$test_scripts test_onig.sl"; \
 	test -z "@ZLIB_MODULE@" || test_scripts="$$test_scripts test_zlib.sl"; \
-	cd test; ./runtests.sl $$test_scripts
+	cd test; ./runtests.sh $$test_scripts
 clean:
 	-cd $(OBJDIR) && /bin/rm -f $(MODULES) $(CHKSUM_OBJS)
 	-/bin/rm -f *~ */*~

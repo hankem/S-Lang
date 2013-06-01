@@ -8,8 +8,6 @@ TEST_SCRIPTS_NO_SLC = autoload nspace2 prep
 
 TEST_SCRIPTS = $(TEST_SCRIPTS_SLC) $(TEST_SCRIPTS_NO_SLC)
 
-API_TESTS = assoc list
-
 TEST_PGM = sltest
 MEMCHECK = valgrind --tool=memcheck --leak-check=yes --leak-resolution=med --num-callers=20
 RUN_TEST_PGM = ./$(TEST_PGM)
@@ -17,11 +15,17 @@ SLANGINC = ..
 SLANGLIB = ../$(ARCH)objs
 OTHERLIBS = -lm
 
-runtests: $(TEST_PGM) $(API_TESTS)
-	./runtests.sl \
-	    $(addsuffix .sl, $(TEST_SCRIPTS)) \
-	    $(addsuffix .slc, $(TEST_SCRIPTS_SLC)) \
-	    $(API_TESTS)
+runtests: $(TEST_PGM)
+	@tests=""; \
+	for test in $(TEST_SCRIPTS); \
+	do \
+	   tests="$$tests $$test.sl"; \
+	done; \
+	for test in $(TEST_SCRIPTS_SLC); \
+	do \
+	   tests="$$tests $$test.slc"; \
+	done; \
+	./runtests.sh $$tests
 	@touch $(TEST_PGM).c
 
 memcheck_run_tests: $(TEST_PGM)
@@ -50,7 +54,7 @@ memcheck_run_tests_slc: $(TEST_PGM)
 
 memcheck: memcheck_run_tests memcheck_run_tests_slc
 
-%: %.c $(SLANGLIB)/libslang.a
-	$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@ -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
+$(TEST_PGM): $(TEST_PGM).c $(SLANGLIB)/libslang.a
+	$(CC) $(CFLAGS) $(LDFLAGS) $(TEST_PGM).c -o $(TEST_PGM) -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
 clean:
-	-/bin/rm -f *~ $(TEST_PGM) $(API_TESTS) *.o *.log tmp-* log.pid* *.slc log.*
+	-/bin/rm -f *~ $(TEST_PGM) *.o *.log tmp-* log.pid* *.slc log.*
