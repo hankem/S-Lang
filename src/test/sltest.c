@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <stdlib.h>
 
-#include "inc.c"
+/* #include "inc.c" */
 
 #include "../sl-feat.h"
+#include "../slang.h"
 
 #if SLANG_HAS_FLOAT
 #if defined(__FreeBSD__) || defined(__386BSD__)
@@ -12,6 +14,13 @@
 # define HAVE_FPSETMASK 1
 #endif
 #endif
+
+static int Ignore_Exit = 0;
+static void c_exit (int *code)
+{
+   if (Ignore_Exit == 0)
+     exit (*code);
+}
 
 static char test_char_return (char *x)
 {
