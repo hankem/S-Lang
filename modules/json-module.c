@@ -1,8 +1,11 @@
 /* -*- mode: C; mode: fold -*- */
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <slang.h>
+
 
 SLANG_MODULE(json);
 
@@ -58,6 +61,7 @@ static char* json_module_version_string = "pre-0.2.0";
 /*}}}*/
 
 static int Json_Parse_Error = -1;
+static int Json_Invalid_Json_Error = -1;
 
 #define DESCRIBE_CHAR_FMT "'%c' = 0x%02X"
 #define DESCRIBE_CHAR(ch) ch, (unsigned int)(unsigned char)ch
@@ -302,9 +306,13 @@ static int parse_and_push_number (Parse_Type *p) /*{{{*/
 
    ch = *s;
    *s = 0;
-   result = is_int
-	  ? SLang_push_long (atol (p->ptr))
-	  : SLang_push_double (atof (p->ptr));
+   result = is_int ?
+#ifdef HAVE_LONG_LONG
+       SLang_push_long_long (atoll (p->ptr))
+#else
+       SLang_push_long (atol (p->ptr))
+#endif
+       : SLang_push_double (atof (p->ptr));
    *s = ch;
    p->ptr = s;
    return result;
@@ -513,9 +521,52 @@ static void json_parse (void) /*{{{*/
 }
 /*}}}*/
 
+#define ALLOC_GENERATED_JSON_STRING 1
+#include "json-module.inc"
+
+#undef ALLOC_GENERATED_JSON_STRING
+#include "json-module.inc"
+
+static void json_generate_string (void) /*{{{*/
+{
+   SLang_BString_Type *bstring = NULL;
+   char *string, *generated_json_string;
+   SLstrlen_Type len;
+
+   if (SLang_peek_at_stack () == SLANG_BSTRING_TYPE)
+     {
+	if (-1 == SLang_pop_bstring (&bstring))
+	  return;
+
+	string = (char *)SLbstring_get_pointer (bstring, &len);
+     }
+   else
+     {
+	if (-1 == SLpop_string (&string))
+	  {
+	     SLang_verror (SL_InvalidParm_Error, "usage: json_generate_string (String_Type json_string)");
+	     return;
+	  }
+	len = strlen (string);
+     }
+
+   if ((generated_json_string = alloc_generated_json_string (string, string + len)) != NULL)
+     {
+	fill_generated_json_string (string, string + len, generated_json_string);
+	(void) SLang_push_malloced_string (generated_json_string);
+     }
+
+   if (bstring != NULL)
+     SLbstring_free (bstring);
+   else
+     SLfree (string);
+}
+/*}}}*/
+
 static SLang_Intrin_Fun_Type Module_Intrinsics [] = /*{{{*/
 {
    MAKE_INTRINSIC_0("json_parse", json_parse, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_json_generate_string", json_generate_string, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 /*}}}*/
@@ -542,6 +593,10 @@ int init_json_module_ns (char *ns_name) /*{{{*/
 
    if ((Json_Parse_Error == -1)
        && (-1 == (Json_Parse_Error = SLerr_new_exception (SL_RunTime_Error, "Json_Parse_Error", "JSON Parse Error"))))
+     return -1;
+
+   if ((Json_Invalid_Json_Error == -1)
+       && (-1 == (Json_Invalid_Json_Error = SLerr_new_exception (SL_RunTime_Error, "Json_Invalid_Json_Error", "Invalid JSON Error"))))
      return -1;
 
    if ((-1 == SLns_add_intrin_fun_table (ns, Module_Intrinsics, NULL))

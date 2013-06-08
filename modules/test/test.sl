@@ -1,5 +1,7 @@
+#<already-handled-by-runtest.sh>
 prepend_to_slang_load_path ("..");
 set_import_module_path ("../${ARCH}objs:"$ + get_import_module_path ());
+#</already-handled-by-runtest.sh>
 
 define testing_module (m)
 {
@@ -71,18 +73,24 @@ private define descr (error)
      return __get_exception_info().descr;
 }
 
-define expect_error(function, expected_error, expected_message);
-define expect_error(function, expected_error, expected_message)
+define expect_error();
+define expect_error(%expected_error, expected_message, function, [args...]
+		                                                          )
 {
+   variable args = __pop_list (_NARGS-3);
+   variable function = ();
+   variable expected_message = ();
+   variable expected_error = ();
+
    if (typeof (function) == Array_Type)
-     return array_map (&expect_error, function, expected_error, expected_message);
+     return array_map (&expect_error, expected_error, expected_message, function, __push_list (args));
 
    variable expected_error_descr = sprintf ("`%s'", descr (expected_error));
 
    variable e;
    try (e)
      {
-	@function();
+	@function(__push_list (args));
 	failed ("expected %S to throw %s, but did not occur", function, expected_error_descr);
      }
    catch expected_error:

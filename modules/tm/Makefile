@@ -38,4 +38,4 @@ install-help: $(HLP_FILES)
 	@echo
 install-html: html
 	-mv *.html ../../doc/html/
-.PHONY: iclean distclean install install-help install-html
+.PHONY: clean distclean install install-help install-html

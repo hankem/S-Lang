@@ -1,4 +1,4 @@
-# -*-sh-*-
+# -*- make -*-
 TEST_SCRIPTS_SLC = argv syntax scircuit eqs sscanf loops arith array strops \
   bstring pack stdio assoc selfload struct nspace path ifeval anytype arrmult \
   time utf8 except bugs list regexp method deref naninf overflow sort \
@@ -16,28 +16,19 @@ SLANGLIB = ../$(ARCH)objs
 OTHERLIBS = -lm
 
 runtests: $(TEST_PGM)
-	@echo ""
-	@echo "Running tests:"
-	@echo ""
-	-@for X in $(TEST_SCRIPTS); \
+	@tests=""; \
+	for test in $(TEST_SCRIPTS); \
 	do \
-	    $(RUN_TEST_PGM) $$X.sl; \
-	    $(RUN_TEST_PGM) -utf8 $$X.sl; \
-	done
-	touch sltest.c
-
-runtests_slc: $(TEST_PGM)
-	@echo ""
-	@echo "Running tests:"
-	@echo ""
-	-@for X in $(TEST_SCRIPTS_SLC); \
+	   tests="$$tests $$test.sl"; \
+	done; \
+	for test in $(TEST_SCRIPTS_SLC); \
 	do \
-	    $(RUN_TEST_PGM) $$X.slc; \
-	    $(RUN_TEST_PGM) -utf8 $$X.slc; \
-	done
-	touch sltest.c
+	   tests="$$tests $$test.slc"; \
+	done; \
+	./runtests.sh $$tests
+	@touch $(TEST_PGM).c
 
-memcheck_runtests: $(TEST_PGM)
+memcheck_run_tests: $(TEST_PGM)
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -48,9 +39,9 @@ memcheck_runtests: $(TEST_PGM)
 	   $(MEMCHECK) --log-file=log.$${X}_u $(RUN_TEST_PGM) -utf8 $$X.sl; \
 	   grep ERROR log.$${X}_u; grep 'lost: [^0]' log.$${X}_u; \
 	done
-	touch sltest.c
+	touch $(TEST_PGM).c
 
-memcheck_runtests_slc: $(TEST_PGM)
+memcheck_run_tests_slc: $(TEST_PGM)
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -59,12 +50,11 @@ memcheck_runtests_slc: $(TEST_PGM)
 	   $(MEMCHECK) --log-file=log.$${X}_c $(RUN_TEST_PGM) $$X.slc; \
 	   $(MEMCHECK) --log-file=log.$${X}_uc $(RUN_TEST_PGM) -utf8 $$X.slc; \
 	done
-	touch sltest.c
+	touch $(TEST_PGM).c
 
-all: runtests runtests_slc
-memcheck: memcheck_runtests memcheck_runtests_slc
+memcheck: memcheck_run_tests memcheck_run_tests_slc
 
-sltest: sltest.c $(SLANGLIB)/libslang.a
-	$(CC) $(CFLAGS) $(LDFLAGS) sltest.c -o sltest -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
+$(TEST_PGM): $(TEST_PGM).c $(SLANGLIB)/libslang.a
+	$(CC) $(CFLAGS) $(LDFLAGS) $(TEST_PGM).c -o $(TEST_PGM) -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
 clean:
-	-/bin/rm -f *~ sltest *.o *.log tmp-* log.pid* *.slc log.*
+	-/bin/rm -f *~ $(TEST_PGM) *.o *.log tmp-* log.pid* *.slc log.*
