@@ -55,7 +55,7 @@ memcheck_runtests_slc: $(TEST_PGM)
 all: runtests runtests_slc
 memcheck: memcheck_runtests memcheck_runtests_slc
 
-$(TEST_PGM): $(TEST_PGM).c $(SLANGLIB)/libslang.a
+$(TEST_PGM): $(TEST_PGM).c assoc.c list.c $(SLANGLIB)/libslang.a
 	$(CC) $(CFLAGS) $(LDFLAGS) $(TEST_PGM).c -o $(TEST_PGM) -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
 clean:
 	-/bin/rm -f *~ $(TEST_PGM) *.o *.log tmp-* log.pid* *.slc log.*
