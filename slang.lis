@@ -176,7 +176,7 @@
 @modules/zlib-module.c
 @modules/zlib.sl
 
-@modules/test/runtests.sh
+@modules/test/runtests.sh 0755
 @modules/test/test.sl
 @modules/test/test_base64.sl
 @modules/test/test_chksum.sl
@@ -474,7 +474,7 @@
 @src/slwcwidth.h
 @src/slxstrng.c
 
-@src/test/runtests.sh
+@src/test/runtests.sh 0755
 @src/test/Makefile
 @src/test/README
 @src/test/anytype.sl
