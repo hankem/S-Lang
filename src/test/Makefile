@@ -28,7 +28,7 @@ runtests: $(TEST_PGM)
 	./runtests.sh $$tests
 	@touch $(TEST_PGM).c
 
-memcheck_run_tests: $(TEST_PGM)
+memcheck_runtests: $(TEST_PGM)
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -41,7 +41,7 @@ memcheck_run_tests: $(TEST_PGM)
 	done
 	touch $(TEST_PGM).c
 
-memcheck_run_tests_slc: $(TEST_PGM)
+memcheck_runtests_slc: $(TEST_PGM)
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -52,7 +52,8 @@ memcheck_run_tests_slc: $(TEST_PGM)
 	done
 	touch $(TEST_PGM).c
 
-memcheck: memcheck_run_tests memcheck_run_tests_slc
+all: runtests runtests_slc
+memcheck: memcheck_runtests memcheck_runtests_slc
 
 $(TEST_PGM): $(TEST_PGM).c $(SLANGLIB)/libslang.a
 	$(CC) $(CFLAGS) $(LDFLAGS) $(TEST_PGM).c -o $(TEST_PGM) -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)

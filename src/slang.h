@@ -687,18 +687,22 @@ SL_EXTERN int SLang_push_struct (SLang_Struct_Type *);
 SL_EXTERN int SLang_pop_struct (SLang_Struct_Type **);
 
 typedef struct _pSLang_Assoc_Array_Type SLang_Assoc_Array_Type;
-SL_EXTERN SLang_Assoc_Array_Type *SLang_create_assoc (SLtype, VOID_STAR);
-SL_EXTERN int SLang_assoc_put (SLang_Assoc_Array_Type *, SLstr_Type *, SLtype, VOID_STAR);
-SL_EXTERN int SLang_assoc_get (SLang_Assoc_Array_Type *, SLstr_Type *, SLtype *, VOID_STAR *);
-SL_EXTERN int SLang_push_assoc (SLang_Assoc_Array_Type *, int);
-SL_EXTERN int SLang_pop_assoc (SLang_Assoc_Array_Type **);
+
+SL_EXTERN SLang_Assoc_Array_Type *SLang_create_assoc (SLtype type, int has_default);
+/* If has_default is non-zero, take the default value from the stack */
 SL_EXTERN void SLang_free_assoc (SLang_Assoc_Array_Type *);
+SL_EXTERN int SLang_push_assoc (SLang_Assoc_Array_Type *, int free_flag);
+SL_EXTERN int SLang_pop_assoc (SLang_Assoc_Array_Type **);
+SL_EXTERN int SLang_assoc_get (SLang_Assoc_Array_Type *, SLstr_Type *, SLtype *);
+/* SLang_assoc_get leaves the object on the stack */
+SL_EXTERN int SLang_assoc_put (SLang_Assoc_Array_Type *, SLstr_Type *);
+/* SLang_assoc_put takes the object from the stack */
 
 typedef struct _pSLang_List_Type SLang_List_Type;
-SL_EXTERN SLang_List_Type *SLang_create_list ();
-SL_EXTERN int SLang_list_append (SLang_List_Type *, SLtype, VOID_STAR, int);
-SL_EXTERN int SLang_list_insert (SLang_List_Type *, SLtype, VOID_STAR, int);
-SL_EXTERN int SLang_push_list (SLang_List_Type *, int);
+SL_EXTERN SLang_List_Type *SLang_create_list (void);
+SL_EXTERN int SLang_list_append (SLang_List_Type *, int);
+SL_EXTERN int SLang_list_insert (SLang_List_Type *, int);
+SL_EXTERN int SLang_push_list (SLang_List_Type *, int free_list);
 SL_EXTERN int SLang_pop_list (SLang_List_Type **);
 SL_EXTERN void SLang_free_list (SLang_List_Type *);
 
@@ -1215,8 +1219,6 @@ SL_EXTERN int SLang_pop_value (SLtype type, VOID_STAR);
 SL_EXTERN void SLang_free_value (SLtype type, VOID_STAR);
 
 typedef struct _pSLang_Object_Type SLang_Any_Type;
-
-SL_EXTERN VOID_STAR SLang_alloc_anytype ();
 SL_EXTERN int SLang_pop_anytype (SLang_Any_Type **);
 SL_EXTERN int SLang_push_anytype (SLang_Any_Type *);
 SL_EXTERN void SLang_free_anytype (SLang_Any_Type *);
@@ -1329,11 +1331,11 @@ SL_EXTERN unsigned char *SLbstring_get_pointer (SLang_BString_Type *, SLstrlen_T
 SL_EXTERN SLang_BString_Type *SLbstring_dup (SLang_BString_Type *);
 SL_EXTERN SLang_BString_Type *SLbstring_create (unsigned char *, SLstrlen_Type);
 
-/* The create_malloced function used the first argument which is assumed
+/* The create_malloced function uses the first argument which is assumed
  * to be a pointer to a len + 1 malloced string.  The extra byte is for
  * \0 termination.
  */
-SL_EXTERN SLang_BString_Type *SLbstring_create_malloced (unsigned char *, SLstrlen_Type, int);
+SL_EXTERN SLang_BString_Type *SLbstring_create_malloced (unsigned char *s, SLstrlen_Type len, int free_on_error);
 
 /* Create a bstring from an slstring */
 SL_EXTERN SLang_BString_Type *SLbstring_create_slstring (SLFUTURE_CONST char *);

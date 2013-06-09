@@ -59,6 +59,7 @@ struct _pSLang_List_Type
 
    Chunk_Type *recent;		       /* most recent chunk accessed */
    SLindex_Type recent_num;	       /* num elements before the recent chunk */
+   int ref_count;
 };
 
 static void delete_chunk (Chunk_Type *c)
@@ -105,19 +106,19 @@ static void delete_chunk_chain (Chunk_Type *c)
      }
 }
 
-static void delete_list (SLang_List_Type *list)
+static void free_list (SLang_List_Type *list)
 {
    if (list == NULL)
      return;
 
+   if (list->ref_count > 1)
+     {
+	list->ref_count--;
+	return;
+     }
+
    delete_chunk_chain (list->first);
    SLfree ((char *) list);
-}
-
-static void list_destroy (SLtype type, VOID_STAR ptr)
-{
-   (void) type;
-   delete_list ((SLang_List_Type *) ptr);
 }
 
 static int make_chunk_chain (int length, Chunk_Type **firstp, Chunk_Type **lastp)
@@ -149,7 +150,13 @@ static int make_chunk_chain (int length, Chunk_Type **firstp, Chunk_Type **lastp
 
 static SLang_List_Type *allocate_list (void)
 {
-   return (SLang_List_Type *)SLcalloc (1, sizeof (SLang_List_Type));
+   SLang_List_Type *list;
+
+   list = (SLang_List_Type *)SLcalloc (1, sizeof (SLang_List_Type));
+   if (list != NULL)
+     list->ref_count = 1;
+
+   return list;
 }
 
 static SLang_Object_Type *find_nth_element (SLang_List_Type *list, SLindex_Type nth, Chunk_Type **cp)
@@ -244,14 +251,13 @@ static SLang_Object_Type *find_nth_element (SLang_List_Type *list, SLindex_Type 
    return c->elements + (nth - next_n);
 }
 
-static int pop_list (SLang_MMT_Type **mmtp, SLang_List_Type **list)
+static int pop_list (SLang_List_Type **list)
 {
-   SLang_MMT_Type *mmt;
-
-   if (NULL == (mmt = SLang_pop_mmt (SLANG_LIST_TYPE)))
-     return -1;
-   *list = (SLang_List_Type *)SLang_object_from_mmt (mmt);
-   *mmtp = mmt;
+   if (-1 == SLclass_pop_ptr_obj (SLANG_LIST_TYPE, (VOID_STAR *) list))
+     {
+	*list = NULL;
+	return -1;
+     }
    return 0;
 }
 
@@ -279,13 +285,13 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a
 
    if (-1 == make_chunk_chain (length, &new_list->first, &new_list->last))
      {
-	delete_list (new_list);
+	free_list (new_list);
 	return NULL;
      }
    obj = find_nth_element (list, indx_a, &c);
    if (obj == NULL)
      {
-	delete_list (new_list);
+	free_list (new_list);
 	return NULL;
      }
    obj_max = c->elements + c->num_elements;
@@ -313,7 +319,7 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a
 	if ((-1 == _pSLpush_slang_obj (obj))
 	    || (-1 == SLang_pop (new_obj)))
 	  {
-	     delete_list (new_list);
+	     free_list (new_list);
 	     return NULL;
 	  }
 
@@ -490,7 +496,7 @@ the_return:
  * Upon failure, calling routine should free obj.
  */
 
-static int pop_insert_append_args (SLang_MMT_Type **mmtp, SLang_List_Type **listp,
+static int pop_insert_append_args (SLang_List_Type **listp,
 				   SLang_Object_Type *obj, int *indx)
 {
    if (SLang_Num_Function_Args == 3)
@@ -500,7 +506,7 @@ static int pop_insert_append_args (SLang_MMT_Type **mmtp, SLang_List_Type **list
      }
    if (-1 == SLang_pop (obj))
      return -1;
-   if (-1 == pop_list (mmtp, listp))
+   if (-1 == pop_list (listp))
      {
 	SLang_free_object (obj);
 	return -1;
@@ -512,11 +518,10 @@ static void list_insert_elem (void)
 {
    int indx;
    SLang_Object_Type obj;
-   SLang_MMT_Type *mmt;
    SLang_List_Type *list;
 
    indx = 0;
-   if (-1 == pop_insert_append_args (&mmt, &list, &obj, &indx))
+   if (-1 == pop_insert_append_args (&list, &obj, &indx))
      return;
 
    if (indx < 0)
@@ -525,18 +530,17 @@ static void list_insert_elem (void)
    if (-1 == insert_element (list, &obj, indx))
      SLang_free_object (&obj);
 
-   SLang_free_mmt (mmt);
+   free_list (list);
 }
 
 static void list_append_elem (void)
 {
    int indx;
    SLang_Object_Type obj;
-   SLang_MMT_Type *mmt;
    SLang_List_Type *list;
 
    indx = -1;
-   if (-1 == pop_insert_append_args (&mmt, &list, &obj, &indx))
+   if (-1 == pop_insert_append_args (&list, &obj, &indx))
      return;
 
    if (indx < 0)
@@ -545,30 +549,22 @@ static void list_append_elem (void)
    if (-1 == insert_element (list, &obj, indx+1))
      SLang_free_object (&obj);
 
-   SLang_free_mmt (mmt);
+   free_list (list);
 }
 
-int SLang_push_list (SLang_List_Type *list, int free_flag)
+static int push_list (SLang_List_Type *list, int free_flag)
 {
-   SLang_MMT_Type *mmt;
-   if (NULL == (mmt = SLang_create_mmt (SLANG_LIST_TYPE, (VOID_STAR) list)))
+   /* SLclass_push_ptr_obj does not do memory management */
+   if (-1 == SLclass_push_ptr_obj (SLANG_LIST_TYPE, (VOID_STAR)list))
      {
-	delete_list (list);
+	if (free_flag) free_list (list);
 	return -1;
      }
-   if (! free_flag)
-     mmt->count = 1;  // SLang_create_mmt created mmt with reference count == 0
-   if (-1 == SLang_push_mmt (mmt))
-     {
-	SLang_free_mmt (mmt);
-	return -1;
-     }
+
+   if (free_flag == 0)
+     list->ref_count++;
+
    return 0;
-}
-
-static int push_list (SLang_List_Type *list)
-{
-   return SLang_push_list (list, 1);
 }
 
 static void list_new (void)
@@ -578,7 +574,7 @@ static void list_new (void)
    if (NULL == (list = allocate_list ()))
      return;
 
-   (void) push_list (list);
+   (void) push_list (list, 1);
 }
 
 static void list_reverse (SLang_List_Type *list)
@@ -632,7 +628,6 @@ static int list_pop_nth (SLang_List_Type *list, SLindex_Type indx)
 static void list_pop (void)
 {
    int indx = 0;
-   SLang_MMT_Type *mmt;
    SLang_List_Type *list;
 
    if (SLang_Num_Function_Args == 2)
@@ -640,11 +635,11 @@ static void list_pop (void)
 	if (-1 == SLang_pop_integer (&indx))
 	  return;
      }
-   if (-1 == pop_list (&mmt, &list))
+   if (-1 == pop_list (&list))
      return;
 
    (void) list_pop_nth (list, indx);
-   SLang_free_mmt (mmt);
+   free_list (list);
 }
 
 static int pop_as_list_internal (unsigned int count)
@@ -669,10 +664,10 @@ static int pop_as_list_internal (unsigned int count)
 
 	count--;
      }
-   return push_list (list);
+   return push_list (list, 1);
 
-   return_error:
-   delete_list (list);
+return_error:
+   free_list (list);
    return -1;
 }
 
@@ -727,14 +722,13 @@ static int l2a_push_callback (VOID_STAR vlist, SLuindex_Type i)
 static void list_to_array (void)
 {
    SLang_List_Type *list;
-   SLang_MMT_Type *mmt;
    SLtype type = 0;
 
    if ((SLang_Num_Function_Args == 2)
        && (-1 == SLang_pop_datatype (&type)))
      return;
 
-   if (-1 == pop_list (&mmt, &list))
+   if (-1 == pop_list (&list))
      return;
 
    (void) _pSLarray_convert_to_array ((VOID_STAR) list,
@@ -742,7 +736,7 @@ static void list_to_array (void)
 				      l2a_push_callback,
 				      list->length, type);
 
-   SLang_free_mmt (mmt);
+   free_list (list);
 }
 
 /* joins  l2 onto l1 */
@@ -793,11 +787,11 @@ static void list_concat (SLang_List_Type *l1, SLang_List_Type *l2)
 
    if (-1 == list_join_internal (list, l2))
      {
-	delete_list (list);
+	free_list (list);
 	return;
      }
 
-  (void) push_list (list);	       /* will delete upon failure */
+  (void) push_list (list, 1);	       /* will delete upon failure */
 }
 
 #define L SLANG_LIST_TYPE
@@ -827,22 +821,22 @@ static int list_length (SLtype type, VOID_STAR v, SLuindex_Type *len)
    SLang_List_Type *list;
 
    (void) type;
-   list = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)v);
+   list = *(SLang_List_Type **) v;
    *len = list->length;
    return 0;
 }
 
-static int list_dereference (SLtype type, VOID_STAR addr)
+static int cl_list_dereference (SLtype type, VOID_STAR addr)
 {
    SLang_List_Type *list;
    (void) type;
 
-   list = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)addr);
+   list = *(SLang_List_Type **) addr;
 
    if (NULL == (list = make_sublist (list, 0, list->length)))
      return -1;
 
-   return push_list (list);	       /* will delete upon failure */
+   return push_list (list, 1);	       /* will delete upon failure */
 }
 
 static char *string_method (SLtype type, VOID_STAR p)
@@ -851,7 +845,7 @@ static char *string_method (SLtype type, VOID_STAR p)
    char buf[256];
 
    (void) type;
-   list = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)p);
+   list = *(SLang_List_Type **) p;
 
    sprintf (buf, "List_Type with %ld elements", (long)list->length);
    return SLmake_string (buf);
@@ -866,8 +860,8 @@ static int eqs_method (SLtype a_type, VOID_STAR pa, SLtype b_type, VOID_STAR pb)
    if ((a_type != SLANG_LIST_TYPE) || (b_type != SLANG_LIST_TYPE))
      return 0;
 
-   a = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)pa);
-   b = (SLang_List_Type *) SLang_object_from_mmt (*(SLang_MMT_Type **)pb);
+   a = *(SLang_List_Type **) pa;
+   b = *(SLang_List_Type **) pb;
 
    if (a == b)
      return 1;
@@ -917,7 +911,6 @@ static int eqs_method (SLtype a_type, VOID_STAR pa, SLtype b_type, VOID_STAR pb)
 struct _pSLang_Foreach_Context_Type
 {
    SLang_List_Type *list;
-   SLang_MMT_Type *mmt;
    int next_index;
 };
 
@@ -939,7 +932,7 @@ cl_foreach_open (SLtype type, unsigned int num)
    if (NULL == (c = (SLang_Foreach_Context_Type *) SLcalloc (1, sizeof (SLang_Foreach_Context_Type))))
      return NULL;
 
-   if (-1 == pop_list (&c->mmt, &c->list))
+   if (-1 == pop_list (&c->list))
      {
 	SLfree ((char *) c);
 	return NULL;
@@ -952,7 +945,7 @@ static void cl_foreach_close (SLtype type, SLang_Foreach_Context_Type *c)
 {
    (void) type;
    if (c == NULL) return;
-   SLang_free_mmt (c->mmt);
+   free_list (c->list);
    SLfree ((char *) c);
 }
 
@@ -976,20 +969,21 @@ static int cl_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 }
 
 static int pop_list_and_index (unsigned int num_indices,
-			       SLang_MMT_Type **mmtp, SLang_List_Type **listp,
+			       SLang_List_Type **listp,
 			       SLang_Array_Type **ind_atp,
 			       SLindex_Type *indx)
 {
-   SLang_MMT_Type *mmt;
    SLang_List_Type *list;
 
-   if (-1 == pop_list (&mmt, &list))
+   *listp = NULL;
+
+   if (-1 == pop_list (&list))
      return -1;
 
    if (num_indices != 1)
      {
 	_pSLang_verror (SL_InvalidParm_Error, "List_Type objects are limited to a single index");
-	SLang_free_mmt (mmt);
+	free_list (list);
 	return -1;
      }
 
@@ -998,7 +992,7 @@ static int pop_list_and_index (unsigned int num_indices,
      {
 	if (-1 == SLang_pop_array_index (indx))
 	  {
-	     SLang_free_mmt (mmt);
+	     free_list (list);
 	     return -1;
 	  }
      }
@@ -1006,20 +1000,18 @@ static int pop_list_and_index (unsigned int num_indices,
      {
 	if (-1 == _pSLarray_pop_index (list->length, ind_atp, indx))
 	  {
-	     SLang_free_mmt (mmt);
+	     free_list (list);
 	     return -1;
 	  }
      }
 
    *listp = list;
-   *mmtp = mmt;
    return 0;
 }
 
 /* FIXME: Extend this to allow an index array */
 static int _pSLlist_aget (SLtype type, unsigned int num_indices)
 {
-   SLang_MMT_Type *mmt;
    SLang_List_Type *list, *new_list;
    SLang_Object_Type *obj;
    SLang_Array_Type *ind_at;
@@ -1029,7 +1021,7 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
 
    (void) type;
 
-   if (-1 == pop_list_and_index (num_indices, &mmt, &list, &ind_at, &indx))
+   if (-1 == pop_list_and_index (num_indices, &list, &ind_at, &indx))
      return -1;
 
    ret = -1;
@@ -1039,7 +1031,7 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
 	if (obj != NULL)
 	  ret = _pSLpush_slang_obj (obj);
 
-	SLang_free_mmt (mmt);
+	free_list (list);
 	return ret;
      }
 
@@ -1067,14 +1059,14 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
 	  }
      }
 
-   ret = push_list (new_list);	       /* frees upon error */
+   ret = push_list (new_list, 1);	       /* frees upon error */
    new_list = NULL;
 
 free_and_return:
 
    if (new_list != NULL)
-     delete_list (new_list);
-   SLang_free_mmt (mmt);
+     free_list (new_list);
+   free_list (list);
    SLang_free_array (ind_at);
    return ret;
 }
@@ -1093,7 +1085,6 @@ static int aput_object (SLang_List_Type *list, SLindex_Type indx, SLang_Object_T
 
 static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 {
-   SLang_MMT_Type *mmt;
    SLang_List_Type *list;
    SLang_Object_Type obj;
    SLang_Array_Type *ind_at;
@@ -1103,24 +1094,24 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 
    (void) type;
 
-   if (-1 == pop_list_and_index (num_indices, &mmt, &list, &ind_at, &indx))
+   if (-1 == pop_list_and_index (num_indices, &list, &ind_at, &indx))
      return -1;
 
    if (ind_at == NULL)
      {
 	if (-1 == SLang_pop (&obj))
 	  {
-	     SLang_free_mmt (mmt);
+	     free_list (list);
 	     return -1;
 	  }
 
 	if (-1 == aput_object (list, indx, &obj))
 	  {
 	     SLang_free_object (&obj);
-	     SLang_free_mmt (mmt);
+	     free_list (list);
 	     return -1;
 	  }
-	SLang_free_mmt (mmt);
+	free_list (list);
 	return 0;
      }
 
@@ -1129,7 +1120,7 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 
    if (-1 == SLang_pop (&obj))
      {
-	SLang_free_mmt (mmt);
+	free_list (list);
 	SLang_free_array (ind_at);
 	return -1;
      }
@@ -1166,11 +1157,9 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
 
    if (obj.o_data_type == SLANG_LIST_TYPE)
      {
-	SLang_MMT_Type *mmt2;
 	SLang_List_Type *list2;
 
-	mmt2 = obj.v.ref;
-	if (NULL == (list2 = (SLang_List_Type *)SLang_object_from_mmt (mmt2)))
+	if (NULL == (list2 = (SLang_List_Type *)obj.v.ptr_val))
 	  goto free_and_return;
 
 	if (list2->length != (SLindex_Type)num)
@@ -1222,8 +1211,21 @@ free_and_return:
 
    SLang_free_object (&obj);
    SLang_free_array (ind_at);
-   SLang_free_mmt (mmt);
+   free_list (list);
    return ret;
+}
+
+
+static void cl_list_destroy (SLtype type, VOID_STAR ptr)
+{
+   (void) type;
+   free_list (*(SLang_List_Type **) ptr);
+}
+
+static int cl_list_push (SLtype type, VOID_STAR ptr)
+{
+   (void) type;
+   return push_list (*(SLang_List_Type **)ptr, 0);
 }
 
 int _pSLang_init_sllist (void)
@@ -1236,10 +1238,11 @@ int _pSLang_init_sllist (void)
    if (NULL == (cl = SLclass_allocate_class ("List_Type")))
      return -1;
 
-   (void) SLclass_set_destroy_function (cl, list_destroy);
+   (void) SLclass_set_destroy_function (cl, cl_list_destroy);
+   (void) SLclass_set_push_function (cl, cl_list_push);
    (void) SLclass_set_aput_function (cl, _pSLlist_aput);
    (void) SLclass_set_aget_function (cl, _pSLlist_aget);
-   (void) SLclass_set_deref_function (cl, list_dereference);
+   (void) SLclass_set_deref_function (cl, cl_list_dereference);
    (void) SLclass_set_string_function (cl, string_method);
    (void) SLclass_set_eqs_function (cl, eqs_method);
    (void) SLclass_set_is_container (cl, 1);
@@ -1250,7 +1253,7 @@ int _pSLang_init_sllist (void)
    cl->cl_foreach_close = cl_foreach_close;
    cl->cl_foreach = cl_foreach;
 
-   if (-1 == SLclass_register_class (cl, SLANG_LIST_TYPE, sizeof (SLang_List_Type), SLANG_CLASS_TYPE_MMT))
+   if (-1 == SLclass_register_class (cl, SLANG_LIST_TYPE, sizeof (SLang_List_Type), SLANG_CLASS_TYPE_PTR))
      return -1;
 
    if (-1 == SLadd_intrin_fun_table (Intrin_Table, NULL))
@@ -1264,41 +1267,56 @@ SLang_List_Type *SLang_create_list ()
    return allocate_list ();
 }
 
-int SLang_list_append (SLang_List_Type *list, SLtype type, VOID_STAR value, int indx)
+int SLang_list_append (SLang_List_Type *list, int indx)
 {
    SLang_Object_Type obj;
-   if ((-1 == SLang_push_value (type, value))
-       || (-1 == SLang_pop (&obj)))
+
+   if (-1 == SLang_pop (&obj))
      return -1;
 
    if (indx < 0)
      indx += list->length;
 
-   return insert_element (list, &obj, indx+1);
+   if (-1 == insert_element (list, &obj, indx+1))
+     {
+	SLang_free_object (&obj);
+	return -1;
+     }
+   return 0;
 }
 
-int SLang_list_insert (SLang_List_Type *list, SLtype type, VOID_STAR value, int indx)
+int SLang_list_insert (SLang_List_Type *list, int indx)
 {
    SLang_Object_Type obj;
-   if ((-1 == SLang_push_value (type, value))
-       || (-1 == SLang_pop (&obj)))
+
+   if (-1 == SLang_pop (&obj))
      return -1;
 
    if (indx < 0)
      indx += list->length;
 
-   return insert_element (list, &obj, indx);
+   if (-1 == insert_element (list, &obj, indx))
+     {
+	SLang_free_object (&obj);
+	return -1;
+     }
+   return 0;
 }
 
 int SLang_pop_list (SLang_List_Type **list)
 {
-   SLang_MMT_Type *mmt;
-   int ret = pop_list (&mmt, list);
-   SLang_free_mmt (mmt);
-   return ret;
+   return pop_list (list);
 }
 
-void SLang_free_list (SLang_List_Type* list)
+int SLang_push_list (SLang_List_Type *list, int free_flag)
 {
-   delete_list (list);
+   if (list == NULL)
+     return SLang_push_null ();
+
+   return push_list (list, free_flag);
+}
+
+void SLang_free_list (SLang_List_Type *list)
+{
+   free_list (list);
 }

@@ -143,6 +143,8 @@
 @modules/histogram.sl
 @modules/histogram-module.inc
 @modules/histogram-module.c
+@modules/json-module.c
+@modules/json.sl
 @modules/onig-module.c
 @modules/onig.sl
 @modules/pcre-module.c
@@ -173,6 +175,8 @@
 @modules/zlib-module.c
 @modules/zlib.sl
 
+@modules/test/runtests.sl
+@modules/test/test.sl
 @modules/test/test_base64.sl
 @modules/test/test_chksum.sl
 @modules/test/test_csv.sl
@@ -181,6 +185,7 @@
 @modules/test/test_rand.sl
 @modules/test/test_hist.sl
 @modules/test/test_stats.sl
+@modules/test/test_json.sl
 
 @modules/tm/pcrefuns.tm
 @modules/tm/pngfuns.tm
@@ -190,6 +195,7 @@
 @modules/tm/forkfuns.tm
 @modules/tm/histfuns.tm
 @modules/tm/statsfuns.tm
+@modules/tm/jsonfuns.tm
 @modules/tm/Makefile
 @modules/tm/modfuns.tm
 @modules/tm/csvfuns.tm
@@ -203,6 +209,7 @@
 @modules/help/forkfuns.hlp
 @modules/help/csvfuns.hlp
 @modules/help/slsmg.hlp
+@modules/help/jsonfuns.hlp
 
 @modules/examples/newt_ex.sl
 @modules/examples/slsmg_ex.sl

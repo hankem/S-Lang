@@ -728,5 +728,4 @@ SLANG2.3.0 {
 		SLang_push_list;
 		SLang_pop_list;
 		SLang_free_list;
-		SLang_alloc_anytype;
 } SLANG2.2.3;
