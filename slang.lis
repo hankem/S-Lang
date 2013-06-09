@@ -144,6 +144,7 @@
 @modules/histogram-module.inc
 @modules/histogram-module.c
 @modules/json-module.c
+@modules/json-module.inc
 @modules/json.sl
 @modules/onig-module.c
 @modules/onig.sl
@@ -175,7 +176,7 @@
 @modules/zlib-module.c
 @modules/zlib.sl
 
-@modules/test/runtests.sl
+@modules/test/runtests.sh
 @modules/test/test.sl
 @modules/test/test_base64.sl
 @modules/test/test_chksum.sl
@@ -472,6 +473,8 @@
 @src/slwcwidth.c
 @src/slwcwidth.h
 @src/slxstrng.c
+
+@src/test/runtests.sh
 @src/test/Makefile
 @src/test/README
 @src/test/anytype.sl

@@ -29,7 +29,7 @@ do
 
     if [ $pass -eq 0 ]
     then
-	n_failed=$(($n_failed+1))
+	n_failed=`expr ${n_failed} + 1`
 	tests_failed="$tests_failed $test"
     fi
 done

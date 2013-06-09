@@ -1,9 +1,11 @@
 /* -*- mode: C; mode: fold -*- */
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <slang.h>
-#include "config.h"
+
 
 SLANG_MODULE(json);
 
@@ -525,7 +527,7 @@ static void json_parse (void) /*{{{*/
 #undef ALLOC_GENERATED_JSON_STRING
 #include "json-module.inc"
 
-static void json_generate_string () /*{{{*/
+static void json_generate_string (void) /*{{{*/
 {
    SLang_BString_Type *bstring = NULL;
    char *string, *generated_json_string;
@@ -533,8 +535,10 @@ static void json_generate_string () /*{{{*/
 
    if (SLang_peek_at_stack () == SLANG_BSTRING_TYPE)
      {
-	SLang_pop_bstring (&bstring);
-	string = SLbstring_get_pointer (bstring, &len);
+	if (-1 == SLang_pop_bstring (&bstring))
+	  return;
+
+	string = (char *)SLbstring_get_pointer (bstring, &len);
      }
    else
      {
@@ -549,10 +553,10 @@ static void json_generate_string () /*{{{*/
    if ((generated_json_string = alloc_generated_json_string (string, string + len)) != NULL)
      {
 	fill_generated_json_string (string, string + len, generated_json_string);
-	SLang_push_malloced_string (generated_json_string);
+	(void) SLang_push_malloced_string (generated_json_string);
      }
 
-   if (bstring)
+   if (bstring != NULL)
      SLbstring_free (bstring);
    else
      SLfree (string);
@@ -590,6 +594,7 @@ int init_json_module_ns (char *ns_name) /*{{{*/
    if ((Json_Parse_Error == -1)
        && (-1 == (Json_Parse_Error = SLerr_new_exception (SL_RunTime_Error, "Json_Parse_Error", "JSON Parse Error"))))
      return -1;
+
    if ((Json_Invalid_Json_Error == -1)
        && (-1 == (Json_Invalid_Json_Error = SLerr_new_exception (SL_RunTime_Error, "Json_Invalid_Json_Error", "Invalid JSON Error"))))
      return -1;
