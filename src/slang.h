@@ -1219,7 +1219,6 @@ SL_EXTERN int SLang_pop_value (SLtype type, VOID_STAR);
 SL_EXTERN void SLang_free_value (SLtype type, VOID_STAR);
 
 typedef struct _pSLang_Object_Type SLang_Any_Type;
-SL_EXTERN VOID_STAR SLang_alloc_anytype (void);
 SL_EXTERN int SLang_pop_anytype (SLang_Any_Type **);
 SL_EXTERN int SLang_push_anytype (SLang_Any_Type *);
 SL_EXTERN void SLang_free_anytype (SLang_Any_Type *);

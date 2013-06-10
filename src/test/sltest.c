@@ -3,8 +3,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-/* #include "inc.c" */
-
 #include "../sl-feat.h"
 #include "../slang.h"
 
@@ -306,151 +304,8 @@ static void check_intrin_long_qualifier (char *name, long *def)
    SLang_push_long (q);
 }
 
-static void api_create_asssoc (void)
-{
-   int i, nkeys;
-   int type;
-   int has_def_value = 0;
-   SLang_Assoc_Array_Type *a;
-
-   nkeys = SLang_Num_Function_Args;
-   if (nkeys < 0)
-     {
-	SLang_verror (SL_Usage_Error, "Illegal usage of api_create_asssoc");
-	return;
-     }
-
-   type = SLANG_VOID_TYPE;
-
-   if (nkeys % 2)
-     {
-	nkeys -= 1;
-	if (-1 == (type = SLang_peek_at_stack ()))
-	  return;
-	has_def_value = 1;
-     }
-
-   if (NULL == (a = SLang_create_assoc (type, has_def_value)))
-     {
-	SLang_verror (SL_Any_Error, "Failed: (API) SLang_create_assoc");
-	return;
-     }
-
-   for (i = 0; i < nkeys; i += 2)
-     {
-	char *key;
-
-	if (-1 == SLreverse_stack (2))
-	  goto free_and_return;
-
-	if (-1 == SLang_pop_slstring (&key))
-	  goto free_and_return;
-
-	if (-1 == SLang_assoc_put (a, key))
-	  {
-	     SLang_free_slstring (key);
-	     goto free_and_return;
-	  }
-	SLang_free_slstring (key);
-     }
-
-   if (-1 == SLang_push_assoc (a, 0))
-     SLang_verror (SL_Any_Error, "Failed: SLang_push_assoc");
-
-   /* drop */
-free_and_return:
-   SLang_free_assoc (a);
-}
-
-static void api_assoc_get (SLang_Assoc_Array_Type *a, char *key)
-{
-   (void) SLang_assoc_get (a, key, NULL);
-}
-
-static void api_assoc_put (void)
-{
-   SLang_Assoc_Array_Type *a;
-   char *key;
-
-   if (-1 == SLreverse_stack (3))
-     return;
-
-   if (-1 == SLang_pop_assoc (&a))
-     return;
-
-   if (0 == SLang_pop_slstring (&key))
-     {
-	(void) SLang_assoc_put (a, key);
-	SLang_free_slstring (key);
-     }
-   SLang_free_assoc (a);
-}
-
-static void api_create_list (void)
-{
-   SLang_List_Type *list;
-   int i, nitems;
-
-   nitems = SLang_Num_Function_Args;
-   if (nitems < 0)
-     {
-	SLang_verror (SL_Usage_Error, "Illegal usage of api_create_list");
-	return;
-     }
-
-   if (NULL == (list = SLang_create_list ()))
-     {
-	SLang_verror (SL_Any_Error, "Failed: (API) SLang_create_list");
-	return;
-     }
-
-   if (-1 == SLreverse_stack (nitems))
-     goto free_and_return;
-
-   for (i = 0; i < nitems; i++)
-     {
-	if (-1 == SLang_list_append (list, -1))
-	  goto free_and_return;
-     }
-
-   if (-1 == SLang_push_list (list, 0))
-     SLang_verror (SL_Any_Error, "Failed: SLang_push_list");
-   /* drop */
-free_and_return:
-   SLang_free_list (list);
-}
-
-static void api_list_insert_append (int (*f)(SLang_List_Type *, int))
-{
-   SLang_List_Type *list;
-   int idx;
-
-   if (-1 == SLreverse_stack (3))
-     return;
-
-   if (-1 == SLang_pop_list (&list))
-     {
-	SLang_verror (0, "Failed: SLang_pop_list");
-	return;
-     }
-
-   if ((0 == SLang_pop_int (&idx))
-       && (-1 == (*f)(list, idx)))
-     SLang_verror (0, "Failed: SLang_list_insert/append");
-
-   /* drop */
-   SLang_free_list (list);
-}
-
-static void api_list_append (void)
-{
-   api_list_insert_append (SLang_list_append);
-}
-
-static void api_list_insert (void)
-{
-   api_list_insert_append (SLang_list_insert);
-}
+#include "assoc.c"
+#include "list.c"
 
 static void fake_import (char *);
 static SLang_Intrin_Fun_Type Intrinsics [] =
@@ -474,13 +329,8 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_0("set_c_struct", set_c_struct, VOID_TYPE),
    MAKE_INTRINSIC_1("get_c_struct_via_ref", get_c_struct_via_ref, VOID_TYPE, SLANG_REF_TYPE),
    MAKE_INTRINSIC_0("new_test_type", new_test_type, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("api_create_asssoc", api_create_asssoc, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_2("api_assoc_get", api_assoc_get, SLANG_VOID_TYPE, SLANG_ASSOC_TYPE, SLANG_STRING_TYPE),
-   MAKE_INTRINSIC_0("api_assoc_put", api_assoc_put, SLANG_VOID_TYPE),
-
-   MAKE_INTRINSIC_0("api_create_list", api_create_list, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("api_list_append", api_list_append, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("api_list_insert", api_list_insert, SLANG_VOID_TYPE),
+   ASSOC_API_TEST_INTRINSICS,
+   LIST_API_TEST_INTRINSICS,
 
    SLANG_END_INTRIN_FUN_TABLE
 };
@@ -577,4 +427,3 @@ int main (int argc, char **argv)
 
    return SLang_get_error ();
 }
-

@@ -300,10 +300,23 @@ private define test_api_list ()
    if (clist[-1] != "end")
      failed ("api_list_append");
 }
-
 loop (10) test_api_list ();
+
+test_api_push_and_pop_list ();  % entirely defined in list.c
+
+private define test_api_pop_and_push_list ()
+{
+   variable l1 = { 1, PI, 2+3i, "foobar", [1,2,3,4], struct {foo, bar}, Assoc_Type[Integer_Type, 42] };
+   l1;
+   variable l2 = api_pop_and_push_list ();
+   ifnot (__is_same (l1, l2))
+     {
+	failed ("api_push_and_pop_list");
+     }
+}
+test_api_pop_and_push_list ();
+
 
 print ("Ok\n");
 
 exit (0);
-

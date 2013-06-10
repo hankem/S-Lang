@@ -12,8 +12,8 @@ SLANG_MODULE(json);
 #define JSON_MODULE_VERSION_NUMBER 200
 static char* json_module_version_string = "pre-0.2.0";
 
-/*{{{ JSON grammar based upon json.org & ietf.org/rfc/rfc4627.txt */
-/*
+/*{{{ JSON grammar based upon json.org & ietf.org/rfc/rfc4627.txt
+ *
  * object:
  *   { }
  *   { members }
@@ -308,11 +308,11 @@ static int parse_and_push_number (Parse_Type *p) /*{{{*/
    *s = 0;
    result = is_int ?
 #ifdef HAVE_LONG_LONG
-       SLang_push_long_long (atoll (p->ptr))
+	    SLang_push_long_long (atoll (p->ptr))
 #else
-       SLang_push_long (atol (p->ptr))
+	    SLang_push_long (atol (p->ptr))
 #endif
-       : SLang_push_double (atof (p->ptr));
+	  : SLang_push_double (atof (p->ptr));
    *s = ch;
    p->ptr = s;
    return result;
@@ -513,7 +513,7 @@ static void json_parse (void) /*{{{*/
    if ((SLang_Num_Function_Args != 1)
        || (-1 == SLpop_string (&buffer)))
      {
-	SLang_verror (SL_Usage_Error, "Usage: json_parse (String_Type json)");
+	SLang_verror (SL_Usage_Error, "Usage: json_parse (String_Type json_text)");
 	return;
      }
    parse_start (buffer);
@@ -544,7 +544,7 @@ static void json_generate_string (void) /*{{{*/
      {
 	if (-1 == SLpop_string (&string))
 	  {
-	     SLang_verror (SL_InvalidParm_Error, "usage: json_generate_string (String_Type json_string)");
+	     SLang_verror (SL_Usage_Error, "usage: _json_generate_string (String_Type json_string)");
 	     return;
 	  }
 	len = strlen (string);

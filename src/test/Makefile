@@ -54,7 +54,7 @@ memcheck_run_tests_slc: $(TEST_PGM)
 
 memcheck: memcheck_run_tests memcheck_run_tests_slc
 
-$(TEST_PGM): $(TEST_PGM).c $(SLANGLIB)/libslang.a
+$(TEST_PGM): $(TEST_PGM).c assoc.c list.c $(SLANGLIB)/libslang.a
 	$(CC) $(CFLAGS) $(LDFLAGS) $(TEST_PGM).c -o $(TEST_PGM) -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
 clean:
 	-/bin/rm -f *~ $(TEST_PGM) *.o *.log tmp-* log.pid* *.slc log.*
