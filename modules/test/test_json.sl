@@ -231,6 +231,17 @@ private define test_parse_escaped_strings ()
 }
 %}}}
 
+private define test_parse_too_large_numbers () %{{{
+{
+   json = json_parse (`[ 18446744073709551616, 1e10000 ]`);
+
+   expect_type (json, List_Type);
+   expect_size (json, 2);
+   expect_value (json[0], _Inf);  % cannot be represented by LLong_Type
+   expect_value (json[1], _Inf);  % cannot be represented by Double_Type
+}
+%}}}
+
 % test_parse_errors %{{{
 
 private variable describe_char_regex = "'.' = 0x[0-9A-F][0-9A-F]";
@@ -335,6 +346,7 @@ private define test_parse ()
    test_parse_heterogenous_array ();
    test_parse_nested_object ();
    test_parse_escaped_strings ();
+   test_parse_too_large_numbers ();
    test_parse_errors ();
 }
 %}}}

@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <slang.h>
 
 
@@ -313,6 +314,12 @@ static int parse_and_push_number (Parse_Type *p) /*{{{*/
 	    SLang_push_long (atol (p->ptr))
 #endif
 	  : SLang_push_double (atof (p->ptr));
+   if (errno == ERANGE)
+     {
+	SLdo_pop ();
+	SLang_load_string ("_Inf");  /* Is there a way to refer to this dconstant defined by slmath.c directly? */
+     }
+
    *s = ch;
    p->ptr = s;
    return result;
