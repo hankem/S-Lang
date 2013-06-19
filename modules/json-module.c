@@ -307,17 +307,21 @@ static int parse_and_push_number (Parse_Type *p) /*{{{*/
 
    ch = *s;
    *s = 0;
+   errno = 0;
    result = is_int ?
 #ifdef HAVE_LONG_LONG
-	    SLang_push_long_long (atoll (p->ptr))
+	    SLang_push_long_long (strtoll (p->ptr, NULL, 10))
 #else
-	    SLang_push_long (atol (p->ptr))
+	    SLang_push_long (strtol (p->ptr, NULL, 10))
 #endif
-	  : SLang_push_double (atof (p->ptr));
+	  : SLang_push_double (strtod (p->ptr, NULL));
    if (errno == ERANGE)
      {
-	SLdo_pop ();
-	SLang_load_string ("_Inf");  /* Is there a way to refer to this dconstant defined by slmath.c directly? */
+	SLang_verror (Json_Parse_Error,
+		      is_int
+			? "Integer value is too large (%s)"
+			: "Numeric value is too large (%s)",
+		      p->ptr);
      }
 
    *s = ch;

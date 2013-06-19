@@ -231,17 +231,6 @@ private define test_parse_escaped_strings ()
 }
 %}}}
 
-private define test_parse_too_large_numbers () %{{{
-{
-   json = json_parse (`[ 18446744073709551616, 1e10000 ]`);
-
-   expect_type (json, List_Type);
-   expect_size (json, 2);
-   expect_value (json[0], _Inf);  % cannot be represented by LLong_Type
-   expect_value (json[1], _Inf);  % cannot be represented by Double_Type
-}
-%}}}
-
 % test_parse_errors %{{{
 
 private variable describe_char_regex = "'.' = 0x[0-9A-F][0-9A-F]";
@@ -260,7 +249,7 @@ private define expect_Json_Parse_Error (expected_error_message)
    };
 }
 
-private define test_parse_errors_due_to_structure ()
+private define test_parse_errors_due_to_structure () %{{{
 {
    ()=expect_Json_Parse_Error ("empty input string")
      .while_parsing ("");
@@ -278,8 +267,9 @@ private define test_parse_errors_due_to_structure ()
      .while_parsing (` { "this is not a value" : | } `)
      .while_parsing (" [ this_is_not_a_value_either ] ");
 }
+%}}}
 
-private define test_parse_errors_with_strings ()
+private define test_parse_errors_with_strings () %{{{
 {
    ()=expect_Json_Parse_Error ("Unexpected end of input seen while parsing a JSON string")
      .while_parsing (`[ "missing quotation mark ]`);
@@ -294,8 +284,9 @@ private define test_parse_errors_with_strings ()
      .while_parsing (`[ "\undef" ]`)
      .while_parsing (`[ "\u123`);
 }
+%}}}
 
-private define test_parse_errors_with_arrays ()
+private define test_parse_errors_with_arrays () %{{{
 {
    ()=expect_Json_Parse_Error ("Expected ',' or ']' while parsing a JSON array, found $describe_char_regex"$)
      .while_parsing ("[ 1 2 ]")
@@ -307,8 +298,9 @@ private define test_parse_errors_with_arrays ()
    ()=expect_Json_Parse_Error ("Expected end of input after parsing JSON array, found $describe_char_regex"$)
      .while_parsing ("[1] 2");
 }
+%}}}
 
-private define test_parse_errors_with_objects ()
+private define test_parse_errors_with_objects () %{{{
 {
    ()=expect_Json_Parse_Error ("Expected a string while parsing a JSON object, found $describe_char_regex"$)
      .while_parsing (`{ 1 }`)
@@ -327,6 +319,19 @@ private define test_parse_errors_with_objects ()
    ()=expect_Json_Parse_Error ("Expected end of input after parsing JSON object, found $describe_char_regex"$)
      .while_parsing (`{ "one" : 1 } 2`);
 }
+%}}}
+
+private define test_parse_errors_due_to_too_large_numbers () %{{{
+{
+   variable large_int = "18446744073709551616";  % cannot even be represented by (U)Int64_Type
+   ()=expect_Json_Parse_Error ("Integer value is too large ($large_int)"$)
+     .while_parsing ("[ $large_int ]"$);
+
+   variable large_num = "2e4932";  % cannot even be represented by binary128/quadruple-precision floating-point format
+   ()=expect_Json_Parse_Error ("Numeric value is too large ($large_num)"$)
+     .while_parsing ("[ $large_num ]"$);
+}
+%}}}
 
 private define test_parse_errors ()
 {
@@ -334,6 +339,7 @@ private define test_parse_errors ()
    test_parse_errors_with_strings ();
    test_parse_errors_with_arrays ();
    test_parse_errors_with_objects ();
+   test_parse_errors_due_to_too_large_numbers ();
 }
 %}}}
 
@@ -346,7 +352,6 @@ private define test_parse ()
    test_parse_heterogenous_array ();
    test_parse_nested_object ();
    test_parse_escaped_strings ();
-   test_parse_too_large_numbers ();
    test_parse_errors ();
 }
 %}}}
