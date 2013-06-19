@@ -477,6 +477,9 @@
 @src/test/runtests.sh 0755
 @src/test/Makefile
 @src/test/README
+@src/test/sltest.c
+@src/test/assoc.c
+@src/test/list.c
 @src/test/anytype.sl
 @src/test/arith.sl
 @src/test/argv.sl
@@ -520,7 +523,6 @@
 @src/test/selfload.sl
 @src/test/scircuit.sl
 @src/test/signal.sl
-@src/test/sltest.c
 @src/test/sort.sl
 @src/test/sscanf.sl
 @src/test/stdio.sl

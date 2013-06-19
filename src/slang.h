@@ -1418,7 +1418,7 @@ SL_EXTERN int SLang_TT_Read_FD;
 /* I do not want to include windows.h just to get the typedef for HANDLE.
  * Make this conditional upon the inclusion of windows.h.
  */
-#  ifdef WINVER
+#  ifdef _WINDOWS_
 SL_EXTERN HANDLE SLw32_Hstdin;
 #  endif
 # endif
