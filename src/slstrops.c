@@ -1884,6 +1884,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 #endif
    unsigned char uch;
    int use_long = 0, use_alt_format = 0;
+   SLuchar_Type utf8_buf[SLUTF8_MAX_MBLEN+1];
 
    while (1)
      {
@@ -2071,7 +2072,6 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 #endif
 	       {
 		  SLwchar_Type wc;
-		  SLuchar_Type utf8_buf[SLUTF8_MAX_MBLEN+1];
 
 		  if (-1 == SLang_pop_wchar (&wc))
 		    return out;
