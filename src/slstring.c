@@ -54,7 +54,7 @@ static SLCONST char *Deleted_String = "*deleted*";
 static Cached_String_Type Cached_Strings [NUM_CACHED_STRINGS];
 
 #define GET_CACHED_STRING(s) \
-   (Cached_Strings + (unsigned int)(((unsigned long) (s)) % NUM_CACHED_STRINGS))
+   (Cached_Strings + (unsigned int)(((size_t) (s)) % NUM_CACHED_STRINGS))
 
 _INLINE_
 static void cache_string (SLstring_Type *sls)

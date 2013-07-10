@@ -215,6 +215,7 @@
 #undef uid_t
 #undef pid_t
 #undef gid_t
+#undef ptrdiff_t
 
 #undef HAVE_SIGLONGJMP
 

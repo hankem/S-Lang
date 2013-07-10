@@ -195,6 +195,9 @@ Changes since 2.2.4
 89. modules/json-module.c: New module provided by Manfred Henke.  To
     support this module several other changes were made including some
     additions to the API.
+90. Initial support for 64-bit windows: Use ptrdiff_t instead of long
+    when subtracting pointers.  Also json-module added to windows
+    makefiles.
 
 {{{ Previous Versions
 

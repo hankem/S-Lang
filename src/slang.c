@@ -3456,7 +3456,7 @@ static int execute_intrinsic_fun (SLang_Intrin_Fun_Type *objf)
 #endif
    VOID_STAR p[SLANG_MAX_INTRIN_ARGS];
    SLang_Object_Type objs[SLANG_MAX_INTRIN_ARGS];
-   long ret;
+   ptrdiff_t ret;
    SLtype ret_type;
    unsigned int argc;
    unsigned int i;

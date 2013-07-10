@@ -359,6 +359,9 @@ int SLerrno_set_errno (int sys_errno)
 #if defined(__WIN32__) && defined(SLANG_DLL)
 # include <windows.h>
 
+/* where is the prototype for DllMain? */
+BOOL WINAPI DllMain(HANDLE hInstance,DWORD dwReason,LPVOID lpParam);
+
 BOOL WINAPI DllMain(HANDLE hInstance,DWORD dwReason,LPVOID lpParam)
 {
    return 1;

@@ -142,7 +142,7 @@ SLANGDIR = ..$(P)src$(P)$(OBJDIR)
 # ---------------------------------------------------------------------------
 # List of modules to compile.  Some/Most require additional libraries to be
 # installed.
-MODULES = slsmg rand csv base64 histogram stats
+MODULES = slsmg rand csv base64 histogram stats json
 # slsmg, rand, csv base64 histogram stats: no external dependencies
 # iconv: iconv library
 # png:   png library
@@ -179,6 +179,8 @@ histogram:
 	$(MAKE) TARGET=histogram TARGETLIBS=$(HISTOGRAMLIBS) TARGETINCS=$(HISTOGRAMINCS) build-target
 stats:
 	$(MAKE) TARGET=stats TARGETLIBS=$(STATSLIBS) TARGETINCS=$(STATSINCS) build-target
+json:
+	$(MAKE) TARGET=json TARGETLIBS=$(JSONLIBS) TARGETINCS=$(JSONINCS) build-target
 #
 build-target: $(TARGET_DLL)
 $(TARGET_DLL): $(TARGET_OBJ)

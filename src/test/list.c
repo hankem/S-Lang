@@ -64,7 +64,7 @@ static void api_list_insert (void)
    api_list_insert_append (SLang_list_insert);
 }
 
-static void test_push_and_pop_list ()
+static void test_push_and_pop_list (void)
 {
    SLang_List_Type *l1 = SLang_create_list ();
    SLang_List_Type *l2;
@@ -75,7 +75,7 @@ static void test_push_and_pop_list ()
      SLang_verror (SL_Any_Error, "Failed: (API) pop yields pointer to previously pushed list");
 }
 
-static void pop_and_push_list ()
+static void pop_and_push_list (void)
 {
    SLang_List_Type *l;
 

@@ -78,7 +78,7 @@ static void api_assoc_put (void)
    SLang_free_assoc (a);
 }
 
-static void test_push_and_pop_assoc () /*{{{*/
+static void test_push_and_pop_assoc (void) /*{{{*/
 {
    SLang_Assoc_Array_Type *a1 = SLang_create_assoc (SLANG_VOID_TYPE, 0);
    SLang_Assoc_Array_Type *a2;
@@ -90,7 +90,7 @@ static void test_push_and_pop_assoc () /*{{{*/
 }
 /*}}}*/
 
-static void pop_and_push_assoc () /*{{{*/
+static void pop_and_push_assoc (void) /*{{{*/
 {
    SLang_Assoc_Array_Type *a;
 

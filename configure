@@ -6415,6 +6415,18 @@ _ACEOF
 
 
 
+ac_fn_c_check_type "$LINENO" "ptrdiff_t" "ac_cv_type_ptrdiff_t" "$ac_includes_default"
+if test "x$ac_cv_type_ptrdiff_t" = xyes; then :
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define ptrdiff_t long
+_ACEOF
+
+fi
+
+
 ac_fn_c_check_type "$LINENO" "size_t" "ac_cv_type_size_t" "$ac_includes_default"
 if test "x$ac_cv_type_size_t" = xyes; then :
 

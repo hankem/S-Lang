@@ -206,6 +206,8 @@ AC_CHECK_SIZEOF(long, 4)
 AC_CHECK_SIZEOF(float, 4)
 AC_CHECK_SIZEOF(double, 8)
 
+AC_CHECK_TYPE(ptrdiff_t,long)
+
 AC_TYPE_SIZE_T
 AC_CHECK_SIZEOF(size_t)
 
