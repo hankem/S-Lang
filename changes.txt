@@ -198,6 +198,8 @@ Changes since 2.2.4
 90. Initial support for 64-bit windows: Use ptrdiff_t instead of long
     when subtracting pointers.  Also json-module added to windows
     makefiles.
+91. modules/rand.sl: rand_int was not properly handing intervals
+    larger than INT_MAX.
 
 {{{ Previous Versions
 

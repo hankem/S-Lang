@@ -113,9 +113,21 @@ define rand_int ()
    get_generator_args (_NARGS, 2, &parms, &rt, &num,
 		       "r = rand_int ([Rand_Type,] imin, imax [,num])");
 
-   variable r = call_rand_func (&rand_uniform, rt, num);
+   variable
+     imin = typecast (parms[0], Int32_Type),
+     imax = typecast (parms[1], Int32_Type), di;
 
-   return nint((parms[0]-0.5) + (parms[1] - parms[0] + 1)*__tmp(r));
+   if (imin > imax)
+     throw InvalidParmError, "rand_int: imax < imin";
+
+   di = typecast (imax - imin, UInt32_Type);
+
+   variable r = call_rand_func (&rand, rt, num);
+
+   if (di + 1 != 0)		       % UINT32_MAX does not exist
+     r = __tmp(r) mod (di + 1);
+
+   return typecast (imin + r, Int32_Type);
 }
 
 define rand_exp ()

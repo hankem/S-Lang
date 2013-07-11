@@ -219,6 +219,25 @@ define test_rand_int ()
 	  continue;
 	failed++;
      }
+
+   x0 = INT_MIN; x1 = INT_MAX;
+   variable nbins = 10, binsize = typecast (x1 - x0, UInt_Type);
+   binsize = typecast (binsize/nbins, Int_Type);
+
+   r = rand_int (x0, x1, nbins * n);
+   loop (nbins)
+     {
+	x1 = x0 + binsize;
+	if (x1 < x0)
+	  break;
+
+	i = where (x0 <= r < x1);
+	ifnot (n - 3*s < length(i) < n + 3*s)
+	  failed++;
+
+	x0 = x1;
+     }
+
    if (failed)
      {
 	() = fputs ("\
