@@ -51,7 +51,7 @@ private define json_generate_object (indent, q, object) %{{{
 
 private define json_generate_array (indent, q, array) %{{{
 {
-   variable json = "[";
+   variable json = "["B;
    variable n_values = length (array);
    if (n_values)
      {
@@ -59,11 +59,15 @@ private define json_generate_array (indent, q, array) %{{{
 	variable new_indent = indent + q.indent;
 	variable value;
 	foreach value (array)
-	  json += new_indent
-		+ _json_generate (new_indent, q, value)
-		+ (n_values--, n_values ? q.pre_vsep + "," : "") + q.post_vsep;
+          {
+             json += new_indent;
+             json += _json_generate (new_indent, q, value);
+             json += (n_values--, n_values ? q.pre_vsep + "," : "");
+             json += q.post_vsep;
+          }
      }
-   json += indent + "]";
+   json += indent;
+   json += "]";
    return json;
 }
 %}}}
@@ -100,7 +104,7 @@ private define _json_generate (%indent, q,       % still on the stack
 
 private define only_whitespace (s)
 {
-   return str_delete_chars (s, "^ \t\n\r");
+   return ""B + str_delete_chars (s, "^ \t\n\r");
 }
 
 private define process_qualifiers ()
@@ -131,7 +135,7 @@ private define process_qualifiers ()
 
 define json_generate (data)
 {
-   return _json_generate ("", process_qualifiers(;; __qualifiers), data);
+   return _json_generate (""B, process_qualifiers(;; __qualifiers), data);
 }
 
 %}}}
