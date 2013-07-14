@@ -16,7 +16,8 @@
     `false'   UChar_Type ('\0')
     `null'    Null_Type
 #v-
-  If the input string does not contain valid JSON data,
+  If the input string does not contain valid JSON data
+  or if numeric values cannot be represented within \slang,
   a \exmp{Json_Parse_Error} is thrown.
 \seealso{json_generate}
 \done
@@ -30,6 +31,7 @@
   Valid input types -- i.e., those that generate text
   that can be parsed by \ifun{json_parse} -- are \dtype{Assoc_Type}
   (for JSON objects) and \dtype{List_Type} (for JSON arrays).
+  Invalid input causes a \exmp{Json_Invalid_Json_Error}.
 
   If the order of a JSON object's key/value pairs matters,
   the \exmp{sort} qualifier can be used to order the keys:

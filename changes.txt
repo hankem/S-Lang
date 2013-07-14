@@ -192,7 +192,7 @@ Changes since 2.2.4
 87. src/slarrfun.c: The prod function for complex numbers had a sign
     error.
 88. modules/csv.sl: Modify fixup_header_names to work with scalars.
-89. modules/json-module.c: New module provided by Manfred Henke.  To
+89. modules/json-module.c: New module provided by Manfred Hanke.  To
     support this module several other changes were made including some
     additions to the API.
 90. Initial support for 64-bit windows: Use ptrdiff_t instead of long

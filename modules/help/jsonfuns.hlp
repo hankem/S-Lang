@@ -21,7 +21,8 @@ json_parse
     `false'   UChar_Type ('\0')
     `null'    Null_Type
 
-  If the input string does not contain valid JSON data,
+  If the input string does not contain valid JSON data
+  or if numeric values cannot be represented within S-Lang,
   a `Json_Parse_Error' is thrown.
 
  SEE ALSO
@@ -43,6 +44,7 @@ json_generate
   Valid input types -- i.e., those that generate text
   that can be parsed by `json_parse' -- are Assoc_Type
   (for JSON objects) and List_Type (for JSON arrays).
+  Invalid input causes a `Json_Invalid_Json_Error'.
 
   If the order of a JSON object's key/value pairs matters,
   the `sort' qualifier can be used to order the keys:
