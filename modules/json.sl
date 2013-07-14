@@ -13,21 +13,21 @@ private define json_generate_number (number) %{{{
 private define json_generate_boolean (bool) %{{{
 {
    switch (bool)
-     { case 1: return "true"; }
-     { case 0: return "false"; }
+     { case 1: return "true"B; }
+     { case 0: return "false"B; }
    throw Json_Invalid_Json_Error, sprintf(`invalid boolean value '\%03o'; only '\000' and '\001' are allowed`, bool);
 }
 %}}}
 
 private define json_generate_null () %{{{
 {
-   return "null";
+   return "null"B;
 }
 %}}}
 
 private define json_generate_object (indent, q, object) %{{{
 {
-   variable json = "{";
+   variable json = "{"B;
    variable keys = assoc_get_keys (object);
    variable n_values = length (keys);
    if (n_values)
@@ -38,13 +38,19 @@ private define json_generate_object (indent, q, object) %{{{
 	  keys = keys[array_sort ( (typeof (q.sort) == Ref_Type) ? (keys, q.sort) : (keys) )];
 	variable key;
 	foreach key (keys)
-	  json += new_indent
-		+ _json_generate_string (key)
-		+ q.pre_nsep + ":" + q.post_nsep
-		+ _json_generate (new_indent, q, object[key])
-		+ (n_values--, n_values ? q.pre_vsep + "," : "") + q.post_vsep;
+          {
+             json += new_indent;
+             json += _json_generate_string (key);
+             json += q.nsep;
+             json += _json_generate (new_indent, q, object[key]);
+             n_values--;
+             if (n_values)
+               json += q.vsep;
+             json += q.post_vsep;
+          }
      }
-   json += indent + "}";
+   json += indent;
+   json += "}"B;
    return json;
 }
 %}}}
@@ -62,12 +68,14 @@ private define json_generate_array (indent, q, array) %{{{
           {
              json += new_indent;
              json += _json_generate (new_indent, q, value);
-             json += (n_values--, n_values ? q.pre_vsep + "," : "");
+             n_values--;
+             if (n_values)
+               json += q.vsep;
              json += q.post_vsep;
           }
      }
    json += indent;
-   json += "]";
+   json += "]"B;
    return json;
 }
 %}}}
@@ -122,7 +130,7 @@ private define process_qualifiers ()
    if (qualifier_exists ("sort") && typeof (sort) != Ref_Type)
      sort = 1;
 
-   return struct {
+   variable q = struct {
       pre_nsep  = only_whitespace (qualifier ("pre_nsep", "")),
       post_nsep = only_whitespace (qualifier ("post_nsep", " ")),
       pre_vsep  = only_whitespace (qualifier ("pre_vsep", "")),
@@ -130,12 +138,18 @@ private define process_qualifiers ()
       indent    = only_whitespace (indent),
       sort      = sort  % can be NULL, 1, or Ref_Type
    };
+   return struct {
+      nsep = q.pre_nsep + ":" + q.post_nsep,
+      vsep = q.pre_vsep + ",",
+      @q
+   };
 }
 %}}}
 
 define json_generate (data)
 {
-   return _json_generate (""B, process_qualifiers(;; __qualifiers), data);
+   variable json = _json_generate (""B, process_qualifiers(;; __qualifiers), data);
+   return typecast (json, String_Type);
 }
 
 %}}}
