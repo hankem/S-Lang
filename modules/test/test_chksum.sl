@@ -57,9 +57,9 @@ private define test_accumulate (name, str, chksum)
      }
 }
 
-define slsh_main ()
+private define test_module (module_name)
 {
-   testing_module ("chksum");
+   testing_module (module_name);
 
    foreach (assoc_get_keys (Chksum_Map))
      {
@@ -78,6 +78,11 @@ define slsh_main ()
 
 	test_accumulate ("sha1", key, sha1);
      }
+}
 
+define slsh_main ()
+{
+   test_module ("chksum");
    end_test ();
 }
+

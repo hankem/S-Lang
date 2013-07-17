@@ -721,9 +721,127 @@ static SLindex_Type issubbytes (void)
    return ofs;
 }
 
+#define USE_BSTRJOIN_INTRIN 0
+#if USE_BSTRJOIN_INTRIN
+static void bstrjoin_cmd (void)
+{
+   SLang_Array_Type *at;
+   SLang_BString_Type *delim, *bstr;
+   unsigned char *delim_ptr, *bytes = NULL, *b;
+   SLstrlen_Type delim_len;
+   size_t len;
+   SLuindex_Type i, num;
+   SLang_BString_Type **data;
+
+   if (SLang_Num_Function_Args == 1)
+     {
+	delim = NULL;
+	delim_len = 0;
+	delim_ptr = NULL;
+     }
+   else
+     {
+	if (-1 == SLang_pop_bstring (&delim))
+	  return;
+	if (NULL == (delim_ptr = SLbstring_get_pointer (delim, &delim_len)))
+	  {
+	     SLbstring_free (delim);
+	     return;
+	  }
+     }
+
+   if (-1 == SLang_pop_array_of_type (&at, SLANG_BSTRING_TYPE))
+     {
+	if (delim != NULL)
+	  SLbstring_free (delim);
+	return;
+     }
+
+   num = at->num_elements;
+   data = (SLang_BString_Type **)at->data;
+   len = 0;
+   for (i = 0; i < num; i++)
+     {
+	SLstrlen_Type dlen;
+
+	if (data[i] == NULL)
+	  continue;
+	if (NULL == SLbstring_get_pointer (data[i], &dlen))
+	  goto free_and_return;
+	len += dlen;
+     }
+
+   if (num)
+     len += (num-1) * delim_len;
+
+   if (len != (SLstrlen_Type)len)
+     {
+	SLang_set_error (SL_Malloc_Error);
+	goto free_and_return;
+     }
+
+   if (NULL == (bytes = (unsigned char *)SLmalloc (len+1)))
+     goto free_and_return;
+
+   b = bytes;
+   if (num)
+     {
+	unsigned char *ptr;
+	SLstrlen_Type dlen;
+
+	if (data[0] != NULL)
+	  {
+	     if (NULL == (ptr = SLbstring_get_pointer (data[0], &dlen)))
+	       goto free_and_return;
+	     memcpy (b, ptr, dlen);
+	     b += dlen;
+	  }
+
+	for (i = 1; i < num; i++)
+	  {
+	     if (delim_len)
+	       {
+		  memcpy (b, delim_ptr, delim_len);
+		  b += delim_len;
+	       }
+	     if (data[i] != NULL)
+	       {
+		  if (NULL == (ptr = SLbstring_get_pointer (data[i], &dlen)))
+		    goto free_and_return;
+		  memcpy (b, ptr, dlen);
+		  b += dlen;
+	       }
+	  }
+     }
+   *b = 0;
+
+   if (NULL == (bstr = SLbstring_create_malloced (bytes, (SLstrlen_Type)len, 1)))
+     {
+	bytes = NULL;
+	goto free_and_return;
+     }
+
+   (void) SLang_push_bstring (bstr);
+   SLbstring_free (bstr);
+   bytes = NULL;
+   /* drop */
+
+free_and_return:
+
+   if (bytes != NULL)
+     SLfree ((char *)bytes);
+   if (delim != NULL)
+     SLbstring_free (delim);
+   SLang_free_array (at);
+}
+#endif
+
 static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
 {
    MAKE_INTRINSIC_1("bstrlen",  bstrlen_cmd, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE),
+#if USE_BSTRJOIN_INTRIN
+   MAKE_INTRINSIC_0("bstrjoin",  bstrjoin_cmd, SLANG_VOID_TYPE),
+#endif
    MAKE_INTRINSIC_2("count_byte_occurances", count_byte_occurrences, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE, SLANG_UCHAR_TYPE),
    MAKE_INTRINSIC_2("count_byte_occurrences", count_byte_occurrences, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE, SLANG_UCHAR_TYPE),
    MAKE_INTRINSIC_0("pack", _pSLpack, SLANG_VOID_TYPE),

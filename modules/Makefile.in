@@ -92,7 +92,7 @@ $(CONFIG_H): $(CONFIG_DIR)/src/config.h
 	cp $(CONFIG_DIR)/src/config.h $(CONFIG_H)
 $(OBJDIR):
 	-$(MKINSDIR) $(OBJDIR)
-$(OBJDIR)/Makefile: $(OBJDIR)
+$(OBJDIR)/Makefile: $(OBJDIR) Makefile
 	cp Makefile $(OBJDIR)
 
 #
@@ -132,6 +132,8 @@ csv-module.so: $(SRCDIR)/csv-module.c $(CONFIG_H)
 	$(COMPILE_CMD) $(SRCDIR)/csv-module.c -o csv-module.so
 base64-module.so: $(SRCDIR)/base64-module.c $(CONFIG_H)
 	$(COMPILE_CMD) $(SRCDIR)/base64-module.c -o base64-module.so
+json-module.so: $(SRCDIR)/json-module.c $(CONFIG_H)
+	$(COMPILE_CMD) $(SRCDIR)/json-module.c -o json-module.so
 #
 chksum-module.so: $(CHKSUM_OBJS)
 	$(COMPILE_CMD) $(CHKSUM_OBJS) -o chksum-module.so
@@ -146,8 +148,6 @@ histogram-module.so: $(SRCDIR)/histogram-module.c $(SRCDIR)/histogram-module.inc
 	$(COMPILE_CMD) $(SRCDIR)/histogram-module.c -o histogram-module.so
 stats-module.so: $(SRCDIR)/stats-module.c $(SRCDIR)/stats-module.inc
 	$(COMPILE_CMD) $(SRCDIR)/stats-module.c -o stats-module.so
-json-module.so: $(SRCDIR)/json-module.c $(SRCDIR)/json-module.inc $(CONFIG_H)
-	$(COMPILE_CMD) $(SRCDIR)/json-module.c -o json-module.so
 #
 # </targets to be built in $(OBJDIR)>
 #

@@ -201,9 +201,9 @@ private define test_rebin (new_grid, old_grid, input_h, sum_ok, expected)
      }
 }
 
-define slsh_main ()
+private define test_module (module_name)
 {
-   testing_module ("hist");
+   testing_module (module_name);
 
    variable g0 = [0,1,2,3,4,5,6];
    variable h0 = [1,2,3,4,5,6,7];
@@ -224,6 +224,10 @@ define slsh_main ()
    test_rebin (Double_Type[0], g0, h0, 0, Double_Type[0]);
    test_rebin ([1:10], [1,5,10], [1,2,3], 1,
 	       [0.25,0.25,0.25,0.25,0.4,0.4,0.4,0.4,0.4,3]);
+}
 
+define slsh_main ()
+{
+   test_module ("hist");
    end_test ();
 }

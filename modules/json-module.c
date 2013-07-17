@@ -10,8 +10,8 @@
 
 SLANG_MODULE(json);
 
-#define JSON_MODULE_VERSION_NUMBER 200
-static char* json_module_version_string = "pre-0.2.0";
+#define JSON_MODULE_VERSION_NUMBER 210
+static char* json_module_version_string = "pre-0.2.1";
 
 /*{{{ JSON grammar based upon json.org & ietf.org/rfc/rfc4627.txt
  *
@@ -532,17 +532,145 @@ static void json_parse (void) /*{{{*/
 }
 /*}}}*/
 
-#define ALLOC_GENERATED_JSON_STRING 1
-#include "json-module.inc"
+/*{{{ json_generate_string implementation and support functions */
 
-#undef ALLOC_GENERATED_JSON_STRING
-#include "json-module.inc"
+static unsigned char Len_Map[128] = /*{{{*/
+{
+   6,6,6,6,6,6,6,6,
+   2,2,2,6,2,2,6,6,
+   6,6,6,6,6,6,6,6,
+   6,6,6,6,6,6,6,6,
+   1,1,2,1,1,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,2,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,1,1,1,1,
+   1,1,1,1,1,1,1,6
+};
+
+/*}}}*/
+
+static char *String_Map[128] = /*{{{*/
+{
+    "\\u0000", "\\u0001", "\\u0002", "\\u0003", "\\u0004", "\\u0005", "\\u0006", "\\u0007",
+        "\\b",     "\\t",     "\\n", "\\u000B",     "\\f",     "\\r", "\\u000E", "\\u000F",
+    "\\u0010", "\\u0011", "\\u0012", "\\u0013", "\\u0014", "\\u0015", "\\u0016", "\\u0017",
+    "\\u0018", "\\u0019", "\\u001A", "\\u001B", "\\u001C", "\\u001D", "\\u001E", "\\u001F",
+          " ",       "!",    "\\\"",       "#",       "$",       "%",       "&",       "'",
+          "(",       ")",       "*",       "+",       ",",       "-",       ".",       "/",
+          "0",       "1",       "2",       "3",       "4",       "5",       "6",       "7",
+          "8",       "9",       ":",       ";",       "<",       "=",       ">",       "?",
+          "@",       "A",       "B",       "C",       "D",       "E",       "F",       "G",
+          "H",       "I",       "J",       "K",       "L",       "M",       "N",       "O",
+          "P",       "Q",       "R",       "S",       "T",       "U",       "V",       "W",
+          "X",       "Y",       "Z",       "[",    "\\\\",       "]",       "^",       "_",
+          "`",       "a",       "b",       "c",       "d",       "e",       "f",       "g",
+          "h",       "i",       "j",       "k",       "l",       "m",       "n",       "o",
+          "p",       "q",       "r",       "s",       "t",       "u",       "v",       "w",
+          "x",       "y",       "z",       "{",       "|",       "}",       "~", "\\u007F"
+};
+
+/*}}}*/
+
+static SLstrlen_Type compute_multibyte_char_len (unsigned char ch) /*{{{*/
+
+{
+   return
+     ((ch & 0xE0) == 0xC0) ? 2  /* (ch & 0b11100000) == 0b11000000 */
+     : ((ch & 0xF0) == 0xE0) ? 3  /* (ch & 0b11110000) == 0b11100000 */
+     : ((ch & 0xF8) == 0xF0) ? 4  /* (ch & 0b11111000) == 0b11110000 */
+     : ((ch & 0xFC) == 0xF8) ? 5  /* (ch & 0b11111100) == 0b11111000 */
+     :                         6;
+}
+
+/*}}}*/
+
+static char *alloc_generated_json_string (char *ptr, char *end_of_input_string, SLstrlen_Type *lenp) /*{{{*/
+{
+   SLstrlen_Type len = 0;
+
+   len = 2;			       /* first '"' and last '"' */
+   while (ptr < end_of_input_string)
+     {
+	unsigned char ch = (unsigned char) *ptr;
+	if (ch < 0x80)
+	  {
+	     len += Len_Map[ch];
+	     ptr++;
+	     continue;
+	  }
+
+	len += 6;
+	ptr += compute_multibyte_char_len (ch);
+	if (ptr > end_of_input_string)
+	  {
+	     SLang_verror (Json_Invalid_Json_Error, "Invalid UTF-8 at end of string");
+	     return NULL;
+	  }
+     }
+
+   *lenp = len;
+   return SLmalloc (len + 1);
+}
+
+/*}}}*/
+
+static void fill_generated_json_string (char *ptr, char *end_of_input_string, char *dest_ptr) /*{{{*/
+{
+   *dest_ptr++ = STRING_DELIMITER;
+
+   while (ptr < end_of_input_string)
+     {
+	unsigned char ch = *ptr;
+	unsigned int len;
+
+	if (ch < 0x80)
+	  {
+	     if (1 == (len = Len_Map[ch]))
+	       *dest_ptr++ = ch;
+	     else
+	       {
+		  char *str = String_Map[ch];
+		  while (len--)
+		    *dest_ptr++ = *str++;
+	       }
+	     ptr++;
+	     continue;
+	  }
+
+	/* We cannot use SLutf8_decode, since we need to handle invalid_or_overlong_utf8 or ILLEGAL_UNICODE as well. */
+	len = compute_multibyte_char_len (ch);
+
+	  {  /* stolen from slutf8.c : fast_utf8_decode */
+	     static unsigned char masks[7] = { 0, 0, 0x1F, 0xF, 0x7, 0x3, 0x1 };
+	     SLwchar_Type w = (ch & masks[len]);
+	     SLstrlen_Type i;
+	     for (i = 1; i < len; i++)
+	       w = (w << 6) | (ptr[i] & 0x3F);
+
+	     sprintf (dest_ptr, "\\u%04X", w);
+	     dest_ptr += 6;
+	  }
+	ptr += len;
+     }
+   *dest_ptr++ = STRING_DELIMITER;
+   *dest_ptr = 0;
+}
+
+
+/*}}}*/
 
 static void json_generate_string (void) /*{{{*/
 {
    SLang_BString_Type *bstring = NULL;
    char *string, *generated_json_string;
-   SLstrlen_Type len;
+   SLstrlen_Type len, new_len;
 
    if (SLang_peek_at_stack () == SLANG_BSTRING_TYPE)
      {
@@ -553,7 +681,7 @@ static void json_generate_string (void) /*{{{*/
      }
    else
      {
-	if (-1 == SLpop_string (&string))
+	if (-1 == SLang_pop_slstring (&string))
 	  {
 	     SLang_verror (SL_Usage_Error, "usage: _json_generate_string (String_Type json_string)");
 	     return;
@@ -561,17 +689,27 @@ static void json_generate_string (void) /*{{{*/
 	len = strlen (string);
      }
 
-   if ((generated_json_string = alloc_generated_json_string (string, string + len)) != NULL)
+   if ((generated_json_string = alloc_generated_json_string (string, string + len, &new_len)) != NULL)
      {
+	SLang_BString_Type *b;
+
 	fill_generated_json_string (string, string + len, generated_json_string);
-	(void) SLang_push_malloced_string (generated_json_string);
+
+	b = SLbstring_create_malloced ((unsigned char *)generated_json_string, new_len, 1);
+	if (b != NULL)
+	  {
+	     (void) SLang_push_bstring (b);
+	     SLbstring_free (b);
+	  }
      }
 
    if (bstring != NULL)
      SLbstring_free (bstring);
    else
-     SLfree (string);
+     SLang_free_slstring (string);
 }
+/*}}}*/
+
 /*}}}*/
 
 static SLang_Intrin_Fun_Type Module_Intrinsics [] = /*{{{*/
