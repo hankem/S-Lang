@@ -1,8 +1,8 @@
-\function{json_parse}
+\function{json_decode}
 \synopsis{Parse JSON text into an S-Lang data structure}
-\usage{json = json_parse (String_Type text)}
+\usage{json = json_decode (String_Type text)}
 \description
-  The \ifun{json_parse} function parses JSON data from the input string,
+  The \ifun{json_decode} function parses JSON data from the input string,
   and returns a corresponding S-Lang data structure. JSON values
   are represented as follows:
 #v+
@@ -19,17 +19,17 @@
   If the input string does not contain valid JSON data
   or if numeric values cannot be represented within \slang,
   a \exmp{Json_Parse_Error} is thrown.
-\seealso{json_generate}
+\seealso{json_encode}
 \done
 
-\function{json_generate}
+\function{json_encode}
 \synopsis{Generate JSON text from an S-Lang data structure}
-\usage{String_Type text = json_generate (json)}
+\usage{String_Type text = json_encode (json)}
 \description
-  The \ifun{json_generate} function generates the JSON text
+  The \ifun{json_encode} function generates the JSON text
   that corresponds to the S_Lang data structure \exmp{json}.
   Valid input types -- i.e., those that generate text
-  that can be parsed by \ifun{json_parse} -- are \dtype{Assoc_Type}
+  that can be parsed by \ifun{json_decode} -- are \dtype{Assoc_Type}
   (for JSON objects) and \dtype{List_Type} (for JSON arrays).
   Invalid input causes a \exmp{Json_Invalid_Json_Error}.
 
@@ -73,14 +73,14 @@
     variable i1 = integer (key1),  i2 = integer (key2);
     return (i1 < i2) ? -1 : (i1 > i2);
   }
-  json_generate (json; sort=&cmp_keys_by_int_value);
+  json_encode (json; sort=&cmp_keys_by_int_value);
 
   % more whitespace around separators:
-  json_generate (json; pre_nsep=" ", post_nsep="  ",
+  json_encode (json; pre_nsep=" ", post_nsep="  ",
                        pre_vsep=" ", post_vsep="\n\t")
 
   % as compact as possible; no additional whitespace:
-  json_generate (json; post_nsep="", post_vsep="")
+  json_encode (json; post_nsep="", post_vsep="")
 #v-
-\seealso{json_parse}
+\seealso{json_decode}
 \done

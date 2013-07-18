@@ -2,7 +2,7 @@
 
 import("json");
 
-%{{{ Type Handlers 
+%{{{ Type Handlers
 
 % Forward declarations
 private define generate_object ();
@@ -28,7 +28,7 @@ add_type_handler (Array_Type, &generate_array);
 
 private define generate_string (indent, q, data)
 {
-   return _json_generate_string (data);
+   return _json_encode_string (data);
 }
 add_type_handler (String_Type, &generate_string);
 add_type_handler (BString_Type, &generate_string);
@@ -60,9 +60,6 @@ foreach $1 (
 	     LLong_Type, ULLong_Type,
 #endif
 	     Float_Type, Double_Type,
-#ifexists Complex_Type
-	     Complex_Type,
-#endif
 	    ])
 {
    add_type_handler ($1, &generate_number);
@@ -90,10 +87,9 @@ private define get_generate_func (type)
      throw Json_Invalid_Json_Error, "$type does not represent a JSON data structure"$;
 }
 
-
 %}}}
 
-private define _json_generate (indent, q, data)
+private define _json_encode (indent, q, data)
 {
    return (@get_generate_func(typeof (data)))(indent, q, data);
 }
@@ -115,16 +111,32 @@ private define generate_object (indent, q, object) %{{{
 
 	json += q.post_vsep + new_indent;
 
-	variable i, key = keys[0];
+	variable i, key = keys[0], val = object[key];
+	variable type = typeof (val);
+	variable func = get_generate_func (type);
 
-	json += _json_generate_string (key) + nsep
-	  + _json_generate (new_indent, q, object[key]);
+	json += _json_encode_string (key) + nsep
+	  + (@func)(new_indent, q, val);
 
 	_for i (1, n_values-1, 1)
           {
-	     key = keys[i];
-	     json += sep + _json_generate_string (key) + nsep
-	       + _json_generate (new_indent, q, object[key]);
+	     key = keys[i]; val = object[key];
+	     variable next_type = typeof(val);
+	     if (next_type == String_Type)
+	       {
+		  json = bstrcat (__tmp(json), sep, _json_encode_string (key),
+				  nsep, _json_encode_string (val));
+		  continue;
+	       }
+
+	     if (next_type != type)
+	       {
+		  func = get_generate_func (next_type);
+		  type = next_type;
+	       }
+
+	     json = bstrcat (__tmp(json), sep, _json_encode_string (key),
+			     nsep, (@func)(new_indent, q, val));
           }
 	json += q.post_vsep;
      }
@@ -149,22 +161,30 @@ private define generate_array (indent, q, array) %{{{
 
 	json += new_indent + (@func)(new_indent, q, a);
 
-	if (typeof (array) == Array_Type)
+	if ((typeof (array) == Array_Type)
+	    && (0 == any(_isnull(array))))
 	  {
-	     _for i (1, n_values-1, 1)
-	       json = __tmp(json) + sep + (@func)(new_indent, q, array[i]);
+	     if (type == String_Type) _for i (1, n_values-1, 1)
+	       json = bstrcat (__tmp(json), sep, _json_encode_string(array[i]));
+	     else _for i (1, n_values-1, 1)
+	       json = bstrcat (__tmp(json), sep, (@func)(new_indent, q, array[i]));
 	  }
 	else _for i (1, n_values-1, 1)
 	  {
 	     a = array[i];
 	     variable next_type = typeof (a);
+	     if (next_type == String_Type)
+	       {
+		  json = bstrcat (__tmp(json), sep, _json_encode_string(a));
+		  continue;
+	       }
+
 	     if (next_type != type)
 	       {
 		  func = get_generate_func (next_type);
 		  type = next_type;
 	       }
-	     %json = __tmp(json) + sep + (@func)(new_indent, q, a);
-	     json += sep + (@func)(new_indent, q, a);
+	     json = bstrcat (__tmp(json), sep, (@func)(new_indent, q, a));
 	  }
 
 	json += q.post_vsep;
@@ -211,9 +231,8 @@ private define process_qualifiers ()
 }
 %}}}
 
-define json_generate (data)
+define json_encode (data)
 {
-   variable json = _json_generate (""B, process_qualifiers(;; __qualifiers), data);
+   variable json = _json_encode (""B, process_qualifiers(;; __qualifiers), data);
    return typecast (json, String_Type);
 }
-
