@@ -263,7 +263,7 @@ concat_bstrings (SLang_BString_Type *a, SLang_BString_Type *b)
 #if SLANG_USE_TMP_OPTIMIZATION
    if ((a->num_refs == 1)	       /* owned by stack */
        && (a->ptr_type == IS_BSTRING)
-       && (len <= a->malloced_len))
+       && (len < a->malloced_len))
      {
 	bytes = (char *)a->v.bytes;
 	memcpy (bytes + a->len, (char *)BS_GET_POINTER(b), b->len);
@@ -721,33 +721,109 @@ static SLindex_Type issubbytes (void)
    return ofs;
 }
 
-#define USE_BSTRJOIN_INTRIN 0
-#if USE_BSTRJOIN_INTRIN
+static SLang_BString_Type *join_bstrings (SLang_BString_Type **data, SLuindex_Type num, SLang_BString_Type *delim,
+					  int tmp_opt_ok)
+{
+   SLuindex_Type i;
+   unsigned char *delim_ptr = NULL, *bytes = NULL;
+   SLstrlen_Type delim_len = 0;
+   SLang_BString_Type *bstr;
+   unsigned char *ptr;
+   SLstrlen_Type dlen;
+
+   size_t len;
+
+   if (num == 0)
+     return SLbstring_create ((unsigned char *)"", 0);
+
+   if (delim != NULL)
+     {
+	if (NULL == (delim_ptr = SLbstring_get_pointer (delim, &delim_len)))
+	  return NULL;
+     }
+
+   len = 0;
+   for (i = 0; i < num; i++)
+     {
+	if (data[i] == NULL)
+	  continue;
+	if (NULL == SLbstring_get_pointer (data[i], &dlen))
+	  return NULL;
+
+	len += dlen;
+     }
+
+   len += (num-1) * delim_len;
+
+   if (len != (SLstrlen_Type)len)
+     {
+	SLang_set_error (SL_Malloc_Error);
+	return NULL;
+     }
+
+# if SLANG_USE_TMP_OPTIMIZATION
+   bstr = data[0];
+   if (tmp_opt_ok && (bstr != NULL)
+       && (bstr->num_refs == 1)	       /* owned by stack */
+       && (bstr->ptr_type == IS_BSTRING)
+       && (len < bstr->malloced_len))
+     {
+	bytes = (unsigned char *)bstr->v.bytes + bstr->len;
+	bstr->len = len;
+	bstr->num_refs++;
+     }
+   else
+     {
+#endif
+	if (NULL == (bstr = create_bstring_of_type (NULL, len, IS_BSTRING)))
+	  return NULL;
+
+	bytes = bstr->v.bytes;
+
+	if (NULL == (ptr = SLbstring_get_pointer (data[0], &dlen)))
+	  goto return_error;
+
+	memcpy (bytes, ptr, dlen);
+	bytes += dlen;
+#if SLANG_USE_TMP_OPTIMIZATION
+     }
+#endif
+
+   for (i = 1; i < num; i++)
+     {
+	if (delim_len)
+	  {
+	     memcpy (bytes, delim_ptr, delim_len);
+	     bytes += delim_len;
+	  }
+	if (data[i] != NULL)
+	  {
+	     if (NULL == (ptr = SLbstring_get_pointer (data[i], &dlen)))
+	       goto return_error;
+	     memcpy (bytes, ptr, dlen);
+	     bytes += dlen;
+	  }
+     }
+   *bytes = 0;
+   return bstr;
+
+return_error:
+
+   SLbstring_free (bstr);
+   return NULL;
+}
+
 static void bstrjoin_cmd (void)
 {
    SLang_Array_Type *at;
    SLang_BString_Type *delim, *bstr;
-   unsigned char *delim_ptr, *bytes = NULL, *b;
-   SLstrlen_Type delim_len;
-   size_t len;
-   SLuindex_Type i, num;
-   SLang_BString_Type **data;
 
    if (SLang_Num_Function_Args == 1)
-     {
-	delim = NULL;
-	delim_len = 0;
-	delim_ptr = NULL;
-     }
+     delim = NULL;
    else
      {
 	if (-1 == SLang_pop_bstring (&delim))
 	  return;
-	if (NULL == (delim_ptr = SLbstring_get_pointer (delim, &delim_len)))
-	  {
-	     SLbstring_free (delim);
-	     return;
-	  }
      }
 
    if (-1 == SLang_pop_array_of_type (&at, SLANG_BSTRING_TYPE))
@@ -757,91 +833,62 @@ static void bstrjoin_cmd (void)
 	return;
      }
 
-   num = at->num_elements;
-   data = (SLang_BString_Type **)at->data;
-   len = 0;
-   for (i = 0; i < num; i++)
+   bstr = join_bstrings ((SLang_BString_Type **)at->data, at->num_elements, delim, 0);
+   if (bstr != NULL)
      {
-	SLstrlen_Type dlen;
+	(void) SLang_push_bstring (bstr);
+	SLbstring_free (bstr);
+     }
+   if (delim != NULL) SLbstring_free (delim);
+   SLang_free_array (at);
+}
 
-	if (data[i] == NULL)
-	  continue;
-	if (NULL == SLbstring_get_pointer (data[i], &dlen))
+static void bstrcat_cmd (void) /*{{{*/
+{
+   SLang_BString_Type *bstrings_buf[10];
+   SLang_BString_Type **bstrings, *bstr;
+   int i, nargs;
+
+   nargs = SLang_Num_Function_Args;
+   if (nargs <= 0) nargs = 2;
+
+   if (nargs <= 10)
+     bstrings = bstrings_buf;
+   else if (NULL == (bstrings = (SLang_BString_Type **)_SLcalloc (nargs, sizeof (SLang_BString_Type *))))
+     return;
+
+   memset ((char *) bstrings, 0, sizeof (SLang_BString_Type *) * nargs);
+
+   i = nargs;
+   while (i != 0)
+     {
+	i--;
+
+	if (-1 == SLang_pop_bstring (bstrings + i))
 	  goto free_and_return;
-	len += dlen;
      }
 
-   if (num)
-     len += (num-1) * delim_len;
-
-   if (len != (SLstrlen_Type)len)
+   bstr = join_bstrings (bstrings, nargs, NULL, 1);
+   if (bstr != NULL)
      {
-	SLang_set_error (SL_Malloc_Error);
-	goto free_and_return;
+	(void) SLang_push_bstring (bstr);
+	SLbstring_free (bstr);
      }
-
-   if (NULL == (bytes = (unsigned char *)SLmalloc (len+1)))
-     goto free_and_return;
-
-   b = bytes;
-   if (num)
-     {
-	unsigned char *ptr;
-	SLstrlen_Type dlen;
-
-	if (data[0] != NULL)
-	  {
-	     if (NULL == (ptr = SLbstring_get_pointer (data[0], &dlen)))
-	       goto free_and_return;
-	     memcpy (b, ptr, dlen);
-	     b += dlen;
-	  }
-
-	for (i = 1; i < num; i++)
-	  {
-	     if (delim_len)
-	       {
-		  memcpy (b, delim_ptr, delim_len);
-		  b += delim_len;
-	       }
-	     if (data[i] != NULL)
-	       {
-		  if (NULL == (ptr = SLbstring_get_pointer (data[i], &dlen)))
-		    goto free_and_return;
-		  memcpy (b, ptr, dlen);
-		  b += dlen;
-	       }
-	  }
-     }
-   *b = 0;
-
-   if (NULL == (bstr = SLbstring_create_malloced (bytes, (SLstrlen_Type)len, 1)))
-     {
-	bytes = NULL;
-	goto free_and_return;
-     }
-
-   (void) SLang_push_bstring (bstr);
-   SLbstring_free (bstr);
-   bytes = NULL;
    /* drop */
 
 free_and_return:
+   for (i = 0; i < nargs; i++)
+     SLbstring_free (bstrings[i]);
 
-   if (bytes != NULL)
-     SLfree ((char *)bytes);
-   if (delim != NULL)
-     SLbstring_free (delim);
-   SLang_free_array (at);
+   if (bstrings != bstrings_buf)
+     SLfree ((char *) bstrings);
 }
-#endif
 
 static SLang_Intrin_Fun_Type BString_Table [] = /*{{{*/
 {
    MAKE_INTRINSIC_1("bstrlen",  bstrlen_cmd, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE),
-#if USE_BSTRJOIN_INTRIN
+   MAKE_INTRINSIC_0("bstrcat",  bstrcat_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("bstrjoin",  bstrjoin_cmd, SLANG_VOID_TYPE),
-#endif
    MAKE_INTRINSIC_2("count_byte_occurances", count_byte_occurrences, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE, SLANG_UCHAR_TYPE),
    MAKE_INTRINSIC_2("count_byte_occurrences", count_byte_occurrences, SLANG_UINT_TYPE, SLANG_BSTRING_TYPE, SLANG_UCHAR_TYPE),
    MAKE_INTRINSIC_0("pack", _pSLpack, SLANG_VOID_TYPE),

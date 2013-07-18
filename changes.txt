@@ -200,6 +200,7 @@ Changes since 2.2.4
     makefiles.
 91. modules/rand.sl: rand_int was not properly handing intervals
     larger than INT_MAX.
+92. src/slbstr.c: Added bstrjoin and bstrcat intrinsics.
 
 {{{ Previous Versions
 
