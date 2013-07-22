@@ -2,11 +2,11 @@
 \synopsis{Parse JSON text into an S-Lang data structure}
 \usage{json = json_decode (String_Type text)}
 \description
-  The \ifun{json_decode} function parses JSON data from the input string,
-  and returns a corresponding S-Lang data structure. JSON values
-  are represented as follows:
+  The \ifun{json_decode} function parses JSON data from the input
+  string, and returns a corresponding S-Lang data structure.
+  JSON values are represented as follows:
 #v+
-    JSON      S-Lang
+    JSON   -> S-Lang
 
     object    Assoc_Type
     array     List_Type
@@ -30,7 +30,20 @@
   that corresponds to the S_Lang data structure \exmp{json}.
   Valid input types -- i.e., those that generate text
   that can be parsed by \ifun{json_decode} -- are \dtype{Assoc_Type}
-  (for JSON objects) and \dtype{List_Type} (for JSON arrays).
+  (for JSON objects) and \dtype{List_Type} or \dtype{Array_Type} (for
+  JSON arrays), provided that these containers contain
+  only the following types:
+#v+
+    S-Lang                         -> JSON
+
+    Assoc_Type                        object
+    List_Type or Array_Type           array
+    String_Type or BString_Type       string
+    UChar_Type ('\1')                 `true'
+    UChar_Type ('\0')                 `false'
+    other non-complex numeric types   number
+    Null_Type                         `null'
+#v-
   Invalid input causes a \exmp{Json_Invalid_Json_Error}.
 
   If the order of a JSON object's key/value pairs matters,

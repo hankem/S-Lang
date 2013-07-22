@@ -1,6 +1,6 @@
 /* -*- mode: C; mode: fold -*- */
 /*
-Copyright (C) 2013 Manfred Hanke
+Copyright (C) 2013 John E. Davis, Manfred Hanke
 
 This file is part of the S-Lang Library.
 
@@ -223,8 +223,8 @@ static int parse_string_length_and_move_ptr (Parse_Type *p, unsigned int *lenp, 
 }
 /*}}}*/
 
-/* try to use string_buffer if there is enough space and the string is
- * not a binary string.
+/* try to use string_buffer
+ * if there is enough space and the string is not a binary string.
  */
 static char *parse_string (Parse_Type *p,
 			   char *string_buffer, unsigned int buflen,
@@ -590,7 +590,7 @@ static void parse_start (char *input_string) /*{{{*/
 }
 /*}}}*/
 
-static void json_parse (void) /*{{{*/
+static void json_decode (void) /*{{{*/
 {
    char *buffer;
 
@@ -626,7 +626,6 @@ static unsigned int Len_Map[128] = /*{{{*/
    1,1,1,1,1,1,1,1,
    1,1,1,1,1,1,1,6
 };
-
 /*}}}*/
 
 static char *String_Map[128] = /*{{{*/
@@ -648,27 +647,22 @@ static char *String_Map[128] = /*{{{*/
           "p",       "q",       "r",       "s",       "t",       "u",       "v",       "w",
           "x",       "y",       "z",       "{",       "|",       "}",       "~", "\\u007F"
 };
-
 /*}}}*/
 
 static SLstrlen_Type compute_multibyte_char_len (unsigned char ch) /*{{{*/
-
 {
-   return
-     ((ch & 0xE0) == 0xC0) ? 2  /* (ch & 0b11100000) == 0b11000000 */
-     : ((ch & 0xF0) == 0xE0) ? 3  /* (ch & 0b11110000) == 0b11100000 */
-     : ((ch & 0xF8) == 0xF0) ? 4  /* (ch & 0b11111000) == 0b11110000 */
-     : ((ch & 0xFC) == 0xF8) ? 5  /* (ch & 0b11111100) == 0b11111000 */
-     :                         6;
+   return ((ch & 0xE0) == 0xC0) ? 2  /* (ch & 0b11100000) == 0b11000000 */
+        : ((ch & 0xF0) == 0xE0) ? 3  /* (ch & 0b11110000) == 0b11100000 */
+        : ((ch & 0xF8) == 0xF0) ? 4  /* (ch & 0b11111000) == 0b11110000 */
+        : ((ch & 0xFC) == 0xF8) ? 5  /* (ch & 0b11111100) == 0b11111000 */
+        :                         6;
 }
-
 /*}}}*/
 
-static char *alloc_generated_json_string (char *ptr, char *end_of_input_string, SLstrlen_Type *lenp) /*{{{*/
+static char *alloc_encoded_json_string (char *ptr, char *end_of_input_string, SLstrlen_Type *lenp) /*{{{*/
 {
-   SLstrlen_Type len = 0;
+   SLstrlen_Type len = 2;			       /* first '"' and last '"' */
 
-   len = 2;			       /* first '"' and last '"' */
    while (ptr < end_of_input_string)
      {
 	unsigned char ch = (unsigned char) *ptr;
@@ -691,10 +685,9 @@ static char *alloc_generated_json_string (char *ptr, char *end_of_input_string, 
    *lenp = len;
    return SLmalloc (len + 1);
 }
-
 /*}}}*/
 
-static void fill_generated_json_string (char *ptr, char *end_of_input_string, char *dest_ptr) /*{{{*/
+static void fill_encoded_json_string (char *ptr, char *end_of_input_string, char *dest_ptr) /*{{{*/
 {
    *dest_ptr++ = STRING_DELIMITER;
 
@@ -719,7 +712,6 @@ static void fill_generated_json_string (char *ptr, char *end_of_input_string, ch
 
 	/* We cannot use SLutf8_decode, since we need to handle invalid_or_overlong_utf8 or ILLEGAL_UNICODE as well. */
 	len = compute_multibyte_char_len (ch);
-
 	  {  /* stolen from slutf8.c : fast_utf8_decode */
 	     static unsigned char masks[7] = { 0, 0, 0x1F, 0xF, 0x7, 0x3, 0x1 };
 	     SLwchar_Type w = (ch & masks[len]);
@@ -735,13 +727,12 @@ static void fill_generated_json_string (char *ptr, char *end_of_input_string, ch
    *dest_ptr++ = STRING_DELIMITER;
    *dest_ptr = 0;
 }
-
 /*}}}*/
 
-static void json_generate_string (void) /*{{{*/
+static void json_encode_string (void) /*{{{*/
 {
    SLang_BString_Type *bstring = NULL;
-   char *string, *generated_json_string;
+   char *string, *encoded_json_string;
    SLstrlen_Type len, new_len;
 
    if (SLang_peek_at_stack () == SLANG_BSTRING_TYPE)
@@ -761,13 +752,13 @@ static void json_generate_string (void) /*{{{*/
 	len = strlen (string);
      }
 
-   if ((generated_json_string = alloc_generated_json_string (string, string + len, &new_len)) != NULL)
+   if ((encoded_json_string = alloc_encoded_json_string (string, string + len, &new_len)) != NULL)
      {
 	SLang_BString_Type *b;
 
-	fill_generated_json_string (string, string + len, generated_json_string);
+	fill_encoded_json_string (string, string + len, encoded_json_string);
 
-	b = SLbstring_create_malloced ((unsigned char *)generated_json_string, new_len, 1);
+	b = SLbstring_create_malloced ((unsigned char *)encoded_json_string, new_len, 1);
 	if (b != NULL)
 	  {
 	     (void) SLang_push_bstring (b);
@@ -786,8 +777,8 @@ static void json_generate_string (void) /*{{{*/
 
 static SLang_Intrin_Fun_Type Module_Intrinsics [] = /*{{{*/
 {
-   MAKE_INTRINSIC_0("json_decode", json_parse, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_0("_json_encode_string", json_generate_string, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("json_decode", json_decode, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_json_encode_string", json_encode_string, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 /*}}}*/
