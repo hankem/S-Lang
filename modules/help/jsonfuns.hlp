@@ -1,17 +1,17 @@
-json_parse
+json_decode
 
  SYNOPSIS
   Parse JSON text into an S-Lang data structure
 
  USAGE
-  json = json_parse (String_Type text)
+  json = json_decode (String_Type text)
 
  DESCRIPTION
-  The `json_parse' function parses JSON data from the input string,
-  and returns a corresponding S-Lang data structure. JSON values
-  are represented as follows:
+  The `json_decode' function parses JSON data from the input
+  string, and returns a corresponding S-Lang data structure.
+  JSON values are represented as follows:
 
-    JSON      S-Lang
+    JSON   -> S-Lang
 
     object    Assoc_Type
     array     List_Type
@@ -26,24 +26,37 @@ json_parse
   a `Json_Parse_Error' is thrown.
 
  SEE ALSO
-  json_generate
+  json_encode
 
 --------------------------------------------------------------
 
-json_generate
+json_encode
 
  SYNOPSIS
   Generate JSON text from an S-Lang data structure
 
  USAGE
-  String_Type text = json_generate (json)
+  String_Type text = json_encode (json)
 
  DESCRIPTION
-  The `json_generate' function generates the JSON text
+  The `json_encode' function generates the JSON text
   that corresponds to the S_Lang data structure `json'.
   Valid input types -- i.e., those that generate text
-  that can be parsed by `json_parse' -- are Assoc_Type
-  (for JSON objects) and List_Type (for JSON arrays).
+  that can be parsed by `json_decode' -- are Assoc_Type
+  (for JSON objects) and List_Type or Array_Type (for
+  JSON arrays), provided that these containers contain
+  only the following types:
+
+    S-Lang                         -> JSON
+
+    Assoc_Type                        object
+    List_Type or Array_Type           array
+    String_Type or BString_Type       string
+    UChar_Type ('\1')                 `true'
+    UChar_Type ('\0')                 `false'
+    other non-complex numeric types   number
+    Null_Type                         `null'
+
   Invalid input causes a `Json_Invalid_Json_Error'.
 
   If the order of a JSON object's key/value pairs matters,
@@ -86,17 +99,17 @@ json_generate
     variable i1 = integer (key1),  i2 = integer (key2);
     return (i1 < i2) ? -1 : (i1 > i2);
   }
-  json_generate (json; sort=&cmp_keys_by_int_value);
+  json_encode (json; sort=&cmp_keys_by_int_value);
 
   % more whitespace around separators:
-  json_generate (json; pre_nsep=" ", post_nsep="  ",
+  json_encode (json; pre_nsep=" ", post_nsep="  ",
                        pre_vsep=" ", post_vsep="\n\t")
 
   % as compact as possible; no additional whitespace:
-  json_generate (json; post_nsep="", post_vsep="")
+  json_encode (json; post_nsep="", post_vsep="")
 
 
  SEE ALSO
-  json_parse
+  json_decode
 
 --------------------------------------------------------------

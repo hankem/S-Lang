@@ -5,7 +5,7 @@ require ("json");
 
 private variable json;
 
-% test_parse %{{{
+% test_decode %{{{
 
 private define expect_json_object_with_key (key, expected_value, expected_type)
 {
@@ -13,31 +13,31 @@ private define expect_json_object_with_key (key, expected_value, expected_type)
    expect_type (json[key], expected_type);
 }
 
-private define test_parse_empty_array () %{{{
+private define test_decode_empty_array () %{{{
 {
    foreach json ({ "[]", "  \n\t[  \n\t \t\n ]\t\n " })
      {
-	json = json_parse (json);
+	json = json_decode (json);
 	expect_type (json, List_Type);
 	expect_size (json, 0);
      }
 }
 %}}}
 
-private define test_parse_empty_object () %{{{
+private define test_decode_empty_object () %{{{
 {
    foreach json ({ "{}", "  \n\t{  \n\t \t\n }\t\n " })
      {
-	json = json_parse (json);
+	json = json_decode (json);
 	expect_type (json, Assoc_Type);
 	expect_size (json, 0);
      }
 }
 %}}}
 
-private define test_parse_simple_array () %{{{
+private define test_decode_simple_array () %{{{
 {
-   json = json_parse ("[1, 2 ,\t\r\n 3]");
+   json = json_decode ("[1, 2 ,\t\r\n 3]");
    expect_type (json, List_Type);
    expect_value (json[0], 1);
    expect_value (json[1], 2);
@@ -45,9 +45,9 @@ private define test_parse_simple_array () %{{{
 }
 %}}}
 
-private define test_parse_simple_object () %{{{
+private define test_decode_simple_object () %{{{
 {
-   json = json_parse (`
+   json = json_decode (`
      {
        "string" : "stringvalue",
        "long"   : 2147483647,
@@ -73,9 +73,9 @@ private define test_parse_simple_object () %{{{
 }
 %}}}
 
-private define test_parse_heterogenous_array () %{{{
+private define test_decode_heterogenous_array () %{{{
 {
-   json = json_parse (`
+   json = json_decode (`
      [
        "stringvalue",
        42,
@@ -108,9 +108,9 @@ private define test_parse_heterogenous_array () %{{{
 }
 %}}}
 
-private define test_parse_nested_object () %{{{
+private define test_decode_nested_object () %{{{
 {
-   json = json_parse (`
+   json = json_decode (`
      {
        "k1" : {
                 "k11" : {
@@ -180,7 +180,7 @@ private define test_parse_nested_object () %{{{
 }
 %}}}
 
-% test_parse_escaped_strings %{{{
+% test_decode_escaped_strings %{{{
 
 % The test below puts the strings into an object:
 
@@ -194,9 +194,9 @@ private define expect_bstring (key, expected_value)
    expect_json_object_with_key (key, expected_value, BString_Type);
 }
 
-private define test_parse_escaped_strings ()
+private define test_decode_escaped_strings ()
 {
-   json = json_parse (`
+   json = json_decode (`
      {
        "quotation mark"  : "\"",
        "reverse solidus" : "\\",
@@ -231,13 +231,13 @@ private define test_parse_escaped_strings ()
 }
 %}}}
 
-% test_parse_errors %{{{
+% test_decode_errors %{{{
 
 private variable describe_char_regex = "'.' = 0x[0-9A-F][0-9A-F]";
 
 private define expect_Json_Parse_Error_while_parsing_method (obj, json_text)
 {
-   expect_error (Json_Parse_Error, obj.expected_error_message, &json_parse, json_text);
+   expect_error (Json_Parse_Error, obj.expected_error_message, &json_decode, json_text);
    return obj;  % for method chaining
 }
 
@@ -333,7 +333,7 @@ private define test_parse_errors_due_to_too_large_numbers () %{{{
 }
 %}}}
 
-private define test_parse_errors ()
+private define test_decode_errors ()
 {
    test_parse_errors_due_to_structure ();
    test_parse_errors_with_strings ();
@@ -343,37 +343,39 @@ private define test_parse_errors ()
 }
 %}}}
 
-private define test_parse ()
+private define test_decode ()
 {
-   test_parse_empty_array ();
-   test_parse_empty_object ();
-   test_parse_simple_array ();
-   test_parse_simple_object ();
-   test_parse_heterogenous_array ();
-   test_parse_nested_object ();
-   test_parse_escaped_strings ();
-   test_parse_errors ();
+   test_decode_empty_array ();
+   test_decode_empty_object ();
+   test_decode_simple_array ();
+   test_decode_simple_object ();
+   test_decode_heterogenous_array ();
+   test_decode_nested_object ();
+   test_decode_escaped_strings ();
+   test_decode_errors ();
 }
 %}}}
 
-% test_generate %{{{
+% test_encode %{{{
 
-private define test_generate_empty_array () %{{{
+private define test_encode_empty_array () %{{{
 {
-   expect_value (json_generate ({}), `[]`);
+   expect_value (json_encode ({}), `[]`);
+   expect_value (json_encode (String_Type[0]), `[]`);
+   expect_value (json_encode (Integer_Type[0]), `[]`);
 }
 %}}}
 
-private define test_generate_empty_object () %{{{
+private define test_encode_empty_object () %{{{
 {
    json = Assoc_Type[];
-   expect_value (json_generate (json), `{}`);
+   expect_value (json_encode (json), `{}`);
 }
 %}}}
 
-private define test_generate_simple_array () %{{{
+private define test_encode_simple_array_from_list () %{{{
 {
-   json = json_generate ({ 1L, 2L, 3L, "Hello", "World!" });
+   json = json_encode ({ 1L, 2L, 3L, "Hello", "World!" });
    expect_value (json, `[
   1,
   2,
@@ -384,7 +386,35 @@ private define test_generate_simple_array () %{{{
 }
 %}}}
 
-private define test_generate_simple_object () %{{{
+private define test_encode_simple_array_from_string_array () %{{{
+{
+   json = json_encode ([ "Hello", "World!" ]);
+   expect_value (json, `[
+  "Hello",
+  "World!"
+]`);
+
+   json = json_encode ([ "Hello", "World!", NULL ]);
+   expect_value (json, `[
+  "Hello",
+  "World!",
+  null
+]`);
+}
+%}}}
+
+private define test_encode_simple_array_from_int_array () %{{{
+{
+   json = json_encode ([ 1, 2, 3 ]);
+   expect_value (json, `[
+  1,
+  2,
+  3
+]`);
+}
+%}}}
+
+private define test_encode_simple_object () %{{{
 {
    variable object = Assoc_Type[];
    object["i"] = 1L;
@@ -401,7 +431,7 @@ private define test_generate_simple_object () %{{{
    json["true"]   = '\1';
    json["false"]  = '\0';
    json["null"]   = NULL;
-   expect_value (json_generate (json; sort), `{
+   expect_value (json_encode (json; sort), `{
   "array": [
     1,
     2,
@@ -426,7 +456,7 @@ private define test_generate_simple_object () %{{{
 }
 %}}}
 
-private define test_generate_escaped_strings () %{{{
+private define test_encode_escaped_strings () %{{{
 {
    json = {
      `" \ /`,
@@ -437,7 +467,7 @@ private define test_generate_escaped_strings () %{{{
      "\u{D800} ... \u{DFFF}, \u{FFFE} & \u{FFFF}",  % illegal in normal UTF-8
      "\u{D834}\u{DD1E}"  % example from ietf.org/rfc/rfc4627.txt
    };
-   expect_value (json_generate (json), `[
+   expect_value (json_encode (json), `[
   "\" \\ /",
   "\b \f \n \r \t",
   "\u1234",
@@ -449,7 +479,7 @@ private define test_generate_escaped_strings () %{{{
 }
 %}}}
 
-private define test_generate_optional_whitespace () %{{{
+private define test_encode_optional_whitespace () %{{{
 {
    variable object = Assoc_Type[];
    object["three"] = 3;
@@ -465,15 +495,15 @@ private define test_generate_optional_whitespace () %{{{
     4
   ]
 ]`;
-  expect_value (json_generate (json),
+  expect_value (json_encode (json),
                 expected_json_text);
-  expect_value (json_generate (json; pre_vsep="", post_vsep="\n  ", pre_nsep="", post_nsep=" "),
+  expect_value (json_encode (json; pre_vsep="", post_vsep="\n  ", pre_nsep="", post_nsep=" "),
                 expected_json_text);
-  expect_value (json_generate (json; pre_vsep="none", post_vsep="newline\n two blanks", pre_nsep="none", post_nsep="non-whitespace ignored"),
+  expect_value (json_encode (json; pre_vsep="none", post_vsep="newline\n two blanks", pre_nsep="none", post_nsep="non-whitespace ignored"),
                 expected_json_text);
-  expect_value (json_generate (json; pre_vsep="", post_vsep="", pre_nsep="", post_nsep=""),
+  expect_value (json_encode (json; pre_vsep="", post_vsep="", pre_nsep="", post_nsep=""),
                 `[1,[2,{"three":3},4]]`);
-  expect_value (json_generate (json; pre_vsep=" ", post_vsep="\n    ", pre_nsep="\t", post_nsep="  "),
+  expect_value (json_encode (json; pre_vsep=" ", post_vsep="\n    ", pre_nsep="\t", post_nsep="  "),
 `[
     1 ,
     [
@@ -487,7 +517,7 @@ private define test_generate_optional_whitespace () %{{{
 }
 %}}}
 
-% test_generate_object_with_sorted_keys () %{{{
+% test_encode_object_with_sorted_keys () %{{{
 
 private define cmp_keys_by_int_value (key1, key2)
 {
@@ -495,7 +525,7 @@ private define cmp_keys_by_int_value (key1, key2)
    return (i1 < i2) ? -1 : (i1 > i2);
 }
 
-private define test_generate_object_with_sorted_keys ()
+private define test_encode_object_with_sorted_keys ()
 {
    json = Assoc_Type[];
    json["1"]   = "I";
@@ -503,37 +533,39 @@ private define test_generate_object_with_sorted_keys ()
    json["100"] = "C";
    json["10"]  = "X";
    json["5"]   = "V";
-   expect_value (json_generate (json; post_nsep="", post_vsep=" ", sort=&cmp_keys_by_int_value),
+   expect_value (json_encode (json; post_nsep="", post_vsep=" ", sort=&cmp_keys_by_int_value),
 		 `{ "1":"I", "5":"V", "10":"X", "50":"L", "100":"C" }`);
 }
 %}}}
 
-private define test_generate_errors () %{{{
+private define test_encode_errors () %{{{
 {
    expect_error (Json_Invalid_Json_Error, `invalid boolean value '\\123'; only '\\000' and '\\001' are allowed`,
-		 &json_generate, { '\123' });
+		 &json_encode, { '\123' });
    expect_error (Json_Invalid_Json_Error, "Struct_Type does not represent a JSON data structure",
-		 &json_generate, struct { invalid_type });
+		 &json_encode, struct { invalid_type });
 }
 %}}}
 
-private define test_generate ()
+private define test_encode ()
 {
-   test_generate_empty_array ();
-   test_generate_empty_object ();
-   test_generate_simple_array ();
-   test_generate_simple_object ();
-   test_generate_escaped_strings ();
-   test_generate_optional_whitespace ();
-   test_generate_object_with_sorted_keys ();
-   test_generate_errors ();
+   test_encode_empty_array ();
+   test_encode_empty_object ();
+   test_encode_simple_array_from_list ();
+   test_encode_simple_array_from_string_array ();
+   test_encode_simple_array_from_int_array ();
+   test_encode_simple_object ();
+   test_encode_escaped_strings ();
+   test_encode_optional_whitespace ();
+   test_encode_object_with_sorted_keys ();
+   test_encode_errors ();
 }
 %}}}
 
 define slsh_main ()
 {
    testing_module ("json");
-   test_parse ();
-   test_generate ();
+   test_decode ();
+   test_encode ();
    end_test ();
 }
