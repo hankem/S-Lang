@@ -26,6 +26,7 @@
 @autoconf/mkinsdir.sh 0755
 @autoconf/iconv.m4
 @autoconf/slangpc.in
+@autoconf/scripts/getsyslibs.sh 0755
 
 @changes.txt
 @configure 0755

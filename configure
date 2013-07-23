@@ -6244,7 +6244,19 @@ esac
       RPATH="$RPATH$libdir"
     fi
   else
-    RPATH="$RPATH:$libdir"
+    _already_there=0
+    for X in `echo $RPATH | sed 's/:/ /g'`
+    do
+      if test "$X" = "$libdir"
+      then
+        _already_there=1
+	break
+      fi
+    done
+    if test $_already_there = 0
+    then
+      RPATH="$RPATH:$libdir"
+    fi
   fi
 fi
 
@@ -7019,6 +7031,14 @@ EOF
   fi
 
 
+  if test -x $ac_aux_dir/scripts/getsyslibs.sh
+  then
+    JD_SYS_INCLIBS=`$ac_aux_dir/scripts/getsyslibs.sh`
+  else
+    JD_SYS_INCLIBS=""
+  fi
+
+
 
 
 
@@ -7119,6 +7139,7 @@ $as_echo_n "checking for the pcre library and header files ... " >&6; }
 	 /usr/local/pcre/include,/usr/local/pcre/lib \
 	 /usr/local/include/pcre,/usr/local/lib \
 	 /usr/local/include,/usr/local/lib \
+	 $JD_SYS_INCLIBS \
 	 /usr/include/pcre,/usr/lib \
 	 /usr/pcre/include,/usr/pcre/lib \
 	 /usr/include,/usr/lib \
@@ -7181,7 +7202,7 @@ $as_echo "yes: $jd_pcre_library_dir and $jd_pcre_include_dir" >&6; }
     jd_with_pcre_library="yes"
             PCRE_LIB=-L$jd_pcre_library_dir
     PCRE_LIB_DIR=$jd_pcre_library_dir
-    if test "X$jd_pcre_library_dir" = "X/usr/lib"
+    if test "X$jd_pcre_library_dir" = "X/usr/lib" -o "X$jd_pcre_include_dir" = "X/usr/include"
     then
       PCRE_LIB=""
     else
@@ -7231,7 +7252,19 @@ esac
       RPATH="$RPATH$jd_pcre_library_dir"
     fi
   else
-    RPATH="$RPATH:$jd_pcre_library_dir"
+    _already_there=0
+    for X in `echo $RPATH | sed 's/:/ /g'`
+    do
+      if test "$X" = "$jd_pcre_library_dir"
+      then
+        _already_there=1
+	break
+      fi
+    done
+    if test $_already_there = 0
+    then
+      RPATH="$RPATH:$jd_pcre_library_dir"
+    fi
   fi
 fi
 
@@ -7371,6 +7404,7 @@ $as_echo_n "checking for the onig library and header files oniguruma.h... " >&6;
 	 /usr/local/onig/include,/usr/local/onig/lib \
 	 /usr/local/include/onig,/usr/local/lib \
 	 /usr/local/include,/usr/local/lib \
+	 $JD_SYS_INCLIBS \
 	 /usr/include/onig,/usr/lib \
 	 /usr/onig/include,/usr/onig/lib \
 	 /usr/include,/usr/lib \
@@ -7433,7 +7467,7 @@ $as_echo "yes: $jd_onig_library_dir and $jd_onig_include_dir" >&6; }
     jd_with_onig_library="yes"
             ONIG_LIB=-L$jd_onig_library_dir
     ONIG_LIB_DIR=$jd_onig_library_dir
-    if test "X$jd_onig_library_dir" = "X/usr/lib"
+    if test "X$jd_onig_library_dir" = "X/usr/lib" -o "X$jd_onig_include_dir" = "X/usr/include"
     then
       ONIG_LIB=""
     else
@@ -7483,7 +7517,19 @@ esac
       RPATH="$RPATH$jd_onig_library_dir"
     fi
   else
-    RPATH="$RPATH:$jd_onig_library_dir"
+    _already_there=0
+    for X in `echo $RPATH | sed 's/:/ /g'`
+    do
+      if test "$X" = "$jd_onig_library_dir"
+      then
+        _already_there=1
+	break
+      fi
+    done
+    if test $_already_there = 0
+    then
+      RPATH="$RPATH:$jd_onig_library_dir"
+    fi
   fi
 fi
 
@@ -7623,6 +7669,7 @@ $as_echo_n "checking for the png library and header files ... " >&6; }
 	 /usr/local/png/include,/usr/local/png/lib \
 	 /usr/local/include/png,/usr/local/lib \
 	 /usr/local/include,/usr/local/lib \
+	 $JD_SYS_INCLIBS \
 	 /usr/include/png,/usr/lib \
 	 /usr/png/include,/usr/png/lib \
 	 /usr/include,/usr/lib \
@@ -7685,7 +7732,7 @@ $as_echo "yes: $jd_png_library_dir and $jd_png_include_dir" >&6; }
     jd_with_png_library="yes"
             PNG_LIB=-L$jd_png_library_dir
     PNG_LIB_DIR=$jd_png_library_dir
-    if test "X$jd_png_library_dir" = "X/usr/lib"
+    if test "X$jd_png_library_dir" = "X/usr/lib" -o "X$jd_png_include_dir" = "X/usr/include"
     then
       PNG_LIB=""
     else
@@ -7735,7 +7782,19 @@ esac
       RPATH="$RPATH$jd_png_library_dir"
     fi
   else
-    RPATH="$RPATH:$jd_png_library_dir"
+    _already_there=0
+    for X in `echo $RPATH | sed 's/:/ /g'`
+    do
+      if test "$X" = "$jd_png_library_dir"
+      then
+        _already_there=1
+	break
+      fi
+    done
+    if test $_already_there = 0
+    then
+      RPATH="$RPATH:$jd_png_library_dir"
+    fi
   fi
 fi
 
@@ -7875,6 +7934,7 @@ $as_echo_n "checking for the z library and header files zlib.h... " >&6; }
 	 /usr/local/z/include,/usr/local/z/lib \
 	 /usr/local/include/z,/usr/local/lib \
 	 /usr/local/include,/usr/local/lib \
+	 $JD_SYS_INCLIBS \
 	 /usr/include/z,/usr/lib \
 	 /usr/z/include,/usr/z/lib \
 	 /usr/include,/usr/lib \
@@ -7937,7 +7997,7 @@ $as_echo "yes: $jd_z_library_dir and $jd_z_include_dir" >&6; }
     jd_with_z_library="yes"
             Z_LIB=-L$jd_z_library_dir
     Z_LIB_DIR=$jd_z_library_dir
-    if test "X$jd_z_library_dir" = "X/usr/lib"
+    if test "X$jd_z_library_dir" = "X/usr/lib" -o "X$jd_z_include_dir" = "X/usr/include"
     then
       Z_LIB=""
     else
@@ -7987,7 +8047,19 @@ esac
       RPATH="$RPATH$jd_z_library_dir"
     fi
   else
-    RPATH="$RPATH:$jd_z_library_dir"
+    _already_there=0
+    for X in `echo $RPATH | sed 's/:/ /g'`
+    do
+      if test "$X" = "$jd_z_library_dir"
+      then
+        _already_there=1
+	break
+      fi
+    done
+    if test $_already_there = 0
+    then
+      RPATH="$RPATH:$jd_z_library_dir"
+    fi
   fi
 fi
 
@@ -8134,6 +8206,7 @@ $as_echo_n "checking for the iconv library and header files ... " >&6; }
 	 /usr/local/iconv/include,/usr/local/iconv/lib \
 	 /usr/local/include/iconv,/usr/local/lib \
 	 /usr/local/include,/usr/local/lib \
+	 $JD_SYS_INCLIBS \
 	 /usr/include/iconv,/usr/lib \
 	 /usr/iconv/include,/usr/iconv/lib \
 	 /usr/include,/usr/lib \
@@ -8196,7 +8269,7 @@ $as_echo "yes: $jd_iconv_library_dir and $jd_iconv_include_dir" >&6; }
     jd_with_iconv_library="yes"
             ICONV_LIB=-L$jd_iconv_library_dir
     ICONV_LIB_DIR=$jd_iconv_library_dir
-    if test "X$jd_iconv_library_dir" = "X/usr/lib"
+    if test "X$jd_iconv_library_dir" = "X/usr/lib" -o "X$jd_iconv_include_dir" = "X/usr/include"
     then
       ICONV_LIB=""
     else
@@ -8246,7 +8319,19 @@ esac
       RPATH="$RPATH$jd_iconv_library_dir"
     fi
   else
-    RPATH="$RPATH:$jd_iconv_library_dir"
+    _already_there=0
+    for X in `echo $RPATH | sed 's/:/ /g'`
+    do
+      if test "$X" = "$jd_iconv_library_dir"
+      then
+        _already_there=1
+	break
+      fi
+    done
+    if test $_already_there = 0
+    then
+      RPATH="$RPATH:$jd_iconv_library_dir"
+    fi
   fi
 fi
 

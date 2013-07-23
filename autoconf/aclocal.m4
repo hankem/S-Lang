@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.3.0-0: Added support for parsing /etc/ld.so.conf
 dnl# 0.2.7-3: Change ncurses5w-config to ncursesw5-config (Gilles Espinasse)
 dnl# 0.2.7-2: For the Makefile rules, use cd foo && bar instead of cd foo; bar
 dnl# 0.2.7-1: Use "$ARCH"elfobjs instead of elf"$ARCH"objs for better flexibility
@@ -85,6 +86,17 @@ EOF
 ])
 #}}}
 
+AC_DEFUN([JD_GET_SYS_INCLIBS], dnl#{{{
+[
+  if test -x $ac_aux_dir/scripts/getsyslibs.sh
+  then
+    JD_SYS_INCLIBS=`$ac_aux_dir/scripts/getsyslibs.sh`
+  else
+    JD_SYS_INCLIBS=""
+  fi
+])
+dnl#}}}
+
 AC_DEFUN([JD_SET_OBJ_SRC_DIR], dnl#{{{
 [
 #---------------------------------------------------------------------------
@@ -165,7 +177,19 @@ then
       RPATH="$RPATH$1"
     fi
   else
-    RPATH="$RPATH:$1"
+    _already_there=0
+    for X in `echo $RPATH | sed 's/:/ /g'`
+    do
+      if test "$X" = "$1"
+      then
+        _already_there=1
+	break
+      fi
+    done
+    if test $_already_there = 0
+    then
+      RPATH="$RPATH:$1"
+    fi
   fi
 fi
 ])
@@ -284,12 +308,12 @@ fi
 JD_UP_NAME[]_INC="-I[$]JD_UP_NAME[]_INCLUDE"
 JD_UP_NAME[]_LIB="-L[$]JD_UP_NAME[]_LIB_DIR"
 JD_SET_RPATH([$]JD_UP_NAME[]_LIB_DIR)
-dnl if test "X$GCC" = Xyes
-dnl then
-dnl    RPATH_[]JD_UP_NAME="-Wl,-R[$]JD_UP_NAME[]_LIB_DIR"
-dnl else
-dnl    RPATH_[]JD_UP_NAME="-R[$]JD_UP_NAME[]_LIB_DIR"
-dnl fi
+dnl# if test "X$GCC" = Xyes
+dnl# then
+dnl#    RPATH_[]JD_UP_NAME="-Wl,-R[$]JD_UP_NAME[]_LIB_DIR"
+dnl# else
+dnl#    RPATH_[]JD_UP_NAME="-R[$]JD_UP_NAME[]_LIB_DIR"
+dnl# fi
 
 # gcc under solaris is often not installed correctly.  Avoid specifying
 # -I/usr/include.
@@ -308,7 +332,7 @@ AC_SUBST(JD_UP_NAME[]_LIB)dnl
 AC_SUBST(JD_UP_NAME[]_INC)dnl
 AC_SUBST(JD_UP_NAME[]_LIB_DIR)dnl
 AC_SUBST(JD_UP_NAME[]_INCLUDE)dnl
-dnl AC_SUBST(RPATH_[]JD_UP_NAME)dnl
+dnl# AC_SUBST(RPATH_[]JD_UP_NAME)dnl
 undefine([JD_UP_NAME])dnl
 ])
 
@@ -845,6 +869,7 @@ dnl# If $3 is present, then also look in $3/include+$3/lib
 AC_DEFUN([JD_CHECK_FOR_LIBRARY], dnl#{{{
 [
   AC_REQUIRE([JD_EXPAND_PREFIX])dnl
+  AC_REQUIRE([JD_GET_SYS_INCLIBS])dnl
   dnl JD_UPPERCASE($1,JD_ARG1)
   JD_WITH_LIBRARY_PATHS($1)
   AC_MSG_CHECKING(for the $1 library and header files $2)
@@ -865,6 +890,7 @@ AC_DEFUN([JD_CHECK_FOR_LIBRARY], dnl#{{{
 	 /usr/local/$1/include,/usr/local/$1/lib \
 	 /usr/local/include/$1,/usr/local/lib \
 	 /usr/local/include,/usr/local/lib \
+	 $JD_SYS_INCLIBS \
 	 /usr/include/$1,/usr/lib \
 	 /usr/$1/include,/usr/$1/lib \
 	 /usr/include,/usr/lib \
@@ -928,7 +954,7 @@ AC_DEFUN([JD_CHECK_FOR_LIBRARY], dnl#{{{
     dnl#  gcc on some solaris systems.
     JD_ARG1[]_LIB=-L$jd_$1_library_dir
     JD_ARG1[]_LIB_DIR=$jd_$1_library_dir
-    if test "X$jd_$1_library_dir" = "X/usr/lib"
+    if test "X$jd_$1_library_dir" = "X/usr/lib" -o "X$jd_$1_include_dir" = "X/usr/include"
     then
       JD_ARG1[]_LIB=""
     else
