@@ -361,6 +361,8 @@ private define test_decode ()
 private define test_encode_empty_array () %{{{
 {
    expect_value (json_encode ({}), `[]`);
+   expect_value (json_encode (String_Type[0]), `[]`);
+   expect_value (json_encode (Integer_Type[0]), `[]`);
 }
 %}}}
 
@@ -371,7 +373,7 @@ private define test_encode_empty_object () %{{{
 }
 %}}}
 
-private define test_encode_simple_array () %{{{
+private define test_encode_simple_array_from_list () %{{{
 {
    json = json_encode ({ 1L, 2L, 3L, "Hello", "World!" });
    expect_value (json, `[
@@ -380,6 +382,34 @@ private define test_encode_simple_array () %{{{
   3,
   "Hello",
   "World!"
+]`);
+}
+%}}}
+
+private define test_encode_simple_array_from_string_array () %{{{
+{
+   json = json_encode ([ "Hello", "World!" ]);
+   expect_value (json, `[
+  "Hello",
+  "World!"
+]`);
+
+   json = json_encode ([ "Hello", "World!", NULL ]);
+   expect_value (json, `[
+  "Hello",
+  "World!",
+  null
+]`);
+}
+%}}}
+
+private define test_encode_simple_array_from_int_array () %{{{
+{
+   json = json_encode ([ 1, 2, 3 ]);
+   expect_value (json, `[
+  1,
+  2,
+  3
 ]`);
 }
 %}}}
@@ -521,7 +551,9 @@ private define test_encode ()
 {
    test_encode_empty_array ();
    test_encode_empty_object ();
-   test_encode_simple_array ();
+   test_encode_simple_array_from_list ();
+   test_encode_simple_array_from_string_array ();
+   test_encode_simple_array_from_int_array ();
    test_encode_simple_object ();
    test_encode_escaped_strings ();
    test_encode_optional_whitespace ();
