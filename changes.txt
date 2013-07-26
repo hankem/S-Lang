@@ -205,6 +205,8 @@ Changes since 2.2.4
     json_generate/json_parse functions were renamed to
     json_encode/json_decode.
 94. configure: added support for parsing /etc/ld.so.conf
+95. modules/json.sl: Use bstrcat throughout json_encode; additional
+    renames: generate->encode, parse->decode. (Manfred Hanke).
 
 {{{ Previous Versions
 
