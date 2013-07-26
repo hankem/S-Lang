@@ -10,7 +10,7 @@ static void api_create_list (void)
 	return;
      }
 
-   if (NULL == (list = SLang_create_list ()))
+   if (NULL == (list = SLang_create_list (0)))
      {
 	SLang_verror (SL_Any_Error, "Failed: (API) SLang_create_list");
 	return;
@@ -66,13 +66,19 @@ static void api_list_insert (void)
 
 static void test_push_and_pop_list (void)
 {
-   SLang_List_Type *l1 = SLang_create_list ();
+   SLang_List_Type *l1 = SLang_create_list (0);
    SLang_List_Type *l2;
 
-   SLang_push_list (l1, 1);
-   SLang_pop_list (&l2);
-   if (l2 != l1)
-     SLang_verror (SL_Any_Error, "Failed: (API) pop yields pointer to previously pushed list");
+   if (-1 == SLang_push_list (l1, 1))
+     return;
+
+   if (0 == SLang_pop_list (&l2))
+     {
+	if (l2 != l1)
+	  SLang_verror (SL_Any_Error, "Failed: (API) pop yields pointer to previously pushed list");
+
+	SLang_free_list (l2);
+     }
 }
 
 static void pop_and_push_list (void)

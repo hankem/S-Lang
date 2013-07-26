@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-95"
+#define SLANG_VERSION_STRING "pre2.3.0-96"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -699,7 +699,7 @@ SL_EXTERN int SLang_assoc_put (SLang_Assoc_Array_Type *, SLstr_Type *);
 /* SLang_assoc_put takes the object from the stack */
 
 typedef struct _pSLang_List_Type SLang_List_Type;
-SL_EXTERN SLang_List_Type *SLang_create_list (void);
+SL_EXTERN SLang_List_Type *SLang_create_list (int);
 SL_EXTERN int SLang_list_append (SLang_List_Type *, int);
 SL_EXTERN int SLang_list_insert (SLang_List_Type *, int);
 SL_EXTERN int SLang_push_list (SLang_List_Type *, int free_list);

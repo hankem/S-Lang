@@ -40,20 +40,21 @@ USA.
  *    copy (list)
  */
 
-#define CHUNK_SIZE 128
-
 typedef struct _Chunk_Type
 {
    struct _Chunk_Type *next;
    struct _Chunk_Type *prev;
-   int num_elements;
-   SLang_Object_Type *elements;	       /* CHUNK_SIZE of em */
+   SLindex_Type num_elements;
+   SLindex_Type chunk_size;
+   SLang_Object_Type *elements;	       /* chunk_size of em */
 }
 Chunk_Type;
 
 struct _pSLang_List_Type
 {
    SLindex_Type length;
+#define DEFAULT_CHUNK_SIZE	128
+   SLuindex_Type default_chunk_size;
    Chunk_Type *first;
    Chunk_Type *last;
 
@@ -78,7 +79,7 @@ static void delete_chunk (Chunk_Type *c)
    SLfree ((char *) c);
 }
 
-static Chunk_Type *new_chunk (void)
+static Chunk_Type *new_chunk (unsigned int size)
 {
    Chunk_Type *c;
 
@@ -86,12 +87,13 @@ static Chunk_Type *new_chunk (void)
    if (c == NULL)
      return c;
 
-   c->elements = (SLang_Object_Type *)SLcalloc(CHUNK_SIZE, sizeof(SLang_Object_Type));
+   c->elements = (SLang_Object_Type *)SLcalloc(size, sizeof(SLang_Object_Type));
    if (c->elements == NULL)
      {
 	SLfree ((char *) c);
 	return NULL;
      }
+   c->chunk_size = size;
    return c;
 }
 
@@ -121,19 +123,19 @@ static void free_list (SLang_List_Type *list)
    SLfree ((char *) list);
 }
 
-static int make_chunk_chain (int length, Chunk_Type **firstp, Chunk_Type **lastp)
+static int make_chunk_chain (SLindex_Type length, Chunk_Type **firstp, Chunk_Type **lastp, int chunk_size)
 {
    Chunk_Type *last, *first;
 
-   if (NULL == (first = new_chunk ()))
+   if (NULL == (first = new_chunk (chunk_size)))
      return -1;
-   length -= CHUNK_SIZE;
+   length -= chunk_size;
 
    last = first;
    while (length > 0)
      {
 	Chunk_Type *next;
-	if (NULL == (next = new_chunk ()))
+	if (NULL == (next = new_chunk (chunk_size)))
 	  {
 	     delete_chunk_chain (first);
 	     return -1;
@@ -141,21 +143,28 @@ static int make_chunk_chain (int length, Chunk_Type **firstp, Chunk_Type **lastp
 	last->next = next;
 	next->prev = last;
 	last = next;
-	length -= CHUNK_SIZE;
+	length -= chunk_size;
      }
    *firstp = first;
    *lastp = last;
    return 0;
 }
 
-static SLang_List_Type *allocate_list (void)
+static SLang_List_Type *allocate_list (SLindex_Type chunk_size)
 {
    SLang_List_Type *list;
 
+   if (chunk_size <= 0)
+     chunk_size = DEFAULT_CHUNK_SIZE;
+   else if (chunk_size > 2*DEFAULT_CHUNK_SIZE)
+     chunk_size = 2*DEFAULT_CHUNK_SIZE;
+
    list = (SLang_List_Type *)SLcalloc (1, sizeof (SLang_List_Type));
    if (list != NULL)
-     list->ref_count = 1;
-
+     {
+	list->ref_count = 1;
+	list->default_chunk_size = chunk_size;
+     }
    return list;
 }
 
@@ -272,7 +281,7 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a
    SLang_Object_Type *obj, *obj_max, *new_obj, *new_obj_max;
 
    if (length == 0)
-     return allocate_list ();
+     return allocate_list (0);
 
    if ((indx_a < 0) || (indx_a + (length - 1) >= list->length))
      {
@@ -280,10 +289,10 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a
 	return NULL;
      }
 
-   if (NULL == (new_list = allocate_list ()))
+   if (NULL == (new_list = allocate_list (length)))
      return NULL;
 
-   if (-1 == make_chunk_chain (length, &new_list->first, &new_list->last))
+   if (-1 == make_chunk_chain (length, &new_list->first, &new_list->last, list->default_chunk_size))
      {
 	free_list (new_list);
 	return NULL;
@@ -299,7 +308,7 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a
    new_list->length = length;
    new_c = new_list->first;
    new_obj = new_c->elements;
-   new_obj_max = new_obj + CHUNK_SIZE;
+   new_obj_max = new_obj + new_c->chunk_size;
 
    for (i = 0; i < length; i++)
      {
@@ -313,7 +322,7 @@ static SLang_List_Type *make_sublist (SLang_List_Type *list, SLindex_Type indx_a
 	  {
 	     new_c = new_c->next;
 	     new_obj = new_c->elements;
-	     new_obj_max = new_obj + CHUNK_SIZE;
+	     new_obj_max = new_obj + new_c->chunk_size;
 	  }
 
 	if ((-1 == _pSLpush_slang_obj (obj))
@@ -391,20 +400,22 @@ static int insert_element (SLang_List_Type *list, SLang_Object_Type *obj, SLinde
 {
    Chunk_Type *c, *c1;
    SLang_Object_Type *elem;
-   int num;
+   SLindex_Type num;
    int equality_ok = 0;
 
    if (indx == 0)
      {
 	c = list->first;
 	if ((c != NULL)
-	    && (c->num_elements < CHUNK_SIZE))
+	    && (c->num_elements < c->chunk_size))
 	  {
 	     slide_right (c, 0);
 	     c->elements[0] = *obj;
 	     goto the_return;
 	  }
-	if (NULL == (c = new_chunk ()))
+	if (list->default_chunk_size < DEFAULT_CHUNK_SIZE)
+	  list->default_chunk_size *= 2;
+	if (NULL == (c = new_chunk (list->default_chunk_size)))
 	  return -1;
 
 	c->next = list->first;
@@ -422,12 +433,16 @@ static int insert_element (SLang_List_Type *list, SLang_Object_Type *obj, SLinde
    if (indx == list->length)
      {
 	c = list->last;
-	if (c->num_elements < CHUNK_SIZE)
+	if (c->num_elements < c->chunk_size)
 	  {
 	     c->elements[c->num_elements] = *obj;
 	     goto the_return;
 	  }
-	if (NULL == (c = new_chunk ()))
+
+	if (list->default_chunk_size < DEFAULT_CHUNK_SIZE)
+	  list->default_chunk_size *= 2;
+
+	if (NULL == (c = new_chunk (list->default_chunk_size)))
 	  return -1;
 	c->prev = list->last;
 	list->last->next = c;
@@ -439,18 +454,21 @@ static int insert_element (SLang_List_Type *list, SLang_Object_Type *obj, SLinde
    if (NULL == (elem = find_nth_element (list, indx, &c)))
      return -1;
 
-   if (c->num_elements < CHUNK_SIZE)
+   if (c->num_elements < c->chunk_size)
      {
 	slide_right (c, elem - c->elements);
 	*elem = *obj;
 	goto the_return;
      }
 
-   if (NULL == (c1 = new_chunk ()))
+   if (list->default_chunk_size < DEFAULT_CHUNK_SIZE)
+     list->default_chunk_size *= 2;
+
+   if (NULL == (c1 = new_chunk (list->default_chunk_size)))
      return -1;
 
-   num = CHUNK_SIZE - (elem - c->elements);
-   if (num == CHUNK_SIZE)
+   num = c->chunk_size - (elem - c->elements);
+   if (num == c->chunk_size)
      {
 	c1->next = c;
 	c1->prev = c->prev;
@@ -570,8 +588,16 @@ static int push_list (SLang_List_Type *list, int free_flag)
 static void list_new (void)
 {
    SLang_List_Type *list;
+   int len = DEFAULT_CHUNK_SIZE;
 
-   if (NULL == (list = allocate_list ()))
+   if (SLang_Num_Function_Args == 1)
+     {
+	if (-1 == SLang_pop_integer (&len))
+	  return;
+	if (len <= 0) len = DEFAULT_CHUNK_SIZE;
+     }
+
+   if (NULL == (list = allocate_list (len)))
      return;
 
    (void) push_list (list, 1);
@@ -646,7 +672,7 @@ static int pop_as_list_internal (unsigned int count)
 {
    SLang_List_Type *list;
 
-   if (NULL == (list = allocate_list ()))
+   if (NULL == (list = allocate_list (count)))
      return -1;
 
    while (count)
@@ -1035,10 +1061,11 @@ static int _pSLlist_aget (SLtype type, unsigned int num_indices)
 	return ret;
      }
 
-   if (NULL == (new_list = allocate_list ()))
+   num = ind_at->num_elements;
+
+   if (NULL == (new_list = allocate_list (num)))
      goto free_and_return;
 
-   num = ind_at->num_elements;
    idx_data = (SLindex_Type *)ind_at->data;
    for (i = 0; i < num; i++)
      {
@@ -1262,9 +1289,9 @@ int _pSLang_init_sllist (void)
    return 0;
 }
 
-SLang_List_Type *SLang_create_list ()
+SLang_List_Type *SLang_create_list (SLindex_Type chunk_size)
 {
-   return allocate_list ();
+   return allocate_list (chunk_size);
 }
 
 int SLang_list_append (SLang_List_Type *list, int indx)

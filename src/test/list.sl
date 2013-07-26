@@ -316,6 +316,28 @@ private define test_api_pop_and_push_list ()
 }
 test_api_pop_and_push_list ();
 
+private define test_size_hint (n)
+{
+   variable l = list_new (n);
+   while (length(l) < 1024)
+     {
+	list_append (l, "foo");
+     }
+
+   l = {"a", "b"};
+
+   while (length(l) < 1024)
+     {
+	list_append (l, "foo");
+     }
+}
+loop (10) test_size_hint (0);
+loop (10) test_size_hint (1);
+loop (10) test_size_hint (2);
+loop (10) test_size_hint (127);
+loop (10) test_size_hint (128);
+loop (10) test_size_hint (129);
+loop (10) test_size_hint (500);
 
 print ("Ok\n");
 

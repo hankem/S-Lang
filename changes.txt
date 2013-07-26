@@ -207,6 +207,8 @@ Changes since 2.2.4
 94. configure: added support for parsing /etc/ld.so.conf
 95. modules/json.sl: Use bstrcat throughout json_encode; additional
     renames: generate->encode, parse->decode. (Manfred Hanke).
+96. src/sllist.c: To decrease memory usages by lists, a size hint may
+    be specified upon list creation.
 
 {{{ Previous Versions
 
