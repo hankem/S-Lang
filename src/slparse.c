@@ -720,13 +720,18 @@ static void rpn_parse_line (_pSLang_Token_Type *tok)
    while (EOF_TOKEN != _pSLget_rpn_token (tok));
 }
 
-static int get_identifier_token (_pSLang_Token_Type *tok)
+static int get_identifier_token (_pSLang_Token_Type *tok, int string_ok)
 {
+   int type = get_token (tok);
+   if ((type == IDENT_TOKEN)
+       || (string_ok && (type == STRING_TOKEN)))
+     return 0;
+
    if (IDENT_TOKEN == get_token (tok))
      return IDENT_TOKEN;
 
    _pSLparse_error (SL_SYNTAX_ERROR, "Expecting identifier", tok, 0);
-   return tok->type;
+   return -1;
 }
 
 static void define_function (_pSLang_Token_Type *ctok, unsigned char type)
@@ -748,7 +753,7 @@ static void define_function (_pSLang_Token_Type *ctok, unsigned char type)
      }
 
    init_token (&fname);
-   if (IDENT_TOKEN != get_identifier_token (&fname))
+   if (-1 == get_identifier_token (&fname, 0))
      {
 	free_token (&fname);
 	return;
@@ -1932,7 +1937,7 @@ static _pSLang_Token_Type *
 	  }
 	else
 	  {
-	     if (IDENT_TOKEN != ctok->type)
+	     if ((IDENT_TOKEN != ctok->type) && (ctok->type != STRING_TOKEN))
 	       break;
 	  }
 
@@ -2697,7 +2702,7 @@ static int get_identifier_expr_token (_pSLang_Token_Type *ctok)
 {
    _pSLang_Token_Type next_token;
 
-   if (IDENT_TOKEN != get_identifier_token (ctok))
+   if (-1 == get_identifier_token (ctok, 0))
      return -1;
 
    init_token (&next_token);
@@ -2707,7 +2712,7 @@ static int get_identifier_expr_token (_pSLang_Token_Type *ctok)
 	return IDENT_TOKEN;
      }
 
-   if (IDENT_TOKEN != get_identifier_token (&next_token))
+   if (-1 == get_identifier_token (&next_token, 0))
      {
 	free_token (&next_token);
 	return -1;
@@ -2719,7 +2724,7 @@ static int get_identifier_expr_token (_pSLang_Token_Type *ctok)
 	return -1;
      }
    free_token (&next_token);
-   return IDENT_TOKEN;
+   return 0;
 }
 
 /* postfix-expression:
@@ -2817,7 +2822,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 
       case BAND_TOKEN:
 #if 0
-	if (IDENT_TOKEN != get_identifier_expr_token (ctok))
+	if (-1 == get_identifier_expr_token (ctok))
 	  break;
 
 	ctok->type = _REF_TOKEN;
@@ -2882,7 +2887,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	get_token (ctok);
 	if (ctok->type == OPAREN_TOKEN)
 	  {
-	     if (IDENT_TOKEN == get_identifier_expr_token (ctok))
+	     if (-1 != get_identifier_expr_token (ctok))
 	       {
 		  ctok->type = TMP_TOKEN;
 		  append_token (ctok);
@@ -2964,7 +2969,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
 	      * and f(a).X[b].c ==> "c" b "X" a f . ARRAY .
 	      * Also, f(a).X[b] = g(x); ==> x g b "X" a f .
 	      */
-	     if (IDENT_TOKEN != get_identifier_token (ctok))
+	     if (-1 == get_identifier_token (ctok, 1))
 	       return;
 
 	     ctok->type = DOT_TOKEN;

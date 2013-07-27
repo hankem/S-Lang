@@ -265,10 +265,10 @@ static _pSLang_Struct_Type *
 	     _pSLang_verror (SL_APPLICATION_ERROR, "A struct field name cannot be NULL");
 	     goto return_error;
 	  }
-
+#if 0
 	if (-1 == _pSLcheck_identifier_syntax (name))
 	  goto return_error;
-
+#endif
 	if (NULL == (f->name = SLang_create_slstring (name)))
 	  goto return_error;
 
@@ -2425,3 +2425,69 @@ int _pSLstruct_push_field_ref (SLFUTURE_CONST char *name)
    return ret;
 }
 
+SLang_Struct_Type *SLang_create_struct (SLFUTURE_CONST char **field_names, unsigned int nfields)
+{
+   SLang_Struct_Type *s = create_struct (nfields, field_names, NULL, NULL);
+   if (s != NULL)
+     s->num_refs = 1;
+   return s;
+}
+
+int SLang_pop_struct_field (SLang_Struct_Type *s, char *name)
+{
+   _pSLstruct_Field_Type *f;
+   SLang_Object_Type obj;
+
+   if (NULL == (f = pop_field (s, name, find_field_via_strcmp)))
+     return -1;
+
+   if (-1 == SLang_pop (&obj))
+     return -1;
+
+   if (f->obj.o_data_type != SLANG_NULL_TYPE)
+     SLang_free_object (&f->obj);
+
+   f->obj = obj;
+   return 0;
+}
+
+int SLang_push_struct_field (SLang_Struct_Type *s, char *name)
+{
+   _pSLstruct_Field_Type *f;
+
+   if (NULL == (f = pop_field (s, name, find_field_via_strcmp)))
+     return -1;
+
+   return _pSLpush_slang_obj (&f->obj);
+}
+
+int SLang_pop_struct_fields (SLang_Struct_Type *s, int n)
+{
+   _pSLstruct_Field_Type *fields, *f;
+
+   if (n < 0)
+     n = (int) s->nfields;
+   else if ((unsigned int)n > s->nfields)
+     {
+	_pSLang_verror (SL_Application_Error, "SLang_pop_struct_fields called with too many field values");
+	return -1;
+     }
+
+   fields = s->fields;
+   f = fields + n;
+   while (f > fields)
+     {
+	SLang_Object_Type obj;
+
+	f--;
+
+	if (-1 == SLang_pop (&obj))
+	  return -1;
+
+	if (f->obj.o_data_type != SLANG_NULL_TYPE)
+	  SLang_free_object (&f->obj);
+
+	f->obj = obj;
+     }
+   return 0;
+}

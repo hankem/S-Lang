@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-96"
+#define SLANG_VERSION_STRING "pre2.3.0-97"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -685,6 +685,15 @@ typedef struct _pSLang_Struct_Type SLang_Struct_Type;
 SL_EXTERN void SLang_free_struct (SLang_Struct_Type *);
 SL_EXTERN int SLang_push_struct (SLang_Struct_Type *);
 SL_EXTERN int SLang_pop_struct (SLang_Struct_Type **);
+
+SL_EXTERN SLang_Struct_Type *SLang_create_struct (SLFUTURE_CONST char **field_names, unsigned int nfields);
+/* Push the specified field value onto the stack */
+SL_EXTERN int SLang_push_struct_field (SLang_Struct_Type *s, char *name);
+/* Pop the value from the stack into the specified field */
+SL_EXTERN int SLang_pop_struct_field (SLang_Struct_Type *s, char *name);
+/* Set the first n fields of the struct from the stack.  If n < 0, pop all fields. */
+SL_EXTERN int SLang_pop_struct_fields (SLang_Struct_Type *s, int n);
+
 
 typedef struct _pSLang_Assoc_Array_Type SLang_Assoc_Array_Type;
 

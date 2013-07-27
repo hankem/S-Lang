@@ -728,4 +728,8 @@ SLANG2.3.0 {
 		SLang_push_list;
 		SLang_pop_list;
 		SLang_free_list;
+		SLang_create_struct;
+		SLang_push_struct_field;
+		SLang_pop_struct_field;
+		SLang_pop_struct_fields;
 } SLANG2.2.3;

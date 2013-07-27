@@ -209,6 +209,19 @@ Changes since 2.2.4
     renames: generate->encode, parse->decode. (Manfred Hanke).
 96. src/sllist.c: To decrease memory usages by lists, a size hint may
     be specified upon list creation.
+97. Allow struct field names to be an arbitrary string.  When
+    referencing such a field, quotes must be used:
+
+         X = struct {"some-field", some_other_field };
+	 X.some_other_field = 3;
+	 X."some-field" = 4;
+
+   New struct-related functions were added to the C API:
+
+     SLang_create_struct
+     SLang_push_struct_field
+     SLang_pop_struct_field
+     SLang_pop_struct_fields
 
 {{{ Previous Versions
 
