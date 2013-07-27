@@ -125,6 +125,51 @@ private define json_encode_object (indent, q, object) %{{{
 add_type_handler (Assoc_Type, &json_encode_object);
 %}}}
 
+private define json_encode_struct (indent, q, object) %{{{
+{
+   variable json = "{"B;
+   variable keys = get_struct_field_names (object);
+   variable n_values = length (keys);
+   if (n_values)
+     {
+	% pvs indent KEY nsep VAL vsep pvs indent KEY nsep VAL vsep
+	% ... pvs indent KEY nsep VAL pvs
+
+	variable new_indent = bstrcat (indent, q.indent);
+	variable sep = bstrcat (q.vsep, q.post_vsep, new_indent);
+	variable nsep = q.nsep;
+
+	variable key = keys[0];
+	variable val = get_struct_field(object, key);
+	variable type = typeof (val);
+	variable func = get_encode_func (type);
+	json = bstrcat (__tmp(json), q.post_vsep, new_indent,
+			_json_encode_string (key), nsep, (@func)(new_indent, q, val));
+
+	variable i;
+	_for i (1, n_values-1)
+	  {
+	     key = keys[i];
+	     val = get_struct_field(object, key);
+	     variable next_type = typeof (val);
+	     if (next_type == String_Type)
+	       {
+		  json = bstrcat (__tmp(json), sep, _json_encode_string (key),
+				  nsep, _json_encode_string (val));
+		  continue;
+	       }
+
+	     if (next_type != type)
+	       (type, func) = (next_type, get_encode_func (next_type));
+	     json = bstrcat (__tmp(json), sep, _json_encode_string (key),
+			     nsep, (@func)(new_indent, q, val));
+          }
+	json = bstrcat (__tmp(json), q.post_vsep);
+     }
+   return bstrcat (__tmp(json), indent, "}");
+}
+add_type_handler (Struct_Type, &json_encode_struct);
+
 private define json_encode_array (indent, q, array) %{{{
 {
    variable json = "["B;
@@ -178,6 +223,9 @@ private define default_handler (indent, q, data) %{{{
 {
    if (0 < __is_numeric (data) < 3)
      return json_encode_number (data);
+
+   if (is_struct_type (data))
+     return json_encode_struct (data);
 
    variable type = _typeof (data);
    throw Json_Invalid_Json_Error, "$type does not represent a JSON data structure"$;

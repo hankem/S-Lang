@@ -17,6 +17,7 @@ define failed ()
    s = sprintf (__push_args(s));
    () = fprintf (stderr, "Failed: %s\n", s);
    tests_failed++;
+   throw RunTimeError;
 }
 
 define end_test ()
@@ -46,6 +47,8 @@ define expect_size (var, expected_size)
 {
    if (typeof (var) == Assoc_Type)
      var = assoc_get_keys (var);
+   if (typeof (var) == Struct_Type)
+     var = get_struct_field_names (var);
    variable len = length (var);
    if (len != expected_size)
      failed ("expected size %d, but was %d", expected_size, len);
@@ -63,6 +66,20 @@ define expect_assoc_key_value (assoc, key, expected_value)
      failed (`expected assoc key "$key"`$);
   else
      expect_value (assoc[key], expected_value);
+}
+
+define expect_struct_key (s, key)
+{
+   ifnot (any (get_struct_field_names(s) == key))
+     failed (`expected struct key "$key"`$);
+}
+
+define expect_struct_key_value (s, key, expected_value)
+{
+   ifnot (any (get_struct_field_names(s) == key))
+     failed (`expected struct key "$key"`$);
+   else
+     expect_value (get_struct_field (s, key), expected_value);
 }
 
 private define descr (error)

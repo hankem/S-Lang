@@ -409,7 +409,10 @@ static int parse_and_push_literal (Parse_Type *p) /*{{{*/
 }
 /*}}}*/
 
-static int parse_and_push_object (Parse_Type *, int);
+static int parse_and_push_object_as_struct (Parse_Type *, int);
+#if 0
+static int parse_and_push_object_as_assoc (Parse_Type *, int);
+#endif
 static int parse_and_push_array (Parse_Type *, int);
 static int parse_and_push_value (Parse_Type *p, int only_toplevel_values) /*{{{*/
 {
@@ -442,7 +445,7 @@ static int parse_and_push_value (Parse_Type *p, int only_toplevel_values) /*{{{*
    if (skip_char (p, BEGIN_OBJECT))
      {
 	p->depth++;
-	ret = parse_and_push_object (p, only_toplevel_values);
+	ret = parse_and_push_object_as_struct (p, only_toplevel_values);
 	p->depth--;
 	return ret;
      }
@@ -463,7 +466,8 @@ static int parse_and_push_value (Parse_Type *p, int only_toplevel_values) /*{{{*
 }
 /*}}}*/
 
-static int parse_and_push_object (Parse_Type *p, int toplevel) /*{{{*/
+#if 0
+static int parse_and_push_object_as_assoc (Parse_Type *p, int toplevel) /*{{{*/
 {
    SLang_Assoc_Array_Type *assoc;
    char buf[512];
@@ -535,6 +539,123 @@ static int parse_and_push_object (Parse_Type *p, int toplevel) /*{{{*/
 
 return_error:
    SLang_free_assoc (assoc);
+   return -1;
+}
+/*}}}*/
+#endif
+
+static void free_string_array (char **sp, unsigned int n)
+{
+   if (sp == NULL)
+     return;
+
+   while (n > 0)
+     {
+	n--;
+	SLang_free_slstring (sp[n]);
+     }
+   SLfree ((char *)sp);
+}
+
+static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
+{
+   char buf[512];
+   unsigned int num_fields, max_fields;
+   char **fields;
+
+   max_fields = 16;
+   if (NULL == (fields = (char **)SLmalloc (max_fields * sizeof (char *))))
+     return -1;
+   num_fields = 0;
+
+   skip_white (p);
+   if (! looking_at (p, END_OBJECT)) do
+     {
+	char *keyword;
+	char *str;
+
+	skip_white (p);
+	if (! skip_char (p, STRING_DELIMITER))
+	  {
+	     SLang_verror (Json_Parse_Error, "Expected a string while parsing a JSON object, found " DESCRIBE_CHAR_FMT, DESCRIBE_CHAR(*p->ptr));
+	     goto return_error;
+	  }
+
+	str = parse_string (p, buf, sizeof (buf), NULL);  /* ignoring binary strings */
+	if (str == NULL)
+	  goto return_error;
+
+	keyword = SLang_create_slstring (str);
+	if (str != buf)
+	  SLfree (str);
+
+	if (keyword == NULL)
+	  goto return_error;
+
+	if (num_fields == max_fields)
+	  {
+	     char **new_fields;
+	     unsigned int new_max_fields = max_fields + 32;
+
+	     if (NULL == (new_fields = (char **) SLrealloc ((char *)fields, new_max_fields*sizeof(char *))))
+	       {
+		  SLang_free_slstring (keyword);
+		  goto return_error;
+	       }
+	     fields = new_fields;
+	     max_fields = new_max_fields;
+	  }
+	fields[num_fields++] = keyword;
+
+	skip_white (p);
+	if (! skip_char (p, NAME_SEPARATOR))
+	  {
+	     SLang_verror (Json_Parse_Error, "Expected a '%c' while parsing a JSON object, found " DESCRIBE_CHAR_FMT,
+			   NAME_SEPARATOR, DESCRIBE_CHAR(*p->ptr));
+	     goto return_error;
+	  }
+
+	if (-1 == parse_and_push_value (p, 0))
+	  goto return_error;
+
+	skip_white (p);
+     }
+   while (skip_char (p, VALUE_SEPARATOR));
+
+   if (skip_char (p, END_OBJECT))
+     {
+	skip_white (p);
+	if (! toplevel || looking_at (p, 0))
+	  {
+	     SLang_Struct_Type *s;
+
+	     if (NULL == (s = SLang_create_struct (fields, num_fields)))
+	       goto return_error;
+
+	     if ((-1 == SLang_pop_struct_fields (s, num_fields))
+		 || (-1 == SLang_push_struct (s)))
+	       {
+		  SLang_free_struct (s);
+		  goto return_error;
+	       }
+	     SLang_free_struct (s);
+	     free_string_array (fields, num_fields);
+	     return 0;
+	  }
+
+	SLang_verror (Json_Parse_Error, "Expected end of input after parsing JSON object, found " DESCRIBE_CHAR_FMT, DESCRIBE_CHAR(*p->ptr));
+     }
+   else
+     {
+	if (looking_at (p, 0))
+	  SLang_verror (Json_Parse_Error, "Unexpected end of input seen while parsing a JSON object");
+	else
+	  SLang_verror (Json_Parse_Error, "Expected '%c' or '%c' while parsing a JSON object, found " DESCRIBE_CHAR_FMT,
+			VALUE_SEPARATOR, END_OBJECT, DESCRIBE_CHAR(*p->ptr));
+     }
+
+return_error:
+   free_string_array (fields, num_fields);
    return -1;
 }
 /*}}}*/

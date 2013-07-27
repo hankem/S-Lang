@@ -223,6 +223,9 @@ Changes since 2.2.4
      SLang_pop_struct_field
      SLang_pop_struct_fields
 
+98. Changed the json module to use structs instead of associative
+    arrays.  (Paul Boekholt).
+
 {{{ Previous Versions
 
 Changes since 2.2.3
