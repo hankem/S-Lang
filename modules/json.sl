@@ -187,6 +187,20 @@ Type_Map[where (_isnull (Type_Map))] = &default_handler;
 
 % process_qualifiers %{{{
 
+private define split_post_vsep (post_vsep) %{{{
+{
+   variable indent = "";
+   variable parts = strchop (post_vsep, '\n', 0);
+   if (length (parts) > 1)
+     {
+	indent = parts[-1];
+	parts[-1] = "";
+	post_vsep = strjoin (parts, "\n");
+     }
+  return (indent, post_vsep);
+}
+%}}}
+
 private define only_whitespace (s)
 {
    return ""B + str_delete_chars (s, "^ \t\n\r");
@@ -194,19 +208,11 @@ private define only_whitespace (s)
 
 private define process_qualifiers ()
 {
-   variable post_vsep = "|" + qualifier ("post_vsep", "\n  ");
-   variable indent = "";
-   variable tok = strtok (post_vsep, "\n");
-   if (length (tok) > 1)
-     {
-	indent = tok[-1];
-	tok[-1] = "";
-	post_vsep = strjoin (tok, "\n");
-     }
-
+   variable post_vsep = split_post_vsep (qualifier ("post_vsep", ""));
+   variable indent = ();  % other return value from split_post_vsep
    variable q = struct {
       pre_nsep  = only_whitespace (qualifier ("pre_nsep", "")),
-      post_nsep = only_whitespace (qualifier ("post_nsep", " ")),
+      post_nsep = only_whitespace (qualifier ("post_nsep", "")),
       pre_vsep  = only_whitespace (qualifier ("pre_vsep", "")),
       post_vsep = only_whitespace (post_vsep),
       indent    = only_whitespace (indent),

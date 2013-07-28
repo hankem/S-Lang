@@ -359,6 +359,10 @@ private define test_decode ()
 
 % test_encode %{{{
 
+% explicit whitespace-qualifiers:
+variable no_whitespaces = struct { pre_nsep="", post_nsep="", pre_vsep="", post_vsep="" };
+variable some_whitespaces = struct { @no_whitespaces, post_nsep=" ", post_vsep="\n  " };
+
 private define test_encode_empty_array () %{{{
 {
    expect_value (json_encode ({}), `[]`);
@@ -376,42 +380,25 @@ private define test_encode_empty_object () %{{{
 
 private define test_encode_simple_array_from_list () %{{{
 {
-   json = json_encode ({ 1L, 2L, 3L, "Hello", "World!" });
-   expect_value (json, `[
-  1,
-  2,
-  3,
-  "Hello",
-  "World!"
-]`);
+   json = json_encode ({ 1L, 2L, 3L, "Hello", "World!" };; no_whitespaces);
+   expect_value (json, `[1,2,3,"Hello","World!"]`);
 }
 %}}}
 
 private define test_encode_simple_array_from_string_array () %{{{
 {
-   json = json_encode ([ "Hello", "World!" ]);
-   expect_value (json, `[
-  "Hello",
-  "World!"
-]`);
+   json = json_encode ([ "Hello", "World!" ];; no_whitespaces);
+   expect_value (json, `["Hello","World!"]`);
 
-   json = json_encode ([ "Hello", "World!", NULL ]);
-   expect_value (json, `[
-  "Hello",
-  "World!",
-  null
-]`);
+   json = json_encode ([ "Hello", "World!", NULL ];; no_whitespaces);
+   expect_value (json, `["Hello","World!",null]`);
 }
 %}}}
 
 private define test_encode_simple_array_from_int_array () %{{{
 {
-   json = json_encode ([ 1, 2, 3 ]);
-   expect_value (json, `[
-  1,
-  2,
-  3
-]`);
+   json = json_encode ([ 1, 2, 3 ];; no_whitespaces);
+   expect_value (json, `[1,2,3]`);
 }
 %}}}
 
@@ -432,7 +419,7 @@ private define test_encode_simple_object () %{{{
 	"null"   = NULL,
      };
 
-   expect_value (json_encode (json; sort), `{
+   expect_value (json_encode (json;; some_whitespaces), `{
   "object": {
     "i": 1,
     "x": 10
@@ -468,7 +455,7 @@ private define test_encode_escaped_strings () %{{{
      "\u{D800} ... \u{DFFF}, \u{FFFE} & \u{FFFF}",  % illegal in normal UTF-8
      "\u{D834}\u{DD1E}"  % example from ietf.org/rfc/rfc4627.txt
    };
-   expect_value (json_encode (json), `[
+   expect_value (json_encode (json;; some_whitespaces), `[
   "\" \\ /",
   "\b \f \n \r \t",
   "\u1234",
@@ -482,13 +469,13 @@ private define test_encode_escaped_strings () %{{{
 
 private define test_encode_optional_whitespace () %{{{
 {
-   variable object = struct 
-     {
-	three = 3,
-     };
+   json = { 1, { 2, struct { three = 3 }, 4 } };
 
-   json = { 1, { 2, object, 4 } };
-   variable expected_json_text =
+   variable expected_json_text = `[1,[2,{"three":3},4]]`;
+   expect_value (json_encode (json), expected_json_text);
+   expect_value (json_encode (json;; no_whitespaces), expected_json_text);
+
+   expected_json_text =
 `[
   1,
   [
@@ -499,24 +486,31 @@ private define test_encode_optional_whitespace () %{{{
     4
   ]
 ]`;
-  expect_value (json_encode (json),
-                expected_json_text);
   expect_value (json_encode (json; pre_vsep="", post_vsep="\n  ", pre_nsep="", post_nsep=" "),
                 expected_json_text);
+  % non-whitespace is ignored:
   expect_value (json_encode (json; pre_vsep="none", post_vsep="newline\n two blanks", pre_nsep="none", post_nsep="non-whitespace ignored"),
                 expected_json_text);
-  expect_value (json_encode (json; pre_vsep="", post_vsep="", pre_nsep="", post_nsep=""),
-                `[1,[2,{"three":3},4]]`);
-  expect_value (json_encode (json; pre_vsep=" ", post_vsep="\n    ", pre_nsep="\t", post_nsep="  "),
+
+  expect_value (json_encode (json; pre_vsep=" ", post_vsep="\n\n    ", pre_nsep="\t", post_nsep="  "),
 `[
+
     1 ,
+
     [
+
         2 ,
+
         {
+
             "three"\t:  3
+
         } ,
+
         4
+
     ]
+
 ]`Q);
 }
 %}}}

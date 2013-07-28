@@ -58,22 +58,23 @@
 \qualifier{pre_nsep=str}{whitespace before name separator ':'
                     in objects}{""}
 \qualifier{post_nsep=str}{whitespace after name separator ':'
-                     in objects}{" "}
+                     in objects}{""}
 \qualifier{pre_vsep=str}{whitespace before value separator ','
                     in objects or arrays}{""}
 \qualifier{post_vsep=str}{whitespace after value separator ',',
                      after the opening, and before
                      the closing brackets in objects
-                     or arrays}{"\\n  "}
+                     or arrays}{""}
 
 \example
 #v+
-  % more whitespace around separators:
-  json_encode (json; pre_nsep=" ", post_nsep="  ",
-                       pre_vsep=" ", post_vsep="\n\t")
+  % some whitespace and indentation after separators:
+  json_encode (json; pre_nsep="", post_nsep=" ",
+                     pre_vsep="", post_vsep="\n  ")
 
-  % as compact as possible; no additional whitespace:
-  json_encode (json; post_nsep="", post_vsep="")
+  % yet more whitespace around separators:
+  json_encode (json; pre_nsep=" ", post_nsep="  ",
+                     pre_vsep=" ", post_vsep="\n\t")
 #v-
 \seealso{json_decode}
 \done
