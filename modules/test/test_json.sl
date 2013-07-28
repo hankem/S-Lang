@@ -9,17 +9,8 @@ private variable json;
 
 private define expect_json_object_with_key (key, expected_value, expected_type)
 {
-   variable v;
-   if (typeof (json) == Struct_Type)
-     {
-	expect_struct_key_value (json, key, expected_value);
-	v = get_struct_field (json, key);
-     }
-   else
-     {
-	expect_assoc_key_value (json, key, expected_value);
-	v = json[key];
-     }
+   expect_struct_key_value (json, key, expected_value);
+   variable v = get_struct_field (json, key);
    expect_type (v, expected_type);
 }
 
@@ -378,7 +369,7 @@ private define test_encode_empty_array () %{{{
 
 private define test_encode_empty_object () %{{{
 {
-   json = Assoc_Type[];
+   json = @Struct_Type (String_Type[0]);
    expect_value (json_encode (json), `{}`);
 }
 %}}}
@@ -426,13 +417,10 @@ private define test_encode_simple_array_from_int_array () %{{{
 
 private define test_encode_simple_object () %{{{
 {
-   variable object = struct
-     { "i" = 1L, "x" = 10L};
-
    json = struct
      {
-	"object" = object,
-	"array"  = { 1, 2, 3},
+	"object" = struct { "i" = 1L, "x" = 10L },
+	"array"  = [ 1, 2, 3 ],
 	"string" = "stringvalue",
 	"long"   = 2147483647,
 #ifeval is_defined("LLONG_MAX")
@@ -443,31 +431,29 @@ private define test_encode_simple_object () %{{{
 	"false"  = '\0',
 	"null"   = NULL,
      };
-#iffalse
-   % FIXME: should structs be sorted?
+
    expect_value (json_encode (json; sort), `{
+  "object": {
+    "i": 1,
+    "x": 10
+  },
   "array": [
     1,
     2,
     3
   ],
-  "double": 6.022e+22,
-  "false": false,`
+  "string": "stringvalue",
+  "long": 2147483647,`
 #ifeval is_defined("LLONG_MAX")
 +`
   "llong": 9223372036854775807,`
 #endif
 +`
-  "long": 2147483647,
-  "null": null,
-  "object": {
-    "i": 1,
-    "x": 10
-  },
-  "string": "stringvalue",
-  "true": true
+  "double": 6.022e+22,
+  "true": true,
+  "false": false,
+  "null": null
 }`);
-#endif
 }
 %}}}
 
@@ -535,32 +521,6 @@ private define test_encode_optional_whitespace () %{{{
 }
 %}}}
 
-% test_encode_object_with_sorted_keys () %{{{
-
-private define cmp_keys_by_int_value (key1, key2)
-{
-   variable i1 = integer (key1),  i2 = integer (key2);
-   return (i1 < i2) ? -1 : (i1 > i2);
-}
-
-#iffalse
-private define test_encode_object_with_sorted_keys ()
-{
-   json = struct
-     {
-	"1"   = "I",
-	"50"  = "L",
-	"100" = "C",
-	"10"  = "X",
-	"5"   = "V",
-     };
-
-   expect_value (json_encode (json; post_nsep="", post_vsep=" ", sort=&cmp_keys_by_int_value),
-		 `{ "1":"I", "5":"V", "10":"X", "50":"L", "100":"C" }`);
-}
-#endif
-%}}}
-
 private define test_encode_errors () %{{{
 {
    expect_error (Json_Invalid_Json_Error, `invalid boolean value '\\123'; only '\\000' and '\\001' are allowed`,
@@ -580,7 +540,6 @@ private define test_encode ()
    test_encode_simple_object ();
    test_encode_escaped_strings ();
    test_encode_optional_whitespace ();
-   % test_encode_object_with_sorted_keys ();
    test_encode_errors ();
 }
 %}}}

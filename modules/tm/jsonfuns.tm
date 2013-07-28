@@ -8,7 +8,7 @@
 #v+
     JSON   -> S-Lang
 
-    object    Assoc_Type
+    object    Struct_Type
     array     List_Type
     string    String_Type or BString_Type
     number    (L)Long_Type or Double_Type
@@ -29,14 +29,14 @@
   The \ifun{json_encode} function generates the JSON text
   that corresponds to the S_Lang data structure \exmp{json}.
   Valid input types -- i.e., those that generate text
-  that can be parsed by \ifun{json_decode} -- are \dtype{Assoc_Type}
+  that can be parsed by \ifun{json_decode} -- are \dtype{Struct_Type}
   (for JSON objects) and \dtype{List_Type} or \dtype{Array_Type} (for
   JSON arrays), provided that these containers contain
   only the following types:
 #v+
     S-Lang                         -> JSON
 
-    Assoc_Type                        object
+    Struct_Type                       object
     List_Type or Array_Type           array
     String_Type or BString_Type       string
     UChar_Type ('\1')                 `true'
@@ -45,17 +45,6 @@
     Null_Type                         `null'
 #v-
   Invalid input causes a \exmp{Json_Invalid_Json_Error}.
-
-  If the order of a JSON object's key/value pairs matters,
-  the \exmp{sort} qualifier can be used to order the keys:
-  If given with a reference to a comparison function
-#v+
-  define cmp_func (key1, key2) { return key1 <=> key2; }
-#v-
-  the strings are sorted accordingly (see \ifun{array_sort}).
-  If given with no (or another type of) value, the keys
-  are ordered lexicographically. If \exmp{sort} is not given,
-  the keys are unsorted as obtained by \ifun{assoc_get_keys}.
 
   Optional whitespace in the output text can be configured
   by the \exmp{pre_nsep}, \exmp{post_nsep}, \exmp{pre_vsep}, and \exmp{post_vsep}
@@ -66,7 +55,6 @@
   which accumulates for nested objects and arrays.
 
 \qualifiers
-\qualifier{sort[=&cmp_func]}{sort the keys of a JSON object}
 \qualifier{pre_nsep=str}{whitespace before name separator ':'
                     in objects}{""}
 \qualifier{post_nsep=str}{whitespace after name separator ':'
@@ -80,14 +68,6 @@
 
 \example
 #v+
-  % order key/value pairs in objects by integer keys:
-  private define cmp_keys_by_int_value (key1, key2)
-  {
-    variable i1 = integer (key1),  i2 = integer (key2);
-    return (i1 < i2) ? -1 : (i1 > i2);
-  }
-  json_encode (json; sort=&cmp_keys_by_int_value);
-
   % more whitespace around separators:
   json_encode (json; pre_nsep=" ", post_nsep="  ",
                        pre_vsep=" ", post_vsep="\n\t")
