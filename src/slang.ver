@@ -733,4 +733,5 @@ SLANG2.3.0 {
 		SLang_push_struct_field;
 		SLang_pop_struct_field;
 		SLang_pop_struct_fields;
+		SLstack_exch;
 } SLANG2.2.3;

@@ -29,8 +29,8 @@ USA.
 
 SLANG_MODULE(json);
 
-#define JSON_MODULE_VERSION_NUMBER 220
-static char* json_module_version_string = "pre-0.2.2";
+#define JSON_MODULE_VERSION_NUMBER 300
+static char* json_module_version_string = "pre-0.3.0";
 
 /*{{{ JSON grammar based upon json.org & ietf.org/rfc/rfc4627.txt
  *
@@ -557,22 +557,85 @@ static void free_string_array (char **sp, unsigned int n)
    SLfree ((char *)sp);
 }
 
+/* This string hash is simple minded but may work well in practice unless
+ * there are a lot of strings.
+ */
+typedef struct
+{
+   char **strings;
+   unsigned int max_strings;
+   unsigned int num_strings;
+}
+String_Hash_Type;
+
+static int init_string_hash (String_Hash_Type *h)
+{
+   h->max_strings = 16;
+   h->strings = (char **) SLmalloc (sizeof(char*)* h->max_strings);
+   if (h->strings == NULL)
+     return -1;
+   h->num_strings = 0;
+   return 0;
+}
+
+/* returns -1 upon failure, 0 if string added, 1 if already there */
+static int add_string_to_hash (String_Hash_Type *h, char *s, int *indexp)
+{
+   unsigned int i;
+   unsigned int n = h->num_strings;
+   char **strings = h->strings;
+
+   for (i = 0; i < n; i++)
+     {
+	if (strings[i] == s)
+	  {
+	     *indexp = i;
+	     return 1;
+	  }
+     }
+
+   if (n == h->max_strings)
+     {
+	char **new_strings;
+	unsigned int new_max_strings = h->max_strings + 32;
+
+	if (NULL == (new_strings = (char **) SLrealloc ((char *)strings, new_max_strings*sizeof(char *))))
+	  return -1;
+
+	h->strings = strings = new_strings;
+	h->max_strings = new_max_strings;
+     }
+
+   strings[h->num_strings++] = s;
+   *indexp = n;
+   return 0;
+}
+
+static void free_string_hash (String_Hash_Type *h)
+{
+   SLfree ((char *)h->strings);
+}
+
 static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 {
    char buf[512];
    unsigned int num_fields, max_fields;
    char **fields;
+   String_Hash_Type h;
 
    max_fields = 16;
-   if (NULL == (fields = (char **)SLmalloc (max_fields * sizeof (char *))))
-     return -1;
    num_fields = 0;
+   if ((NULL == (fields = (char **)SLmalloc (max_fields * sizeof (char *))))
+       || (-1 == init_string_hash (&h)))
+     goto return_error;
 
    skip_white (p);
    if (! looking_at (p, END_OBJECT)) do
      {
 	char *keyword;
 	char *str;
+	int status;
+	int idx;
 
 	skip_white (p);
 	if (! skip_char (p, STRING_DELIMITER))
@@ -592,20 +655,26 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 	if (keyword == NULL)
 	  goto return_error;
 
-	if (num_fields == max_fields)
-	  {
-	     char **new_fields;
-	     unsigned int new_max_fields = max_fields + 32;
+	if (-1 == (status = add_string_to_hash (&h, keyword, &idx)))
+	  goto return_error;
 
-	     if (NULL == (new_fields = (char **) SLrealloc ((char *)fields, new_max_fields*sizeof(char *))))
+	if (status == 0)
+	  {
+	     if (num_fields == max_fields)
 	       {
-		  SLang_free_slstring (keyword);
-		  goto return_error;
+		  char **new_fields;
+		  unsigned int new_max_fields = max_fields + 32;
+
+		  if (NULL == (new_fields = (char **) SLrealloc ((char *)fields, new_max_fields*sizeof(char *))))
+		    {
+		       SLang_free_slstring (keyword);
+		       goto return_error;
+		    }
+		  fields = new_fields;
+		  max_fields = new_max_fields;
 	       }
-	     fields = new_fields;
-	     max_fields = new_max_fields;
+	     fields[num_fields++] = keyword;
 	  }
-	fields[num_fields++] = keyword;
 
 	skip_white (p);
 	if (! skip_char (p, NAME_SEPARATOR))
@@ -615,9 +684,18 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 	     goto return_error;
 	  }
 
+
 	if (-1 == parse_and_push_value (p, 0))
 	  goto return_error;
 
+	if (status == 1)
+	  {
+	     /* keyword already exists -- update value */
+	     if ((-1 == SLstack_exch (0, num_fields - idx))
+		 || (-1 == SLdo_pop ()))
+	       goto return_error;
+
+	  }
 	skip_white (p);
      }
    while (skip_char (p, VALUE_SEPARATOR));
@@ -639,6 +717,7 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 		  goto return_error;
 	       }
 	     SLang_free_struct (s);
+	     free_string_hash (&h);
 	     free_string_array (fields, num_fields);
 	     return 0;
 	  }
@@ -656,6 +735,7 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 
 return_error:
    free_string_array (fields, num_fields);
+   free_string_hash (&h);
    return -1;
 }
 /*}}}*/

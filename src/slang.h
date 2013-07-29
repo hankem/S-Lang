@@ -1302,6 +1302,9 @@ SL_EXTERN int SLroll_stack (int);
  * up.  If negative, the stack is rolled down.
  */
 
+/* exchange two items on the stack.  The top item is given by 0 */
+SL_EXTERN int SLstack_exch (unsigned int, unsigned int);
+
 SL_EXTERN int SLdup_n (int n);
 /* Duplicate top n elements of stack */
 

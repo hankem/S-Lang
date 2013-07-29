@@ -877,6 +877,27 @@ int SLroll_stack (int np)
    return roll_stack (np);
 }
 
+int SLstack_exch (unsigned int a, unsigned int b)
+{
+   SLang_Object_Type *ap, *bp;
+   SLang_Object_Type tmp;
+   unsigned int stklen = (unsigned int)(Stack_Pointer - Run_Stack);
+
+   if ((a >= stklen) || (b >= stklen))
+     {
+	(void) SLang_set_error (SL_STACK_UNDERFLOW);
+	return -1;
+     }
+   ap = Stack_Pointer - (a+1);
+   bp = Stack_Pointer - (b+1);
+
+   tmp = *ap;
+   *ap = *bp;
+   *bp = tmp;
+
+   return 0;
+}
+
 int SLstack_depth (void)
 {
    return (int) (Stack_Pointer - Run_Stack);
