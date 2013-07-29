@@ -937,3 +937,9 @@ void SLang_free_assoc (SLang_Assoc_Array_Type *assoc)
 {
    free_assoc (assoc);
 }
+
+int SLang_assoc_key_exists (SLang_Assoc_Array_Type *a, SLstr_Type *key)
+{
+   return assoc_key_exists(a, key);
+}
+

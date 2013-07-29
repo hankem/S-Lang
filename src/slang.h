@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-98"
+#define SLANG_VERSION_STRING "pre2.3.0-99"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -707,6 +707,8 @@ SL_EXTERN int SLang_assoc_get (SLang_Assoc_Array_Type *, SLstr_Type *, SLtype *)
 SL_EXTERN int SLang_assoc_put (SLang_Assoc_Array_Type *, SLstr_Type *);
 /* SLang_assoc_put takes the object from the stack */
 
+SL_EXTERN int SLang_assoc_key_exists (SLang_Assoc_Array_Type *, SLstr_Type *);
+
 typedef struct _pSLang_List_Type SLang_List_Type;
 SL_EXTERN SLang_List_Type *SLang_create_list (int);
 SL_EXTERN int SLang_list_append (SLang_List_Type *, int);
@@ -1299,6 +1301,7 @@ SL_EXTERN int SLroll_stack (int);
 /* If argument p is positive, the top p objects on the stack are rolled
  * up.  If negative, the stack is rolled down.
  */
+
 SL_EXTERN int SLdup_n (int n);
 /* Duplicate top n elements of stack */
 

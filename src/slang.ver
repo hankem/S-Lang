@@ -722,6 +722,7 @@ SLANG2.3.0 {
 		SLang_push_assoc;
 		SLang_pop_assoc;
 		SLang_free_assoc;
+		SLang_assoc_key_exists;
 		SLang_create_list;
 		SLang_list_append;
 		SLang_list_insert;
