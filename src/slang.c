@@ -4355,7 +4355,7 @@ static SLang_Name_Type *
 		    SLang_NameSpace_Type *gns,
 		    int do_error)
 {
-   return find_global_hashed_name (name, _pSLcompute_string_hash (name), pns, sns, gns, do_error);
+   return find_global_hashed_name (name, SLcompute_string_hash (name), pns, sns, gns, do_error);
 }
 
 #if SLANG_HAS_DEBUGGER_SUPPORT
@@ -7156,7 +7156,7 @@ static SLang_Name_Type *locate_namespace_encoded_name (SLCONST char *name, int e
    if (name == ns)
      {
 	/* Use Global Namespace */
-	return _pSLns_locate_hashed_name (Global_NameSpace, name, _pSLcompute_string_hash (name));
+	return _pSLns_locate_hashed_name (Global_NameSpace, name, SLcompute_string_hash (name));
      }
 
    ns = SLang_create_nslstring (ns, (unsigned int) ((name-2) - ns));
@@ -7171,7 +7171,7 @@ static SLang_Name_Type *locate_namespace_encoded_name (SLCONST char *name, int e
      }
    SLang_free_slstring (ns);
 
-   nt = _pSLns_locate_hashed_name (table, name, _pSLcompute_string_hash (name));
+   nt = _pSLns_locate_hashed_name (table, name, SLcompute_string_hash (name));
    if (nt == NULL)
      return NULL;
 
@@ -7235,7 +7235,7 @@ static SLang_Name_Type *locate_hashed_name (SLCONST char *name, unsigned long ha
 
 SLang_Name_Type *_pSLlocate_name (SLCONST char *name)
 {
-   return locate_hashed_name (name, _pSLcompute_string_hash (name), 0);
+   return locate_hashed_name (name, SLcompute_string_hash (name), 0);
 }
 
 SLang_Name_Type *_pSLlocate_global_name (SLCONST char *name)
@@ -7306,7 +7306,7 @@ static int add_intrinsic_function (SLang_NameSpace_Type *ns,
 	return -1;
      }
 
-   f = (SLang_Intrin_Fun_Type *) add_global_name (name, _pSLcompute_string_hash (name),
+   f = (SLang_Intrin_Fun_Type *) add_global_name (name, SLcompute_string_hash (name),
 						  SLANG_INTRINSIC, sizeof (SLang_Intrin_Fun_Type),
 						  ns);
 
@@ -7378,7 +7378,7 @@ static SLang_Name_Type *add_xxx_helper (SLang_NameSpace_Type *ns, SLCONST char *
    if (ns == NULL) ns = Global_NameSpace;
 
    return add_global_name (name,
-			   _pSLcompute_string_hash (name),
+			   SLcompute_string_hash (name),
 			   what, sizeof_what, ns);
 }
 
@@ -7553,7 +7553,7 @@ static int SLns_autoload (SLFUTURE_CONST char *name, SLFUTURE_CONST char *file, 
    if (*cnsname == 0)
      cnsname = "Global";
 
-   hash = _pSLcompute_string_hash (name);
+   hash = SLcompute_string_hash (name);
    if (NULL != (ns = _pSLns_find_namespace (cnsname)))
      {
 	f = (_pSLang_Function_Type *)_pSLns_locate_hashed_name (ns, name, hash);
@@ -8598,7 +8598,7 @@ static int add_global_variable (SLCONST char *name, char name_type, unsigned lon
     * in the variable ZZZZ being defined because of the immediate processing.
     * The current solution is to do: if (0) { eval("variable ZZZZ;"); }
     */
-   /* hash = _pSLcompute_string_hash (name); */
+   /* hash = SLcompute_string_hash (name); */
    g = _pSLns_locate_hashed_name (ns, name, hash);
 
    if (g != NULL)
@@ -8620,7 +8620,7 @@ int SLadd_global_variable (SLCONST char *name)
      return -1;
 
    return add_global_variable (name, SLANG_GVARIABLE,
-			       _pSLcompute_string_hash (name),
+			       SLcompute_string_hash (name),
 			       Global_NameSpace);
 }
 
@@ -8997,7 +8997,7 @@ static void compile_simple (_pSLang_BC_Type main_type)
 
 static void compile_identifier (SLCONST char *name, _pSLang_Token_Type *tok)
 {
-   compile_hashed_identifier (name, _pSLcompute_string_hash (name), tok);
+   compile_hashed_identifier (name, SLcompute_string_hash (name), tok);
 }
 
 static void compile_call_direct (int (*f) (void), _pSLang_BC_Type byte_code)
@@ -10510,7 +10510,7 @@ static int add_generic_table (SLang_NameSpace_Type *ns,
 
 	t->name = name;
 
-	hash = _pSLcompute_string_hash (name);
+	hash = SLcompute_string_hash (name);
 	hash = hash % table_size;
 
 	/* First time.  Make sure this has not already been added */

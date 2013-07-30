@@ -38,7 +38,7 @@ static SLFUTURE_CONST char *Deleted_Key = "*deleted*";
 typedef struct _pSLAssoc_Array_Element_Type
 {
    SLFUTURE_CONST char *key;                   /* slstring */
-   SLhash_Type hash;
+   SLstr_Hash_Type hash;
    SLang_Object_Type value;
 }
 _pSLAssoc_Array_Element_Type;
@@ -61,7 +61,7 @@ typedef struct _pSLang_Assoc_Array_Type
 }
 _pSLang_Assoc_Array_Type;
 
-static int HASH_AGAIN (SLCONST char *str, SLhash_Type hash, unsigned int table_len)
+static int HASH_AGAIN (SLCONST char *str, SLstr_Hash_Type hash, unsigned int table_len)
 {
    int h;
    (void) table_len; (void) str;
@@ -72,7 +72,7 @@ static int HASH_AGAIN (SLCONST char *str, SLhash_Type hash, unsigned int table_l
 }
 
 static _pSLAssoc_Array_Element_Type *
-find_element (SLang_Assoc_Array_Type *a, char *str, SLhash_Type hash)
+find_element (SLang_Assoc_Array_Type *a, char *str, SLstr_Hash_Type hash)
 {
    int i, c;
    _pSLAssoc_Array_Element_Type *e, *elements;
@@ -106,7 +106,7 @@ find_element (SLang_Assoc_Array_Type *a, char *str, SLhash_Type hash)
 
 static _pSLAssoc_Array_Element_Type *
 find_empty_element (_pSLAssoc_Array_Element_Type *elements, unsigned int table_len,
-                    SLCONST char *str, SLhash_Type hash)
+                    SLCONST char *str, SLstr_Hash_Type hash)
 {
    int i, c;
    _pSLAssoc_Array_Element_Type *e;
@@ -287,7 +287,7 @@ static SLang_Assoc_Array_Type *alloc_assoc_array (SLtype type, int has_default_v
    return a;
 }
 
-static _pSLAssoc_Array_Element_Type *store_object (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e, SLstr_Type *s, SLhash_Type hash, SLang_Object_Type *obj)
+static _pSLAssoc_Array_Element_Type *store_object (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e, SLstr_Type *s, SLstr_Hash_Type hash, SLang_Object_Type *obj)
 {
    if ((e != NULL)
        || (NULL != (e = find_element (a, s, hash))))
@@ -331,7 +331,7 @@ static int pop_assoc (SLang_Assoc_Array_Type **assoc)
 
 static int pop_index (unsigned int num_indices,
                       SLang_Assoc_Array_Type **ap,
-                      SLstr_Type **strp, SLhash_Type *hashp)
+                      SLstr_Type **strp, SLstr_Hash_Type *hashp)
 {
 
    if (-1 == pop_assoc (ap))
@@ -356,7 +356,7 @@ static int pop_index (unsigned int num_indices,
    return 0;
 }
 
-static int push_assoc_element (SLang_Assoc_Array_Type *a, SLstr_Type *str, SLhash_Type hash)
+static int push_assoc_element (SLang_Assoc_Array_Type *a, SLstr_Type *str, SLstr_Hash_Type hash)
 {
    _pSLAssoc_Array_Element_Type *e = find_element (a, str, hash);
    SLang_Object_Type *obj;
@@ -385,7 +385,7 @@ static int push_assoc_element (SLang_Assoc_Array_Type *a, SLstr_Type *str, SLhas
 
 int _pSLassoc_aget (SLtype type, unsigned int num_indices)
 {
-   SLhash_Type hash;
+   SLstr_Hash_Type hash;
    SLstr_Type *str;
    SLang_Assoc_Array_Type *a;
    int ret;
@@ -405,7 +405,7 @@ int _pSLassoc_aget (SLtype type, unsigned int num_indices)
 _INLINE_
 static _pSLAssoc_Array_Element_Type *
 assoc_aput (SLang_Assoc_Array_Type *a, _pSLAssoc_Array_Element_Type *e,
-	    SLstr_Type *str, SLhash_Type hash)
+	    SLstr_Type *str, SLstr_Hash_Type hash)
 {
    SLang_Object_Type obj;
 
@@ -435,7 +435,7 @@ int _pSLassoc_aput (SLtype type, unsigned int num_indices)
    SLstr_Type *str;
    SLang_Assoc_Array_Type *a;
    int ret;
-   SLhash_Type hash;
+   SLstr_Hash_Type hash;
 
    (void) type;
 
@@ -455,7 +455,7 @@ int _pSLassoc_aput (SLtype type, unsigned int num_indices)
 
 int _pSLassoc_inc_value (unsigned int num_indices, int inc)
 {
-   SLhash_Type hash;
+   SLstr_Hash_Type hash;
    SLstr_Type *str;
    _pSLAssoc_Array_Element_Type *e;
    SLang_Assoc_Array_Type *a;
@@ -665,7 +665,7 @@ static void assoc_get_values (SLang_Assoc_Array_Type *a)
 
 static int assoc_key_exists (SLang_Assoc_Array_Type *a, char *key)
 {
-   return (NULL != find_element (a, key, _pSLcompute_string_hash (key)));
+   return (NULL != find_element (a, key, SLcompute_string_hash (key)));
 }
 
 static void assoc_delete_key (SLang_Assoc_Array_Type *a, char *key)
@@ -887,7 +887,7 @@ SLang_Assoc_Array_Type *SLang_create_assoc (SLtype type, int has_default_value)
 
 int SLang_assoc_put (SLang_Assoc_Array_Type *assoc, SLstr_Type *key)
 {
-   SLhash_Type hash = _pSLstring_get_hash (key);
+   SLstr_Hash_Type hash = _pSLstring_get_hash (key);
 
    if (NULL == assoc_aput (assoc, NULL, key, hash))
      return -1;
@@ -898,7 +898,7 @@ int SLang_assoc_put (SLang_Assoc_Array_Type *assoc, SLstr_Type *key)
 int SLang_assoc_get (SLang_Assoc_Array_Type *assoc, SLstr_Type *key, SLtype *typep)
 {
    int type;
-   SLhash_Type hash = _pSLstring_get_hash (key);
+   SLstr_Hash_Type hash = _pSLstring_get_hash (key);
 
    if ((-1 == push_assoc_element (assoc, key, hash))
        || (-1 == (type = SLang_peek_at_stack ())))

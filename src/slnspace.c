@@ -456,7 +456,7 @@ SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt)
      return NULL;
 
    name = nt->name;
-   hash = _pSLcompute_string_hash (name);
+   hash = SLcompute_string_hash (name);
 
    ns = Namespace_Tables;
    while (ns != NULL)
@@ -477,7 +477,7 @@ SLang_NameSpace_Type *_pSLns_find_object_namespace (SLang_Name_Type *nt)
 
 SLang_Name_Type *_pSLns_locate_name (SLang_NameSpace_Type *ns, SLCONST char *name)
 {
-   return _pSLns_locate_hashed_name (ns, name, _pSLcompute_string_hash (name));
+   return _pSLns_locate_hashed_name (ns, name, SLcompute_string_hash (name));
 }
 
 static void delete_namespace_objects (SLang_NameSpace_Type *ns)

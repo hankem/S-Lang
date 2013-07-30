@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-99"
+#define SLANG_VERSION_STRING "pre2.3.0-101"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -297,6 +297,9 @@ SL_EXTERN SLstr_Type *SLang_create_slstring (SLFUTURE_CONST char *);
 SL_EXTERN void SLang_free_slstring (SLCONST SLstr_Type *);    /* handles NULL */
 SL_EXTERN int SLang_pop_slstring (SLstr_Type **);   /* free with SLang_free_slstring */
 SL_EXTERN SLstr_Type *SLang_concat_slstrings (SLstr_Type *a, SLstr_Type *b);
+typedef unsigned long SLstr_Hash_Type;
+SL_EXTERN SLstr_Hash_Type SLcompute_string_hash (SLCONST SLstr_Type *);
+
 
 /* SL_EXTERN void SLstring_dump_stats (void);  // is not (yet?) defined by S-Lang library */
 

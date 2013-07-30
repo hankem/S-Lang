@@ -557,63 +557,104 @@ static void free_string_array (char **sp, unsigned int n)
    SLfree ((char *)sp);
 }
 
-/* This string hash is simple minded but may work well in practice unless
- * there are a lot of strings.
- */
+/* This has table implementation does not copy the strings */
+#define HASH_TABLE_SIZE 601
+typedef struct String_Hash_Elem_Type
+{
+   SLstr_Type *string;		       /* not copied! */
+   unsigned int val;
+   struct String_Hash_Elem_Type *next;
+}
+String_Hash_Elem_Type;
+
 typedef struct
 {
-   char **strings;
-   unsigned int max_strings;
+   String_Hash_Elem_Type hash_table[HASH_TABLE_SIZE];
    unsigned int num_strings;
+   unsigned int num_collisions;
 }
 String_Hash_Type;
 
-static int init_string_hash (String_Hash_Type *h)
+static String_Hash_Type *create_string_hash (void)
 {
-   h->max_strings = 16;
-   h->strings = (char **) SLmalloc (sizeof(char*)* h->max_strings);
-   if (h->strings == NULL)
-     return -1;
-   h->num_strings = 0;
-   return 0;
+   String_Hash_Type *h;
+   if (NULL == (h = (String_Hash_Type *)SLmalloc(sizeof(String_Hash_Type))))
+     return NULL;
+   memset ((char *)h, 0, sizeof(String_Hash_Type));
+   return h;
 }
 
 /* returns -1 upon failure, 0 if string added, 1 if already there */
-static int add_string_to_hash (String_Hash_Type *h, char *s, int *indexp)
+static int add_string_to_hash (String_Hash_Type *h, char *s, unsigned int val, unsigned int *valp)
 {
-   unsigned int i;
-   unsigned int n = h->num_strings;
-   char **strings = h->strings;
+   SLstr_Hash_Type hash;
+   String_Hash_Elem_Type *e, *e1;
 
-   for (i = 0; i < n; i++)
+   hash = SLcompute_string_hash (s);
+   e = &h->hash_table[hash % HASH_TABLE_SIZE];
+   if (e->string == NULL)
      {
-	if (strings[i] == s)
+	e->string = s;
+	*valp = e->val = val;
+	h->num_strings++;
+	return 0;
+     }
+
+   while (1)
+     {
+	if (e->string == s)
 	  {
-	     *indexp = i;
+	     *valp = e->val;
 	     return 1;
 	  }
+	if (e->next == NULL)
+	  break;
+	e = e->next;
      }
 
-   if (n == h->max_strings)
-     {
-	char **new_strings;
-	unsigned int new_max_strings = h->max_strings + 32;
+   e1 = (String_Hash_Elem_Type *)SLmalloc (sizeof (String_Hash_Elem_Type));
+   if (e1 == NULL)
+     return -1;
 
-	if (NULL == (new_strings = (char **) SLrealloc ((char *)strings, new_max_strings*sizeof(char *))))
-	  return -1;
-
-	h->strings = strings = new_strings;
-	h->max_strings = new_max_strings;
-     }
-
-   strings[h->num_strings++] = s;
-   *indexp = n;
+   e1->string = s;
+   *valp = e1->val = val;
+   e1->next = NULL;
+   e->next = e1;
+   h->num_strings++;
+   h->num_collisions++;
    return 0;
 }
 
 static void free_string_hash (String_Hash_Type *h)
 {
-   SLfree ((char *)h->strings);
+   String_Hash_Elem_Type *e, *emax;
+   unsigned int num_collisions;
+
+   if (h == NULL)
+     return;
+
+   e = h->hash_table;
+   emax = e + HASH_TABLE_SIZE;
+   num_collisions = h->num_collisions;
+   while (num_collisions && (e < emax))
+     {
+	String_Hash_Elem_Type *e1;
+	if (e->next == NULL)
+	  {
+	     e++;
+	     continue;
+	  }
+	e1 = e->next;
+	while (e1 != NULL)
+	  {
+	     String_Hash_Elem_Type *e2 = e1->next;
+	     SLfree ((char *)e1);
+	     num_collisions--;
+	     e1 = e2;
+	  }
+	e++;
+     }
+   SLfree ((char *)h);
 }
 
 static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
@@ -621,12 +662,12 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
    char buf[512];
    unsigned int num_fields, max_fields;
    char **fields;
-   String_Hash_Type h;
+   String_Hash_Type *h;
 
    max_fields = 16;
    num_fields = 0;
    if ((NULL == (fields = (char **)SLmalloc (max_fields * sizeof (char *))))
-       || (-1 == init_string_hash (&h)))
+       || (NULL == (h = create_string_hash ())))
      goto return_error;
 
    skip_white (p);
@@ -635,7 +676,7 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 	char *keyword;
 	char *str;
 	int status;
-	int idx;
+	unsigned int idx;
 
 	skip_white (p);
 	if (! skip_char (p, STRING_DELIMITER))
@@ -655,7 +696,7 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 	if (keyword == NULL)
 	  goto return_error;
 
-	if (-1 == (status = add_string_to_hash (&h, keyword, &idx)))
+	if (-1 == (status = add_string_to_hash (h, keyword, num_fields, &idx)))
 	  goto return_error;
 
 	if (status == 0)
@@ -717,7 +758,7 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 		  goto return_error;
 	       }
 	     SLang_free_struct (s);
-	     free_string_hash (&h);
+	     free_string_hash (h);
 	     free_string_array (fields, num_fields);
 	     return 0;
 	  }
@@ -735,7 +776,7 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
 
 return_error:
    free_string_array (fields, num_fields);
-   free_string_hash (&h);
+   free_string_hash (h);
    return -1;
 }
 /*}}}*/

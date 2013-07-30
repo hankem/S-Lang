@@ -227,6 +227,8 @@ Changes since 2.2.4
     arrays.  (Paul Boekholt).
 99. src/slassoc.c: Add C API SLang_assoc_key_exists (Paul Boekholt).
 100. src/slang.c: Add SLstack_exch and tweak the json module to use it.
+101. src/slang.h: Made the SLcompute_string_hash function public and
+     rewrote the hash table function in the json module to use it.
 
 {{{ Previous Versions
 
