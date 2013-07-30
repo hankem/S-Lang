@@ -229,6 +229,8 @@ Changes since 2.2.4
 100. src/slang.c: Add SLstack_exch and tweak the json module to use it.
 101. src/slang.h: Made the SLcompute_string_hash function public and
      rewrote the hash table function in the json module to use it.
+102. json-module: Doc updates, use compact encoding by default
+     (Manfred Hanke).
 
 {{{ Previous Versions
 
