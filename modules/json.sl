@@ -79,55 +79,6 @@ add_type_handler (
 private define json_encode_object (indent, q, object) %{{{
 {
    variable json = "{"B;
-   variable keys = assoc_get_keys (object);
-   variable n_values = length (keys);
-   if (n_values)
-     {
-	if (q.sort != NULL)
-	  keys = keys[array_sort ( (typeof (q.sort) == Ref_Type) ? (keys, q.sort) : (keys) )];
-
-	% pvs indent KEY nsep VAL vsep pvs indent KEY nsep VAL vsep
-	% ... pvs indent KEY nsep VAL pvs
-
-	variable new_indent = bstrcat (indent, q.indent);
-	variable sep = bstrcat (q.vsep, q.post_vsep, new_indent);
-	variable nsep = q.nsep;
-
-	variable key = keys[0];
-	variable val = object[key];
-	variable type = typeof (val);
-	variable func = get_encode_func (type);
-	json = bstrcat (__tmp(json), q.post_vsep, new_indent,
-			_json_encode_string (key), nsep, (@func)(new_indent, q, val));
-
-	variable i;
-	_for i (1, n_values-1)
-	  {
-	     key = keys[i];
-	     val = object[key];
-	     variable next_type = typeof (val);
-	     if (next_type == String_Type)
-	       {
-		  json = bstrcat (__tmp(json), sep, _json_encode_string (key),
-				  nsep, _json_encode_string (val));
-		  continue;
-	       }
-
-	     if (next_type != type)
-	       (type, func) = (next_type, get_encode_func (next_type));
-	     json = bstrcat (__tmp(json), sep, _json_encode_string (key),
-			     nsep, (@func)(new_indent, q, val));
-          }
-	json = bstrcat (__tmp(json), q.post_vsep);
-     }
-   return bstrcat (__tmp(json), indent, "}");
-}
-add_type_handler (Assoc_Type, &json_encode_object);
-%}}}
-
-private define json_encode_struct (indent, q, object) %{{{
-{
-   variable json = "{"B;
    variable keys = get_struct_field_names (object);
    variable n_values = length (keys);
    if (n_values)
@@ -168,7 +119,8 @@ private define json_encode_struct (indent, q, object) %{{{
      }
    return bstrcat (__tmp(json), indent, "}");
 }
-add_type_handler (Struct_Type, &json_encode_struct);
+add_type_handler (Struct_Type, &json_encode_object);
+%}}}
 
 private define json_encode_array (indent, q, array) %{{{
 {
@@ -225,7 +177,7 @@ private define default_handler (indent, q, data) %{{{
      return json_encode_number (data);
 
    if (is_struct_type (data))
-     return json_encode_struct (data);
+     return json_encode_object (data);
 
    variable type = _typeof (data);
    throw Json_Invalid_Json_Error, "$type does not represent a JSON data structure"$;
@@ -235,6 +187,20 @@ Type_Map[where (_isnull (Type_Map))] = &default_handler;
 
 % process_qualifiers %{{{
 
+private define split_post_vsep (post_vsep) %{{{
+{
+   variable indent = "";
+   variable parts = strchop (post_vsep, '\n', 0);
+   if (length (parts) > 1)
+     {
+	indent = parts[-1];
+	parts[-1] = "";
+	post_vsep = strjoin (parts, "\n");
+     }
+  return (indent, post_vsep);
+}
+%}}}
+
 private define only_whitespace (s)
 {
    return ""B + str_delete_chars (s, "^ \t\n\r");
@@ -242,26 +208,14 @@ private define only_whitespace (s)
 
 private define process_qualifiers ()
 {
-   variable post_vsep = "|" + qualifier ("post_vsep", "\n  ");
-   variable indent = "";
-   variable tok = strtok (post_vsep, "\n");
-   if (length (tok) > 1)
-     {
-	indent = tok[-1];
-	tok[-1] = "";
-	post_vsep = strjoin (tok, "\n");
-     }
-   variable sort = qualifier ("sort");  % == NULL, if qualifier "sort" does not exist
-   if (qualifier_exists ("sort") && typeof (sort) != Ref_Type)
-     sort = 1;
-
+   variable post_vsep = split_post_vsep (qualifier ("post_vsep", ""));
+   variable indent = ();  % other return value from split_post_vsep
    variable q = struct {
       pre_nsep  = only_whitespace (qualifier ("pre_nsep", "")),
-      post_nsep = only_whitespace (qualifier ("post_nsep", " ")),
+      post_nsep = only_whitespace (qualifier ("post_nsep", "")),
       pre_vsep  = only_whitespace (qualifier ("pre_vsep", "")),
       post_vsep = only_whitespace (post_vsep),
       indent    = only_whitespace (indent),
-      sort      = sort  % can be NULL, 1, or Ref_Type
    };
    return struct {
       nsep = q.pre_nsep + ":" + q.post_nsep,

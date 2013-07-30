@@ -60,7 +60,7 @@ static char* json_module_version_string = "pre-0.3.0";
  *   null
  *
  * Since a pair consists of a (arbitrary string) keyword and a value,
- * a JSON object maps onto an associatve array (Assoc_Type) in S-Lang.
+ * a JSON object maps onto a structure (Struct_Type) in S-Lang.
  *
  * Since a JSON array is a heterogenous collection of elements,
  * these map onto a list (List_Type) in S-Lang.
