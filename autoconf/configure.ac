@@ -178,6 +178,20 @@ then
   AC_DEFINE(HAVE_NL_LANGINFO_CODESET, 1, [Set to 1 if you have the nl_langinfo(CODESET) function])
 fi
 
+AC_MSG_CHECKING(for environ variable)
+AC_TRY_LINK([
+#include <stdlib.h>
+extern char **environ;
+],
+[exit (environ == NULL);],
+have_environ=yes, have_environ=no)
+AC_MSG_RESULT([$have_environ])
+if test $have_environ = yes
+then
+  AC_DEFINE(HAVE_ENVIRON, 1, [Set to 1 if environ exists])
+fi
+
+
 AC_CHECK_LIB(m, acosh, [AC_DEFINE(HAVE_ACOSH,1,[Set to 1 if you have the acosh function])])
 AC_CHECK_LIB(m, asinh, [AC_DEFINE(HAVE_ASINH,1,[Set to 1 if you have the asinh function])])
 AC_CHECK_LIB(m, atanh, [AC_DEFINE(HAVE_ATANH,1,[Set to 1 if you have the atanh function])])

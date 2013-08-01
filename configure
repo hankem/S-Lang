@@ -5392,6 +5392,39 @@ $as_echo "#define HAVE_NL_LANGINFO_CODESET 1" >>confdefs.h
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for environ variable" >&5
+$as_echo_n "checking for environ variable... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <stdlib.h>
+extern char **environ;
+
+int
+main ()
+{
+exit (environ == NULL);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  have_environ=yes
+else
+  have_environ=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_environ" >&5
+$as_echo "$have_environ" >&6; }
+if test $have_environ = yes
+then
+
+$as_echo "#define HAVE_ENVIRON 1" >>confdefs.h
+
+fi
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for acosh in -lm" >&5
 $as_echo_n "checking for acosh in -lm... " >&6; }
 if ${ac_cv_lib_m_acosh+:} false; then :

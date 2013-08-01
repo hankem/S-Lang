@@ -1139,6 +1139,31 @@ static void clear_error_intrin (void)
    (void) _pSLerr_clear_error (1);
 }
 
+#ifdef HAVE_ENVIRON
+extern char **environ;		       /* POSIX and ??? */
+static void get_environment (void)
+{
+   unsigned int num;
+   char **e;
+
+   if (environ == NULL)
+     {
+	(void) SLang_push_null ();
+	return;
+     }
+
+   e = environ;
+   num = 0;
+   while (*e != NULL)
+     {
+	num++;
+	e++;
+     }
+
+   (void) SLang_push_array (_pSLstrings_to_array (environ, num), 1);   /* NULL ok */
+}
+#endif				       /* HAVE_ENVIRON */
+
 static void set_argv_intrinsic (void);
 static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
 {
@@ -1164,6 +1189,9 @@ static SLang_Intrin_Fun_Type SLang_Basic_Table [] = /*{{{*/
    MAKE_INTRINSIC_S("getenv",  intrin_getenv_cmd, SLANG_VOID_TYPE),
 #ifdef HAVE_PUTENV
    MAKE_INTRINSIC_0("putenv",  intrin_putenv, SLANG_VOID_TYPE),
+#endif
+#ifdef HAVE_ENVIRON
+   MAKE_INTRINSIC_0("get_environ", get_environment, SLANG_VOID_TYPE),
 #endif
    MAKE_INTRINSIC_0("evalfile",  load_file, SLANG_INT_TYPE),
    MAKE_INTRINSIC_I("char",  char_cmd, SLANG_VOID_TYPE),

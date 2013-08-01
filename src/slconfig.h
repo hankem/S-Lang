@@ -1,5 +1,6 @@
+/* This configuration file is for all non-Unix OS */
 /*
-Copyright (C) 2004-2011 John E. Davis
+Copyright (C) 2004-2013 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -22,7 +23,6 @@ USA.
 #ifndef SL_CONFIG_H
 #define SL_CONFIG_H
 
-/* This configuration file is for all non-Unix OS */
 #ifdef VMS
 # ifdef __DECC
 #  define HAVE_STDLIB_H
@@ -148,6 +148,10 @@ USA.
 # define HAVE_MEMCMP
 # define HAVE_MEMCHR
 # define HAVE_FCNTL_H
+#endif
+
+#if defined(__WIN32__)
+# define HAVE_ENVIRON 1
 #endif
 
 #define HAVE_GETCWD 1

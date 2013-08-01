@@ -200,6 +200,8 @@
 #undef HAVE_SYSCONF
 #undef HAVE_PATHCONF
 
+#undef HAVE_ENVIRON
+
 /* These two are needed on DOS-like systems.  Unix does not require them.
  * They are included here for consistency.
  *

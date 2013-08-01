@@ -231,6 +231,8 @@ Changes since 2.2.4
      rewrote the hash table function in the json module to use it.
 102. json-module: Doc updates, use compact encoding by default
      (Manfred Hanke).
+103. src/slstd.c: Added get_environ intrinsic, which returns an array of
+     the currently defined environment variables.
 
 {{{ Previous Versions
 
