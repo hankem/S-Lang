@@ -233,6 +233,8 @@ Changes since 2.2.4
      (Manfred Hanke).
 103. src/slstd.c: Added get_environ intrinsic, which returns an array of
      the currently defined environment variables.
+104. src/slang.c: Fixed a small memory leak introduced by the byte-code
+     optimizer when dealing with floating point literals.
 
 {{{ Previous Versions
 

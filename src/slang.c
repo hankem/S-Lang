@@ -6847,6 +6847,7 @@ static int lang_free_branch (SLBlock_Type *p)
 	   case SLANG_BC_LITERAL_STR:
 	   case SLANG_BC_LITERAL_DBL:
 	   case SLANG_BC_LITERAL_COMBINED:
+	   case SLANG_BC_COMBINED:
 	     /* No user types should be here. */
 	     GET_BUILTIN_CLASS(cl, p->bc_sub_type);
 	     (*cl->cl_byte_code_destroy) (p->bc_sub_type, (VOID_STAR) &p->b.ptr_blk);
@@ -6974,6 +6975,7 @@ static int push_block_context (int type)
    num = 20;
    if (NULL == (b = (SLBlock_Type *) _SLcalloc (num, sizeof (SLBlock_Type))))
      return -1;
+   memset ((char *)b, 0, num*sizeof(SLBlock_Type));   /* not done by _SLcalloc */
 
    c = Block_Context_Stack + Block_Context_Stack_Len;
    c->block = This_Compile_Block;
@@ -8555,7 +8557,7 @@ static int lang_begin_block (void)
 
 static int lang_check_space (void)
 {
-   unsigned int n;
+   size_t dn, n;
    SLBlock_Type *p;
 
    if (NULL == (p = This_Compile_Block))
@@ -8568,18 +8570,19 @@ static int lang_check_space (void)
    if (Compile_ByteCode_Ptr + 1 < This_Compile_Block_Max)
      return 0;
 
-   n = (unsigned int) (This_Compile_Block_Max - p);
+   n = (This_Compile_Block_Max - p);
 
-   /* enlarge the space by 2 objects */
-   n += 20;
+   /* enlarge the space by 20 objects */
+   dn = 20;
 
-   if (NULL == (p = (SLBlock_Type *) _SLrecalloc((char *)p, n, sizeof(SLBlock_Type))))
+   if (NULL == (p = (SLBlock_Type *) _SLrecalloc((char *)p, n+dn, sizeof(SLBlock_Type))))
      return -1;
+   memset ((char *)(p+n), 0, dn*sizeof(SLBlock_Type));
 
-   This_Compile_Block_Max = p + n;
-   n = (unsigned int) (Compile_ByteCode_Ptr - This_Compile_Block);
+   n = Compile_ByteCode_Ptr - This_Compile_Block;
    This_Compile_Block = p;
    Compile_ByteCode_Ptr = p + n;
+   This_Compile_Block_Max = Compile_ByteCode_Ptr + dn;
 
    return 0;
 }
