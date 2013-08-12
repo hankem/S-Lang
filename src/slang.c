@@ -97,6 +97,9 @@ typedef struct _pSLBlock_Type
 {
    _pSLang_BC_Type bc_main_type;
    unsigned char bc_sub_type;	       /* no types greater than 255 allowed here */
+   unsigned char bc_flags;
+#define BC_LITERAL_MASK 0x1	       /* if object is a literal */
+
    unsigned short linenum;
    union
      {
@@ -6843,11 +6846,14 @@ static int lang_free_branch (SLBlock_Type *p)
 	       SLfree((char *)p->b.blk);
 	     break;
 
+	   case SLANG_BC_COMBINED:
+	     if (0 == (p->bc_flags & BC_LITERAL_MASK))
+	       break;
+	     /* drop */
 	   case SLANG_BC_LITERAL:
 	   case SLANG_BC_LITERAL_STR:
 	   case SLANG_BC_LITERAL_DBL:
 	   case SLANG_BC_LITERAL_COMBINED:
-	   case SLANG_BC_COMBINED:
 	     /* No user types should be here. */
 	     GET_BUILTIN_CLASS(cl, p->bc_sub_type);
 	     (*cl->cl_byte_code_destroy) (p->bc_sub_type, (VOID_STAR) &p->b.ptr_blk);
@@ -8883,6 +8889,7 @@ static int handle_special_file (Special_NameTable_Type *nt, _pSLang_Token_Type *
    Compile_ByteCode_Ptr->b.s_blk = name;
    Compile_ByteCode_Ptr->bc_main_type = SLANG_BC_LITERAL_STR;
    Compile_ByteCode_Ptr->bc_sub_type = SLANG_STRING_TYPE;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
    return 0;
 }
 
@@ -8897,6 +8904,7 @@ static int handle_special_line (Special_NameTable_Type *nt, _pSLang_Token_Type *
 #endif
    Compile_ByteCode_Ptr->bc_main_type = SLANG_BC_LITERAL;
    Compile_ByteCode_Ptr->bc_sub_type = SLANG_UINT_TYPE;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
 
    return 0;
 }
@@ -9029,6 +9037,7 @@ static void compile_integer (long i, _pSLang_BC_Type bc_main_type, SLtype bc_sub
    Compile_ByteCode_Ptr->b.l_blk = i;
    Compile_ByteCode_Ptr->bc_main_type = bc_main_type;
    Compile_ByteCode_Ptr->bc_sub_type = bc_sub_type;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
 
    lang_try_now ();
 }
@@ -9049,6 +9058,7 @@ static void compile_llong (long long i, _pSLang_BC_Type bc_main_type, SLtype bc_
 # endif
    Compile_ByteCode_Ptr->bc_main_type = bc_main_type;
    Compile_ByteCode_Ptr->bc_sub_type = bc_sub_type;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
 
    lang_try_now ();
 }
@@ -9078,6 +9088,7 @@ static void compile_double (_pSLang_Token_Type *t, _pSLang_BC_Type main_type, SL
 
    Compile_ByteCode_Ptr->bc_main_type = main_type;
    Compile_ByteCode_Ptr->bc_sub_type = type;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
    lang_try_now ();
 }
 
@@ -9088,6 +9099,7 @@ static void compile_float (_pSLang_Token_Type *t)
    Compile_ByteCode_Ptr->b.float_blk = f;
    Compile_ByteCode_Ptr->bc_main_type = SLANG_BC_LITERAL;
    Compile_ByteCode_Ptr->bc_sub_type = SLANG_FLOAT_TYPE;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
    lang_try_now ();
 }
 
@@ -9100,6 +9112,7 @@ static void compile_string (SLCONST char *s, unsigned long hash)
 
    Compile_ByteCode_Ptr->bc_main_type = SLANG_BC_LITERAL_STR;
    Compile_ByteCode_Ptr->bc_sub_type = SLANG_STRING_TYPE;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
 
    lang_try_now ();
 }
@@ -9111,6 +9124,7 @@ static void compile_string_dollar (SLCONST char *s, unsigned long hash)
 
    Compile_ByteCode_Ptr->bc_main_type = SLANG_BC_DOLLAR_STR;
    Compile_ByteCode_Ptr->bc_sub_type = SLANG_STRING_TYPE;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
 
    lang_try_now ();
 }
@@ -9122,6 +9136,7 @@ static void compile_bstring (SLang_BString_Type *s)
 
    Compile_ByteCode_Ptr->bc_main_type = SLANG_BC_LITERAL;
    Compile_ByteCode_Ptr->bc_sub_type = SLANG_BSTRING_TYPE;
+   Compile_ByteCode_Ptr->bc_flags |= BC_LITERAL_MASK;
 
    lang_try_now ();
 }

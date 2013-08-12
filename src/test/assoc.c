@@ -87,6 +87,7 @@ static void test_push_and_pop_assoc (void) /*{{{*/
    SLang_pop_assoc (&a2);
    if (a2 != a1)
      SLang_verror (SL_Any_Error, "Failed: (API) pop yields pointer to previously pushed assoc");
+   SLang_free_assoc (a2);
 }
 /*}}}*/
 
