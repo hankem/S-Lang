@@ -38,6 +38,10 @@ USA.
 # include <math.h>
 #endif
 
+#if defined(__APPLE__) && defined(HAVE_ENVIRON)
+# include <crt_externs.h>	       /* for _NSGetEnviron */
+#endif
+
 #include "slang.h"
 #include "_slang.h"
 
@@ -1140,19 +1144,33 @@ static void clear_error_intrin (void)
 }
 
 #ifdef HAVE_ENVIRON
-extern char **environ;		       /* POSIX and ??? */
+
+/* In a shared library, macos requires a call to _NSGetEnviron to get the environ. */
+# if !defined(__APPLE__)
+extern char **environ;                 /* POSIX and ??? */
+# endif
+
+static char **get_sys_environ (void)
+{
+# if defined(__APPLE__)
+   return _NSGetEnviron ();
+# else
+   return environ;
+# endif
+}
+
 static void get_environment (void)
 {
    unsigned int num;
-   char **e;
+   char **env, **e;
 
-   if (environ == NULL)
+   if (NULL == (env = get_sys_environ ()))
      {
 	(void) SLang_push_null ();
 	return;
      }
 
-   e = environ;
+   e = env;
    num = 0;
    while (*e != NULL)
      {
@@ -1160,7 +1178,7 @@ static void get_environment (void)
 	e++;
      }
 
-   (void) SLang_push_array (_pSLstrings_to_array (environ, num), 1);   /* NULL ok */
+   (void) SLang_push_array (_pSLstrings_to_array (env, num), 1);   /* NULL ok */
 }
 #endif				       /* HAVE_ENVIRON */
 

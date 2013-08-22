@@ -237,6 +237,8 @@ Changes since 2.2.4
      optimizer when dealing with floating point literals.
 105. src/slang.c: The changes added in #104 were a bit too aggressive.
      I added code so that only literals get freed.
+106. src/slstd.c: OSX has no proper environ, need to use a function
+     call. (Dima Pasechnik).
 
 {{{ Previous Versions
 
