@@ -94,7 +94,7 @@ USA.
 #define CHAR_MASK	0x000000FF
 #define FG_MASK		0x0000FF00
 #define BG_MASK		0x00FF0000
-#define ATTR_MASK	0x1F000000
+#define ATTR_MASK	0x3F000000
 #define BGALL_MASK	0x0FFF0000
 
 /* The 0x10000000 bit represents the alternate character set.  BGALL_MASK does
@@ -192,6 +192,7 @@ char *SLtt_Graphics_Char_Pairs = NULL;	       /* ac termcap string -- def is vt1
 
 static SLCONST char *UnderLine_Vid_Str;
 static SLCONST char *Blink_Vid_Str;
+static SLCONST char *Italic_Vid_Str;
 static SLCONST char *Bold_Vid_Str;
 static SLCONST char *Ins_Mode_Str; /* = "\033[4h"; */   /* ins mode (im) */
 static SLCONST char *Eins_Mode_Str; /* = "\033[4l"; */  /* end ins mode (ei) */
@@ -1371,11 +1372,59 @@ static int parse_color_digit_name (SLCONST char *color, SLtt_Char_Type *f)
    return 0;
 }
 
+/* Here whitespace is not allowed.  That is, "blue;blink" is ok but
+ * "blue; blink" or "blue ;blink" are not.
+ */
+static int parse_color_and_attributes (SLCONST char *f, char *buf, size_t buflen, SLtt_Char_Type *attrp)
+{
+   SLCONST char *s;
+   unsigned int len;
+   SLtt_Char_Type a;
+
+   *attrp = a = 0;
+
+   s = strchr (f, ';');
+   if (s == NULL) return 0;
+
+   len = s - f;
+   if (len >= buflen) len = buflen-1;
+   strncpy (buf, f, len);
+   buf[len] = 0;
+
+   while ((*s == ';') || (*s == ' ') || (*s == '\t')) s++;
+   f = s;
+   while (*f)
+     {
+	s = strchr (f, ';');
+	if (s == NULL)
+	  s = f + strlen (f);
+
+	len = s - f;
+	if (len)
+	  {
+	     if (0 == strncmp (f, "italic", 6))
+	       a |= SLTT_ITALIC_MASK;
+	     else if (0 == strncmp (f, "blink", 5))
+	       a |= SLTT_BLINK_MASK;
+	     else if (0 == strncmp (f, "underline", 9))
+	       a |= SLTT_ULINE_MASK;
+	     else if (0 == strncmp (f, "bold", 4))
+	       a |= SLTT_BOLD_MASK;
+	  }
+	while ((*s == ';') || (*s == ' ') || (*s == '\t')) s++;
+	f = s;
+     }
+   *attrp = a;
+   return 1;
+}
+
 static int make_color_fgbg (SLCONST char *fg, SLCONST char *bg, SLtt_Char_Type *fgbg)
 {
    SLtt_Char_Type f = 0xFFFFFFFFU, b = 0xFFFFFFFFU;
    SLCONST char *dfg, *dbg;
    unsigned int i;
+   char bgbuf[16], fgbuf[16];
+   SLtt_Char_Type fattr= 0, battr = 0;
 
    if ((fg != NULL) && (*fg == 0)) fg = NULL;
    if ((bg != NULL) && (*bg == 0)) bg = NULL;
@@ -1389,6 +1438,9 @@ static int make_color_fgbg (SLCONST char *fg, SLCONST char *bg, SLtt_Char_Type *
 	if (bg == NULL) bg = dbg;
      }
 
+   if (1 == parse_color_and_attributes (fg, fgbuf, sizeof(fgbuf), &fattr))
+     fg = fgbuf;
+
    if (-1 == parse_color_digit_name (fg, &f))
      {
 	for (i = 0; i < MAX_COLOR_NAMES; i++)
@@ -1398,6 +1450,9 @@ static int make_color_fgbg (SLCONST char *fg, SLCONST char *bg, SLtt_Char_Type *
 	     break;
 	  }
      }
+
+   if (1 == parse_color_and_attributes (bg, bgbuf, sizeof(bgbuf), &battr))
+     bg = bgbuf;
 
    if (-1 == parse_color_digit_name (bg, &b))
      {
@@ -1412,7 +1467,7 @@ static int make_color_fgbg (SLCONST char *fg, SLCONST char *bg, SLtt_Char_Type *
    if ((f == 0xFFFFFFFFU) || (b == 0xFFFFFFFFU))
      return -1;
 
-   *fgbg = fb_to_fgbg (f, b);
+   *fgbg = fb_to_fgbg (f, b) | fattr | battr;
    return 0;
 }
 
@@ -1481,6 +1536,7 @@ static void write_attributes (SLtt_Char_Type fgbg)
 	if (fgbg & SLTT_ULINE_MASK) tt_write_string (UnderLine_Vid_Str);
 	if (fgbg & SLTT_BOLD_MASK) SLtt_bold_video ();
 	if (fgbg & SLTT_REV_MASK) tt_write_string (Rev_Vid_Str);
+	if (fgbg & SLTT_ITALIC_MASK) tt_write_string (Italic_Vid_Str);
 	if (fgbg & SLTT_BLINK_MASK)
 	  {
 	     /* Someday Linux will have a blink mode that set high intensity
@@ -2667,6 +2723,7 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
      Blink_Vid_Str = "\033[5m";
 
    UnderLine_Vid_Str = tt_tgetstr("us");
+   Italic_Vid_Str = "\033[3m";
 
    Start_Alt_Chars_Str = tt_tgetstr ("as");   /* smacs */
    End_Alt_Chars_Str = tt_tgetstr ("ae");   /* rmacs */
@@ -2864,6 +2921,7 @@ void SLtt_set_term_vtxxx(int *vt100)
    Bold_Vid_Str = "\033[1m";
    Blink_Vid_Str = "\033[5m";
    UnderLine_Vid_Str = "\033[4m";
+   Italic_Vid_Str = "\033[3m";
    Del_Eol_Str = "\033[K";
    Del_Bol_Str = "\033[1K";
    Rev_Scroll_Str = "\033M";

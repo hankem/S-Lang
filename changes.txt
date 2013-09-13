@@ -239,6 +239,17 @@ Changes since 2.2.4
      I added code so that only literals get freed.
 106. src/slstd.c: OSX has no proper environ, need to use a function
      call. (Dima Pasechnik).
+107. src/sldisply.c: Added support for an italic attribute if the
+     terminal supports it.  This can be enabled using a color name
+     with a qualifier, e.g.,
+
+         SLtt_set_color ("menu", "white;italics", "blue");
+
+     This mechanism has also been extended to other attributes:
+
+        SLtt_set_color ("comment", "black;underline;italics", "cyan");
+
+     (Based upon a patch provided by Egmont Koblinger).
 
 {{{ Previous Versions
 

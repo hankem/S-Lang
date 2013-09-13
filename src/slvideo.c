@@ -2298,6 +2298,23 @@ int SLtt_reset_video (void)
 }
 #endif
 
+/* FIXME: This does nothing with the attributes */
+static char *parse_color_and_attributes (char *f, char *buf, size_t buflen)
+{
+   SLCONST char *s;
+   size_t len;
+
+   s = strchr (f, ';');
+   if (s == NULL) return f;
+
+   len = s - f;
+   if (len >= buflen) len = buflen-1;
+   strncpy (buf, f, len);
+   buf[len] = 0;
+
+   return buf;
+}
+
 /*----------------------------------------------------------------------*\
  * Function:	void SLtt_set_color (int obj, char *what, char *fg, char *bg);
  *
@@ -2310,11 +2327,15 @@ int SLtt_reset_video (void)
 int SLtt_set_color (int obj, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg, SLFUTURE_CONST char *bg)
 {
    int i, b = 0, f = 7;
+   char fgbuf[32], bgbuf[32];
 
    (void) what;
 
    if ((obj < 0) || (obj >= JMAX_COLORS))
      return -1;
+
+   fg = parse_color_and_attributes ((char *)fg, fgbuf, sizeof(fgbuf));
+   bg = parse_color_and_attributes ((char *)fg, bgbuf, sizeof(bgbuf));
 
    for (i = 0; i < JMAX_COLOR_NAMES; i++ )
      {

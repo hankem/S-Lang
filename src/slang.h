@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-106"
+#define SLANG_VERSION_STRING "pre2.3.0-107"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1659,6 +1659,7 @@ typedef unsigned long SLtt_Char_Type;
 #define SLTT_ULINE_MASK	0x04000000UL
 #define SLTT_REV_MASK	0x08000000UL
 #define SLTT_ALTC_MASK  0x10000000UL
+#define SLTT_ITALIC_MASK  0x20000000UL
 
 SL_EXTERN int SLtt_Screen_Rows;
 SL_EXTERN int SLtt_Screen_Cols;
