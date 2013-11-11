@@ -291,7 +291,7 @@ slsmg_write_wrapped_string
   The `slsmg_write_wrapped_string' function writes the
   string `s' to the virtual display.  The string will be confined
   to the rectangular region whose upper right corner is at row `r'
-  and column `c', and consists of `nr' rows and `nc' columns.
+  and column `c', and consists of `nr' rows and `dc' columns.
   The string will be wrapped at the boundaries of the box.  If `fill'
   is non-zero, the last line to which characters have been written will
   get padded with spaces.

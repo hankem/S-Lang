@@ -146,7 +146,7 @@
 \notes
   On Unix, this timer makes use of the C library \cfun{gettimeofday}
   function.
-\seealso{toc, times}
+\seealso{toc, _toc, _tic, times}
 \done
 
 \function{_time}
@@ -210,7 +210,7 @@
   system call.  The precision of the clock is system dependent and may
   not be very accurate for small time intervals.  For this reason, the
   tic/toc functions may be more useful for small time-intervals.
-\seealso{_tic, _tic, _toc, times, _time}
+\seealso{_tic, tic, toc, times, _time}
 \done
 
 \function{toc}

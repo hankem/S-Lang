@@ -251,6 +251,9 @@ Changes since 2.2.4
 
      (Based upon a patch provided by Egmont Koblinger).
 
+108. *.tm: Documentation updates and corrections. (Agathoklis D.
+     Hatzimanikas)
+
 {{{ Previous Versions
 
 Changes since 2.2.3

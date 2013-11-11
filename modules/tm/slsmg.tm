@@ -180,7 +180,7 @@
   The \ifun{slsmg_write_wrapped_string} function writes the
   string \var{s} to the virtual display.  The string will be confined
   to the rectangular region whose upper right corner is at row \var{r}
-  and column \var{c}, and consists of \var{nr} rows and \var{nc} columns.
+  and column \var{c}, and consists of \var{nr} rows and \var{dc} columns.
   The string will be wrapped at the boundaries of the box.  If \var{fill}
   is non-zero, the last line to which characters have been written will
   get padded with spaces.

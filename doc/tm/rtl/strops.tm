@@ -614,7 +614,7 @@
 \description
   The \ifun{string_matches} function combines the functionality of
   \ifun{string_match} and \ifun{string_match_nth}.  Like
-  \ifun{string_match}, it matches the test string \exmp{str} against
+  \ifun{string_match}, it matches the string \exmp{str} against
   the regular expression \exmp{pat}.  If the string does not match the
   pattern the function will return \NULL.  Otherwise, the function
   will return an array of strings whose \exmp{ith} element is the string that

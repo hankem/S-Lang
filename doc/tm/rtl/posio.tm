@@ -23,7 +23,7 @@
 
 \function{_fileno}
 \synopsis{Get the underlying integer file descriptor}
-\usage{Int_Type fileno (File_Type|FD_Type fp)}
+\usage{Int_Type _fileno (File_Type|FD_Type fp)}
 \description
   The \ifun{_fileno} function returns the underlying integer
   descriptor for a specified stdio \dtype{File_Type} or

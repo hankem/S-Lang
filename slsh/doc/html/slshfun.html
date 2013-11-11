@@ -14,7 +14,7 @@ Contents
 <HR>
 <H1> SLSH Library Reference (version 2.3.0)</H1>
 
-<H2>John E. Davis &lt;www.jedsoft.org&gt;</H2> Oct 27, 2012
+<H2>John E. Davis &lt;www.jedsoft.org&gt;</H2> Nov 11, 2013
 <P>
 <H2><A NAME="toc1">1.</A> <A HREF="slshfun-1.html">Introduction</A></H2>
 
@@ -59,56 +59,64 @@ Contents
 <H2><A NAME="toc7">7.</A> <A HREF="slshfun-7.html">Array Functions</A></H2>
 
 <UL>
-<LI><A NAME="toc7.1">7.1</A> <A HREF="slshfun-7.html#ss7.1"><B>reverse</B></A>
-<LI><A NAME="toc7.2">7.2</A> <A HREF="slshfun-7.html#ss7.2"><B>shift</B></A>
+<LI><A NAME="toc7.1">7.1</A> <A HREF="slshfun-7.html#ss7.1"><B>rearrange</B></A>
+<LI><A NAME="toc7.2">7.2</A> <A HREF="slshfun-7.html#ss7.2"><B>reverse</B></A>
+<LI><A NAME="toc7.3">7.3</A> <A HREF="slshfun-7.html#ss7.3"><B>shift</B></A>
 </UL>
 <P>
-<H2><A NAME="toc8">8.</A> <A HREF="slshfun-8.html">Subprocess Functions</A></H2>
+<H2><A NAME="toc8">8.</A> <A HREF="slshfun-8.html">List Functions and List-based Data Structures</A></H2>
 
 <UL>
-<LI><A NAME="toc8.1">8.1</A> <A HREF="slshfun-8.html#ss8.1"><B>new_process</B></A>
+<LI><A NAME="toc8.1">8.1</A> <A HREF="slshfun-8.html#ss8.1"><B>list_sort</B></A>
+<LI><A NAME="toc8.2">8.2</A> <A HREF="slshfun-8.html#ss8.2"><B>heap_new</B></A>
 </UL>
 <P>
-<H2><A NAME="toc9">9.</A> <A HREF="slshfun-9.html">Profiling Functions</A></H2>
+<H2><A NAME="toc9">9.</A> <A HREF="slshfun-9.html">Subprocess Functions</A></H2>
 
 <UL>
-<LI><A NAME="toc9.1">9.1</A> <A HREF="slshfun-9.html#ss9.1"><B>profile_on</B></A>
-<LI><A NAME="toc9.2">9.2</A> <A HREF="slshfun-9.html#ss9.2"><B>profile_off</B></A>
-<LI><A NAME="toc9.3">9.3</A> <A HREF="slshfun-9.html#ss9.3"><B>profile_begin</B></A>
-<LI><A NAME="toc9.4">9.4</A> <A HREF="slshfun-9.html#ss9.4"><B>profile_end</B></A>
-<LI><A NAME="toc9.5">9.5</A> <A HREF="slshfun-9.html#ss9.5"><B>profile_calibrate</B></A>
-<LI><A NAME="toc9.6">9.6</A> <A HREF="slshfun-9.html#ss9.6"><B>profile_report</B></A>
+<LI><A NAME="toc9.1">9.1</A> <A HREF="slshfun-9.html#ss9.1"><B>new_process</B></A>
 </UL>
 <P>
-<H2><A NAME="toc10">10.</A> <A HREF="slshfun-10.html">Set Functions</A></H2>
+<H2><A NAME="toc10">10.</A> <A HREF="slshfun-10.html">Profiling Functions</A></H2>
 
 <UL>
-<LI><A NAME="toc10.1">10.1</A> <A HREF="slshfun-10.html#ss10.1"><B>complement</B></A>
-<LI><A NAME="toc10.2">10.2</A> <A HREF="slshfun-10.html#ss10.2"><B>intersection</B></A>
-<LI><A NAME="toc10.3">10.3</A> <A HREF="slshfun-10.html#ss10.3"><B>ismember</B></A>
-<LI><A NAME="toc10.4">10.4</A> <A HREF="slshfun-10.html#ss10.4"><B>union</B></A>
-<LI><A NAME="toc10.5">10.5</A> <A HREF="slshfun-10.html#ss10.5"><B>unique</B></A>
+<LI><A NAME="toc10.1">10.1</A> <A HREF="slshfun-10.html#ss10.1"><B>profile_on</B></A>
+<LI><A NAME="toc10.2">10.2</A> <A HREF="slshfun-10.html#ss10.2"><B>profile_off</B></A>
+<LI><A NAME="toc10.3">10.3</A> <A HREF="slshfun-10.html#ss10.3"><B>profile_begin</B></A>
+<LI><A NAME="toc10.4">10.4</A> <A HREF="slshfun-10.html#ss10.4"><B>profile_end</B></A>
+<LI><A NAME="toc10.5">10.5</A> <A HREF="slshfun-10.html#ss10.5"><B>profile_calibrate</B></A>
+<LI><A NAME="toc10.6">10.6</A> <A HREF="slshfun-10.html#ss10.6"><B>profile_report</B></A>
 </UL>
 <P>
-<H2><A NAME="toc11">11.</A> <A HREF="slshfun-11.html">Miscellaneous Functions</A></H2>
+<H2><A NAME="toc11">11.</A> <A HREF="slshfun-11.html">Set Functions</A></H2>
 
 <UL>
-<LI><A NAME="toc11.1">11.1</A> <A HREF="slshfun-11.html#ss11.1"><B>print</B></A>
-<LI><A NAME="toc11.2">11.2</A> <A HREF="slshfun-11.html#ss11.2"><B>print_set_pager</B></A>
-<LI><A NAME="toc11.3">11.3</A> <A HREF="slshfun-11.html#ss11.3"><B>print_set_pager_lines</B></A>
+<LI><A NAME="toc11.1">11.1</A> <A HREF="slshfun-11.html#ss11.1"><B>complement</B></A>
+<LI><A NAME="toc11.2">11.2</A> <A HREF="slshfun-11.html#ss11.2"><B>intersection</B></A>
+<LI><A NAME="toc11.3">11.3</A> <A HREF="slshfun-11.html#ss11.3"><B>ismember</B></A>
+<LI><A NAME="toc11.4">11.4</A> <A HREF="slshfun-11.html#ss11.4"><B>union</B></A>
+<LI><A NAME="toc11.5">11.5</A> <A HREF="slshfun-11.html#ss11.5"><B>unique</B></A>
 </UL>
 <P>
-<H2><A NAME="toc12">12.</A> <A HREF="slshfun-12.html">SLSH intrinsic functions</A></H2>
+<H2><A NAME="toc12">12.</A> <A HREF="slshfun-12.html">Miscellaneous Functions</A></H2>
 
 <UL>
-<LI><A NAME="toc12.1">12.1</A> <A HREF="slshfun-12.html#ss12.1"><B>slsh_readline_init</B></A>
-<LI><A NAME="toc12.2">12.2</A> <A HREF="slshfun-12.html#ss12.2"><B>slsh_readline_new</B></A>
-<LI><A NAME="toc12.3">12.3</A> <A HREF="slshfun-12.html#ss12.3"><B>slsh_readline</B></A>
-<LI><A NAME="toc12.4">12.4</A> <A HREF="slshfun-12.html#ss12.4"><B>slsh_readline_noecho</B></A>
-<LI><A NAME="toc12.5">12.5</A> <A HREF="slshfun-12.html#ss12.5"><B>slsh_set_readline_update_hook</B></A>
-<LI><A NAME="toc12.6">12.6</A> <A HREF="slshfun-12.html#ss12.6"><B>slsh_set_update_preread_cb</B></A>
-<LI><A NAME="toc12.7">12.7</A> <A HREF="slshfun-12.html#ss12.7"><B>slsh_set_update_postread_cb</B></A>
-<LI><A NAME="toc12.8">12.8</A> <A HREF="slshfun-12.html#ss12.8"><B>slsh_set_update_width_cb</B></A>
+<LI><A NAME="toc12.1">12.1</A> <A HREF="slshfun-12.html#ss12.1"><B>print</B></A>
+<LI><A NAME="toc12.2">12.2</A> <A HREF="slshfun-12.html#ss12.2"><B>print_set_pager</B></A>
+<LI><A NAME="toc12.3">12.3</A> <A HREF="slshfun-12.html#ss12.3"><B>print_set_pager_lines</B></A>
+</UL>
+<P>
+<H2><A NAME="toc13">13.</A> <A HREF="slshfun-13.html">SLSH intrinsic functions</A></H2>
+
+<UL>
+<LI><A NAME="toc13.1">13.1</A> <A HREF="slshfun-13.html#ss13.1"><B>slsh_readline_init</B></A>
+<LI><A NAME="toc13.2">13.2</A> <A HREF="slshfun-13.html#ss13.2"><B>slsh_readline_new</B></A>
+<LI><A NAME="toc13.3">13.3</A> <A HREF="slshfun-13.html#ss13.3"><B>slsh_readline</B></A>
+<LI><A NAME="toc13.4">13.4</A> <A HREF="slshfun-13.html#ss13.4"><B>slsh_readline_noecho</B></A>
+<LI><A NAME="toc13.5">13.5</A> <A HREF="slshfun-13.html#ss13.5"><B>slsh_set_readline_update_hook</B></A>
+<LI><A NAME="toc13.6">13.6</A> <A HREF="slshfun-13.html#ss13.6"><B>slsh_set_update_preread_cb</B></A>
+<LI><A NAME="toc13.7">13.7</A> <A HREF="slshfun-13.html#ss13.7"><B>slsh_set_update_postread_cb</B></A>
+<LI><A NAME="toc13.8">13.8</A> <A HREF="slshfun-13.html#ss13.8"><B>slsh_set_update_width_cb</B></A>
 </UL>
 <HR>
 <A HREF="slshfun-1.html">Next</A>

@@ -2132,7 +2132,7 @@
 #v-
    Keep in mind that expressions such as \exmp{i--} do not return a
    value in \slang as they do in C.  The same effect can be achieved
-   to use a comma to separate the expressions as as in
+   to use a comma to separate the expressions as in
 #v+
       i = 10;
       while (i, i--) newline ();
@@ -4979,7 +4979,7 @@
        return 1/x;
     }
 #v-
-  In this case, the message field of the exception object will contain
+  In this case, the message field of the exception will contain
   the string \exmp{"Array contains elements that are zero"} and the
   object field will be set to the indices of the zero elements.
 

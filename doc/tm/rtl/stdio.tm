@@ -436,8 +436,8 @@
 \usage{Integer_Type pclose (File_Type fp)}
 \description
   The \ifun{pclose} function waits for the process associated with
-  \exmp{fp} to exit and the returns the exit status of the command.
-\seealso{pclose, fclose}
+  \exmp{fp} to exit and then returns the exit status of the command.
+\seealso{popen, fclose}
 \done
 
 \function{popen}

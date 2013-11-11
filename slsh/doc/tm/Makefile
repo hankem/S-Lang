@@ -17,7 +17,7 @@ slsh.sgml: slsh.tm
 view: slsh.1
 	nroff -man slsh.1 | most
 #----------------------------------------------------------------------------
-slshfun.sgml : slshfun.tm
+slshfun.sgml : slshfun.tm slshifun.tm
 	$(TM2SGML) slshfun.tm slshfun.sgml
 slshfun.html : slshfun.sgml
 	$(SGML2HTML) slshfun.sgml

@@ -30,7 +30,7 @@
 <CODE>cmdopt_new</CODE> function takes a reference to an error handling
 function that will get called upon error.  In most cases, this
 function should print out the error message, display a usage
-message, and the call <CODE>exit</CODE>.  If the error handler is <CODE>NULL</CODE>,
+message, and then call <CODE>exit</CODE>.  If the error handler is <CODE>NULL</CODE>,
 or it returns instead of calling exit, then an exception will be thrown.</P>
 <P>The error handler must be defined to take a single string argument
 (the error message) and must return nothing.</P>

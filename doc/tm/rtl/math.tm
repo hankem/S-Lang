@@ -335,10 +335,11 @@
 \synopsis{Test if a number is greater than or equal to 0}
 \usage{Char_Type _isnonneg(x)}
 \description
-  This function returns 1 if a number is greater or equal to 0, and zero
-  otherwise.  If the argument is an array, then the corresponding
-  array of boolean (\dtype{Char_Type}) values will be returned.
-\seealso{_isneg, _isnonneg}
+  This function returns 1 if a number is greater than or equal to 0,
+  and zero otherwise.  If the argument is an array, then the
+  corresponding array of boolean (\dtype{Char_Type}) values will be
+  returned.
+\seealso{_isneg, _ispos}
 \done
 
 \function{_ispos}

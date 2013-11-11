@@ -296,7 +296,7 @@
 
 \function{symlink}
 \synopsis{Create a symbolic link}
-\usage{status = symlink (String_Type oldpath, String_Type new_path)}
+\usage{Int_Type symlink (String_Type oldpath, String_Type new_path)}
 \description
   The \ifun{symlink} function may be used to create a symbolic link
   named \exmp{new_path} for  \exmp{oldpath}.  If successful, the function

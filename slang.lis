@@ -118,9 +118,9 @@
 @examples/assoc.sl
 @examples/colormap.sl
 @examples/life.sl
-@examples/prime.sl
+@examples/prime.sl 0755
 @examples/saveobj.sl
-@examples/sort.sl
+@examples/sort.sl 0755
 @examples/utmp.sl
 @examples/slsmgex2.sl
 
@@ -342,6 +342,10 @@
 @slsh/doc/html/slshfun-7.html
 @slsh/doc/html/slshfun-8.html
 @slsh/doc/html/slshfun-9.html
+@slsh/doc/html/slshfun-10.html
+@slsh/doc/html/slshfun-11.html
+@slsh/doc/html/slshfun-12.html
+@slsh/doc/html/slshfun-13.html
 @slsh/scripts/badlinks 0755
 @slsh/scripts/htmlstrip 0755
 @slsh/scripts/ls 0755

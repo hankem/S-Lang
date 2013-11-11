@@ -92,7 +92,7 @@ pcre_matches
  `string' and returns matched substrings as an array.  If
  `regexp' is a string, the function will first compile the
  pattern using the `pcre_compile' function.  The third parameter
- is optional and if providied, will be passed as the `options'
+ is optional and, if provided, will be passed as the `options'
  parameter to `pcre_exec'.
 
  If no match is found, the function will return NULL.

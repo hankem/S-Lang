@@ -2602,7 +2602,7 @@ symlink
   Create a symbolic link
 
  USAGE
-  status = symlink (String_Type oldpath, String_Type new_path)
+  Int_Type symlink (String_Type oldpath, String_Type new_path)
 
  DESCRIPTION
   The `symlink' function may be used to create a symbolic link
@@ -4051,12 +4051,13 @@ _isnonneg
   Char_Type _isnonneg(x)
 
  DESCRIPTION
-  This function returns 1 if a number is greater or equal to 0, and zero
-  otherwise.  If the argument is an array, then the corresponding
-  array of boolean (Char_Type) values will be returned.
+  This function returns 1 if a number is greater than or equal to 0,
+  and zero otherwise.  If the argument is an array, then the
+  corresponding array of boolean (Char_Type) values will be
+  returned.
 
  SEE ALSO
-  _isneg, _isnonneg
+  _isneg, _ispos
 
 --------------------------------------------------------------
 
@@ -5565,7 +5566,7 @@ _fileno
   Get the underlying integer file descriptor
 
  USAGE
-  Int_Type fileno (File_Type|FD_Type fp)
+  Int_Type _fileno (File_Type|FD_Type fp)
 
  DESCRIPTION
   The `_fileno' function returns the underlying integer
@@ -7907,10 +7908,10 @@ pclose
 
  DESCRIPTION
   The `pclose' function waits for the process associated with
-  `fp' to exit and the returns the exit status of the command.
+  `fp' to exit and then returns the exit status of the command.
 
  SEE ALSO
-  pclose, fclose
+  popen, fclose
 
 --------------------------------------------------------------
 
@@ -8775,7 +8776,7 @@ string_matches
  DESCRIPTION
   The `string_matches' function combines the functionality of
   `string_match' and `string_match_nth'.  Like
-  `string_match', it matches the test string `str' against
+  `string_match', it matches the string `str' against
   the regular expression `pat'.  If the string does not match the
   pattern the function will return NULL.  Otherwise, the function
   will return an array of strings whose `ith' element is the string that
@@ -10139,7 +10140,7 @@ tic
   function.
 
  SEE ALSO
-  toc, times
+  toc, _toc, _tic, times
 
 --------------------------------------------------------------
 
@@ -10245,7 +10246,7 @@ _toc
   tic/toc functions may be more useful for small time-intervals.
 
  SEE ALSO
-  _tic, _tic, _toc, times, _time
+  _tic, tic, toc, times, _time
 
 --------------------------------------------------------------
 

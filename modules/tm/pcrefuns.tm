@@ -71,7 +71,7 @@
  \exmp{string} and returns matched substrings as an array.  If
  \exmp{regexp} is a string, the function will first compile the
  pattern using the \ifun{pcre_compile} function.  The third parameter
- is optional and if providied, will be passed as the \exmp{options}
+ is optional and, if provided, will be passed as the \exmp{options}
  parameter to \ifun{pcre_exec}.
 
  If no match is found, the function will return NULL.
