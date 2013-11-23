@@ -118,6 +118,7 @@ static int store_value (Values_Array_Type *va, char *value)
 	if (values == NULL)
 	  return -1;
 	va->values = values;
+	va->num_allocated = num_allocated;
      }
    if (NULL == (va->values[va->num] = SLang_create_slstring (value)))
      return -1;
