@@ -93,6 +93,9 @@ private define fixup_header_names (names)
    variable i = where (names == "");
    names[i] = array_map (String_Type, &sprintf, "col%d", i+1);
 
+#iffalse
+   % This code is nolonger necessary since slang now allows arbitrary
+   % structure names.
    names = strtrans (names, "^\\w", "_");
    names = strcompress (names, "_");
 
@@ -101,7 +104,7 @@ private define fixup_header_names (names)
 	if ('0' <= names[i][0] <= '9')
 	  names[i] = "_" + names[i];
      }
-
+#endif
    if (is_scalar) names = names[0];
    return names;
 }

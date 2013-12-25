@@ -253,10 +253,13 @@ Changes since 2.2.4
 
 108. *.tm: Documentation updates and corrections. (Agathoklis D.
      Hatzimanikas)
-109. modules/cvs-module.c: The store_value function was not updating
+109. modules/csv-module.c: The store_value function was not updating
      the num_allocated variable when resizing the value array.  This
      caused it to fail when reading a CSV table with more than 256
      data columns.
+110. modules/csv.sl: Since S-Lang structure field names may be
+     arbitrary strings, there is no need to massage the csv column
+     names. (See change 97).
 
 {{{ Previous Versions
 
