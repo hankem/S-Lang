@@ -87,7 +87,7 @@ static void destroy_iconv (SLtype type, VOID_STAR f)
    (void) type;
 
    it = (ICONV_Type *) f;
-   iconv_close(it->cd);
+   _iconv_close(it);
    free_iconv_type (it);
 }
 

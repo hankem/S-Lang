@@ -260,6 +260,8 @@ Changes since 2.2.4
 110. modules/csv.sl: Since S-Lang structure field names may be
      arbitrary strings, there is no need to massage the csv column
      names. (See change 97).
+111. modules/iconv-module.c: If the iconv descriptor has been closed,
+     then do not close it again in the iconv object destructor
 
 {{{ Previous Versions
 
