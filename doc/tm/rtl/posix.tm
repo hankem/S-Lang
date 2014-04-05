@@ -74,6 +74,67 @@
 \seealso{setpriority, getpid, getppid}
 \done
 
+\function{getrusage}
+\synopsis{Get process resource usage}
+\usage{Struct_Type getrusage ([Int_Type who]}
+\description
+  This function returns a structure whose fields contain information
+  about the resource usage of calling process, summed over all threads
+  of the process.  The optional integer argument \exmp{who} may be
+  used to obtain resource usage of child processes, or of the calling
+  thread itself. Specifically, the optional integer argument
+  \exmp{who} may take on one of the following values:
+#v+
+    RUSAGE_SELF (default)
+    RUSAGE_CHILDREN
+#v-
+  If \ivar{RUSAGE_CHILDREN} is specified, then the process information
+  will be the sum of all descendents of the calling process that have
+  terminated and have been waited for (via, e.g., \ifun{waitpid}).  It
+  will not contain any information about child processes that have not
+  terminated.
+
+  The structure that is returned will contain the following fields:
+#v+
+   ru_utimesecs       user CPU time used (Double_Type secs)
+   ru_stimesecs       system CPU time used (Double_Type secs)
+   ru_maxrss          maximum resident_set_size
+   ru_minflt          page reclaims (soft page faults)
+   ru_majflt          page faults (hard page faults)
+   ru_inblock         block input operations
+   ru_oublock         block output operations
+   ru_nvcsw           voluntary context switches
+   ru_nivcsw          involuntary context switches
+   ru_ixrss           integral shared memory size
+   ru_idrss           integral unshared data size
+   ru_isrss           integral unshared stack size
+   ru_nswap           swaps
+   ru_msgsnd          IPC messages sent
+   ru_msgrcv          IPC messages received
+   ru_nsignals        signals received
+#v-
+  Some of the fields may not be supported for a particular OS or
+  kernel version.  For example, on Linux the 2.6.32 kernel supports
+  only the following fields:
+#v+
+    ru_utimesecs
+    ru_stimesecs
+    ru_maxrss (since Linux 2.6.32)
+    ru_minflt
+    ru_majflt
+    ru_inblock (since Linux 2.6.22)
+    ru_oublock (since Linux 2.6.22)
+    ru_nvcsw (since Linux 2.6)
+    ru_nivcsw (since Linux 2.6)
+#v-
+\notes
+  The underlying system call returns the CPU user and system times
+  as C \exmp{struct timeval} objects.  For convenience, the interpreter
+  interface represents these objects as double precision floating point
+  values.
+\seealso{times}
+\done
+
 \function{getuid}
 \synopsis{Get the user-id of the current process}
 \usage{Int_Type getuid ()}

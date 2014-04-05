@@ -1,6 +1,6 @@
 /* Process specific system calls */
 /*
-Copyright (C) 2004-2011 John E. Davis
+Copyright (C) 2004-2014 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -242,6 +242,61 @@ static int setpriority_intrin (int *which, int *who, int *prio)
 }
 #endif
 
+#ifdef HAVE_GETRUSAGE
+typedef struct
+{
+   struct rusage r;
+   double ru_utimesecs;
+   double ru_stimesecs;
+}
+RUsage_Type;
+
+static SLang_CStruct_Field_Type RUsage_Struct [] =
+{
+   MAKE_CSTRUCT_FLOAT_FIELD(RUsage_Type, ru_utimesecs, "ru_utimesecs", 0),
+   MAKE_CSTRUCT_FLOAT_FIELD(RUsage_Type, ru_stimesecs, "ru_stimesecs", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_maxrss, "ru_maxrss", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_minflt, "ru_minflt", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_majflt, "ru_majflt", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_inblock, "ru_inblock", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_oublock, "ru_oublock", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_nvcsw, "ru_nvcsw", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_nivcsw, "ru_nivcsw", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_ixrss, "ru_ixrss", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_idrss, "ru_idrss", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_isrss, "ru_isrss", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_nswap, "ru_nswap", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_msgsnd, "ru_msgsnd", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_msgrcv, "ru_msgrcv", 0),
+   MAKE_CSTRUCT_INT_FIELD(RUsage_Type, r.ru_nsignals, "ru_nsignals", 0),
+   SLANG_END_CSTRUCT_TABLE
+};
+
+static void getrusage_intrin (void)
+{
+   RUsage_Type rut;
+   int who = RUSAGE_SELF;
+
+   if ((SLang_Num_Function_Args == 1)
+       && (-1 == SLang_pop_int (&who)))
+     return;
+
+   if (-1 == getrusage (who, &rut.r))
+     {
+	_pSLerrno_errno = errno;
+	(void) SLang_push_null ();
+	return;
+     }
+
+   rut.ru_stimesecs
+     = (double)rut.r.ru_stime.tv_sec + 1e-6*rut.r.ru_stime.tv_usec;
+   rut.ru_utimesecs
+     = (double)rut.r.ru_utime.tv_sec + 1e-6*rut.r.ru_utime.tv_usec;
+
+   (void) SLang_push_cstruct ((VOID_STAR) &rut, RUsage_Struct);
+}
+#endif
+
 static SLang_Intrin_Fun_Type Process_Name_Table[] =
 {
    MAKE_INTRINSIC_0("getpid", getpid_cmd, SLANG_INT_TYPE),
@@ -302,6 +357,9 @@ static SLang_Intrin_Fun_Type Process_Name_Table[] =
 #ifdef HAVE_GETPRIORITY
    MAKE_INTRINSIC_II("getpriority", getpriority_intrin, SLANG_VOID_TYPE),
 #endif
+#ifdef HAVE_GETRUSAGE
+   MAKE_INTRINSIC_0("getrusage", getrusage_intrin, SLANG_VOID_TYPE),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 
@@ -315,6 +373,15 @@ static SLang_IConstant_Type Const_Table [] =
 #endif
 #ifdef PRIO_USER
    MAKE_ICONSTANT("PRIO_USER", PRIO_USER),
+#endif
+#ifdef RUSAGE_SELF
+   MAKE_ICONSTANT("RUSAGE_SELF", RUSAGE_SELF),
+#endif
+#ifdef RUSAGE_CHILDREN
+   MAKE_ICONSTANT("RUSAGE_CHILDREN", RUSAGE_CHILDREN),
+#endif
+#ifdef RUSAGE_THREAD
+   MAKE_ICONSTANT("RUSAGE_THREAD", RUSAGE_THREAD),
 #endif
    SLANG_END_ICONST_TABLE
 };

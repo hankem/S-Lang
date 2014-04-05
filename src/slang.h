@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-111"
+#define SLANG_VERSION_STRING "pre2.3.0-112"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -2354,6 +2354,11 @@ SL_EXTERN int SLclass_patch_intrin_fun_table1 (SLang_Intrin_Fun_Type *table,
    (sizeof(((s*)0L)->f)==sizeof(char))?(SLANG_UCHAR_TYPE): \
    (sizeof(((s*)0L)->f)==sizeof(long))?(SLANG_ULONG_TYPE): \
    SLANG_ULLONG_TYPE, (r)\
+}
+
+#define MAKE_CSTRUCT_FLOAT_FIELD(s,f,n,r) {(n), offsetof(s,f),\
+   (sizeof(((s*)0L)->f)==sizeof(float))?(SLANG_FLOAT_TYPE): \
+   SLANG_DOUBLE_TYPE, (r)\
 }
 
 #define SLANG_END_TABLE {NULL}

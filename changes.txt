@@ -262,6 +262,8 @@ Changes since 2.2.4
      names. (See change 97).
 111. modules/iconv-module.c: If the iconv descriptor has been closed,
      then do not close it again in the iconv object destructor
+112. src/slproc.c: Added getrusage function to get process resource
+     usage.
 
 {{{ Previous Versions
 

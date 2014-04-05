@@ -343,6 +343,7 @@ USA.
 #undef HAVE_WAITPID
 #undef HAVE_TTYNAME
 #undef HAVE_TTYNAME_R
+#undef HAVE_GETRUSAGE
 
 /* Files used by the slang-readline interface.  The interface first tries
  * to read SLRLINE_USER_INIT_FILE from $HOME, and if that does not exist, it

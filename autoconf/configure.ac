@@ -154,6 +154,7 @@ fork waitpid \
 socket socketpair \
 confstr pathconf \
 getpriority setpriority \
+getrusage \
 setvbuf \
 utime utimes \
 ttyname ttyname_r \

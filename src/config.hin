@@ -88,6 +88,8 @@
 #undef HAVE_SYS_MMAN_H
 
 #undef HAVE_SYS_RESOURCE_H
+#undef HAVE_GETRUSAGE
+
 
 /* Set these to the appropriate values */
 #undef SIZEOF_SHORT
