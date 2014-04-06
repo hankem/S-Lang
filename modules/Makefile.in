@@ -180,6 +180,7 @@ install: all
 	done
 runtests: all
 	@test_scripts="$(TEST_SCRIPTS)"; \
+	test -z "@PNG_MODULE@" || test_scripts="$$test_scripts test_png.sl"; \
 	test -z "@ONIG_MODULE@" || test_scripts="$$test_scripts test_onig.sl"; \
 	test -z "@ZLIB_MODULE@" || test_scripts="$$test_scripts test_zlib.sl"; \
 	cd test; ./runtests.sh $$test_scripts

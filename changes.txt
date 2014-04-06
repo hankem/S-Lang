@@ -264,6 +264,8 @@ Changes since 2.2.4
      then do not close it again in the iconv object destructor
 112. src/slproc.c: Added getrusage function to get process resource
      usage.
+113. modules/png-module.c: Only the first 1/4 pixels of an RGB+alpha
+     image were getting byte-swapped. (RGB images were ok).
 
 {{{ Previous Versions
 

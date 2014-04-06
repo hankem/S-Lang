@@ -231,7 +231,7 @@ static void fixup_array_rgba (SLang_Array_Type *at)
    unsigned char *data, *data_max;
 
    data = (unsigned char *) at->data;
-   data_max = data + at->num_elements;
+   data_max = data + 4*at->num_elements;
 
    /* RGBARGBA -> ARGBARGB */
    while (data < data_max)
