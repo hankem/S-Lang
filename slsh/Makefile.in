@@ -82,9 +82,9 @@ $(OBJDIR)/slsh_exe: $(OBJDIR)/slsh.o $(OBJDIR)/readline.o
 $(OBJDIR)/slsh: $(OBJDIR)/slsh.o $(OBJDIR)/readline.o
 	$(CC) $(CFLAGS) $(OBJDIR)/slsh.o $(OBJDIR)/readline.o -o $(OBJDIR)/slsh $(LDFLAGS) $(INST_LIBS)
 $(OBJDIR)/slsh.o: $(OBJDIR) slsh.c slsh.h config.h Makefile
-	cd $(OBJDIR) && $(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) $(SRCDIR)/slsh.c
+	cd $(OBJDIR) && $(CC) $(SLANG_SRCINC) $(CFLAGS) -c $(DEFS) $(SRCDIR)/slsh.c
 $(OBJDIR)/readline.o: $(OBJDIR) readline.c slsh.h config.h Makefile
-	cd $(OBJDIR) && $(CC) -c $(CFLAGS) $(SLANG_SRCINC) $(DEFS) -DUSE_GNU_READLINE=$(GNU_READLINE) $(SRCDIR)/readline.c
+	cd $(OBJDIR) && $(CC) $(SLANG_SRCINC) $(CFLAGS) -c $(DEFS) -DUSE_GNU_READLINE=$(GNU_READLINE) $(SRCDIR)/readline.c
 $(OBJDIR):
 	-$(MKINSDIR) $(OBJDIR)
 config.h: ../src/config.h

@@ -266,6 +266,10 @@ Changes since 2.2.4
      usage.
 113. modules/png-module.c: Only the first 1/4 pixels of an RGB+alpha
      image were getting byte-swapped. (RGB images were ok).
+114. configure,*/Makefile.in: rearranged the compiler command so that
+     include flags occur before CFLAGS.  This is a protective measure
+     designed to avoid issues when the CFLAGS variable also contains an
+     include path.
 
 {{{ Previous Versions
 
