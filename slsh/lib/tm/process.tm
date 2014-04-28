@@ -20,7 +20,7 @@
   e.g., \exmp{fd0} and \exmp{fd1} correspond to the child's stdin and
   stdout, respectively.  The structure also contains fields of the
   form \exmp{fpN} whose values are stdio \dtype{File_Type} objects
-  obtained using \exmp{fdopen} with the correponding \exmp{fdN} value.
+  obtained using \exmp{fdopen} with the corresponding \exmp{fdN} value.
 
   Other important fields include \exmp{pid} whose value is
   the process-id of the newly created process.
@@ -87,11 +87,18 @@
 #v+
    pre_exec_hook=&func
 #v-
-     This qualifier will cause the function corresponding to func to
+     This qualifier will cause the function corresponding to \exmp{func} to
      be called prior to closing unused file descriptors and invoking
      the executable.  The function will be passed a list of integer
-     valued of file descriptors that will be kept open.  Additional
-     integers may be added to the list by the function.
+     valued file descriptors that will be kept open.  Additional
+     integers may be added to the list by the function.  If the
+     qualifier \exmp{pre_exec_hook_optarg} exists, it will also be
+     passed as an addtional argument.
+#v+
+   pre_exec_hook_optarg=VALUE
+#v-
+     If this qualifier exists, its value will be passed as the second
+     argument to the \exmp{pre_exec_hook} callback function.
 
   Note that the read and write qualifiers specify the nature of the
   file descriptors from the child process's view.  That is, those

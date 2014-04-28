@@ -270,6 +270,8 @@ Changes since 2.2.4
      include flags occur before CFLAGS.  This is a protective measure
      designed to avoid issues when the CFLAGS variable also contains an
      include path.
+115. slsh/lib/process.sl: Added support to the pre_exec_hook callback
+     function for an optional argument.
 
 {{{ Previous Versions
 

@@ -1,11 +1,19 @@
 require ("process");
 
+private define pre_exec_hook (fdlist, optarg)
+{
+   putenv ("TEST_OPTARG=$optarg");
+}
+
 define slsh_main ()
 {
    % This is a silly example.  echo write to fd=12, which has stdout
    % dup'd to it.  wc reads from echo via fd=16, which has stdin dup'd
    % to it.
-   variable echo = new_process (["echo", "foo bar"]; write=12, dup1=12);
+   variable echo = new_process (["echo", "foo bar"]; write=12, dup1=12,
+				pre_exec_hook=&pre_exec_hook,
+				pre_exec_hook_optarg="FOOBAR");
+
    variable wc = new_process ("wc"; write=10, dup1=10, fd16=echo.fd12, dup0=16);
 
    variable line;

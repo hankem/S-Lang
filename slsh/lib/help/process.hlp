@@ -25,7 +25,7 @@ new_process
   e.g., `fd0' and `fd1' correspond to the child's stdin and
   stdout, respectively.  The structure also contains fields of the
   form `fpN' whose values are stdio File_Type objects
-  obtained using `fdopen' with the correponding `fdN' value.
+  obtained using `fdopen' with the corresponding `fdN' value.
 
   Other important fields include `pid' whose value is
   the process-id of the newly created process.
@@ -92,11 +92,18 @@ new_process
 
    pre_exec_hook=&func
 
-     This qualifier will cause the function corresponding to func to
+     This qualifier will cause the function corresponding to `func' to
      be called prior to closing unused file descriptors and invoking
      the executable.  The function will be passed a list of integer
-     valued of file descriptors that will be kept open.  Additional
-     integers may be added to the list by the function.
+     valued file descriptors that will be kept open.  Additional
+     integers may be added to the list by the function.  If the
+     qualifier `pre_exec_hook_optarg' exists, it will also be
+     passed as an addtional argument.
+
+   pre_exec_hook_optarg=VALUE
+
+     If this qualifier exists, its value will be passed as the second
+     argument to the `pre_exec_hook' callback function.
 
   Note that the read and write qualifiers specify the nature of the
   file descriptors from the child process's view.  That is, those
