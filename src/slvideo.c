@@ -2335,7 +2335,7 @@ int SLtt_set_color (int obj, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg,
      return -1;
 
    fg = parse_color_and_attributes ((char *)fg, fgbuf, sizeof(fgbuf));
-   bg = parse_color_and_attributes ((char *)fg, bgbuf, sizeof(bgbuf));
+   bg = parse_color_and_attributes ((char *)bg, bgbuf, sizeof(bgbuf));
 
    for (i = 0; i < JMAX_COLOR_NAMES; i++ )
      {

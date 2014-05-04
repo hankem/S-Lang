@@ -272,6 +272,9 @@ Changes since 2.2.4
      include path.
 115. slsh/lib/process.sl: Added support to the pre_exec_hook callback
      function for an optional argument.
+116. Change 107 introduced a cut/paste error that prevented the
+     background color on Windows systems from being properly parsed.
+     (Reported by Frank and Manfred from jed-users).
 
 {{{ Previous Versions
 
