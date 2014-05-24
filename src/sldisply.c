@@ -1089,8 +1089,8 @@ static Color_Def_Type Color_Defs [MAX_COLOR_NAMES] =
      {"brightgreen",	SLSMG_COLOR_BRIGHT_GREEN},
      {"yellow",		SLSMG_COLOR_BRIGHT_BROWN},
      {"brightblue",	SLSMG_COLOR_BRIGHT_BLUE},
-     {"brightmagenta",	SLSMG_COLOR_BRIGHT_CYAN},
-     {"brightcyan",	SLSMG_COLOR_BRIGHT_MAGENTA},
+     {"brightmagenta",	SLSMG_COLOR_BRIGHT_MAGENTA},
+     {"brightcyan",	SLSMG_COLOR_BRIGHT_CYAN},
      {"white",		SLSMG_COLOR_BRIGHT_WHITE},
 #define SLSMG_COLOR_DEFAULT 0xFF
      {"default",		SLSMG_COLOR_DEFAULT}

@@ -275,6 +275,9 @@ Changes since 2.2.4
 116. Change 107 introduced a cut/paste error that prevented the
      background color on Windows systems from being properly parsed.
      (Reported by Frank and Manfred from jed-users).
+117. src/sldisply.c: SLSMG_COLOR_BRIGHT_MAGENTA and
+     SLSMG_COLOR_BRIGHT_CYAN were swapped (patch provided by Thorben
+     from slang-users list).
 
 {{{ Previous Versions
 
