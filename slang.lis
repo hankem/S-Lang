@@ -145,7 +145,6 @@
 @modules/histogram-module.inc
 @modules/histogram-module.c
 @modules/json-module.c
-@modules/json-module.inc
 @modules/json.sl
 @modules/onig-module.c
 @modules/onig.sl
@@ -188,6 +187,7 @@
 @modules/test/test_hist.sl
 @modules/test/test_stats.sl
 @modules/test/test_json.sl
+@modules/test/test_png.sl
 
 @modules/tm/pcrefuns.tm
 @modules/tm/pngfuns.tm

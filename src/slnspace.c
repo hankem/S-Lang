@@ -1,7 +1,7 @@
 /* -*- mode: C; mode: fold; -*- */
 /* slnspace.c  --- Name Space implementation */
 /*
-Copyright (C) 2004-2011 John E. Davis
+Copyright (C) 2004-2014 John E. Davis
 
 This file is part of the S-Lang Library.
 

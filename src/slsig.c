@@ -1,6 +1,6 @@
 /* interpreter signal handling functions */
 /*
-Copyright (C) 2004-2011 John E. Davis
+Copyright (C) 2004-2014 John E. Davis
 
 This file is part of the S-Lang Library.
 

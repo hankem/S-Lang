@@ -1,5 +1,9 @@
 % Struct functions
-
+% Copyright (C) 2012-2014 John E. Davis
+%
+% This file is part of the S-Lang Library and may be distributed under the
+% terms of the GNU General Public License.  See the file COPYING for
+% more information.
 private define make_indices (num_dims, d, i)
 {
    _for (0, num_dims-1, 1)
