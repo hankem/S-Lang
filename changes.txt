@@ -297,6 +297,9 @@ Changes since 2.2.4
         slsh> path_dirname(path_dirname("/usr/bin/./slsh"));
 	/usr
 
+123. slsh/scripts/badlinks updated to use the fswalk functions
+     (Agathoklis D. Hatzimanikas).
+
 {{{ Previous Versions
 
 Changes since 2.2.3
