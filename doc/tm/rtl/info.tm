@@ -47,6 +47,23 @@
 \seealso{is_defined, sprintf, _get_namespaces}
 \done
 
+\variable{__FILE__}
+\synopsis{Path of the compilation unit}
+\usage{String_Type __FILE__}
+\description
+  Every private namespace has \ivar{__FILE__} variable associated with
+  it.  If the namespace is associated with a file, then the value of
+  this variable will be equal to the pathname of the file.  If the
+  namespace is associated with a string, such as one passed to the
+  \ifun{eval} function, then the value of this variable will be
+  \exmp{"***string***"};
+\notes
+  In the case of a file, the pathname may be an absolute path or a
+  relative one.  If it is a relative one, then it will be relative to
+  the directory from where the file was loaded, i.e., the value
+  returned by the \ifun{getcwd} function.
+\done
+
 \function{_function_name}
 \synopsis{Returns the name of the currently executing function}
 \usage{String_Type _function_name ()}

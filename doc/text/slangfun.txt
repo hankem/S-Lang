@@ -1083,7 +1083,7 @@ wherenot
   Get indices where a numeric array is 0
 
  USAGE
-  Array_Type wherenot (Array_Type)
+  Array_Type wherenot (Array_Type a)
 
  DESCRIPTION
   This function is equivalent to `where(not a)'.  See the
@@ -3010,6 +3010,30 @@ _apropos
 
  SEE ALSO
   is_defined, sprintf, _get_namespaces
+
+--------------------------------------------------------------
+
+__FILE__
+
+ SYNOPSIS
+  Path of the compilation unit
+
+ USAGE
+  String_Type __FILE__
+
+ DESCRIPTION
+  Every private namespace has `__FILE__' variable associated with
+  it.  If the namespace is associated with a file, then the value of
+  this variable will be equal to the pathname of the file.  If the
+  namespace is associated with a string, such as one passed to the
+  `eval' function, then the value of this variable will be
+  `"***string***"';
+
+ NOTES
+  In the case of a file, the pathname may be an absolute path or a
+  relative one.  If it is a relative one, then it will be relative to
+  the directory from where the file was loaded, i.e., the value
+  returned by the `getcwd' function.
 
 --------------------------------------------------------------
 
@@ -5236,6 +5260,19 @@ putenv
 
 --------------------------------------------------------------
 
+__set_argc_argv
+
+ SYNOPSIS
+  Set the argument list
+
+ USAGE
+  __set_argc_argv (Array_Type a)
+
+ DESCRIPTION
+  This function sets the `__argc' and `__argv' intrinsic variables.
+
+--------------------------------------------------------------
+
 _slang_install_prefix
 
  SYNOPSIS
@@ -5529,12 +5566,30 @@ close
   Int_Type close (FD_Type fd)
 
  DESCRIPTION
-  The `close' function is used to close and open file descriptor
+  The `close' function is used to close an open file descriptor
   created by the `open' function.  Upon success 0 is returned,
   otherwise the function returns -1 and sets `errno' accordingly.
 
  SEE ALSO
-  open, fclose, read, write
+  open, _close, fclose, read, write
+
+--------------------------------------------------------------
+
+_close
+
+ SYNOPSIS
+  Close an open file descriptor
+
+ USAGE
+  Int_Type _close (Int_Type fd)
+
+ DESCRIPTION
+  The `_close' function is used to close the underlying integer
+  open file descriptor.  Upon success 0 is returned, otherwise the
+  function returns -1 and sets `errno' accordingly.
+
+ SEE ALSO
+  open, _fileno, close, fclose, read, write
 
 --------------------------------------------------------------
 
@@ -5557,6 +5612,24 @@ dup_fd
 
  SEE ALSO
   open, close
+
+--------------------------------------------------------------
+
+dup2_fd
+
+ SYNOPSIS
+  Duplicate a file descriptor
+
+ USAGE
+  Int_Type dup2_fd (FD_Type fd, int newfd)
+
+ DESCRIPTION
+  The `dup2_fd' function makes `newfd' a copy of the
+  specified file descriptor `fd'. Upon success returns `newfd',
+  otherwise it returns -1 and sets `errno' accordingly.
+
+ SEE ALSO
+  dup, open, close, _close, _fileno, read
 
 --------------------------------------------------------------
 
@@ -6012,7 +6085,28 @@ kill
   This function is not supported by all systems.
 
  SEE ALSO
-  getpid
+  killpg, getpid
+
+--------------------------------------------------------------
+
+killpg
+
+ SYNOPSIS
+  Send a signal to a process group
+
+ USAGE
+  Integer_Type killpg (Integer_Type pgrppid, Integer_Type sig)
+
+ DESCRIPTION
+  This function may be used to send a signal given by the integer `sig'
+  to the process group specified by `pgrppid'.  The function returns zero upon
+  success or `-1' upon failure setting `errno' accordingly.
+
+ NOTES
+  This function is not supported by all systems.
+
+ SEE ALSO
+  kill, getpid
 
 --------------------------------------------------------------
 
@@ -9874,8 +9968,10 @@ get_struct_field
   x = get_struct_field (Struct_Type s, String field_name)
 
  DESCRIPTION
-   The `get_struct_field' function gets the value of the field
-   whose name is specified by `field_name' of the structure `s'.
+  The `get_struct_field' function gets the value of the field
+  whose name is specified by `field_name' of the structure
+  `s'. If the specified name is not a field of the structure, the
+  function will throw an `InvalidParmError' exception.
 
  SEE ALSO
   set_struct_field, get_struct_field_names, array_info

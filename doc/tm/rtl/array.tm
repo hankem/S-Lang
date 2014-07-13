@@ -804,7 +804,7 @@ temporary arrays.
 
 \function{wherenot}
 \synopsis{Get indices where a numeric array is 0}
-\usage{Array_Type wherenot (Array_Type)}
+\usage{Array_Type wherenot (Array_Type a)}
 \description
   This function is equivalent to \exmp{where(not a)}.  See the
   documentation for \ifun{where} for more information.

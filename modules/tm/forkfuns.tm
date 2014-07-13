@@ -114,36 +114,6 @@
 \seealso{execv, execve, system, fork, _exit}
 \done
 
-\function{execve, execv, execvp}
-\synopsis{Execute a new process}
-\usage{Int_Type execve(path, argv[], envp[])}
-#v+
-  Int_Type execvp(path, argv[])}
-  Int_Type execv(path, argv[])}
-#v-
-\description
-  The \ifun{execv} family of functions overlay the current process
-  with a new process that corresponds to the program specified by the
-  \exmp{path} argument.  If for some reason the function fails a
-  value of -1 will be returned with \ivar{errno} set accordingly.
-  Normally the function will not return.
-
-  The \exmp{argv} parameter is an array of strings that will
-  correspond to the argument list used when invoking the program.  For
-  example, if the invoked program is a C program, the \exmp{argv}
-  parameter will be correspond to the C program's argv-list.
-
-  The \ifun{execve} function takes an array of strings that will be
-  used to initialize the environment of the overlayed program.
-
-  The \ifun{execvp} function will mimick the actions /bin/sh when
-  searching for the executable file.
-\notes
-  These function are wrappers around the corresponding system library
-  functions.  See the system documentation for more information.
-\seealso{execve, execvp, system, fork, _exit}
-\done
-
 \function{_exit}
 \synopsis{Exit the current processes}
 \usage{_exit(Int_Type status)}

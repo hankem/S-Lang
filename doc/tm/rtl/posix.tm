@@ -166,7 +166,19 @@
 #v-
 \notes
   This function is not supported by all systems.
-\seealso{getpid}
+\seealso{killpg, getpid}
+\done
+
+\function{killpg}
+\synopsis{Send a signal to a process group}
+\usage{Integer_Type killpg (Integer_Type pgrppid, Integer_Type sig)}
+\description
+  This function may be used to send a signal given by the integer \exmp{sig}
+  to the process group specified by \exmp{pgrppid}.  The function returns zero upon
+  success or \exmp{-1} upon failure setting \ivar{errno} accordingly.
+\notes
+  This function is not supported by all systems.
+\seealso{kill, getpid}
 \done
 
 \function{mkfifo}

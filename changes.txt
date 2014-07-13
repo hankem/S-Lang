@@ -299,7 +299,8 @@ Changes since 2.2.4
 
 123. slsh/scripts/badlinks updated to use the fswalk functions
      (Agathoklis D. Hatzimanikas).
-
+124. Various documentation updates/corrections (Agathoklis D.
+     Hatzimanikas).
 {{{ Previous Versions
 
 Changes since 2.2.3

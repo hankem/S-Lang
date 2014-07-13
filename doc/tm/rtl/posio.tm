@@ -2,10 +2,20 @@
 \synopsis{Close an open file descriptor}
 \usage{Int_Type close (FD_Type fd)}
 \description
-  The \ifun{close} function is used to close and open file descriptor
+  The \ifun{close} function is used to close an open file descriptor
   created by the \ifun{open} function.  Upon success \0 is returned,
   otherwise the function returns \-1 and sets \ivar{errno} accordingly.
-\seealso{open, fclose, read, write}
+\seealso{open, _close, fclose, read, write}
+\done
+
+\function{_close}
+\synopsis{Close an open file descriptor}
+\usage{Int_Type _close (Int_Type fd)}
+\description
+  The \ifun{_close} function is used to close the underlying integer
+  open file descriptor.  Upon success \0 is returned, otherwise the
+  function returns \-1 and sets \ivar{errno} accordingly.
+\seealso{open, _fileno, close, fclose, read, write}
 \done
 
 \function{dup_fd}
@@ -21,6 +31,16 @@
 \seealso{open, close}
 \done
 
+\function{dup2_fd}
+\synopsis{Duplicate a file descriptor}
+\usage{Int_Type dup2_fd (FD_Type fd, int newfd)}
+\description
+  The \ifun{dup2_fd} function makes \exmp{newfd} a copy of the
+  specified file descriptor \exmp{fd}. Upon success returns \exmp{newfd},
+  otherwise it returns \-1 and sets \ivar{errno} accordingly.
+\seealso{dup, open, close, _close, _fileno, read}
+\done
+ 
 \function{_fileno}
 \synopsis{Get the underlying integer file descriptor}
 \usage{Int_Type _fileno (File_Type|FD_Type fp)}

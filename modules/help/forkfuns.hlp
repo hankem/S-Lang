@@ -150,45 +150,6 @@ execvp
 
 --------------------------------------------------------------
 
-execve, execv, execvp
-
- SYNOPSIS
-  Execute a new process
-
- USAGE
-  Int_Type execve(path, argv[], envp[])
-
-  Int_Type execvp(path, argv[])}
-  Int_Type execv(path, argv[])}
-
-
- DESCRIPTION
-  The `execv' family of functions overlay the current process
-  with a new process that corresponds to the program specified by the
-  `path' argument.  If for some reason the function fails a
-  value of -1 will be returned with `errno' set accordingly.
-  Normally the function will not return.
-
-  The `argv' parameter is an array of strings that will
-  correspond to the argument list used when invoking the program.  For
-  example, if the invoked program is a C program, the `argv'
-  parameter will be correspond to the C program's argv-list.
-
-  The `execve' function takes an array of strings that will be
-  used to initialize the environment of the overlayed program.
-
-  The `execvp' function will mimick the actions /bin/sh when
-  searching for the executable file.
-
- NOTES
-  These function are wrappers around the corresponding system library
-  functions.  See the system documentation for more information.
-
- SEE ALSO
-  execve, execvp, system, fork, _exit
-
---------------------------------------------------------------
-
 _exit
 
  SYNOPSIS

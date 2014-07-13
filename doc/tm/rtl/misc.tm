@@ -277,6 +277,13 @@
 \seealso{getenv, sprintf}
 \done
 
+\function{__set_argc_argv}
+\synopsis{Set the argument list}
+\usage{__set_argc_argv (Array_Type a)}
+\description
+  This function sets the \ivar{__argc} and \ivar{__argv} intrinsic variables.
+\done
+
 \variable{_slang_install_prefix}
 \synopsis{S-Lang's installation prefix}
 \usage{String_Type _slang_install_prefix}
