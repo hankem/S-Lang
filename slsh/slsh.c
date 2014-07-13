@@ -36,7 +36,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static SLFUTURE_CONST char *Slsh_Version = "0.9.0-2";
+static SLFUTURE_CONST char *Slsh_Version = "0.9.1-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -316,12 +316,23 @@ static int try_to_load_file (SLFUTURE_CONST char *path, char *file, char *ns)
 {
    int status;
 
-   if (path == NULL)
-     path = ".";
-
    if (file != NULL)
      {
+	int free_path = 0;
+	if (path == NULL)
+	  {
+	     free_path = 1;
+	     path = SLpath_getcwd ();
+	     if (path == NULL)
+	       {
+		  path = ".";
+		  free_path = 0;
+	       }
+	  }
+
 	file = SLpath_find_file_in_path (path, file);
+	if (free_path) SLfree (path);
+
 	if (file == NULL)
 	  return 0;
      }

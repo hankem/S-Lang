@@ -281,7 +281,7 @@ Changes since 2.2.4
 118. Updated copyright year for upcoming release.
 119. src/slposdir.c: Added lchown intrinsic.
 120. src/slang.h, src/slpath.c: Added API function SLpath_getcwd
-
+121. src/slsh.c: Use SLpath_getcwd instead of "." for CWD.
 
 {{{ Previous Versions
 
