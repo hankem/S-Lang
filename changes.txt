@@ -280,6 +280,7 @@ Changes since 2.2.4
      from slang-users list).
 118. Updated copyright year for upcoming release.
 119. src/slposdir.c: Added lchown intrinsic.
+120. src/slang.h, src/slpath.c: Added API function SLpath_getcwd
 
 
 {{{ Previous Versions

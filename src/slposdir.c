@@ -492,42 +492,16 @@ static void fixup_dir (char *dir)
 
 static void slget_cwd (void)
 {
-   char cwd[1024];
-   char *p;
-
-#ifndef HAVE_GETCWD
-   p = getwd (cwd);
-#else
-# if defined (__EMX__)
-   p = _getcwd2(cwd, 1022);	       /* includes drive specifier */
-# else
-   p = getcwd(cwd, 1022);	       /* djggp includes drive specifier */
-# endif
-#endif
+   char *p = SLpath_getcwd ();
 
    if (p == NULL)
      {
 	_pSLerrno_errno = errno;
-	SLang_push_null ();
+	(void) SLang_push_null ();
 	return;
      }
 
-#ifndef VMS
-#ifdef __GO32__
-   /* You never know about djgpp since it favors unix */
-     {
-	char ch;
-	p = cwd;
-	while ((ch = *p) != 0)
-	  {
-	     if (ch == '/') *p = '\\';
-	     p++;
-	  }
-     }
-#endif
-   fixup_dir (cwd);
-#endif
-   SLang_push_string (cwd);
+   (void) SLang_push_malloced_string (p);     /* free string even when push fails */
 }
 
 static int chdir_cmd (char *s)

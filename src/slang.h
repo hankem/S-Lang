@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20300
-#define SLANG_VERSION_STRING "pre2.3.0-119"
+#define SLANG_VERSION_STRING "pre2.3.0-120"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -2476,6 +2476,7 @@ SL_EXTERN char *SLpath_find_file_in_path (SLFUTURE_CONST char *, SLFUTURE_CONST 
 SL_EXTERN char *SLpath_dirname (SLFUTURE_CONST char *);
 SL_EXTERN int SLpath_file_exists (SLFUTURE_CONST char *);
 SL_EXTERN char *SLpath_pathname_sans_extname (SLFUTURE_CONST char *);
+SL_EXTERN char *SLpath_getcwd (void);  /* return NULL on error, sets errno */
 
 /*}}}*/
 

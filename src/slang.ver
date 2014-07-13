@@ -735,4 +735,5 @@ SLANG2.3.0 {
 		SLang_pop_struct_fields;
 		SLstack_exch;
 		SLcompute_string_hash;
+		SLpath_getcwd;
 } SLANG2.2.3;

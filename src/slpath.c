@@ -530,3 +530,51 @@ int SLpath_set_delimiter (int d)
    Path_Delimiter = ch;
    return 0;
 }
+
+
+char *SLpath_getcwd (void)
+{
+   char cwd[4096];
+   char *p;
+   size_t len;
+
+#ifndef HAVE_GETCWD
+   p = getwd (cwd);
+#else
+# if defined (__EMX__)
+   p = _getcwd2(cwd, sizeof(cwd));	       /* includes drive specifier */
+# else
+   p = getcwd(cwd, sizeof(cwd));	       /* djggp includes drive specifier */
+# endif
+#endif
+
+   if (p == NULL)
+     return NULL;
+
+#ifdef IBMPC_SYSTEM
+   convert_slashes (cwd);
+#endif
+
+   len = strlen (cwd);
+
+   p = (char *) SLmalloc (len+2);      /* \0 + trailing / */
+   if (p == NULL)
+     {
+#ifdef ENOMEM
+	errno = ENOMEM;
+#endif
+	return NULL;
+     }
+
+   strcpy (p, cwd);
+
+#ifndef VMS
+   if (len && (p[len-1] != PATH_SEP))
+     {
+	p[len++] = PATH_SEP;
+	p[len] = 0;
+     }
+#endif
+
+   return p;
+}
