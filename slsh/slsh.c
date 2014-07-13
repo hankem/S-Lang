@@ -36,7 +36,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static SLFUTURE_CONST char *Slsh_Version = "0.9.1-0";
+static SLFUTURE_CONST char *Slsh_Version = "0.9.1-1";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -485,7 +485,7 @@ static void output_version (void)
 static int output_copyright (void)
 {
    output_version ();
-   fprintf (stdout, "Copyright (C) 2005-2013 John E. Davis <jed@jedsoft.org>\r\n");
+   fprintf (stdout, "Copyright (C) 2005-2014 John E. Davis <jed@jedsoft.org>\r\n");
    fprintf (stdout, "This is free software with ABSOLUTELY NO WARRANTY.\r\n");
    fprintf (stdout, "\n");
 

@@ -301,6 +301,7 @@ Changes since 2.2.4
      (Agathoklis D. Hatzimanikas).
 124. Various documentation updates/corrections (Agathoklis D.
      Hatzimanikas).
+125. slsh/slsh.c: bumped copyright year.
 {{{ Previous Versions
 
 Changes since 2.2.3
