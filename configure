@@ -5238,7 +5238,7 @@ snprintf vsnprintf \
 getppid getegid geteuid getuid getgid setgid setuid \
 setpgid getpgid setpgrp getpgrp setsid getsid \
 mmap \
-chown popen mkfifo \
+chown lchown popen mkfifo \
 atexit on_exit umask uname \
 times gmtime mktime gettimeofday \
 getitimer setitimer \

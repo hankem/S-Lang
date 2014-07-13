@@ -279,6 +279,8 @@ Changes since 2.2.4
      SLSMG_COLOR_BRIGHT_CYAN were swapped (patch provided by Thorben
      from slang-users list).
 118. Updated copyright year for upcoming release.
+119. src/slposdir.c: Added lchown intrinsic.
+
 
 {{{ Previous Versions
 

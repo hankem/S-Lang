@@ -116,6 +116,7 @@
 #undef HAVE_KILL
 #undef HAVE_KILLPG
 #undef HAVE_CHOWN
+#undef HAVE_LCHOWN
 #undef HAVE_VSNPRINTF
 #undef HAVE_POPEN
 #undef HAVE_UMASK

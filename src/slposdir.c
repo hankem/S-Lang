@@ -450,7 +450,25 @@ static int chown_cmd (char *file, int *owner, int *group)
      }
    return 0;
 }
+
+static int lchown_cmd (char *file, int *owner, int *group)
+{
+#ifdef HAVE_LCHOWN
+   while (-1 == lchown(file, (uid_t) *owner, (gid_t) *group))
+     {
+	if (is_interrupt (errno))
+	  continue;
+
+	_pSLerrno_errno = errno;
+	return -1;
+     }
+   return 0;
+#else
+   return chown_cmd (file, owner, group);
 #endif
+}
+#endif				       /* HAVE_CHOWN */
+
 
 /* add trailing slash to dir */
 static void fixup_dir (char *dir)
@@ -1121,6 +1139,7 @@ static SLang_Intrin_Fun_Type PosixDir_Name_Table [] =
 #endif
 #ifdef HAVE_CHOWN
    MAKE_INTRINSIC_SII("chown", chown_cmd, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_SII("lchown", lchown_cmd, SLANG_INT_TYPE),
 #endif
    MAKE_INTRINSIC_SI("chmod", chmod_cmd, SLANG_INT_TYPE),
 #ifdef HAVE_UMASK

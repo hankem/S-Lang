@@ -175,6 +175,9 @@ USA.
 # define HAVE_CHOWN 1
 #endif
 
+#define HAVE_LSTAT 0
+#defien HAVE_LCHOWN 0
+
 #define HAVE_ATEXIT	1
 
 /* Do these systems have these functions?  For now, assume the worst */
