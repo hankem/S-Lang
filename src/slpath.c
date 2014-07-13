@@ -53,17 +53,20 @@ USA.
 # define DRIVE_SPECIFIER	':'
 # define SEARCH_PATH_DELIMITER	';'
 # define THIS_DIR_STRING	"."
+# define PARENT_DIR_STRING      ".."
 #else
 # if defined(VMS)
 #  define PATH_SEP		']'
 #  define DRIVE_SPECIFIER	':'
 #  define SEARCH_PATH_DELIMITER	' '
 #  define THIS_DIR_STRING	"[]"   /* Is this correct?? */
+#  define PARENT_DIR_STRING     "[-]" /* ??????????????? */
 # else
 #  define PATH_SEP		'/'
 #  define UNIX_PATHNAMES_OK
 #  define SEARCH_PATH_DELIMITER	':'
 #  define THIS_DIR_STRING	"."
+#  define PARENT_DIR_STRING      ".."
 # endif
 #endif
 
@@ -77,38 +80,68 @@ USA.
 
 static char Path_Delimiter = SEARCH_PATH_DELIMITER;
 
-/* If file is /a/b/c/basename, this function returns a pointer to basename */
-char *SLpath_basename (SLFUTURE_CONST char *file)
+/* On Unix, this has no effect.
+ *   C:zzz ==> returns zzz (DOS/Windows, VMS)
+ *   //drive/zzz ==> returns zzz (DOS/Windows)
+ */
+static SLFUTURE_CONST char *skip_drive (SLFUTURE_CONST char *file)
 {
-   char *b;
+#ifdef DRIVE_SPECIFIER
+   SLFUTURE_CONST char *f;
+   /* look for A:/foo form */
+   f = file + strlen (file);
+   while (f != file)
+     {
+	f--;
+	if (*f == DRIVE_SPECIFIER)
+	  return f+1;
+     }
+#endif
+#ifdef IBMPC_SYSTEM
+   /* windows //netdrive/dir form */
+   if (IS_PATH_SEP(file[0]) && IS_PATH_SEP(file[1]))
+     {
+	const char *f = file+2;
+	while (*f && (0 == IS_PATH_SEP(*f)))
+	  f++;
+	return f;
+     }
+#endif
+   return file;
+}
 
-   if (file == NULL) return NULL;
-   b = (char *) file + strlen (file);
+/* If file is /a/b/c/basename, this function returns a pointer to basename */
+SLFUTURE_CONST char *SLpath_basename (SLFUTURE_CONST char *drivefile)
+{
+   SLFUTURE_CONST char *b, *file;
+
+   if (drivefile == NULL) return NULL;
+
+   file = skip_drive (drivefile);
+   b = file + strlen (file);
 
    while (b != file)
      {
 	b--;
 	if (IS_PATH_SEP(*b))
 	  return b + 1;
-#ifdef DRIVE_SPECIFIER
-	if (*b == DRIVE_SPECIFIER)
-	  return b + 1;
-#endif
      }
 
    return b;
 }
 
 /* Returns a malloced string */
-char *SLpath_pathname_sans_extname (SLFUTURE_CONST char *file)
+char *SLpath_pathname_sans_extname (SLFUTURE_CONST char *drivefile)
 {
    char *b;
+   char *file;
 
-   file = SLmake_string (file);
-   if (file == NULL)
+   drivefile = SLmake_string (drivefile);
+   if (drivefile == NULL)
      return NULL;
 
-   b = (char *) file + strlen (file);
+   file = (char *)skip_drive (drivefile);
+   b = file + strlen (file);
 
    while (b != file)
      {
@@ -116,59 +149,109 @@ char *SLpath_pathname_sans_extname (SLFUTURE_CONST char *file)
 	if (IS_PATH_SEP(*b))
 	  break;
 
-#ifdef DRIVE_SPECIFIER
-	if (*b == DRIVE_SPECIFIER)
-	  {
-	     b++;
-	     break;
-	  }
-#endif
 	if (*b == '.')
 	  {
 	     *b = 0;
-	     return (char *) file;
+	     break;
 	  }
      }
 
-   return (char *) file;
+   return drivefile;
 }
 
 /* If path looks like: A/B/C/D/whatever, it returns A/B/C/D as a malloced
  * string.
  */
-char *SLpath_dirname (SLFUTURE_CONST char *file)
+char *SLpath_dirname (SLFUTURE_CONST char *drivefile)
 {
    SLCONST char *b;
+   const char *file;
+   char *dir, *drivedir;
+   size_t len;
 
-   if (file == NULL) return NULL;
+   if (drivefile == NULL) return NULL;
+   file = skip_drive (drivefile);
+
    b = file + strlen (file);
 
    while (b != file)
      {
 	b--;
-	if (IS_PATH_SEP(*b))
-	  {
-#ifdef VMS
-	     b++;		       /* make sure final ] is included */
-#else
-	     if (b == file) b++;
-#endif
-	     break;
-	  }
+	if (0 == IS_PATH_SEP(*b))
+	  continue;
 
-#ifdef DRIVE_SPECIFIER
-	if (*b == DRIVE_SPECIFIER)
-	  {
-	     b++;
-	     break;
-	  }
+#ifdef VMS
+	b++;		       /* make sure final ] is included */
+#else
+	/* collapse multiple slashes */
+	while ((b != file) && IS_PATH_SEP(*(b-1)))
+	  b--;
+
+	if (b == file) b++;
 #endif
+	break;
      }
 
+   /* now b should point to the character after the slash:
+    *    file="zzz/xxxx"
+    *       b------^
+    */
    if (b == file)
-     return SLmake_string (THIS_DIR_STRING);
+     {
+	/* pathological cases -- what is the parent?  For simplicity
+	 * simply return the current directory.
+	 */
+	len = file - drivefile;
+	if (NULL == (dir = SLmalloc (len + 1 + strlen(THIS_DIR_STRING))))
+	  return NULL;
+	strncpy (dir, drivefile, len);
+	strcpy (dir + len, THIS_DIR_STRING);
+	return dir;
+     }
 
-   return SLmake_nstring (file, (unsigned int) (b - file));
+   if (NULL == (drivedir = SLmake_nstring (drivefile, b - drivefile)))
+     return NULL;
+
+   dir = drivedir + (file - drivefile);
+   len = b - file;		       /* len is from start of file on drive */
+
+#ifndef VMS
+   /* handle special cases
+    *    /foo/.   --> /foo
+    *    /.       --> /
+    *    /foo/..  --> /
+    * C:/.
+    */
+   while ((len > 1) && (dir[len-1] == '.'))
+     {
+	if (IS_PATH_SEP(dir[len-2]))
+	  {
+	     len--;		       /* lose "." */
+	     while ((len > 1) && IS_PATH_SEP(dir[len-1]))
+	       len--;		       /* lose "/" */
+	     dir[len] = 0;
+	     continue;
+	  }
+	if ((len > 2) && (dir[len-2] == '.') && IS_PATH_SEP(dir[len-3]))
+	  {
+	     len -= 2;		       /* lose ".." */
+	     if (len > 1)
+	       {
+		  len--;		       /* lose "/" */
+		  dir[len] = 0;
+		  b = SLpath_basename (dir);   /* will not fail: zzz/xxx --> zzz/x */
+		  len = b - dir;
+		  while ((len > 1) && IS_PATH_SEP(dir[len-1]))
+		    len--;
+	       }
+	     dir[len] = 0;
+	     continue;
+	  }
+
+	break;
+     }
+#endif				       /* not VMS */
+   return drivedir;
 }
 
 /* Note: VMS filenames also contain version numbers.  The caller will have
@@ -220,16 +303,9 @@ int SLpath_is_absolute_path (SLFUTURE_CONST char *name)
    if (IS_PATH_SEP (*name))
      return 1;
 
-# ifdef DRIVE_SPECIFIER
-   /* Look for a drive specifier */
-   while (*name)
-     {
-	if (*name == DRIVE_SPECIFIER)
-	  return 1;
-
-	name++;
-     }
-# endif
+   /* If it contains a drive specifier, regard it as absolute */
+   if (name != skip_drive (name))
+     return 1;
 
    return 0;
 #endif

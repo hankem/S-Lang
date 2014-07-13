@@ -1,4 +1,4 @@
-() = evalfile ("inc.sl");
+() = evalfile ("./inc.sl");
 
 testing_feature ("path");
 
@@ -12,7 +12,7 @@ static define test_path_concat (a, b, c)
 static define test_path (path, dir, base, ext, dirbase, sansextname)
 {
    if (dir != path_dirname (path))
-     failed ("path_dirname " + path);
+     failed ("path_dirname " + path + sprintf (" ;got %S", path_dirname(path)));
 
    if (base != path_basename (path))
      failed ("path_basename " + path);
@@ -34,6 +34,10 @@ test_path ("/", "/", "", "", "/", "/");
 test_path (".", ".", ".", ".", "./.", "");
 test_path ("/a./b", "/a.", "b", "", "/a./b", "/a./b");
 test_path (".c", ".", ".c", ".c", "./.c", "");
+test_path ("foo/bar/../up", "foo", "up", "", "foo/up", "foo/bar/../up");
+test_path ("foo/bar/./up", "foo/bar", "up", "", "foo/bar/up", "foo/bar/./up");
+test_path ("./x.c", ".", "x.c", ".c", "./x.c", "./x");
+test_path ("/./x.c", "/", "x.c", ".c", "/x.c", "/./x");
 %"/tmp/jedtest4775.7430/dev/foo"
 
 #elifdef VMS

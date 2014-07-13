@@ -282,6 +282,20 @@ Changes since 2.2.4
 119. src/slposdir.c: Added lchown intrinsic.
 120. src/slang.h, src/slpath.c: Added API function SLpath_getcwd
 121. src/slsh.c: Use SLpath_getcwd instead of "." for CWD.
+122. src/slpath.c: Added support for \\netdrive\paths for Windows, and
+     modified SLpath_dirname (path_dirname intrinsic) to perform some
+     expansion of .. and . in path names (e.g.,
+     path_dirname("/foo/../bar") will produce "/" instead of
+     "/foo/..").
+
+     The old bahavior was consident with that of the Unix
+     dirname command:
+        $ dirname `dirname /usr/bin/./slsh`
+	/usr/bin
+
+     The new behavior produces an arguably more accurate result:
+        slsh> path_dirname(path_dirname("/usr/bin/./slsh"));
+	/usr
 
 {{{ Previous Versions
 
