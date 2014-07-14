@@ -175,8 +175,8 @@ USA.
 # define HAVE_CHOWN 1
 #endif
 
-#define HAVE_LSTAT 0
-#defien HAVE_LCHOWN 0
+#undef HAVE_LSTAT
+#undef HAVE_LCHOWN
 
 #define HAVE_ATEXIT	1
 

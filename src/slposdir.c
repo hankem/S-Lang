@@ -235,16 +235,16 @@ static void lstat_cmd (char *file)
 	return;
      }
 
-#ifdef __WIN32__
+# ifdef __WIN32__
    opt_attrs = GetFileAttributes (file);
-#else
+# else
    opt_attrs = 0;
-#endif
+# endif
 
    push_stat_struct (&st, opt_attrs);
 #else
    stat_cmd (file);
-#endif
+#endif				       /* HAVE_LSTAT */
 }
 
 #if defined(HAVE_UTIME) || defined(HAVE_UTIMES)
@@ -468,27 +468,6 @@ static int lchown_cmd (char *file, int *owner, int *group)
 #endif
 }
 #endif				       /* HAVE_CHOWN */
-
-
-/* add trailing slash to dir */
-static void fixup_dir (char *dir)
-{
-#ifndef VMS
-   ssize_t n;
-
-   if ((n = strlen(dir)) > 1)
-     {
-	n--;
-#if defined(IBMPC_SYSTEM)
-      if ( dir[n] != '/' && dir[n] != '\\' )
-      	strcat(dir, "\\" );
-#else
-      if (dir[n] != '/' )
-      	strcat(dir, "/" );
-#endif
-     }
-#endif /* !VMS */
-}
 
 static void slget_cwd (void)
 {

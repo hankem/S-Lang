@@ -101,10 +101,10 @@ static SLFUTURE_CONST char *skip_drive (SLFUTURE_CONST char *file)
    /* windows //netdrive/dir form */
    if (IS_PATH_SEP(file[0]) && IS_PATH_SEP(file[1]))
      {
-	const char *f = file+2;
-	while (*f && (0 == IS_PATH_SEP(*f)))
-	  f++;
-	return f;
+	file += 2;
+	while (*file && (0 == IS_PATH_SEP(*file)))
+	  file++;
+	return file;
      }
 #endif
    return file;
