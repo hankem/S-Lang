@@ -16,8 +16,13 @@
     `false'   UChar_Type ('\0')
     `null'    Null_Type
 #v-
-  If the input string does not contain valid JSON data
+  The S-Lang structure corresponding to a JSON object
+  with duplicate keys has no duplicate field names,
+  but the field value is given by the last JSON value.
+
+  If the input string does not contain valid JSON data,
   or if numeric values cannot be represented within \slang,
+  or if JSON objects and/or arrays are too deeply nested,
   a \exmp{Json_Parse_Error} is thrown.
 \seealso{json_encode}
 \done

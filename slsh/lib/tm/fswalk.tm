@@ -2,7 +2,7 @@
 \synopsis{Create an object to walk the filesystem tree}
 \usage{obj = fswalk_new (Ref_Type dirfunc, Ref_Type filefunc; qualifiers)}
 \description
-  The \sfun{fswalk_new} function is creates an object that is useful
+  The \sfun{fswalk_new} function creates an object that is useful
   for exploring a filesystem tree.  It requires two arguments that
   are references to functions to be called when a directory or file is
   encountered.  Each of these functions is passed at least two
@@ -11,7 +11,7 @@
   the stat structure of the of the file or directory.  Qualifiers may
   be used to specify additional arguments.
 
-  The objects \exmp{walk} method is the one that actually walks the
+  The object's \exmp{walk} method is the one that actually walks the
   filesystem.
 
   The directory callback function must return an integer value that
@@ -36,12 +36,12 @@
    dargs={args...}
 #v-
     \exmp{dargs} is a list of additional arguments that will be added when
-    calling directory callback function.
+    calling the directory callback function.
 #v+
    fargs={args...}
 #v-
     \exmp{fargs} is a list of additional arguments that will be added when
-    calling file callback function.
+    calling the file callback function.
 #v+
    followlinks[=val]
 #v-

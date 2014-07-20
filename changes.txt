@@ -305,6 +305,7 @@ Changes since 2.2.4
 126. src/slconfig.h: For non-Unix, HAVE_LSTAT and HAVE_LCHOWN were
      defined to be 0 instead of undef'd.  Also, removed an unused
      function from slposdir.c and a shadowed variable from slpath.c
+127. documentation updates (Manfred Hanke)
 
 {{{ Previous Versions
 

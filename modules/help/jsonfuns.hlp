@@ -21,8 +21,13 @@ json_decode
     `false'   UChar_Type ('\0')
     `null'    Null_Type
 
-  If the input string does not contain valid JSON data
+  The S-Lang structure corresponding to a JSON object
+  with duplicate keys has no duplicate field names,
+  but the field value is given by the last JSON value.
+
+  If the input string does not contain valid JSON data,
   or if numeric values cannot be represented within S-Lang,
+  or if JSON objects and/or arrays are too deeply nested,
   a `Json_Parse_Error' is thrown.
 
  SEE ALSO

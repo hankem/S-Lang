@@ -7,7 +7,7 @@ fswalk_new
   obj = fswalk_new (Ref_Type dirfunc, Ref_Type filefunc; qualifiers)
 
  DESCRIPTION
-  The `fswalk_new' function is creates an object that is useful
+  The `fswalk_new' function creates an object that is useful
   for exploring a filesystem tree.  It requires two arguments that
   are references to functions to be called when a directory or file is
   encountered.  Each of these functions is passed at least two
@@ -16,7 +16,7 @@ fswalk_new
   the stat structure of the of the file or directory.  Qualifiers may
   be used to specify additional arguments.
 
-  The objects `walk' method is the one that actually walks the
+  The object's `walk' method is the one that actually walks the
   filesystem.
 
   The directory callback function must return an integer value that
@@ -41,12 +41,12 @@ fswalk_new
    dargs={args...}
 
     `dargs' is a list of additional arguments that will be added when
-    calling directory callback function.
+    calling the directory callback function.
 
    fargs={args...}
 
     `fargs' is a list of additional arguments that will be added when
-    calling file callback function.
+    calling the file callback function.
 
    followlinks[=val]
 
