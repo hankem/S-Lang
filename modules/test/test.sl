@@ -56,22 +56,37 @@ define expect_size (var, expected_size)
 
 define expect_assoc_key (assoc, key)
 {
+   expect_type (assoc, Assoc_Type);
    ifnot (assoc_key_exists (assoc, key))
      failed (`expected assoc key "$key"`$);
 }
 
 define expect_assoc_key_value (assoc, key, expected_value)
 {
+   expect_type (assoc, Assoc_Type);
    ifnot (assoc_key_exists (assoc, key))
      failed (`expected assoc key "$key"`$);
-  else
+   else
      expect_value (assoc[key], expected_value);
 }
 
 define expect_struct_key (s, key)
 {
+   ifnot (is_struct_type (s))
+     failed ("expected struct, but was %S", typeof (s));
    ifnot (any (get_struct_field_names(s) == key))
      failed (`expected struct key "$key"`$);
+}
+
+define expect_struct_field_names (s, expected_field_names)
+{
+   ifnot (is_struct_type (s))
+     failed ("expected struct, but was %S", typeof (s));
+   variable struct_field_names = get_struct_field_names (s);
+   if (any (struct_field_names != expected_field_names))
+     failed ("expected struct field names [%s], but got [%s]",
+	     strjoin (expected_field_names, ", "),
+	     strjoin (struct_field_names, ", "));
 }
 
 define expect_struct_key_value (s, key, expected_value)

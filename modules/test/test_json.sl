@@ -60,8 +60,19 @@ private define test_decode_simple_object () %{{{
      }
    `);
 
-   expect_type (json, Struct_Type);
-   expect_size (json, 7);
+   expect_struct_field_names (json,
+			      [
+				"string",
+				"long",
+#ifeval is_defined("LLONG_MAX")
+				"llong",
+#endif
+				"double",
+				"true",
+				"false",
+				"null"
+			      ]);
+
    expect_json_object_with_key ("string", "stringvalue", String_Type);
    expect_json_object_with_key ("long", 2147483647, LLong_Type);
 #ifeval is_defined("LLONG_MAX")
@@ -181,6 +192,34 @@ private define test_decode_nested_object () %{{{
 }
 %}}}
 
+private variable maximally_nested_array = `[
+[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+"(depth = 100 below the toplevel array)"
+]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+]`;
+
+private define test_decode_maximally_nested_array () %{{{
+{
+   json = json_decode (maximally_nested_array);
+   loop (1+100)
+     {
+	expect_type (json, List_Type);
+	json = json[0];
+     }
+   expect_type (json, String_Type);
+}
+%}}}
+
+private define test_decode_object_with_duplicate_key () %{{{
+{
+   json = json_decode (`{"a":null, "b":"B", "a":"A"}`);
+   expect_type (json, Struct_Type);
+   expect_struct_field_names (json, ["a", "b"]);
+   expect_json_object_with_key ("a", "A", String_Type);
+   expect_json_object_with_key ("b", "B", String_Type);
+}
+%}}}
+
 % test_decode_escaped_strings %{{{
 
 % The test below puts the strings into an object:
@@ -236,7 +275,7 @@ private define test_decode_escaped_strings ()
 
 private variable describe_char_regex = "'.' = 0x[0-9A-F][0-9A-F]";
 
-private define expect_Json_Parse_Error_while_parsing_method (obj, json_text)
+private define expect_Json_Parse_Error_while_decoding_method (obj, json_text)
 {
    expect_error (Json_Parse_Error, obj.expected_error_message, &json_decode, json_text);
    return obj;  % for method chaining
@@ -246,79 +285,79 @@ private define expect_Json_Parse_Error (expected_error_message)
 {
    return struct {  % syntactic sugar...
       expected_error_message = expected_error_message,
-      while_parsing = &expect_Json_Parse_Error_while_parsing_method
+      while_decoding = &expect_Json_Parse_Error_while_decoding_method
    };
 }
 
 private define test_parse_errors_due_to_structure () %{{{
 {
    ()=expect_Json_Parse_Error ("empty input string")
-     .while_parsing ("");
+     .while_decoding ("");
 
    ()=expect_Json_Parse_Error ("Unexpected character $describe_char_regex seen while parsing JSON data"$)
-     .while_parsing (` "top-level string" `)
-     .while_parsing (" 42 ")
-     .while_parsing (" 6.022e+22 ")
-     .while_parsing (" true ")
-     .while_parsing (" false ")
-     .while_parsing (" null ")
-     .while_parsing (" ö ");
+     .while_decoding (` "top-level string" `)
+     .while_decoding (" 42 ")
+     .while_decoding (" 6.022e+22 ")
+     .while_decoding (" true ")
+     .while_decoding (" false ")
+     .while_decoding (" null ")
+     .while_decoding (" ö ");
 
    ()=expect_Json_Parse_Error ("Unexpected character $describe_char_regex seen while parsing a JSON value"$)
-     .while_parsing (` { "this is not a value" : | } `)
-     .while_parsing (" [ this_is_not_a_value_either ] ");
+     .while_decoding (` { "this is not a value" : | } `)
+     .while_decoding (" [ this_is_not_a_value_either ] ");
 }
 %}}}
 
 private define test_parse_errors_with_strings () %{{{
 {
    ()=expect_Json_Parse_Error ("Unexpected end of input seen while parsing a JSON string")
-     .while_parsing (`[ "missing quotation mark ]`);
+     .while_decoding (`[ "missing quotation mark ]`);
 
    ()=expect_Json_Parse_Error ("Control character 0x0A in JSON string must be escaped")
-     .while_parsing (`[ "literal newline \n is not allowed", "(must be \\n instead)" ]`Q);
+     .while_decoding (`[ "literal newline \n is not allowed", "(must be \\n instead)" ]`Q);
 
    ()=expect_Json_Parse_Error ("Illegal escaped character 'a' = 0x61 in JSON string")
-     .while_parsing (`[ "\a" ]`);
+     .while_decoding (`[ "\a" ]`);
 
    ()=expect_Json_Parse_Error (`Illegal Unicode escape sequence in JSON string: \\u`)
-     .while_parsing (`[ "\undef" ]`)
-     .while_parsing (`[ "\u123`);
+     .while_decoding (`[ "\undef" ]`)
+     .while_decoding (`[ "\u123`);
 }
 %}}}
 
 private define test_parse_errors_with_arrays () %{{{
 {
    ()=expect_Json_Parse_Error ("Expected ',' or ']' while parsing a JSON array, found $describe_char_regex"$)
-     .while_parsing ("[ 1 2 ]")
-     .while_parsing ("[ 1 : 2 ]");
+     .while_decoding ("[ 1 2 ]")
+     .while_decoding ("[ 1 : 2 ]");
 
    ()=expect_Json_Parse_Error ("Unexpected end of input seen while parsing a JSON array")
-     .while_parsing ("[ 1, 2 ");
+     .while_decoding ("[ 1, 2 ");
 
    ()=expect_Json_Parse_Error ("Expected end of input after parsing JSON array, found $describe_char_regex"$)
-     .while_parsing ("[1] 2");
+     .while_decoding ("[1] 2");
 }
 %}}}
 
 private define test_parse_errors_with_objects () %{{{
 {
    ()=expect_Json_Parse_Error ("Expected a string while parsing a JSON object, found $describe_char_regex"$)
-     .while_parsing (`{ 1 }`)
-     .while_parsing (`{ "one" : 1, , "two" : 2 }`);
+     .while_decoding (`{ 1 }`)
+     .while_decoding (`{ "one" : 1, , "two" : 2 }`);
 
    ()=expect_Json_Parse_Error ("Expected a ':' while parsing a JSON object, found $describe_char_regex"$)
-     .while_parsing (`{ "one" = 1 }`);
+     .while_decoding (`{ "one" = 1 }`);
 
    ()=expect_Json_Parse_Error ("Expected ',' or '}' while parsing a JSON object, found $describe_char_regex"$)
-     .while_parsing (`{ "one" : 1 "two" : 2 }`)
-     .while_parsing (`{ "one" : 1 : "two" : 2 }`);
+     .while_decoding (`{ "one" : 1 "two" : 2 }`)
+     .while_decoding (`{ "one" : 1 : "two" : 2 }`);
 
    ()=expect_Json_Parse_Error ("Unexpected end of input seen while parsing a JSON object")
-     .while_parsing (`{ "one" : 1 `);
+     .while_decoding (`{ "one" : 1 `);
 
    ()=expect_Json_Parse_Error ("Expected end of input after parsing JSON object, found $describe_char_regex"$)
-     .while_parsing (`{ "one" : 1 } 2`);
+     .while_decoding (`{ "one" : 1 } 2`);
 }
 %}}}
 
@@ -326,13 +365,19 @@ private define test_parse_errors_due_to_too_large_numbers () %{{{
 {
    variable large_int = "18446744073709551616";  % cannot even be represented by (U)Int64_Type
    ()=expect_Json_Parse_Error ("Integer value is too large ($large_int)"$)
-     .while_parsing ("[ $large_int ]"$);
+     .while_decoding ("[ $large_int ]"$);
 
    variable large_num = "2e4932";  % cannot even be represented by binary128/quadruple-precision floating-point format
    ()=expect_Json_Parse_Error ("Numeric value is too large ($large_num)"$)
-     .while_parsing ("[ $large_num ]"$);
+     .while_decoding ("[ $large_num ]"$);
 }
 %}}}
+
+private define test_parse_error_due_to_recursion_depth () %{{{
+{
+  ()=expect_Json_Parse_Error ("json text exceeds maximum nesting level")
+    .while_decoding ("[ $maximally_nested_array ]"$);
+}
 
 private define test_decode_errors ()
 {
@@ -341,6 +386,7 @@ private define test_decode_errors ()
    test_parse_errors_with_arrays ();
    test_parse_errors_with_objects ();
    test_parse_errors_due_to_too_large_numbers ();
+   test_parse_error_due_to_recursion_depth ();
 }
 %}}}
 
@@ -352,6 +398,8 @@ private define test_decode ()
    test_decode_simple_object ();
    test_decode_heterogenous_array ();
    test_decode_nested_object ();
+   test_decode_maximally_nested_array ();
+   test_decode_object_with_duplicate_key ();
    test_decode_escaped_strings ();
    test_decode_errors ();
 }
@@ -487,10 +535,10 @@ private define test_encode_optional_whitespace () %{{{
   ]
 ]`;
   expect_value (json_encode (json; pre_vsep="", post_vsep="\n  ", pre_nsep="", post_nsep=" "),
-                expected_json_text);
+		expected_json_text);
   % non-whitespace is ignored:
   expect_value (json_encode (json; pre_vsep="none", post_vsep="newline\n two blanks", pre_nsep="none", post_nsep="non-whitespace ignored"),
-                expected_json_text);
+		expected_json_text);
 
   expect_value (json_encode (json; pre_vsep=" ", post_vsep="\n\n    ", pre_nsep="\t", post_nsep="  "),
 `[

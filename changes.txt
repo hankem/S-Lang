@@ -306,6 +306,7 @@ Changes since 2.2.4
      defined to be 0 instead of undef'd.  Also, removed an unused
      function from slposdir.c and a shadowed variable from slpath.c
 127. documentation updates (Manfred Hanke)
+128. modules/test/: Additional json-modules tests (Manfred Hanke)
 
 {{{ Previous Versions
 
