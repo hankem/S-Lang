@@ -266,6 +266,11 @@ try
 }
 catch TypeMismatchError;
 
+private define function_returning_NULL_or_string (x) { x == 0 ? NULL : "!0"; }
+$1 = array_map (String_Type, &function_returning_NULL_or_string, [-1:1]);
+if (neqs ($1, ["!0", NULL, "!0"]))
+  failed ("array_map putting NULL into String_Type array");
+
 % Indexing of 7d array
 if (31 != _reshape ([31], [1,1,1,1,1,1,1])[0,0,0,0,0,0,0])
   failed ("reshape of 7d array");

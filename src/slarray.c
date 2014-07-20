@@ -1691,7 +1691,7 @@ _pSLarray_aput_transfer_elem (SLang_Array_Type *at, SLindex_Type *indices,
 
 static int
 aput_get_data_to_put (SLang_Class_Type *cl, SLuindex_Type num_elements, int allow_array,
-		       SLang_Array_Type **at_ptr, char **data_to_put, SLuindex_Type *data_increment)
+		      SLang_Array_Type **at_ptr, char **data_to_put, SLuindex_Type *data_increment)
 {
    SLtype data_type;
    int type;
@@ -4718,14 +4718,38 @@ static void array_map (void)
 	while (ret > retvals)
 	  {
 	     SLang_Array_Type *at;
+	     SLang_Class_Type *cl;
 
 	     ret--;
 	     if (NULL == (at = ret->at))
 	       continue;
 
-	     if (-1 == at->cl->cl_apop (at->data_type, (VOID_STAR) ret->addr))
-	       goto return_error;
+	     cl = at->cl;
 
+	     if (0 == (at->flags & SLARR_DATA_VALUE_IS_POINTER))
+	       {
+		  if (-1 == cl->cl_apop (at->data_type, (VOID_STAR) ret->addr))
+		    goto return_error;
+	       }
+	     else
+	       {
+		  /* Use aput_get_data_to_put to allow NULLs */
+		  SLuindex_Type nelements = 1;
+		  int allow_array = 0;
+		  SLang_Array_Type *unused_array;
+		  char *data_to_put;
+		  SLuindex_Type unused_data_increment;
+
+		  if (-1 == aput_get_data_to_put (cl, nelements, allow_array, &unused_array, &data_to_put, &unused_data_increment))
+		    goto return_error;
+
+		  if (-1 == transfer_n_elements(at, ret->addr, data_to_put, at->sizeof_type, 1, 1))
+		    {
+		       (*cl->cl_destroy) (cl->cl_data_type, (VOID_STAR) data_to_put);
+		       goto return_error;
+		    }
+		  (*cl->cl_destroy) (cl->cl_data_type, (VOID_STAR) data_to_put);
+	       }
 	     ret->addr += at->sizeof_type;
 	  }
      }
