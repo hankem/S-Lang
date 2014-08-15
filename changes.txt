@@ -309,6 +309,8 @@ Changes since 2.2.4
 128. modules/test/: Additional json-modules tests (Manfred Hanke)
 129. src/slarray.c: Allow functions called by array_map to return
      NULL. (Manfred Hanke)
+130. src/slang.c: Fixed a bug in the short-circuiting of non-boolean
+     expressions.
 
 {{{ Previous Versions
 

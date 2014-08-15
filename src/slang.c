@@ -4012,7 +4012,8 @@ static void lang_do_and_orelse (int is_or, SLBlock_Type *addr, SLBlock_Type *add
 	    || (-1 == pop_ctrl_integer (&test)))
 	  return;
 
-	if (is_or == (test != 0))
+	test = (test != 0);
+	if (is_or == test)
 	  break;
 
 	/* if (((stype == SLANG_BCST_ANDELSE) && (test == 0))
@@ -5887,6 +5888,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 		       int i;
 		       if ((0 == pop_ctrl_integer (&i)) && i)
 			 {
+			    i = (i != 0);
 			    (void) push_char_object (SLANG_CHAR_TYPE, (char)i);
 			    block = NULL;
 			    break;
