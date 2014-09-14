@@ -203,15 +203,17 @@
 @modules/tm/csvfuns.tm
 @modules/tm/slsmg.tm
 
+@modules/help/csvfuns.hlp
+@modules/help/forkfuns.hlp
+@modules/help/histfuns.hlp
+@modules/help/jsonfuns.hlp
+@modules/help/onigfuns.hlp
 @modules/help/pcrefuns.hlp
 @modules/help/pngfuns.hlp
 @modules/help/randfuns.hlp
-@modules/help/sockfuns.hlp
-@modules/help/onigfuns.hlp
-@modules/help/forkfuns.hlp
-@modules/help/csvfuns.hlp
 @modules/help/slsmg.hlp
-@modules/help/jsonfuns.hlp
+@modules/help/sockfuns.hlp
+@modules/help/statsfuns.hlp
 
 @modules/examples/newt_ex.sl
 @modules/examples/slsmg_ex.sl

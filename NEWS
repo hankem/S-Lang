@@ -1,3 +1,105 @@
+NEWS for version 2.3.x                                             -*-text-*-
+
+New Modules
+===========
+
+   1. base64: A base64 encoder/decoder module
+   2. chksum: A module for computing various checksums (currently md5
+      and sha1)
+   3. stats: A statistics module
+   4. histogram: A histogram module
+   5. json: Encode/decode json structures
+
+Intrinsic Functions
+===================
+
+   The following intrinsic functions have been added for 2.3.x:
+
+     sincos : returns both sin and cos in one function call
+
+     get/setitimer: get/set an interval timer
+
+     wherefirstmin/max, wherelastmin/max: gets index for first/last
+       min/max values of an array
+
+     wherediff: returns indices where adjacient elements of an array
+       differ.
+
+     bstrjoin, bstrcat: like strjoin/strcat but for binary strings.
+
+     get_environ: returns an array of currently defined environment variables.
+
+     getrusage: Get resource usage
+
+     lchown: Change ownership of a symbolic link
+
+   The following functions have been enhanced:
+
+     array_map modified to support multiple return values.
+
+     is_substrbytes: Added support for an optional offset into the
+       string.
+
+Interpreter Syntax
+==================
+
+   The step parameter was made optional for the _for statement.
+
+   Struct field names may be an arbirtary string:
+
+         X = struct {"some-field", some_other_field };
+         X.some_other_field = 3;
+         X."some-field" = 4;
+
+
+slsh library (used by conforming slang apps such as jed, slrn, ...)
+===================================================================
+
+   fswalk.sl: Functions that facilitate walking the filesystem.
+
+   listfuns.sl: Set of functions dealing with lists and list-based
+     structures (e.g., heaps).
+
+   rearrange: Performs an in-place arrangement of values in an array
+     or list (defined in arrayfuns.sl).
+
+
+slsh
+====
+
+   Using "who" at the slsh> prompt will list the names/values of
+   variables and functions defined at the prompt.
+
+API News
+========
+
+   SLang_init_tty: if flow control parameter is negative, the
+   terminal's flow control setting will not be changed.
+
+   New functions:
+
+       SLang_qualifier_exists;
+       SLang_get_int_qualifier;
+       SLang_get_long_qualifier;
+       SLang_get_double_qualifier;
+       SLang_get_string_qualifier;
+       SLang_create_struct
+       SLang_push_struct_field
+       SLang_pop_struct_field
+       SLang_pop_struct_fields
+       SLang_assoc_key_exists
+       SLstack_exch
+       SLcompute_string_hash
+       SLpath_getcwd
+
+     Font attributes (italics, bold, underline, ...) may be enabled for
+     terminals that support them by using a color name with a qualifier:
+
+       SLtt_set_color ("menu", "white;italics", "blue");
+       SLtt_set_color ("comment", "black;underline;italics", "cyan");
+
+=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=
+
 NEWS for version 2.2.x                                             -*-text-*-
 
 Interpreter Enhancements
