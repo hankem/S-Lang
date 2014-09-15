@@ -1,6 +1,6 @@
-  S-Lang Library C Programmer's Guide (v2.2.4)
+  S-Lang Library C Programmer's Guide (v2.3.0)
   John E. Davis <www.jedsoft.org>
-  Nov 11, 2013
+  Sep 14, 2014
   ____________________________________________________________
 
 

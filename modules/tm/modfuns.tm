@@ -89,35 +89,15 @@ separate namespace to avoid collisions, e.g.,
 Then the \exmp{png_read} function may be called using
 \exmp{PNG->png_read}.
 
-\chapter{Perl Compatible Regular Expression Module}
-This module provides an interface to the PCRE library.  It may be
-loaded using \exmp{require("pcre")}.
-#i pcrefuns.tm
+\chapter{Base64 Module}
+This module provides a base64 encodear and decoder.  Use
+\exmp{require("base64")} to load it.
+#i base64funs.tm
 
-\chapter{Oniguruma Regular Expression Module}
-This module provides an interface to the Oniguruma regular expression
-library.  Use \exmp{require("onig")} to load it.
-#i onigfuns.tm
-
-\chapter{Random Number Module}
-The \module{rand} module provides a number of random number functions.
-It may be loaded using \exmp{require("rand")}.
-#i randfuns.tm
-
-\chapter{PNG Module}
-The \module{png} module includes a number of functions for dealing
-with PNG images and colormaps.  Use \exmp{require("png")} to load it.
-#i pngfuns.tm
-
-\chapter{Fork Module}
-The \module{fork} module contains several low-level functions that may
-be used for subprocess creation.  Use \exmp{require("fork")} to load it.
-#i forkfuns.tm
-
-\chapter{Socket Module}
-This module provides an interface to the POSIX socket functions.  Use
-\exmp{require("socket")} to load it.
-#i sockfuns.tm
+\chapter{Checksum Module}
+This module provides a various routines for computing checksums.
+\exmp{require("chksum")} to load it.
+#i chksumfuns.tm
 
 \chapter{CSV Module}
 This module allows a \slang script to read and write
@@ -125,15 +105,40 @@ comma-separated-value, tab-delimited files, etc.  Use
 \exmp{require("csv")} to load it.
 #i csvfuns.tm
 
+\chapter{Fork Module}
+The \module{fork} module contains several low-level functions that may
+be used for subprocess creation.  Use \exmp{require("fork")} to load it.
+#i forkfuns.tm
+
 \chapter{Histogram Module}
 This module has several functions for creating and manipulating
 histograms (binned data).  Use \exmp{require("histogram")} to load it.
 #i histfuns.tm
 
-\chapter{Stats Module}
-This module has has a number of statistics functions. Use
-\exmp{require("stats")} to load it.
-#i histfuns.tm
+\chapter{JSON Module}
+This module encodes and decodes JSON (JavaScript Object Notation)
+formatted data.  Use \exmp{require("json")} to load it.
+#i jsonfuns.tm
+
+\chapter{Oniguruma Regular Expression Module}
+This module provides an interface to the Oniguruma regular expression
+library.  Use \exmp{require("onig")} to load it.
+#i onigfuns.tm
+
+\chapter{Perl Compatible Regular Expression Module}
+This module provides an interface to the PCRE library.  It may be
+loaded using \exmp{require("pcre")}.
+#i pcrefuns.tm
+
+\chapter{Portable Network Graphics Module}
+The \module{png} module includes a number of functions for dealing
+with PNG images and colormaps.  Use \exmp{require("png")} to load it.
+#i pngfuns.tm
+
+\chapter{Random Number Module}
+The \module{rand} module provides a number of random number functions.
+It may be loaded using \exmp{require("rand")}.
+#i randfuns.tm
 
 \chapter{Screen Management Module}
 The \module{slsmg} module provides access to SLsmg routines, which is
@@ -141,5 +146,15 @@ an interface to platform indepented routines for manipulating the display
 on a terminal.
 It may be loaded using \exmp{require("slsmg")}.
 #i slsmg.tm
+
+\chapter{Socket Module}
+This module provides an interface to the POSIX socket functions.  Use
+\exmp{require("socket")} to load it.
+#i sockfuns.tm
+
+\chapter{Statistics Module}
+This module has has a number of statistics functions. Use
+\exmp{require("stats")} to load it.
+#i statsfuns.tm
 
 \end{\documentstyle}

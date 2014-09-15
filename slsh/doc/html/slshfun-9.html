@@ -42,7 +42,7 @@ qualifiers, as described in detail below.</P>
 e.g., <CODE>fd0</CODE> and <CODE>fd1</CODE> correspond to the child's stdin and
 stdout, respectively.  The structure also contains fields of the
 form <CODE>fpN</CODE> whose values are stdio <CODE>File_Type</CODE> objects
-obtained using <CODE>fdopen</CODE> with the correponding <CODE>fdN</CODE> value.</P>
+obtained using <CODE>fdopen</CODE> with the corresponding <CODE>fdN</CODE> value.</P>
 <P>Other important fields include <CODE>pid</CODE> whose value is
 the process-id of the newly created process.</P>
 <P>The status of the process may be checked or collected using the
@@ -131,11 +131,21 @@ files have been opened.  Hence, files attached to <CODE>stdin</CODE>,
 </PRE>
 </CODE></BLOCKQUOTE>
 
-This qualifier will cause the function corresponding to func to
+This qualifier will cause the function corresponding to <CODE>func</CODE> to
 be called prior to closing unused file descriptors and invoking
 the executable.  The function will be passed a list of integer
-valued of file descriptors that will be kept open.  Additional
-integers may be added to the list by the function.</P>
+valued file descriptors that will be kept open.  Additional
+integers may be added to the list by the function.  If the
+qualifier <CODE>pre_exec_hook_optarg</CODE> exists, it will also be
+passed as an addtional argument.
+<BLOCKQUOTE><CODE>
+<PRE>
+   pre_exec_hook_optarg=VALUE
+</PRE>
+</CODE></BLOCKQUOTE>
+
+If this qualifier exists, its value will be passed as the second
+argument to the <CODE>pre_exec_hook</CODE> callback function.</P>
 <P>Note that the read and write qualifiers specify the nature of the
 file descriptors from the child process's view.  That is, those
 opened in the child process using the read qualifier, may be written

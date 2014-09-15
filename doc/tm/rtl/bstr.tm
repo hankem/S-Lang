@@ -17,6 +17,30 @@
 \seealso{array_to_bstring, init_char_array}
 \done
 
+\function{bstrcat}
+\synopsis{Concatenate binary strings}
+\usage{String_Type bstrcat (BString_Type a_1, ...,  BString_Type a_N)}
+\description
+  The \ifun{bstrcat} function concatenates its N binary string
+  arguments \exmp{a_1}, ... \exmp{a_N} together and returns the result.
+\notes
+  This function will produce a result that is identical to that of
+  \ifun{strcat} if the input strings do not contain null characters.
+\seealso{strcat, bstrjoin}
+\done
+
+\function{bstrjoin}
+\synopsis{Concatenate elements of an array of BString_Type objects}
+\usage{String_Type bstrjoin (Array_Type a [, BString_Type delim])}
+\description
+   The \ifun{bstrjoin} function operates on an array of binary strings
+   by joining successive elements together separated with the optional
+   delimiter \exmp{delim}.  If \exmp{delim} is not specified, then
+   empty string \exmp{""} will be used resulting in a concatenation of
+   the elements.
+\seealso{bstrcat, strjoin}
+\done
+
 \function{bstrlen}
 \synopsis{Get the length of a binary string}
 \usage{UInt_Type bstrlen (BString_Type s)}

@@ -1223,6 +1223,47 @@ bstring_to_array
 
 --------------------------------------------------------------
 
+bstrcat
+
+ SYNOPSIS
+  Concatenate binary strings
+
+ USAGE
+  String_Type bstrcat (BString_Type a_1, ...,  BString_Type a_N)
+
+ DESCRIPTION
+  The `bstrcat' function concatenates its N binary string
+  arguments `a_1', ... `a_N' together and returns the result.
+
+ NOTES
+  This function will produce a result that is identical to that of
+  `strcat' if the input strings do not contain null characters.
+
+ SEE ALSO
+  strcat, bstrjoin
+
+--------------------------------------------------------------
+
+bstrjoin
+
+ SYNOPSIS
+  Concatenate elements of an array of BString_Type objects
+
+ USAGE
+  String_Type bstrjoin (Array_Type a [, BString_Type delim])
+
+ DESCRIPTION
+   The `bstrjoin' function operates on an array of binary strings
+   by joining successive elements together separated with the optional
+   delimiter `delim'.  If `delim' is not specified, then
+   empty string `""' will be used resulting in a concatenation of
+   the elements.
+
+ SEE ALSO
+  bstrcat, strjoin
+
+--------------------------------------------------------------
+
 bstrlen
 
  SYNOPSIS
@@ -2256,7 +2297,7 @@ chown
   Some systems do not support this function.
 
  SEE ALSO
-  chmod, stat_file
+  lchown, chmod, stat_file
 
 --------------------------------------------------------------
 
@@ -2303,6 +2344,26 @@ hardlink
 
  SEE ALSO
   symlink
+
+--------------------------------------------------------------
+
+lchown
+
+ SYNOPSIS
+  Change the owner of a file
+
+ USAGE
+  Int_Type lchown (String_Type file, Int_Type uid, Int_Type gid)
+
+ DESCRIPTION
+  The `lchown' function is like `chown', except that it does
+  not dereference a symbolic link.  Hence, it may be used to change
+  the ownership of a symbolic link itself, and not to what it
+  references.  See the documentation for the `chown' function for
+  more details.
+
+ SEE ALSO
+  chown, chmod, stat_file
 
 --------------------------------------------------------------
 
@@ -5019,6 +5080,28 @@ _eqs
 
 --------------------------------------------------------------
 
+get_environ
+
+ SYNOPSIS
+  Get all environment variables
+
+ USAGE
+  String_Type[] = get_environ()
+
+ DESCRIPTION
+   The `get_environ' function returns an array of strings
+   representing the environmen variables defined for the current
+   process.  Each element of the array will be of the form
+   `NAME=VALUE'.
+
+   This function will return NULL if the system does not support this
+   feature.
+
+ SEE ALSO
+  getenv, putenv, is_defined
+
+--------------------------------------------------------------
+
 getenv
 
  SYNOPSIS
@@ -5044,7 +5127,7 @@ getenv
 
 
  SEE ALSO
-  putenv, strlen, is_defined
+  get_environ, putenv, strlen, is_defined
 
 --------------------------------------------------------------
 
@@ -5898,6 +5981,47 @@ getgid
 
 --------------------------------------------------------------
 
+getpgid
+
+ SYNOPSIS
+  Get the process group id
+
+ USAGE
+  Int_Type getpgid (Int_Type pid)
+
+ DESCRIPTION
+  The `getpgid' function returns the process group id of the
+  process whose process is `pid'.  If `pid' is 0, then the
+  current process will be used.
+
+ NOTES
+  This function is not supported by all systems.
+
+ SEE ALSO
+  getpgrp, getpid, getppid
+
+--------------------------------------------------------------
+
+getpgrp
+
+ SYNOPSIS
+  Get the process group id of the calling process
+
+ USAGE
+  Int_Type getpgrp ()
+
+ DESCRIPTION
+  The `getpgrp' function returns the process group id of the
+  current process.
+
+ NOTES
+  This function is not supported by all systems.
+
+ SEE ALSO
+  getpgid, getpid, getppid
+
+--------------------------------------------------------------
+
 getpid
 
  SYNOPSIS
@@ -6033,6 +6157,24 @@ getrusage
 
  SEE ALSO
   times
+
+--------------------------------------------------------------
+
+getsid
+
+ SYNOPSIS
+  get the session id of a process
+
+ USAGE
+  Int_Type getsid ([Int_Type pid])
+
+ DESCRIPTION
+  The `getsid' function returns the session id of the current
+  process.  If the optional integer `pid' argument is given, then
+  the function returns the session id of the specified process id.
+
+ SEE ALSO
+  setsid, getpid, getpid
 
 --------------------------------------------------------------
 
@@ -6228,6 +6370,27 @@ setpriority
 
  SEE ALSO
   getpriority, getpid
+
+--------------------------------------------------------------
+
+setsid
+
+ SYNOPSIS
+  Create a new session for the current process
+
+ USAGE
+  Int_Type setsid ()
+
+ DESCRIPTION
+  If the current process is not a session leader, the `setsid'
+  function will create a new session and make the process the session
+  leader for the new session.  It returns the the process group id of
+  the new session.
+
+  Upon failure, -1 will be returned and `errno' set accordingly.
+
+ SEE ALSO
+  getsid, setpgid
 
 --------------------------------------------------------------
 
@@ -8140,6 +8303,39 @@ printf
 
 --------------------------------------------------------------
 
+setvbuf
+
+ SYNOPSIS
+
+ USAGE
+  Int_Type setvbuf (File_Type fp, Int_Type mode, Int_Type size)
+
+ DESCRIPTION
+  The `setvbuf' function may be used to control how the stdio
+  stream specified by the open File_Type object is buffered.
+
+  The `mode' argument must be one of the following values:
+
+   _IONBF   : unbuffered
+   _IOFBF   : fully buffered
+   _IOLBF   : line buffered
+
+  The `size' argument controls the size of the buffer.  If
+  `size' is 0, then the function will not change the size of the
+  buffer, only the mode.  Otherwise, `size' is expected to be
+  larger than 0 and a buffer of the requested size will be allocated
+  for the stream.
+  are buffered.
+
+ NOTES
+  This function must be used only after the stream has been opened and
+  before any other operations have been performed on the stream.
+
+ SEE ALSO
+  fopen, fclose, fflush
+
+--------------------------------------------------------------
+
 count_char_occurrences
 
  SYNOPSIS
@@ -10012,6 +10208,25 @@ get_struct_field_names
 
  SEE ALSO
   _push_struct_field_values, get_struct_field
+
+--------------------------------------------------------------
+
+_is_struct_type
+
+ SYNOPSIS
+  Determine whether or not an object is a structure
+
+ USAGE
+  Integer_Type _is_struct_type (X)
+
+ DESCRIPTION
+  The `_is_struct_type' function returns 1 if the parameter
+  refers to a structure or a user-defined type, or to an array of
+  structures or user-defined types.  If the object is neither, 0 will
+  be returned.
+
+ SEE ALSO
+  typeof, _typeof, is_struct_type
 
 --------------------------------------------------------------
 

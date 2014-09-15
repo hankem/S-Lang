@@ -53,7 +53,7 @@ single character, and '*' matches 0 or more characters.</P>
 <DT><B> Usage </B><DD>
 <P><CODE>obj = fswalk_new (Ref_Type dirfunc, Ref_Type filefunc; qualifiers)</CODE></P>
 <DT><B> Description </B><DD>
-<P>The <CODE>fswalk_new</CODE> function is creates an object that is useful
+<P>The <CODE>fswalk_new</CODE> function creates an object that is useful
 for exploring a filesystem tree.  It requires two arguments that
 are references to functions to be called when a directory or file is
 encountered.  Each of these functions is passed at least two
@@ -61,7 +61,7 @@ arguments: the name of the file or directory (including leading path
 elements relative to the directory where processing started), and
 the stat structure of the of the file or directory.  Qualifiers may
 be used to specify additional arguments.</P>
-<P>The objects <CODE>walk</CODE> method is the one that actually walks the
+<P>The object's <CODE>walk</CODE> method is the one that actually walks the
 filesystem.</P>
 <P>The directory callback function must return an integer value that
 indicates how it should be processed.  If the function returns 0,
@@ -87,7 +87,7 @@ control will pass back to the caller.</P>
 </CODE></BLOCKQUOTE>
 
 <CODE>dargs</CODE> is a list of additional arguments that will be added when
-calling directory callback function.
+calling the directory callback function.
 <BLOCKQUOTE><CODE>
 <PRE>
    fargs={args...}
@@ -95,7 +95,7 @@ calling directory callback function.
 </CODE></BLOCKQUOTE>
 
 <CODE>fargs</CODE> is a list of additional arguments that will be added when
-calling file callback function.
+calling the file callback function.
 <BLOCKQUOTE><CODE>
 <PRE>
    followlinks[=val]

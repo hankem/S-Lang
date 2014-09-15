@@ -53,11 +53,16 @@ define sha1sum (str)
    return _chksum_close (c);
 }
 
-define chksum_file (file, type)
+define chksum_file (fp, type)
 {
-   variable fp = fopen (file, "rb");
-   if (fp == NULL)
-     throw OpenError, "Error opening $file";
+   variable file = NULL;
+   if (typeof (fp) != File_Type)
+     {
+	file = fp;
+	fp = fopen (file, "rb");
+	if (fp == NULL)
+	  throw OpenError, "Error opening $file"$;
+     }
 
    variable c = _chksum_new (type);
 
@@ -66,6 +71,7 @@ define chksum_file (file, type)
      {
 	_chksum_accumulate (c, buf);
      }
+   % Allow the interpreter to close fp when it goes out of scope
    return _chksum_close (c);
 }
 

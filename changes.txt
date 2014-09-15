@@ -312,6 +312,7 @@ Changes since 2.2.4
 130. src/slang.c: Fixed a bug in the short-circuiting of non-boolean
      expressions.
 131. Updated the NEWS file for release.
+132. documentation updates
 
 {{{ Previous Versions
 

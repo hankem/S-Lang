@@ -31,6 +31,29 @@
 \seealso{getpid, getppid}
 \done
 
+\function{getpgid}
+\synopsis{Get the process group id}
+\usage{Int_Type getpgid (Int_Type pid)}
+\description
+  The \ifun{getpgid} function returns the process group id of the
+  process whose process is \exmp{pid}.  If \exmp{pid} is 0, then the
+  current process will be used.
+\notes
+  This function is not supported by all systems.
+\seealso{getpgrp, getpid, getppid}
+\done
+
+\function{getpgrp}
+\synopsis{Get the process group id of the calling process}
+\usage{Int_Type getpgrp ()}
+\description
+  The \ifun{getpgrp} function returns the process group id of the
+  current process.
+\notes
+  This function is not supported by all systems.
+\seealso{getpgid, getpid, getppid}
+\done
+
 \function{getpid}
 \synopsis{Get the current process id}
 \usage{Integer_Type getpid ()}
@@ -133,6 +156,16 @@
   interface represents these objects as double precision floating point
   values.
 \seealso{times}
+\done
+
+\function{getsid}
+\synopsis{get the session id of a process}
+\usage{Int_Type getsid ([Int_Type pid])}
+\description
+  The \ifun{getsid} function returns the session id of the current
+  process.  If the optional integer \exmp{pid} argument is given, then
+  the function returns the session id of the specified process id.
+\seealso{setsid, getpid, getpid}
 \done
 
 \function{getuid}
@@ -263,6 +296,20 @@
  -20 to 20, with -20 being the highest scheduling priority, and +20
  the lowest.
 \seealso{getpriority, getpid}
+\done
+
+
+\function{setsid}
+\synopsis{Create a new session for the current process}
+\usage{Int_Type setsid ()}
+\description
+  If the current process is not a session leader, the \ifun{setsid}
+  function will create a new session and make the process the session
+  leader for the new session.  It returns the the process group id of
+  the new session.
+
+  Upon failure, -1 will be returned and \ivar{errno} set accordingly.
+\seealso{getsid, setpgid}
 \done
 
 \function{setuid}

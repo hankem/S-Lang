@@ -483,3 +483,29 @@
 \seealso{fputs, fprintf, fwrite, message}
 \done
 
+
+\function{setvbuf}
+\synopsis{}
+\usage{Int_Type setvbuf (File_Type fp, Int_Type mode, Int_Type size)}
+\description
+  The \ifun{setvbuf} function may be used to control how the stdio
+  stream specified by the open \dtype{File_Type} object is buffered.
+
+  The \ifun{mode} argument must be one of the following values:
+#v+
+   _IONBF   : unbuffered
+   _IOFBF   : fully buffered
+   _IOLBF   : line buffered
+#v-
+  The \exmp{size} argument controls the size of the buffer.  If
+  \exmp{size} is 0, then the function will not change the size of the
+  buffer, only the mode.  Otherwise, \exmp{size} is expected to be
+  larger than 0 and a buffer of the requested size will be allocated
+  for the stream.
+  are buffered.
+\notes
+  This function must be used only after the stream has been opened and
+  before any other operations have been performed on the stream.
+\seealso{fopen, fclose, fflush}
+\done
+

@@ -189,20 +189,24 @@
 @modules/test/test_json.sl
 @modules/test/test_png.sl
 
-@modules/tm/pcrefuns.tm
-@modules/tm/pngfuns.tm
-@modules/tm/sockfuns.tm
-@modules/tm/onigfuns.tm
-@modules/tm/randfuns.tm
+@modules/tm/Makefile
+@modules/tm/base64funs.tm
+@modules/tm/chksumfuns.tm
+@modules/tm/csvfuns.tm
 @modules/tm/forkfuns.tm
 @modules/tm/histfuns.tm
-@modules/tm/statsfuns.tm
 @modules/tm/jsonfuns.tm
-@modules/tm/Makefile
 @modules/tm/modfuns.tm
-@modules/tm/csvfuns.tm
+@modules/tm/onigfuns.tm
+@modules/tm/pcrefuns.tm
+@modules/tm/pngfuns.tm
+@modules/tm/randfuns.tm
 @modules/tm/slsmg.tm
+@modules/tm/sockfuns.tm
+@modules/tm/statsfuns.tm
 
+@modules/help/base64funs.hlp
+@modules/help/chksumfuns.hlp
 @modules/help/csvfuns.hlp
 @modules/help/forkfuns.hlp
 @modules/help/histfuns.hlp

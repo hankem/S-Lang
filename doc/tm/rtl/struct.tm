@@ -186,6 +186,17 @@
 \seealso{_push_struct_field_values, get_struct_field}
 \done
 
+\function{_is_struct_type}
+\synopsis{Determine whether or not an object is a structure}
+\usage{Integer_Type _is_struct_type (X)}
+\description
+  The \ifun{_is_struct_type} function returns 1 if the parameter
+  refers to a structure or a user-defined type, or to an array of
+  structures or user-defined types.  If the object is neither, 0 will
+  be returned.
+\seealso{typeof, _typeof, is_struct_type}
+\done
+
 \function{is_struct_type}
 \synopsis{Determine whether or not an object is a structure}
 \usage{Integer_Type is_struct_type (X)}

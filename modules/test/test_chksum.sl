@@ -57,6 +57,19 @@ private define test_accumulate (name, str, chksum)
      }
 }
 
+private define test_chksum_file (func, data)
+{
+   variable tmpfile = sprintf ("/tmp/test_chksum_%d_%d", getpid(), _time());
+   variable fp = fopen (tmpfile, "wb");
+   if (fp == NULL)
+     return;
+   () = fwrite (data, fp);
+   () = fclose (fp);
+   variable s = (@func)(tmpfile);
+   () = remove (tmpfile);
+   return s;
+}
+
 private define test_module (module_name)
 {
    testing_module (module_name);
@@ -72,11 +85,19 @@ private define test_module (module_name)
 
 	test_accumulate ("md5", key, md5);
 
+	md5 = test_chksum_file (&md5sum_file, key);
+	if (md5 != s.md5)
+	  failed ("md5sum_file failed: got %s, expected %s", md5, s.md5);
+
 	variable sha1 = sha1sum (key);
 	if (sha1 != s.sha1)
 	  failed ("SHA1 failure for %s, got %s instead of %s", key, sha1, s.sha1);
 
 	test_accumulate ("sha1", key, sha1);
+
+	sha1 = test_chksum_file (&sha1sum_file, key);
+	if (sha1 != s.sha1)
+	  failed ("sha1sum_file failed: got %s, expected %s", sha1, s.sha1);
      }
 }
 

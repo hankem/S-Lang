@@ -50,4 +50,4 @@
 
 #d kbd#1 <tt>$1</tt>
 #d math#1 $1
-#d docversion v2.2.4
+#d docversion v2.3.0

@@ -109,6 +109,20 @@
 \seealso{typeof, __is_same, __get_reference, __is_callable}
 \done
 
+\function{get_environ}
+\synopsis{Get all environment variables}
+\usage{String_Type[] = get_environ()}
+\description
+   The \ifun{get_environ} function returns an array of strings
+   representing the environmen variables defined for the current
+   process.  Each element of the array will be of the form
+   \exmp{NAME=VALUE}.
+
+   This function will return \NULL if the system does not support this
+   feature.
+\seealso{getenv, putenv, is_defined}
+\done
+
 \function{getenv}
 \synopsis{Get the value of an environment variable}
 \usage{String_Type getenv(String_Type var)}
@@ -126,7 +140,7 @@
         USE_ANSI_COLORS = 1;
       }
 #v-
-\seealso{putenv, strlen, is_defined}
+\seealso{get_environ, putenv, strlen, is_defined}
 \done
 
 \function{__get_reference}

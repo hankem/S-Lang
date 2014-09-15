@@ -73,30 +73,69 @@ slsh
 API News
 ========
 
+   Note: The slang 2.3.x API is backward binary compatible with slang
+   2.y.z.
+
+   Font attributes (italics, bold, underline, ...) may be enabled for
+   terminals that support them by using a color name with a qualifier:
+
+       SLtt_set_color ("menu", "white;italics", "blue");
+       SLtt_set_color ("comment", "black;underline;italics", "cyan");
+
    SLang_init_tty: if flow control parameter is negative, the
    terminal's flow control setting will not be changed.
 
    New functions:
 
-       SLang_qualifier_exists;
-       SLang_get_int_qualifier;
-       SLang_get_long_qualifier;
-       SLang_get_double_qualifier;
-       SLang_get_string_qualifier;
-       SLang_create_struct
-       SLang_push_struct_field
-       SLang_pop_struct_field
-       SLang_pop_struct_fields
-       SLang_assoc_key_exists
-       SLstack_exch
-       SLcompute_string_hash
-       SLpath_getcwd
+     Functions for dealing with qualifiers passed to intrinsic
+     functions:
+        SLang_qualifier_exists;
+	SLang_get_int_qualifier;
+	SLang_get_long_qualifier;
+	SLang_get_double_qualifier;
+	SLang_get_string_qualifier;
 
-     Font attributes (italics, bold, underline, ...) may be enabled for
-     terminals that support them by using a color name with a qualifier:
+     Callback functions that allow an app additional hooks into the
+     slang readline functions:
 
-       SLtt_set_color ("menu", "white;italics", "blue");
-       SLtt_set_color ("comment", "black;underline;italics", "cyan");
+        SLrline_set_free_update_cb;
+	SLrline_set_update_clear_cb;
+	SLrline_set_update_preread_cb;
+	SLrline_set_update_postread_cb;
+	SLrline_set_update_width_cb;
+	SLrline_get_update_client_data;
+
+     Functions for dealing with interpreter associative arrays:
+
+	SLang_create_assoc;
+	SLang_push_assoc;
+	SLang_pop_assoc;
+	SLang_free_assoc;
+	SLang_assoc_put;
+	SLang_assoc_get;
+	SLang_assoc_key_exists;
+
+     Functions for dealing with interpreter list objects:
+
+        SLang_create_list;
+	SLang_list_append;
+	SLang_list_insert;
+	SLang_push_list;
+	SLang_pop_list;
+	SLang_free_list;
+
+     Functions for dealing with interpreter structures:
+
+        SLang_create_struct;
+	SLang_push_struct_field;
+	SLang_pop_struct_field;
+	SLang_pop_struct_fields;
+
+     Miscellaneous Functions:
+
+        SLstack_exch;
+	SLcompute_string_hash;
+	SLpath_getcwd;
 
 =x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=
 
