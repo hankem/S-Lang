@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.3.2-0: Add rpath support for freebsd
 dnl# 0.3.1-0: New output variable: CC_SHARED_FLAGS; CC_SHARED is deprecated
 dnl# 0.3.0-0: Added support for parsing /etc/ld.so.conf
 dnl# 0.2.7-3: Change ncurses5w-config to ncursesw5-config (Gilles Espinasse)
@@ -147,7 +148,7 @@ case "$host_os" in
       fi
     fi
   ;;
-  *osf*|*openbsd*)
+  *osf*|*openbsd*|*freebsd*)
     if test "X$GCC" = Xyes
     then
       RPATH="-Wl,-rpath,"

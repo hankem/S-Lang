@@ -313,6 +313,7 @@ Changes since 2.2.4
      expressions.
 131. Updated the NEWS file for release.
 132. documentation updates
+133. autoconf/: Updated configure scripts
 
 {{{ Previous Versions
 
