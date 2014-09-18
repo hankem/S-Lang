@@ -1,6 +1,46 @@
 #include <stdio.h>
 #include <slang.h>
 #include <stdlib.h>
+#include <string.h>
+
+char *SLmalloc (SLstrlen_Type len)
+{
+   char *m = malloc (len);
+   if (m == NULL)
+     (void) fprintf (stderr, "Out of memory\n");
+   return m;
+}
+
+SLFUTURE_VOID *SLcalloc (SLstrlen_Type n, SLstrlen_Type len)
+{
+   SLFUTURE_VOID *p = SLmalloc (n*len);
+   if (p != NULL)
+     memset (p, 0, n*len);
+   return p;
+}
+
+void SLfree (SLFUTURE_VOID *s)
+{
+   if (s != NULL) free (s);
+}
+
+void SLang_free_slstring (SLCONST SLstr_Type *s)
+{
+   if (s != NULL) free ((void *)s);
+}
+
+char *SLang_create_slstring (char *s)
+{
+   char *t;
+
+   t = SLmalloc (strlen (s) + 1);
+   if (t == NULL)
+     return t;
+
+   strcpy (t, s);
+   return t;
+}
+
 
 static void usage (void)
 {

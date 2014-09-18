@@ -314,6 +314,8 @@ Changes since 2.2.4
 131. Updated the NEWS file for release.
 132. documentation updates
 133. autoconf/: Updated configure scripts
+134. src/mkfiles/mkmake.c: Add definitions for SLmalloc/free so that
+     mkmake can be built without the full slang library.
 
 {{{ Previous Versions
 
