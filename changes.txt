@@ -1,6 +1,10 @@
 -*- mode: text; mode: fold -*-
 Changes since 2.3.0
 1. modules/json-module.c: Fix a possible uninitialized variable error.
+2. Define _BSD_SOURCE the few places necessary to get prototypes for
+   strtoll and BSD specific network struct fields.
+
+{{{ Previous Versions
 
 Changes since 2.2.4
 1. src/slarray.c: Try to find a suitable multiplier for range arrays
@@ -319,8 +323,6 @@ Changes since 2.2.4
 133. autoconf/: Updated configure scripts
 134. src/mkfiles/mkmake.c: Add definitions for SLmalloc/free so that
      mkmake can be built without the full slang library.
-
-{{{ Previous Versions
 
 Changes since 2.2.3
 1. src/slpack.c: Typo affecting 64 bit integers ('q' & 'Q') (Paul
