@@ -1,4 +1,7 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.3.0
+1. modules/json-module.c: Fix a possible uninitialized variable error.
+
 Changes since 2.2.4
 1. src/slarray.c: Try to find a suitable multiplier for range arrays
    to avoid roundoff errors.  Using the multiplier avoids the

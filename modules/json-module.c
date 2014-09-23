@@ -662,7 +662,7 @@ static int parse_and_push_object_as_struct (Parse_Type *p, int toplevel) /*{{{*/
    char buf[512];
    unsigned int num_fields, max_fields;
    char **fields;
-   String_Hash_Type *h;
+   String_Hash_Type *h = NULL;
 
    max_fields = 16;
    num_fields = 0;
