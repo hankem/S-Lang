@@ -3,6 +3,7 @@ Changes since 2.3.0
 1. modules/json-module.c: Fix a possible uninitialized variable error.
 2. Define _BSD_SOURCE the few places necessary to get prototypes for
    strtoll and BSD specific network struct fields.
+3. src/slstd.c: define _SVID_SOURCE to get prototype for putenv
 
 {{{ Previous Versions
 

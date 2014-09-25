@@ -23,6 +23,7 @@ USA.
 */
 
 #define _BSD_SOURCE 1		       /* to get strtoll */
+#define _SVID_SOURCE		       /* for putenv */
 #include "slinclud.h"
 /*{{{ Include Files */
 
