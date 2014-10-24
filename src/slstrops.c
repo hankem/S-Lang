@@ -1381,6 +1381,9 @@ static int strtrim_internal (int do_beg, int do_end)
      }
    else cd.lut = make_whitespace_lut ();
 
+   if (cd.lut == NULL)
+     return -1;
+
    status = arraymap_str_func_str (func_strtrim, &cd);
    if (free_lut) SLwchar_free_lut (cd.lut);
    return status;

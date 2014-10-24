@@ -677,5 +677,18 @@ test_strtrim (&strtrim_beg, $1, "hello world\n\t", NULL);
 test_strtrim (&strtrim_end, $1, " \t hello world", NULL);
 test_strtrim (&strtrim, $1, "hello wor", " \t\nld");
 
+private define test_strtrim_bad ()
+{
+   try
+     {
+	() = strtrim ("asasasc", "\\n"); % --> \ + n is invalid character class
+	failed ("%s", "Expected strtrim to choke on invalid char class");
+     }
+   catch InvalidParmError;
+}
+
+
+test_strtrim_bad ();
+
 print ("Ok\n");
 exit (0);

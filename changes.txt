@@ -6,6 +6,9 @@ Changes since 2.3.0
 3. src/slstd.c: define _SVID_SOURCE to get prototype for putenv
 4. modules/Makefile.in: On cygwin, the libraries must be placed last
    for module compilation (Marco Atzeri).
+5. src/slstrops.c: The return value from pop_lut was not being
+   checked leading to a segv upon faiure (reported by Morten Bo
+   Johansen).
 
 {{{ Previous Versions
 
