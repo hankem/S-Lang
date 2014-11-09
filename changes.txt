@@ -9,6 +9,9 @@ Changes since 2.3.0
 5. src/slstrops.c: The return value from pop_lut was not being
    checked leading to a segv upon faiure (reported by Morten Bo
    Johansen).
+6. slsh/lib/slshrl.sl: Floating point literals with a leading '.' were
+   not being properly handled by slsh_interactive_massage_hook
+   (Manfred Hanke).
 
 {{{ Previous Versions
 

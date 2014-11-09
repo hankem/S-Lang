@@ -240,11 +240,17 @@ public define slsh_interactive_massage_hook (input)
 	if (all (s0 != ["help", "apropos", "quit", "who"]))
 	  return maybe_append_semicolon (input);
      }
-   else
+   else %  line begins with "."
      {
-	%  line begins with "."
-	variable type = _slang_guess_type (strtok (input, "-+*/<>&|; \t")[0]);
-	if (type != String_Type)
+	if (input[1] == ' ')
+	  {
+	     % RPN
+	     return input;
+	  }
+
+	% The only thing that is syntactically valid here that begins
+	% with a '.' is a floating point number.
+	if (isdigit(input[1]))
 	  {
 	     % Do not allow the line to be parsed as RPN.  So prefix
 	     % with a space.
@@ -294,7 +300,7 @@ public define slsh_interactive_massage_hook (input)
 	       }
 
 	     if (s0 == "cd")
-	       return sprintf ("slsh->interactive->_sys_chdir_cmd(\"%s\");", s1);
+	       return sprintf ("slsh_interactive->sys_chdir_cmd(\"%s\");", s1);
 
 	     %  Assume the next arg is a slang script.
 
