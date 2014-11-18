@@ -484,19 +484,19 @@ typedef unsigned int _pSLuint64_Type;
 # if SIZEOF_SHORT == 8
 #  define _pSLANG_INT64_TYPE	SLANG_SHORT_TYPE
 #  define _pSLANG_UINT64_TYPE	SLANG_USHORT_TYPE
-typedef int _pSLInt64_Type;
+typedef int _pSLint64_Type;
 typedef unsigned int _pSLuint64_Type;
 # else
 #  if SIZEOF_LONG == 8
 #   define _pSLANG_INT64_TYPE	SLANG_LONG_TYPE
 #   define _pSLANG_UINT64_TYPE	SLANG_ULONG_TYPE
-typedef long _pSLInt64_Type;
+typedef long _pSLint64_Type;
 typedef unsigned long _pSLuint64_Type;
 #  else
 #   if SIZEOF_LONG_LONG == 8
 #    define _pSLANG_INT64_TYPE	SLANG_LLONG_TYPE
 #    define _pSLANG_UINT64_TYPE	SLANG_ULLONG_TYPE
-typedef long long _pSLInt64_Type;
+typedef long long _pSLint64_Type;
 typedef unsigned long long _pSLuint64_Type;
 #   else
 #    define _pSLANG_INT64_TYPE	0
@@ -504,6 +504,23 @@ typedef unsigned long long _pSLuint64_Type;
 #   endif
 #  endif
 # endif
+#endif
+
+extern int _pSLang_pop_int16 (_pSLint16_Type *);
+extern int _pSLang_pop_uint16 (_pSLuint16_Type *);
+extern int _pSLang_pop_int32 (_pSLint32_Type *);
+extern int _pSLang_pop_uint32 (_pSLuint32_Type *);
+#if _pSLANG_INT64_TYPE
+extern int _pSLang_pop_int64(_pSLint64_Type *);
+extern int _pSLang_pop_uint64 (_pSLuint64_Type *);
+#endif
+extern int _pSLang_push_int16 (_pSLint16_Type);
+extern int _pSLang_push_uint16 (_pSLuint16_Type);
+extern int _pSLang_push_int32 (_pSLint32_Type);
+extern int _pSLang_push_uint32 (_pSLuint32_Type);
+#if _pSLANG_INT64_TYPE
+extern int _pSLang_push_int64(_pSLint64_Type);
+extern int _pSLang_push_uint64 (_pSLuint64_Type);
 #endif
 
 typedef union
@@ -531,6 +548,14 @@ typedef union
    char char_val;
    unsigned char uchar_val;
    SLindex_Type index_val;
+   _pSLint16_Type int16_val;
+   _pSLuint16_Type uint16_val;
+   _pSLint32_Type int32_val;
+   _pSLuint32_Type uint32_val;
+#if _pSLANG_INT64_TYPE
+   _pSLint64_Type int64_val;
+   _pSLuint64_Type uint64_val;
+#endif
 }
 _pSL_Object_Union_Type;
 

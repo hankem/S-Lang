@@ -403,6 +403,73 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # endif
 #endif				       /* HAVE_LONG_LONG */
 
+#define GENERIC_TYPE_A char
+#define GENERIC_TYPE_B double
+#define DO_WHEREFIRST_OP_FUNC wherefirst_op_char
+#define DO_WHERELAST_OP_FUNC wherelast_op_char
+#include "slarrfun.inc"
+#define GENERIC_TYPE_A unsigned char
+#define GENERIC_TYPE_B double
+#define DO_WHEREFIRST_OP_FUNC wherefirst_op_uchar
+#define DO_WHERELAST_OP_FUNC wherelast_op_uchar
+#include "slarrfun.inc"
+
+#define GENERIC_TYPE_A _pSLint16_Type
+#define GENERIC_TYPE_B double
+#define DO_WHEREFIRST_OP_FUNC wherefirst_op_int16
+#define DO_WHERELAST_OP_FUNC wherelast_op_int16
+#include "slarrfun.inc"
+#define GENERIC_TYPE_A _pSLuint16_Type
+#define GENERIC_TYPE_B double
+#define DO_WHEREFIRST_OP_FUNC wherefirst_op_uint16
+#define DO_WHERELAST_OP_FUNC wherelast_op_uint16
+#include "slarrfun.inc"
+
+#define GENERIC_TYPE_A _pSLint32_Type
+#define GENERIC_TYPE_B double
+#define DO_WHEREFIRST_OP_FUNC wherefirst_op_int32
+#define DO_WHERELAST_OP_FUNC wherelast_op_int32
+#include "slarrfun.inc"
+#define GENERIC_TYPE_A _pSLuint32_Type
+#define GENERIC_TYPE_B double
+#define DO_WHEREFIRST_OP_FUNC wherefirst_op_uint32
+#define DO_WHERELAST_OP_FUNC wherelast_op_uint32
+#include "slarrfun.inc"
+
+#if _pSLANG_INT64_TYPE
+# define GENERIC_TYPE_A _pSLint64_Type
+# define GENERIC_TYPE_B double
+# define DO_WHEREFIRST_OP_FUNC wherefirst_op_int64
+# define DO_WHERELAST_OP_FUNC wherelast_op_int64
+# include "slarrfun.inc"
+# define GENERIC_TYPE_A _pSLuint64_Type
+# define GENERIC_TYPE_B double
+# define DO_WHEREFIRST_OP_FUNC wherefirst_op_uint64
+# define DO_WHERELAST_OP_FUNC wherelast_op_uint64
+# include "slarrfun.inc"
+# define GENERIC_TYPE_A _pSLint64_Type
+# define GENERIC_TYPE_B _pSLint64_Type
+# define DO_WHEREFIRST_OP_FUNC wherefirst_op_int64_alt
+# define DO_WHERELAST_OP_FUNC wherelast_op_int64_alt
+# include "slarrfun.inc"
+# define GENERIC_TYPE_A _pSLuint64_Type
+# define GENERIC_TYPE_B _pSLuint64_Type
+# define DO_WHEREFIRST_OP_FUNC wherefirst_op_uint64_alt
+# define DO_WHERELAST_OP_FUNC wherelast_op_uint64_alt
+# include "slarrfun.inc"
+#endif
+
+#define GENERIC_TYPE_A float
+#define GENERIC_TYPE_B double
+#define DO_WHEREFIRST_OP_FUNC wherefirst_op_float
+#define DO_WHERELAST_OP_FUNC wherelast_op_float
+#include "slarrfun.inc"
+#define GENERIC_TYPE_A double
+#define GENERIC_TYPE_B double
+#define DO_WHEREFIRST_OP_FUNC wherefirst_op_double
+#define DO_WHERELAST_OP_FUNC wherelast_op_double
+#include "slarrfun.inc"
+
 /* This routine works only with linear arrays */
 static SLang_Array_Type *transpose (SLang_Array_Type *at)
 {
@@ -1222,7 +1289,7 @@ array_max (void)
    (void) SLarray_contract_array (Array_Max_Funs);
 }
 
-/* The wherexxx funcions do not support the optional dim argument */
+/* The wherexxx function do not support the optional dim argument */
 #define DO_WHEREXXX_YYY(what, tbl) \
    if (SLang_Num_Function_Args != 1) \
        _pSLang_verror (SL_USAGE_ERROR, "Usage: idx = %s(array)", what); \
@@ -1751,6 +1818,199 @@ static void set_innerprod_block_size (int *sp)
    Inner_Prod_Block_Size = (unsigned int) s;
 }
 
+static int do_wherefirstlast_op (const char *fname, int is_first, int op)
+{
+   SLindex_Type istart;
+   SLang_Array_Type *at;
+   SLindex_Type num;
+   int use_double, type, status;
+   double b;
+
+   istart = (is_first ? 0 : -1);
+
+   switch (SLang_Num_Function_Args)
+     {
+      case 3:
+	if (-1 == SLang_pop_array_index (&istart))
+	  return -1;
+	/* drop */
+      case 2:
+	if (-1 == SLstack_exch (0, 1))
+	  return -1;
+	break;
+
+      default:
+	_pSLang_verror (SL_Usage_Error, "Usage: i = %s (array, double [,istart]", fname);
+	return -1;
+     }
+
+   if (-1 == SLang_pop_array (&at, 1))
+     return -1;
+
+   status = -1;
+
+   num = at->num_elements;
+   if (istart < 0)
+     istart += num;
+   if (istart < 0)
+     {
+	if (num == 0)
+	  istart = 0;
+	else
+	  {
+	     SLang_set_error (SL_Index_Error);
+	     goto free_and_return;
+	  }
+     }
+   else if (istart > num)
+     istart = num;
+
+   use_double = 1;
+   type = at->data_type;
+
+#if _pSLANG_INT64_TYPE
+   if ((type == _pSLANG_INT64_TYPE) || (type == _pSLANG_UINT64_TYPE))
+     {
+	int type1;
+	if (-1 == (type1 = SLang_peek_at_stack ()))
+	  goto free_and_return;
+
+	/* Use the following as a proxy for determining an integral type */
+	use_double = (0 == SLang_get_int_size ((SLtype) type1));
+     }
+#endif
+
+   if (use_double
+       && (-1 == SLang_pop_double (&b)))
+     goto free_and_return;
+
+   switch (type)
+     {
+      case SLANG_CHAR_TYPE:
+	if (is_first)
+	  status = wherefirst_op_char (at, op, b, istart);
+	else
+	  status = wherelast_op_char (at, op, b, istart);
+	break;
+
+      case SLANG_UCHAR_TYPE:
+	if (is_first)
+	  status = wherefirst_op_uchar (at, op, b, istart);
+	else
+	  status = wherelast_op_uchar (at, op, b, istart);
+	break;
+
+      case _pSLANG_INT16_TYPE:
+	if (is_first)
+	  status = wherefirst_op_int16 (at, op, b, istart);
+	else
+	  status = wherelast_op_int16 (at, op, b, istart);
+	break;
+
+      case _pSLANG_UINT16_TYPE:
+	if (is_first)
+	  status = wherefirst_op_uint16 (at, op, b, istart);
+	else
+	  status = wherelast_op_uint16 (at, op, b, istart);
+	break;
+
+      case _pSLANG_INT32_TYPE:
+	if (is_first)
+	  status = wherefirst_op_int32 (at, op, b, istart);
+	else
+	  status = wherelast_op_int32 (at, op, b, istart);
+	break;
+
+      case _pSLANG_UINT32_TYPE:
+	if (is_first)
+	  status = wherefirst_op_uint32 (at, op, b, istart);
+	else
+	  status = wherelast_op_uint32 (at, op, b, istart);
+	break;
+
+#if _pSLANG_INT64_TYPE
+      case _pSLANG_INT64_TYPE:
+	if (use_double)
+	  {
+	     if (is_first)
+	       status = wherefirst_op_int64 (at, op, b, istart);
+	     else
+	       status = wherelast_op_int64 (at, op, b, istart);
+	  }
+	else
+	  {
+	     _pSLint64_Type b64;
+	     if (-1 == (status = _pSLang_pop_int64 (&b64)))
+	       break;
+	     if (is_first)
+	       status = wherefirst_op_int64_alt (at, op, b64, istart);
+	     else
+	       status = wherelast_op_int64_alt (at, op, b64, istart);
+	  }
+	break;
+
+      case _pSLANG_UINT64_TYPE:
+	if (use_double)
+	  {
+	     if (is_first)
+	       status = wherefirst_op_uint64 (at, op, b, istart);
+	     else
+	       status = wherelast_op_uint64 (at, op, b, istart);
+	  }
+	else
+	  {
+	     _pSLuint64_Type b64;
+	     if (-1 == (status = _pSLang_pop_uint64 (&b64)))
+	       break;
+	     if (is_first)
+	       status = wherefirst_op_uint64_alt (at, op, b64, istart);
+	     else
+	       status = wherelast_op_uint64_alt (at, op, b64, istart);
+	  }
+	break;
+#endif				       /* _pSLANG_INT64_TYPE */
+
+      case SLANG_FLOAT_TYPE:
+	if (is_first)
+	  status = wherefirst_op_float (at, op, b, istart);
+	else
+	  status = wherelast_op_float (at, op, b, istart);
+	break;
+
+      case SLANG_DOUBLE_TYPE:
+	if (is_first)
+	  status = wherefirst_op_double (at, op, b, istart);
+	else
+	  status = wherelast_op_double (at, op, b, istart);
+	break;
+
+      default:
+	SLang_verror (SL_NotImplemented_Error, "%s: support for arrays of type %s is not available",
+		      fname, SLclass_get_datatype_name (type));
+	goto free_and_return;
+     }
+
+free_and_return:
+
+   SLang_free_array (at);
+   return status;
+}
+
+
+static void wherefirsteq(void) {(void) do_wherefirstlast_op ("wherefirsteq", 1, SLANG_EQ);}
+static void wherefirstne(void) {(void) do_wherefirstlast_op ("wherefirstne", 1, SLANG_NE);}
+static void wherefirstlt(void) {(void) do_wherefirstlast_op ("wherefirstlt", 1, SLANG_LT);}
+static void wherefirstgt(void) {(void) do_wherefirstlast_op ("wherefirstgt", 1, SLANG_GT);}
+static void wherefirstle(void) {(void) do_wherefirstlast_op ("wherefirstle", 1, SLANG_LE);}
+static void wherefirstge(void) {(void) do_wherefirstlast_op ("wherefirstge", 1, SLANG_GE);}
+
+static void wherelasteq(void) {(void) do_wherefirstlast_op ("wherelasteq", 0, SLANG_EQ);}
+static void wherelastne(void) {(void) do_wherefirstlast_op ("wherelastne", 0, SLANG_NE);}
+static void wherelastlt(void) {(void) do_wherefirstlast_op ("wherelastlt", 0, SLANG_LT);}
+static void wherelastgt(void) {(void) do_wherefirstlast_op ("wherelastgt", 0, SLANG_GT);}
+static void wherelastle(void) {(void) do_wherefirstlast_op ("wherelastle", 0, SLANG_LE);}
+static void wherelastge(void) {(void) do_wherefirstlast_op ("wherelastge", 0, SLANG_GE);}
+
 static SLang_Intrin_Fun_Type Array_Fun_Table [] =
 {
    MAKE_INTRINSIC_1("transpose", array_transpose, SLANG_VOID_TYPE, SLANG_ARRAY_TYPE),
@@ -1773,6 +2033,20 @@ static SLang_Intrin_Fun_Type Array_Fun_Table [] =
    MAKE_INTRINSIC_0("wherefirstmax", array_wherefirstmax, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("wherelastmin", array_wherelastmin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("wherelastmax", array_wherelastmax, SLANG_VOID_TYPE),
+
+   MAKE_INTRINSIC_0("wherefirst_eq", wherefirsteq, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherefirst_ne", wherefirstne, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherefirst_gt", wherefirstgt, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherefirst_lt", wherefirstlt, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherefirst_ge", wherefirstge, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherefirst_le", wherefirstle, SLANG_VOID_TYPE),
+
+   MAKE_INTRINSIC_0("wherelast_eq", wherelasteq, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherelast_ne", wherelastne, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherelast_gt", wherelastgt, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherelast_lt", wherelastlt, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherelast_ge", wherelastge, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wherelast_le", wherelastle, SLANG_VOID_TYPE),
 
    MAKE_INTRINSIC_0("__get_innerprod_block_size", get_innerprod_block_size, SLANG_INT_TYPE),
    MAKE_INTRINSIC_I("__set_innerprod_block_size", set_innerprod_block_size, SLANG_VOID_TYPE),

@@ -746,6 +746,33 @@ int SLang_pop_uint (unsigned int *i)
    return integer_pop (SLANG_UINT_TYPE, (VOID_STAR) i);
 }
 
+int _pSLang_pop_int16 (_pSLint16_Type *i) {return integer_pop (_pSLANG_INT16_TYPE, i);}
+int _pSLang_pop_uint16 (_pSLuint16_Type *i) {return integer_pop (_pSLANG_UINT16_TYPE, i);}
+int _pSLang_pop_int32 (_pSLint32_Type *i) {return integer_pop (_pSLANG_INT32_TYPE, i);}
+int _pSLang_pop_uint32 (_pSLuint32_Type *i) {return integer_pop (_pSLANG_UINT32_TYPE, i);}
+#if _pSLANG_INT64_TYPE
+int _pSLang_pop_int64(_pSLint64_Type *i) {return integer_pop (_pSLANG_INT64_TYPE, i);}
+int _pSLang_pop_uint64 (_pSLuint64_Type *i) {return integer_pop (_pSLANG_UINT64_TYPE, i);}
+#endif
+
+#define MK_PUSH_INTXX(fname_, ctype_, stype_, field_) \
+   int fname_ (ctype_ i) \
+   { \
+      SLang_Object_Type obj; \
+      obj.o_data_type = stype_; \
+      obj.v.field_ = i; \
+      return SLang_push (&obj); \
+   }
+
+MK_PUSH_INTXX(_pSLang_push_int16, _pSLint16_Type, _pSLANG_INT16_TYPE, int16_val)
+MK_PUSH_INTXX(_pSLang_push_uint16, _pSLuint16_Type, _pSLANG_UINT16_TYPE, uint16_val)
+MK_PUSH_INTXX(_pSLang_push_int32, _pSLint32_Type, _pSLANG_INT32_TYPE, int32_val)
+MK_PUSH_INTXX(_pSLang_push_uint32, _pSLuint32_Type, _pSLANG_UINT32_TYPE, uint32_val)
+#if _pSLANG_INT64_TYPE
+MK_PUSH_INTXX(_pSLang_push_int64, _pSLint64_Type, _pSLANG_INT64_TYPE, int64_val)
+MK_PUSH_INTXX(_pSLang_push_uint64, _pSLuint64_Type, _pSLANG_UINT64_TYPE, uint64_val)
+#endif
+
 int SLang_push_int (int i)
 {
    return SLclass_push_int_obj (SLANG_INT_TYPE, i);

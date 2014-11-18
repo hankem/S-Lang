@@ -1749,6 +1749,85 @@ test_prod ([1+0i]);
 test_prod ([1:5] + 1i*[2:6]);
 #endif
 
+private define test_wherefirst_op ()
+{
+   variable types = [Char_Type, UChar_Type, Short_Type, UShort_Type,
+		     Int_Type, UInt_Type, Long_Type, ULong_Type,
+#ifexists LLong_Type
+		     LLong_Type, ULLong_Type,
+#endif
+		     Float_Type, Double_Type
+		    ];
+
+   variable ops = {"_op_eqs", "_op_neqs", "_op_gt", "_op_ge", "_op_lt", "_op_le"};
+   loop (50)
+     {
+	foreach (ops)
+	  {
+	     variable op = ();
+	     variable suffix = op[[3:5]];
+	     variable wherefirst_func = __get_reference ("wherefirst" + suffix);
+	     variable wherelast_func = __get_reference ("wherelast" + suffix);
+	     op = __get_reference (op);
+
+	     variable a = 128*urand(1000);
+	     variable b = 128*urand();
+	     variable istart = int (-10 + 10*urand ());
+	     variable aa, bb, atype, btype, i, j;
+
+	     foreach atype (types)
+	       {
+		  aa = typecast (a, atype);
+		  foreach btype (types)
+		    {
+		       bb = typecast (b, btype);
+		       i = (@wherefirst_func)(aa, bb);
+		       j = wherefirst ((@op)(aa, bb));
+		       if (i != j)
+			 {
+			    failed ("%S(%S,%S %S)==>a[%S]=%S, expected a[%S]=%S",
+				    wherefirst_func, aa, btype, bb,
+				    i, (i==NULL?"NULL":aa[i]),
+				    j, (j==NULL?"NULL":aa[j]));
+			 }
+
+		       i = (@wherelast_func)(aa, bb);
+		       j = wherelast ((@op)(aa, bb));
+		       if (i != j)
+			 {
+			    failed ("%S(%S,%S %S)==>a[%S]=%S, expected a[%S]=%S",
+				    wherelast_func, aa, btype, bb,
+				    i, (i==NULL?"NULL":aa[i]),
+				    j, (j==NULL?"NULL":aa[j]));
+			 }
+
+		       i = (@wherefirst_func)(aa, bb, istart);
+		       j = wherefirst ((@op)(aa, bb), istart);
+		       if (i != j)
+			 {
+			    failed ("%S(%S,%S %S)==>a[%S]=%S, expected a[%S]=%S",
+				    wherefirst_func, aa, btype, bb, istart,
+				    i, (i==NULL?"NULL":aa[i]),
+				    j, (j==NULL?"NULL":aa[j]));
+			 }
+
+		       i = (@wherelast_func)(aa, bb, istart);
+		       j = wherelast ((@op)(aa, bb), istart);
+		       if (i != j)
+			 {
+			    failed ("%S(%S,%S %S,%S)==>a[%S]=%S, expected a[%S]=%S",
+				    wherelast_func, aa, btype, bb, istart,
+				    i, (i==NULL?"NULL":aa[i]),
+				    j, (j==NULL?"NULL":aa[j]));
+			 }
+		    }
+	       }
+	  }
+     }
+}
+
+test_wherefirst_op ();
+
 print ("Ok\n");
 exit (0);
 

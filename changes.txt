@@ -12,6 +12,20 @@ Changes since 2.3.0
 6. slsh/lib/slshrl.sl: Floating point literals with a leading '.' were
    not being properly handled by slsh_interactive_massage_hook
    (Manfred Hanke).
+7. src/slarrfun.c: Added wherefirst/last_eq/ne/gt/lt/ge/le functions,
+   which are much faster than using just wherefirst or wherefast with
+   the implied binary comparison.  For example:
+
+     slsh> .load rand
+     slsh> x = rand_uniform (100000);
+     slsh> tic; loop (1000) i=wherefirst(x>=0.999); toc; i;
+     0.597183
+     268
+     slsh> tic; loop (1000) i=wherefirst_ge(x,0.999); toc; i;
+     0.0024419999999999997
+     268
+
+   For this case, the speedup about 0.60/0.0024 = 250.
 
 {{{ Previous Versions
 
