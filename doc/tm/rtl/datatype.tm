@@ -210,7 +210,7 @@
       }
 #v-
   The loop will terminate when the last elements \exmp{child} field is
-  NULL.  If no ``linking'' field is specified, the field name will
+  \NULL.  If no ``linking'' field is specified, the field name will
   default to \exmp{next}.
 
   User-defined data types are similar to the \var{Struct_Type}.  A

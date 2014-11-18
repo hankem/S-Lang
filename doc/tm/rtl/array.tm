@@ -387,7 +387,7 @@
 \synopsis{Check an array for NULL elements}
 \usage{Char_Type[] = _isnull (a[])}
 \description
-  This function may be used to test for the presence of NULL elements
+  This function may be used to test for the presence of \NULL elements
   of an array.   Specifically, it returns a \dtype{Char_Type} array of
   with the same number of elements and dimensionality of the input
   array.  If an element of the input array is \NULL, then the
@@ -748,9 +748,9 @@ wherelast_eq, wherelast_ne, wherelast_ge, wherelast_gt, wherelast_le, wherelast_
   These functions perform the indicated binary operation between the
   elements of numeric array \exmp{A} and a number \exmp{b}.  The
   \exmp{wherefirst_*} functions return the index of the first element for which the
-  comparison is true.  The \exmp{wherefirst_*} functions return the last
+  comparison is true.  The \exmp{wherelast_*} functions return the last
   index where the binary operation is true.  If no matching elements are
-  found, the functions return NULL.
+  found, the functions return \NULL.
 
   If the optional third parameter, \exmp{istart}, is given, then it
   indicates the index into the array where the search is to start.

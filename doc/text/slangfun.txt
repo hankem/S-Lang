@@ -983,7 +983,7 @@ wherefirst_eq, wherefirst_ne, wherefirst_ge, wherefirst_gt, wherefirst_le, where
   These functions perform the indicated binary operation between the
   elements of numeric array `A' and a number `b'.  The
   `wherefirst_*' functions return the index of the first element for which the
-  comparison is true.  The `wherefirst_*' functions return the last
+  comparison is true.  The `wherelast_*' functions return the last
   index where the binary operation is true.  If no matching elements are
   found, the functions return NULL.
 
@@ -6598,7 +6598,7 @@ qualifier
 
  DESCRIPTION
  This function may be used to get the value of a qualifier.  If the
- specified qualifier does not exist, `NULL' will be returned,
+ specified qualifier does not exist, NULL will be returned,
  unless a default value has been provided.
 
  EXAMPLE
@@ -6613,9 +6613,9 @@ qualifier
 
 
  NOTES
- Since `NULL' is a valid value for a qualifier, this function is
+ Since NULL is a valid value for a qualifier, this function is
  unable to distinguish between a non-existent qualifier and one whose
- value is `NULL'.  If such a distinction is important, the
+ value is NULL.  If such a distinction is important, the
  `qualifier_exists' function can be used.  For example,
 
     define echo (text)
@@ -6628,7 +6628,7 @@ qualifier
     echo ("hello"; use_stderr);  % writes hello to stderr
 
  In this case, no value was provided for the `use_stderr'
- qualifier: it exists but has a value of `NULL'.
+ qualifier: it exists but has a value of NULL.
 
  SEE ALSO
   qualifier_exists, __qualifiers
@@ -6647,7 +6647,7 @@ __qualifiers
  This function returns the set of qualifiers associated with the
  current execution context.  If qualifiers are active, then the result
  is a structure representing the names of the qualifiers and their
- corresponding values.  Otherwise `NULL' will be returned.
+ corresponding values.  Otherwise NULL will be returned.
 
  One of the main uses of this function is to pass the current set of
  qualifiers to another another function.  For example, consider a

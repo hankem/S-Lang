@@ -3,7 +3,7 @@
 \usage{value = qualifier (String_Type name [,default_value])}
 \description
  This function may be used to get the value of a qualifier.  If the
- specified qualifier does not exist, \exmp{NULL} will be returned,
+ specified qualifier does not exist, \NULL will be returned,
  unless a default value has been provided.
 \example
 #v+
@@ -16,9 +16,9 @@
     echo ("hello"; out=stderr);  % writes hello to stderr
 #v-
 \notes
- Since \exmp{NULL} is a valid value for a qualifier, this function is
+ Since \NULL is a valid value for a qualifier, this function is
  unable to distinguish between a non-existent qualifier and one whose
- value is \exmp{NULL}.  If such a distinction is important, the
+ value is \NULL.  If such a distinction is important, the
  \ifun{qualifier_exists} function can be used.  For example,
 #v+
     define echo (text)
@@ -31,7 +31,7 @@
     echo ("hello"; use_stderr);  % writes hello to stderr
 #v-
  In this case, no value was provided for the \exmp{use_stderr}
- qualifier: it exists but has a value of \exmp{NULL}.
+ qualifier: it exists but has a value of \NULL.
 \seealso{qualifier_exists, __qualifiers}
 \done
 
@@ -42,7 +42,7 @@
  This function returns the set of qualifiers associated with the
  current execution context.  If qualifiers are active, then the result
  is a structure representing the names of the qualifiers and their
- corresponding values.  Otherwise \exmp{NULL} will be returned.
+ corresponding values.  Otherwise \NULL will be returned.
 
  One of the main uses of this function is to pass the current set of
  qualifiers to another another function.  For example, consider a

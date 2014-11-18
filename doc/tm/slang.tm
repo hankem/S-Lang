@@ -1115,7 +1115,7 @@
 \sect1{Null_Type}
 
    Objects of type \dtype{Null_Type} can have only one value:
-   \var{NULL}.  About the only thing that you can do with this data
+   \NULL.  About the only thing that you can do with this data
    type is to assign it to variables and test for equality with
    other objects.  Nevertheless, \var{Null_Type} is an important and
    extremely useful data type.  Its main use stems from the fact that
@@ -1138,10 +1138,10 @@
 #v-
    It should be clear that after these statements have been executed,
    \exmp{c} will have a value of 3.  It should also be clear
-   that \exmp{d} will have a value of 1 because \var{NULL} has
+   that \exmp{d} will have a value of 1 because \NULL has
    been passed as the second parameter.  One feature of the language
    is that if a parameter has been omitted from a function call, the
-   variable associated with that parameter will be set to \var{NULL}.
+   variable associated with that parameter will be set to \NULL.
    Hence, \exmp{e} and \exmp{f} will be set to 1 and 0,
    respectively.
 
@@ -2613,7 +2613,7 @@
      variable s = add_10 ();
 #v-
   is \em{not} equivalent to \exmp{add_10(NULL)}.  The reason for this
-  is simple: the parser can only tell whether or not \var{NULL} should
+  is simple: the parser can only tell whether or not \NULL should
   be substituted by looking at the position of the comma character in
   the parameter list, and only function calls that indicate more than
   one parameter will use a comma.  A mechanism for handling single
@@ -3321,7 +3321,7 @@
    numeric array is created, all its elements are initialized to zero.
    The initialization of other array types depend upon the data type,
    e.g., the elements in \var{String_Type} and \var{Struct_Type} arrays are
-   initialized to \var{NULL}.
+   initialized to \NULL.
 
    As a concrete example, consider
 #v+
