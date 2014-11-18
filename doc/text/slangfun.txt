@@ -956,9 +956,65 @@ wherefirst
 
 
  SEE ALSO
-  where, wherelast, wherfirstmin, wherfirstmax
+  where, wherelast, wherfirstmin, wherfirstmax, wherefirst_eq
 
 --------------------------------------------------------------
+
+wherefirst_eq, wherefirst_ne, wherefirst_ge, wherefirst_gt, wherefirst_le, wherefirst_lt, wherelast_eq, wherelast_ne, wherelast_ge, wherelast_gt, wherelast_le, wherelast_lt
+
+ SYNOPSIS
+  Get the first or last matching element of an array
+
+ USAGE
+  Int_Type wherefirst_eq (A, b [,istart])
+  Int_Type wherefirst_ne (A, b [,istart])
+  Int_Type wherefirst_ge (A, b [,istart])
+  Int_Type wherefirst_gt (A, b [,istart])
+  Int_Type wherefirst_le (A, b [,istart])
+  Int_Type wherefirst_lt (A, b [,istart])
+  Int_Type wherelast_eq (A, b [,istart])
+  Int_Type wherelast_ne (A, b [,istart])
+  Int_Type wherelast_ge (A, b [,istart])
+  Int_Type wherelast_gt (A, b [,istart])
+  Int_Type wherelast_le (A, b [,istart])
+  Int_Type wherelast_lt (A, b [,istart])
+
+ DESCRIPTION
+  These functions perform the indicated binary operation between the
+  elements of numeric array `A' and a number `b'.  The
+  `wherefirst_*' functions return the index of the first element for which the
+  comparison is true.  The `wherefirst_*' functions return the last
+  index where the binary operation is true.  If no matching elements are
+  found, the functions return NULL.
+
+  If the optional third parameter, `istart', is given, then it
+  indicates the index into the array where the search is to start.
+
+  These functions have the following equivalent forms:
+
+   wherefirst_eq (A, b, istart) <==> wherefirst (A == b, istart)
+   wherefirst_ne (A, b, istart) <==> wherefirst (A != b, istart)
+   wherefirst_ge (A, b, istart) <==> wherefirst (A >= b, istart)
+   wherefirst_gt (A, b, istart) <==> wherefirst (A > b, istart)
+   wherefirst_le (A, b, istart) <==> wherefirst (A <= b, istart)
+   wherefirst_lt (A, b, istart) <==> wherefirst (A < b, istart)
+
+   wherelast_eq (A, b, istart) <==> wherelast (A == b, istart)
+   wherelast_ne (A, b, istart) <==> wherelast (A != b, istart)
+   wherelast_ge (A, b, istart) <==> wherelast (A >= b, istart)
+   wherelast_gt (A, b, istart) <==> wherelast (A > b, istart)
+   wherelast_le (A, b, istart) <==> wherelast (A <= b, istart)
+   wherelast_lt (A, b, istart) <==> wherelast (A < b, istart)
+
+  However, the `wherefirst_*' and `wherelast_*' function can
+  execute several orders of magnitude faster, depending upon the context.
+
+ NOTES
+  The current implementation of these functions is limited to numeric
+  types.
+
+ SEE ALSO
+  wherefirst, wherelast
 
 wherefirstmax
 
@@ -969,12 +1025,12 @@ wherefirstmax
   Int_Type wherefirstmax (Array_Type a)
 
  DESCRIPTION
-This function is equivalent to
+ This function is equivalent to
 
    index = wherefirst (a == max(a));
 
-It executes about 3 times faster, and does not require the creation of
-temporary arrays.
+ It executes about 3 times faster, and does not require the creation of
+ temporary arrays.
 
  SEE ALSO
   wherefirst, wherefirstmax, wherelastmin, min, max
@@ -990,12 +1046,12 @@ wherefirstmin
   Int_Type wherefirstmin (Array_Type a)
 
  DESCRIPTION
-This function is equivalent to
+ This function is equivalent to
 
    index = wherefirst (a == min(a));
 
-It executes about 3 times faster, and does not require the creation of
-temporary arrays.
+ It executes about 3 times faster, and does not require the creation of
+ temporary arrays.
 
  SEE ALSO
   wherefirst, wherelastmin, wherefirstmax, min, max
@@ -1031,7 +1087,7 @@ wherelast
 
 
  SEE ALSO
-  where, wherefirst, wherelastmin, wherelastmax
+  where, wherefirst, wherelastmin, wherelastmax, wherefirst_eq
 
 --------------------------------------------------------------
 
@@ -1044,12 +1100,12 @@ wherelastmax
   Int_Type wherelastmax (Array_Type a)
 
  DESCRIPTION
-This function is equivalent to
+  This function is equivalent to
 
    index = wherelast (a == max(a));
 
-It executes about 3 times faster, and does not require the creation of
-temporary arrays.
+  It executes about 3 times faster, and does not require the creation of
+  temporary arrays.
 
  SEE ALSO
   wherelast, wherefirstmin, wherelastmin, min, max
@@ -1065,12 +1121,12 @@ wherelastmin
   Int_Type wherelastmin (Array_Type a)
 
  DESCRIPTION
-This function is equivalent to
+  This function is equivalent to
 
    index = wherelast (a == min(a));
 
-It executes about 3 times faster, and does not require the creation of
-temporary arrays.
+  It executes about 3 times faster, and does not require the creation of
+  temporary arrays.
 
  SEE ALSO
   wherelast, wherefirstmin, wherelastmax, min, max

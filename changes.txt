@@ -26,7 +26,7 @@ Changes since 2.3.0
      268
 
    For this case, the speedup about 0.60/0.0024 = 250.
-
+8. Rebuilt text documentation for change #7.
 {{{ Previous Versions
 
 Changes since 2.2.4
