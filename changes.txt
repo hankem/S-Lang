@@ -28,6 +28,8 @@ Changes since 2.3.0
    For this case, the speedup about 0.60/0.0024 = 250.
 8. Rebuilt text documentation for change #7.
 9. Documentation updates (Manfred Hanke).
+10. src/slarrfun.inc: use a macro for the common case statements of
+    the wherefirst_op and wherelast_op code. (Manfred Hanke)
 
 {{{ Previous Versions
 

@@ -795,38 +795,17 @@ static int DO_WHEREFIRST_OP_FUNC (SLang_Array_Type *at, int op, GENERIC_TYPE_B b
    a = (GENERIC_TYPE_A *) at->data;
    num_elements = (SLindex_Type) at->num_elements;
 
+# define WHEREFIRST_CASE_BODY(cop) \
+   i = istart; while ((i < num_elements) && (0 == (a[i] cop b))) i++;
+
    switch (op)
      {
-      case SLANG_EQ:
-	for (i = istart; i < num_elements; i++)
-	  if (a[i] == b) break;
-	break;
-
-      case SLANG_NE:
-	for (i = istart; i < num_elements; i++)
-	  if (a[i] != b) break;
-	break;
-
-      case SLANG_GT:
-	for (i = istart; i < num_elements; i++)
-	  if (a[i] > b) break;
-	break;
-
-      case SLANG_GE:
-	for (i = istart; i < num_elements; i++)
-	  if (a[i] >= b) break;
-	break;
-
-      case SLANG_LT:
-	for (i = istart; i < num_elements; i++)
-	  if (a[i] < b) break;
-	break;
-
-      case SLANG_LE:
-	for (i = istart; i < num_elements; i++)
-	  if (a[i] <= b) break;
-	break;
-
+      case SLANG_EQ: WHEREFIRST_CASE_BODY(==); break;
+      case SLANG_NE: WHEREFIRST_CASE_BODY(!=); break;
+      case SLANG_GT: WHEREFIRST_CASE_BODY( >); break;
+      case SLANG_GE: WHEREFIRST_CASE_BODY(>=); break;
+      case SLANG_LT: WHEREFIRST_CASE_BODY( <); break;
+      case SLANG_LE: WHEREFIRST_CASE_BODY(<=); break;
       default:
 	SLang_verror (SL_Internal_Error, "Unexpected op: %d\n", op);
 	return -1;
@@ -837,6 +816,7 @@ static int DO_WHEREFIRST_OP_FUNC (SLang_Array_Type *at, int op, GENERIC_TYPE_B b
 
    return SLang_push_null ();
 }
+#undef WHEREFIRST_CASE_BODY
 #undef DO_WHEREFIRST_OP_FUNC
 #endif
 
@@ -850,56 +830,17 @@ static int DO_WHERELAST_OP_FUNC (SLang_Array_Type *at, int op, GENERIC_TYPE_B b,
    num_elements = (SLindex_Type) at->num_elements;
    if (istart >= num_elements) istart = num_elements-1;
 
+# define WHERELAST_CASE_BODY(cop) \
+   while ((istart >= 0) && (0 == (a[istart] cop b))) istart--
+
    switch (op)
      {
-      case SLANG_EQ:
-	while (istart >= 0)
-	  {
-	     if (a[istart] == b) break;
-	     istart--;
-	  }
-	break;
-
-      case SLANG_NE:
-	while (istart >= 0)
-	  {
-	     if (a[istart] != b) break;
-	     istart--;
-	  }
-	break;
-
-      case SLANG_GT:
-	while (istart >= 0)
-	  {
-	     if (a[istart] > b) break;
-	     istart--;
-	  }
-	break;
-
-      case SLANG_GE:
-	while (istart >= 0)
-	  {
-	     if (a[istart] >= b) break;
-	     istart--;
-	  }
-	break;
-
-      case SLANG_LT:
-	while (istart >= 0)
-	  {
-	     if (a[istart] < b) break;
-	     istart--;
-	  }
-	break;
-
-      case SLANG_LE:
-	while (istart >= 0)
-	  {
-	     if (a[istart] <= b) break;
-	     istart--;
-	  }
-	break;
-
+      case SLANG_EQ: WHERELAST_CASE_BODY(==); break;
+      case SLANG_NE: WHERELAST_CASE_BODY(!=); break;
+      case SLANG_GT: WHERELAST_CASE_BODY( >); break;
+      case SLANG_GE: WHERELAST_CASE_BODY(>=); break;
+      case SLANG_LT: WHERELAST_CASE_BODY( <); break;
+      case SLANG_LE: WHERELAST_CASE_BODY(<=); break;
       default:
 	SLang_verror (SL_Internal_Error, "Unexpected op: %d\n", op);
 	return -1;
@@ -910,6 +851,7 @@ static int DO_WHERELAST_OP_FUNC (SLang_Array_Type *at, int op, GENERIC_TYPE_B b,
 
    return SLang_push_null ();
 }
+#undef WHERELAST_CASE_BODY
 #undef DO_WHERELAST_OP_FUNC
 #endif
 
