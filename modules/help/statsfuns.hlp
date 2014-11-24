@@ -16,7 +16,7 @@ ad_ktest
   the last parameter is a reference, then the variable that it
   references will be set to the value of the statistic upon return.
 
-  The paper that this test was based upon presents two statistical
+  The paper that this test is based upon presents two statistical
   tests: one for continuous data where ties are improbable, and one
   for data where ties can occur.  This function returns the p-value
   and statistic for the latter case.  A qualifier may be used to
