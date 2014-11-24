@@ -30,6 +30,12 @@ Changes since 2.3.0
 9. Documentation updates (Manfred Hanke).
 10. src/slarrfun.inc: use a macro for the common case statements of
     the wherefirst_op and wherelast_op code. (Manfred Hanke)
+11. modules/stats.sl: Added Anderson-Darling tests:
+
+       ad_test:   test for normality
+       ad_ktest:  k-sample test
+
+    I also broke out some of the statistical tests into separate files.
 
 {{{ Previous Versions
 

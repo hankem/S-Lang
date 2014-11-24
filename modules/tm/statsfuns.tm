@@ -1,3 +1,61 @@
+\function{ad_ktest}
+\synopsis{k-sample Anderson-Darling test}
+\usage{p = ad_ktest ({X1, X2, ...} [,&statistic] [;qualifiers])}
+\description
+  The \sfun{ad_ktest} function performs a k-sample Anderson-Darling
+  test, which may be used to test the hypothesis that two or more
+  statistical samples come from the same underlying parent population.
+
+  The function returns the p-value representing the probability that
+  the samples are consistent with a common parent distribution.  If
+  the last parameter is a reference, then the variable that it
+  references will be set to the value of the statistic upon return.
+
+  The paper that this test was based upon presents two statistical
+  tests: one for continuous data where ties are improbable, and one
+  for data where ties can occur.  This function returns the p-value
+  and statistic for the latter case.  A qualifier may be used to
+  obtain the p-value and statistic for the continuous case.
+\qualifiers
+\qualifier{pval2=&var}{Set the variable \exmp{var} to the p-value for continuous case}
+\qualifier{stat2=&var}{Set the variable \exmp{var} to the statistic for the continuous case.}
+\notes
+  The k-sample test was implemented from the equations found in
+  Scholz F.W. and Stephens M.A., "K-Sample Anderson-Darling Tests",
+  Journal of the American Statistical Association, Vol 82, 399 (1987).
+\seealso{ks_test2, ad_test}
+\done
+
+
+\function{ad_test}
+\synopsis{Anderson-Darling test for normality}
+\usage{pval = ad_test (X [,&statistic] [;qualifiers])}
+\description
+  The \sfun{ad_test} function may be used to test the hypothesis that
+  random samples \exmp{X} come from a normal distribution.  It returns
+  the p-value representing the probability of obtaining such a dataset
+  under the assumption that the data represent random samples of the
+  underlying distribution.  If the optional second parameter is
+  present, then it must be a reference to a variable that will be set
+  to the value of the statistic upon return.
+\qualifiers
+\qualifier{mu=value}{Specifies the known mean of the normal distribution}.
+\qualifier{sigma}{Specifies the known standard deviation of the normal distribution}
+\qualifier{cdf}{If present, the data will be interpreted as a CDFs of a known, but unspecified, distribution.}
+\notes
+  For testing the hypothesis that a dataset is sampled from a known,
+  not necessarily normal, distribution, convert the random samples
+  into CDFs and pass those as the value of X to the \sfun{ad_test}
+  function.  Also use the \exmp{cdf} qualifier to let the function
+  know that the values are CDFs and not random samples.  When this is
+  done, the values of the CDFs will range from 0 to 1, and the p-value
+  returned by the function will be computed using an algorithm by
+  Marsaglia and Marsaglia: Evaluating the Anderson-Darling
+  Distribution, Journal of Statistical Software, Vol. 9, Issue 2, Feb
+  2004.
+\seealso{ad_ktest, ks_test, t_test, z_test, normal_cdf, }
+\done
+
 \function{median}
 \synopsis{Compute the median of an array of values}
 \usage{m = median (a [,i])}
@@ -221,7 +279,7 @@
 #v+
     pval = ks_test (normal_cdf(X, 20, 3));
 #v-
-\seealso{ks_test2, kuiper_test, t_test, z_test}
+\seealso{ks_test2, ad_test, kuiper_test, t_test, z_test}
 \done
 
 \function{ks_test2}
@@ -236,7 +294,7 @@
  If \exmp{length(X)*length(Y)<=10000}, the \ifun{kim_jennrich_cdf}
  function will be used to compute the exact probability.  Otherwise an
  asymptotic form will be used.
-\seealso{ks_test, kuiper_test, kim_jennrich_cdf}
+\seealso{ks_test, ad_ktest, kuiper_test, kim_jennrich_cdf}
 \done
 
 \function{kuiper_test}
@@ -275,7 +333,7 @@
  hypothesis that they share the same underlying distribution.
  \opt-3-parm{Kuiper statistic}
 \notes
- The p-value is computed from an asymotic formula suggested by
+ The p-value is computed from an asymptotic formula suggested by
  Stephens, M.A., Journal of the American Statistical Association, Vol
  69, No 347, 1974, pp 730-737.
 \seealso{ks_test2, kuiper_test}
@@ -470,6 +528,6 @@
   array is finite and non-zero.  The returned value falls in the
   range -1 to 1, with -1 indicating that the data are anti-correlated,
   and +1 indicating that the data are completely correlated.
-\seealso{covariance, stdddev}
+\seealso{covariance, stddev}
 \done
 

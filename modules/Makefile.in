@@ -167,6 +167,15 @@ install: all
 		echo $(INSTALL_DATA) $$i.sl $(DEST_SLSH_DIR); \
 		$(INSTALL_DATA) $$i.sl $(DEST_SLSH_DIR); \
 	done
+	@for d in statslib; \
+	do \
+	   $(MKINSDIR) $(DEST_SLSH_DIR)/$$d; \
+	   for i in $$d/*.sl; \
+	   do \
+		echo $(INSTALL_DATA) $$i $(DEST_SLSH_DIR)/$$d/; \
+		$(INSTALL_DATA) $$i $(DEST_SLSH_DIR)/$$d/; \
+	   done; \
+        done
 	-$(MKINSDIR) $(DEST_CMAPSDIR)
 	@for i in cmaps/*.map; \
 	do \

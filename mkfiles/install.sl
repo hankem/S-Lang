@@ -1,4 +1,4 @@
-private variable Script_Version_String = "0.1.1";
+private variable Script_Version_String = "0.1.2";
 
 require ("cmdopt");
 require ("glob");
@@ -116,6 +116,10 @@ private define install_modules (prefix)
    dir = "$prefix/share/slsh"$;
    () = mkdir_p (dir);
    install_files ("modules/*.sl", dir);
+
+   dir = "$prefix/share/slsh/statslib"$;
+   () = mkdir_p (dir);
+   install_files ("modules/statslib/*.sl", dir);
 
    dir = "$prefix/share/slsh/cmaps"$;
    () = mkdir_p (dir);

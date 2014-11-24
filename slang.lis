@@ -161,6 +161,9 @@
 @modules/stats.sl
 @modules/stats-module.c
 @modules/stats-module.inc
+@modules/statslib/kuiper.sl
+@modules/statslib/ad_test.sl
+@modules/statslib/ks_test.sl
 @modules/sysconf-module.c
 @modules/sysconf.sl
 @modules/termios-module.c

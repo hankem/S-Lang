@@ -217,6 +217,53 @@ private define test_spearman ()
      failed ("*** spearman_r pval= %g, expected %g", p, expected_p);
 }
 
+private define check_pval_and_t (name, pv, t, pv_exp, t_exp)
+{
+   if (feqs (pv, pv_exp) && feqs (t, t_exp))
+     return;
+
+   failed ("%s: pv=%S!=%S, t=%S!=%S", name, pv, pv_exp, t, t_exp);
+}
+
+private define test_ad_ktest ()
+{
+   % This test is from Scholz & Stephens
+   variable datasets =
+     {
+	[38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0],
+	[39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8],
+	[34.0, 35.0, 39.0, 40.0, 43.0, 43.0, 44.0, 45.0],
+	[34.0, 34.8, 34.8, 35.4, 37.2, 37.8, 41.2, 42.8],
+     };
+
+   variable pval, t, pval2, t2;
+   pval = ad_ktest (datasets, &t; pval2=&pval2, stat2=&t2);
+   check_pval_and_t ("ad_ktest1", pval, t, 0.00219, 4.480);
+   check_pval_and_t ("ad_ktest1", pval2, t2, 0.00227, 4.449);
+
+   % This examples comes from
+   % <http://tools.ietf.org/html/draft-ietf-ippm-testplan-rfc2680-02>
+   datasets =
+     {
+	[114, 175, 138, 142, 181, 105],
+	[115, 128, 136, 127, 139, 138],
+     };
+   pval = ad_ktest (datasets, &t; pval2=&pval2, stat2=&t2);
+   check_pval_and_t ("ad_ktest2", pval, t, 0.18607, 0.62679);
+   check_pval_and_t ("ad_ktest2", pval2, t2, 0.20604, 0.52043);
+
+   % This example comes from kSamples.R package
+   datasets =
+     {
+	[0.824, 0.216, 0.538, 0.685],
+	[0.448, 0.348, 0.443, 0.722],
+	[0.403, 0.268, 0.440, 0.087],
+     };
+   pval = ad_ktest (__push_list(datasets), &t; pval2=&pval2, stat2=&t2);
+   check_pval_and_t ("ad_ktest3", pval, t, 0.193, 0.70807);
+   check_pval_and_t ("ad_ktest3", pval2, t2, 0.190135, 0.72238);
+}
+
 private variable XData = [
 -0.15, %1
  8.60, %9
@@ -377,6 +424,7 @@ define slsh_main ()
    test_mw_cdf (10);
    test_mw_cdf (21);
    test_mw_test ();
+   test_ad_ktest ();
    test_spearman ();
    test_binomial ();
    test_student_t ();
