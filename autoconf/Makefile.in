@@ -41,16 +41,19 @@ src/Makefile: configure src/Makefile.in src/config.hin
 #
 makefiles: Makefile slsh/Makefile modules/Makefile src/Makefile
 help:
-	@echo "make install : install a shared version of the library"
-	@echo "make install-static : install a static version"
-	@echo "make install-all : install both shared and static versions"
-	@echo "make check : Build the library and run the regression tests"
+	@echo "make install ==> shared version of the library, slsh and modules"
+	@echo "make install-static ==> static version of the library and slsh; no modules"
+	@echo "make install-all ==> shared/static versions of the library/modules + shared slsh."
+	@echo "make install-modules ==> install the modules"
+	@echo "make check ==> Build the library and run the regression tests"
 slang.pc: configure autoconf/slangpc.in
 	@echo "slang.pc needs to be updated -- rerun configure"
 	@exit 1
 static: makefiles slang.pc
 	cd src; $(MAKE) static
-	cd slsh; $(MAKE) all
+	cd slsh; $(MAKE) static
+modules:
+	cd modules; $(MAKE) all
 elf: makefiles slang.pc
 	cd src; $(MAKE) elf
 	cd slsh; $(MAKE) all
@@ -73,10 +76,11 @@ clean:
 	cd demo; $(MAKE) clean
 install-static:
 	cd src; $(MAKE) install-static
+	cd slsh; $(MAKE) install-static
 install-pkgconfig: slang.pc
 	$(MKINSDIR) $(DEST_PKGCONFIGDIR)
 	$(INSTALL_DATA) slang.pc $(DEST_PKGCONFIGDIR)/
-install-elf:
+install-elf: install-pkgconfig
 	cd src; $(MAKE) install-elf
 	@echo Now installing slsh
 	cd slsh; $(MAKE) install
@@ -86,7 +90,10 @@ install-elf:
 	@echo "On some systems, e.g., linux, you may also have to run ldconfig."
 	@echo ""
 install: install-elf install-pkgconfig
-install-all: install-elf install-static install-pkgconfig
+install-all: install-elf
+	cd src; $(MAKE) install-static
+install-modules:
+	cd modules; $(MAKE) install
 install-links:
 	cd src; $(MAKE) install-links
 #
