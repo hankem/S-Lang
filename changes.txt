@@ -38,6 +38,7 @@ Changes since 2.3.0
     I also broke out some of the statistical tests into separate files.
 12. Tweaked the makefiles to create a statically-linked version of
     slsh when `make static` and `make install-static` are run.
+13. For the static slsh build, disable dynamic linking.
 
 {{{ Previous Versions
 

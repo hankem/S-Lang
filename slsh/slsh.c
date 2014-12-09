@@ -514,7 +514,9 @@ int main (int argc, char **argv)
 
    if ((-1 == SLang_init_all ())
        || (-1 == SLang_init_array_extra ())
+#ifndef SLSH_STATIC
        || (-1 == SLang_init_import ()) /* dynamic linking */
+#endif
        || (-1 == SLadd_intrin_fun_table (Intrinsics, NULL))
        || (-1 == slsh_init_readline_intrinsics ()))
      {
