@@ -767,9 +767,18 @@ static void stdio_fread_bytes (SLang_Ref_Type *ref, unsigned int *num_wantedp, S
    size_t num_read = 0, num_wanted = *num_wantedp;
    int ret = -1;
    char *buf = NULL;
+   SLstrlen_Type nwp1;
    SLang_BString_Type *bs;
    if (NULL == (fp = check_fp (t, SL_READ)))
      goto the_return;
+
+   /* FIXME: until SLstrlen_Type == size_t, add this check */
+   nwp1 = num_wanted + 1;
+   if ((size_t)nwp1 != num_wanted+1)
+     {
+	SLang_set_error (SL_MALLOC_ERROR);
+	return;
+     }
 
    if (NULL == (buf = (char *)SLmalloc (num_wanted + 1)))
      goto the_return;

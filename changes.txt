@@ -39,6 +39,8 @@ Changes since 2.3.0
 12. Tweaked the makefiles to create a statically-linked version of
     slsh when `make static` and `make install-static` are run.
 13. For the static slsh build, disable dynamic linking.
+14. src/slstdio.c:fread_bytes: A size_t vs unsigned int issue was
+    causing SLmalloc to be called with an incorrect size in some cases.
 
 {{{ Previous Versions
 
