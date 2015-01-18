@@ -2,6 +2,28 @@
 
 testing_feature ("Binary Strings");
 
+private define test_printable_bstring ()
+{
+   variable db = "a\000"B, b = ""B;
+   loop (20)
+     b += db;
+
+   set_printable_bstring_size (16);
+   if (16 != get_printable_bstring_size ())
+     failed ("get/set_printable_bstring_size");
+   % for 16, we expect
+   variable expect = "a\\000a\\000a...";
+   if (expect != "$b"$)
+     failed ("expected expected bstring representation to be: %s, got %s",
+	     expect, "$b"$);
+
+   set_printable_bstring_size (256);
+   b = "abc";
+   if ("abc" != "$b"$)
+     failed ("representation of small binary string");
+}
+test_printable_bstring ();
+
 define test ()
 {
    variable a = "\000A\000B\000C\000D";
