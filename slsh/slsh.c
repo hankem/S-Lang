@@ -36,7 +36,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static SLFUTURE_CONST char *Slsh_Version = "0.9.1-1";
+static SLFUTURE_CONST char *Slsh_Version = "0.9.1-2";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -646,6 +646,7 @@ int main (int argc, char **argv)
 	       (void) SLdefine_for_ifdef (prep);
 	     argc--;
 	     argv++;
+	     continue;
 	  }
 
 	break;

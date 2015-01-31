@@ -44,6 +44,8 @@ Changes since 2.3.0
 15. src/slbstr.c: Made the size of the printable representation of
     binary strings customizable via get/set_printable_bstring_size
     intrinsics.
+16. slsh/slsh.c: A missing continue statement was causing slsh to stop
+    parsing command line options after the first occurrence of -D.
 
 {{{ Previous Versions
 
