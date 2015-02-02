@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20301
-#define SLANG_VERSION_STRING "pre2.3.1-16"
+#define SLANG_VERSION_STRING "pre2.3.1-17"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1624,7 +1624,6 @@ SL_EXTERN int SLrline_set_update_hook (SLrline_Type *,
 				    VOID_STAR client_data);
 /* free update_hook client_data */
 SL_EXTERN void SLrline_set_free_update_cb (SLrline_Type *, void (*)(SLrline_Type *, VOID_STAR));
-SL_EXTERN int SLrline_get_update_client_data (SLrline_Type *, VOID_STAR *);
 
 /* These functions are passed a pointer to the update_hook client_data */
 SL_EXTERN void SLrline_set_update_clear_cb(SLrline_Type *, void (*)(SLrline_Type *, VOID_STAR));

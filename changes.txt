@@ -46,6 +46,8 @@ Changes since 2.3.0
     intrinsics.
 16. slsh/slsh.c: A missing continue statement was causing slsh to stop
     parsing command line options after the first occurrence of -D.
+17. src/slang.h: Remove duplicate prototype for
+    SLrline_get_update_client_data. (Valdis Kletnieks)
 
 {{{ Previous Versions
 
