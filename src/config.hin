@@ -74,6 +74,8 @@
 /* define if you have sys/fcntl.h */
 #undef HAVE_SYS_FCNTL_H
 
+#undef HAVE_SYS_STATVFS_H
+
 #undef HAVE_SYS_TYPES_H
 #undef HAVE_SYS_WAIT_H
 #undef HAVE_SYS_TIMES_H
@@ -134,7 +136,7 @@
 #undef HAVE_MMAP
 #undef HAVE_TTYNAME_R
 #undef HAVE_TTYNAME
-
+#undef HAVE_STATVFS
 #undef HAVE_GETPPID
 #undef HAVE_GETGID
 #undef HAVE_GETEGID

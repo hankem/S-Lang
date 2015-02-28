@@ -88,6 +88,7 @@ sys/types.h \
 sys/wait.h \
 sys/utsname.h \
 sys/times.h \
+sys/statvfs.h \
 sys/time.h \
 utime.h \
 floatingpoint.h \
@@ -159,6 +160,7 @@ setvbuf \
 utime utimes \
 ttyname ttyname_r \
 newlocale strtod_l localeconv \
+statvfs \
 )
 
 if test x"$ac_cv_func_socketpair" != x"yes"; then

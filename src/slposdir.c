@@ -74,6 +74,10 @@ USA.
 # include <sys/stat.h>
 #endif
 
+#ifdef HAVE_SYS_STATVFS_H
+# include <sys/statvfs.h>
+#endif
+
 #if defined(VMS)
 # define USE_LISTDIR_INTRINSIC	0
 #else
@@ -246,6 +250,89 @@ static void lstat_cmd (char *file)
    stat_cmd (file);
 #endif				       /* HAVE_LSTAT */
 }
+
+#if defined(HAVE_STATVFS)
+static SLang_CStruct_Field_Type StatVFS_Struct [] =
+{
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_bsize, "f_bsize", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_bsize, "f_bsize", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_frsize, "f_frsize", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_blocks, "f_blocks", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_bfree, "f_bfree", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_bavail, "f_bavail", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_files, "f_files", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_ffree, "f_ffree", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_favail, "f_favail", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_fsid, "f_fsid", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_flag, "f_flag", 0),
+   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_namemax, "f_namemax", 0),
+   SLANG_END_CSTRUCT_TABLE
+};
+
+static void statvfs_cmd (void)
+{
+   struct statvfs vfs;
+   FILE *fp;
+   char *path = NULL;
+   SLFile_FD_Type *f = NULL;
+   SLang_MMT_Type *mmt = NULL;
+   int fd, status;
+
+   switch (SLang_peek_at_stack ())
+     {
+      default:
+      case SLANG_INT_TYPE:
+	if (-1 == SLang_pop_int (&fd))
+	  return;
+	break;
+
+      case SLANG_FILE_FD_TYPE:
+	if (-1 == SLfile_pop_fd (&f))
+	  return;
+	if (-1 == SLfile_get_fd (f, &fd))
+	  goto free_and_return;
+	break;
+
+      case SLANG_FILE_PTR_TYPE:
+	if (-1 == SLang_pop_fileptr (&mmt, &fp))
+	  return;
+	fd = fileno (fp);
+	break;
+
+      case SLANG_STRING_TYPE:
+	if (-1 == SLang_pop_slstring (&path))
+	  return;
+	break;
+     }
+
+   if (path != NULL)
+     {
+	while ((-1 == (status = statvfs (path, &vfs)))
+	       && (is_interrupt (errno)))
+	  continue;
+     }
+   else
+     {
+	while ((-1 == (status = fstatvfs (fd, &vfs)))
+	       && (is_interrupt (errno)))
+	  continue;
+     }
+
+   if (status == 0)
+     (void) SLang_push_cstruct ((VOID_STAR) &vfs, StatVFS_Struct);
+   else
+     {
+	_pSLerrno_errno = errno;
+	(void) SLang_push_null ();
+     }
+
+   /* drop */
+free_and_return:
+   if (f != NULL) SLfile_free_fd (f);
+   if (mmt != NULL) SLang_free_mmt (mmt);
+   if (path != NULL) SLang_free_slstring (path);
+}
+#endif				       /* HAVE_STATVFS */
 
 #if defined(HAVE_UTIME) || defined(HAVE_UTIMES)
 static int utime_intrin (char *file, double *t0p, double *t1p)
@@ -1113,6 +1200,9 @@ static SLang_Intrin_Fun_Type PosixDir_Name_Table [] =
 #ifdef HAVE_UTIME
    MAKE_INTRINSIC_3("utime", utime_intrin, SLANG_INT_TYPE, SLANG_STRING_TYPE, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE),
 #endif
+#ifdef HAVE_STATVFS
+   MAKE_INTRINSIC_0("statvfs", statvfs_cmd, SLANG_VOID_TYPE),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 
@@ -1181,6 +1271,12 @@ static SLang_IConstant_Type PosixDir_Consts [] =
    MAKE_ICONSTANT("W_OK", W_OK),
    MAKE_ICONSTANT("X_OK", X_OK),
    MAKE_ICONSTANT("F_OK", F_OK),
+#endif
+#ifdef ST_RDONLY
+   MAKE_ICONSTANT("ST_RDONLY", ST_RDONLY),
+#endif
+#ifdef ST_NOSUID
+   MAKE_ICONSTANT("ST_NOSUID", ST_NOSUID),
 #endif
    SLANG_END_ICONST_TABLE
 };

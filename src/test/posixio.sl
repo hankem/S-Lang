@@ -100,5 +100,12 @@ if (fileno (stdin) == fileno(stdout))
    failed ("fileno(stdin) is equal to fileno(stdout)");
 }
 
+#ifexists statvfs
+() = statvfs (".");
+() = statvfs (stdout);
+() = statvfs (1);
+() = statvfs (fileno(stdout));
+#endif
+
 print ("Ok\n");
 exit (0);

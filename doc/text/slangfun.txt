@@ -6489,6 +6489,54 @@ sleep
 
 --------------------------------------------------------------
 
+statvfs
+
+ SYNOPSIS
+  Get file system statistics
+
+ USAGE
+  Struct_Type statvfs (fsobj)
+
+ DESCRIPTION
+  This function is a wrapper around the corresponding POSIX function.
+  It returns a structure whose fields provide information about the
+  filesystem object `fsobj'.  This object can be either a path
+  name within the file system, or an open file descriptor represented
+  by an integer, File_Type, or FD_Type object.
+
+  The fields of the structure are defined as follows:
+
+    f_bsize  :  file system block size
+    f_frsize :  fragment size
+    f_blocks :  size of fs in f_frsize units
+    f_bfree  :  number of free blocks
+    f_bavail :  number of free blocks for unprivileged users
+    f_files  :  number of inodes
+    f_ffree  :  number of free inodes
+    f_favail :  number of free inodes for unprivileged users
+    f_fsid   :  file system ID
+    f_flag   :  mount flags
+    f_namemax:  maximum filename length
+
+  The value of the `f_flag' field is a bitmapped integer composed
+  of the following bits:
+
+    ST_RDONLY : Read-only file system.
+    ST_NOSUID : Set-user-ID/set-group-ID bits are ignored by the exec
+                functions.
+
+
+  Upon error, the function returns NULL and sets `errno'
+  accordingly.
+
+ NOTES
+  This function is not supported by all systems.
+
+ SEE ALSO
+  stat_file
+
+--------------------------------------------------------------
+
 system
 
  SYNOPSIS

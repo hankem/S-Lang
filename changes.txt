@@ -48,6 +48,8 @@ Changes since 2.3.0
     parsing command line options after the first occurrence of -D.
 17. src/slang.h: Remove duplicate prototype for
     SLrline_get_update_client_data. (Valdis Kletnieks)
+18. src/slposdir.c: Add statvfs intrinsic that wraps corresponding
+    POSIX function.
 
 {{{ Previous Versions
 

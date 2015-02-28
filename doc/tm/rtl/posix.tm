@@ -335,6 +335,45 @@
   Not all system support sleeping for a fractional part of a second.
 \done
 
+\function{statvfs}
+\synopsis{Get file system statistics}
+\usage{Struct_Type statvfs (fsobj)}
+\description
+  This function is a wrapper around the corresponding POSIX function.
+  It returns a structure whose fields provide information about the
+  filesystem object \exmp{fsobj}.  This object can be either a path
+  name within the file system, or an open file descriptor represented
+  by an integer, \dtype{File_Type}, or \dtype{FD_Type} object.
+
+  The fields of the structure are defined as follows:
+#v+
+    f_bsize  :  file system block size
+    f_frsize :  fragment size
+    f_blocks :  size of fs in f_frsize units
+    f_bfree  :  number of free blocks
+    f_bavail :  number of free blocks for unprivileged users
+    f_files  :  number of inodes
+    f_ffree  :  number of free inodes
+    f_favail :  number of free inodes for unprivileged users
+    f_fsid   :  file system ID
+    f_flag   :  mount flags
+    f_namemax:  maximum filename length
+#v-
+  The value of the \exmp{f_flag} field is a bitmapped integer composed
+  of the following bits:
+#v+
+    ST_RDONLY : Read-only file system.
+    ST_NOSUID : Set-user-ID/set-group-ID bits are ignored by the exec
+                functions.
+#v-
+
+  Upon error, the function returns \NULL and sets \ivar{errno}
+  accordingly.
+\notes
+  This function is not supported by all systems.
+\seealso{stat_file}
+\done
+
 \function{system}
 \synopsis{Execute a shell command}
 \usage{Integer_Type system (String_Type cmd)}
