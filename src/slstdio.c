@@ -522,7 +522,7 @@ static int read_one_line (FILE *fp, char **strp, SLstrlen_Type *lenp, int trim_t
 	while (len1)
 	  {
 	     len1--;
-	     if (0 == isspace(str[len1]))
+	     if (0 == isspace ((unsigned char)str[len1]))
 	       {
 		  len1++;
 		  break;

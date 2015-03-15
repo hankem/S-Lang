@@ -984,14 +984,14 @@ void _pSLset_double_format (SLCONST char *fmt)
      s++;
 
    /* field width */
-   while (isdigit (*s)) s++;
+   while (isdigit ((unsigned char)*s)) s++;
 
    /* precision */
    if (*s == '.')
      {
 	s++;
 	precision = 0;
-	while (isdigit (*s))
+	while (isdigit ((unsigned char)*s))
 	  {
 	     precision = precision * 10 + (*s - '0');
 	     s++;
@@ -1053,7 +1053,7 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
    while (1)
      {
 	ch = *b;
-	if (isdigit (ch))
+	if (isdigit ((unsigned char)ch))
 	  {
 	     count++;
 	     b++;
@@ -1143,7 +1143,7 @@ static int massage_decimal_buffer (char *inbuf, char *buf,
 	s--;
      }
 
-   if ((count < 4) || (0 == isdigit (*s)))
+   if ((count < 4) || (0 == isdigit ((unsigned char)*s)))
      return 0;
 
    if (c == '9')

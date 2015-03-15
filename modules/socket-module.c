@@ -426,7 +426,7 @@ static Host_Addr_Info_Type *get_host_addr_info (char *host)
 # ifndef INADDR_NONE
 #  define INADDR_NONE ((in_addr_t)(-1))
 # endif
-   if ((isdigit (*host))
+   if ((isdigit ((unsigned char)*host))
        && (INADDR_NONE != (addr = inet_addr (host))))
      {
 	/* Numerical address */

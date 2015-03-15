@@ -145,7 +145,7 @@ static int parse_a_format (char **format, Format_Type *ft)
    f = *format;
 
    while (((ch = *f++) != 0)
-	  && isspace (ch))
+	  && isspace ((unsigned char)ch))
      ;
 
    switch (ch)
@@ -180,12 +180,12 @@ static int parse_a_format (char **format, Format_Type *ft)
    ft->format_type = ch;
    ft->repeat = 1;
 
-   if (isdigit (*f))
+   if (isdigit ((unsigned char)*f))
      {
 	repeat = (unsigned int) (*f - '0');
 	f++;
 
-	while (isdigit (*f))
+	while (isdigit ((unsigned char)*f))
 	  {
 	     unsigned int repeat10 = 10 * repeat + (unsigned int)(*f - '0');
 

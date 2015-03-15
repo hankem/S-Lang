@@ -52,6 +52,8 @@ Changes since 2.3.0
     POSIX function.
 19. modules/Makefile.in, png-module.c: Cygwin tweaks
     (Marco Atzeri).
+20. */*.c: Added explicit (unsigned char) typecast to isspace/isdigit
+    functions.
 
 {{{ Previous Versions
 

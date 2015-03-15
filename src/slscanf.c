@@ -243,7 +243,7 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
 			    while (s < smax)
 			      {
 				 ch = *s++;
-				 if (isdigit(ch)
+				 if (isdigit ((unsigned char)ch)
 				     || ((ch >= 'a') && (ch <= 'z'))
 				     || ((ch >= 'A') && (ch <= 'Z'))
 				     || (ch == '_'))
@@ -409,7 +409,7 @@ static int parse_string (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, ch
    s0 = s = *sp;
    while (s < smax)
      {
-	if (isspace (*s))
+	if (isspace ((unsigned char)*s))
 	  break;
 	s++;
      }
@@ -557,7 +557,7 @@ int _pSLang_sscanf (void)
 #endif
 	  }
 
-	if (isspace (chf))
+	if (isspace ((unsigned char)chf))
 	  {
 	     char *s1 = _pSLskip_whitespace (s);
 	     if (s1 == s)
@@ -589,7 +589,7 @@ int _pSLang_sscanf (void)
 	  }
 
 	/* Width */
-	has_width = isdigit (chf);
+	has_width = isdigit ((unsigned char)chf);
 	if (has_width)
 	  {
 	     f--;

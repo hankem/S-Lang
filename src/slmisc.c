@@ -85,7 +85,7 @@ void SLmake_lut (unsigned char *lut, unsigned char *range, unsigned char reverse
 
 char *_pSLskip_whitespace (SLCONST char *s)
 {
-   while (isspace (*s))
+   while (isspace ((unsigned char)*s))
      s++;
 
    return (char *) s;

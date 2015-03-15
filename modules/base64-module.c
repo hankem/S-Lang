@@ -372,7 +372,7 @@ static void b64_decoder_accumulate_intrin (Base64_Type *b64, SLFUTURE_CONST char
      return;
 
 #define NEXT_CHAR \
-   while (isspace(*str)) str++; ch = *str++
+   while (isspace ((unsigned char)*str)) str++; ch = *str++
 
    NEXT_CHAR;
    if (ch == 0)
