@@ -137,7 +137,7 @@ json-module.so: $(SRCDIR)/json-module.c $(CONFIG_H)
 	$(COMPILE_CMD) $(SRCDIR)/json-module.c -o json-module.so $(LIBS)
 #
 chksum-module.so: $(CHKSUM_OBJS)
-	$(COMPILE_CMD) $(CHKSUM_OBJS) -o chksum-module.so
+	$(COMPILE_CMD) $(CHKSUM_OBJS) -o chksum-module.so $(LIBS)
 chksum-module.o: $(SRCDIR)/chksum-module.c $(SRCDIR)/chksum.h
 	$(COMPILE_CMD) -c $(SRCDIR)/chksum-module.c
 chksum_md5.o: $(SRCDIR)/chksum_md5.c $(SRCDIR)/chksum.h
@@ -146,9 +146,9 @@ chksum_sha1.o: $(SRCDIR)/chksum_sha1.c $(SRCDIR)/chksum.h
 	$(COMPILE_CMD) -c $(SRCDIR)/chksum_sha1.c
 #
 histogram-module.so: $(SRCDIR)/histogram-module.c $(SRCDIR)/histogram-module.inc
-	$(COMPILE_CMD) $(SRCDIR)/histogram-module.c -o histogram-module.so
+	$(COMPILE_CMD) $(SRCDIR)/histogram-module.c -o histogram-module.so $(LIBS)
 stats-module.so: $(SRCDIR)/stats-module.c $(SRCDIR)/stats-module.inc
-	$(COMPILE_CMD) $(SRCDIR)/stats-module.c -o stats-module.so
+	$(COMPILE_CMD) $(SRCDIR)/stats-module.c -o stats-module.so $(LIBS)
 #
 # </targets to be built in $(OBJDIR)>
 #

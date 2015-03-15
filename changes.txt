@@ -50,6 +50,8 @@ Changes since 2.3.0
     SLrline_get_update_client_data. (Valdis Kletnieks)
 18. src/slposdir.c: Add statvfs intrinsic that wraps corresponding
     POSIX function.
+19. modules/Makefile.in, png-module.c: Cygwin tweaks
+    (Marco Atzeri).
 
 {{{ Previous Versions
 
