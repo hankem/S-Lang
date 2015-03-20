@@ -510,7 +510,7 @@ static int incbeta_cfe (double x, double a, double b, double *result)
    double last_f;
    double factor;
 
-   factor = a*log(x)+b*log(1.0-x);
+   /* factor = a*log(x)+b*log(1.0-x); */
    factor = a*log(x)+b*log1p(-x);
    factor += JDMlog_gamma(a+b)-JDMlog_gamma(a) - JDMlog_gamma(b);
    factor = exp (factor)/a;

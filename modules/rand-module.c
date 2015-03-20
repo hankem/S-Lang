@@ -516,11 +516,9 @@ static void generate_poisson_randoms (Rand_Type *rt, VOID_STAR ap,
  */
 static double marsaglia_tsang_gamma_internal (Rand_Type *rt, double c, double d)
 {
-   double v, u;
-
    while (1)
      {
-	double x;
+	double x, u, v;
         do
           {
 	     if (rt->one_available)
@@ -906,7 +904,6 @@ static int pop_rand_type_and_dims (int argc, SLang_MMT_Type **mmtp,
 {
    int type;
    SLang_MMT_Type *mmt;
-   unsigned int i, imax;
 
    *mmtp = NULL;
 
@@ -949,6 +946,8 @@ static int pop_rand_type_and_dims (int argc, SLang_MMT_Type **mmtp,
    else
      {
 	SLang_Array_Type *at;
+	unsigned int i, imax;
+
 	if (-1 == SLang_pop_array (&at, 1))
 	  return -1;
 
@@ -1423,8 +1422,6 @@ static SLang_Intrin_Fun_Type Module_Intrinsics [] =
 
 int init_rand_module_ns (char *ns_name)
 {
-   SLang_Class_Type *cl;
-
    SLang_NameSpace_Type *ns = SLns_create_namespace (ns_name);
    if (ns == NULL)
      return -1;
@@ -1442,6 +1439,8 @@ int init_rand_module_ns (char *ns_name)
 
    if (Rand_Type_Id == -1)
      {
+	SLang_Class_Type *cl;
+
 	if (NULL == (cl = SLclass_allocate_class ("Rand_Type")))
 	  return -1;
 

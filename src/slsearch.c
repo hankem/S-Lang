@@ -108,11 +108,11 @@ static SLuchar_Type *
    while(1)
      {
 	SLuchar_Type ch;
-	SLstrlen_Type dbeg;
         SLstrlen_Type j;
 
         while (beg < end)
           {
+	     SLstrlen_Type dbeg;
              ch = *beg;
              dbeg = skip_table[ch];
              if ((dbeg < key_len)
@@ -743,7 +743,7 @@ void SLang_define_case (int *u, int *l)
 
 void SLang_init_case_tables (void)
 {
-   int i, j;
+   int i;
    if (Case_Tables_Ok) return;
 
    for (i = 0; i < 256; i++)
@@ -754,7 +754,7 @@ void SLang_init_case_tables (void)
 
    for (i = 'A'; i <= 'Z'; i++)
      {
-	j = i + 32;
+	int j = i + 32;
 	_pSLChg_UCase_Lut[j] = i;
 	_pSLChg_LCase_Lut[i] = j;
      }
@@ -772,7 +772,7 @@ void SLang_init_case_tables (void)
    /* ISO Latin */
    for (i = 192; i <= 221; i++)
      {
-	j = i + 32;
+	int j = i + 32;
 	_pSLChg_UCase_Lut[j] = i;
 	_pSLChg_LCase_Lut[i] = j;
      }

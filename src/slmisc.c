@@ -61,7 +61,7 @@ char *SLmake_nstring (SLFUTURE_CONST char *str, SLstrlen_Type n)
 void SLmake_lut (unsigned char *lut, unsigned char *range, unsigned char reverse)
 {
    /* register unsigned char *l = lut, *lmax = lut + 256; */
-   int i, r1, r2;
+   int i, r1;
 
    memset ((char *)lut, reverse, 256);
    /* while (l < lmax) *l++ = reverse; */
@@ -70,7 +70,7 @@ void SLmake_lut (unsigned char *lut, unsigned char *range, unsigned char reverse
    r1 = *range++;
    while (r1)
      {
-	r2 = *range++;
+	int r2 = *range++;
 	if ((r2 == '-') && (*range != 0))
 	  {
 	     r2 = *range++;

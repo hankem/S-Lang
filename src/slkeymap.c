@@ -215,13 +215,12 @@ char *SLang_process_keystring(SLFUTURE_CONST char *s)
 {
    /* FIXME: v2.0, make this thread safe */
    static char str[32];
-   unsigned char ch;
    int i;
 
    i = 1;
    while (*s != 0)
      {
-	ch = (unsigned char) *s++;
+	unsigned char ch = (unsigned char) *s++;
 	if (ch == '^')
 	  {
 	     ch = *s++;
@@ -264,10 +263,12 @@ char *SLang_process_keystring(SLFUTURE_CONST char *s)
 static int key_string_compare (unsigned char *a, unsigned char *b, unsigned int len)
 {
    unsigned char *amax = a + len;
-   int cha, chb, cha_up, chb_up;
+   int cha_up, chb_up;
 
    while (a < amax)
      {
+	int cha, chb;
+
 	cha = *a++;
 	chb = *b++;
 

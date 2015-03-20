@@ -776,12 +776,12 @@ void SLang_vmessage (SLFUTURE_CONST char *fmt, ...)
 /* This routine does not queue messages.  It is used for tracing, etc. */
 void _pSLerr_dump_msg (SLFUTURE_CONST char *fmt, ...)
 {
-   char buf[1024];
    va_list ap;
 
    va_start (ap, fmt);
    if (SLang_Dump_Routine != NULL)
      {
+	char buf[1024];
 	(void) SLvsnprintf (buf, sizeof (buf), fmt, ap);
 	(*SLang_Dump_Routine) (buf);
      }

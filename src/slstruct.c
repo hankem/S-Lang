@@ -136,7 +136,6 @@ int SLang_push_struct (_pSLang_Struct_Type *s)
 int SLang_pop_struct (_pSLang_Struct_Type **sp)
 {
    SLang_Object_Type obj;
-   SLang_Class_Type *cl;
    SLtype type;
 
    if (0 != SLang_pop (&obj))
@@ -145,6 +144,7 @@ int SLang_pop_struct (_pSLang_Struct_Type **sp)
    type = obj.o_data_type;
    if (type != SLANG_STRUCT_TYPE)
      {
+	SLang_Class_Type *cl;
 	cl = _pSLclass_get_class (type);
 	if (cl->is_struct == 0)
 	  {

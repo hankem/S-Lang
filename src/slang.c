@@ -1345,9 +1345,9 @@ static int do_bc_call_direct_nargs (int (*f)(void))
 
 static int do_name_type_error (SLang_Name_Type *nt)
 {
-   char buf[256];
    if (nt != NULL)
      {
+	char buf[256];
 	(void) _pSLsnprintf (buf, sizeof (buf), "(Error occurred processing %s)", nt->name);
 	do_traceback (buf);
      }
@@ -4308,11 +4308,11 @@ int _pSLang_trace_fun (SLFUTURE_CONST char *f)
 
 int _pSLdump_objects (char *prefix, SLang_Object_Type *x, unsigned int n, int dir)
 {
-   char *s;
-   SLang_Class_Type *cl;
-
    while (n)
      {
+	SLang_Class_Type *cl;
+	char *s;
+
 	GET_CLASS(cl,x->o_data_type);
 
 	s = _pSLstringize_object (x);
@@ -4450,7 +4450,6 @@ int _pSLang_set_frame_variable (int depth, char *name)
 
 int _pSLang_get_frame_variable (int depth, char *name)
 {
-   SLang_Class_Type *cl;
    Function_Stack_Type s;
    SLang_Name_Type *nt;
    int i;
@@ -4460,6 +4459,7 @@ int _pSLang_get_frame_variable (int depth, char *name)
 
    if (-1 != (i = find_local_variable_index (s.header, name)))
      {
+	SLang_Class_Type *cl;
 	SLang_Object_Type *obj = s.local_variable_frame - i;
 	GET_CLASS(cl,obj->o_data_type);
 	return (*cl->cl_push) (obj->o_data_type, (VOID_STAR) &obj->v);
@@ -4644,10 +4644,8 @@ static void do_traceback (SLCONST char *message)
 static void do_function_traceback (Function_Header_Type *header, unsigned int linenum)
 {
    unsigned int nlocals;
-   char *s;
    unsigned int i;
    SLang_Object_Type *objp;
-   SLtype stype;
 
    if (SLang_Traceback == SL_TB_NONE)
      return;
@@ -4667,6 +4665,8 @@ static void do_function_traceback (Function_Header_Type *header, unsigned int li
      {
 	SLang_Class_Type *cl;
 	char *class_name;
+	char *s;
+	SLtype stype;
 
 	objp = Local_Variable_Frame - i;
 	stype = objp->o_data_type;
@@ -7552,7 +7552,6 @@ add_slang_function (SLFUTURE_CONST char *name, unsigned char type, unsigned long
 
 static int SLns_autoload (SLFUTURE_CONST char *name, SLFUTURE_CONST char *file, SLFUTURE_CONST char *nsname)
 {
-   _pSLang_Function_Type *f;
    unsigned long hash;
    SLang_NameSpace_Type *ns;
    SLFUTURE_CONST char *cnsname = nsname;
@@ -7566,6 +7565,8 @@ static int SLns_autoload (SLFUTURE_CONST char *name, SLFUTURE_CONST char *file, 
    hash = SLcompute_string_hash (name);
    if (NULL != (ns = _pSLns_find_namespace (cnsname)))
      {
+	_pSLang_Function_Type *f;
+
 	f = (_pSLang_Function_Type *)_pSLns_locate_hashed_name (ns, name, hash);
 
 	if ((f != NULL)
@@ -8458,8 +8459,13 @@ static int lang_define_function (SLFUTURE_CONST char *name, unsigned char type, 
    h = allocate_function_header (Function_Args_Number,
 				 Local_Variable_Number,
 				 This_Compile_Filename);
-   if ((h == NULL)
-       || (-1 == add_slang_function (name, type, hash, h, NULL, ns)))
+   if (h == NULL)
+     {
+	end_define_function ();
+	return -1;
+     }
+
+   if (-1 == add_slang_function (name, type, hash, h, NULL, ns))
      {
 	free_function_header (h);
 	end_define_function ();

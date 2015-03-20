@@ -140,7 +140,6 @@ static int parse_a_format (char **format, Format_Type *ft)
 {
    char *f;
    char ch;
-   unsigned int repeat;
 
    f = *format;
 
@@ -182,7 +181,7 @@ static int parse_a_format (char **format, Format_Type *ft)
 
    if (isdigit ((unsigned char)*f))
      {
-	repeat = (unsigned int) (*f - '0');
+	unsigned int repeat = (unsigned int) (*f - '0');
 	f++;
 
 	while (isdigit ((unsigned char)*f))
@@ -352,14 +351,14 @@ static int compute_size_for_format (char *format, SLstrlen_Type *num_bytes)
 
 static void byte_swap64 (unsigned char *ss, unsigned int n) /*{{{*/
 {
-   unsigned char *p, *pmax, ch;
+   unsigned char *p, *pmax;
 
    if (n == 0) return;
    p = (unsigned char *) ss;
    pmax = p + 8 * n;
    while (p < pmax)
      {
-	ch = *p;
+	unsigned char ch = *p;
 	*p = *(p + 7);
 	*(p + 7) = ch;
 
@@ -382,13 +381,13 @@ static void byte_swap64 (unsigned char *ss, unsigned int n) /*{{{*/
 /*}}}*/
 static void byte_swap32 (unsigned char *ss, unsigned int n) /*{{{*/
 {
-   unsigned char *p, *pmax, ch;
+   unsigned char *p, *pmax;
 
    p = (unsigned char *) ss;
    pmax = p + 4 * n;
    while (p < pmax)
      {
-	ch = *p;
+	unsigned char ch = *p;
 	*p = *(p + 3);
 	*(p + 3) = ch;
 
@@ -402,12 +401,12 @@ static void byte_swap32 (unsigned char *ss, unsigned int n) /*{{{*/
 /*}}}*/
 static void byte_swap16 (unsigned char *p, unsigned int nread) /*{{{*/
 {
-   unsigned char *pmax, ch;
+   unsigned char *pmax;
 
    pmax = p + 2 * nread;
    while (p < pmax)
      {
-	ch = *p;
+	unsigned char ch = *p;
 	*p = *(p + 1);
 	*(p + 1) = ch;
 	p += 2;

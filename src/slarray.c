@@ -572,11 +572,10 @@ static void
 free_index_objects (SLang_Object_Type *index_objs, unsigned int num_indices)
 {
    unsigned int i;
-   SLang_Object_Type *obj;
 
    for (i = 0; i < num_indices; i++)
      {
-	obj = index_objs + i;
+	SLang_Object_Type *obj = index_objs + i;
 	if (obj->o_data_type != 0)
 	  SLang_free_object (obj);
      }
@@ -814,7 +813,6 @@ static int
 aget_transfer_n_elems (SLang_Array_Type *at, SLuindex_Type num, SLindex_Type *start_indices,
 		       VOID_STAR new_data, size_t sizeof_type, int is_ptr)
 {
-   VOID_STAR at_data;
    SLuindex_Type i;
    SLuindex_Type last_index = at->num_dims-1;
    SLindex_Type indices[SLARRAY_MAX_DIMS];
@@ -828,11 +826,11 @@ aget_transfer_n_elems (SLang_Array_Type *at, SLuindex_Type num, SLindex_Type *st
    if ((at->data != NULL)
        && (at->index_fun == linear_get_data_addr))
      {
-	VOID_STAR addr_start, addr_end;
+	VOID_STAR addr_start;
 	if (NULL == (addr_start = linear_get_data_addr (at, indices)))
 	  return -1;
 	indices[last_index] += (num-1);
-	if (NULL == (addr_end = linear_get_data_addr (at, indices)))
+	if (NULL == linear_get_data_addr (at, indices))
 	  return -1;
 
 	if (is_ptr == 0)
@@ -846,6 +844,8 @@ aget_transfer_n_elems (SLang_Array_Type *at, SLuindex_Type num, SLindex_Type *st
 
    for (i = 0; i < num; i++)
      {
+	VOID_STAR at_data;
+
 	/* Since 1 element is being transferred, there is no need to coerce
 	 * the array to linear.
 	 */
@@ -1417,7 +1417,6 @@ static int aget_from_array (unsigned int num_indices)
    SLang_Object_Type index_objs [SLARRAY_MAX_DIMS];
    int ret;
    int is_index_array, free_indices;
-   unsigned int i;
 
    /* Implementation note: The push_string_element function calls this with
     * num_indices==1, and assumes that the pop_array call below will happen.
@@ -1472,6 +1471,7 @@ static int aget_from_array (unsigned int num_indices)
    free_array (at);
    if (free_indices)
      {
+	unsigned int i;
 	for (i = 0; i < num_indices; i++)
 	  SLang_free_object (index_objs + i);
      }
@@ -2436,7 +2436,7 @@ static int ms_builtin_sort_cmp_fun (void *vobj, SLindex_Type i, SLindex_Type j)
 	int cmp;
 
 	if ((at->flags & SLARR_DATA_VALUE_IS_POINTER)
-	    && ((*(VOID_STAR *) a_data == NULL) || (*(VOID_STAR *) a_data == NULL)))
+	    && ((*(VOID_STAR *) a_data == NULL) || (*(VOID_STAR *) b_data == NULL)))
 	  {
 	     _pSLang_verror (SL_VARIABLE_UNINITIALIZED,
 			   "%s array has uninitialized element", cl->cl_name);
@@ -2565,8 +2565,6 @@ static void array_sort_intrin (void)
    void *vobj;
    SLindex_Type n;
    int nargs = SLang_Num_Function_Args;
-   int (*msort_fun)(void *, SLindex_Type, SLindex_Type);
-   int (*qsort_fun)(const void *, const void *);
    int dir = 1;
    int use_qsort = 0;
    char *method;
@@ -2587,6 +2585,9 @@ static void array_sort_intrin (void)
 
    if (nargs == 1)		       /* i = sort (a) */
      {
+	int (*msort_fun)(void *, SLindex_Type, SLindex_Type);
+	int (*qsort_fun)(const void *, const void *);
+
 	if (-1 == pop_1d_array (&at))
 	  return;
 
@@ -3452,7 +3453,7 @@ static SLang_Array_Type *concat_arrays (unsigned int count)
 int _pSLarray_inline_array (void)
 {
    SLang_Object_Type *obj, *objmin;
-   SLtype type, this_type;
+   SLtype type;
    unsigned int count;
    SLang_Array_Type *at;
 
@@ -3464,7 +3465,7 @@ int _pSLarray_inline_array (void)
 
    while ((count > 0) && (--obj >= objmin))
      {
-	this_type = obj->o_data_type;
+	SLtype this_type = obj->o_data_type;
 
 	if (type == 0)
 	  type = this_type;
@@ -3659,7 +3660,6 @@ static int array_binary_op (int op,
 			    VOID_STAR cp)
 {
    SLang_Array_Type *at, *bt, *ct;
-   SLuindex_Type i, num_dims;
    int (*binary_fun) (int,
 		      SLtype, VOID_STAR, SLuindex_Type,
 		      SLtype, VOID_STAR, SLuindex_Type,
@@ -3732,6 +3732,8 @@ static int array_binary_op (int op,
 
    if ((at != NULL) && (bt != NULL))
      {
+	SLuindex_Type i, num_dims;
+
 	num_dims = at->num_dims;
 
 	if (num_dims != bt->num_dims)

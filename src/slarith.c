@@ -1041,7 +1041,6 @@ SLCONST char *_pSLget_double_format (void)
 static void check_decimal (char *buf, unsigned int buflen, double x)
 {
    char *b, *bstart = buf, *bufmax = buf + buflen;
-   char ch;
    unsigned int count = 0, expon;
    int has_point = 0;
    unsigned int expon_threshold = Double_Format_Expon_Threshold;
@@ -1052,7 +1051,7 @@ static void check_decimal (char *buf, unsigned int buflen, double x)
    b = bstart;
    while (1)
      {
-	ch = *b;
+	char ch = *b;
 	if (isdigit ((unsigned char)ch))
 	  {
 	     count++;

@@ -441,7 +441,12 @@ static char *csv_encode (CSV_Type *csv,
 
 	     if (ch == '\n')
 	       {
+#if 0
+		  /* Do not insert a \r-- excel cannot deal with \r\n in a field.
+		   * It requires \r\n only at the end of the CSV line
+		   */
 		  size++;	       /* for \r */
+#endif
 		  needs_quote = 1;
 		  continue;
 	       }
@@ -497,7 +502,7 @@ static char *csv_encode (CSV_Type *csv,
 
 	     if (ch == '\n')
 	       {
-		  *s++ = '\r';
+		  /* *s++ = '\r'; --- See above comment about excel and \r\n in a field*/
 		  *s++ = ch;
 		  continue;
 	       }

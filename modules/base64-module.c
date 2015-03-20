@@ -230,13 +230,13 @@ static void b64_encoder_close_intrin (Base64_Type *b64)
    if (b64->smallbuf_len)
      {
 	unsigned char *encode_buf = b64->buffer + b64->num_buffered;
-	unsigned char ch0, ch1;
+	unsigned char ch0;
 
 	ch0 = b64->smallbuf[0];
 	encode_buf[0] = Base64_Bit_Mapping[ch0>>2];
 	if (b64->smallbuf_len > 1)
 	  {
-	     ch1 = b64->smallbuf[1];
+	     unsigned char ch1 = b64->smallbuf[1];
 	     encode_buf[1] = Base64_Bit_Mapping[((ch0&0x3)<<4) | (ch1>>4)];
 	     encode_buf[2] = Base64_Bit_Mapping[((ch1&0xF)<<2)];
 	  }

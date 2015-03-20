@@ -1867,7 +1867,7 @@ static void strcompress_vintrin (char *white) /*{{{*/
 
 static char *SLdo_sprintf (char *fmt) /*{{{*/
 {
-   register char *p = fmt, ch;
+   register char *p = fmt;
    char *out = NULL, *outp = NULL;
    char dfmt[1024];	       /* used to hold part of format */
    char *f, *f1;
@@ -1891,6 +1891,8 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 
    while (1)
      {
+	char ch;
+
 	while ((ch = *p) != 0)
 	  {
 	     if (ch == '%')
@@ -1973,7 +1975,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 
 	if (want_width)
 	  {
-	     sprintf(f, "%d", width);
+	     sprintf(f, "%u", width);
 	     f += strlen (f);
 	  }
 	precis = 0;
@@ -1997,7 +1999,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	       }
 	     if (want_width)
 	       {
-		  sprintf(f, "%d", precis);
+		  sprintf(f, "%u", precis);
 		  f += strlen (f);
 	       }
 	     else precis = 0;

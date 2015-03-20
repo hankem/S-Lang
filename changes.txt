@@ -54,6 +54,8 @@ Changes since 2.3.0
     (Marco Atzeri).
 20. */*.c: Added explicit (unsigned char) typecast to isspace/isdigit
     functions.
+21. */*.c: reduced the scope of some variables; removed duplicate ||
+    expression from slarray.c (David Binderman)
 
 {{{ Previous Versions
 

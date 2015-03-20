@@ -62,7 +62,7 @@ USA.
 
 SLcurses_Window_Type *SLcurses_Stdscr;
 int SLcurses_Esc_Delay = 150;	       /* 0.15 seconds */
-SLtt_Char_Type SLcurses_Acs_Map [128];
+SLtt_Char_Type SLcurses_Acs_Map [256];
 int SLcurses_Is_Endwin = 1;
 int SLcurses_Num_Colors = 8;
 
@@ -1146,7 +1146,9 @@ int SLcurses_wclear (SLcurses_Window_Type *w)
 {
    unsigned int i;
 
-   if (w != NULL) w->modified = 1;
+   if (w == NULL)
+     return -1;
+   w->modified = 1;
    for (i=0; i < w->nrows; i++)
      blank_line (w->lines[i], w->ncols, w->color);
    return 0;

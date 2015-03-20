@@ -1070,7 +1070,6 @@ static unsigned long Blank_Hash;
 static int try_scroll_down (int rmin, int rmax)
 {
    int i, r1, r2, di, j;
-   unsigned long hash;
    int did_scroll;
    SLsmg_Color_Type color;
    SLsmg_Char_Type *tmp;
@@ -1079,6 +1078,7 @@ static int try_scroll_down (int rmin, int rmax)
    did_scroll = 0;
    for (i = rmax; i > rmin; i--)
      {
+	unsigned long hash;
 	hash = SL_Screen[i].new_hash;
 	if (hash == Blank_Hash) continue;
 
@@ -1168,7 +1168,6 @@ static int try_scroll_down (int rmin, int rmax)
 static int try_scroll_up (int rmin, int rmax)
 {
    int i, r1, r2, di, j;
-   unsigned long hash;
    int did_scroll;
    SLsmg_Color_Type color;
    SLsmg_Char_Type *tmp;
@@ -1177,6 +1176,7 @@ static int try_scroll_up (int rmin, int rmax)
    did_scroll = 0;
    for (i = rmin; i < rmax; i++)
      {
+	unsigned long hash;
 	hash = SL_Screen[i].new_hash;
 	if (hash == Blank_Hash) continue;
 	if (hash == SL_Screen[i].old_hash)

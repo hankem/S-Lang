@@ -1540,7 +1540,6 @@ static void array_swap (void)
    int len;
    unsigned char *src, *dst;
    size_t sizeof_type;
-   unsigned int k;
    int dim, have_dim;
    SLang_Array_Type *at;
 #if 0
@@ -1584,6 +1583,8 @@ static void array_swap (void)
    sizeof_type = at->cl->cl_sizeof_type;
    if (have_dim == 0)
      {
+	unsigned int k;
+
 	src = (unsigned char *)at->data + j*sizeof_type;
 	dst = (unsigned char *)at->data + i*sizeof_type;
 

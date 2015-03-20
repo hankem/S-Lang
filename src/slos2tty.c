@@ -258,10 +258,13 @@ unsigned int _pSLsys_getkey ()
    unsigned int c;
    unsigned char scan;
 
-   int tsecs = 300;
 
    if (!keyWaiting())
-     while (!_pSLsys_input_pending(tsecs));
+     {
+	int tsecs = 300;
+	while (!_pSLsys_input_pending(tsecs))
+	  ;
+     }
 
    /* read codes from buffer */
    RequestSem();

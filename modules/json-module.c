@@ -163,13 +163,12 @@ static int parse_string_length_and_move_ptr (Parse_Type *p, unsigned int *lenp, 
 {
    unsigned int new_string_len = 0;
    char *s = p->ptr;
-   char ch;
 
    *lenp = 0; *is_binary_stringp = 0;
 
    while (1)
      {
-	ch = *s++;
+	char ch = *s++;
 
 	/* STRING_DELIMITER = 34, SPACE = 32 */
 	if ((unsigned char)ch <= STRING_DELIMITER)

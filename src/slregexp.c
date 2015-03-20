@@ -950,7 +950,6 @@ SLRegexp_Type *SLregexp_compile (SLFUTURE_CONST char *pattern, unsigned int flag
 
 char *SLregexp_quote_string (SLFUTURE_CONST char *re, char *buf, unsigned int buflen)
 {
-   char ch;
    char *b, *bmax;
 
    if (re == NULL) return NULL;
@@ -960,6 +959,7 @@ char *SLregexp_quote_string (SLFUTURE_CONST char *re, char *buf, unsigned int bu
 
    while (b < bmax)
      {
+	char ch;
 	switch (ch = *re++)
 	  {
 	   case 0:

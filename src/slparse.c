@@ -1536,10 +1536,6 @@ static void handle_try_statement (_pSLang_Token_Type *ctok)
  */
 static void handle_throw_statement (_pSLang_Token_Type *ctok)
 {
-#if SLANG_HAS_BOSEOS
-   int eos;
-#endif
-
    push_token_list ();
 
    if (ctok->type == SEMICOLON_TOKEN)
@@ -1547,7 +1543,7 @@ static void handle_throw_statement (_pSLang_Token_Type *ctok)
    else
      {
 #if SLANG_HAS_BOSEOS
-	eos = append_bos (ctok, 2);
+	int eos = append_bos (ctok, 2);
 #endif
 	append_token_of_type (ARG_TOKEN);
 	simple_expression (ctok);
@@ -2390,7 +2386,6 @@ static void handle_binary_sequence (_pSLang_Token_Type *ctok, unsigned char max_
 {
    unsigned char op_stack [64];
    unsigned char level_stack [64];
-   unsigned char level;
    unsigned int op_num;
    unsigned char type;
 
@@ -2400,7 +2395,7 @@ static void handle_binary_sequence (_pSLang_Token_Type *ctok, unsigned char max_
    while ((_pSLang_Error == 0)
 	  && (IS_BINARY_OP(type)))
      {
-	level = Binop_Level[type - FIRST_BINARY_OP];
+	unsigned char level = Binop_Level[type - FIRST_BINARY_OP];
 	if (level >= max_level)
 	  break;
 
@@ -2759,7 +2754,6 @@ static int get_identifier_expr_token (_pSLang_Token_Type *ctok)
 static void postfix_expression (_pSLang_Token_Type *ctok)
 {
    unsigned int start_pos;
-   unsigned char type;
    _pSLang_Token_Type *last_token;
 
    if (Token_List == NULL)
@@ -2917,7 +2911,7 @@ static void postfix_expression (_pSLang_Token_Type *ctok)
    while (_pSLang_Error == 0)
      {
 	unsigned int end_pos = Token_List->len;
-	type = ctok->type;
+	unsigned char type = ctok->type;
 	switch (type)
 	  {
 	   case OBRACKET_TOKEN:	       /* X[args] ==> [args] X ARRAY */

@@ -163,12 +163,13 @@ static int resize_table (SLang_Assoc_Array_Type *a)
      return -1;
    if (NULL != (old_es = a->elements))
      {
-	_pSLAssoc_Array_Element_Type *new_e, *old_e, *old_emax;
+	_pSLAssoc_Array_Element_Type *old_e, *old_emax;
 
 	old_e = old_es;
 	old_emax = old_e + a->table_len;
 	while (old_e < old_emax)
 	  {
+	     _pSLAssoc_Array_Element_Type *new_e;
 	     SLCONST char *key = old_e->key;
 
 	     if ((key == NULL) || (key == Deleted_Key))
@@ -195,7 +196,7 @@ static int resize_table (SLang_Assoc_Array_Type *a)
 
 static void delete_assoc_array (SLang_Assoc_Array_Type *a)
 {
-   _pSLAssoc_Array_Element_Type *e, *emax;
+   _pSLAssoc_Array_Element_Type *e;
 #if SLANG_OPTIMIZE_FOR_SPEED
    int is_scalar_type;
 #endif
@@ -209,7 +210,7 @@ static void delete_assoc_array (SLang_Assoc_Array_Type *a)
    e = a->elements;
    if (e != NULL)
      {
-	emax = e + a->table_len;
+	_pSLAssoc_Array_Element_Type *emax = e + a->table_len;
 	while (e < emax)
 	  {
 	     if ((e->key != NULL) && (e->key != Deleted_Key))
@@ -587,7 +588,6 @@ static int
 transfer_element (SLang_Class_Type *cl, VOID_STAR dest_data,
 		  SLang_Object_Type *obj)
 {
-   size_t sizeof_type;
    VOID_STAR src_data;
 
 #if USE_NEW_ANYTYPE_CODE
@@ -606,8 +606,7 @@ transfer_element (SLang_Class_Type *cl, VOID_STAR dest_data,
    /* Optimize for scalar */
    if (cl->cl_class_type == SLANG_CLASS_TYPE_SCALAR)
      {
-	sizeof_type = cl->cl_sizeof_type;
-	memcpy ((char *) dest_data, (char *)&obj->v, sizeof_type);
+	memcpy ((char *) dest_data, (char *)&obj->v, cl->cl_sizeof_type);
 	return 0;
      }
 

@@ -1108,7 +1108,6 @@ static SLrline_Type *Active_Rline_Info = NULL;
 char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigned int *lenp)
 {
    unsigned char *p, *pmax;
-   SLang_Key_Type *key;
    int last_input_char;
    unsigned int dummy_len_buf;
 
@@ -1169,6 +1168,7 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
    last_input_char = 0;
    while (1)
      {
+	SLang_Key_Type *key;
 	SLrline_Type *save_rli = Active_Rline_Info;
 
 	errno = 0;

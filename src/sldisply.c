@@ -276,7 +276,6 @@ int _pSLusleep (unsigned long usecs)
 
 int SLtt_flush_output (void)
 {
-   ssize_t nwrite = 0;
    size_t total;
    size_t n = (Output_Bufferp - Output_Buffer);
 
@@ -285,7 +284,7 @@ int SLtt_flush_output (void)
    total = 0;
    while (n > 0)
      {
-	nwrite = write (SLang_TT_Write_FD, (char *) Output_Buffer + total, n);
+	ssize_t nwrite = write (SLang_TT_Write_FD, (char *) Output_Buffer + total, n);
 	if (nwrite == -1)
 	  {
 	     nwrite = 0;
@@ -320,15 +319,13 @@ static void tt_write(SLCONST char *str, SLstrlen_Type n)
 {
    static unsigned long last_time;
    static SLstrlen_Type total;
-   unsigned long now;
-   size_t ndiff;
 
    if ((str == NULL) || (n == 0)) return;
    total += n;
 
    while (1)
      {
-	ndiff = MAX_OUTPUT_BUFFER_SIZE - (Output_Bufferp - Output_Buffer);
+	size_t ndiff = MAX_OUTPUT_BUFFER_SIZE - (Output_Bufferp - Output_Buffer);
 	if (ndiff < n)
 	  {
 	     memcpy ((char *) Output_Bufferp, str, ndiff);
@@ -348,6 +345,7 @@ static void tt_write(SLCONST char *str, SLstrlen_Type n)
    if (((SLtt_Baud_Rate > 150) && (SLtt_Baud_Rate <= 9600))
        && (10 * total > (unsigned int)SLtt_Baud_Rate))
      {
+	unsigned long now;
 	total = 0;
 	if ((now = (unsigned long) time(NULL)) - last_time <= 1)
 	  {
@@ -393,7 +391,7 @@ void SLtt_putchar (char ch)
 static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt, int x, int y)
 {
    SLCONST char *fmt_max;
-   unsigned char *b, *bmax, ch;
+   unsigned char *b, *bmax;
    int offset;
    int z, z1, parse_level;
    int zero_pad;
@@ -428,7 +426,7 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
 
    while ((fmt < fmt_max) && (b < bmax))
      {
-	ch = *fmt++;
+	unsigned char ch = *fmt++;
 
 	if (ch != '%')
 	  {
@@ -793,7 +791,6 @@ static void goto_relative_rc (int r, int c)
 void SLtt_goto_rc(int r, int c)
 {
    char *s = NULL;
-   int n;
    char buf[6];
 
    if ((c < 0) || (r < 0))
@@ -815,7 +812,7 @@ void SLtt_goto_rc(int r, int c)
    if ((Cursor_Set > 0)
        || ((Cursor_Set < 0) && !Automatic_Margins))
      {
-	n = r - Cursor_r;
+	int n = r - Cursor_r;
 	if ((n == -1) && (Cursor_Set > 0) && (Cursor_c == c)
 	    && (Curs_Up_Str != NULL))
 	  {
@@ -908,7 +905,6 @@ static void delete_line_in_scroll_region (void)
 
 void SLtt_delete_nlines (int nn)
 {
-   int r1, curs;
    unsigned int n;
 
    if (nn <= 0) return;
@@ -927,6 +923,7 @@ void SLtt_delete_nlines (int nn)
    /* get a new terminal */
      {
 	char buf[80];
+	int curs, r1;
 	unsigned int dn = n;
 
 	if (dn > sizeof (buf))
@@ -1100,8 +1097,8 @@ static int Brushes_Initialized = 0;
 
 static int initialize_brushes (void)
 {
-   int fg, bg;
    Brush_Info_Type *b, *bmax;
+   int bg;
 
    b = Brush_Table;
    bmax = b + JMAX_COLORS;
@@ -1109,7 +1106,7 @@ static int initialize_brushes (void)
    bg = 0;
    while (b < bmax)
      {
-	fg = 7;
+	int fg = 7;
 	while (b < bmax)
 	  {
 	     if (fg != bg)
@@ -1340,7 +1337,6 @@ static SLtt_Char_Type fb_to_fgbg (SLtt_Char_Type f, SLtt_Char_Type b)
 static int parse_color_digit_name (SLCONST char *color, SLtt_Char_Type *f)
 {
    unsigned int i;
-   unsigned char ch;
 
    if (strncmp (color, "color", 5))
      return -1;
@@ -1353,6 +1349,7 @@ static int parse_color_digit_name (SLCONST char *color, SLtt_Char_Type *f)
    while (1)
      {
 	unsigned int j;
+	unsigned char ch;
 
 	ch = (unsigned char) *color++;
 	if (ch == 0)
@@ -1507,7 +1504,6 @@ void SLtt_set_alt_char_set (int i)
 
 static void write_attributes (SLtt_Char_Type fgbg)
 {
-   int bg0, fg0;
    int unknown_attributes;
 
    if (Worthless_Highlight) return;
@@ -1549,6 +1545,7 @@ static void write_attributes (SLtt_Char_Type fgbg)
 
    if (SLtt_Use_Ansi_Colors)
      {
+	int bg0, fg0;
 	fg0 = (int) GET_FG(fgbg);
 	bg0 = (int) GET_BG(fgbg);
 
@@ -1879,7 +1876,6 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 {
    register SLsmg_Char_Type *p, *q, *qmax, *pmax, *buf;
    SLsmg_Char_Type buffer[SLTT_MAX_SCREEN_COLS+1];
-   unsigned int n_spaces;
    SLsmg_Char_Type *space_match, *last_buffered_match;
 #ifdef HP_GLITCH_CODE
    int handle_hp_glitch = 0;
@@ -2094,7 +2090,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
    while (1)
      {
 	/* while they do not match and we do not hit a space, buffer them up */
-	n_spaces = 0;
+	unsigned int n_spaces = 0;
 	while (p < pmax)
 	  {
 	     if (CHAR_EQS_SPACE(q) && CHAR_EQS_SPACE(p))
@@ -3063,10 +3059,10 @@ void SLtt_bold_video (void)
 
 int SLtt_set_mouse_mode (int mode, int force)
 {
-   char *term;
-
    if (force == 0)
      {
+	char *term;
+
 	if (NULL == (term = (char *) getenv("TERM"))) return -1;
 	if (strncmp ("xterm", term, 5))
 	  return -1;

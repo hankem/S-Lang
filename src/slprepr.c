@@ -353,14 +353,14 @@ int SLdefine_for_ifdef (SLFUTURE_CONST char *s)	/*{{{*/
 /*{{{ static functions */
 static int is_any_defined (SLprep_Type *pt, SLCONST char *buf)	/*{{{*/
 {
-   SLCONST char *sys;
-   unsigned int i;
    char comment;
 
    /* FIXME: priority: low.  This needs adapted to multi-char comments */
    comment = pt->comment_start[0];
    while (1)
      {
+	SLCONST char *sys;
+	unsigned int i;
 	register char ch;
 
 	/* Skip whitespace */

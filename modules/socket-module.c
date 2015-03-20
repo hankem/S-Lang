@@ -801,10 +801,9 @@ static Socket_Type *pop_socket (SLFile_FD_Type **fp)
 static void socket_intrin (int *domain, int *type, int *protocol)
 {
    Socket_Type *s;
-   Domain_Methods_Type *a;
    int fd;
 
-   if (NULL == (a = lookup_domain_methods (*domain)))
+   if (NULL == lookup_domain_methods (*domain))
      return;
 
    fd = socket (*domain, *type, *protocol);

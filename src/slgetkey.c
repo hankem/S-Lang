@@ -36,11 +36,11 @@ int SLang_Ignore_User_Abort = 0;
 
 unsigned int SLang_getkey (void)
 {
-   unsigned int imax;
    unsigned int ch;
 
    if (SLang_Input_Buffer_Len)
      {
+	unsigned int imax;
 	ch = (unsigned int) *SLang_Input_Buffer;
 	SLang_Input_Buffer_Len--;
 	imax = SLang_Input_Buffer_Len;

@@ -40,13 +40,13 @@ static int Is_Little_Endian;
 
 static void byte_swap32 (unsigned char *p, unsigned char *t, SLuindex_Type n)
 {
-   unsigned char *pmax, ch;
+   unsigned char *pmax;
 
    /* t and p could point to the same buffer */
    pmax = p + 4 * n;
    while (p < pmax)
      {
-	ch = *p;
+	unsigned char ch = *p;
 	*t = *(p + 3);
 	*(t + 3) = ch;
 
@@ -60,12 +60,12 @@ static void byte_swap32 (unsigned char *p, unsigned char *t, SLuindex_Type n)
 
 static void byte_swap16 (unsigned char *p, unsigned char *t, SLuindex_Type n)
 {
-   unsigned char *pmax, ch;
+   unsigned char *pmax;
 
    pmax = p + 2 * n;
    while (p < pmax)
      {
-	ch = *p;
+	unsigned char ch = *p;
 	*t = *(p + 1);
 	*(t + 1) = ch;
 	p += 2;

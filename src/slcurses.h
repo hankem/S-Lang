@@ -242,7 +242,7 @@ extern int SLcurses_Is_Endwin;
    (w)->scroll_max=(w)->nrows, \
    wscrl((w), -1))
 
-extern SLtt_Char_Type SLcurses_Acs_Map [128];
+extern SLtt_Char_Type SLcurses_Acs_Map [256];
 #define acs_map SLcurses_Acs_Map
 
 #define ACS_ULCORNER (acs_map[SLSMG_ULCORN_CHAR])

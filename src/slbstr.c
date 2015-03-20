@@ -1003,7 +1003,6 @@ void _pSLbstring_foreach_close (SLtype type, SLang_Foreach_Context_Type *c)
 
 int _pSLbstring_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 {
-   unsigned char ch;
    SLwchar_Type wch;
    unsigned char *s, *s1, *smax;
 
@@ -1016,7 +1015,7 @@ int _pSLbstring_foreach (SLtype type, SLang_Foreach_Context_Type *c)
 
    if (c->using_chars == 0)
      {
-	ch = (unsigned char) *s++;
+	unsigned char ch = (unsigned char) *s++;
 	c->s = s;
 
 	if (-1 == SLclass_push_char_obj (SLANG_UCHAR_TYPE, ch))

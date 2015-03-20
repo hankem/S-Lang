@@ -128,7 +128,6 @@ static void chain_fd_type (SLFile_FD_Type *f)
 
 static void unchain_fdtype (SLFile_FD_Type *f)
 {
-   SLFile_FD_Type *prev;
    SLFile_FD_Type *curr;
 
    curr = FD_Type_List;
@@ -140,7 +139,7 @@ static void unchain_fdtype (SLFile_FD_Type *f)
 
    while (curr != NULL)
      {
-	prev = curr;
+	SLFile_FD_Type *prev = curr;
 	curr = curr->next;
 	if (curr == f)
 	  {

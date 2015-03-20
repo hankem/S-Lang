@@ -361,7 +361,6 @@ int SLscroll_pageup (SLscroll_Window_Type *win)
 {
    SLscroll_Type *l, *top;
    unsigned int nrows, hidden_mask;
-   unsigned int n;
 
    if (win == NULL)
      return -1;
@@ -373,7 +372,7 @@ int SLscroll_pageup (SLscroll_Window_Type *win)
    if ((NULL != (top = win->top_window_line))
        && (nrows > 2))
      {
-	n = 0;
+	unsigned int n = 0;
 	hidden_mask = win->hidden_mask;
 	l = win->current_line;
 	while ((l != NULL) && (l != top))
@@ -418,7 +417,6 @@ int SLscroll_pagedown (SLscroll_Window_Type *win)
 {
    SLscroll_Type *l, *bot;
    unsigned int nrows, hidden_mask;
-   unsigned int n;
 
    if (win == NULL)
      return -1;
@@ -430,7 +428,7 @@ int SLscroll_pagedown (SLscroll_Window_Type *win)
    if ((NULL != (bot = win->bot_window_line))
        && (nrows > 2))
      {
-	n = 0;
+	unsigned int n = 0;
 	hidden_mask = win->hidden_mask;
 	l = win->current_line;
 	while ((l != NULL) && (l != bot))
