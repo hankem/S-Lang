@@ -1077,8 +1077,8 @@ static int sum_complex (VOID_STAR zp, unsigned int inc, unsigned int num, VOID_S
 	z += inc;
      }
    s = (double *)sp;
-   s[0] = sr;
-   s[1] = si;
+   s[0] = sr + sr_err;
+   s[1] = si + si_err;
    return 0;
 }
 

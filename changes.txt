@@ -56,6 +56,8 @@ Changes since 2.3.0
     functions.
 21. */*.c: reduced the scope of some variables; removed duplicate ||
     expression from slarray.c (David Binderman)
+22. src/slarray.c: The Kahan error corrections were not be added back
+    when summing complex arrays.
 
 {{{ Previous Versions
 
