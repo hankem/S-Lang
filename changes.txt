@@ -58,6 +58,7 @@ Changes since 2.3.0
     expression from slarray.c (David Binderman)
 22. src/slarray.c: The Kahan error corrections were not be added back
     when summing complex arrays.
+23. slsh/lib/listfuns.sl: Corrected the usage method for heap_new().
 
 {{{ Previous Versions
 

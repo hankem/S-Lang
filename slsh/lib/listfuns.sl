@@ -131,7 +131,7 @@ h = new_heap (list; cmp=&cmpfun, dir=val);
 len = h.length();
 h.add (item);
 top = h.remove();
-top = h.replace (item);
+top = h.peek ();
 `
 	    );
 
