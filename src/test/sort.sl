@@ -17,7 +17,7 @@ private define test_simple_sort (n, dir)
 	    ])
      {
 	variable type = ();
-	loop (10)
+	loop (3)
 	  {
 	     x = typecast (1000*(urand (n)), type);
 	     x = x[array_sort (x; dir=dir)];
@@ -137,6 +137,8 @@ private define run_test_sort (method)
    test_sort ([2], 1, [2]; dir=-1);
    test_sort (A[[0:-1]], 0, A[[0:-1]]; dir=-1);
 }
+run_test_sort ("qsort");
+run_test_sort ("msort");
 
 private define test_stability (method)
 {

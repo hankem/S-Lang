@@ -188,6 +188,43 @@ private define test_foreach_using_with_null (s)
 }
 test_foreach_using_with_null (NULL);
 
+private define test_foreach ()
+{
+   variable s = struct
+     {
+	val = 1,
+	next = struct
+	  {
+	     val = 2,
+	     next = struct
+	       {
+		  val = 3,
+		  next = NULL
+	       }
+	  }
+     };
+   variable c = 0;
+   variable ss;
+   foreach ss (s)
+     c += ss.val;
+   foreach ss (s) using ("next")
+     c += 2*ss.val;
+
+   if (c != 18)
+     {
+	failed ("foreach using implicit next");
+     }
+   try
+     {
+	foreach (s) using ("foo", "bar")
+	  ss = ();
+     }
+   catch AnyError: return;
+
+   failed ("Expected foreach with bad using clause to fail");
+}
+test_foreach ();
+
 define return_struct_fun (c)
 {
    variable s = struct
@@ -244,9 +281,16 @@ private define vector_chs (v)
    return v;
 }
 
+private variable Num_Destroyed = 0;
+private define destroy_vector (v)
+{
+   Num_Destroyed++;
+}
+
 __add_unary ("-", Vector_Type, &vector_chs, Vector_Type);
 __add_unary ("abs", Double_Type, &vector_abs, Vector_Type);
 __add_unary ("sqr", Double_Type, &vector_sqr, Vector_Type);
+__add_destroy (Vector_Type, &destroy_vector);
 
 private define vector_plus (v1, v2)
 {
@@ -305,6 +349,69 @@ private define vector_string (a)
    sprintf ("[%S,%S,%S]", a.x, a.y, a.z);
 }
 __add_string (Vector_Type, &vector_string);
+
+private define vector_aget (i, v)
+{
+   return vector (v.x[i], v.y[i], v.z[i]);
+}
+__add_aget (Vector_Type, &vector_aget);
+
+private define vector_aput (i, v)
+{
+   variable u = ();
+   v.x[i] = u.x;
+   v.y[i] = u.y;
+   v.z[i] = u.z;
+}
+__add_aput (Vector_Type, &vector_aput);
+
+private define test_aget_aput ()
+{
+   variable v = vector ([0:10], [1:11], [2:12]);
+   variable u = v[3];
+   if ((u.x != 3) || (u.y != 4) || (u.z != 5))
+     failed ("vector aget");
+
+   v[4] = u + vector(1,1,1);
+   u = v[4];
+   if ((u.x != 4) || (u.y != 5) || (u.z != 6))
+     failed ("vector aput");
+}
+test_aget_aput ();
+
+private define test_destroy ()
+{
+   Num_Destroyed = 0;
+   variable v1 = vector(1,2,3), v2 = vector (3, 4, 5);
+   try
+     {
+	() = @Vector_Type + "foo";
+     }
+   catch AnyError;
+   if (Num_Destroyed != 1)
+     failed ("Expected Num_Destroyed = 1, found %S", Num_Destroyed);
+   Num_Destroyed = 0;
+
+   variable v3 = v1 + v2;
+   if (Num_Destroyed)
+     failed ("unexpected destroy method called");
+   v3 = 0;
+   v2 = v1;
+   if (Num_Destroyed != 2)
+     failed ("expected destroy method to be called 2 times");
+   v2 = 0;
+   if (Num_Destroyed != 2)
+     failed ("expected destroy method to be called 2 times");
+   v1 = 0;
+   if (Num_Destroyed != 3)
+     failed ("expected destroy method to be called 3 times");
+
+   __add_destroy (Vector_Type, &destroy_vector);
+   __add_destroy (Vector_Type, &destroy_vector);
+   __add_destroy (Vector_Type, &destroy_vector);
+   __add_destroy (Vector_Type, &destroy_vector);
+}
+test_destroy ();
 
 private variable X = vector (1,2,3);
 

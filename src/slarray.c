@@ -2797,7 +2797,7 @@ static SLang_Array_Type
 
    if (NULL == (at = SLang_create_array (type, 0, (VOID_STAR) range, &num, 1)))
      {
-	SLfree ((char *)range);
+	SLfree ((char *)r);
 	return NULL;
      }
    r->first_index = range->first_index;

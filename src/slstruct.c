@@ -57,10 +57,26 @@ static void free_struct (_pSLang_Struct_Type *s)
 
    if (s->destroy_method != NULL)
      {
-	if ((0 == SLang_start_arg_list ())
-	    && (0 == SLang_push_struct (s))
-	    && (0 == SLang_end_arg_list ()))
-	  (void) SLexecute_function (s->destroy_method);
+	int err, status;
+
+	if ((0 != (err = _pSLang_Error))
+	    && (-1 == _pSLang_push_error_context ()))
+	  {
+	     SLang_free_function (s->destroy_method);
+	     free_fields (s->fields, s->nfields);
+	     SLfree ((char *) s);
+	     return;
+	  }
+
+	status = 0;
+	if ((-1 == SLang_start_arg_list ())
+	    || (-1 == SLang_push_struct (s))
+	    || (-1 == SLang_end_arg_list ())
+	    || (-1 == SLexecute_function (s->destroy_method)))
+	  status = -1;
+
+	if (err)
+	  _pSLang_pop_error_context (status != 0);
 
 	if (s->num_refs > 1)
 	  {
@@ -70,7 +86,6 @@ static void free_struct (_pSLang_Struct_Type *s)
 
 	SLang_free_function (s->destroy_method);
      }
-
    free_fields (s->fields, s->nfields);
    SLfree ((char *) s);
 }
@@ -2412,6 +2427,7 @@ int _pSLstruct_push_field_ref (SLFUTURE_CONST char *name)
      {
 	SLang_free_struct (s);
 	SLang_free_slstring ((char *) name);
+	return -1;
      }
    frt = (Struct_Field_Ref_Type *) ref->data;
    frt->s = s;

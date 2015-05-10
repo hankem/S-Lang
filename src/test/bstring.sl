@@ -48,7 +48,7 @@ define test ()
    if (typeof (a) != BString_Type)
      failed ("B suffix on a binary string");
 
-   loop (500)
+   loop (10)
      {
 	variable aa = a + ""B;
 	variable b = __tmp(a) + "X";
@@ -58,8 +58,14 @@ define test ()
      }
 
    a = BString_Type[10]; a[*] = "XYZ"B;
+
+   if (bstrjoin (a) != strjoin (a))
+     failed ("bstrjoin 1");
+   if (bstrjoin (a, "\n") != strjoin (a,"\n"))
+     failed ("bstrjoin 2");
+
    b = "XYZ";
-   loop (100)
+   loop (10)
      {
 	a += "XYZ"B;
 	b += "XYZ";
@@ -67,11 +73,16 @@ define test ()
 	  failed ("Adding array of bstrings");
      }
 
-   loop (1000)
+   loop (20)
      {
 	a = "\000A\000B\000C\000D";
 	a = "A\000B\000C\000";
      }
+
+   if ("XYZ\000XYZ\000XYZ\000" != bstrcat ("XY","Z\000", "XYZ\000", "XYZ", "\000"))
+     failed ("bstrcat");
+   if ("XYZ" == bstrcat ("XY","Z\000", "XYZ\000", "XYZ", "\000"))
+     failed ("bstrcat 2");
 }
 test ();
 

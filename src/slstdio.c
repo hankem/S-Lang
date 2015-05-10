@@ -878,13 +878,15 @@ static void stdio_fread (SLang_Ref_Type *ref, int *data_typep, unsigned int *num
 	SLang_Array_Type *at;
 	SLindex_Type inum_read = (SLindex_Type) num_read;
 	at = SLang_create_array (data_type, 0, (VOID_STAR)s, &inum_read, 1);
+	if (at == NULL)
+	  goto the_return;
+
 	ret = SLang_assign_to_ref (ref, SLANG_ARRAY_TYPE, (VOID_STAR)&at);
 	SLang_free_array (at);
      }
    s = NULL;
-
-   the_return:
-
+   /* drop */
+the_return:
    if (s != NULL)
      SLfree (s);
 

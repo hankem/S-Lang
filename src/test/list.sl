@@ -233,7 +233,7 @@ private define run_index_tests ()
    foreach ([1, 100, 127, 128, 129, 255, 256, 257, 1024, 8192, 8193])
      {
 	variable num = ();
-	test_indexing ("random", num, 10000, &random_indices, NULL);
+	test_indexing ("random", num, 1000, &random_indices, NULL);
 	cd = -1;
 	test_indexing ("forward", num, num, &forward_indices, &cd);
 	cd = num+1;
@@ -331,14 +331,27 @@ private define test_size_hint (n)
 	list_append (l, "foo");
      }
 }
-loop (10) test_size_hint (0);
-loop (10) test_size_hint (1);
-loop (10) test_size_hint (2);
-loop (10) test_size_hint (127);
-loop (10) test_size_hint (128);
-loop (10) test_size_hint (129);
-loop (10) test_size_hint (500);
+loop (3) test_size_hint (0);
+loop (3) test_size_hint (1);
+loop (3) test_size_hint (2);
+loop (3) test_size_hint (127);
+loop (3) test_size_hint (128);
+loop (3) test_size_hint (129);
+loop (3) test_size_hint (500);
 
+private define test_list_reverse ()
+{
+   variable l = make_big_list (10);
+   variable lrev = @l;
+   list_reverse (lrev);
+   variable a, b;
+   loop (length (l))
+     {
+	if (list_pop (l) != list_pop (lrev, -1))
+	  failed ("list_reverse");
+     }
+}
+test_list_reverse ();
 print ("Ok\n");
 
 exit (0);

@@ -690,8 +690,10 @@ static int _typecast_object_to_type (SLang_Object_Type *y, SLang_Object_Type *ob
    if ((allow_arrays == 0)
        || (y->o_data_type != SLANG_ARRAY_TYPE)
        || (y->v.array_val->data_type != type))
-     if (-1 == SLclass_typecast (type, 1, 0))
-       return -1;
+     {
+	if (-1 == SLclass_typecast (type, 1, 0))
+	  return -1;
+     }
 
    /* Here, *y has been replaced by the object of the specified type */
    *obj = *y;
@@ -716,7 +718,7 @@ _INLINE_
      }
    if (-1 == _typecast_object_to_type (y, &obj, SLANG_INT_TYPE, 0))
      {
-	Stack_Pointer = y;
+	/* Stack_Pointer = y; */
 	return -1;
      }
    *i = obj.v.int_val;
@@ -746,7 +748,7 @@ int SLang_pop_array_index (SLindex_Type *i)
      }
    if (-1 == _typecast_object_to_type (y, &obj, SLANG_ARRAY_INDEX_TYPE, 0))
      {
-	Stack_Pointer = y;
+	/* Stack_Pointer = y; */
 	return -1;
      }
    *i = obj.v.index_val;
@@ -776,7 +778,7 @@ _INLINE_ static int pop_object_of_type (SLtype type, SLang_Object_Type *obj,
      }
    if (-1 == _typecast_object_to_type (y, obj, type, allow_arrays))
      {
-	Stack_Pointer = y;
+	/* Stack_Pointer = y; */
 	return -1;
      }
    Stack_Pointer = y;

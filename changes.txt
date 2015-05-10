@@ -59,6 +59,8 @@ Changes since 2.3.0
 22. src/slarray.c: The Kahan error corrections were not be added back
     when summing complex arrays.
 23. slsh/lib/listfuns.sl: Corrected the usage method for heap_new().
+24. Found and corrected a few memory leaks that occur after a malloc
+    failure; added some more unit tests
 
 {{{ Previous Versions
 

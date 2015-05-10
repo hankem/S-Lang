@@ -785,6 +785,9 @@ static int parse_and_push_array (Parse_Type *p, int toplevel) /*{{{*/
 {
    SLang_List_Type *list = SLang_create_list (8);   /* let's start with 8 elements */
 
+   if (list == NULL)
+     return -1;
+
    skip_white (p);
    if (! looking_at (p, END_ARRAY)) do
      {

@@ -107,5 +107,13 @@ if (fileno (stdin) == fileno(stdout))
 () = statvfs (fileno(stdout));
 #endif
 
+define test_listdir ()
+{
+   variable files = strlow (listdir("."));
+   if (1 != length (where (files == "posixio.sl")))
+     failed ("listdir: posixio.sl not in the list");
+}
+test_listdir ();
+
 print ("Ok\n");
 exit (0);

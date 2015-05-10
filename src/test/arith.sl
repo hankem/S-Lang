@@ -166,6 +166,44 @@ check_sum_result (1u, 3, 4);
 check_sum_result (1UL, '\x3', 4UL);
 
 #ifexists Complex_Type
+private define check_complex_real_binary (z)
+{
+   if ((z * 1.0) != z) failed ("complex %S*1.0", z);
+   if ((z / 1.0) != z) failed ("complex %S/1.0", z);
+   if ((z + 0.0) != z) failed ("complex %S+0.0", z);
+   if ((z - 0.0) != z) failed ("complex %S-0.0", z);
+
+   if ((1.0 * z) != z) failed ("complex 1.0*%S", z);
+   if ((0.0 + z) != z) failed ("complex 1.0+%S", z);
+   if ((0.0 - z) != -z) failed ("complex 1.0-%S", z);
+
+   if (Real(z) == 0)
+     {
+	ifnot (Imag (z) == -1i*z) failed ("double==complex");
+	ifnot (-1i*z == Imag(z)) failed ("complex==double");
+
+	if ((-1i*z != Imag(z)) || (Imag(z) != -1i*z))
+	  failed ("imag z");
+     }
+
+   variable z2, zz, diff;
+   z2 = z^2.0, zz = z*z;
+   diff = abs (z2-zz);
+
+   z2 = 2.0^z;
+   zz = exp (z*log(2.0));
+   diff = abs (z2-zz);
+   if (diff > 1e-13) failed ("%S^%S", 2.0, z);
+}
+
+
+check_complex_real_binary (0+0i);
+check_complex_real_binary (0+1i);
+check_complex_real_binary (0+2i);
+check_complex_real_binary (1+0i);
+check_complex_real_binary (1+1i);
+check_complex_real_binary (2+1i);
+
 static define check_complex_fun (fun, x)
 {
    variable z = x + 0i;

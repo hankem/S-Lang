@@ -162,6 +162,9 @@ static char *find_file (SLFUTURE_CONST char *path, SLFUTURE_CONST char *file)
    /* No extension.  So look for .slc and .sl forms */
    len = (extname - file);
    filebuf = (char *)SLmalloc (len + 5);
+   if (filebuf == NULL)
+     return NULL;
+
    strcpy (filebuf, file);
    strcpy (filebuf + len, ".sl");
 

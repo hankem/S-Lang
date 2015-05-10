@@ -900,7 +900,7 @@ static void strbskipchar_intrin (void)
    if (_pSLinterp_UTF8_Mode == 0)
      {
 	(void) SLang_push_strlen_type (pos-1);
-	(void) SLang_push_uchar (*str0);
+	(void) SLang_push_uchar (*(str0-1));
 	goto free_and_return;
      }
    str1 = SLutf8_bskip_chars (str, str0, 1, NULL, skip_combining);

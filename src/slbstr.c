@@ -634,7 +634,11 @@ static char *bstring_string (SLtype type, VOID_STAR v)
 	*b++ = '.';
      }
    *b = 0;
-   return (char *)SLrealloc ((char *)buf, 1+(b-buf));
+
+   /* reduce the size */
+   b = (unsigned char *)SLrealloc ((char *)buf, 1+(b-buf));
+   if (b != NULL) buf = b;
+   return (char *)buf;
 }
 
 static unsigned int bstrlen_cmd (SLang_BString_Type *b)
@@ -735,9 +739,9 @@ static SLindex_Type issubbytes (void)
 	/* 1-based upon return */
 
 	ofs = (SLindex_Type) uofs;
-	SLbstring_free (b);
+	SLbstring_free (a);
      }
-   SLbstring_free (a);
+   SLbstring_free (b);
    return ofs;
 }
 

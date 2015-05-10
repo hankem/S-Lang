@@ -412,6 +412,9 @@ int main (int argc, char **argv)
 	if (0 == strncmp (SLpath_extname (file), ".slc", 4))
 	  {
 	     char *file_sl = SLmake_string (file);
+	     if (file_sl == NULL)
+	       return 1;
+
 	     file_sl[strlen(file_sl)-1] = 0;
 	     if (-1 == SLang_byte_compile_file (file_sl, 0))
 	       {
