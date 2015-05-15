@@ -81,6 +81,66 @@ else
      failed ("\\x{AB} expected to be 1 byte");
 }
 
+% Invalid sequences
+#ifeval (_slang_utf8_ok)
+private define check_illegal (wch)
+{
+   variable ustr = char (wch);
+   variable nbytes = strbytelen (ustr);
+   if (nbytes != strlen (ustr))
+     failed ("%d != strlen of wide char %S", nbytes, wch);
+
+   variable ustr_up = "A" + ustr;
+   variable ustr_dn = strlow (ustr_up);
+   if ((ustr_up != strup (ustr_dn)) || (ustr != ustr_dn[[1:]]))
+     failed ("strlow/strup on illegal seq");
+
+   variable p = 0;
+   variable ch;
+   forever
+     {
+	(p, ch) = strskipchar (ustr, p);
+	if (ch == 0)
+	  {
+	     if (nbytes == 0)
+	       break;
+	     failed ("strskipchar on illegal sequence of wch = %S", wch);
+	  }
+	if (nbytes == 0)
+	  {
+	     failed ("strskipchar-1 on illegal sequence of wch = %S", wch);
+	  }
+	nbytes--;
+     }
+
+   nbytes = strbytelen (ustr);
+   p = nbytes;
+   forever
+     {
+	(p, ch) = strbskipchar (ustr, p);
+	if (ch == 0)
+	  {
+	     if ((nbytes == 0) && (p == 0))
+	       break;
+	     failed ("strbskipchar on illegal sequence of wch = %S", wch);
+	  }
+	if (nbytes == 0)
+	  {
+	     failed ("strbskipchar-1 on illegal sequence of wch = %S", wch);
+	  }
+	nbytes--;
+     }
+}
+
+
+check_illegal (0xD800);
+check_illegal (0xDFFF);
+check_illegal (0xDA12);
+check_illegal (0xFFFE);
+check_illegal (0xFFFF);
+
+#endif
+
 print ("Ok\n");
 exit (0);
 

@@ -9,7 +9,7 @@ private define test_simple_sort (n, dir)
    variable x, dx, bad;
 
    foreach ([Int_Type, Float_Type, Double_Type,
-	     Short_Type, Char_Type, Long_Type,
+	     UShort_Type, Short_Type, Char_Type, Long_Type,
 	     UInt_Type, UChar_Type, ULong_Type,
 #ifexists LLong_Type
 	     LLong_Type, ULLong_Type

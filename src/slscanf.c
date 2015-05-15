@@ -674,7 +674,7 @@ int _pSLang_sscanf (void)
 	       }
 	     else
 	       {
-		  obj.o_data_type = SLANG_INT_TYPE;
+		  obj.o_data_type = SLANG_UINT_TYPE;
 		  status = parse_uint (&s, smax, &obj.v.uint_val, base, map);
 	       }
 	     break;
@@ -683,7 +683,7 @@ int _pSLang_sscanf (void)
 	     is_long = 1;
 	   case 'i':
 	     if ((s + 1 >= smax)
-		 || (*s != 0))
+		 || (*s != '0'))
 	       chf = 'd';
 	     else if (((s[1] == 'x') || (s[1] == 'X'))
 		      && (s + 2 < smax))

@@ -1118,8 +1118,9 @@ static void listdir_cmd_wrap (void)
 	     return;
 	  }
 	break;
+
       default:
-	_pSLang_verror (SL_INVALID_PARM, "usage: listdir (string, [opt-string]");
+	_pSLang_verror (SL_Usage_Error, "Usage: listdir (string)");   /* FIXME */
 	return;
      }
 

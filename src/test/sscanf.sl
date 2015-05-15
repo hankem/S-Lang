@@ -73,7 +73,13 @@ static define test_atof_main (n)
    test_atof (random ());
 }
 test_atof_main (1000);
+
+# ifexists EINVAL
+if ((0.0 != atof ("FOO")) || (errno != EINVAL)) failed ("atof FOO");
+# endif
+
 #endif				       %  Double_Type
+
 
 define test_scanf (buf, format, xp, yp, n)
 {
@@ -189,6 +195,109 @@ define test_default_format ()
      }
 }
 test_default_format ();
+
+private define test_bad_formats (str, fmt, varp)
+{
+   try
+     {
+	if (0 == sscanf (str, fmt, varp))
+	  throw AnyError, "sscanf returned 0-- this is ok";
+     }
+   catch AnyError: return;
+
+   failed ("expected sscanf(%S,%S,%S) to fail, produced %S", str, fmt, varp, @varp);
+}
+test_bad_formats ("7", "%d", 14);
+test_bad_formats ("7", "%)", &$1);
+test_bad_formats ("7", "%", &$1);
+test_bad_formats ("7", "%d", &errno);
+test_bad_formats ("7", "%d", &sin);
+test_bad_formats ("range", "%[a-d", &$1);
+test_bad_formats ("range", "%]", &$1);
+
+private define test_other_formats (str, fmt, val)
+{
+   variable x;
+   if (1 != sscanf (str, fmt, &x))
+     failed ("scanf (%S. %S. %S) did not return 1", str, fmt, &x);
+
+   if (typeof (x) != typeof (val))
+     failed ("sscanf (%S. %S. %S) produced %S, expected %S",
+	     str, fmt, &x, typeof(x), typeof(val));
+
+   if (x != val)
+     {
+	failed ("sscanf (%S, %S, %S) produced %S, expected %S",
+		str, fmt, &x, x, val);
+     }
+}
+
+#ifexists Double_Type
+test_other_formats ("2.0", "%e", 2.0f);
+test_other_formats ("2.0", "%f", 2.0f);
+test_other_formats ("2.0", "%g", 2.0f);
+test_other_formats ("2.0", "%E", 2.0);
+test_other_formats ("2.0", "%F", 2.0);
+#endif
+test_other_formats ("255", "%i", 255);
+test_other_formats ("0xFF", "%i", 255);
+test_other_formats ("0377", "%i", 255);
+
+test_other_formats ("255", "%hi", 255h);
+test_other_formats ("0xFF", "%hi", 255h);
+test_other_formats ("0377", "%hi", 255h);
+
+test_other_formats ("255", "%li", 255L);
+test_other_formats ("0xFF", "%li", 255L);
+test_other_formats ("0377", "%li", 255L);
+
+test_other_formats ("255", "%I", 255L);
+test_other_formats ("0xFF", "%I", 255L);
+test_other_formats ("0377", "%I", 255L);
+
+test_other_formats ("FF", "%x", 255);
+test_other_formats ("FF", "%hx", 255h);
+test_other_formats ("FF", "%lx", 255L);
+test_other_formats ("FF", "%X", 255L);
+
+test_other_formats ("377", "%o", 255);
+test_other_formats ("377", "%ho", 255h);
+test_other_formats ("377", "%lo", 255L);
+test_other_formats ("377", "%O", 255L);
+
+test_other_formats ("1234", "%u", 1234U);
+test_other_formats ("1234", "%hu", 1234UH);
+test_other_formats ("1234", "%lu", 1234UL);
+test_other_formats ("1234", "%U", 1234UL);
+
+private define is_equal (x, y)
+{
+   if (x == y) return 1;
+#ifexists isnan
+   if (isnan (x) && isnan (y))
+     return 1;
+#endif
+   return 0;
+}
+
+private define test_2weird (str, fmt, x, y)
+{
+   variable a, b;
+   if ((2 != sscanf (str, fmt, &a, &b))
+       || (0 == is_equal(a, x))
+       || (0 == is_equal(b, y)))
+     failed ("sscanf (%S, %S): expected %S, %S", str, fmt, x, y);
+}
+
+#ifexists Double_Type
+test_2weird ("-nan:4", "%f:%d", _NaN, 4);
+test_2weird ("-nan():4", "%f:%d", _NaN, 4);
+test_2weird ("-nan(here):4", "%f:%d", _NaN, 4);
+test_2weird ("Inf:4", "%f:%d", _Inf, 4);
+test_2weird ("Infinity:4", "%f:%d", _Inf, 4);
+test_2weird ("-Inf:4", "%f:%d", -_Inf, 4);
+test_2weird ("-Infinity:4", "%f:%d", -_Inf, 4);
+#endif
 
 print ("Ok\n");
 

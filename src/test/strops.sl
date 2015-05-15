@@ -524,7 +524,7 @@ test_strcmp ("ignore_all", "ign", 1);
 test_strcmp ("ign", "ignore_all", -1);
 test_strcmp ("silly", "silly", 0);
 
-static define test_strchop (s, d, len, nth, nth_val)
+private define test_strchop (s, d, len, nth, nth_val)
 {
    variable a = strchop (s, d, 0);
    if (length (a) != len)
@@ -532,6 +532,10 @@ static define test_strchop (s, d, len, nth, nth_val)
 
    if (a[nth] != nth_val)
      failed ("strchop (%S,%S,0)[%d] ==> %S, not %S", s,d,nth,a[nth],nth_val);
+
+   variable b = strchopr (s, d, 0);
+   ifnot (_eqs (b[[-1::-1]], a))
+     failed ("strchopr (%S,%S,0)", s,d);
 }
 test_strchop ("{{{\r}}}\r\rX", '\r', 4, 0, "{{{");
 test_strchop ("{{{\r}}}\r\rX", '\r', 4, 1, "}}}");
@@ -625,7 +629,7 @@ test_char (-0x78, "\x78");
 test_char (-0xAB, "\xAB");
 
 #ifexists Double_Type
-_for $1 (0, 4000, 10)
+foreach $1 ([0,1,2,5,10,20,50,100,200,500,1000,2000,5000])
 {
    () = sprintf ("%f", 10^$1);
    () = sprintf ("%f", -10^$1);
@@ -868,8 +872,66 @@ private define test_wchar_funcs ()
    if ((0 == ispunct (p)) || ispunct (d)) failed ("ispunct");
    if ((0 == iscntrl (1)) || iscntrl (' '))  failed ("iscntrl");
    if ((0 == isxdigit (d)) || isxdigit ('g')) failed ("isxdigit");
+   if ((0 == isgraph ("x")) || isgraph (' ')) failed ("isgraph");
+   if ((0 == isprint (' ')) || isprint (1)) failed ("isprint");
+   if ((0 == isascii (' ')) || isascii (255)) failed ("isascii");
+   if ((0 == isalpha ('a')) || isalpha ('6')) failed ("isalpha");
+   if ((0 == isalnum ('6')) || isalnum ('/')) failed ("isalnum");
 }
 test_wchar_funcs ();
+
+if (any (typecast (["foo", "", NULL, "bar"], Int_Type) != ['f',0,0,'b']))
+  failed ("typecast of string[] to integer");
+
+private define test_string_sort ()
+{
+   variable a = ["1", "2", "3", "33", "22", "11"];
+   variable i = array_sort (a);
+   if (any (i != [0,5,1,4,2,3]))
+     failed ("string sort");
+}
+test_string_sort ();
+
+#ifexists Double_Type
+private define test_get_set_float_format (fmt, x)
+{
+   variable dfmt = get_float_format ();
+
+   set_float_format (fmt);
+   if (string (x) != sprintf (fmt, x))
+     failed ("set_float_format %S", fmt);
+   set_float_format (dfmt);
+}
+test_get_set_float_format ("%e", PI);
+test_get_set_float_format ("%f", PI);
+test_get_set_float_format ("%g", PI);
+test_get_set_float_format ("%+ f", PI);
+test_get_set_float_format ("%+f", PI);
+test_get_set_float_format ("%+.5f", PI);
+test_get_set_float_format ("%+3.5f", PI);
+test_get_set_float_format ("% 3.5f", PI);
+
+#endif
+
+private define test_sprintf (fmt, x, ans)
+{
+   foreach ([Char_Type, UChar_Type, Short_Type, UShort_Type,
+	     Int_Type, UInt_Type, Long_Type, ULong_Type,
+#ifexists LLong_Type
+	     LLong_Type, ULLong_Type
+#endif
+	     ])
+     {
+	variable t = ();
+	if (ans != sprintf (fmt, typecast (x, t)))
+	  failed ("%S != sprintf (%S, (%S)%x)", ans, fmt, t);
+     }
+}
+test_sprintf ("%B", 7, "111");
+test_sprintf ("%5B", 7, "  111");
+test_sprintf ("%5.5B", 7, "00111");
+test_sprintf ("%.7B", 7, "0000111");
+test_sprintf ("%8.7B", 7, " 0000111");
 
 print ("Ok\n");
 exit (0);

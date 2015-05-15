@@ -405,6 +405,24 @@ test_binary ("0b1110", 14);
 test_binary ("-0b1110", -14);
 
 $1 = -0;
+
+private define usage_func ()
+{
+   if (_NARGS != 1)
+     usage ("usage_func (x)");
+   variable x = ();
+}
+
+private define test_usage ()
+{
+   try
+     {
+	usage_func ();
+	failed ("Expected a usage error");
+     }
+   catch UsageError;
+}
+test_usage ();
 print ("Ok\n");
 
 exit (0);

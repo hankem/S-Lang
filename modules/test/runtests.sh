@@ -8,7 +8,7 @@ export SLANG_MODULE_PATH="`pwd`/../${ARCH}objs"
 export LD_LIBRARY_PATH="$ROOT/src/${ARCH}elfobjs"
 
 run_test_pgm="$SLSHROOT/${ARCH}objs/slsh_exe -n -g"
-runprefix=""
+runprefix="$SLTEST_RUN_PREFIX"
 #runprefix="valgrind --tool=memcheck --leak-check=yes --error-limit=no --num-callers=25"
 #runprefix="gdb --args"
 

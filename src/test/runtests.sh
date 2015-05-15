@@ -1,6 +1,7 @@
 #!/bin/sh
 
 run_test_pgm="./sltest"
+runprefix="$SLTEST_RUN_PREFIX"
 
 ########################################################################
 
@@ -16,21 +17,25 @@ echo
 echo "Running tests:"
 echo
 
+test -d lastrun || mkdir lastrun
+
 n_failed=0
 tests_failed=""
-for test in $@
+for testfile in $@
 do
     pass=1
 
     for utf8mode in "" "-utf8"
     do
-	$run_test_pgm $utf8mode $test || pass=0
+	$runprefix $run_test_pgm $utf8mode $testfile || pass=0
     done
 
     if [ $pass -eq 0 ]
     then
 	n_failed=`expr ${n_failed} + 1`
-	tests_failed="$tests_failed $test"
+	tests_failed="$tests_failed $testfile"
+    else
+        touch lastrun/$testfile
     fi
 done
 

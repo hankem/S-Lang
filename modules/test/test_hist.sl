@@ -15,6 +15,31 @@ private define urand (n)
    return array_map (Double_Type, &urand_1, [1:n]);
 }
 
+private define test_alternate_forms (pts, edges, rev_indices, expected_h)
+{
+   variable h = hist1d (pts, edges);
+   ifnot (_eqs (h, expected_h))
+     failed ("alternate form hist1d(pts, edges)");
+
+   h = hist1d (pts, edges, NULL);
+   ifnot (_eqs (h, expected_h))
+     failed ("alternate form hist1d(pts, edges, NULL)");
+
+   h = hist1d (pts, edges, NULL);
+   ifnot (_eqs (h, expected_h))
+     failed ("alternate form hist1d(pts, edges, NULL)");
+
+   h = hist1d (NULL, pts, edges, NULL);
+   ifnot (_eqs (h, expected_h))
+     failed ("alternate form hist1d(pts, edges, NULL)");
+
+   variable h1 = h;
+   h1[*] = 1;
+   h = hist1d (h1, pts, edges, NULL);
+   ifnot (__is_same (h, h1))
+     failed ("alternate form hist1d h1 not same as h");
+}
+
 define test_hist1d (n, m)
 {
    variable pts = urand (n); pts = pts[array_sort(pts)];
@@ -67,18 +92,24 @@ define test_hist1d (n, m)
 	       failed ("hist1d: reverse index problem 2");
 	  }
      }
+
+   test_alternate_forms (pts, edges, rev_indices, h);
 }
 
 define test_hist1d_uc (n, edges)
 {
-   variable pts = typecast (256 * urand (n), UChar_Type);
-   variable rev_indices;
+   foreach ([UChar_Type, Short_Type, Int_Type, Float_Type, Long_Type])
+     {
+	variable type = ();
+	variable pts = typecast (256 * urand (n), type);
+	variable rev_indices;
 
-   variable h1 = hist1d (pts, edges, &rev_indices);
-   variable h2 = hist1d (pts, edges);
+	variable h1 = hist1d (pts, edges, &rev_indices);
+	variable h2 = hist1d (pts, edges);
 
-   if (length (where (h1 != h2)))
-     failed ("hist1d on unsigned chars");
+	if (length (where (h1 != h2)))
+	  failed ("hist1d on %S", type);
+     }
 }
 
 define do_test_hist1d (n, m)
@@ -101,14 +132,38 @@ define do_test_hist1d (n, m)
    test_hist1d_uc (n*10, [254.9,255.01]);
 }
 
-define test_hist2d (num, nr, nc) %{{{
+private define test_alternate_forms2d (xpts, ypts, xedges, yedges, rev_indices, expected_h)
 {
-   variable r = urand(num);
-   variable c = urand(num);
+   variable h = hist2d (xpts, ypts, xedges, yedges);
+   ifnot (_eqs (h, expected_h))
+     failed ("alternate form hist2d(xpts, ypts, xedges, yedges)");
+
+   h = hist2d (xpts, ypts, xedges, yedges, NULL);
+   ifnot (_eqs (h, expected_h))
+     failed ("alternate form hist2d(xpts, ypts, xedges, yedges, NULL)");
+
+   h = hist2d (NULL, xpts, ypts, xedges, yedges, NULL);
+   ifnot (_eqs (h, expected_h))
+     failed ("alternate form hist2d(NULL, xpts, ypts, xedges, yedges, NULL)");
+
+   h = hist2d (NULL, xpts, ypts, xedges, yedges);
+   ifnot (_eqs (h, expected_h))
+     failed ("alternate form hist2d(NULL, xpts, ypts, xedges, yedges)");
+
+   variable h1 = h;
+   h = hist2d (h1, xpts, ypts, xedges, yedges);
+   ifnot (__is_same (h, h1))
+     failed ("alternate form hist2d h1 not same as h");
+}
+
+define test_hist2d (num, nr, nc, type) %{{{
+{
+   variable r = typecast (256*urand(num), type);
+   variable c = typecast (256*urand(num), type);
 
    variable gr, gc;
-   gr = [1:nr]/(1.1*nr);
-   gc = [1:nc]/(1.1*nc);
+   gr = 256*([1:nr]/(1.1*nr));
+   gc = 256*([1:nc]/(1.1*nc));
 
    variable rev, img;
    img = hist2d (r, c, gr, gc, &rev);
@@ -125,7 +180,7 @@ define test_hist2d (num, nr, nc) %{{{
 	variable rlo, rhi;
 	rlo = gr[ir];
 	if (ir == nr-1)
-	  rhi = 10;
+	  rhi = _Inf;
 	else
 	  rhi = gr[ir+1];
 
@@ -140,7 +195,7 @@ define test_hist2d (num, nr, nc) %{{{
 
 	     clo = gc[ic];
 	     if (ic == nc-1)
-	       chi = 10;
+	       chi = _Inf;
 	     else
 	       chi = gc[ic+1];
 
@@ -149,6 +204,8 @@ define test_hist2d (num, nr, nc) %{{{
 	       failed ("hist2d: Reverse index problem");
 	  }
      }
+
+   test_alternate_forms2d (r, c, gr, gc, rev, img);
 }
 
 do_test_hist1d (20, 5);
@@ -170,11 +227,14 @@ do_test_hist1d (1, 5);
 do_test_hist1d (0, 1);
 do_test_hist1d (0, 0);
 
-test_hist2d (20, 1, 1);
-test_hist2d (200, 1, 3);
-test_hist2d (20, 10, 20);
-test_hist2d (20, 10, 30);
-test_hist2d (20000, 10, 30);
+foreach $1 ([UChar_Type, Short_Type, Int_Type, Float_Type, Long_Type])
+{
+   test_hist2d (20, 1, 1, $1);
+   test_hist2d (200, 1, 3, $1);
+   test_hist2d (20, 10, 20, $1);
+   test_hist2d (20, 10, 30, $1);
+   test_hist2d (20000, 10, 30, $1);
+}
 
 private variable Test_Number = 0;
 private define test_rebin (new_grid, old_grid, input_h, sum_ok, expected)
@@ -201,6 +261,34 @@ private define test_rebin (new_grid, old_grid, input_h, sum_ok, expected)
      }
 }
 
+private define test_bsearch ()
+{
+   variable xbins = [1:10:0.5];
+   variable nbins = length (xbins);
+   variable data = (11*urand (100)) - 1;
+
+   variable i, indices = hist_bsearch (data, xbins);
+   _for i (0, length (data)-1, 1)
+     {
+	variable x = data[i];
+	variable j = indices[i];
+	if (x < xbins[j])
+	  {
+	     if (j != 0)
+	       failed ("hist_bsearch: x=%S < bin edge %S", x, xbins[j]);
+	  }
+
+	if (j + 1 < nbins)
+	  {
+	     if (x >= xbins[j+1])
+	       failed ("hist_bsearch: x=%S >= right bin edge %S", x, xbins[j+1]);
+	  }
+
+	if (j != hist_bsearch (x, xbins))
+	  failed ("hist_bsearch on scalar");
+     }
+}
+
 private define test_module (module_name)
 {
    testing_module (module_name);
@@ -224,6 +312,8 @@ private define test_module (module_name)
    test_rebin (Double_Type[0], g0, h0, 0, Double_Type[0]);
    test_rebin ([1:10], [1,5,10], [1,2,3], 1,
 	       [0.25,0.25,0.25,0.25,0.4,0.4,0.4,0.4,0.4,3]);
+
+   test_bsearch ();
 }
 
 define slsh_main ()

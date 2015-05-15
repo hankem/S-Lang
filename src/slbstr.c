@@ -239,7 +239,7 @@ static int compare_bstrings (SLang_BString_Type *a, SLang_BString_Type *b)
    len = a->len;
    if (b->len < len) len = b->len;
 
-   ret = memcmp ((char *)BS_GET_POINTER(b), (char *)BS_GET_POINTER(a), len);
+   ret = memcmp ((char *)BS_GET_POINTER(a), (char *)BS_GET_POINTER(b), len);
    if (ret != 0)
      return ret;
 

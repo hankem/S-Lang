@@ -170,12 +170,24 @@ private define check_complex_real_binary (z)
 {
    if ((z * 1.0) != z) failed ("complex %S*1.0", z);
    if ((z / 1.0) != z) failed ("complex %S/1.0", z);
+   if ((z * 1L) != z) failed ("complex %S*1L", z);
+   if ((z / 1L) != z) failed ("complex %S/1L", z);
+
    if ((z + 0.0) != z) failed ("complex %S+0.0", z);
    if ((z - 0.0) != z) failed ("complex %S-0.0", z);
+   if ((z + 0L) != z) failed ("complex %S+0.0", z);
+   if ((z - 0L) != z) failed ("complex %S-0.0", z);
 
    if ((1.0 * z) != z) failed ("complex 1.0*%S", z);
    if ((0.0 + z) != z) failed ("complex 1.0+%S", z);
    if ((0.0 - z) != -z) failed ("complex 1.0-%S", z);
+
+   if ((1L * z) != z) failed ("complex 1L*%S", z);
+   if ((0L + z) != z) failed ("complex 1.0+%S", z);
+   if ((0L - z) != -z) failed ("complex 1.0-%S", z);
+
+   if (((1i*z) / (1.0i)) != z) failed ("complex (1i*%S)/(1i)", z);
+   if (z/(1+0i) != z) failed ("complex (1i*%S)/(1i)", z);
 
    if (Real(z) == 0)
      {
@@ -186,7 +198,9 @@ private define check_complex_real_binary (z)
 	  failed ("imag z");
      }
 
-   variable z2, zz, diff;
+   variable z2, w, z1, x, y, zz, diff;
+
+   x = Real(z); y = Imag(z);
    z2 = z^2.0, zz = z*z;
    diff = abs (z2-zz);
 
@@ -194,7 +208,65 @@ private define check_complex_real_binary (z)
    zz = exp (z*log(2.0));
    diff = abs (z2-zz);
    if (diff > 1e-13) failed ("%S^%S", 2.0, z);
+   z2 = (2+0i)^z;
+   diff = abs (z2-zz);
+   if (diff > 1e-13) failed ("%S^%S", 2.0, z);
+   z2 = (2L)^z;
+   diff = abs (z2-zz);
+   if (diff > 1e-13) failed ("%S^%S", 2.0, z);
+
+   z2 = 1i*x + y;
+   if ((Imag(z2) != x) || (Real(z2) != y))
+     failed ("Real/Imag %S", z);
+
+   z2 = Conj(z);
+   if ((Real(z2) != x) || (Imag(z2) != -y))
+     failed ("Conj %S", z);
+
+   % 1/z = z*/|z|^2
+   z1 = 1.0/z;
+   z2 = sqr(z);  % |z|^2
+   diff = abs (z1 - (x/z2 - 1i*y/z2));
+   if (diff > 1e-13) failed ("1/z, sqr(z)");
+   z1 = 1L/z;
+   diff = abs (z1 - (x/z2 - 1i*y/z2));
+   if (diff > 1e-13) failed ("1/z, sqr(z)");
+
+   z1 = z^0.5;
+   z2 = sqrt(z);
+   diff = abs (z1-z2);
+   if (diff > 1e-13) failed ("z^0.5 vs sqrt");
+
+   z1 = z+1;
+   z2 = z; z2++;
+   if (z2 != z1) failed ("z++");
+   z1--;
+   if (z1 != z) failed ("z--");
+
+   if (mul2(z) != 2*z) failed ("mul2");
+
+   if (sign(z) != sign(y))
+     failed ("sign z");
+
+   if ((z^0 != 1) || (z^0L != 1) || (z^0.0 != 1L))
+     failed ("z^0");
+
+   if (z*0 != 0L) failed ("z*0 != 0L");
+   if (0L != z*0h) failed ("0L != z*0h");
+
+#iffalse  % needs to be implemented for Complex
+   if (abs(z) >= 1L)
+     {
+	w = z^-50;
+	if (log1p (w) != w)
+	  failed ("log1p(%S) ==> %S", w, log1p(w));
+
+	if (expm1(w) != w)
+	  failed ("expm1");
+     }
+#endif
 }
+
 
 
 check_complex_real_binary (0+0i);

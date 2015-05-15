@@ -119,6 +119,47 @@ test_is_substrbytes ("", "\0x", 0);
 test_is_substrbytes ("", "\0", 0);
 test_is_substrbytes ("eefdefg", "efg", 5);
 
+private define test_ops (a1, a2)
+{
+   variable b1, b2;
+   b1 = typecast (a1, BString_Type);
+   b2 = typecast (a2, BString_Type);
+
+   if ((a1 == a2) != (b1 == b2))
+     failed ("operator %S == %S", b1, b2);
+   if ((a1 >= a2) != (b1 >= b2))
+     failed ("operator %S >= %S", b1, b2);
+   if ((a1 <= a2) != (b1 <= b2))
+     failed ("operator %S <= %S", b1, b2);
+   if ((a1 > a2) != (b1 > b2))
+     failed ("operator %S > %S", b1, b2);
+   if ((a1 < a2) != (b1 < b2))
+     failed ("operator %S < %S", b1, b2);
+
+   variable c1 = BString_Type[5]; c1[*] = b1;
+   variable c2 = BString_Type[5]; c2[*] = b2;
+   a1 = typecast (c1, String_Type);
+   a2 = typecast (c2, String_Type);
+
+   if (any ((a1 == a2) != (c1 == c2)))
+     failed ("operator[] %S == %S", b1, b2);
+   if (any ((a1 >= a2) != (c1 >= c2)))
+     failed ("operator[] %S >= %S", b1, b2);
+   if (any ((a1 <= a2) != (c1 <= c2)))
+     failed ("operator[] %S <= %S", b1, b2);
+   if (any ((a1 > a2) != (c1 > c2)))
+     failed ("operator[] %S > %S", b1, b2);
+   if (any ((a1 < a2) != (c1 < c2)))
+     failed ("operator[] %S < %S", b1, b2);
+}
+
+test_ops ("hello", "world");
+test_ops ("hello", "hello");
+test_ops ("hell", "hello");
+test_ops ("hello", "hell");
+test_ops ("", "hell");
+test_ops ("hell", "");
+test_ops ("", "");
 
 print ("Ok\n");
 exit (0);

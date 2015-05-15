@@ -17,7 +17,7 @@
  permissions to the file, otherwise it will return -1 and set
  \ivar{errno} accordingly.
 
- Access to a file depend not only upon the file itself, but also upon
+ Access to a file depends not only upon the file itself, but also upon
  the permissions of each of the directories in the pathname.  The
  checks are done using the real user and group ids of the process, and
  not using the effective ids.
