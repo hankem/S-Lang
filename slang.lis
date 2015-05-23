@@ -518,6 +518,7 @@
 @src/test/longline.inc
 @src/test/loops.sl
 @src/test/method.sl
+@src/test/misc.sl
 @src/test/multline.sl
 @src/test/naninf.sl
 @src/test/ns1.inc
@@ -539,6 +540,7 @@
 @src/test/signal.sl
 @src/test/sort.sl
 @src/test/sscanf.sl
+@src/test/stack.sl
 @src/test/stdio.sl
 @src/test/strops.sl
 @src/test/struct.sl
