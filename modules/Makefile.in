@@ -7,7 +7,7 @@ MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
 SLFILES = slsmg termios select fcntl varray socket pcre png iconv \
   onig rand csv zlib fork sysconf base64 chksum histogram stats json
 TEST_SCRIPTS = test_rand.sl test_csv.sl test_base64.sl test_chksum.sl \
-  test_hist.sl test_stats.sl test_json.sl
+  test_hist.sl test_stats.sl test_json.sl test_sysconf.sl
 CHKSUM_OBJS = chksum-module.o chksum_md5.o chksum_sha1.o
 #---------------------------------------------------------------------------
 CC		= @CC@

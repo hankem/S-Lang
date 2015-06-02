@@ -68,6 +68,9 @@ Changes since 2.3.0
      histogram-module.c: A missing 'break' statement was causing hist2d
        to fail when binning 8 bit integers.
 
+26. src/slposdir.c: If an fdopen'd FILE* object was closed, then do
+    not close the underlying fd descriptor; added more regression/unit
+    tests.
 
 {{{ Previous Versions
 

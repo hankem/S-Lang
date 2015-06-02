@@ -198,6 +198,16 @@ void _pSLfclose_fdopen_fp (SLang_MMT_Type *mmt)
 
 	     SLang_free_mmt (mmt);
 	     SLfree ((char *) curr);
+	     /* Do not attempt to close the descriptor since fclose did it.
+	      * This avoids a problem if a new descriptor with the same fd
+	      * has been created before this has been called, e.g.,
+	      * fd = open(); fp = fdopen(fd); fclose(fp); fd = open();
+	      * The last open is the problem, since it is equive to the following:
+	      *   tmp = open(); close(fd); fd = tmp;
+	      * Here, after the first open, tmp may be set to the same integer
+	      * as fd.
+	      */
+	     f->is_closed = 1;
 	     return;
 	  }
 	f = f->next;

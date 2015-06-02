@@ -189,6 +189,7 @@
 @modules/test/test_rand.sl
 @modules/test/test_hist.sl
 @modules/test/test_stats.sl
+@modules/test/test_sysconf.sl
 @modules/test/test_json.sl
 @modules/test/test_png.sl
 

@@ -2,6 +2,40 @@
 
 testing_feature ("stdio routines");
 
+define fdopen_tmp_file (fileptr, mode, fdp)
+{
+   variable n;
+   variable file, fp;
+   variable fmt;
+
+   @fileptr = NULL;
+
+   fmt = "tmp-xxx.%03d";    % I need something that works on an 8+3 filesystem
+
+   n = -1;
+   while (n < 999)
+     {
+	n++;
+	file = sprintf (fmt, n);
+	if (NULL != stat_file (file))
+	  continue;
+
+	variable fd = open (file, O_WRONLY|O_BINARY|O_CREAT);
+	if (fd == NULL)
+	  continue;
+
+	fp = fdopen (fd, mode);
+	if (fp != NULL)
+	  {
+	     @fdp = fd;
+	     @fileptr = file;
+	     return fp;
+	  }
+	break;
+     }
+   failed ("Unable to open a tmp file");
+}
+
 define fopen_tmp_file (fileptr, mode)
 {
    variable n;
@@ -26,18 +60,22 @@ define fopen_tmp_file (fileptr, mode)
 	     @fileptr = file;
 	     return fp;
 	  }
+	break;
      }
    failed ("Unable to open a tmp file");
 }
 
 define run_tests (some_text, read_fun, write_fun, length_fun)
 {
-   variable file, fp;
+   variable file, fp, fd;
    variable new_text, nbytes, len;
    variable pos;
 
-   fp = fopen_tmp_file (&file, "wb");
-
+   fp = fdopen_tmp_file (&file, "wb", &fd);
+#ifexists setvbuf
+   if (-1 == setvbuf (fp, _IOFBF, 8))
+     failed ("setvbuf");
+#endif
    if (-1 == @write_fun (some_text, fp))
      failed (string (write_fun));
 
@@ -92,13 +130,14 @@ define run_tests (some_text, read_fun, write_fun, length_fun)
 
    if (-1 == fclose (fp)) failed ("fclose after tests");
 
-   variable fd = open (file, O_RDONLY);
+   fd = open (file, O_RDONLY);
    if (fd == NULL)
      failed ("open %s failed", file);
 
    variable ofs = (@length_fun)(some_text) - 1;
-   if (ofs != lseek (fd, ofs, SEEK_SET))
-     failed ("lseek failed to return %S", ofs);
+   variable ofs1 = lseek (fd, ofs, SEEK_SET);
+   if (ofs != ofs1)
+     failed ("lseek returned %S, expected %S: %S", ofs1, ofs, errno_string());
    if (1 != read (fd, &new_text, 1))
      failed ("read failed after lseek");
    if (new_text[0] != some_text[-1])
@@ -112,7 +151,24 @@ define run_tests (some_text, read_fun, write_fun, length_fun)
 
 static define do_fgets (addr, nbytes, fp)
 {
-   return fgets (addr, fp);
+   variable count;
+   variable dbytes, bytes;
+
+   variable dc = fgets (&bytes, fp);
+   if (dc == -1)
+     return -1;
+
+   count = dc;
+   while (count < nbytes)
+     {
+	dc = fgets (&dbytes, fp);
+	if (dc == -1)
+	  break;
+	count += dc;
+	bytes += dbytes;
+     }
+   @addr = bytes;
+   return count;
 }
 
 static define do_fread (addr, nbytes, fp)
@@ -121,8 +177,37 @@ static define do_fread (addr, nbytes, fp)
    return fread_bytes (addr, nbytes, fp);
 }
 
+private define do_fprintf (some_text, fp)
+{
+   if (fprintf (fp, "%s", some_text) != strbytelen(some_text))
+     return -1;
+
+   return 0;
+}
+
+private define do_foreach_char (addr, nbytes, fp)
+{
+   variable ch, str = NULL, count = 0;
+   foreach ch (fp) using ("char")
+     {
+	if (str == NULL)
+	  str = "";
+	str = strcat (str, char(-1*ch));
+	count++;
+	if (count >= nbytes)
+	  break;
+     }
+   if (str == NULL)
+     return -1;
+
+   @addr = str;
+   return count;
+}
+
 run_tests ("ABCDEFG", &do_fgets, &fputs, &strlen);
 run_tests ("A\000BC\000\n\n\n", &do_fread, &fwrite, &bstrlen);
+run_tests ("A\nAB\n\ABC\nABCD", &do_fgets, &do_fprintf, &strbytelen);
+run_tests ("A\nAB\n\ABC\nABCD", &do_foreach_char, &fwrite, &strbytelen);
 
 define test_fread_fwrite (x)
 {

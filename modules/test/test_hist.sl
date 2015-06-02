@@ -316,8 +316,71 @@ private define test_module (module_name)
    test_bsearch ();
 }
 
+private define test_badgrids ()
+{
+   variable xgrid, ygrid;
+   variable pts = urand (100);
+
+   xgrid = Double_Type[0];
+   if (length (hist1d (pts, xgrid)))
+     failed ("hist1d with empty grid");
+   foreach xgrid ({[_NaN], [0,_NaN], [_NaN,0], [2,1], [1,2,-1]})
+     {
+	try
+	  {
+	     () = hist1d (pts, xgrid);
+	     failed ("Expecting hist1d to fail with invalid grid");
+	  }
+	catch InvalidParmError: continue;
+     }
+
+   reshape (pts, [length(pts)/2, 2]);
+   try
+     {
+	() = hist1d (pts, xgrid);
+	failed ("Expecting hist1d to fail with invalid grid");
+     }
+   catch InvalidParmError:;
+
+   reshape (pts, [length(pts)]);
+   variable ypts = urand (100);
+   xgrid = [0,0.5];
+
+   foreach ygrid ({[_NaN], [0,_NaN], [_NaN,0], [2,1], [1,2,-1]})
+     {
+	try
+	  {
+	     () = hist2d (pts, ypts, xgrid, ygrid);
+	     failed ("Expecting hist2d to fail with invalid y grid");
+	  }
+	catch InvalidParmError:;
+     }
+
+   ygrid = xgrid;
+   foreach xgrid ({[_NaN], [0,_NaN], [_NaN,0], [2,1], [1,2,-1]})
+     {
+	try
+	  {
+	     () = hist2d (pts, ypts, xgrid, ygrid);
+	     failed ("Expecting hist2d to fail with invalid x grid");
+	  }
+	catch InvalidParmError: continue;
+     }
+
+   xgrid = [0, 0.5];
+   ygrid = [0, 0.5];
+   ypts = urand (length(pts)-1);
+   try
+     {
+	() = hist2d (pts, ypts, xgrid, ygrid);
+	failed ("Expecting hist2d to fail with mismatched x and y data arrays");
+     }
+   catch InvalidParmError:;
+}
+
 define slsh_main ()
 {
    test_module ("hist");
+   test_badgrids ();
    end_test ();
 }

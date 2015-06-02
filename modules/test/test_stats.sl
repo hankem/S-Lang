@@ -1,6 +1,20 @@
 () = evalfile("./test.sl");
 require ("stats.sl");
 
+private variable Random_Number = _time ();
+private define urand_1 (x)
+{
+   Random_Number = typecast (Random_Number * 69069UL + 1013904243UL, UInt32_Type);
+   return Random_Number/4294967296.0;
+}
+private define urand (n)
+{
+   if (n == 0)
+     return Double_Type[0];
+
+   return array_map (Double_Type, &urand_1, [1:n]);
+}
+
 private define test_chisqr_test ()
 {
    % This example comes from Conover, 1980, section 4.2
@@ -289,32 +303,37 @@ private variable YData = [
 -0.37
 ];
 
-private define test_mean_stddev ()
+private define test_mean_stddev (xdata)
 {
-   ifnot (feqs (sum(XData)/length(XData), mean(XData), 1e-6))
+   ifnot (feqs (sum(xdata)/length(xdata), mean(xdata), 1e-6))
      failed ("test_mean_stddev: mean failed");
 
-   variable n = length(XData);
+   variable n = length(xdata);
    if (0 == (n & 0x1))
      n--;
 
-   variable x1 = XData[array_sort(XData)][n/2];
-   variable x2 = median (XData);
+   variable x1 = xdata[array_sort(xdata)][n/2];
+   variable x2 = median (xdata);
    if (x1 != x2)
-     failed ("median, found %g, expected %g", x2, x1);
+     failed ("median %S: found %g, expected %g", xdata, x2, x1);
+   x2 = median_nc (xdata);
+   if (x1 != x2)
+     failed ("median_nc %S: found %g, expected %g", xdata, x2, x1);
 
-   x1 = stddev (XData);
-   x2 = sqrt(sum((XData-mean(XData))^2)/(length(XData)-1));
+   x1 = stddev (xdata);
+   x2 = sqrt(sum((xdata-mean(xdata))^2)/(length(xdata)-1));
    ifnot (feqs (x1, x2, 1e-6))
      failed ("stddev, found %g, expected %g", x1, x2);
 
-   variable a = Double_Type [length(XData), 3];
-   a[*,0] = XData; a[*,1] = XData; a[*,2] = XData;
+   variable a = Double_Type [length(xdata), 3];
+   a[*,0] = xdata; a[*,1] = xdata; a[*,2] = xdata;
    x2 = stddev (a, 0);
    if (length (x2) != 3)
      failed ("stddev(a,0): expected an array of 3, got %d", length (x2));
-   if ((x2[0] != x1) || (x2[1] != x1) || (x2[2] != x1))
-     failed ("stddev(a,0) produced incorrect values");
+   ifnot (all (feqs(x2, x1, 1e-6)))
+     {
+	failed ("stddev(%S,0) produced incorrect values", a);
+     }
 }
 
 private define wikipedia_sample_skewness (x)
@@ -410,11 +429,28 @@ private define test_poisson_cdf ()
    check_poisson_cdf (50000.0, 50500, 0.9873021349);
 }
 
+private define test_mean_stddev_with_datatypes ()
+{
+   variable xdata = 256*urand(10);
+   variable type;
+
+   foreach type ([Char_Type, UChar_Type, Int16_Type, UInt16_Type,
+		  Int32_Type, UInt32_Type,
+#ifexists UInt64_Type
+		  Int64_Type, UInt64_Type,
+#endif
+		  Float_Type, Double_Type,
+		 ])
+     {
+	test_mean_stddev (typecast (xdata, type));
+     }
+}
+
 define slsh_main ()
 {
    testing_module ("stats");
 
-   test_mean_stddev ();
+   test_mean_stddev_with_datatypes ();
    test_chisqr_test ();
    test_f ();
    test_kendall ();

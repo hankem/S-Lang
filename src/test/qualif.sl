@@ -14,7 +14,7 @@ if (3 != simple_test_function (;qualifier=3))
 public define qualifier_function ()
 {
    variable q = __qualifiers ();
-   loop (10) q = __qualifiers ();
+   loop (3) q = __qualifiers ();
 
    return _NARGS, q;
 }
