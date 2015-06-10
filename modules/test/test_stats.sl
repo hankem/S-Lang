@@ -305,7 +305,7 @@ private variable YData = [
 
 private define test_mean_stddev (xdata)
 {
-   ifnot (feqs (sum(xdata)/length(xdata), mean(xdata), 1e-6))
+   ifnot (feqs (sum(1.0*xdata)/length(xdata), mean(xdata), 1e-6))
      failed ("test_mean_stddev: mean failed");
 
    variable n = length(xdata);
@@ -435,10 +435,7 @@ private define test_mean_stddev_with_datatypes ()
    variable type;
 
    foreach type ([Char_Type, UChar_Type, Int16_Type, UInt16_Type,
-		  Int32_Type, UInt32_Type,
-#ifexists UInt64_Type
-		  Int64_Type, UInt64_Type,
-#endif
+		  Int_Type, UInt_Type, Long_Type, ULong_Type,
 		  Float_Type, Double_Type,
 		 ])
      {

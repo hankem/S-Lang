@@ -71,6 +71,9 @@ Changes since 2.3.0
 26. src/slposdir.c: If an fdopen'd FILE* object was closed, then do
     not close the underlying fd descriptor; added more regression/unit
     tests.
+27. modules/test/test_stats.sl: Do not use 64 bit ints when testing
+    the mean and stddev functions on 32 bit systems since these
+    integers are not supported by the functions.
 
 {{{ Previous Versions
 
