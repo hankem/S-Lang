@@ -112,7 +112,10 @@ static int NC_MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num,
    while (1)
      {
 	less = 0; greater = 0; equal = 0;
-	guess = min/2 + max/2;
+	/* We want guess=(min+max)/2.  But min+max could overflow.  So use
+	 *  (min+(max-min)+min)/2 = min + (max-min)/2
+	 */
+	guess = min + (max-min)/2;
         maxltguess = min;
         mingtguess = max;
 
@@ -128,7 +131,7 @@ static int NC_MEDIAN_FUNCTION (VOID_STAR ap, unsigned int inc, unsigned int num,
 	     if (ai > guess)
 	       {
 		  greater++;
-		  if (a[i] < mingtguess) mingtguess = ai;
+		  if (ai < mingtguess) mingtguess = ai;
 		  continue;
 	       }
 	     equal++;

@@ -429,9 +429,8 @@ private define test_poisson_cdf ()
    check_poisson_cdf (50000.0, 50500, 0.9873021349);
 }
 
-private define test_mean_stddev_with_datatypes ()
+private define test_mean_stddev_with_datatypes (xdata)
 {
-   variable xdata = 256*urand(10);
    variable type;
 
    foreach type ([Char_Type, UChar_Type, Int16_Type, UInt16_Type,
@@ -447,7 +446,21 @@ define slsh_main ()
 {
    testing_module ("stats");
 
-   test_mean_stddev_with_datatypes ();
+   variable xdata = 256*urand(10);
+   test_mean_stddev_with_datatypes (xdata);
+   xdata = 256*urand(11);
+   test_mean_stddev_with_datatypes (xdata);
+
+   % The following array caused problems for median_nc in the previous
+   % implmentation
+   xdata = [221, 125, 163, 230, 13, 67, 125, 215, 122, 108];
+   test_mean_stddev_with_datatypes (xdata);
+
+   xdata = [1,1,1];
+   test_mean_stddev_with_datatypes (xdata);
+   xdata = [1,1];
+   test_mean_stddev_with_datatypes (xdata);
+
    test_chisqr_test ();
    test_f ();
    test_kendall ();
