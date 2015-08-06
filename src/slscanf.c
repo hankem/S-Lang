@@ -560,8 +560,11 @@ int _pSLang_sscanf (void)
 	if (isspace ((unsigned char)chf))
 	  {
 	     char *s1 = _pSLskip_whitespace (s);
-	     if (s1 == s)
-	       break;
+
+	     /* Next line commented out since the sscanf man page allows
+	      * whitespace to match 0 or more whitespace chars.
+	      */
+	     /* if (s1 == s) break; */
 	     s = s1;
 	     continue;
 	  }

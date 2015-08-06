@@ -76,6 +76,8 @@ Changes since 2.3.0
     integers are not supported by the functions.
 28. modules/stats-module.inc: Some arrays were causing median_nc to
     not converge.
+29. src/slscanf.c: Allow whitespace in the format to match 0
+    whitespace characters in the input string.
 
 {{{ Previous Versions
 

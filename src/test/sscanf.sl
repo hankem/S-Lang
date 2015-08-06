@@ -173,6 +173,9 @@ test_scanf ("ab[-]cdefghijk", "%40[][ab-]%s", "ab[-]", "cdefghijk", 2);
 test_scanf ("ab12345cdefghijk", "ab%[^1-9]%s", "", "12345cdefghijk", 2);
 test_scanf ("ab12345cdefghijk", "ab%3[^4-5]%s", "123", "45cdefghijk", 2);
 
+% tests " " matching 0 or more whitespace chars
+test_scanf ("hel7o world19", " h el %do wor l d%d", 7, 19, 2);
+
 test_scanf ("\t\n", "%s %s", "", "", 0);
 test_scanf ("", "%s", "", "", 0);
 
