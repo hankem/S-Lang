@@ -78,6 +78,7 @@ Changes since 2.3.0
     not converge.
 29. src/slscanf.c: Allow whitespace in the format to match 0
     whitespace characters in the input string.
+30. src/slproc.c: define _XOPEN_SOURCE to be 500
 
 {{{ Previous Versions
 
