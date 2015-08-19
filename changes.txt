@@ -79,6 +79,9 @@ Changes since 2.3.0
 29. src/slscanf.c: Allow whitespace in the format to match 0
     whitespace characters in the input string.
 30. src/slproc.c: define _XOPEN_SOURCE to be 500
+31. src/slproc.c: #31 caused a compilation error on macos since it
+    caused certain rusage fields to not be exposed.  Define
+    _BSD_SOURCE to expose them.
 
 {{{ Previous Versions
 
