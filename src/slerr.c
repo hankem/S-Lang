@@ -805,8 +805,40 @@ int _pSLerr_set_error_queue (_pSLerr_Error_Queue_Type *q)
    return 0;
 }
 
+#if defined(__WIN32__)
+#include <crtdbg.h>  /* For _CrtSetReportMode */
+/* See <https://msdn.microsoft.com/en-us/library/ksazx244%28v=vs.140%29.aspx>
+ * for an explanation of the invalid_parm_handler.  The default
+ * handler will cause the program to terminate on code such as:
+ *
+ *  FILE *fp = fdopen (fd);
+ *  close (fd);
+ *  fclose (fp);  <--- underlying descriptor has been closed.
+ *
+ * On POSIX systems, fclose will fail with errno == EBADF.
+ */
+static void invalid_parm_handler (const wchar_t* expression,
+				  const wchar_t* function,
+				  const wchar_t* file,
+				  unsigned int line,
+				  uintptr_t pReserved)
+{
+   (void) expression;
+   (void) function;
+   (void) file;
+   (void) line;
+   (void) pReserved;
+}
+#endif
+
 int _pSLerr_init (void)
 {
+#ifdef __WIN32__
+   (void) _set_invalid_parameter_handler (invalid_parm_handler);
+   /* Disable the message box for assertions. */
+   _CrtSetReportMode(_CRT_ASSERT, 0);
+#endif
+
    if (Default_Error_Queue == NULL)
      {
 	Suspend_Error_Messages = 0;

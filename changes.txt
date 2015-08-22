@@ -82,6 +82,9 @@ Changes since 2.3.0
 31. src/slproc.c: #31 caused a compilation error on macos since it
     caused certain rusage fields to not be exposed.  Define
     _BSD_SOURCE to expose them.
+32. src/slerr.c: Add a windows error handler so that windows will
+    return an error code instead of aborting when passed a bad file
+    descriptor, etc.
 
 {{{ Previous Versions
 
