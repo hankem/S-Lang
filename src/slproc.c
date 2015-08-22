@@ -25,7 +25,7 @@ USA.
 #endif
 
 #ifndef _XOPEN_SOURCE
-# define _XOPEN_SOURCE 500
+# define _XOPEN_SOURCE 1
 #endif
 #ifndef _XOPEN_SOURCE_EXTENDED
 # define _XOPEN_SOURCE_EXTENDED 1
