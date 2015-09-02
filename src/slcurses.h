@@ -28,7 +28,7 @@ USA.
 /* This is a temporary hack until lynx is fixed to not include this file. */
 #ifndef LYCURSES_H
 
-typedef unsigned long SLcurses_Char_Type;
+typedef unsigned int SLcurses_Char_Type;
 typedef struct SLcurses_Cell_Type
 {
    SLcurses_Char_Type main;
@@ -71,7 +71,7 @@ extern int SLcurses_wnoutrefresh (SLcurses_Window_Type *);
 extern int SLcurses_wclrtoeol (SLcurses_Window_Type *);
 
 extern int SLcurses_wmove (SLcurses_Window_Type *, unsigned int, unsigned int);
-extern int SLcurses_waddch (SLcurses_Window_Type *, SLtt_Char_Type);
+extern int SLcurses_waddch (SLcurses_Window_Type *, SLcurses_Char_Type);
 extern int SLcurses_waddnstr (SLcurses_Window_Type *, char *, int);
 
 #define waddnstr		SLcurses_waddnstr
@@ -142,9 +142,9 @@ extern int SLcurses_nil (void);
 extern int SLcurses_wgetch (SLcurses_Window_Type *);
 extern int SLcurses_getch (void);
 
-extern int SLcurses_wattrset (SLcurses_Window_Type *, SLtt_Char_Type);
-extern int SLcurses_wattron (SLcurses_Window_Type *, SLtt_Char_Type);
-extern int SLcurses_wattroff (SLcurses_Window_Type *, SLtt_Char_Type);
+extern int SLcurses_wattrset (SLcurses_Window_Type *, SLcurses_Char_Type);
+extern int SLcurses_wattron (SLcurses_Window_Type *, SLcurses_Char_Type);
+extern int SLcurses_wattroff (SLcurses_Window_Type *, SLcurses_Char_Type);
 #define attrset(x) SLcurses_wattrset(stdscr, (x))
 #define attron(x) SLcurses_wattron(stdscr, (x))
 #define attroff(x) SLcurses_wattroff(stdscr, (x))
@@ -242,7 +242,7 @@ extern int SLcurses_Is_Endwin;
    (w)->scroll_max=(w)->nrows, \
    wscrl((w), -1))
 
-extern SLtt_Char_Type SLcurses_Acs_Map [256];
+extern SLcurses_Char_Type SLcurses_Acs_Map [256];
 #define acs_map SLcurses_Acs_Map
 
 #define ACS_ULCORNER (acs_map[SLSMG_ULCORN_CHAR])
@@ -304,8 +304,15 @@ extern int SLcurses_Num_Colors;
 #define COLORS		SLcurses_Num_Colors
 #define COLOR_PAIRS	(SLcurses_Num_Colors*SLcurses_Num_Colors)
 
-#define init_pair(_x,_f,_b) \
- SLtt_set_color_object((_x), ((_f) == (_b) ? 0x0700 : ((_f) | ((_b) << 8)) << 8))
+#if SLANG_VERSION >= 30000
+# define init_pair(_x,_f,_b) \
+   SLtt_set_color_fgbg ((_x), \
+			(((_f) == (_b)) ? 7 : (_f)), \
+			(((_f) == (_b)) ? 0 : (_b)))
+#else
+# define init_pair(_x,_f,_b) \
+   SLtt_set_color_object((_x), ((_f) == (_b) ? 0x0700 : ((_f) | ((_b) << 8)) << 8))
+#endif
 
 #define scrollok(a,b) ((a)->scroll_ok = (b))
 #define getyx(a,y,x)  (y=(a)->_cury, x=(a)->_curx)

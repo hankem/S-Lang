@@ -87,6 +87,8 @@ Changes since 2.3.0
     descriptor, etc.
 33. src/slproc.c: Use _XOPEN_SOURCE=1 instead of 500.  This setting
     works for both OSX and Windows.  (See #30,31)
+34. src/slcurses.h: SLtt_Char_Type and SLcurses_Char_Type were being
+    used interchangably.
 
 {{{ Previous Versions
 

@@ -58,11 +58,9 @@ USA.
 #define SLCURSES_EXTRACT_COLOR(ch) (((ch >> 24)&0xFF))
 #define SLCURSES_EXTRACT_CHAR(ch) ((ch)&A_CHARTEXT)
 
-#define SLTT_EXTRACT_CHAR(ch) ((ch)&A_CHARTEXT)
-
 SLcurses_Window_Type *SLcurses_Stdscr;
 int SLcurses_Esc_Delay = 150;	       /* 0.15 seconds */
-SLtt_Char_Type SLcurses_Acs_Map [256];
+SLcurses_Char_Type SLcurses_Acs_Map [256];
 int SLcurses_Is_Endwin = 1;
 int SLcurses_Num_Colors = 8;
 
@@ -233,15 +231,16 @@ int SLcurses_getch (void)
  */
 static unsigned char Color_Objects[256];
 
-static unsigned int map_attr_to_object (SLtt_Char_Type attr)
+static unsigned int map_attr_to_object (SLcurses_Char_Type attr)
 {
    unsigned int obj;
-   SLtt_Char_Type at;
 
    obj = SLCURSES_EXTRACT_COLOR(attr);
 
    if (SLtt_Use_Ansi_Colors)
      {
+	SLtt_Char_Type at;
+
 	if (Color_Objects[obj] != 0) return obj;
 
 	at = SLtt_get_color_object (obj & 0xF);
@@ -431,7 +430,7 @@ SLcurses_Window_Type *SLcurses_initscr (void)
    return SLcurses_Stdscr;
 }
 
-int SLcurses_wattrset (SLcurses_Window_Type *w, SLtt_Char_Type ch)
+int SLcurses_wattrset (SLcurses_Window_Type *w, SLcurses_Char_Type ch)
 {
    unsigned int obj;
 
@@ -441,7 +440,7 @@ int SLcurses_wattrset (SLcurses_Window_Type *w, SLtt_Char_Type ch)
    return 0;
 }
 
-int SLcurses_wattroff (SLcurses_Window_Type *w, SLtt_Char_Type ch)
+int SLcurses_wattroff (SLcurses_Window_Type *w, SLcurses_Char_Type ch)
 {
    if (SLtt_Use_Ansi_Colors)
      return SLcurses_wattrset (w, 0);
@@ -450,7 +449,7 @@ int SLcurses_wattroff (SLcurses_Window_Type *w, SLtt_Char_Type ch)
    return SLcurses_wattrset (w, w->attr);
 }
 
-int SLcurses_wattron (SLcurses_Window_Type *w, SLtt_Char_Type ch)
+int SLcurses_wattron (SLcurses_Window_Type *w, SLcurses_Char_Type ch)
 {
    if (SLtt_Use_Ansi_Colors)
      return SLcurses_wattrset (w, ch);
@@ -580,6 +579,9 @@ static void SLcurses_placechar (SLcurses_Window_Type *w, SLwchar_Type wch,
    SLcurses_Cell_Type *b;
    unsigned int i;
 
+   if ((w->_cury >= w->nrows) || (w->_curx >= w->ncols))
+     return;
+
    if (width <= 0)
      {
 	/* Backtrack to the start of any multicolumn character. */
@@ -642,9 +644,9 @@ static void SLcurses_placechar (SLcurses_Window_Type *w, SLwchar_Type wch,
      }
 }
 
-int SLcurses_waddch (SLcurses_Window_Type *win, SLtt_Char_Type attr)
+int SLcurses_waddch (SLcurses_Window_Type *win, SLcurses_Char_Type attr)
 {
-   SLtt_Char_Type ch;
+   SLcurses_Char_Type ch;
    SLsmg_Color_Type color;
    int width;
    int is_acs;
@@ -660,7 +662,7 @@ int SLcurses_waddch (SLcurses_Window_Type *win, SLtt_Char_Type attr)
 
    win->modified = 1;
 
-   ch = SLTT_EXTRACT_CHAR(attr);
+   ch = SLCURSES_EXTRACT_CHAR(attr);
    if (ch == 0) return -1;
 
    if (attr == ch)
