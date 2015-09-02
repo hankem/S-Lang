@@ -1,5 +1,39 @@
 NEWS for version 2.3.x                                             -*-text-*-
 
+24 bit color support
+====================
+
+  The SLtt interface has been modified to support 24 bit (true)
+  colors.  Until the next major release (version 3), this feature is
+  available for 64 bit Unix/VMS systems to keep binary compatibility.
+  Support for 32 bit systems will be added in version 3.
+
+  Since not all terminals support true color, and it is not supported
+  by terminfo, 24 bit color is disabled by default.  A list of
+  terminals that support true color may be found at
+  <https://gist.github.com/XVilka/8346728>.
+
+  To indicate that a terminal supports true color, set the value of
+  the environment variable COLORTERM to either "24bit" or "truecolor",
+  e.g.,
+
+      export COLORTERM=truecolor
+
+  Then to use 24 bit color in applications such as jed and slrn, use a
+  24bit RGB value in the form "#RRGGBB" as the name of the color.
+  For example, to set the color of the status line in jed to AliceBlue
+  (#F0F8FF) on a SlateGray (#708090) background, use
+
+      set_color ("status", "#F0F8FF", "#708090");
+
+  in the .jedrc file.  In slrn, to set the color of the author name to
+  the above colors use
+
+      color author "#F0F8FF" "#708090"
+
+  in the .slrnrc file.  Also note other character attributes may be
+  specified, e.g., "#F0F8FF;italics;underline".
+
 New Modules
 ===========
 

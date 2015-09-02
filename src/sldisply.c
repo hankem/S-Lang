@@ -89,21 +89,69 @@ USA.
 /* Colors:  These definitions are used for the display.  However, the
  * application only uses object handles which get mapped to this
  * internal representation.  The mapping is performed by the Color_Map
- * structure below. */
-
-#define CHAR_MASK	0x000000FF
-#define FG_MASK		0x0000FF00
-#define BG_MASK		0x00FF0000
-#define ATTR_MASK	0x3F000000
-#define BGALL_MASK	0x0FFF0000
-
-/* The 0x10000000 bit represents the alternate character set.  BGALL_MASK does
- * not include this attribute.
+ * structure below.
+ *
+ * Colors are encoded in 25 bits as follows:
+ * - Values 0-255 for standard palette
+ * - 256 for terminal's default color
+ * - 0x1RRGGBB for true colors
+ *
+ * The bits are split so we can maintain ABI compatibility on 64 bit machines.
  */
+#if SLTT_HAS_TRUECOLOR_SUPPORT && (SIZEOF_LONG == 8)
+static int Has_True_Color = 0;
+# if 0
+#  define FG_MASK_LOW		0x0000000000FFFFFFULL
+#  define FG_MASK_HIGH		0x0200000000000000ULL
+#  define BG_MASK		0x01FFFFFF00000000ULL
+#  define ATTR_MASK		0x000000003F000000ULL
+#  define INVALID_ATTR		0xFFFFFFFFFFFFFFFFULL
+#  define SLSMG_COLOR_DEFAULT	0x0000000000000100ULL
 
-#define GET_FG(fgbg) (((fgbg) & FG_MASK) >> 8)
-#define GET_BG(fgbg) (((fgbg) & BG_MASK) >> 16)
-#define MAKE_COLOR(fg, bg) (((fg) | ((bg) << 8)) << 8)
+#  define TRUE_COLOR_BIT		0x01000000ULL
+#  define IS_TRUE_COLOR(f)	((f) & TRUE_COLOR_BIT)
+#  define GET_FG(fgbg) ((((fgbg) & FG_MASK_HIGH) >> 33) | ((fgbg) & FG_MASK_LOW))
+#  define GET_BG(fgbg) (((fgbg) & BG_MASK) >> 32)
+#  define MAKE_COLOR(f, b) \
+   ((((f) << 33) & FG_MASK_HIGH) | ((f) & FG_MASK_LOW) \
+     | (((b) << 32) & BG_MASK))
+# else
+#  define FG_MASK_LOW		0x000000000000FF00ULL
+#  define FG_MASK_HIGH		0x0000FFFF00000000ULL
+#  define FG_TRUE_COLOR		0x0000000000000001ULL
+#  define BG_MASK_LOW		0x0000000000FF0000ULL
+#  define BG_MASK_HIGH		0xFFFF000000000000ULL
+#  define BG_TRUE_COLOR		0x0000000000000002ULL
+#  define ATTR_MASK		0x000000003F000000ULL
+#  define INVALID_ATTR		0xFFFFFFFFFFFFFFFFULL
+
+#  define SLSMG_COLOR_DEFAULT		0x00000100ULL
+#  define TRUE_COLOR_BIT		0x01000000ULL
+#  define IS_TRUE_COLOR(f)	((f) & TRUE_COLOR_BIT)
+#  define GET_FG(fgbg) \
+   ((((fgbg)&FG_TRUE_COLOR)<<24) | (((fgbg)&FG_MASK_HIGH)>>24) \
+     | (((fgbg)&FG_MASK_LOW)>>8))
+#  define GET_BG(fgbg) \
+   ((((fgbg)&BG_TRUE_COLOR)<<23) | (((fgbg)&BG_MASK_HIGH)>>40) \
+     | (((fgbg)&BG_MASK_LOW)>>16))
+#  define MAKE_COLOR(f, b) \
+   (((((f)&0x1000000)>>24) | (((f)&0xFF)<<8) | (((f)&(0xFFFF00))<<24)) \
+     | ((((b)&0x1000000)>>23) | (((b)&0xFF)<<16) | (((b)&(0xFFFF00))<<40)))
+# endif
+#else
+# undef SLTT_HAS_TRUECOLOR_SUPPORT
+# define SLTT_HAS_TRUECOLOR_SUPPORT 0
+# define FG_MASK_LOW		0x0000FF00UL
+# define FG_MASK_HIGH		0x00000000UL
+# define BG_MASK		0x00FF0000UL
+# define ATTR_MASK		0x3F000000UL
+# define INVALID_ATTR		0xFFFFFFFFUL
+# define SLSMG_COLOR_DEFAULT	0x000000FFUL
+# define IS_TRUE_COLOR(f)	(0)
+# define GET_FG(fgbg) (((fgbg) & FG_MASK_LOW)>>8)
+# define GET_BG(fgbg) (((fgbg) & BG_MASK) >> 16)
+# define MAKE_COLOR(fg, bg) (((fg)<<8) | ((bg)<<16))
+#endif
 
 int SLtt_Screen_Cols = 80;
 int SLtt_Screen_Rows = 24;
@@ -180,6 +228,10 @@ static SLCONST int RGB_to_BGR[] =
 
 static SLCONST char *Color_Fg_Str = "\033[3%dm";
 static SLCONST char *Color_Bg_Str = "\033[4%dm";
+#if SLTT_HAS_TRUECOLOR_SUPPORT
+static SLCONST char *Color_RGB_Fg_Str = "\033[38;2;%d;%d;%dm";
+static SLCONST char *Color_RGB_Bg_Str = "\033[48;2;%d;%d;%dm";
+#endif
 static SLCONST char *Default_Color_Fg_Str = "\033[39m";
 static SLCONST char *Default_Color_Bg_Str = "\033[49m";
 
@@ -247,7 +299,7 @@ static int Scroll_r1 = 0, Scroll_r2 = 23;
 static int Cursor_r, Cursor_c;	       /* 0 based */
 
 /* current attributes --- initialized to impossible value */
-static SLtt_Char_Type Current_Fgbg = 0xFFFFFFFFU;
+static SLtt_Char_Type Current_Fgbg = INVALID_ATTR;
 
 static int Cursor_Set;		       /* 1 if cursor position known, 0
 					* if not.  -1 if only row is known
@@ -1042,7 +1094,7 @@ static void del_eol (void)
      }
 
    if ((Del_Eol_Str != NULL)
-       && (Can_Background_Color_Erase || ((Current_Fgbg & ~0xFFU) == 0)))
+       && (Can_Background_Color_Erase || (Current_Fgbg == 0)))
      {
 	tt_write_string(Del_Eol_Str);
 	return;
@@ -1059,7 +1111,7 @@ static void del_eol (void)
 
 void SLtt_del_eol (void)
 {
-   if (Current_Fgbg != 0xFFFFFFFFU) SLtt_normal_video ();
+   if (Current_Fgbg != INVALID_ATTR) SLtt_normal_video ();
    del_eol ();
 }
 
@@ -1089,8 +1141,7 @@ static Color_Def_Type Color_Defs [MAX_COLOR_NAMES] =
      {"brightmagenta",	SLSMG_COLOR_BRIGHT_MAGENTA},
      {"brightcyan",	SLSMG_COLOR_BRIGHT_CYAN},
      {"white",		SLSMG_COLOR_BRIGHT_WHITE},
-#define SLSMG_COLOR_DEFAULT 0xFF
-     {"default",		SLSMG_COLOR_DEFAULT}
+     {"default",	SLSMG_COLOR_DEFAULT}
 };
 
 static int Brushes_Initialized = 0;
@@ -1098,7 +1149,7 @@ static int Brushes_Initialized = 0;
 static int initialize_brushes (void)
 {
    Brush_Info_Type *b, *bmax;
-   int bg;
+   SLtt_Char_Type bg;
 
    b = Brush_Table;
    bmax = b + JMAX_COLORS;
@@ -1106,7 +1157,7 @@ static int initialize_brushes (void)
    bg = 0;
    while (b < bmax)
      {
-	int fg = 7;
+	SLtt_Char_Type fg = 7;
 	while (b < bmax)
 	  {
 	     if (fg != bg)
@@ -1147,7 +1198,7 @@ static SLtt_Char_Type get_brush_attr (SLsmg_Color_Type color)
    Brush_Info_Type *b;
 
    if (NULL == (b = get_brush_info (color)))
-     return (SLtt_Char_Type)-1;
+     return INVALID_ATTR;
 
    if (SLtt_Use_Ansi_Colors)
      return b->fgbg;
@@ -1157,7 +1208,10 @@ static SLtt_Char_Type get_brush_attr (SLsmg_Color_Type color)
 
 static SLtt_Char_Type get_brush_fgbg (SLsmg_Color_Type color)
 {
-   return get_brush_info(color)->fgbg;
+   Brush_Info_Type *b = get_brush_info(color);
+   if (b == NULL)
+     return INVALID_ATTR;
+   return b->fgbg;
 }
 
 int SLtt_set_mono (int obj, SLFUTURE_CONST char *what, SLtt_Char_Type mask)
@@ -1302,11 +1356,17 @@ static SLtt_Char_Type fb_to_fgbg (SLtt_Char_Type f, SLtt_Char_Type b)
 {
    SLtt_Char_Type attr;
 
-   if (Max_Terminfo_Colors != 8)
+   if ((Max_Terminfo_Colors != 8)
+#if SLTT_HAS_TRUECOLOR_SUPPORT
+       || Has_True_Color
+#endif
+      )
      {
-	if (f != SLSMG_COLOR_DEFAULT) f %= Max_Terminfo_Colors;
-	if (b != SLSMG_COLOR_DEFAULT) b %= Max_Terminfo_Colors;
-	return ((f << 8) | (b << 16));
+	if ((f != SLSMG_COLOR_DEFAULT) && (0 == IS_TRUE_COLOR(f)))
+	  f %= Max_Terminfo_Colors;
+	if ((b != SLSMG_COLOR_DEFAULT) && (0 == IS_TRUE_COLOR(b)))
+	  b %= Max_Terminfo_Colors;
+	return MAKE_COLOR(f,b);
      }
 
    /* Otherwise we have 8 ansi colors.  Try to get bright versions
@@ -1328,8 +1388,45 @@ static SLtt_Char_Type fb_to_fgbg (SLtt_Char_Type f, SLtt_Char_Type b)
 	b &= 0x7;
      }
 
-   return ((f << 8) | (b << 16) | attr);
+   return MAKE_COLOR(f,b) | attr;
 }
+
+#if SLTT_HAS_TRUECOLOR_SUPPORT
+static int parse_hex_digit (char ch)
+{
+   if (('0' <= ch) && (ch <= '9')) return ch - '0';
+   if (('A' <= ch) && (ch <= 'F')) return 10 + ch - 'A';
+   if (('a' <= ch) && (ch <= 'f')) return 10 + ch - 'a';
+   return -1;
+}
+
+static int parse_true_color (const char *color, SLtt_Char_Type *c)
+{
+   SLtt_Char_Type rgb;
+   unsigned int i;
+   int h[6];
+
+   i = 0;
+   while (i < 6)
+     {
+	if (-1 == (h[i] = parse_hex_digit (color[i])))
+	  return -1;
+	i++;
+     }
+   if (color[i] != 0)
+     return -1;
+
+   if (i == 3)			       /* RRGGBB */
+     rgb = (h[0] << 20) | (h[0] << 16) | (h[1] << 12) | (h[1] << 8) | (h[2] << 4) | h[2];
+   else if ((i == 6) && (color[i] == 0))
+     rgb = (h[0] << 20) | (h[1] << 16) | (h[2] << 12) | (h[3] << 8) | (h[4] << 4) | h[5];
+   else
+     return -1;
+
+   *c = rgb | TRUE_COLOR_BIT;
+   return 0;
+}
+#endif
 
 /* This looks for colors with name form 'colorN'.  If color is of this
  * form, N is passed back via parameter list.
@@ -1337,6 +1434,11 @@ static SLtt_Char_Type fb_to_fgbg (SLtt_Char_Type f, SLtt_Char_Type b)
 static int parse_color_digit_name (SLCONST char *color, SLtt_Char_Type *f)
 {
    unsigned int i;
+
+#if SLTT_HAS_TRUECOLOR_SUPPORT
+   if (Has_True_Color && (color[0] == '#'))
+     return parse_true_color (color+1, f);
+#endif
 
    if (strncmp (color, "color", 5))
      return -1;
@@ -1417,7 +1519,7 @@ static int parse_color_and_attributes (SLCONST char *f, char *buf, size_t buflen
 
 static int make_color_fgbg (SLCONST char *fg, SLCONST char *bg, SLtt_Char_Type *fgbg)
 {
-   SLtt_Char_Type f = 0xFFFFFFFFU, b = 0xFFFFFFFFU;
+   SLtt_Char_Type f = INVALID_ATTR, b = INVALID_ATTR;
    SLCONST char *dfg, *dbg;
    unsigned int i;
    char bgbuf[16], fgbuf[16];
@@ -1461,7 +1563,7 @@ static int make_color_fgbg (SLCONST char *fg, SLCONST char *bg, SLtt_Char_Type *
 	  }
      }
 
-   if ((f == 0xFFFFFFFFU) || (b == 0xFFFFFFFFU))
+   if ((f == INVALID_ATTR) || (b == INVALID_ATTR))
      return -1;
 
    *fgbg = fb_to_fgbg (f, b) | fattr | battr;
@@ -1501,6 +1603,21 @@ void SLtt_set_alt_char_set (int i)
    tt_write_string (i ? Start_Alt_Chars_Str : End_Alt_Chars_Str );
    last_i = i;
 }
+
+#if SLTT_HAS_TRUECOLOR_SUPPORT
+static void write_truecolor (const char *fmt, SLtt_Char_Type c)
+{
+   char tmpbuf[32];
+   int r, g, b;
+
+   r = (int)((c>>16) & 0xFF);
+   g = (int)((c>>8) & 0xFF);
+   b = (int)(c & 0xFF);
+
+   sprintf (tmpbuf, fmt, r, g, b);
+   tt_write_string (tmpbuf);
+}
+#endif
 
 static void write_attributes (SLtt_Char_Type fgbg)
 {
@@ -1554,6 +1671,10 @@ static void write_attributes (SLtt_Char_Type fgbg)
 	  {
 	     if (fg0 == SLSMG_COLOR_DEFAULT)
 	       tt_write_string (Default_Color_Fg_Str);
+#if SLTT_HAS_TRUECOLOR_SUPPORT
+	     else if (IS_TRUE_COLOR(fg0))
+	       write_truecolor (Color_RGB_Fg_Str, fg0);
+#endif
 	     else
 	       tt_printf (Color_Fg_Str, COLOR_ARG(fg0, Is_Fg_BGR), 0);
 	  }
@@ -1563,6 +1684,10 @@ static void write_attributes (SLtt_Char_Type fgbg)
 	  {
 	     if (bg0 == SLSMG_COLOR_DEFAULT)
 	       tt_write_string (Default_Color_Bg_Str);
+#if SLTT_HAS_TRUECOLOR_SUPPORT
+	     else if (IS_TRUE_COLOR(bg0))
+	       write_truecolor (Color_RGB_Bg_Str, bg0);
+#endif
 	     else
 	       tt_printf (Color_Bg_Str, COLOR_ARG(bg0, Is_Bg_BGR), 0);
 	  }
@@ -1586,7 +1711,7 @@ void SLtt_reverse_video (int color)
 	     tt_write_string (Norm_Vid_Str);
 	  }
 	else tt_write_string (Rev_Vid_Str);
-	Current_Fgbg = 0xFFFFFFFFU;
+	Current_Fgbg = INVALID_ATTR;
 	return;
      }
 
@@ -2325,10 +2450,19 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 static void get_color_info (void)
 {
    SLCONST char *fg, *bg;
+   char *ct;
 
-   /* Allow easy mechanism to override inadequate termcap/terminfo files. */
-   if (SLtt_Use_Ansi_Colors == 0)
-     SLtt_Use_Ansi_Colors = (NULL != getenv ("COLORTERM"));
+   ct = getenv ("COLORTERM");
+
+   if (ct != NULL)
+     {
+	/* Allow easy mechanism to override inadequate termcap/terminfo files. */
+	SLtt_Use_Ansi_Colors = 1;
+#if SLTT_HAS_TRUECOLOR_SUPPORT
+	if ((0 == strcmp(ct, "truecolor")) || (0 == strcmp(ct, "24bit")))
+	  Has_True_Color = 1;
+#endif
+     }
 
    if (SLtt_Use_Ansi_Colors)
      Is_Color_Terminal = 1;
@@ -2337,6 +2471,8 @@ static void get_color_info (void)
    if (Can_Background_Color_Erase == 0)
      Can_Background_Color_Erase = (NULL != getenv ("COLORTERM_BCE"));
 #endif
+
+   /* terminfo does not support truecolor */
 
    if (-1 == get_default_colors (&fg, &bg))
      return;
@@ -3024,7 +3160,7 @@ int SLtt_reset_video (void)
    SLtt_normal_video ();	       /* MSKermit requires this  */
    tt_write_string(Norm_Vid_Str);
 
-   Current_Fgbg = 0xFFFFFFFFU;
+   Current_Fgbg = INVALID_ATTR;
    SLtt_set_alt_char_set (0);
    if (SLtt_Use_Ansi_Colors)
      {
@@ -3036,7 +3172,7 @@ int SLtt_reset_video (void)
 	     else tt_write_string ("\033[0m\033[m");
 	  }
 	else tt_write_string (Reset_Color_String);
-	Current_Fgbg = 0xFFFFFFFFU;
+	Current_Fgbg = INVALID_ATTR;
      }
    SLtt_erase_line ();
    SLtt_deinit_keypad ();

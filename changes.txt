@@ -89,6 +89,9 @@ Changes since 2.3.0
     works for both OSX and Windows.  (See #30,31)
 34. src/slcurses.h: SLtt_Char_Type and SLcurses_Char_Type were being
     used interchangably.
+35. src/sldisply.c: Added support for 24 bit color terminals based
+    upon a patch from Egmont Koblinger forwarded to me by Anton Kochkov.
+    See NEWS for usage.  (for 64 bit systems)
 
 {{{ Previous Versions
 

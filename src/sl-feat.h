@@ -54,6 +54,10 @@
 # define SLTT_HAS_NON_BCE_SUPPORT	0
 #endif
 
+/* Enable support for 24 bit colors.  (ignored on 32 bit systems) */
+#define SLTT_HAS_TRUECOLOR_SUPPORT	1
+
+
 /* If you want slang to assume that an xterm always has the background color
  * erase feature, then set this to 1.  Otherwise, it will check the terminfo
  * database.  This may or may not be a good idea since most good color xterms
