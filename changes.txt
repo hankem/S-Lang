@@ -95,6 +95,9 @@ Changes since 2.3.0
 36. src/slposio.c: Rename the posix_close function to avoid conflict
     with an upcoming POSIX standard. (patch provided by Thomas
     Petazzoni).
+37. slposio.c,slstdio.c,slposdir.c: Do not include <sys/fcntl.h> if
+    <fcntl.h> was included. (variation on a patch provided by Thomas
+    Petazzoni).
 
 {{{ Previous Versions
 
