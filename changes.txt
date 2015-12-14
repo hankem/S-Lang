@@ -92,6 +92,9 @@ Changes since 2.3.0
 35. src/sldisply.c: Added support for 24 bit color terminals based
     upon a patch from Egmont Koblinger forwarded to me by Anton Kochkov.
     See NEWS for usage.  (for 64 bit systems)
+36. src/slposio.c: Rename the posix_close function to avoid conflict
+    with an upcoming POSIX standard. (patch provided by Thomas
+    Petazzoni).
 
 {{{ Previous Versions
 
