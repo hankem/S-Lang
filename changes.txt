@@ -101,6 +101,9 @@ Changes since 2.3.0
 38. slsh/: Move processing of the SLSH_PATH environment variable to
     slsh.rc.  Also, guess the slsh lib path based upon the location of
     the executable.
+39. modules/onig-module.c: Only allow certain flags for onig_search.
+    Others cause onig_search to reinterpret the meaning of the region
+    argument.
 
 {{{ Previous Versions
 

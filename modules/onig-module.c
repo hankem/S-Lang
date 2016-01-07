@@ -437,7 +437,7 @@ static void do_onig_new (void)
 
    if (NULL == (o = (Onig_Type *) SLcalloc (1, sizeof (Onig_Type))))
      {
-	SLfree ((char *)pattern);
+	SLang_free_slstring ((char *)pattern);
 	return;
      }
 
@@ -526,6 +526,11 @@ static int do_onig_search (void)
       case 3:
 	if (-1 == pop_onig_option (&option))
 	  return -1;
+	if (option & ~(ONIG_OPTION_NOTBOL|ONIG_OPTION_NOTEOL))
+	  {
+	     SLang_verror (SL_InvalidParm_Error, "onig_search: invalid option flags");
+	     return -1;
+	  }
 	break;
       case 2:
 	 break;
@@ -726,6 +731,9 @@ static SLang_IConstant_Type Onig_Consts [] =
    MAKE_ICONSTANT ("ONIG_OPTION_NEGATE_SINGLELINE", ONIG_OPTION_NEGATE_SINGLELINE),
    MAKE_ICONSTANT ("ONIG_OPTION_DONT_CAPTURE_GROUP", ONIG_OPTION_DONT_CAPTURE_GROUP),
    MAKE_ICONSTANT ("ONIG_OPTION_CAPTURE_GROUP", ONIG_OPTION_CAPTURE_GROUP),
+
+   MAKE_ICONSTANT ("ONIG_OPTION_NOTBOL", ONIG_OPTION_NOTBOL),
+   MAKE_ICONSTANT ("ONIG_OPTION_NOTEOL", ONIG_OPTION_NOTEOL),
 
    SLANG_END_ICONST_TABLE
 };
