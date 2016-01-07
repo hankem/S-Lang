@@ -104,6 +104,8 @@ Changes since 2.3.0
 39. modules/onig-module.c: Only allow certain flags for onig_search.
     Others cause onig_search to reinterpret the meaning of the region
     argument.
+40. slsh/etc/slsh.rc: Add support for multiple paths to the
+    *_to_slang_load_path functions.
 
 {{{ Previous Versions
 
