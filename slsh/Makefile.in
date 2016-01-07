@@ -160,19 +160,20 @@ install_docs:
 		  exit 1; \
 		fi; \
 	done
+	$(INSTALL_DATA) doc/man/slsh.1 $(DEST_MAN_DIR)/
 #
-install: slsh install_directories install_lib_files install_rline_files \
- install_scripts install_help install_docs
+install_slsh:
 	$(INSTALL) $(OBJDIR)/slsh $(DEST_BIN_DIR)/
-	$(INSTALL_DATA) etc/slsh.rc $(DEST_SLSH_CONF_DIR)/
-	echo 'prepend_to_slang_load_path("$(SLSH_LOCALLIB_DIR)");' >> $(DEST_SLSH_CONF_DIR)/slsh.rc
-	$(INSTALL_DATA) doc/man/slsh.1 $(DEST_MAN_DIR)/
-install-static: static install_directories install_lib_files install_rline_files \
- install_scripts install_help install_docs
+install_static_slsh:
 	$(INSTALL) $(SOBJDIR)/slsh $(DEST_BIN_DIR)/
+install_slshrc:
 	$(INSTALL_DATA) etc/slsh.rc $(DEST_SLSH_CONF_DIR)/
 	echo 'prepend_to_slang_load_path("$(SLSH_LOCALLIB_DIR)");' >> $(DEST_SLSH_CONF_DIR)/slsh.rc
-	$(INSTALL_DATA) doc/man/slsh.1 $(DEST_MAN_DIR)/
+	echo 'prepend_to_slang_load_path(getenv($(SLSH_PATH_ENV)));' >> $(DEST_SLSH_CONF_DIR)/slsh.rc
+install_common: install_directories install_lib_files install_rline_files install_scripts install_help install_docs
+#
+install: slsh install_common install_slsh install_slshrc
+install-static: static install_common install_static_slsh install_slshrc
 #---------------------------------------------------------------------------
 # Housekeeping
 #---------------------------------------------------------------------------
@@ -184,5 +185,6 @@ distclean: clean
 #
 .PHONY: all clean distclean symlinks slsh install install_directories \
   install_lib_files install_rline_files install_scripts install_help \
-  install_docs install-static static
+  install_docs install-static static install_common \
+  install_slsh install_static_slsh install_slshrc
 

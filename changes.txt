@@ -98,6 +98,9 @@ Changes since 2.3.0
 37. slposio.c,slstdio.c,slposdir.c: Do not include <sys/fcntl.h> if
     <fcntl.h> was included. (variation on a patch provided by Thomas
     Petazzoni).
+38. slsh/: Move processing of the SLSH_PATH environment variable to
+    slsh.rc.  Also, guess the slsh lib path based upon the location of
+    the executable.
 
 {{{ Previous Versions
 

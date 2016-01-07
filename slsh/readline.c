@@ -950,11 +950,11 @@ static void set_rline_update_hook (void)
       case 3:
 	if (-1 == SLang_pop_anytype (&cb->cd))
 	  return;
-
+	/* drop */
       case 2:
 	if (NULL == (cb->update_hook = SLang_pop_function ()))
 	  goto free_and_return;
-
+	/* drop */
       case 1:
 	if (NULL == (cb->mmt = pop_sri_type (&cb->sri)))
 	  goto free_and_return;
@@ -979,6 +979,7 @@ free_and_return:
    free_cb_info (cb);
 }
 
+/* On stack: (rli, callback) */
 static int pop_set_rline_cb_args (SLang_MMT_Type **mmtp,
 				  Rline_CB_Type **cbp, SLang_Name_Type **ntp)
 {

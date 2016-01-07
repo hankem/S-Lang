@@ -5,6 +5,7 @@
 
 private define dir_exists (dir)
 {
+   if (dir == NULL) return 0;
    variable s = stat_file (dir);
    if (s == NULL) return 0;
    return stat_is ("dir", s.st_mode);
