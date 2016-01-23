@@ -577,6 +577,23 @@ mw_test
 
 --------------------------------------------------------------
 
+student_t_cdf
+
+ SYNOPSIS
+  Compute the Student-t CDF
+
+ USAGE
+  cdf = student_t_cdf (t, n)
+
+ DESCRIPTION
+This function computes the CDF for the Student-t distribution for n
+degrees of freedom.
+
+ SEE ALSO
+  t_test, normal_cdf
+
+--------------------------------------------------------------
+
 f_test2
 
  SYNOPSIS

@@ -256,17 +256,18 @@ test_other_formats ("0377", "%li", 255L);
 
 test_other_formats ("255", "%I", 255L);
 test_other_formats ("0xFF", "%I", 255L);
+test_other_formats ("0XFF", "%I", 255L);
 test_other_formats ("0377", "%I", 255L);
 
-test_other_formats ("FF", "%x", 255);
-test_other_formats ("FF", "%hx", 255h);
-test_other_formats ("FF", "%lx", 255L);
-test_other_formats ("FF", "%X", 255L);
+test_other_formats ("FF", "%x", 255u);
+test_other_formats ("FF", "%hx", 255uh);
+test_other_formats ("FF", "%lx", 255UL);
+test_other_formats ("FF", "%X", 255UL);
 
-test_other_formats ("377", "%o", 255);
-test_other_formats ("377", "%ho", 255h);
-test_other_formats ("377", "%lo", 255L);
-test_other_formats ("377", "%O", 255L);
+test_other_formats ("377", "%o", 255U);
+test_other_formats ("377", "%ho", 255uh);
+test_other_formats ("377", "%lo", 255UL);
+test_other_formats ("377", "%O", 255UL);
 
 test_other_formats ("1234", "%u", 1234U);
 test_other_formats ("1234", "%hu", 1234UH);

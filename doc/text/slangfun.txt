@@ -2282,7 +2282,7 @@ access
  permissions to the file, otherwise it will return -1 and set
  `errno' accordingly.
 
- Access to a file depend not only upon the file itself, but also upon
+ Access to a file depends not only upon the file itself, but also upon
  the permissions of each of the directories in the pathname.  The
  checks are done using the real user and group ids of the process, and
  not using the effective ids.
@@ -5146,7 +5146,7 @@ get_environ
 
  DESCRIPTION
    The `get_environ' function returns an array of strings
-   representing the environmen variables defined for the current
+   representing the environment variables defined for the current
    process.  Each element of the array will be of the form
    `NAME=VALUE'.
 
@@ -8892,8 +8892,10 @@ sscanf
        i     Matches either a hexadecimal integer, decimal integer, or
              octal integer.
        I     Equivalent to `li'.
-       x     Matches a hexadecimal integer.
-       X     Matches a long hexadecimal integer (same as `lx').
+       o     Matches an unsigned octal integer.
+       O     Matches an unsigned long octal integer.
+       x     Matches an unsigned hexadecimal integer.
+       X     Matches a long unsigned hexadecimal integer (same as `lx').
        e,f,g Matches a decimal floating point number (Float_Type).
        E,F,G Matches a double precision floating point number, same as `lf'.
        s     Matches a string of non-whitespace characters (String_Type).

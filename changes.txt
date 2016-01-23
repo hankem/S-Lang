@@ -106,6 +106,8 @@ Changes since 2.3.0
     argument.
 40. slsh/etc/slsh.rc: Add support for multiple paths to the
     *_to_slang_load_path functions.
+41. src/slscanf.c: The formats %x and %o were producing a signed values instead
+    of an unsigned ones.
 
 {{{ Previous Versions
 

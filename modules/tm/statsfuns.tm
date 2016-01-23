@@ -383,6 +383,16 @@
 \seealso{mann_whitney_cdf, ks_test2, chisqr_test, t_test}
 \done
 
+
+\function{student_t_cdf}
+\synopsis{Compute the Student-t CDF}
+\usage{cdf = student_t_cdf (t, n)}
+\description
+This function computes the CDF for the Student-t distribution for n
+degrees of freedom.
+\seealso{t_test, normal_cdf}
+\done
+
 \function{f_test2}
 \synopsis{Apply the Two-sample F test}
 \usage{p = f_test2 (X, Y [,&F]}

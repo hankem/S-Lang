@@ -377,8 +377,10 @@
        i     Matches either a hexadecimal integer, decimal integer, or
              octal integer.
        I     Equivalent to `li'.
-       x     Matches a hexadecimal integer.
-       X     Matches a long hexadecimal integer (same as `lx').
+       o     Matches an unsigned octal integer.
+       O     Matches an unsigned long octal integer.
+       x     Matches an unsigned hexadecimal integer.
+       X     Matches a long unsigned hexadecimal integer (same as `lx').
        e,f,g Matches a decimal floating point number (Float_Type).
        E,F,G Matches a double precision floating point number, same as `lf'.
        s     Matches a string of non-whitespace characters (String_Type).

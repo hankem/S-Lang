@@ -539,6 +539,7 @@ int _pSLang_sscanf (void)
 	int no_assign;
 	int is_short;
 	int is_long;
+	int force_signed;
 	int status;
 	char chf;
 	unsigned int width;
@@ -635,8 +636,8 @@ int _pSLang_sscanf (void)
 
 	map = map10;
 	base = 10;
-
-	try_again:		       /* used by i, x, and o, conversions */
+	force_signed = 0;
+try_again:		       /* used by i, x, and o, conversions */
 	switch (chf)
 	  {
 	   case 0:
@@ -684,6 +685,7 @@ int _pSLang_sscanf (void)
 
 	   case 'I':
 	     is_long = 1;
+	     /* drop */
 	   case 'i':
 	     if ((s + 1 >= smax)
 		 || (*s != '0'))
@@ -695,27 +697,37 @@ int _pSLang_sscanf (void)
 		  chf = 'x';
 	       }
 	     else chf = 'o';
+	     force_signed = 1;
 	     goto try_again;
 
 	   case 'O':
 	     is_long = 1;
+	     /* drop */
 	   case 'o':
 	     map = map8;
 	     base = 8;
-	     chf = 'd';
+	     if (force_signed)
+	       chf = 'd';
+	     else
+	       chf = 'u';
 	     goto try_again;
 
 	   case 'X':
 	     is_long = 1;
+	     /* drop */
 	   case 'x':
 	     base = 16;
 	     map = map16;
-	     chf = 'd';
+	     if (force_signed)
+	       chf = 'd';
+	     else
+	       chf = 'u';
 	     goto try_again;
 
 	   case 'E':
 	   case 'F':
 	     is_long = 1;
+	     /* drop */
 	   case 'e':
 	   case 'f':
 	   case 'g':
