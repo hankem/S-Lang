@@ -108,6 +108,8 @@ Changes since 2.3.0
     *_to_slang_load_path functions.
 41. src/slscanf.c: The formats %x and %o were producing a signed values instead
     of an unsigned ones.
+42. src/slconfig.h,...: Added longlong functions to win32, use
+    "%I64d/u" format when printing long long on win32.
 
 {{{ Previous Versions
 

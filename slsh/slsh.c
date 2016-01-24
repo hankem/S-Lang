@@ -433,7 +433,7 @@ static int setup_paths (const char *pgm)
      {
 	char *dir;
 	dir = prepend_exec_root (pgm, "\\lib\\slang\\v2\\modules", pathbuf, sizeof(pathbuf));
-	if (-1 == SLang_set_module_load_path (slshdir))
+	if (-1 == SLang_set_module_load_path (dir))
 	  return -1;
      }
 #endif

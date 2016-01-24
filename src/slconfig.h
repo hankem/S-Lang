@@ -283,10 +283,18 @@ USA.
 /* #define gid_t int */
 /* #define off_t int */
 /* #define size_t unsigned int */
-#define SIZEOF_OFF_T	4
-#define SIZEOF_SIZE_T	4
 
-#undef HAVE_LONG_LONG
+#if defined(__x86_64__) || defined(__LP64__)   /* gcc only??? */
+/* 64-bit */
+# define SIZEOF_OFF_T	8
+# define SIZEOF_SIZE_T	8
+#else
+# define SIZEOF_OFF_T	4
+# define SIZEOF_SIZE_T	4
+#endif
+
+#define HAVE_LONG_LONG 1
+#define SIZEOF_LONG_LONG 8
 
 #define HAVE_SETVBUF
 

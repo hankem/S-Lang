@@ -2108,21 +2108,25 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	   case 'u':
 	   case 'X':
 	   case 'x':
-	     if (use_long)
-	       {
 #ifdef HAVE_LONG_LONG
-		  if (use_long > 1)
-		    {
-		       if (-1 == SLang_pop_long_long (&llong_var))
-			 return out;
-		       *f++ = 'l';
-		    }
-		  else
-#endif
+	     if (use_long > 1)
+	       {
+		  if (-1 == SLang_pop_long_long (&llong_var))
+		    return out;
+# ifdef __WIN32__
+		  *f++ = 'I'; *f++ = '6'; *f++ = '4';
+# else
+		  *f++ = 'l'; *f++ = 'l';
+# endif
+	       }
+	     else
+#endif				       /* HAVE_LONG_LONG */
+	       if (use_long)
+		 {
 		    if (-1 == SLang_pop_long (&long_var))
 		      return out;
-		  *f++ = 'l';
-	       }
+		    *f++ = 'l';
+		 }
 	     else if (-1 == SLang_pop_int (&int_var))
 	       return out;
 	     break;

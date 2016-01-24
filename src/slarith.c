@@ -1261,10 +1261,10 @@ static char *arith_string (SLtype type, VOID_STAR v)
 	break;
 #ifdef HAVE_LONG_LONG
       case SLANG_LLONG_TYPE:
-	sprintf (s, "%lld", *(long long *) v);
+	sprintf (s, SLFMT_LLD, *(long long *) v);
 	break;
       case SLANG_ULLONG_TYPE:
-	sprintf (s, "%llu", *(unsigned long long *) v);
+	sprintf (s, SLFMT_LLU, *(unsigned long long *) v);
 	break;
 #endif
 #if SLANG_HAS_FLOAT

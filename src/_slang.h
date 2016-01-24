@@ -523,6 +523,16 @@ extern int _pSLang_push_int64(_pSLint64_Type);
 extern int _pSLang_push_uint64 (_pSLuint64_Type);
 #endif
 
+#ifdef HAVE_LONG_LONG
+# ifdef __WIN32__
+#  define SLFMT_LLD  "%I64d"
+#  define SLFMT_LLU  "%I64u"
+# else
+#  define SLFMT_LLD  "%lld"
+#  define SLFMT_LLU  "%llu"
+# endif
+#endif
+
 typedef union
 {
 #if SLANG_HAS_FLOAT

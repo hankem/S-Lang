@@ -217,12 +217,12 @@ static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
 
 #ifdef HAVE_LONG_LONG
       case LLONG_TOKEN:
-	sprintf (numbuf, "%lld", tok->v.llong_val);
+	sprintf (numbuf, SLFMT_LLD, tok->v.llong_val);
 	s = numbuf;
 	break;
 
       case ULLONG_TOKEN:
-	sprintf (numbuf, "%llu", tok->v.ullong_val);
+	sprintf (numbuf, SLFMT_LLU, tok->v.ullong_val);
 	s = numbuf;
 	break;
 #endif
@@ -2345,11 +2345,11 @@ static void byte_compile_token (_pSLang_Token_Type *tok)
 
 #ifdef HAVE_LONG_LONG
       case LLONG_TOKEN:
-	sprintf (b3, "%lld", tok->v.llong_val);
+	sprintf (b3, SLFMT_LLD, tok->v.llong_val);
 	break;
 
       case ULLONG_TOKEN:
-	sprintf (b3, "%llu", tok->v.ullong_val);
+	sprintf (b3, SLFMT_LLU, tok->v.ullong_val);
 	break;
 #endif
       case _BSTRING_TOKEN:
