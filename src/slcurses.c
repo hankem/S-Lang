@@ -60,7 +60,7 @@ USA.
 
 SLcurses_Window_Type *SLcurses_Stdscr;
 int SLcurses_Esc_Delay = 150;	       /* 0.15 seconds */
-SLcurses_Char_Type SLcurses_Acs_Map [256];
+SLcurses_Char_Type SLcurses_Acs_Map [128];
 int SLcurses_Is_Endwin = 1;
 int SLcurses_Num_Colors = 8;
 

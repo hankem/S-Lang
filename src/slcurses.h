@@ -28,7 +28,7 @@ USA.
 /* This is a temporary hack until lynx is fixed to not include this file. */
 #ifndef LYCURSES_H
 
-typedef unsigned int SLcurses_Char_Type;
+typedef unsigned long SLcurses_Char_Type;
 typedef struct SLcurses_Cell_Type
 {
    SLcurses_Char_Type main;
@@ -242,7 +242,7 @@ extern int SLcurses_Is_Endwin;
    (w)->scroll_max=(w)->nrows, \
    wscrl((w), -1))
 
-extern SLcurses_Char_Type SLcurses_Acs_Map [256];
+extern SLcurses_Char_Type SLcurses_Acs_Map [128];
 #define acs_map SLcurses_Acs_Map
 
 #define ACS_ULCORNER (acs_map[SLSMG_ULCORN_CHAR])

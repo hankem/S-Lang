@@ -110,6 +110,8 @@ Changes since 2.3.0
     of an unsigned ones.
 42. src/slconfig.h,...: Added longlong functions to win32, use
     "%I64d/u" format when printing long long on win32.
+43. src/slcurses.c: Changed the data type of SLcurses_Char_Type back
+    to long[128] (change #34 broke backward compatibility)
 
 {{{ Previous Versions
 
