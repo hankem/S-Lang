@@ -677,6 +677,44 @@ define test_struct_merge ()
 }
 test_struct_merge ();
 
+private define test_push_struct_fields ()
+{
+   variable field, fields = ["foo", "bar", "baz"];
+   variable v0 = {"20", "30", "40"}, v1, v2;
+
+   variable s = @Struct_Type(fields);
+   set_struct_fields (s, __push_list (v0));
+
+   variable i, n;
+
+   % usage form 1
+   n = _push_struct_field_values(s);
+   if (n != length (fields))
+     failed ("Expected _push_struct_field_values to return %d, got %d", length(fields), n);
+
+   _for i (0, n-1, 1)
+     {
+	v1 = ();
+	v2 = get_struct_field (s, fields[i]);
+	if (v1 != v2)
+	  failed ("Expecting _push_struct_field_values to push %S at i=%d, found %S", v2, i, v1);
+     }
+
+   % usage form 2
+   v1 = {_push_struct_field_values (s, fields)};
+   ifnot (_eqs (v1, v0))
+     failed ("_push_struct_field_values usage form 2 produced incorrect result");
+
+   v2 = { _push_struct_field_values (s, String_Type[0]) };
+   if (length (v2) != 0)
+     failed ("Expected _push_struct_field_values to return nothing for an empty array");
+
+   if (NULL != _push_struct_field_values (s, "b i z a r r e"))
+     failed ("_push_struct_field_values failed to return NULL for non-existent field");
+}
+
+test_push_struct_fields ();
+
 print ("Ok\n");
 exit (0);
 

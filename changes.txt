@@ -112,6 +112,8 @@ Changes since 2.3.0
     "%I64d/u" format when printing long long on win32.
 43. src/slcurses.c: Changed the data type of SLcurses_Char_Type back
     to long[128] (change #34 broke backward compatibility)
+44. src/slstruct.c: Optional argument to _push_struct_field_values may
+    be used to specify the fields to be pushed.
 
 {{{ Previous Versions
 

@@ -215,13 +215,15 @@ static _pSLstruct_Field_Type *find_field_strcmp (_pSLang_Struct_Type *s, SLCONST
 {
    _pSLstruct_Field_Type *f, *fmax;
 
+   if (NULL != (f = find_field_in_fields (s->fields, s->nfields, name)))
+     return f;
+
    f = s->fields;
    fmax = f + s->nfields;
 
    while (f < fmax)
      {
-	if ((name == f->name)
-	    || (0 == strcmp (name, f->name)))
+	if (0 == strcmp (name, f->name))
 	  return f;
 
 	f++;
@@ -1931,15 +1933,57 @@ static void get_struct_field_names (_pSLang_Struct_Type *s)
    SLang_push_array (a, 1);
 }
 
-static int push_struct_fields (_pSLang_Struct_Type *s)
+static void push_struct_fields_intrin (void)
 {
+   _pSLang_Struct_Type *s;
    _pSLstruct_Field_Type *f, *fmax;
+   SLang_Array_Type *at = NULL;
    int num;
+
+   switch (SLang_Num_Function_Args)
+     {
+      default:
+	SLang_verror (SL_Usage_Error, "Usage: Incorrect number of arguments passed, expecting one or two arguments");
+	return;
+      case 2:
+	if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
+	  return;
+	/* drop */
+      case 1:
+	if (-1 == SLang_pop_struct (&s))
+	  {
+	     SLang_free_array (at);    /* NULL ok */
+	     return;
+	  }
+	break;
+     }
+
+   if (at != NULL)
+     {
+	char **namep, **namep_max;
+	int ret = 0;
+
+	namep = (char **)at->data;
+	namep_max = namep + at->num_elements;
+	while ((ret == 0) && (namep < namep_max))
+	  {
+	     /* Use strcmp method since there is no guarantee that the array is one of slstrings */
+	     if (NULL == (f = find_field_strcmp (s, *namep)))
+	       ret = SLang_push_null ();
+	     else
+	       ret = _pSLpush_slang_obj (&f->obj);
+
+	     namep++;
+	  }
+	SLang_free_array (at);
+	free_struct (s);
+	return;
+     }
 
    f = s->fields;
    fmax = f + s->nfields;
-
    num = 0;
+
    while (fmax > f)
      {
 	fmax--;
@@ -1948,8 +1992,8 @@ static int push_struct_fields (_pSLang_Struct_Type *s)
 
 	num++;
      }
-
-   return num;
+   SLang_free_struct (s);
+   (void) SLang_push_int (num);
 }
 
 /* Syntax: set_struct_field (s, name, value); */
@@ -2083,7 +2127,7 @@ static SLang_Intrin_Fun_Type Struct_Table [] =
 {
    MAKE_INTRINSIC_1("get_struct_field_names", get_struct_field_names, SLANG_VOID_TYPE, SLANG_STRUCT_TYPE),
    MAKE_INTRINSIC_1("get_struct_field", get_struct_field, SLANG_VOID_TYPE, SLANG_STRING_TYPE),
-   MAKE_INTRINSIC_1("_push_struct_field_values", push_struct_fields, SLANG_INT_TYPE, SLANG_STRUCT_TYPE),
+   MAKE_INTRINSIC_0("_push_struct_field_values", push_struct_fields_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("set_struct_field", struct_set_field, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("set_struct_fields", set_struct_fields, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("is_struct_type", is_struct_type, SLANG_INT_TYPE),

@@ -210,11 +210,36 @@
 \function{_push_struct_field_values}
 \synopsis{Push the values of a structure's fields onto the stack}
 \usage{Integer_Type num = _push_struct_field_values (Struct_Type s)}
+\altusage{(v1,v2,...,vN) = _push_struct_field_values (Struct_Type s, Array_Type names)}
 \description
-  The \ifun{_push_struct_field_values} function pushes the values of
-  all the fields of a structure onto the stack, returning the
-  number of items pushed.  The fields are pushed such that the last
-  field of the structure is pushed first.
+ The \ifun{_push_struct_field_values} function may be used to obtain
+ the values of one of more fields of a structure.  This function has
+ two usage forms.
+
+ The first form pushes the values of all the fields of a structure
+ onto the stack, returning the number of items pushed.  The fields are
+ pushed such that the last field of the structure is pushed first.
+
+ The second form has an additional array argument that specifies the
+ names of the fields to process.  It returns the values in the order
+ specified by the array.  Unlike the first form, it does not return
+ the number of items pushed.
+\example
+#v+
+   s = struct {foo=1, bar="seven", z = "zz"};
+
+   % Form 1
+   n = _push_struct_field_values (s);  % ==> n = 3
+   list = __pop_list (n); % ==> list = {"zz", "seven", 1};
+
+   % Form 2
+   list = {_push_struct_field_values (s, ["foo", "bar", "z"])};
+   % ==> list = {1, "seven", "zz"};
+
+   % Form 2
+   list = {_push_struct_field_values (s, ["z", "foo"])};
+   % ==> list = {"zz", 1};
+#v-
 \seealso{get_struct_field_names, get_struct_field}
 \done
 
