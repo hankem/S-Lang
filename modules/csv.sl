@@ -375,11 +375,15 @@ Qualifiers:\n\
 	     comment = comment,
 	  };
      }
-   else if (typeof (fp) != File_Type)
+   else
      {
-	fp = fopen (fp, "r");
-	if (fp == NULL)
-	  throw OpenError, "Unable to open CSV file"$;
+	if (type != File_Type)
+	  {
+	     fp = fopen (fp, "r");
+	     if (fp == NULL)
+	       throw OpenError, "Unable to open CSV file"$;
+	  }
+
 	func_data = struct
 	  {
 	     fp = fp,
@@ -391,6 +395,7 @@ Qualifiers:\n\
 	loop (skiplines)
 	  () = fgets (&line, fp);
      }
+
    variable csv = struct
      {
 	decoder = _csv_decoder_new (func, func_data, delim, quote, flags),

@@ -1,7 +1,7 @@
-#<already-handled-by-runtest.sh>
-prepend_to_slang_load_path ("..");
-set_import_module_path ("../${ARCH}objs:"$ + get_import_module_path ());
-#</already-handled-by-runtest.sh>
+% These tests load the uninstalled version of slsh.rc.  The
+% installation script appends code for SLSH_PATH processing.  Since
+% the uninstalled version of slsh.rc lacks this code, it is added here.
+prepend_to_slang_load_path(getenv("SLSH_PATH"));
 
 define testing_module (m)
 {

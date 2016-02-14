@@ -25,11 +25,8 @@ He will not go behind his father's saying,\n\
 And he likes having thought of it so well\n\
 He says again, \"Good fences make good neighbors.\"");
 
-private define test_csv ()
+private define test_csv (file)
 {
-   variable file = sprintf ("/tmp/testcsv-%ld.csv", _time() mod getpid());
-   csv_writecol (file, Table);
-
    variable names = get_struct_field_names (Table);
 
    variable table = csv_readcol (file;has_header);
@@ -50,6 +47,12 @@ private define test_csv ()
 	  }
      }
 
+   if (typeof(file) == File_Type)
+     {
+	clearerr (file);
+	() = fseek (file, 0, SEEK_SET);
+     }
+
    table = csv_readcol (file, 1, 3; has_header);
    if (any(names[[1,3]-1] != get_struct_field_names (table)))
      {
@@ -65,15 +68,16 @@ private define test_csv ()
 	     return;
 	  }
      }
-
-   () = remove (file);
 }
 
 define slsh_main ()
 {
    testing_module ("csv");
 
-   test_csv ();
-
+   variable file = sprintf ("/tmp/testcsv-%ld.csv", _time() mod getpid());
+   csv_writecol (file, Table);
+   test_csv (file);
+   test_csv (fopen (file, "r"));
+   () = remove (file);
    end_test ();
 }

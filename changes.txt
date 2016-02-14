@@ -119,6 +119,11 @@ Changes since 2.3.0
 46. src/slstd.c,slstrops.c: Improve the speed of sprintf by reducing
     the number of reallocs and special casing strings in the
     _pSLstring_intrinsic function.
+47. modules/cvs.sl: Reading a CSV file from an open file descriptor
+    (e.g., stdin) was failing.  The updated regression test also
+    exposed a side effect of change #38: the uninstalled version of
+    slsh.rc lacks processing of SLSH_PATH.  Processing of SLSH_PATH
+    was added to the test.sl include file.
 
 {{{ Previous Versions
 

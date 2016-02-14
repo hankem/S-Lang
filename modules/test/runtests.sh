@@ -8,6 +8,7 @@ export SLANG_MODULE_PATH="`pwd`/../${ARCH}objs"
 export LD_LIBRARY_PATH="$ROOT/src/${ARCH}elfobjs"
 
 run_test_pgm="$SLSHROOT/${ARCH}objs/slsh_exe -n -g"
+#run_test_pgm="$SLSHROOT/${ARCH}objs/slsh_exe -n -g $SLSHROOT/scripts/sldb"
 runprefix="$SLTEST_RUN_PREFIX"
 #runprefix="valgrind --tool=memcheck --leak-check=yes --error-limit=no --num-callers=25"
 #runprefix="gdb --args"
@@ -27,14 +28,14 @@ echo
 
 n_failed=0
 tests_failed=""
-for test in $@
+for testxxx in $@
 do
-    $runprefix $run_test_pgm $test
+    $runprefix $run_test_pgm $testxxx
 
     if [ $? -ne 0 ]
     then
 	n_failed=`expr $n_failed + 1`
-	tests_failed="$tests_failed $test"
+	tests_failed="$tests_failed $testxxx"
     fi
 done
 
