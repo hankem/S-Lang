@@ -1906,7 +1906,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 
 	if (len + dlen >= malloc_len)
 	  {
-	     malloc_len = len + dlen;
+	     malloc_len = len + dlen + 512;
 	     if (out == NULL) outp = (char *)SLmalloc(malloc_len + 1);
 	     else outp = (char *)SLrealloc(out, malloc_len + 1);
 	     if (NULL == outp)
@@ -2176,6 +2176,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 
 	if (len + guess_size > malloc_len)
 	  {
+	     guess_size += 512;
 	     outp = (char *) SLrealloc(out, len + guess_size + 1);
 	     if (outp == NULL)
 	       {

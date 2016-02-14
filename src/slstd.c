@@ -262,7 +262,12 @@ void _pSLstring_intrinsic (void) /*{{{*/
    SLang_Object_Type x;
    char *s;
 
-   if (SLang_pop (&x)) return;
+   if (SLANG_STRING_TYPE == SLang_peek_at_stack ())
+     return;
+
+   if (-1 == SLang_pop (&x))
+     return;
+
    if (NULL != (s = _pSLstringize_object (&x)))
      _pSLang_push_slstring (s);
 

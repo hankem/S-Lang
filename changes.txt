@@ -116,6 +116,9 @@ Changes since 2.3.0
     be used to specify the fields to be pushed.
 45. src/sllimits.h: Bumped up the size of the slsring table.  A future
     version will dynamically resize the table.
+46. src/slstd.c,slstrops.c: Improve the speed of sprintf by reducing
+    the number of reallocs and special casing strings in the
+    _pSLstring_intrinsic function.
 
 {{{ Previous Versions
 
