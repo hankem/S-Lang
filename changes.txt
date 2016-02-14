@@ -114,6 +114,8 @@ Changes since 2.3.0
     to long[128] (change #34 broke backward compatibility)
 44. src/slstruct.c: Optional argument to _push_struct_field_values may
     be used to specify the fields to be pushed.
+45. src/sllimits.h: Bumped up the size of the slsring table.  A future
+    version will dynamically resize the table.
 
 {{{ Previous Versions
 

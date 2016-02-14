@@ -23,8 +23,8 @@ USA.
 #define USE_NEW_HASH_CODE	1
 
 /* slstring.c: Size of the hash table used for strings (prime numbers) */
-#define SLSTRING_HASH_TABLE_SIZE	32327 /* was 25013, 10007 */
-/* Other large primes: 70001, 100003, 140009,... */
+#define SLSTRING_HASH_TABLE_SIZE       140009  /* was 32327, 25013, 10007 */
+/* Other large primes: 70001, 100003, 300007,... */
 /* slang.c: maximum size of run time stack */
 #ifdef __MSDOS_16BIT__
 # define SLANG_MAX_STACK_LEN		500
@@ -88,8 +88,10 @@ USA.
 #if !defined(__MSDOS_16BIT__)
 # define SLTT_MAX_SCREEN_COLS 512
 # define SLTT_MAX_SCREEN_ROWS 512
+# define SLTT_MAX_COLORS 0x8000       /* consistent with SLSMG_COLOR_MASK */
 #else
 # define SLTT_MAX_SCREEN_ROWS 64
 # define SLTT_MAX_SCREEN_COLS 75
+/* #define SLTT_MAX_COLORS 0x8000 */  /* use slvideo.c default */
 #endif
 
