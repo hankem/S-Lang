@@ -348,7 +348,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 
 	   case MAYBE_ONCE | ANY_DIGIT:
 	     save_str = str;
-	     if ((str < estr) && ((*str > '9') || (*str < '0'))) str++;
+	     if ((str < estr) && ((*str <= '9') && (*str >= '0'))) str++;
 	     goto match_rest;
 
 	   case LEAST_ONCE | ANY_DIGIT:

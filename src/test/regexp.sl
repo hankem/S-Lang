@@ -36,6 +36,14 @@ test_regexp_match ("\([1-5]2\)"R, "0xAB123G", 5, "12");
 test_regexp_match ("G", "0xAB123G", 8, NULL);
 test_regexp_match ("\(G\)"R, "0xAB123G", 8, "G");
 
+test_regexp_match (`=\(\d\)`, "L=1X", 2, "1");
+test_regexp_match (`=\(\d?\)`, "L=1X", 2, "1");
+test_regexp_match (`=\(\d?\)`, "L=12X", 2, "1");
+test_regexp_match (`=\(\d+\)`, "L=1X", 2, "1");
+test_regexp_match (`=\(\d+\)`, "L=12X", 2, "12");
+test_regexp_match (`=\(\d*\)`, "L=1X", 2, "1");
+test_regexp_match (`=\(\d*\)`, "L=X", 2, "");
+
 static define test_globbing (glob, re)
 {
    variable pat = glob_to_regexp (glob);
