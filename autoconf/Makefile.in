@@ -74,7 +74,7 @@ clean:
 	cd modules; $(MAKE) clean
 	cd slsh; $(MAKE) clean
 	cd demo; $(MAKE) clean
-install-static:
+install-static: install-pkgconfig
 	cd src; $(MAKE) install-static
 	cd slsh; $(MAKE) install-static
 install-pkgconfig: slang.pc
