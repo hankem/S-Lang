@@ -125,6 +125,7 @@ Changes since 2.3.0
     slsh.rc lacks processing of SLSH_PATH.  Processing of SLSH_PATH
     was added to the test.sl include file.
 48. src/slregexp.c: The RE \d? was not handled properly.
+49. src/slmisc.c: Catch empty hex \x and decimal \d escape sequences.
 
 {{{ Previous Versions
 

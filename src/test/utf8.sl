@@ -141,6 +141,48 @@ check_illegal (0xFFFF);
 
 #endif
 
+% The escape sequence checks are for the unbraced \xhh, \d, and \ooo forms.
+% They always expand to single bytes.
+private define test_escaped_chars (testid, a, b)
+{
+   if (a != b)
+     failed ("testid=%s: test_escaped_chars (\"%s\", \"%s\")", testid, a, b);
+}
+
+test_escaped_chars ("X1", "\x20A", " A");
+test_escaped_chars ("X2", "A\x20", "A ");
+test_escaped_chars ("X3", "A\x20B", "A B");
+
+test_escaped_chars ("O1", "\0406", " 6");
+test_escaped_chars ("O2", "6\040", "6 ");
+test_escaped_chars ("O3", "6\0407", "6 7");
+test_escaped_chars ("O3", "\7A", "\x07A");
+test_escaped_chars ("O3", "\10A", "\x08A");
+
+test_escaped_chars ("D1", "\d0327", " 7");
+test_escaped_chars ("D2", "6\d032", "6 ");
+test_escaped_chars ("D3","6\d0327", "6 7");
+test_escaped_chars ("D4","6\d1A", "6\x01A");
+test_escaped_chars ("D5","6\d15A", "6\x0FA");
+
+private define test_bad_cases ()
+{
+   foreach ([`\x`, `\d`, `\800`,
+	     `\xZ`, `\dZ`, `\d256`])
+     {
+	variable s = ();
+	variable bad = 0;
+	try
+	  {
+	     ()=eval(`"` + s + `"`);
+	     bad = 1;
+	  }
+	catch AnyError;
+	if (bad) failed ("Expected parsing of %S to fail.", s);
+     }
+}
+test_bad_cases ();
+
 print ("Ok\n");
 exit (0);
 

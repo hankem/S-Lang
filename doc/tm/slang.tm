@@ -982,7 +982,7 @@
     In the above table, \tt{h} represents one of the HEXADECIMAL
     characters from the set \em{[0-9A-Fa-f]}.  It is important to
     understand the distinction between the \exmp{\\x\{h..h\}} and
-    \exmp{\\u\{h..h\}} forms.  When using in a string, the \exmp{\\u}
+    \exmp{\\u\{h..h\}} forms.  When used in a string, the \exmp{\\u}
     form always expands to the corresponding UTF-8 sequence regardless
     of the UTF-8 mode.  In contrast, when in non-UTF-8 mode, the
     \exmp{\\x} form expands to a byte when given two hex characters,
