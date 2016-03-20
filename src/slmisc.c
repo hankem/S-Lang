@@ -219,7 +219,7 @@ char *_pSLexpand_escaped_char(char *p, char *pmax, SLwchar_Type *ch, int *isunic
 
    if (num_digits_processed == 0)
      {
-	_pSLang_verror (SL_SYNTAX_ERROR, "Empty \\x pr \\d escape sequence seen");
+	_pSLang_verror (SL_SYNTAX_ERROR, "Empty \\x or \\d escape sequence seen");
 	return NULL;
      }
    if ((base == 10) && (num >= 256))
