@@ -131,6 +131,8 @@ Changes since 2.3.0
 51. src/test/signal.sl: Skip the sigsuspend test when running from
     make.  The test involves the user pressing ^C, which kills the
     make process.  This test should be run outside of make.
+52. src/slmisc.c: Corrected a typo in the error message introduced in
+    change #49 (Manfred Hanke).
 
 {{{ Previous Versions
 
