@@ -107,6 +107,12 @@ private define sigint_handler (sig)
 
 private define test_sigsuspend ()
 {
+   if (NULL != getenv ("MAKERUNNING"))
+     {
+	print ("\t(make detected: skipping test_sigsuspend)\n");
+	return;
+     }
+
    signal (SIGINT, &sigint_handler);
    print ("\tNow try pressing ^C in next 5 seconds...");
    alarm (5);

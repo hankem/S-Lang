@@ -26,7 +26,7 @@ runtests: $(TEST_PGM)
 	do \
 	   tests="$$tests $$test.slc"; \
 	done; \
-	./runtests.sh $$tests
+	MAKERUNNING=1 ./runtests.sh $$tests
 #	@touch $(TEST_PGM).c
 
 update: $(TEST_PGM)
@@ -47,7 +47,7 @@ update: $(TEST_PGM)
 	done; \
 	if test -n "$$tests"; \
 	then \
-	  ./runtests.sh $$tests; \
+	  MAKERUNNING=1 ./runtests.sh $$tests; \
 	fi
 #	@touch $(TEST_PGM).c
 

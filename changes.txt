@@ -128,6 +128,9 @@ Changes since 2.3.0
 49. src/slmisc.c: Catch empty hex \x and decimal \d escape sequences.
 50. autoconf/Makefile.in: Add install-pkgconfig to the install-static
     target. (Max Filippov).
+51. src/test/signal.sl: Skip the sigsuspend test when running from
+    make.  The test involves the user pressing ^C, which kills the
+    make process.  This test should be run outside of make.
 
 {{{ Previous Versions
 
