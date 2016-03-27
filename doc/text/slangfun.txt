@@ -10672,8 +10672,32 @@ _time
   `gmtime', `localtime', etc.) are able to convert such a
   value to other representations.
 
+ NOTES
+  This function is a wrapper around the C library `time'
+  function, and as such, probably does not account for leap seconds.
+
  SEE ALSO
-  ctime, time, localtime, gmtime
+  _ftime, ctime, time, localtime, gmtime
+
+--------------------------------------------------------------
+
+_ftime
+
+ SYNOPSIS
+  Get the current calendar time in seconds
+
+ USAGE
+  Double_Type _time ( [Double_Type opt_epoch] )
+
+ DESCRIPTION
+  The `_ftime' function returns the number seconds since the Unix
+  epoch, 00:00:00 UTC, January 1, 1970 as a double precision number.
+  If the optional argument `opt_epoch' is passed, the function
+  will return a value relative to that epoch, which is defined as the
+  number of seconds since the Unix epoch.
+
+ SEE ALSO
+  _time, ctime, time, localtime, gmtime
 
 --------------------------------------------------------------
 

@@ -157,7 +157,22 @@
   00:00:00 UTC, January 1, 1970.  A number of functions (\ifun{ctime},
   \ifun{gmtime}, \ifun{localtime}, etc.) are able to convert such a
   value to other representations.
-\seealso{ctime, time, localtime, gmtime}
+\notes
+  This function is a wrapper around the C library \exmp{time}
+  function, and as such, probably does not account for leap seconds.
+\seealso{_ftime, ctime, time, localtime, gmtime}
+\done
+
+\function{_ftime}
+\synopsis{Get the current calendar time in seconds}
+\usage{Double_Type _time ( [Double_Type opt_epoch] )}
+\description
+  The \ifun{_ftime} function returns the number seconds since the Unix
+  epoch, 00:00:00 UTC, January 1, 1970 as a double precision number.
+  If the optional argument \exmp{opt_epoch} is passed, the function
+  will return a value relative to that epoch, which is defined as the
+  number of seconds since the Unix epoch.
+\seealso{_time, ctime, time, localtime, gmtime}
 \done
 
 \function{time}

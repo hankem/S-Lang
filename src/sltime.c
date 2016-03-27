@@ -642,18 +642,25 @@ static double toc_cmd (void)
 }
 
 #ifdef SLANG_HAS_FLOAT
-# if USE_FROM_FUTURE
-static double ftime_cmd (void)
+static double _ftime_cmd (void)
 {
-#  ifdef HAVE_GETTIMEOFDAY
-   struct timeval tv;
-   (void) gettimeofday (&tv, NULL);
-   return (double) tv.tv_sec + (double) tv.tv_usec*1e-6;
-#  else
-   return (double) _time_cmd ();
-#  endif
-}
+   double e = 0.0;
+   if (SLang_Num_Function_Args == 1)
+     {
+	if (-1 == SLang_pop_double (&e))
+	  return -1.0;
+     }
+
+# ifdef HAVE_GETTIMEOFDAY
+     {
+	struct timeval tv;
+	(void) gettimeofday (&tv, NULL);
+	return (tv.tv_sec - e) + 1e-6*tv.tv_usec;
+     }
+# else
+   return _time_cmd () - e;
 # endif
+}
 #endif
 
 static void strftime_cmd (void)
@@ -738,9 +745,7 @@ static SLang_Intrin_Fun_Type Time_Funs_Table [] =
    MAKE_INTRINSIC_0("tic", tic_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("toc", toc_cmd, SLANG_DOUBLE_TYPE),
 #if SLANG_HAS_FLOAT
-# if USE_FROM_FUTURE
-   MAKE_INTRINSIC_0("ftime", ftime_cmd, SLANG_DOUBLE_TYPE),
-# endif
+   MAKE_INTRINSIC_0("_ftime", _ftime_cmd, SLANG_DOUBLE_TYPE),
 #endif
    SLANG_END_INTRIN_FUN_TABLE
 };
