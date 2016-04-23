@@ -319,9 +319,9 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
    SLang_Class_Type *cl;
    SLang_Array_Type *at;
    unsigned int i;
-   SLuindex_Type num_elements;
-   size_t sizeof_type;
-   unsigned int size;
+   SLindex_Type num_elements;
+   SLindex_Type size;
+   int sizeof_type;
 
    if ((num_dims == 0) || (num_dims > SLARRAY_MAX_DIMS))
      {
@@ -357,10 +357,16 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
        && (cl->cl_class_type != SLANG_CLASS_TYPE_VECTOR))
      at->flags |= SLARR_DATA_VALUE_IS_POINTER;
 
+   /* The elements of an array must be addressable by a single index of
+    * SLindex_Type, even for multi-dimensional arrays.  E.g.,
+    *   a = Int_Type[m, n];
+    *   i = where (a < 0);
+    *   a[i] = 0;
+    */
    num_elements = 1;
    for (i = 0; i < num_dims; i++)
      {
-	SLuindex_Type new_num_elements;
+	SLindex_Type new_num_elements;
 	at->dims[i] = dims[i];
 	new_num_elements = dims[i] * num_elements;
 	if (dims[i] && (new_num_elements/dims[i] != num_elements))
@@ -380,7 +386,8 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
 
    at->num_elements = num_elements;
    at->index_fun = linear_get_data_addr;
-   at->sizeof_type = sizeof_type = cl->cl_sizeof_type;
+   sizeof_type = (int) cl->cl_sizeof_type;
+   at->sizeof_type = (unsigned int) sizeof_type;
 
    if (data != NULL)
      {
@@ -388,8 +395,8 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
 	return at;
      }
 
-   size = (unsigned int) (num_elements * sizeof_type);
-   if (size/sizeof_type != num_elements)
+   size = (num_elements * sizeof_type);
+   if ((size/sizeof_type != num_elements) || (size < 0))
      {
 	throw_size_error (SL_INVALID_PARM);
 	free_array (at);

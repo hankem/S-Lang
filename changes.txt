@@ -135,6 +135,13 @@ Changes since 2.3.0
     change #49 (Manfred Hanke).
 53. src/sltime.c: Added _ftime, which returns the number of
     (wallclock) seconds since an epoch.
+54. Changes the array allocation routines to use a signed integer
+    (SLindex_Type) vs an unsigned one (SLuindex_Type).  The reason for
+    this is that all slang arrays may be indexed from the end using a
+    negative index, and multidemsional arrays must allow indexing
+    using a single signed index, e.g.,
+
+          a = Int_Type[10,20]; ...;  a[where(a<0)] = 0;
 
 {{{ Previous Versions
 
