@@ -142,6 +142,8 @@ Changes since 2.3.0
     using a single signed index, e.g.,
 
           a = Int_Type[10,20]; ...;  a[where(a<0)] = 0;
+55. src/sltime.c: Fixed a windows compile error involving _ftime
+    (see change #53).
 
 {{{ Previous Versions
 

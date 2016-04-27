@@ -658,7 +658,7 @@ static double _ftime_cmd (void)
 	return (tv.tv_sec - e) + 1e-6*tv.tv_usec;
      }
 # else
-   return _time_cmd () - e;
+   return (double)time(NULL) - e;
 # endif
 }
 #endif
