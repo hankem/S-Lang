@@ -656,6 +656,30 @@ minabs
 
 --------------------------------------------------------------
 
+prod
+
+ SYNOPSIS
+  Compute the product of the elements of an array
+
+ USAGE
+  result = prod (Array_Type a [, Int_Type dim])
+
+ DESCRIPTION
+  The `prod' function computes the product of the elements of a
+  numeric array and returns the result.  If a second argument is
+  given, then it specifies the dimension of the array over which the
+  product is to be taken.  In this case, an array of dimension one
+  less than that of the input array will be returned.
+
+  If the input array is an integer type, then the resulting value will
+  be a Double_Type.  If the input array is a
+  Complex_Type, then the result will be a Complex_Type.
+
+ SEE ALSO
+  sum, sumsq
+
+--------------------------------------------------------------
+
 _reshape
 
  SYNOPSIS
@@ -1192,7 +1216,7 @@ assoc_get_values
   Return all the values of an Associative Array
 
  USAGE
-  Array_Type assoc_get_keys (Assoc_Type a)
+  Array_Type assoc_get_values (Assoc_Type a)
 
  DESCRIPTION
   This function returns all the values in the associative array
@@ -2060,16 +2084,16 @@ _set_bof_handler
  execution of the body S-Lang function but after its arguments have
  been evaluated, provided that function was defined
  with `_bofeof_info' set appropriately.  The callback function
- must be defined to take a single parameter representing the name of
- the function and must return nothing.
+ must be defined to take two parameters, the function name and the
+ filename and must return nothing.
 
  EXAMPLE
 
-    private define bof_handler (fun)
+    private define bof_handler (fun, file)
     {
-      () = fputs ("About to execute $fun"$, stdout);
+      () = fputs ("About to execute function $fun from file $file"$, stdout);
     }
-    _set_bos_handler (&bof_handler);
+    _set_bof_handler (&bof_handler);
 
 
  SEE ALSO
@@ -5671,7 +5695,7 @@ path_is_absolute
   Int_Type path_is_absolute (String_Type filename)
 
  DESCRIPTION
-   The `path_is_absolute' function will return non-zero is
+   The `path_is_absolute' function will return non-zero if
    `filename' refers to an absolute filename, otherwise it returns zero.
 
  SEE ALSO
@@ -5827,7 +5851,7 @@ isatty
   object.
 
  SEE ALSO
-  fopen, fclose, fileno
+  fopen, fclose, fileno, ttyname
 
 --------------------------------------------------------------
 
@@ -5954,6 +5978,27 @@ read
 
  SEE ALSO
   fread, open, close, write
+
+--------------------------------------------------------------
+
+ttyname
+
+ SYNOPSIS
+  Get the pathname of the terminal
+
+ USAGE
+  String_Type ttyname (FD_Type fd)
+
+ DESCRIPTION
+  This function returns the pathname of the terminal associated with
+  the file descriptor `fd' or NULL if `fd' does not refer
+  to a terminal.
+
+ NOTES
+  This function is not available in all systems.
+
+ SEE ALSO
+  isatty
 
 --------------------------------------------------------------
 

@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.3.0)
   John E. Davis <www.jedsoft.org>
-  Feb 28, 2015
+  Apr 26, 2016
   ____________________________________________________________
 
 
@@ -961,7 +961,7 @@
 
   In the above table, h represents one of the HEXADECIMAL characters
   from the set [0-9A-Fa-f]. It is important to understand the distinc-
-  tion between the \x{h..h} and \u{h..h} forms. When using in a string,
+  tion between the \x{h..h} and \u{h..h} forms. When used in a string,
   the \u form always expands to the corresponding UTF-8 sequence regard-
   less of the UTF-8 mode. In contrast, when in non-UTF-8 mode, the \x
   form expands to a byte when given two hex characters, or to the corre-
@@ -4717,7 +4717,7 @@
                    StackOverflowError
                    StackUnderflowError
                 ReadOnlyError
-                VariableUnitializedError
+                VariableUninitializedError
                 NumArgsError
                 IndexError
                 UsageError

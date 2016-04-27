@@ -73,7 +73,7 @@
 \synopsis{Determine whether or not a filename is absolute}
 \usage{Int_Type path_is_absolute (String_Type filename)}
 \description
-   The \ifun{path_is_absolute} function will return non-zero is
+   The \ifun{path_is_absolute} function will return non-zero if
    \exmp{filename} refers to an absolute filename, otherwise it returns zero.
 \seealso{path_dirname, path_basename, path_extname, path_concat}
 \done

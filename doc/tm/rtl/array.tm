@@ -502,6 +502,22 @@
 \seealso{min, max, maxabs}
 \done
 
+\function{prod}
+\synopsis{Compute the product of the elements of an array}
+\usage{result = prod (Array_Type a [, Int_Type dim])}
+\description
+  The \ifun{prod} function computes the product of the elements of a
+  numeric array and returns the result.  If a second argument is
+  given, then it specifies the dimension of the array over which the
+  product is to be taken.  In this case, an array of dimension one
+  less than that of the input array will be returned.
+
+  If the input array is an integer type, then the resulting value will
+  be a \dtype{Double_Type}.  If the input array is a
+  \dtype{Complex_Type}, then the result will be a \dtype{Complex_Type}.
+\seealso{sum, sumsq}
+\done
+
 \function{_reshape}
 \synopsis{Copy an array to a new shape}
 \usage{Array_Type _reshape (Array_Type A, Array_Type I)}

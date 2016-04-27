@@ -20,7 +20,7 @@
 
 \function{assoc_get_values}
 \synopsis{Return all the values of an Associative Array}
-\usage{Array_Type assoc_get_keys (Assoc_Type a)}
+\usage{Array_Type assoc_get_values (Assoc_Type a)}
 \description
   This function returns all the values in the associative array
   \exmp{a} as an array of proper type.  If the associative array

@@ -145,6 +145,7 @@ Changes since 2.3.0
 55. src/sltime.c: Fixed a windows compile error involving _ftime
     (see change #53).
 56. src/slnspace.c,...: Check for malformed namepace names.
+57. doc/tm/: Documentation updates (Agathoklis D. Chatzimanikas)
 
 {{{ Previous Versions
 

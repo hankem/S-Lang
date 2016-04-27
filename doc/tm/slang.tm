@@ -5034,7 +5034,7 @@
             StackOverflowError
             StackUnderflowError
          ReadOnlyError
-         VariableUnitializedError
+         VariableUninitializedError
          NumArgsError
          IndexError
          UsageError

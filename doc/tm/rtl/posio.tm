@@ -72,7 +72,7 @@
   terminal; otherwise it returns \0.  The object \exmp{fd} may either
   be a \dtype{File_Type} stdio descriptor or a lower-level \dtype{FD_Type}
   object.
-\seealso{fopen, fclose, fileno}
+\seealso{fopen, fclose, fileno, ttyname}
 \done
 
 \function{lseek}
@@ -173,6 +173,18 @@
   the open file descriptor and no data is available for reading then
   the function will return \-1 and set \ivar{errno} to \icon{EAGAIN}.
 \seealso{fread, open, close, write}
+\done
+
+\function{ttyname}
+\synopsis{Get the pathname of the terminal}
+\usage{String_Type ttyname (FD_Type fd)}
+\description
+  This function returns the pathname of the terminal associated with
+  the file descriptor \exmp{fd} or \NULL if \exmp{fd} does not refer
+  to a terminal.
+\notes
+  This function is not available in all systems.
+\seealso{isatty}
 \done
 
 \function{write}

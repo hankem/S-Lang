@@ -146,15 +146,15 @@
  execution of the body \slang function but after its arguments have
  been evaluated, provided that function was defined
  with \ivar{_bofeof_info} set appropriately.  The callback function
- must be defined to take a single parameter representing the name of
- the function and must return nothing.
+ must be defined to take two parameters, the function name and the
+ filename and must return nothing.
 \example
 #v+
-    private define bof_handler (fun)
+    private define bof_handler (fun, file)
     {
-      () = fputs ("About to execute $fun"$, stdout);
+      () = fputs ("About to execute function $fun from file $file"$, stdout);
     }
-    _set_bos_handler (&bof_handler);
+    _set_bof_handler (&bof_handler);
 #v-
 \seealso{_set_eof_handler, _boseos_info, _set_bos_handler}
 \done
