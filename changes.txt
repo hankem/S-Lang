@@ -144,6 +144,7 @@ Changes since 2.3.0
           a = Int_Type[10,20]; ...;  a[where(a<0)] = 0;
 55. src/sltime.c: Fixed a windows compile error involving _ftime
     (see change #53).
+56. src/slnspace.c,...: Check for malformed namepace names.
 
 {{{ Previous Versions
 

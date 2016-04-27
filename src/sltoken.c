@@ -485,7 +485,7 @@ int _pSLcheck_identifier_syntax (SLCONST char *name)
      }
 
    _pSLang_verror (SL_SYNTAX_ERROR,
-		 "Identifier or structure field name '%s' contains an illegal character", name);
+		 "Identifier, namespace or structure field name '%s' contains an illegal character", name);
    return -1;
 }
 

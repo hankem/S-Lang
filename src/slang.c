@@ -10855,6 +10855,9 @@ static int implements_ns (SLFUTURE_CONST char *namespace_name)
    SLang_NameSpace_Type *ns;
    SLFUTURE_CONST char *name;
 
+   if (-1 == _pSLns_check_name (namespace_name))
+     return -1;
+
    if ((This_Private_NameSpace == NULL) || (This_Static_NameSpace == NULL))
      {
 	/* This error should never happen */

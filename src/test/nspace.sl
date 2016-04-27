@@ -132,6 +132,27 @@ public variable Testing_Line_Token;
 if ("space3" != func ())
   failed ("nspace3");
 
+private define test_nsname_syntax ()
+{
+   variable bad = 0;
+   try
+     {
+	eval ("variable test = 1;", "bad.");
+	bad = 1;
+     }
+   catch AnyError;
+   if (bad)
+     failed ("Expected an error on a malformed namespace identifier");
+
+   try
+     {
+	eval ("variable test = 1;", "");
+     }
+   catch AnyError:
+     failed ("An empty string flagged as a bad namespace");
+}
+test_nsname_syntax ();
+
 print ("Ok\n");
 
 exit (0);

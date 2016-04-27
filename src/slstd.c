@@ -360,6 +360,11 @@ static int load_string_or_file (int (*f) (SLFUTURE_CONST char *, SLFUTURE_CONST 
      {
 	if (-1 == SLang_pop_slstring (&ns))
 	  return -1;
+	if (-1 == _pSLns_check_name (ns))
+	  {
+	     SLang_free_slstring (ns);
+	     return -1;
+	  }
      }
 
    if (-1 == SLang_pop_slstring (&file))

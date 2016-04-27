@@ -733,6 +733,8 @@ struct _pSLang_NameSpace_Type
    unsigned int table_size;
    SLang_Name_Type **table;
 };
+
+extern int _pSLns_check_name (SLFUTURE_CONST char *);
 extern SLang_NameSpace_Type *_pSLns_new_namespace (SLFUTURE_CONST char *, unsigned int);
 extern SLang_NameSpace_Type *_pSLns_allocate_namespace (SLFUTURE_CONST char *, unsigned int);
 extern void _pSLns_deallocate_namespace (SLang_NameSpace_Type *);
