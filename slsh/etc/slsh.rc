@@ -60,11 +60,15 @@ public define append_to_slang_load_path (p)
      set_slang_load_path (sprintf ("%s%c%s", get_slang_load_path (), path_get_delimiter (), p));
 }
 
-() = evalfile ("autoload.sl");
-
+% This function gets called from slsh after loading this file
+public define __slsh_startup_hook ()
+{
+   () = evalfile ("autoload.sl");
 #ifdef __INTERACTIVE__
-() = evalfile ("slshrl.sl");
+   () = evalfile ("slshrl.sl");
 #endif
+}
+prepend_to_slang_load_path (getenv (SLSH_PATH_ENV));
 
 % Add local additions here
 

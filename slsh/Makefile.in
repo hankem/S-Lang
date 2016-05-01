@@ -169,7 +169,6 @@ install_static_slsh:
 install_slshrc:
 	$(INSTALL_DATA) etc/slsh.rc $(DEST_SLSH_CONF_DIR)/
 	echo 'prepend_to_slang_load_path("$(SLSH_LOCALLIB_DIR)");' >> $(DEST_SLSH_CONF_DIR)/slsh.rc
-	echo 'prepend_to_slang_load_path(getenv($(SLSH_PATH_ENV)));' >> $(DEST_SLSH_CONF_DIR)/slsh.rc
 install_common: install_directories install_lib_files install_rline_files install_scripts install_help install_docs
 #
 install: slsh install_common install_slsh install_slshrc

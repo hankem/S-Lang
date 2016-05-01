@@ -146,6 +146,8 @@ Changes since 2.3.0
     (see change #53).
 56. src/slnspace.c,...: Check for malformed namepace names.
 57. doc/tm/: Documentation updates (Agathoklis D. Chatzimanikas)
+58. slsh/slsh.c: Added __slsh_startup_hook function that slsh will
+    call after loading slsh.rc.
 
 {{{ Previous Versions
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005-2014 John E. Davis
+Copyright (C) 2005-2016 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -36,7 +36,7 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static SLFUTURE_CONST char *Slsh_Version = "0.9.2-0";
+static SLFUTURE_CONST char *Slsh_Version = "0.9.3-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -510,7 +510,7 @@ static void output_version (void)
 static int output_copyright (void)
 {
    output_version ();
-   fprintf (stdout, "Copyright (C) 2005-2014 John E. Davis <jed@jedsoft.org>\r\n");
+   fprintf (stdout, "Copyright (C) 2005-2016 John E. Davis <jed@jedsoft.org>\r\n");
    fprintf (stdout, "This is free software with ABSOLUTELY NO WARRANTY.\r\n");
    fprintf (stdout, "\n");
 
@@ -701,6 +701,9 @@ int main (int argc, char **argv)
      (void) SLdefine_for_ifdef ("__INTERACTIVE__");
 
    if (-1 == load_startup_file (pgm, is_interactive))
+     return SLang_get_error ();
+
+   if (-1 == SLang_run_hooks ("__slsh_startup_hook", 0))
      return SLang_get_error ();
 
    /* Initializing the readline interface causes the .slrlinerc file
