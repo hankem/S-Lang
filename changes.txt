@@ -148,6 +148,10 @@ Changes since 2.3.0
 57. doc/tm/: Documentation updates (Agathoklis D. Chatzimanikas)
 58. slsh/slsh.c: Added __slsh_startup_hook function that slsh will
     call after loading slsh.rc.
+59. modules/: Updated the png and pcre modules, and added new test
+    scripts.  Added support for setting the compression value to the
+    png module, and added additional symbolic constants to the pcre
+    module.
 
 {{{ Previous Versions
 

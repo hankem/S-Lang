@@ -31,8 +31,8 @@ USA.
 
 SLANG_MODULE(png);
 
-static SLFUTURE_CONST char *Module_Version_String = "0.1.1";
-#define MODULE_VERSION_NUMBER  (0*10000 + 1*100 + 1)
+static SLFUTURE_CONST char *Module_Version_String = "0.2.0";
+#define MODULE_VERSION_NUMBER  (0*10000 + 2*100 + 0)
 
 /*{{{ Byte-swapping routines */
 
@@ -552,7 +552,7 @@ static int write_array (png_struct *png, png_byte **image_pointers, SLindex_Type
 static int write_image_internal (char *file, SLang_Array_Type *at,
 				 int color_type,
 				 void (*write_fun)(png_struct *, png_byte *p, SLindex_Type, png_byte *),
-				 int flip)
+				 int flip, int compress_level)
 {
    FILE *fp;
    Png_Type *p = NULL;
@@ -609,6 +609,9 @@ static int write_image_internal (char *file, SLang_Array_Type *at,
      }
    png_init_io(png, fp);
 
+   if ((compress_level >= 0) && (compress_level <= 9))
+     png_set_compression_level (png, compress_level);
+
    png_set_IHDR (png, info, width, height,
 		 bit_depth, color_type, PNG_INTERLACE_NONE,
 		 PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
@@ -643,6 +646,7 @@ static void write_image (int flip)
    SLang_Array_Type *at;
    int with_alpha = 0;
    int has_with_alpha = 0;
+   int compress_level;
    int color_type;
    void (*write_fun) (png_struct *, png_byte *, SLindex_Type, png_byte *);
 
@@ -652,6 +656,9 @@ static void write_image (int flip)
 	  return;
 	has_with_alpha = 1;
      }
+
+   if (-1 == SLang_get_int_qualifier ("compress", &compress_level, -1))
+     return;
 
    if (-1 == SLang_pop_array (&at, 0))
      return;
@@ -715,7 +722,7 @@ static void write_image (int flip)
 	SLang_free_array (at);
 	return;
      }
-   (void) write_image_internal (file, at, color_type, write_fun, flip);
+   (void) write_image_internal (file, at, color_type, write_fun, flip, compress_level);
    SLang_free_slstring (file);
    SLang_free_array (at);
 }

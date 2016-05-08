@@ -22,12 +22,11 @@ define failed ()
 
 define end_test ()
 {
-   ifnot (tests_failed)
-     {
-	() = fprintf(stdout, "OK\n");
-	() = fflush (stdout);
-     }
-   exit (tests_failed);
+   if (tests_failed)
+     exit (tests_failed);
+
+   () = fprintf(stdout, "OK\n");
+   () = fflush (stdout);
 }
 
 

@@ -4,12 +4,15 @@ MODULES = slsmg-module.so termios-module.so select-module.so fcntl-module.so \
   csv-module.so base64-module.so chksum-module.so histogram-module.so \
   stats-module.so json-module.so \
   @PCRE_MODULE@ @PNG_MODULE@ @ICONV_MODULE@ @ONIG_MODULE@ @ZLIB_MODULE@ @SYSCONF_MODULE@
-SLFILES = slsmg termios select fcntl varray socket pcre png iconv \
-  onig rand csv zlib fork sysconf base64 chksum histogram stats json
-TEST_SCRIPTS = test_rand.sl test_csv.sl test_base64.sl test_chksum.sl \
-  test_hist.sl test_stats.sl test_json.sl test_sysconf.sl
+SLFILES = slsmg termios select fcntl varray socket rand fork csv  \
+  base64 chksum histogram stats json \
+  pcre png iconv onig zlib sysconf
+TEST_SCRIPTS = test_slsmg.sl test_termios.sl test_select.sl test_fcntl.sl \
+  test_varray.sl test_socket.sl test_rand.sl test_fork.sl test_csv.sl \
+  test_base64.sl test_chksum.sl test_hist.sl test_stats.sl test_json.sl
+#
 CHKSUM_OBJS = chksum-module.o chksum_md5.o chksum_sha1.o
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
 LDFLAGS		= @LDFLAGS@
@@ -20,9 +23,9 @@ SRCDIR		= $(CONFIG_DIR)/modules
 CONFIG_H        = $(SRCDIR)/config.h
 OBJDIR		= $(ARCH)objs
 ELFDIR          = @ELFDIR@
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Installation location of the slang library
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 prefix 		= @prefix@
 exec_prefix 	= @exec_prefix@
 SLANG_SRCINC	= -I@SRCDIR@
@@ -32,38 +35,38 @@ DLL_IMPLIB_NAME = @DLL_IMPLIB_NAME@
 # slang library, otherwise leave it blank.
 SLANG_LIB	= @SLANG_LIB_FOR_MODULES@
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # If building the PCRE module, you may need to set these
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 PCRE_INC	= @PCRE_INC@
 PCRE_LIB	= @PCRE_LIB@ -lpcre
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # If building the PNG module, you may need to set these
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 PNG_INC	= @PNG_INC@
 PNG_LIB	= @PNG_LIB@ -lpng
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # If building the ICONV module, you may need to set these
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 ICONV_INC	= @ICONV_INC@
 ICONV_LIB	= @ICONV_LIB@
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # If building the ONIG module, you may need to set these
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 ONIG_INC	= @ONIG_INC@
 ONIG_LIB	= @ONIG_LIB@ -lonig
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # If building the ZLIB module, you may need to set these
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 ZLIB_INC	= @Z_INC@
 ZLIB_LIB	= @Z_LIB@ -lz
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # If building the SOCKET module, you may need to set these
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 SOCKET_LIBS = @X_EXTRA_LIBS@
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Installation location of the modules
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 MODULE_INSTALL_DIR = @libdir@/slang/v@slang_major_version@/modules
 INSTALL		= @INSTALL@
 INSTALL_DATA	= @INSTALL_DATA@
@@ -72,21 +75,21 @@ MKINSDIR	= $(CONFIG_DIR)/autoconf/mkinsdir.sh
 SLSH_DIR	= $(prefix)/share/slsh
 CMAPS_DIR	= $(SLSH_DIR)/cmaps
 HELP_DIR	= $(SLSH_DIR)/help
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # DESTDIR is designed to facilitate making packages.  Normally it is empty
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 #DESTDIR =
 DEST_MODULEDIR	= $(DESTDIR)$(MODULE_INSTALL_DIR)
 DEST_SLSH_DIR	= $(DESTDIR)$(SLSH_DIR)
 DEST_CMAPSDIR	= $(DESTDIR)$(CMAPS_DIR)
 DEST_HELPDIR	= $(DESTDIR)$(HELP_DIR)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 RPATH = @RPATH@
 
 LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) $(DL_LIB) @M_LIB@
 INCS = $(SLANG_SRCINC)
 COMPILE_CMD = $(CC_SHARED) $(INCS)
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 all: $(OBJDIR)/Makefile
 	cd $(OBJDIR) && $(MAKE) $(MODULES)
 $(CONFIG_H): $(CONFIG_DIR)/src/config.h
@@ -193,6 +196,9 @@ runtests: all
 	test -z "@PNG_MODULE@" || test_scripts="$$test_scripts test_png.sl"; \
 	test -z "@ONIG_MODULE@" || test_scripts="$$test_scripts test_onig.sl"; \
 	test -z "@ZLIB_MODULE@" || test_scripts="$$test_scripts test_zlib.sl"; \
+	test -z "@PCRE_MODULE@" || test_scripts="$$test_scripts test_pcre.sl"; \
+	test -z "@ICONV_MODULE@" || test_scripts="$$test_scripts test_iconv.sl"; \
+	test -z "@SYSCONF_MODULE@" || test_scripts="$$test_scripts test_sysconf.sl"; \
 	cd test; ./runtests.sh $$test_scripts
 clean:
 	-cd $(OBJDIR) && /bin/rm -f $(MODULES) $(CHKSUM_OBJS)

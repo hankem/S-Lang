@@ -405,6 +405,8 @@ private define test_decode ()
 }
 %}}}
 
+%}}}
+
 % test_encode %{{{
 
 % explicit whitespace-qualifiers:

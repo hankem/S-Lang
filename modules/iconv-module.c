@@ -105,8 +105,9 @@ static void _iconv_reset_shift(ICONV_Type *it)
    size_t rc;
 
    rc = iconv(it->cd, NULL, NULL, &p, &n);
-   if ((rc == (size_t)(-1)) || (n > rc))
+   if (rc == (size_t)(-1))
      {
+	/* Since no input was provided, errno must be E2BIG */
 	SLang_verror (SL_Internal_Error, "Internal error: shift buffer too small in iconv_reset_shift!");
 	return;
      }
@@ -165,7 +166,7 @@ static void _iconv(ICONV_Type *it, SLang_BString_Type *bstr)
 	     /* drop */
 	     /* grrrr
 	      * At least on windows, libiconv returns with errno = 0
-	      * (or unmodified?) when there's no more roon on outstr
+	      * (or unmodified?) when there's no more room on outstr
 	      * if so, fallback
 	      */
 	   case E2BIG:
