@@ -154,6 +154,8 @@ Changes since 2.3.0
     module.
 60. slsh/lib/test/: Have `make check` run the test scripts in this
     directory.
+61. modules/csv-module.c: Added line number information to error
+    messages.
 
 {{{ Previous Versions
 

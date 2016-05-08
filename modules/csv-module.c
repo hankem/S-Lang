@@ -222,7 +222,8 @@ static int decode_csv_row (CSV_Type *csv, int flags)
 
 		  if ((ch != ',') && (ch != 0) && (ch != '\n'))
 		    {
-		       SLang_verror (SL_Data_Error, "Expecting a delimiter after an end-quote character");
+		       SLang_verror (SL_Data_Error, "Expecting a delimiter after an end-quote character in field #%ld",
+				    (long)av.num+1);
 		       goto return_error;
 		    }
 		  in_quote = 0;
@@ -230,7 +231,8 @@ static int decode_csv_row (CSV_Type *csv, int flags)
 	       }
 	     else if (value_ofs != 0)
 	       {
-		  SLang_verror (SL_Data_Error, "Misplaced quote character inside a csv field");
+		  SLang_verror (SL_Data_Error, "Misplaced quote character inside csv field #%ld",
+				(long)av.num+1);
 		  goto return_error;
 	       }
 	     else
@@ -264,7 +266,8 @@ static int decode_csv_row (CSV_Type *csv, int flags)
 		       do_read = 1;
 		       continue;
 		    }
-		  SLang_verror (SL_Data_Error, "No closing quote seen parsing CSV data");
+		  SLang_verror (SL_Data_Error, "No closing quote seen parsing CSV data field #%ld",
+				(long)av.num+1);
 		  goto return_error;
 	       }
 
