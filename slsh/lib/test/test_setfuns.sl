@@ -1,3 +1,4 @@
+() = evalfile ("./common.sl");
 require ("setfuns");
 
 private define test_func (func, arglist, ans)
@@ -7,7 +8,7 @@ private define test_func (func, arglist, ans)
      {
 	print (ans1, &ans1);
 	print (ans, &ans);
-	throw RunTimeError, "$func failed: got $ans1 instead of $ans"$;
+	failed ("$func failed: got $ans1 instead of $ans"$);
      }
 }
 
@@ -17,6 +18,8 @@ private define unique1 (a)
    return a[i[array_sort(i)]];
 }
 
+private define test_setfuns ()
+{
 test_func (&unique1, {[1,2,2,3,5,-1]}, [1,2,3,5,-1]);
 test_func (&unique1, {[1]}, [1]);
 test_func (&unique1, {[1,1]}, [1]);
@@ -59,3 +62,11 @@ test_func (&complement, {{"foo","foo"}, {"foo"}}, Int_Type[0]);
 test_func (&union, {{"foo", 1, 2}, {"bar", 1, 3}}, {"foo", 1, 2, "bar", 3});
 test_func (&union, {[1:10], [3:5], [9:12]}, [1:12]);
 test_func (&union, {[1:10], [3:5], 2i}, [[1:10], 2i]);
+}
+
+define slsh_main ()
+{
+   start_test ("setfuns");
+   test_setfuns ();
+   end_test ();
+}

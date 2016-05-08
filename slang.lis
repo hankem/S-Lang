@@ -184,14 +184,24 @@
 @modules/test/test_base64.sl
 @modules/test/test_chksum.sl
 @modules/test/test_csv.sl
-@modules/test/test_zlib.sl
-@modules/test/test_onig.sl
-@modules/test/test_rand.sl
+@modules/test/test_fcntl.sl
+@modules/test/test_fork.sl
 @modules/test/test_hist.sl
+@modules/test/test_iconv.sl
+@modules/test/test_json.sl
+@modules/test/test_onig.sl
+@modules/test/test_pcre.sl
+@modules/test/test_png.sl
+@modules/test/test_rand.sl
+@modules/test/test_select.sl
+@modules/test/test_slsmg.sl
+@modules/test/test_socket.sl
 @modules/test/test_stats.sl
 @modules/test/test_sysconf.sl
-@modules/test/test_json.sl
-@modules/test/test_png.sl
+@modules/test/test_sysconf.sl
+@modules/test/test_termios.sl
+@modules/test/test_varray.sl
+@modules/test/test_zlib.sl
 
 @modules/tm/Makefile
 @modules/tm/base64funs.tm
@@ -329,6 +339,8 @@
 @slsh/lib/tm/setfuns.tm
 @slsh/lib/tm/listfuns.tm
 
+@slsh/lib/test/runtests.sh 0755
+@slsh/lib/test/common.sl
 @slsh/lib/test/test_cmdopt.sl
 @slsh/lib/test/test_structfuns.sl
 @slsh/lib/test/test_readascii.sl

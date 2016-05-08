@@ -1,3 +1,5 @@
+() = evalfile ("./common.sl");
+
 require ("process");
 
 private define pre_exec_hook (fdlist, optarg)
@@ -5,7 +7,7 @@ private define pre_exec_hook (fdlist, optarg)
    putenv ("TEST_OPTARG=$optarg");
 }
 
-define slsh_main ()
+private define test_process ()
 {
    % This is a silly example.  echo write to fd=12, which has stdout
    % dup'd to it.  wc reads from echo via fd=16, which has stdin dup'd
@@ -18,16 +20,23 @@ define slsh_main ()
 
    variable line;
    if (-1 == fgets (&line, wc.fp10))
-     throw IOError, "Failed to read from wc process: " + errno_string ();
+     failed ("Failed to read from wc process: " + errno_string ());
    line = strcompress (line, " \t\n");
    if (line != "1 2 8")
      {
-	() = fprintf (stderr, "Expected 1 2 8, got %s\n", line);
+	failed ("Expected 1 2 8, got %s\n", line);
      }
    variable status = echo.wait ();
    if (status == NULL)
-     () = fprintf (stderr, "wait method failed for echo");
+     failed ("wait method failed for echo");
    status = wc.wait ();
    if (status == NULL)
-     () = fprintf (stderr, "wait method failed for echo");
+     failed ("wait method failed for echo");
+}
+
+define slsh_main ()
+{
+   start_test ("process");
+   test_process ();
+   end_test ();
 }

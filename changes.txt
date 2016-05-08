@@ -152,6 +152,8 @@ Changes since 2.3.0
     scripts.  Added support for setting the compression value to the
     png module, and added additional symbolic constants to the pcre
     module.
+60. slsh/lib/test/: Have `make check` run the test scripts in this
+    directory.
 
 {{{ Previous Versions
 

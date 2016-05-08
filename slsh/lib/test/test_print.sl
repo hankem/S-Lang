@@ -1,6 +1,8 @@
+() = evalfile ("./common.sl");
+
 require ("print");
 
-define slsh_main ()
+private define test_print ()
 {
    variable x = [1:20:0.1];
    variable ref_x, file_x, fp_x;
@@ -22,8 +24,14 @@ define slsh_main ()
    () = remove (file);
    if ((ref_x != file_x) || (ref_x != fp_x))
      {
-	() = fprintf (stderr, "Failed: print failed to produce identical results\n");
-	exit (1);
+	failed ("Failed: print failed to produce identical results\n");
      }
+}
+
+define slsh_main ()
+{
+   start_test ("print");
+   test_print ();
+   end_test ();
 }
 

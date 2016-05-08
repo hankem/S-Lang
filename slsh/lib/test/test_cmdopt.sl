@@ -1,3 +1,5 @@
+() = evalfile ("./common.sl");
+
 require("cmdopt.sl");
 
 private define test_args (opts, args, expected_iend, s, val_list, should_error)
@@ -64,7 +66,7 @@ private define callback_inc (ref)
    @ref += 1;
 }
 
-define slsh_main ()
+private define test_cmdopt ()
 {
    variable opts = cmdopt_new (NULL);
    variable s = struct
@@ -130,4 +132,18 @@ define slsh_main ()
    opts.add ("f", &s.flags; bor=1, band=~0x2);
    args = ["-a", "-f", "--b4000"];
    test_args (opts, args, 3, s, {0x8000|0x4000|1, 0x4|0x1}, 0);
+}
+
+define slsh_main ()
+{
+   start_test ("cmdopt");
+   variable e;
+   try(e)
+     {
+	test_cmdopt ();
+     }
+   catch AnyError:
+     failed ("%S", e.message);
+
+   end_test ();
 }

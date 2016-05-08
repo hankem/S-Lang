@@ -1,3 +1,5 @@
+() = evalfile ("./common.sl");
+
 require ("rand");
 require ("listfuns");
 
@@ -23,14 +25,15 @@ define test_heap (n, dir)
    rearrange (rnums, array_sort (rnums; dir=dir));
 
    if (length (rnums) != length (list))
-     throw RunTimeError, "length of list != length of array";
+     failed ("length of list != length of array");
 
    if (length (rnums) && any (rnums != list_to_array (list)))
-     throw RunTimeError, "heap sorted list does not match sorted array";
+     failed ("heap sorted list does not match sorted array");
 }
 
 define slsh_main ()
 {
+   start_test ("listfuns");
    srand (0);
    variable i;
    _for i (0, 33, 1)
@@ -38,4 +41,5 @@ define slsh_main ()
 	test_heap (i, 1);
 	test_heap (i, -1);
      }
+   end_test();
 }

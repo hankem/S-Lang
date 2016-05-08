@@ -63,6 +63,7 @@ runtests: all
 	@failed=0; \
 	cd src; $(MAKE) runtests || failed=1; cd ..; \
 	cd modules; $(MAKE) runtests || failed=1; cd ..; \
+	cd slsh; $(MAKE) runtests || failed=1; cd ..; \
 	exit $$failed
 check: runtests
 
