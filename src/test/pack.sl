@@ -60,6 +60,17 @@ test_unpack1 (">j", "\xAB\xCD"B, 0xABCD, Int16_Type);
 test_unpack1 (">k", "\xAB\xCD\xEF\x12"B, 0xABCDEF12L, Int32_Type);
 test_unpack1 ("<j", "\xCD\xAB"B, 0xABCD, Int16_Type);
 test_unpack1 ("<k", "\x12\xEF\xCD\xAB"B, 0xABCDEF12L, Int32_Type);
+test_unpack1 (">J", "\xAB\xCD"B, 0xABCDU, UInt16_Type);
+test_unpack1 (">K", "\xAB\xCD\xEF\x12"B, 0xABCDEF12UL, UInt32_Type);
+test_unpack1 ("<J", "\xCD\xAB"B, 0xABCDU, UInt16_Type);
+test_unpack1 ("<K", "\x12\xEF\xCD\xAB"B, 0xABCDEF12UL, UInt32_Type);
+
+#ifexists Int64_Type
+test_unpack1 (">Q", "\x12\x34\x56\x78\x9A\xBC\xDE\xF0"B,
+	      0x123456789ABCDEF0LL, UInt64_Type);
+test_unpack1 (">q", "\x12\x34\x56\x78\x9A\xBC\xDE\xF0"B,
+	      0x123456789ABCDEF0ULL, Int64_Type);
+#endif
 
 define test_unpack2 (fmt, a, type)
 {
@@ -111,6 +122,23 @@ test_unpack3 ("x x0 S20 x x20 d x", "FF", 41.7);
 test_unpack3 ("x x0 s5 x x20 d x", "FF\0\0\0", 41.7);
 test_unpack3 ("x x0 z5 x x20 f x", "FF", 41.7f);
 #endif
+
+private define test_pack_format (fmt, ans, n)
+{
+   variable n1, ans1;
+   ans1 = pad_pack_format (fmt);
+   if (ans != ans1)
+     failed ("pad_pack_format(%s) --> %s, expected %s",
+	     fmt, ans1, ans);
+   n1 = sizeof_pack (ans);
+   if (n != n1)
+     failed ("sizeof_pack(%s) --> %S, expected %S",
+	     fmt, n1, n);
+}
+test_pack_format ("cjDCkcqc",
+		  %0123456701234567012345670123456701234567
+		  %cxj-xxxxD-------cxxxk---cxxxxxxxq-------c
+		  "cx1jx4DCx3kcx7qc", 41);
 
 print ("Ok\n");
 exit (0);

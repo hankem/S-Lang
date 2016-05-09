@@ -156,6 +156,7 @@ Changes since 2.3.0
     directory.
 61. modules/csv-module.c: Added line number information to error
     messages.
+62. src/test/: Updated some tests
 
 {{{ Previous Versions
 

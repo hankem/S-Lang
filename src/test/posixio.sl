@@ -72,7 +72,10 @@ define run_tests (some_text)
    if (bstrlen (new_text))
      failed ("read at EOF");
 
-   if (-1 == close (fd)) failed ("close after tests");
+   if (-1 == _close (_fileno(fd))) failed ("_close after tests");
+   if (0 == close (fd))
+     failed ("Expected close to fail since _close was already used");
+
    variable st = stat_file (file);
    () = st.st_mode;  %  see if stat_file returned the right struct
    () = remove (file);
@@ -114,6 +117,42 @@ define test_listdir ()
      failed ("listdir: posixio.sl not in the list");
 }
 test_listdir ();
+
+private define test_misc ()
+{
+   variable s, fd;
+   fd = fileno (stderr);
+#ifexists ttyname
+   if (isatty (fd))
+     {
+	s = ttyname ();
+	if ((s != NULL) && (NULL == stat_file (s)))
+	  failed ("Unable to stat tty %S", s);
+     }
+   if (isatty (0))
+     {
+	% Given no args, ttyname will use fileno(stdin)
+	if (NULL == ttyname ())
+	  failed ("ttyname failed with no arguments");
+     }
+#endif
+
+   variable fd1 = dup_fd (fd);
+   if (typeof (fd1) != FD_Type)
+     failed ("dup_fd did not return an FD_Type");
+   if (fd1 == fd)
+     failed ("dup_fd did not return a duplicate");
+   () = close (fd1);
+   if (123 != dup2_fd (fd, 123))
+     failed ("dup2_fd failed to return a specified descriptor: %S", errno_string());
+
+   fd1 = @FD_Type(123);
+   if (_fileno (fd1) != 123)
+     failed ("@FD_Type failed");
+   () = close (fd1);
+}
+
+test_misc ();
 
 print ("Ok\n");
 exit (0);

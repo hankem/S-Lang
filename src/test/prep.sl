@@ -2,6 +2,27 @@
 
 testing_feature ("slprep");
 
+putenv ("SLPREP=prep1234");
+#ifn$SLPREP
+failed ("ifn$ENV");
+#endif
+
+#if$SLPREP prepx*
+failed ("if$ENV with wildcard");
+#endif
+
+#if$SLPREP ?rep?????
+failed ("if$ENV matches too many chars");
+#endif
+
+#ifn$SLPREP ?rep*
+failed ("if$ENV failed with a wildcard");
+#endif
+
+#ifn$SLPREP prep1234*
+failed ("if$ENV failed with an appended wildcard");
+#endif
+
 public variable X = 0;
 
 #ifdef FOO_MOO_TOO_KOO

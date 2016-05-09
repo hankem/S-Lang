@@ -69,6 +69,28 @@ define test_mktime ()
 }
 test_mktime ();
 
+private define test_other ()
+{
+   % Just test the calling syntax on these.
+   tic(); _tic();
+   variable n1 = toc(), n2 = _toc();
+
+   variable secs = 1000000;
+   if (typeof (ctime (secs)) != String_Type)
+     failed ("Expected ctime to return a string");
+   if (typeof (_ftime ()) != Double_Type)
+     failed ("Expected _ftime to return a double");
+#ifexists times
+   variable s = times ();
+   if ((Double_Type != typeof(s.tms_utime))
+       || (Double_Type != typeof(s.tms_stime))
+       || (Double_Type != typeof(s.tms_cutime))
+       || (Double_Type != typeof(s.tms_cstime)))
+     failed ("Expected fields to return value of the times function to be doubles");
+#endif
+}
+test_other ();
+
 print ("Ok\n");
 
 exit (0);
