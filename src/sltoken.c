@@ -2028,23 +2028,32 @@ void _pSLcompile_byte_compiled (void)
 	   case BREAK_N_TOKEN:
 	   case LINE_NUM_TOKEN:
 	   case CHAR_TOKEN:
-	   case UCHAR_TOKEN:
 	   case SHORT_TOKEN:
-	   case USHORT_TOKEN:
 	   case INT_TOKEN:
-	   case UINT_TOKEN:
 	   case LONG_TOKEN:
+	     if (NULL == check_byte_compiled_token (buf))
+	       return;
+	     tok.v.long_val = SLatol (buf);
+	     break;
+
+	   case UCHAR_TOKEN:
+	   case USHORT_TOKEN:
+	   case UINT_TOKEN:
 	   case ULONG_TOKEN:
 	     if (NULL == check_byte_compiled_token (buf))
 	       return;
-	     tok.v.long_val = atol (buf);
+	     tok.v.ulong_val = SLatoul (buf);
 	     break;
 #ifdef HAVE_LONG_LONG
 	   case LLONG_TOKEN:
-	   case ULLONG_TOKEN:
 	     if (NULL == check_byte_compiled_token (buf))
 	       return;
 	     tok.v.llong_val = SLatoll ((unsigned char *)buf);
+	     break;
+	   case ULLONG_TOKEN:
+	     if (NULL == check_byte_compiled_token (buf))
+	       return;
+	     tok.v.ullong_val = SLatoull ((unsigned char *)buf);
 	     break;
 #endif
 	   case COMPLEX_TOKEN:

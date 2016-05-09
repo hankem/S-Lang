@@ -39,11 +39,11 @@ test_pack ("S4", "1234", "123456");
 test_pack ("s10", "1234\0\0\0\0\0\0", "1234");
 test_pack ("S10", "1234      ", "1234");
 
-define test_unpack1 (fmt, str, x, type)
+define test_unpack1 (fmt, str, y, type)
 {
    variable xx;
 
-   x = typecast (x, type);
+   variable x = typecast (y, type);
 
    xx = unpack (fmt, str);
 
@@ -123,6 +123,9 @@ test_unpack3 ("x x0 s5 x x20 d x", "FF\0\0\0", 41.7);
 test_unpack3 ("x x0 z5 x x20 f x", "FF", 41.7f);
 #endif
 
+#iffalse
+% The alignment is implementation-defined.  A better way of testing
+% this will me needed.
 private define test_pack_format (fmt, ans, n)
 {
    variable n1, ans1;
@@ -139,6 +142,7 @@ test_pack_format ("cjDCkcqc",
 		  %0123456701234567012345670123456701234567
 		  %cxj-xxxxD-------cxxxk---cxxxxxxxq-------c
 		  "cx1jx4DCx3kcx7qc", 41);
+#endif
 
 print ("Ok\n");
 exit (0);
