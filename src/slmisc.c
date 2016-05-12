@@ -149,7 +149,10 @@ char *_pSLexpand_escaped_char(char *p, char *pmax, SLwchar_Type *ch, int *isunic
       case 'x':			       /* hex */
 	base = 16;
 	max = '9';
-	i = 2;
+	if (isunicode)
+	  i = 4;		       /* \u.... */
+	else
+	  i = 2;
 	num = 0;
 	num_digits_processed = 0;
 

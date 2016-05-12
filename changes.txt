@@ -171,6 +171,9 @@ Changes since 2.3.0
        restart it.  See <http://lwn.net/Articles/576478/>.
       src/sltoken.c: Use unsigned char * cast for SLatol functions.
 
+66. src/slmisc.c: \uABCD supported in string literals.  Previously,
+    braces were required (\u{ABCD}).
+
 {{{ Previous Versions
 
 Changes since 2.2.4
