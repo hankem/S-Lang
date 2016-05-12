@@ -33,7 +33,7 @@ AC_SUBST(pkgconfigdir)
 
 dnl # Terminfo binary format
 AC_ARG_WITH(terminfo,
-   [  --with-terminfo=xxx  Terminfo layout: default, hpux11, osf1r5, aix4, uwin ],
+   [  --with-terminfo=xxx     Terminfo layout: default, hpux11, osf1r5, aix4, uwin ],
    [ jd_with_terminfo_arg=$withval ], [jd_with_terminfo_arg=default])
 AC_MSG_CHECKING(terminfo layout)
 if test "x$jd_with_terminfo_arg" = "x"
@@ -51,7 +51,7 @@ AC_SUBST(TERMINFO_LAYOUT)
 
 dnl # Readline support for slsh
 AC_ARG_WITH(readline,
-   [  --with-readline=xxx       use slang(default) or gnu readline for slsh ],
+   [  --with-readline=xxx     Use slang(default) or gnu readline for slsh ],
    [ jd_with_readline_arg=$withval ], [jd_with_readline_arg=slang])
 AC_MSG_CHECKING(type of readline support for slsh)
 case "x$jd_with_readline_arg" in
@@ -68,6 +68,27 @@ case "x$jd_with_readline_arg" in
 esac
 AC_SUBST(GNU_READLINE)
 AC_SUBST(LIB_READLINE)
+
+dnl #
+AC_ARG_WITH(slsyswrap,
+   [  --with-slsyswrap=DIR    Not for production use],
+   [ jd_with_slsyswrap_arg=$withval ], [jd_with_slsyswrap_arg=no])
+AC_MSG_CHECKING(for slsyswrap)
+
+case "x$jd_with_slsyswrap_arg" in
+  x|xno)
+    DSLSYSWRAP=""
+    LIB_SLSYSWRAP=""
+    AC_MSG_RESULT(no);
+    ;;
+  *)
+    DSLSYSWRAP="-I$jd_with_slsyswrap_arg/include -DSLSYSWRAP=1"
+    LIB_SLSYSWRAP="-L$jd_with_slsyswrap_arg/lib -lslsyswrap"
+    AC_MSG_RESULT(yes);
+    ;;
+esac
+AC_SUBST(DSLSYSWRAP)
+AC_SUBST(LIB_SLSYSWRAP)
 
 # For the socket module
 AC_PATH_XTRA

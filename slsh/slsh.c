@@ -36,7 +36,11 @@ USA.
 #include <signal.h>
 #include <slang.h>
 
-static SLFUTURE_CONST char *Slsh_Version = "0.9.3-0";
+#ifdef SLSYSWRAP
+# include <slsyswrap.h>
+#endif
+
+static SLFUTURE_CONST char *Slsh_Version = "0.9.3-1";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -535,6 +539,10 @@ int main (int argc, char **argv)
    char *exec_string = NULL;
    int quiet = 0;
 
+#ifdef SLSYSWRAP
+   (void) SLsyswrap_set_syscall_failure (0);
+#endif
+
    (void) SLutf8_enable (-1);
 
    if ((-1 == SLang_init_all ())
@@ -552,6 +560,10 @@ int main (int argc, char **argv)
 
 #ifdef SIGPIPE
    (void) SLsignal (SIGPIPE, SIG_IGN);
+#endif
+
+#ifdef SLSYSWRAP
+   (void) SLsyswrap_set_syscall_failure (1);
 #endif
 
    /* FIXME for other systems */

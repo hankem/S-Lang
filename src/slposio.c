@@ -63,6 +63,14 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
+#ifdef SLSYSWRAP
+# include <slsyswrap.h>
+#else
+# define SLSYSWRAP_OPEN open
+# define SLSYSWRAP_READ read
+# define SLSYSWRAP_WRITE write
+#endif
+
 typedef struct _Stdio_MMT_List_Type
 {
    SLang_MMT_Type *stdio_mmt;
@@ -312,7 +320,7 @@ static int do_write (SLFile_FD_Type *f, char *buf, SLstrlen_Type *nump)
 	if (f->write != NULL)
 	  num = (*f->write)(f->clientdata, buf, *nump);
 	else
-	  num = write (fd, buf, *nump);
+	  num = SLSYSWRAP_WRITE (fd, buf, *nump);
 
 	if (num != -1)
 	  {
@@ -346,7 +354,7 @@ static int do_read (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 	if (f->read != NULL)
 	  num = (*f->read)(f->clientdata, buf, *nump);
 	else
-	  num = read (fd, buf, *nump);
+	  num = SLSYSWRAP_READ (fd, buf, *nump);
 
 	if (num != -1)
 	  {
@@ -695,7 +703,7 @@ static void posix_open (void)
      }
    SLang_free_slstring (file);
 
-   while (-1 == (f->fd = open (f->name, flags, mode)))
+   while (-1 == (f->fd = SLSYSWRAP_OPEN (f->name, flags, mode)))
      {
 	if (is_interrupt (errno, 1))
 	  continue;

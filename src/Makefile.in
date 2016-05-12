@@ -36,7 +36,8 @@ MODULE_PATH_ENV_NAME = "SLANG_MODULE_PATH"
 #---------------------------------------------------------------------------
 # Misc Libraries
 MISC_TERMINFO_DIRS = @MISC_TERMINFO_DIRS@
-OTHERLIBS = @TERMCAP@ @LIBS@ @M_LIB@
+OTHER_CFLAGS = @DSLSYSWRAP@
+OTHER_LIBS = @LIB_SLSYSWRAP@ @TERMCAP@ @LIBS@ @M_LIB@
 #---------------------------------------------------------------------------
 # Directory where library is going to go when installed
 #---------------------------------------------------------------------------
@@ -57,6 +58,11 @@ DEST_DOCDIR = $(DESTDIR)$(install_doc_dir)
 DEST_INCDIR = $(DESTDIR)$(install_include_dir)
 DEST_BINDIR = $(DESTDIR)$(install_bin_dir)
 
+#----------------------------------------------------------------------------
+# These should be empty for production code
+#----------------------------------------------------------------------------
+SLSYSWRAP_DEF = @DSLSYSWRAP@
+SLSYSWRAP_LIB = @LIB_SLSYSWRAP@
 #---------------------------------------------------------------------------
 # Misc commands (safe to leave these untouched)
 #---------------------------------------------------------------------------
@@ -85,8 +91,8 @@ INSTALL_ELFLIB_TARGET	= @INSTALL_ELFLIB_TARGET@
 
 CONFIG_H		= config.h
 TERMINFO_INC		= terminfo/@TERMINFO_LAYOUT@.inc
-ALL_CFLAGS		= $(CFLAGS) -Dunix $(THIS_LIB_DEFINES)
-ALL_ELF_CFLAGS		= $(ELF_CFLAGS) -Dunix $(THIS_LIB_DEFINES)
+ALL_CFLAGS		= $(CFLAGS) -Dunix $(THIS_LIB_DEFINES) $(OTHER_CFLAGS)
+ALL_ELF_CFLAGS		= $(ELF_CFLAGS) -Dunix $(THIS_LIB_DEFINES) $(OTHER_CFLAGS)
 COMPILE_CMD		= $(CC) -c $(ALL_CFLAGS)
 ELFCOMPILE_CMD		= $(ELF_CC) -c $(ALL_ELF_CFLAGS)
 ELF_LINK_CMD		= $(ELF_LINK)
@@ -107,7 +113,7 @@ ELFLIB_BUILD_NAME       = @ELFLIB_BUILD_NAME@
 ELFDIR_ELF_LIB = $(ELFDIR)/$(ELFLIB_BUILD_NAME)#
 ELFDIR_DLL_LIB = $(ELFDIR)/$(DLL_IMPLIB_NAME)#
 
-EXECLIBS = -L$(OBJDIR) -lslang $(OTHERLIBS) $(DL_LIB)
+EXECLIBS = -L$(OBJDIR) -lslang $(OTHER_LIBS) $(DL_LIB)
 EXECDEPS = $(OBJDIR_NORMAL_LIB)
 
 OFILES = @PROGRAM_OFILES@
@@ -216,7 +222,7 @@ install: install-all
 # Tests
 #---------------------------------------------------------------------------
 runtests: $(OBJDIR_NORMAL_LIB) static
-	cd test; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" OTHERLIBS="$(OTHERLIBS)" SLANGLIB="$(OBJDIR)"
+	cd test; $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" OTHER_CFLAGS="$(OTHER_CFLAGS)" OTHER_LIBS="$(OTHER_LIBS)" SLANGLIB="$(OBJDIR)"
 #---------------------------------------------------------------------------
 # Housekeeping
 #---------------------------------------------------------------------------

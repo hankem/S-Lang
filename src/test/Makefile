@@ -14,9 +14,10 @@ MEMCHECK = valgrind --tool=memcheck --leak-check=yes --leak-resolution=med --num
 RUN_TEST_PGM = ./$(TEST_PGM)
 SLANGINC = ..
 SLANGLIB = ../$(ARCH)objs
-OTHERLIBS = -lm
+OTHER_LIBS = -lm
+OTHER_CFLAGS =
 
-runtests: $(TEST_PGM)
+runtests: $(TEST_PGM) cleantmp
 	@tests=""; \
 	for test in $(TEST_SCRIPTS); \
 	do \
@@ -29,7 +30,7 @@ runtests: $(TEST_PGM)
 	MAKERUNNING=1 ./runtests.sh $$tests
 #	@touch $(TEST_PGM).c
 
-update: $(TEST_PGM)
+update: $(TEST_PGM) cleantmp
 	@tests=""; \
 	for X in $(TEST_SCRIPTS); \
 	do \
@@ -51,7 +52,7 @@ update: $(TEST_PGM)
 	fi
 #	@touch $(TEST_PGM).c
 
-memcheck_runtests: $(TEST_PGM)
+memcheck_runtests: $(TEST_PGM) cleantmp
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -64,7 +65,7 @@ memcheck_runtests: $(TEST_PGM)
 	done
 #	touch $(TEST_PGM).c
 
-memcheck_runtests_slc: $(TEST_PGM)
+memcheck_runtests_slc: $(TEST_PGM) cleantmp
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -78,9 +79,12 @@ memcheck_runtests_slc: $(TEST_PGM)
 memcheck: memcheck_runtests memcheck_runtests_slc
 
 $(TEST_PGM): $(TEST_PGM).c assoc.c list.c $(SLANGLIB)/libslang.a
-	$(CC) $(CFLAGS) $(LDFLAGS) $(TEST_PGM).c -o $(TEST_PGM) -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHERLIBS)
-clean:
-	-/bin/rm -f *~ *.o *.log tmp-* log.pid* *.slc log.* *.log-*
+	$(CC) $(CFLAGS) $(OTHER_CFLAGS) $(LDFLAGS) $(TEST_PGM).c -o $(TEST_PGM) -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHER_LIBS)
+cleantmp:
+	-/bin/rm -rf tmpfile*.* tmpdir*.*
+clean: cleantmp
+	-/bin/rm -f *~ *.o *.log log.pid* *.slc log.* *.log-*
 distclean: clean
 	/bin/rm -f $(TEST_PGM) $(TEST_PGM).gcda $(TEST_PGM).gcno
-.PHONY: clean memcheck runtests memcheck_runtests_slc memcheck_runtests
+.PHONY: clean memcheck runtests memcheck_runtests_slc memcheck_runtests cleantmp
+

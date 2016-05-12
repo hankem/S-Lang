@@ -68,6 +68,11 @@ DEST_SLSH_SCRIPT_DIR = $(DESTDIR)$(SLSH_SCRIPT_DIR)
 DEST_SLSH_DOC_DIR= $(DESTDIR)$(SLSH_DOC_DIR)
 
 #----------------------------------------------------------------------------
+# These should be empty for production code
+#----------------------------------------------------------------------------
+SLSYSWRAP_DEF = @DSLSYSWRAP@
+SLSYSWRAP_LIB = @LIB_SLSYSWRAP@
+#----------------------------------------------------------------------------
 # End of user configuration
 #----------------------------------------------------------------------------
 @SET_MAKE@
@@ -75,10 +80,10 @@ SHELL = /bin/sh
 INST_LIBS = $(DEST_LIB_DIR) $(RPATH) $(SLANG_INST_LIB) -lslang $(READLINE_LIB) $(DYNAMIC_LIBS)
 DEFS = -DSLSH_CONF_DIR='"$(SLSH_CONF_DIR)"' -DSLSH_PATH='"$(SLSH_LIB_DIR)"' \
  -DSLSH_CONF_DIR_ENV='$(SLSH_CONF_DIR_ENV)' -DSLSH_LIB_DIR_ENV='$(SLSH_LIB_DIR_ENV)' \
- -DSLSH_PATH_ENV='$(SLSH_PATH_ENV)'
+ -DSLSH_PATH_ENV='$(SLSH_PATH_ENV)' $(SLSYSWRAP_DEF)
 SDEFS = $(DEFS) -DSLSH_STATIC
-SRC_LIBS = $(SLANG_ELFLIB) -lslang $(READLINE_LIB) $(DYNAMIC_LIBS)
-STATIC_SRC_LIBS = $(SLANG_OBJLIB) -lslang $(READLINE_LIB) $(STATIC_LIBS)
+SRC_LIBS = $(SLANG_ELFLIB) -lslang $(SLSYSWRAP_LIB) $(READLINE_LIB) $(DYNAMIC_LIBS)
+STATIC_SRC_LIBS = $(SLANG_OBJLIB) -lslang $(SLSYSWRAP_LIB) $(READLINE_LIB) $(STATIC_LIBS)
 #
 all: $(OBJDIR)/slsh_exe
 slsh: $(OBJDIR)/slsh

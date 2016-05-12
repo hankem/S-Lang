@@ -160,6 +160,8 @@ Changes since 2.3.0
 63. src/sltoken.c: bug fix affecting reading byte-compiled files: Use
     SLatoul for unsigned longs instead of atol; remove alignment test
     from pack.sl until a new test can be devised.
+64. Added support for compiling against slsyscall testing library.
+    It is disabled for production code.
 
 {{{ Previous Versions
 
