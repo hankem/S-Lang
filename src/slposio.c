@@ -299,6 +299,10 @@ static int do_close (SLFile_FD_Type *f)
 
 	if (0 == is_interrupt (errno, 1))
 	  return -1;
+#ifdef EINTR
+	/* see http://lwn.net/Articles/576478/ */
+	if (errno == EINTR) return 0;
+#endif
      }
 }
 
@@ -705,10 +709,12 @@ static void posix_open (void)
 
    while (-1 == (f->fd = SLSYSWRAP_OPEN (f->name, flags, mode)))
      {
+	int e = errno;
 	if (is_interrupt (errno, 1))
 	  continue;
 
-	SLfile_free_fd (f);
+	SLfile_free_fd (f);	       /* could affect errno */
+	SLerrno_set_errno (e);
 	SLang_push_null ();
 	return;
      }

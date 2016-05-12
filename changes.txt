@@ -162,6 +162,14 @@ Changes since 2.3.0
     from pack.sl until a new test can be devised.
 64. Added support for compiling against slsyscall testing library.
     It is disabled for production code.
+65. Bug fixes:
+
+      src/slarrfun.c: SLang_duplicate_array return value not checked;
+      src/slstdio.c: SLfree was used in an error handler instead of
+       SLang_free_slstring
+      src/slposio.c: If EINTR happens in the close function, do not
+       restart it.  See <http://lwn.net/Articles/576478/>.
+      src/sltoken.c: Use unsigned char * cast for SLatol functions.
 
 {{{ Previous Versions
 

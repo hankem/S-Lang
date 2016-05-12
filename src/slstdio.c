@@ -641,11 +641,11 @@ static void stdio_fgetslines_internal (FILE *fp, unsigned int n)
      SLang_push_null ();
    return;
 
-   return_error:
+return_error:
    while (num_lines > 0)
      {
 	num_lines--;
-	SLfree (list[num_lines]);
+	SLang_free_slstring (list[num_lines]);
      }
    SLfree ((char *)list);
    SLang_push_null ();

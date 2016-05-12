@@ -489,6 +489,7 @@ static SLang_Array_Type *transpose (SLang_Array_Type *at)
        || (num_dims == 1))
      {
 	bt = SLang_duplicate_array (at);
+	if (bt == NULL) return NULL;
 	if (num_dims == 1) bt->num_dims = 2;
 	goto transpose_dims;
      }

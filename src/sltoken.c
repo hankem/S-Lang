@@ -2033,7 +2033,7 @@ void _pSLcompile_byte_compiled (void)
 	   case LONG_TOKEN:
 	     if (NULL == check_byte_compiled_token (buf))
 	       return;
-	     tok.v.long_val = SLatol (buf);
+	     tok.v.long_val = SLatol ((unsigned char *)buf);
 	     break;
 
 	   case UCHAR_TOKEN:
@@ -2042,7 +2042,7 @@ void _pSLcompile_byte_compiled (void)
 	   case ULONG_TOKEN:
 	     if (NULL == check_byte_compiled_token (buf))
 	       return;
-	     tok.v.ulong_val = SLatoul (buf);
+	     tok.v.ulong_val = SLatoul ((unsigned char *)buf);
 	     break;
 #ifdef HAVE_LONG_LONG
 	   case LLONG_TOKEN:
