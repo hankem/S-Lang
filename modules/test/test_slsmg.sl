@@ -1,4 +1,11 @@
 () = evalfile ("./test.sl");
+
+% TODO:
+% The test plan is to write output to a file and compare that output to a
+% validated output file.  Such a test cannot rely upon using a system
+% provided terminfo database, which could vary from system to system.
+% As such, a TERMCAP environment variable will be used.
+
 try
 {
    require ("slsmg");

@@ -107,7 +107,7 @@ if (length ([8198.0:8192.0:8192]) != 0)
   failed ("length ([8198.0:8192.0:8192])");
 
 % Test for memory leak
-loop (100) B = transpose (B);
+loop (10) B = transpose (B);
 B = 0;
 
 % Try on a string array
@@ -1229,7 +1229,7 @@ private define index_random ()
 {
    variable a = [1:60];
    variable n = Int_Type[83]; n[*] = 70;
-   loop (100)
+   loop (5)
      {
 	try
 	  {
@@ -1760,7 +1760,7 @@ private define test_wherefirst_op ()
 		    ];
 
    variable ops = {"_op_eqs", "_op_neqs", "_op_gt", "_op_ge", "_op_lt", "_op_le"};
-   loop (50)
+   loop (5)
      {
 	foreach (ops)
 	  {

@@ -130,3 +130,21 @@ define expect_error(%expected_error, expected_message, function, [args...]
    catch AnyError:
      failed (`expected %S to throw %s, but got %s "%s"`, function, expected_error_descr, e.descr, e.message);
 }
+
+private variable Random_Number = _time ();
+$1 = getenv ("SLSYSWRAP_RANDSEED");
+if ($1 != NULL) Random_Number = typecast (atol($1), ULong_Type);
+
+define urand_1 (x)
+{
+   Random_Number = typecast (Random_Number * 69069UL + 1013904243UL, UInt32_Type);
+   return Random_Number/4294967296.0;
+}
+define urand (n)
+{
+   if (n == 0)
+     return Double_Type[0];
+
+   return array_map (Double_Type, &urand_1, [1:n]);
+}
+

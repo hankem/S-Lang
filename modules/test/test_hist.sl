@@ -1,20 +1,6 @@
 () = evalfile ("./test.sl");
 require ("histogram");
 
-private variable Random_Number = _time ();
-private define urand_1 (x)
-{
-   Random_Number = typecast (Random_Number * 69069UL + 1013904243UL, UInt32_Type);
-   return Random_Number/4294967296.0;
-}
-private define urand (n)
-{
-   if (n == 0)
-     return Double_Type[0];
-
-   return array_map (Double_Type, &urand_1, [1:n]);
-}
-
 private define test_alternate_forms (pts, edges, rev_indices, expected_h)
 {
    variable h = hist1d (pts, edges);

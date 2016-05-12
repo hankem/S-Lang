@@ -173,6 +173,7 @@ Changes since 2.3.0
 
 66. src/slmisc.c: \uABCD supported in string literals.  Previously,
     braces were required (\u{ABCD}).
+67. Updated many of the unit tests/regression scripts.
 
 {{{ Previous Versions
 

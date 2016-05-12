@@ -6,6 +6,10 @@
 #include "../sl-feat.h"
 #include "../slang.h"
 
+#ifdef SLSYSWRAP
+# include <slsyswrap.h>
+#endif
+
 #if SLANG_HAS_FLOAT
 #if defined(__FreeBSD__) || defined(__386BSD__)
 # include <floatingpoint.h>
@@ -131,6 +135,42 @@ static void test_pop_mmt (void)
    if (-1 == SLang_push_mmt (mmt))
      SLang_free_mmt (mmt);
 }
+
+typedef struct
+{
+   char *name;
+   int i_value;
+   char *s_value;
+   double d_value;
+}
+My_Struct_Type;
+
+static My_Struct_Type My_Struct =
+{
+   "My_Struct",
+   -41,
+   NULL,
+   7.18
+};
+
+static My_Struct_Type *My_Struct_Ptr = &My_Struct;
+
+static SLang_IStruct_Field_Type My_Struct_Field_Table [] =
+{
+   MAKE_ISTRUCT_FIELD(My_Struct_Type, name, "name", SLANG_STRING_TYPE, 1),
+   MAKE_ISTRUCT_FIELD(My_Struct_Type, i_value, "i", SLANG_INT_TYPE, 0),
+   MAKE_ISTRUCT_FIELD(My_Struct_Type, s_value, "s", SLANG_STRING_TYPE, 0),
+   MAKE_ISTRUCT_FIELD(My_Struct_Type, d_value, "d", SLANG_DOUBLE_TYPE, 0),
+   SLANG_END_ISTRUCT_TABLE
+};
+
+static int add_my_struct_type (void)
+{
+   return SLadd_istruct_table (My_Struct_Field_Table,
+			       (VOID_STAR) &My_Struct_Ptr,
+			       "Intrinsic_Struct");
+}
+
 
 typedef struct
 {
@@ -268,6 +308,9 @@ static int add_test_classes (void)
      return -1;
    Test_Type_Id = SLclass_get_class_id (cl);
 
+   if (-1 == add_my_struct_type ())
+     return -1;
+
    return 0;
 }
 
@@ -304,6 +347,13 @@ static void check_intrin_long_qualifier (char *name, long *def)
    SLang_push_long (q);
 }
 
+#ifdef SLSYSWRAP
+static int set_syscall_failure (int *f)
+{
+   return SLsyswrap_set_syscall_failure (*f);
+}
+#endif
+
 #include "assoc.c"
 #include "list.c"
 
@@ -329,6 +379,9 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_0("set_c_struct", set_c_struct, VOID_TYPE),
    MAKE_INTRINSIC_1("get_c_struct_via_ref", get_c_struct_via_ref, VOID_TYPE, SLANG_REF_TYPE),
    MAKE_INTRINSIC_0("new_test_type", new_test_type, SLANG_VOID_TYPE),
+#ifdef SLSYSWRAP
+   MAKE_INTRINSIC_1("_slsyswrap_set_syscall_failure", set_syscall_failure, SLANG_INT_TYPE, SLANG_INT_TYPE),
+#endif
    ASSOC_API_TEST_INTRINSICS,
    LIST_API_TEST_INTRINSICS,
 
@@ -368,14 +421,34 @@ int main (int argc, char **argv)
 	fprintf (stderr, "Usage: %s [-utf8] FILE...\n", argv[0]);
 	return 1;
      }
-   (void) SLutf8_enable (utf8);
 
+   if (utf8)
+     {
+	putenv("LANG=en_US.UTF-8");
+	if (0 == SLutf8_enable (-1))
+	  {
+	     fprintf (stderr, "***WARNING: Failed to trigger utf8 mode via LANG\n");
+	     (void) SLutf8_enable (1);
+	  }
+     }
+   else (void) SLutf8_enable (0);
+
+   if (utf8 != SLutf8_is_utf8_mode ())
+     {
+	fprintf (stderr, "SLutf8_is_utf8_mode failed\n");
+	return 1;
+     }
+#ifdef SLSYSWRAP
+   (void) SLsyswrap_set_syscall_failure (0);
+#endif
    if ((-1 == SLang_init_all ())
        || (-1 == SLang_init_array_extra ())
        || (-1 == SLadd_intrin_fun_table (Intrinsics, NULL))
        || (-1 == add_test_classes ()))
      return 1;
-
+#ifdef SLSYSWRAP
+   (void) SLsyswrap_set_syscall_failure (1);
+#endif
    SLang_Traceback = 1;
 
    if (-1 == SLang_set_argc_argv (argc, argv))

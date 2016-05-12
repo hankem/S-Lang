@@ -150,7 +150,7 @@ private define test_sigprocmask ()
 
 test_signal (SIGHUP, &handle_hup);
 
-$1 = getenv ("SLSYSCALL_TEST");
+$1 = getenv ("SLSYSWRAP_TEST");
 
 if (($1 == NULL) || (atoi ($1) == 0))
 {

@@ -27,7 +27,12 @@ private define test_pipe ()
    variable fdr, fdw, buf, n;
    (fdr, fdw) = pipe ();
 
-   () = write (fdw, "hello");
+   while (-1 == write (fdw, "hello"))
+     {
+	if (errno == EINTR)
+	  continue;
+	failed ("write to pipe failed: %S", errno_string);
+     }
    n = read (fdr, &buf, 10);
    if ((buf != "hello") || (n != 5))
      {

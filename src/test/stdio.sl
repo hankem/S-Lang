@@ -4,65 +4,34 @@ testing_feature ("stdio routines");
 
 define fdopen_tmp_file (fileptr, mode, fdp)
 {
-   variable n;
-   variable file, fp;
-   variable fmt;
+   variable file, fp, fd;
 
    @fileptr = NULL;
 
-   fmt = "tmp-xxx.%03d";    % I need something that works on an 8+3 filesystem
+   file = util_make_tmp_file ("tmpfile", &fd);
+   fp = fdopen (fd, mode);
+   if (fp == NULL)
+     failed ("fdopen failed: %s", errno_string());
 
-   n = -1;
-   while (n < 999)
-     {
-	n++;
-	file = sprintf (fmt, n);
-	if (NULL != stat_file (file))
-	  continue;
-
-	variable fd = open (file, O_WRONLY|O_BINARY|O_CREAT);
-	if (fd == NULL)
-	  continue;
-
-	fp = fdopen (fd, mode);
-	if (fp != NULL)
-	  {
-	     @fdp = fd;
-	     @fileptr = file;
-	     return fp;
-	  }
-	break;
-     }
-   failed ("Unable to open a tmp file");
+   @fdp = fd;
+   @fileptr = file;
+   return fp;
 }
 
 define fopen_tmp_file (fileptr, mode)
 {
-   variable n;
    variable file, fp;
-   variable fmt;
 
    @fileptr = NULL;
 
-   fmt = "tmp-xxx.%03d";    % I need something that works on an 8+3 filesystem
+   file = util_make_tmp_file ("tmpfile", NULL);
 
-   n = -1;
-   while (n < 999)
-     {
-	n++;
-	file = sprintf (fmt, n);
-	if (NULL != stat_file (file))
-	  continue;
+   fp = fopen (file, mode);
+   if (fp == NULL)
+     failed ("Unable to open %S", file);
 
-	fp = fopen (file, mode);
-	if (fp != NULL)
-	  {
-	     @fileptr = file;
-	     return fp;
-	  }
-	break;
-     }
-   failed ("Unable to open a tmp file");
+   @fileptr = file;
+   return fp;
 }
 
 define run_tests (some_text, read_fun, write_fun, length_fun)

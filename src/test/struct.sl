@@ -628,20 +628,22 @@ private define test_internal_struct_type ()
 {
    variable t;
 
-   loop (100)
+   loop (5)
      {
 	t = new_test_type ();
 	t.field1 = 7;
 	t.field2 = 3;
-	t.field1 += 3;
+	t.field1 += 4;
 	t.field1 -= t.field2;
+	if (t.field1 != 8)
+	  failed ("new_test_type");
      }
 }
 test_internal_struct_type ();
 
 private define test_it (p)
 {
-   loop (10)
+   loop (5)
      {
 	variable userdata = struct{items};
 
@@ -714,6 +716,27 @@ private define test_push_struct_fields ()
 }
 
 test_push_struct_fields ();
+
+% Intrinsic structure
+private define test_intrinsic_structure ()
+{
+   variable s = Intrinsic_Struct;
+   if (s.name != "My_Struct")
+     failed ("Intrinsic_Struct name: %S", s.name);
+
+   try
+     {
+	s.name = "foo";
+	failed ("Intrinsic_Struct.name should be read-only");
+     }
+   catch ReadOnlyError;
+   s.i = 37;
+   s.s = "foobar";
+   s.d = PI;
+   if ((s.i != 37) || (s.s != "foobar") || (s.d != PI))
+     failed ("Intrinsic_Struct field read/write error");
+}
+test_intrinsic_structure();
 
 print ("Ok\n");
 exit (0);

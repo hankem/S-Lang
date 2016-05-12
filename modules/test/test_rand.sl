@@ -106,7 +106,7 @@ define test_rand_binomial()
    variable p, n;
    foreach p ([0, 0.25, 0.75, 1.0])
      {
-	foreach n ([1, 2, 10, 20])
+	foreach n ([1, 2, 10, 20, 50]) %  make sure n*MIN(p,1-p) > 10 for one case
 	  {
 	     test_generic (&rand_binomial, UInt_Type, {p, n},
 			   n*p, n*p*(1-p),

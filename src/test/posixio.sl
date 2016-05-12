@@ -2,41 +2,13 @@
 
 testing_feature ("POSIX I/O routines");
 
-static define open_tmp_file (fileptr, flags, mode)
-{
-   variable n;
-   variable file, fd;
-   variable fmt;
-
-   @fileptr = NULL;
-
-   fmt = "tmp-xxx.%03d";    % I need something that works on an 8+3 filesystem
-
-   n = -1;
-   while (n < 999)
-     {
-	n++;
-	file = sprintf (fmt, n);
-	if (NULL != stat_file (file))
-	  continue;
-
-	fd = open (file, flags, 0777);
-	if (fd != NULL)
-	  {
-	     @fileptr = file;
-	     return fd;
-	  }
-     }
-   failed ("Unable to open a tmp file");
-}
-
 define run_tests (some_text)
 {
    variable file, fd, fp1, fp2;
    variable new_text, nbytes, len;
    variable pos;
 
-   fd = open_tmp_file (&file, O_WRONLY|O_BINARY|O_CREAT, 0777);
+   file = util_make_tmp_file ("tmpfile", &fd);
 
    if (-1 == write (fd, some_text))
      failed ("write");
@@ -56,7 +28,8 @@ define run_tests (some_text)
      failed ("close");
 
    fd = open (file, O_RDONLY|O_BINARY);
-   if (fd == NULL) failed ("fopen existing");
+   if (fd == NULL)
+     failed ("open existing");
 
    len = bstrlen (some_text);
    nbytes = read (fd, &new_text, len);
@@ -150,6 +123,13 @@ private define test_misc ()
    if (_fileno (fd1) != 123)
      failed ("@FD_Type failed");
    () = close (fd1);
+
+   variable e = errno;
+   if (NULL == stat_file (". .|<>."))
+     {
+	if (String_Type != typeof(errno_string (errno)))
+	  failed ("expected errno_string to return a string");
+     }
 }
 
 test_misc ();
