@@ -76,21 +76,6 @@ if (fileno (stdin) == fileno(stdout))
    failed ("fileno(stdin) is equal to fileno(stdout)");
 }
 
-#ifexists statvfs
-() = statvfs (".");
-() = statvfs (stdout);
-() = statvfs (1);
-() = statvfs (fileno(stdout));
-#endif
-
-define test_listdir ()
-{
-   variable files = strlow (listdir("."));
-   if (1 != length (where (files == "posixio.sl")))
-     failed ("listdir: posixio.sl not in the list");
-}
-test_listdir ();
-
 private define test_misc ()
 {
    variable s, fd;

@@ -6,11 +6,25 @@ require ("fork");
 
 private define test_fork ()
 {
+   variable _ppid = getpid ();
    variable pid = fork ();
 
    if (pid == 0)
      {
 	% child
+	if (_ppid == getpid ())
+	  {
+	     () = fprintf (stderr, "fork did not change pid\n");
+	     _exit (1);
+	  }
+
+#ifexists getppid
+	if (_ppid != getppid ())
+	  {
+	     () = fprintf (stderr, "getppid failed in child\n");
+	     _exit (1);
+	  }
+#endif
 	_exit(123);
      }
 

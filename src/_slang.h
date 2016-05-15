@@ -506,21 +506,22 @@ typedef unsigned long long _pSLuint64_Type;
 # endif
 #endif
 
-extern int _pSLang_pop_int16 (_pSLint16_Type *);
-extern int _pSLang_pop_uint16 (_pSLuint16_Type *);
-extern int _pSLang_pop_int32 (_pSLint32_Type *);
-extern int _pSLang_pop_uint32 (_pSLuint32_Type *);
+/* The following are commented out because they are not used by the library */
+/* extern int _pSLang_pop_int16 (_pSLint16_Type *); */
+/* extern int _pSLang_pop_uint16 (_pSLuint16_Type *); */
+/* extern int _pSLang_pop_int32 (_pSLint32_Type *); */
+/* extern int _pSLang_pop_uint32 (_pSLuint32_Type *); */
 #if _pSLANG_INT64_TYPE
 extern int _pSLang_pop_int64(_pSLint64_Type *);
 extern int _pSLang_pop_uint64 (_pSLuint64_Type *);
 #endif
-extern int _pSLang_push_int16 (_pSLint16_Type);
-extern int _pSLang_push_uint16 (_pSLuint16_Type);
-extern int _pSLang_push_int32 (_pSLint32_Type);
-extern int _pSLang_push_uint32 (_pSLuint32_Type);
+/* extern int _pSLang_push_int16 (_pSLint16_Type); */
+/* extern int _pSLang_push_uint16 (_pSLuint16_Type); */
+/* extern int _pSLang_push_int32 (_pSLint32_Type); */
+/* extern int _pSLang_push_uint32 (_pSLuint32_Type); */
 #if _pSLANG_INT64_TYPE
-extern int _pSLang_push_int64(_pSLint64_Type);
-extern int _pSLang_push_uint64 (_pSLuint64_Type);
+/* extern int _pSLang_push_int64(_pSLint64_Type); */
+/* extern int _pSLang_push_uint64 (_pSLuint64_Type); */
 #endif
 
 #ifdef HAVE_LONG_LONG

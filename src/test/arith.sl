@@ -345,22 +345,54 @@ another_test();
 
 define test_typecast ()
 {
-   variable args = __pop_args (_NARGS-1);
-   variable y = ();
-
-   if (y != typecast (__push_args (args)))
-     failed ("typecast");
+   variable s, t, x = 37;
+   variable x2 = 74;
+   foreach t (Util_Arith_Types)
+     {
+	variable y = typecast (x, t);
+	if ((x != y) || (typeof (y) != t))
+	  failed ("typecast scalar");
+	foreach s (Util_Arith_Types)
+	  {
+	     variable z = typecast (y, s);
+	     if ((z != x) || (z != y) || (typeof(z) != s))
+	       failed ("typecast scalar %S->%S", t, s);
+	  }
+     }
 }
+test_typecast ();
 
-#ifexists Double_Type
-test_typecast (0.0f, 0, Float_Type);
-#endif
+define test_binary ()
+{
+   variable x = 37, x2 = 74, xm2 = 35, xp2 = 39, xmod2=1, s, t;
+   foreach t (Util_Arith_Types)
+     {
+	variable y = typecast (x, t);
+	variable y2 = typecast (x2, t);
+	foreach s (Util_Arith_Types)
+	  {
+	     variable two = typecast(2, s);
+	     if (y2/two != x) failed ("binary %S/%S", t, s);
+	     if (y*two != x2) failed ("binary %S*%S", t, s);
+	     if (y-two != xm2) failed ("binary %S-%S", t, s);
+	     if (y+two != xp2) failed ("binary %S+%S", t, s);
+	     if ((y mod two) != xmod2) failed ("binary %S mod %S", t, s);
+	     ifnot (y>two) failed ("binary %S > %S", t, s);
+	     ifnot (y>=two) failed ("binary %S > %S", t, s);
+	     if (y<two) failed ("binary %S > %S", t, s);
+	     if (y<=two) failed ("binary %S <= %S", t, s);
+	     if (y==two) failed ("binary %S==%S", t, s);
+	     ifnot (y!=two) failed ("binary %S!=%S", t, s);
+	  }
+     }
+}
+test_binary ();
 
 define check_hypot (a, b, c)
 {
    variable cc;
    cc = hypot (a, b);
-   if (typeof (c) != typeof (cc))
+   if (_typeof (c) != _typeof (cc))
      failed ("Wrong return type for hypot");
    if (0 == _eqs(c, cc))
      failed ("hypot: expected %S, got %S", c, cc);
@@ -373,44 +405,30 @@ define check_hypot (a, b, c)
      failed ("hypot ([a,a,a,a],[b,b,b,b])");
 }
 
-check_hypot (3.0, 4.0, 5.0);
-check_hypot (3.0f, 4.0, 5.0);
-check_hypot (3.0, 4.0f, 5.0);
-check_hypot (3.0f, 4.0f, 5.0f);
-check_hypot (3, 4, 5.0);
-check_hypot (3, 4.0f, 5.0);
+private define check_hypot_with_types ()
+{
+   variable a, b, c, s, t, u;
+   foreach t (Util_Arith_Types)
+     {
+	a = typecast (3, t);
+	foreach s (Util_Arith_Types)
+	  {
+	     b = typecast (4, s);
+	     c = 5.0;
+	     if ((t == Float_Type) && (s == Float_Type))
+	       c = 5.0f;
+	     u = typeof (c);
 
-check_hypot ([3.0], [4.0], [5.0]);
-check_hypot ([3.0f], [4.0], [5.0]);
-check_hypot ([3.0], [4.0f], [5.0]);
-check_hypot ([3.0f], [4.0f], [5.0f]);
-check_hypot ([3], [4], [5.0]);
-check_hypot ([3], [4.0f], [5.0]);
-
-check_hypot (3.0, [4.0], [5.0]);
-check_hypot (3.0f, [4.0], [5.0]);
-check_hypot (3.0, [4.0f], [5.0]);
-check_hypot (3.0f, [4.0f], [5.0f]);
-check_hypot (3, [4], [5.0]);
-check_hypot (3, [4.0f], [5.0]);
-
-check_hypot ([3.0], 4.0, [5.0]);
-check_hypot ([3.0f], 4.0, [5.0]);
-check_hypot ([3.0], 4.0f, [5.0]);
-check_hypot ([3.0f], 4.0f, [5.0f]);
-check_hypot ([3], 4, [5.0]);
-check_hypot ([3], 4.0f, [5.0]);
-
-$1 = Double_Type[0];
-$2 = Float_Type[0];
-$3 = Int_Type[0];
-
-check_hypot ($1, 4.0, $1);
-check_hypot ($2, 4.0, $1);
-check_hypot ($1, 4.0f, $1);
-check_hypot ($2, 4.0f, $2);
-check_hypot ($3, 4, $1);
-check_hypot ($3, 4.0f, $1);
+	     check_hypot (a, b, c);
+	     check_hypot (a, [b], [c]);
+	     check_hypot ([a], b, [c]);
+	     check_hypot ([a], [b], [c]);
+	     check_hypot (t[0], b, u[0]);
+	     check_hypot (a, s[0], u[0]);
+	  }
+     }
+}
+check_hypot_with_types ();
 
 static define check_integer (str, val)
 {
@@ -614,6 +632,24 @@ if (fgteqs (2.0, 3.0, 0.001, 0.1))
 if (flteqs (2.0, 1.0, 0.001, 0.1))
   failed ("fgteqs(2,1)");
 #endif				       %  Double_Type
+
+private define test_string()
+{
+   variable t;
+   foreach t (Util_Arith_Types)
+     {
+	variable s = string (typecast (37, t));
+	if ((t == Double_Type) || (t == Float_Type))
+	  {
+	     if (s != "37.0")
+	       failed ("string(%S)", t);
+	     continue;
+	  }
+	if (s != "37")
+	  failed ("string(%S)", t);
+     }
+}
+test_string ();
 
 print ("Ok\n");
 exit (0);

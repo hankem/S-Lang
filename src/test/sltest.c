@@ -1,3 +1,4 @@
+#include "../config.h"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -26,25 +27,71 @@ static void c_exit (int *code)
 
 static char test_char_return (char *x)
 {
-   return *x;
+   char y = *x;
+   if (0 == SLang_push_char (y))
+     (void) SLang_pop_char (&y);
+   return y;
 }
 static short test_short_return (short *x)
 {
-   return *x;
+   short y = *x;
+   if (0 == SLang_push_short (y))
+     (void) SLang_pop_short (&y);
+   return y;
 }
 static int test_int_return (int *x)
 {
-   return *x;
+   int y = *x;
+   if (0 == SLang_push_int (y))
+     (void) SLang_pop_int (&y);
+   return y;
 }
 static long test_long_return (long *x)
 {
-   return *x;
+   long y = *x;
+   if (0 == SLang_push_long (y))
+     (void) SLang_pop_long (&y);
+   return y;
 }
+
+static char test_uchar_return (unsigned char *x)
+{
+   unsigned char y = *x;
+   if (0 == SLang_push_uchar (y))
+     (void) SLang_pop_uchar (&y);
+   return y;
+}
+static short test_ushort_return (unsigned short *x)
+{
+   unsigned short y = *x;
+   if (0 == SLang_push_ushort (y))
+     (void) SLang_pop_ushort (&y);
+   return y;
+}
+static int test_uint_return (unsigned int *x)
+{
+   unsigned int y = *x;
+   if (0 == SLang_push_uint (y))
+     (void) SLang_pop_uint (&y);
+   return y;
+}
+
+static long test_ulong_return (unsigned long *x)
+{
+   unsigned long y = *x;
+   if (0 == SLang_push_ulong (y))
+     (void) SLang_pop_ulong (&y);
+   return y;
+}
+
+#if SLANG_HAS_FLOAT
+
+/* Intrinsics that return float are not supported.
 /* static float test_float_return (float *x) */
 /* { */
 /*    return *x; */
 /* } */
-#if SLANG_HAS_FLOAT
+
 static double test_double_return (double *x)
 {
    return *x;
@@ -370,8 +417,13 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_1("test_short_return", test_short_return, SLANG_SHORT_TYPE, SLANG_SHORT_TYPE),
    MAKE_INTRINSIC_1("test_int_return", test_int_return, SLANG_INT_TYPE, SLANG_INT_TYPE),
    MAKE_INTRINSIC_1("test_long_return", test_long_return, SLANG_LONG_TYPE, SLANG_LONG_TYPE),
-   /* MAKE_INTRINSIC_1("test_float_return", test_float_return, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE), */
+
+   MAKE_INTRINSIC_1("test_uchar_return", test_uchar_return, SLANG_UCHAR_TYPE, SLANG_UCHAR_TYPE),
+   MAKE_INTRINSIC_1("test_ushort_return", test_ushort_return, SLANG_USHORT_TYPE, SLANG_USHORT_TYPE),
+   MAKE_INTRINSIC_1("test_uint_return", test_uint_return, SLANG_UINT_TYPE, SLANG_UINT_TYPE),
+   MAKE_INTRINSIC_1("test_ulong_return", test_ulong_return, SLANG_ULONG_TYPE, SLANG_ULONG_TYPE),
 #if SLANG_HAS_FLOAT
+   /* MAKE_INTRINSIC_1("test_float_return", test_float_return, SLANG_FLOAT_TYPE, SLANG_FLOAT_TYPE), */
    MAKE_INTRINSIC_1("test_double_return", test_double_return, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE),
 #endif
    MAKE_INTRINSIC_0("test_pop_mmt", test_pop_mmt, SLANG_VOID_TYPE),

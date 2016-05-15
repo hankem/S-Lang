@@ -43,10 +43,16 @@ define mkarith_copy_funs (fp)
 	variable fname = FNames[i];
 	variable compile_if = Compile_If[i];
 	variable prec = Precedence[i];
+	variable else_alias = Else_Alias[i];
+	variable s_fname = fname;
+	if (s_fname[0] == 'u') s_fname = substr (s_fname, 2, -1);
 
 	() = fprintf (fp, "/* ------------ %s ---------- */\n", ctype);
+
 	if (compile_if != "")
 	  () = fprintf (fp, "#if %s\n", compile_if);
+
+	variable is_long = (s_fname == "long");
 
 	_for j (0, ntypes-1, 1)
 	  {
@@ -55,29 +61,55 @@ define mkarith_copy_funs (fp)
 	     variable sltype1 = SLTypes[j];
 	     variable fname1 = FNames[j];
 	     variable compile_if1 = Compile_If[j];
-	     variable else_alias = Else_Alias[j];
+	     variable else_alias1 = Else_Alias[j];
 	     variable prec1 = Precedence[j];
-	     variable s_fname, s_fname1;
+	     variable s_fname1;
 
 	     if (compile_if1 != "")
 	       () = fprintf (fp, "#if %s\n", compile_if1);
 
-	     s_fname = fname;
 	     s_fname1 = fname1;
-	     if (s_fname[0] == 'u') s_fname = substr (s_fname, 2, -1);
 	     if (s_fname1[0] == 'u') s_fname1 = substr (s_fname1, 2, -1);
+	     variable is_long1 = (s_fname1 == "long");
+	     variable is_conditional = is_long || is_long1;
+
+	     variable def1 = sprintf ("copy_%s_to_%s", fname, fname1);
+	     variable def2 = sprintf ("%s_to_%s", fname, fname1);
+
 	     if ((s_fname1 == s_fname)
 		 and ((s_fname1 != fname1) or (s_fname != fname)))
 	       () = fprintf (fp, "#define copy_%s_to_%s\tcopy_%s_to_%s\n",
 			   fname, fname1, s_fname, s_fname1);
 	     else
-	       () = fprintf (fp, "DEFUN_1(copy_%s_to_%s,%s,%s)\n",
-			     fname, fname1, ctype, ctype1);
+	       {
+		  if (is_conditional)
+		    {
+		       () = fputs ("#if LONG_IS_INT\n", fp);
+		       if (is_long1)
+			 () = fputs ("# define $def1 copy_${fname}_to_${else_alias1}\n"$, fp);
+		       else
+			 () = fputs ("# define $def1 copy_${else_alias}_to_${fname1}\n"$, fp);
+		       () = fputs ("#else\n", fp);
+		    }
+		  () = fputs ("DEFUN_1($def1,$ctype,$ctype1)\n"$, fp);
+		  if (is_conditional)
+		    () = fputs ("#endif\n", fp);
+	       }
 
 	     if (prec < prec1)
 	       {
-		  () = fprintf (fp, "DEFUN_2(%s_to_%s,%s,%s,copy_%s_to_%s)\n",
-				fname, fname1, ctype, ctype1, fname, fname1);
+		  if (is_conditional)
+		    {
+		       () = fputs ("#if LONG_IS_INT\n", fp);
+		       if (is_long1)
+			 () = fputs ("# define $def2 ${fname}_to_${else_alias1}\n"$, fp);
+		       else
+			 () = fputs ("# define $def2 ${else_alias}_to_${fname1}\n"$, fp);
+		       () = fputs ("#else\n", fp);
+		    }
+		  () = fputs ("DEFUN_2($def2,$ctype,$ctype1,$def1)\n"$, fp);
+		  if (is_conditional)
+		    () = fputs ("#endif\n", fp);
 	       }
 	     else
 	       {

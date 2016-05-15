@@ -89,16 +89,23 @@ try
 }
 catch IndexError;
 
-B = transpose (A);
-
-if ((B[0,0,0] != 0)
-    or (B[1,0,0] != 1)
-    or (neqs (B[[:],0,0], [0:3]))
-    or (neqs (B[[:],1,0], [4:7]))
-    or (neqs (B[[:],2,0], [8:11]))
-    or (neqs (B[[:],0,1], [12:15]))
-    or (neqs (B[[:],1,1], [16:19]))
-    or (neqs (B[[:],2,1], [20:23]))) failed ("transpose int array");
+private define test_transpose_for_all_types ()
+{
+   foreach (Util_Arith_Types)
+     {
+	variable t = ();
+	variable b = transpose (typecast (A, t));
+	if ((b[0,0,0] != 0)
+	    or (b[1,0,0] != 1)
+	    or (neqs (b[[:],0,0], [0:3]))
+	    or (neqs (b[[:],1,0], [4:7]))
+	    or (neqs (b[[:],2,0], [8:11]))
+	    or (neqs (b[[:],0,1], [12:15]))
+	    or (neqs (b[[:],1,1], [16:19]))
+	    or (neqs (b[[:],2,1], [20:23])))
+	  failed ("transpose %S array", t);
+     }
+}
 
 if (length ([8198:8192:8192]) != 0)
   failed ("length ([8198:8192:8192])");
@@ -107,7 +114,8 @@ if (length ([8198.0:8192.0:8192]) != 0)
   failed ("length ([8198.0:8192.0:8192])");
 
 % Test for memory leak
-loop (10) B = transpose (B);
+B = transpose (A);
+loop (3) B = transpose (B);
 B = 0;
 
 % Try on a string array
@@ -606,6 +614,31 @@ private define test_indexing_with_1_index ()
 }
 test_indexing_with_1_index ();
 
+private define test_index_arrays ()
+{
+   foreach (Util_Arith_Types)
+     {
+	variable s = ();
+	variable x = typecast ([1:10], s);
+	variable y = typecast ([1,3,5,7,9], s);
+	variable i = [0::2];
+	foreach (Util_Arith_Types)
+	  {
+	     variable t = ();
+	     if (1 != __is_numeric(t))
+	       continue;
+	     variable ii = typecast (i, t);
+	     ifnot (_eqs (y, x[i]))
+	       failed ("get with index array of type %S", t);
+	     variable z = Int_Type[10];
+	     z[ii] = y;
+	     ifnot (_eqs (y, z[ii]))
+	       failed ("put with index array of type %S", t);
+	  }
+     }
+}
+test_index_arrays ();
+
 % Test array summing operations
 #ifexists Double_Type
 private define compute_sum (a, n)
@@ -797,6 +830,19 @@ A = [1.0:10]; A[3] = _NaN;
 test_eqs ("min", min(A), find_min(A));
 test_eqs ("max", max(A), find_max(A));
 test_min_maxabs(A);
+
+private define test_eqsmin_max_all_types (A)
+{
+   foreach (Util_Arith_Types)
+     {
+	variable t = ();
+	variable b = typecast (A, t);
+	test_eqs ("min", min(b), find_min(b));
+	test_eqs ("max", max(b), find_max(b));
+	test_min_maxabs(b);
+     }
+}
+test_eqsmin_max_all_types ([10:20]);
 
 if ((_min(2, 1) != 1) or (_min(1,2) != 1))
   failed ("_min");
@@ -1270,8 +1316,7 @@ private define test_all_1 (astr, ans)
 
 private define test_any_or_all (fun, astr, ans)
 {
-   foreach ([Char_Type, UChar_Type, Short_Type, UShort_Type,
-	     Int_Type, UInt_Type, Long_Type, ULong_Type])
+   foreach (Util_Arith_Types)
      {
 	variable t = ();
 	(@fun) ("typecast ($astr, $t);"$, ans);
@@ -1666,16 +1711,7 @@ test_range_multiplier ();
 
 private define test_wherefirstlast_minmax (a)
 {
-   foreach ([
-#ifexists Double_Type
-	     Double_Type, Float_Type,
-#endif
-#ifexists LLong_Type
-	     LLong_Type, ULLong_Type,
-#endif
-	     Long_Type, ULong_Type, Int_Type, UInt_Type,
-	     Short_Type, UShort_Type, Char_Type, UChar_Type,
-	    ])
+   foreach (Util_Arith_Types)
      {
 	variable type = ();
 	variable b = typecast (a, type);
@@ -1751,13 +1787,7 @@ test_prod ([1:5] + 1i*[2:6]);
 
 private define test_wherefirst_op ()
 {
-   variable types = [Char_Type, UChar_Type, Short_Type, UShort_Type,
-		     Int_Type, UInt_Type, Long_Type, ULong_Type,
-#ifexists LLong_Type
-		     LLong_Type, ULLong_Type,
-#endif
-		     Float_Type, Double_Type
-		    ];
+   variable types = Util_Arith_Types;
 
    variable ops = {"_op_eqs", "_op_neqs", "_op_gt", "_op_ge", "_op_lt", "_op_le"};
    loop (5)

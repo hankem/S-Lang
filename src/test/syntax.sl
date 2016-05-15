@@ -20,14 +20,34 @@ check_version_string ();
 pop(1);  % This tests pop as a special keyword
 
 #ifexists test_char_return	       %  defined by the sltest script
-if (0x12 != test_char_return (0x12)) failed ("test_char_return");
-if (0x1234h != test_short_return (0x1234h)) failed ("test_short_return");
-if (0x1234 != test_int_return (0x1234)) failed ("test_int_return");
-if (0x12345678L != test_long_return (0x12345678L)) failed ("test_long_return");
-% if (1.2e34f != test_float_return (1.2e34f)) failed ("test_float_return");
-#ifexists Double_Type
-if (1.2e34 != test_double_return (1.2e34)) failed ("test_double_return");
-#endif
+private define test_type_return (func, type, x)
+{
+   variable skip_float = __is_datatype_numeric (type) == 1;
+   foreach (Util_Arith_Types)
+     {
+	variable t = ();
+
+	if ((__is_datatype_numeric(t) == 2) && skip_float)
+	  continue;		       %  cannot pass floats to int functs
+
+	variable y = (@func)(typecast (x, t));
+	if ((y != x) || (typeof(y) != type))
+	  failed ("%S failed", func);
+     }
+}
+test_type_return (&test_char_return, Char_Type, 0x12);
+test_type_return (&test_short_return, Short_Type, 0x12);
+test_type_return (&test_int_return, Int_Type, 0x12);
+test_type_return (&test_long_return, Long_Type, 0x12);
+test_type_return (&test_uchar_return, UChar_Type, 0x12);
+test_type_return (&test_ushort_return, UShort_Type, 0x12);
+test_type_return (&test_uint_return, UInt_Type, 0x12);
+test_type_return (&test_ulong_return, ULong_Type, 0x12);
+
+# ifexists Double_Type
+%test_type_return (&test_float_return, Float_Type, 1.2f);
+test_type_return (&test_double_return, Double_Type, 12.0);
+# endif
 #endif
 
 static define static_xxx ()

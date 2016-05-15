@@ -1,3 +1,18 @@
+#ifexists _slsyswrap_set_syscall_failure
+% Every file loads this-- do not subject it to syscall failures everytime
+private variable Inc_Syscall = _slsyswrap_set_syscall_failure (0);
+#endif
+
+define slsyswrap_set_syscall_failure (n)
+{
+#ifexists _slsyswrap_set_syscall_failure
+   return _slsyswrap_set_syscall_failure (n);
+#else
+   return -1;
+#endif
+}
+
+
 define print (x)
 {
    x = string (x);
@@ -19,15 +34,6 @@ define testing_feature (f)
 }
 
 new_exception ("TestError", AnyError, "Test Error");
-
-define slsyswrap_set_syscall_failure (n)
-{
-#ifexists _slsyswrap_set_syscall_failure
-   return _slsyswrap_set_syscall_failure (n);
-#else
-   return -1;
-#endif
-}
 
 define failed ()
 {
@@ -57,6 +63,12 @@ define random_integer (maxn)
 
 define urand ()
 {
+   variable scf = slsyswrap_set_syscall_failure (0);
+   EXIT_BLOCK
+     {
+	() = slsyswrap_set_syscall_failure (scf);
+     }
+
    if (_NARGS == 0)
      return random ();
    variable n = ();
@@ -126,3 +138,17 @@ define util_make_tmp_dir (prefix)
    failed ("Could not create a tmp directory with prefix %s", prefix);
 }
 
+variable Util_Arith_Types
+  = [Char_Type, UChar_Type, Short_Type, UShort_Type,
+     Int_Type, UInt_Type, Long_Type, ULong_Type,
+#ifexists Double_Type
+     Float_Type, Double_Type,
+#endif
+#ifexists LLong_Type
+     LLong_Type, ULLong_Type,
+#endif
+    ];
+
+#ifexists _slsyswrap_set_syscall_failure
+() = slsyswrap_set_syscall_failure (Inc_Syscall);
+#endif

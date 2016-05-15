@@ -886,10 +886,15 @@ aget_transfer_n_elems (SLang_Array_Type *at, SLuindex_Type num, SLindex_Type *st
 # define AGET_FROM_INDEX_ARRAY_FUN aget_ints_from_index_array
 # define APUT_FROM_INDEX_ARRAY_FUN aput_ints_from_index_array
 # include "slagetput.inc"
-# define GENERIC_TYPE long
-# define AGET_FROM_INDEX_ARRAY_FUN aget_longs_from_index_array
-# define APUT_FROM_INDEX_ARRAY_FUN aput_longs_from_index_array
-# include "slagetput.inc"
+# if LONG_IS_INT
+#  define aget_longs_from_index_array aget_ints_from_index_array
+#  define aput_longs_from_index_array aput_ints_from_index_array
+# else
+#  define GENERIC_TYPE long
+#  define AGET_FROM_INDEX_ARRAY_FUN aget_longs_from_index_array
+#  define APUT_FROM_INDEX_ARRAY_FUN aput_longs_from_index_array
+#  include "slagetput.inc"
+# endif
 # define GENERIC_TYPE char
 # define AGET_FROM_INDEX_ARRAY_FUN aget_chars_from_index_array
 # define APUT_FROM_INDEX_ARRAY_FUN aput_chars_from_index_array
@@ -1042,16 +1047,20 @@ aget_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 					      ind_at, is_range, (short *)new_data))
 	  goto return_error;
 	break;
+
+      case SLANG_LONG_TYPE:
+      case SLANG_ULONG_TYPE:
+	/* drop */
+# if LONG_IS_NOT_INT
+	if (-1 == aget_longs_from_index_array ((long *)src_data, num_elements,
+					      ind_at, is_range, (long *)new_data))
+	  goto return_error;
+	break;
+# endif
       case SLANG_INT_TYPE:
       case SLANG_UINT_TYPE:
 	if (-1 == aget_ints_from_index_array ((int *)src_data, num_elements,
 					      ind_at, is_range, (int *)new_data))
-	  goto return_error;
-	break;
-      case SLANG_LONG_TYPE:
-      case SLANG_ULONG_TYPE:
-	if (-1 == aget_longs_from_index_array ((long *)src_data, num_elements,
-					      ind_at, is_range, (long *)new_data))
 	  goto return_error;
 	break;
 #endif
@@ -2028,18 +2037,21 @@ aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 	  goto return_error;
 	break;
 
+      case SLANG_LONG_TYPE:
+      case SLANG_ULONG_TYPE:
+	/* drop */
+#if LONG_IS_NOT_INT
+	if (-1 == aput_longs_from_index_array (data_to_put, data_increment,
+					      ind_at, is_range,
+					      (long*)dest_data, num_elements))
+	  goto return_error;
+	break;
+#endif
       case SLANG_INT_TYPE:
       case SLANG_UINT_TYPE:
 	if (-1 == aput_ints_from_index_array (data_to_put, data_increment,
 					      ind_at, is_range,
 					      (int*)dest_data, num_elements))
-	  goto return_error;
-	break;
-      case SLANG_LONG_TYPE:
-      case SLANG_ULONG_TYPE:
-	if (-1 == aput_longs_from_index_array (data_to_put, data_increment,
-					      ind_at, is_range,
-					      (long*)dest_data, num_elements))
 	  goto return_error;
 	break;
 #endif

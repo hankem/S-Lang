@@ -12,10 +12,26 @@ DEFUN_1(copy_char_to_int,signed char,int)
 DEFUN_2(char_to_int,signed char,int,copy_char_to_int)
 DEFUN_1(copy_char_to_uint,signed char,unsigned int)
 DEFUN_2(char_to_uint,signed char,unsigned int,copy_char_to_uint)
+#if LONG_IS_INT
+# define copy_char_to_long copy_char_to_int
+#else
 DEFUN_1(copy_char_to_long,signed char,long)
+#endif
+#if LONG_IS_INT
+# define char_to_long char_to_int
+#else
 DEFUN_2(char_to_long,signed char,long,copy_char_to_long)
+#endif
+#if LONG_IS_INT
+# define copy_char_to_ulong copy_char_to_uint
+#else
 DEFUN_1(copy_char_to_ulong,signed char,unsigned long)
+#endif
+#if LONG_IS_INT
+# define char_to_ulong char_to_uint
+#else
 DEFUN_2(char_to_ulong,signed char,unsigned long,copy_char_to_ulong)
+#endif
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_char_to_llong,signed char,long long)
 DEFUN_2(char_to_llong,signed char,long long,copy_char_to_llong)
@@ -53,10 +69,26 @@ DEFUN_1(copy_uchar_to_int,unsigned char,int)
 DEFUN_2(uchar_to_int,unsigned char,int,copy_uchar_to_int)
 DEFUN_1(copy_uchar_to_uint,unsigned char,unsigned int)
 DEFUN_2(uchar_to_uint,unsigned char,unsigned int,copy_uchar_to_uint)
+#if LONG_IS_INT
+# define copy_uchar_to_long copy_uchar_to_int
+#else
 DEFUN_1(copy_uchar_to_long,unsigned char,long)
+#endif
+#if LONG_IS_INT
+# define uchar_to_long uchar_to_int
+#else
 DEFUN_2(uchar_to_long,unsigned char,long,copy_uchar_to_long)
+#endif
+#if LONG_IS_INT
+# define copy_uchar_to_ulong copy_uchar_to_uint
+#else
 DEFUN_1(copy_uchar_to_ulong,unsigned char,unsigned long)
+#endif
+#if LONG_IS_INT
+# define uchar_to_ulong uchar_to_uint
+#else
 DEFUN_2(uchar_to_ulong,unsigned char,unsigned long,copy_uchar_to_ulong)
+#endif
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_uchar_to_llong,unsigned char,long long)
 DEFUN_2(uchar_to_llong,unsigned char,long long,copy_uchar_to_llong)
@@ -94,10 +126,26 @@ DEFUN_1(copy_short_to_int,short,int)
 DEFUN_2(short_to_int,short,int,copy_short_to_int)
 DEFUN_1(copy_short_to_uint,short,unsigned int)
 DEFUN_2(short_to_uint,short,unsigned int,copy_short_to_uint)
+#if LONG_IS_INT
+# define copy_short_to_long copy_short_to_int
+#else
 DEFUN_1(copy_short_to_long,short,long)
+#endif
+#if LONG_IS_INT
+# define short_to_long short_to_int
+#else
 DEFUN_2(short_to_long,short,long,copy_short_to_long)
+#endif
+#if LONG_IS_INT
+# define copy_short_to_ulong copy_short_to_uint
+#else
 DEFUN_1(copy_short_to_ulong,short,unsigned long)
+#endif
+#if LONG_IS_INT
+# define short_to_ulong short_to_uint
+#else
 DEFUN_2(short_to_ulong,short,unsigned long,copy_short_to_ulong)
+#endif
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_short_to_llong,short,long long)
 DEFUN_2(short_to_llong,short,long long,copy_short_to_llong)
@@ -135,10 +183,26 @@ DEFUN_1(copy_ushort_to_int,unsigned short,int)
 DEFUN_2(ushort_to_int,unsigned short,int,copy_ushort_to_int)
 DEFUN_1(copy_ushort_to_uint,unsigned short,unsigned int)
 DEFUN_2(ushort_to_uint,unsigned short,unsigned int,copy_ushort_to_uint)
+#if LONG_IS_INT
+# define copy_ushort_to_long copy_ushort_to_int
+#else
 DEFUN_1(copy_ushort_to_long,unsigned short,long)
+#endif
+#if LONG_IS_INT
+# define ushort_to_long ushort_to_int
+#else
 DEFUN_2(ushort_to_long,unsigned short,long,copy_ushort_to_long)
+#endif
+#if LONG_IS_INT
+# define copy_ushort_to_ulong copy_ushort_to_uint
+#else
 DEFUN_1(copy_ushort_to_ulong,unsigned short,unsigned long)
+#endif
+#if LONG_IS_INT
+# define ushort_to_ulong ushort_to_uint
+#else
 DEFUN_2(ushort_to_ulong,unsigned short,unsigned long,copy_ushort_to_ulong)
+#endif
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_ushort_to_llong,unsigned short,long long)
 DEFUN_2(ushort_to_llong,unsigned short,long long,copy_ushort_to_llong)
@@ -176,10 +240,26 @@ DEFUN_1(copy_int_to_int,int,int)
 #define int_to_int	NULL
 #define copy_int_to_uint	copy_int_to_int
 #define int_to_uint	NULL
+#if LONG_IS_INT
+# define copy_int_to_long copy_int_to_int
+#else
 DEFUN_1(copy_int_to_long,int,long)
+#endif
+#if LONG_IS_INT
+# define int_to_long int_to_int
+#else
 DEFUN_2(int_to_long,int,long,copy_int_to_long)
+#endif
+#if LONG_IS_INT
+# define copy_int_to_ulong copy_int_to_uint
+#else
 DEFUN_1(copy_int_to_ulong,int,unsigned long)
+#endif
+#if LONG_IS_INT
+# define int_to_ulong int_to_uint
+#else
 DEFUN_2(int_to_ulong,int,unsigned long,copy_int_to_ulong)
+#endif
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_int_to_llong,int,long long)
 DEFUN_2(int_to_llong,int,long long,copy_int_to_llong)
@@ -217,10 +297,26 @@ DEFUN_1(copy_uint_to_ushort,unsigned int,unsigned short)
 #define uint_to_int	NULL
 #define copy_uint_to_uint	copy_int_to_int
 #define uint_to_uint	NULL
+#if LONG_IS_INT
+# define copy_uint_to_long copy_uint_to_int
+#else
 DEFUN_1(copy_uint_to_long,unsigned int,long)
+#endif
+#if LONG_IS_INT
+# define uint_to_long uint_to_int
+#else
 DEFUN_2(uint_to_long,unsigned int,long,copy_uint_to_long)
+#endif
+#if LONG_IS_INT
+# define copy_uint_to_ulong copy_uint_to_uint
+#else
 DEFUN_1(copy_uint_to_ulong,unsigned int,unsigned long)
+#endif
+#if LONG_IS_INT
+# define uint_to_ulong uint_to_uint
+#else
 DEFUN_2(uint_to_ulong,unsigned int,unsigned long,copy_uint_to_ulong)
+#endif
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_uint_to_llong,unsigned int,long long)
 DEFUN_2(uint_to_llong,unsigned int,long long,copy_uint_to_llong)
@@ -246,82 +342,214 @@ TO_DOUBLE_FUN(uint_to_one_double,unsigned int)
 #endif
 
 /* ------------ long ---------- */
+#if LONG_IS_INT
+# define copy_long_to_char copy_int_to_char
+#else
 DEFUN_1(copy_long_to_char,long,signed char)
+#endif
 #define long_to_char	NULL
+#if LONG_IS_INT
+# define copy_long_to_uchar copy_int_to_uchar
+#else
 DEFUN_1(copy_long_to_uchar,long,unsigned char)
+#endif
 #define long_to_uchar	NULL
+#if LONG_IS_INT
+# define copy_long_to_short copy_int_to_short
+#else
 DEFUN_1(copy_long_to_short,long,short)
+#endif
 #define long_to_short	NULL
+#if LONG_IS_INT
+# define copy_long_to_ushort copy_int_to_ushort
+#else
 DEFUN_1(copy_long_to_ushort,long,unsigned short)
+#endif
 #define long_to_ushort	NULL
+#if LONG_IS_INT
+# define copy_long_to_int copy_int_to_int
+#else
 DEFUN_1(copy_long_to_int,long,int)
+#endif
 #define long_to_int	NULL
+#if LONG_IS_INT
+# define copy_long_to_uint copy_int_to_uint
+#else
 DEFUN_1(copy_long_to_uint,long,unsigned int)
+#endif
 #define long_to_uint	NULL
+#if LONG_IS_INT
+# define copy_long_to_long copy_long_to_int
+#else
 DEFUN_1(copy_long_to_long,long,long)
+#endif
 #define long_to_long	NULL
 #define copy_long_to_ulong	copy_long_to_long
 #define long_to_ulong	NULL
 #if defined(HAVE_LONG_LONG)
+#if LONG_IS_INT
+# define copy_long_to_llong copy_int_to_llong
+#else
 DEFUN_1(copy_long_to_llong,long,long long)
+#endif
+#if LONG_IS_INT
+# define long_to_llong int_to_llong
+#else
 DEFUN_2(long_to_llong,long,long long,copy_long_to_llong)
+#endif
 #endif /* defined(HAVE_LONG_LONG) */
 #if defined(HAVE_LONG_LONG)
+#if LONG_IS_INT
+# define copy_long_to_ullong copy_int_to_ullong
+#else
 DEFUN_1(copy_long_to_ullong,long,unsigned long long)
+#endif
+#if LONG_IS_INT
+# define long_to_ullong int_to_ullong
+#else
 DEFUN_2(long_to_ullong,long,unsigned long long,copy_long_to_ullong)
+#endif
 #endif /* defined(HAVE_LONG_LONG) */
 #if SLANG_HAS_FLOAT
+#if LONG_IS_INT
+# define copy_long_to_float copy_int_to_float
+#else
 DEFUN_1(copy_long_to_float,long,float)
+#endif
+#if LONG_IS_INT
+# define long_to_float int_to_float
+#else
 DEFUN_2(long_to_float,long,float,copy_long_to_float)
+#endif
 #endif /* SLANG_HAS_FLOAT */
 #if SLANG_HAS_FLOAT
+#if LONG_IS_INT
+# define copy_long_to_double copy_int_to_double
+#else
 DEFUN_1(copy_long_to_double,long,double)
+#endif
+#if LONG_IS_INT
+# define long_to_double int_to_double
+#else
 DEFUN_2(long_to_double,long,double,copy_long_to_double)
+#endif
 #endif /* SLANG_HAS_FLOAT */
 #if defined(HAVE_LONG_DOUBLE)
+#if LONG_IS_INT
+# define copy_long_to_ldouble copy_int_to_ldouble
+#else
 DEFUN_1(copy_long_to_ldouble,long,long double)
+#endif
+#if LONG_IS_INT
+# define long_to_ldouble int_to_ldouble
+#else
 DEFUN_2(long_to_ldouble,long,long double,copy_long_to_ldouble)
+#endif
 #endif /* defined(HAVE_LONG_DOUBLE) */
 #if SLANG_HAS_FLOAT
 TO_DOUBLE_FUN(long_to_one_double,long)
 #endif
 
 /* ------------ unsigned long ---------- */
+#if LONG_IS_INT
+# define copy_ulong_to_char copy_uint_to_char
+#else
 DEFUN_1(copy_ulong_to_char,unsigned long,signed char)
+#endif
 #define ulong_to_char	NULL
+#if LONG_IS_INT
+# define copy_ulong_to_uchar copy_uint_to_uchar
+#else
 DEFUN_1(copy_ulong_to_uchar,unsigned long,unsigned char)
+#endif
 #define ulong_to_uchar	NULL
+#if LONG_IS_INT
+# define copy_ulong_to_short copy_uint_to_short
+#else
 DEFUN_1(copy_ulong_to_short,unsigned long,short)
+#endif
 #define ulong_to_short	NULL
+#if LONG_IS_INT
+# define copy_ulong_to_ushort copy_uint_to_ushort
+#else
 DEFUN_1(copy_ulong_to_ushort,unsigned long,unsigned short)
+#endif
 #define ulong_to_ushort	NULL
+#if LONG_IS_INT
+# define copy_ulong_to_int copy_uint_to_int
+#else
 DEFUN_1(copy_ulong_to_int,unsigned long,int)
+#endif
 #define ulong_to_int	NULL
+#if LONG_IS_INT
+# define copy_ulong_to_uint copy_uint_to_uint
+#else
 DEFUN_1(copy_ulong_to_uint,unsigned long,unsigned int)
+#endif
 #define ulong_to_uint	NULL
 #define copy_ulong_to_long	copy_long_to_long
 #define ulong_to_long	NULL
 #define copy_ulong_to_ulong	copy_long_to_long
 #define ulong_to_ulong	NULL
 #if defined(HAVE_LONG_LONG)
+#if LONG_IS_INT
+# define copy_ulong_to_llong copy_uint_to_llong
+#else
 DEFUN_1(copy_ulong_to_llong,unsigned long,long long)
+#endif
+#if LONG_IS_INT
+# define ulong_to_llong uint_to_llong
+#else
 DEFUN_2(ulong_to_llong,unsigned long,long long,copy_ulong_to_llong)
+#endif
 #endif /* defined(HAVE_LONG_LONG) */
 #if defined(HAVE_LONG_LONG)
+#if LONG_IS_INT
+# define copy_ulong_to_ullong copy_uint_to_ullong
+#else
 DEFUN_1(copy_ulong_to_ullong,unsigned long,unsigned long long)
+#endif
+#if LONG_IS_INT
+# define ulong_to_ullong uint_to_ullong
+#else
 DEFUN_2(ulong_to_ullong,unsigned long,unsigned long long,copy_ulong_to_ullong)
+#endif
 #endif /* defined(HAVE_LONG_LONG) */
 #if SLANG_HAS_FLOAT
+#if LONG_IS_INT
+# define copy_ulong_to_float copy_uint_to_float
+#else
 DEFUN_1(copy_ulong_to_float,unsigned long,float)
+#endif
+#if LONG_IS_INT
+# define ulong_to_float uint_to_float
+#else
 DEFUN_2(ulong_to_float,unsigned long,float,copy_ulong_to_float)
+#endif
 #endif /* SLANG_HAS_FLOAT */
 #if SLANG_HAS_FLOAT
+#if LONG_IS_INT
+# define copy_ulong_to_double copy_uint_to_double
+#else
 DEFUN_1(copy_ulong_to_double,unsigned long,double)
+#endif
+#if LONG_IS_INT
+# define ulong_to_double uint_to_double
+#else
 DEFUN_2(ulong_to_double,unsigned long,double,copy_ulong_to_double)
+#endif
 #endif /* SLANG_HAS_FLOAT */
 #if defined(HAVE_LONG_DOUBLE)
+#if LONG_IS_INT
+# define copy_ulong_to_ldouble copy_uint_to_ldouble
+#else
 DEFUN_1(copy_ulong_to_ldouble,unsigned long,long double)
+#endif
+#if LONG_IS_INT
+# define ulong_to_ldouble uint_to_ldouble
+#else
 DEFUN_2(ulong_to_ldouble,unsigned long,long double,copy_ulong_to_ldouble)
+#endif
 #endif /* defined(HAVE_LONG_DOUBLE) */
 #if SLANG_HAS_FLOAT
 TO_DOUBLE_FUN(ulong_to_one_double,unsigned long)
@@ -341,9 +569,17 @@ DEFUN_1(copy_llong_to_int,long long,int)
 #define llong_to_int	NULL
 DEFUN_1(copy_llong_to_uint,long long,unsigned int)
 #define llong_to_uint	NULL
+#if LONG_IS_INT
+# define copy_llong_to_long copy_llong_to_int
+#else
 DEFUN_1(copy_llong_to_long,long long,long)
+#endif
 #define llong_to_long	NULL
+#if LONG_IS_INT
+# define copy_llong_to_ulong copy_llong_to_uint
+#else
 DEFUN_1(copy_llong_to_ulong,long long,unsigned long)
+#endif
 #define llong_to_ulong	NULL
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_llong_to_llong,long long,long long)
@@ -384,9 +620,17 @@ DEFUN_1(copy_ullong_to_int,unsigned long long,int)
 #define ullong_to_int	NULL
 DEFUN_1(copy_ullong_to_uint,unsigned long long,unsigned int)
 #define ullong_to_uint	NULL
+#if LONG_IS_INT
+# define copy_ullong_to_long copy_ullong_to_int
+#else
 DEFUN_1(copy_ullong_to_long,unsigned long long,long)
+#endif
 #define ullong_to_long	NULL
+#if LONG_IS_INT
+# define copy_ullong_to_ulong copy_ullong_to_uint
+#else
 DEFUN_1(copy_ullong_to_ulong,unsigned long long,unsigned long)
+#endif
 #define ullong_to_ulong	NULL
 #if defined(HAVE_LONG_LONG)
 #define copy_ullong_to_llong	copy_llong_to_llong
@@ -427,9 +671,17 @@ DEFUN_1(copy_float_to_int,float,int)
 #define float_to_int	NULL
 DEFUN_1(copy_float_to_uint,float,unsigned int)
 #define float_to_uint	NULL
+#if LONG_IS_INT
+# define copy_float_to_long copy_float_to_int
+#else
 DEFUN_1(copy_float_to_long,float,long)
+#endif
 #define float_to_long	NULL
+#if LONG_IS_INT
+# define copy_float_to_ulong copy_float_to_uint
+#else
 DEFUN_1(copy_float_to_ulong,float,unsigned long)
+#endif
 #define float_to_ulong	NULL
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_float_to_llong,float,long long)
@@ -470,9 +722,17 @@ DEFUN_1(copy_double_to_int,double,int)
 #define double_to_int	NULL
 DEFUN_1(copy_double_to_uint,double,unsigned int)
 #define double_to_uint	NULL
+#if LONG_IS_INT
+# define copy_double_to_long copy_double_to_int
+#else
 DEFUN_1(copy_double_to_long,double,long)
+#endif
 #define double_to_long	NULL
+#if LONG_IS_INT
+# define copy_double_to_ulong copy_double_to_uint
+#else
 DEFUN_1(copy_double_to_ulong,double,unsigned long)
+#endif
 #define double_to_ulong	NULL
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_double_to_llong,double,long long)
@@ -513,9 +773,17 @@ DEFUN_1(copy_ldouble_to_int,long double,int)
 #define ldouble_to_int	NULL
 DEFUN_1(copy_ldouble_to_uint,long double,unsigned int)
 #define ldouble_to_uint	NULL
+#if LONG_IS_INT
+# define copy_ldouble_to_long copy_ldouble_to_int
+#else
 DEFUN_1(copy_ldouble_to_long,long double,long)
+#endif
 #define ldouble_to_long	NULL
+#if LONG_IS_INT
+# define copy_ldouble_to_ulong copy_ldouble_to_uint
+#else
 DEFUN_1(copy_ldouble_to_ulong,long double,unsigned long)
+#endif
 #define ldouble_to_ulong	NULL
 #if defined(HAVE_LONG_LONG)
 DEFUN_1(copy_ldouble_to_llong,long double,long long)
