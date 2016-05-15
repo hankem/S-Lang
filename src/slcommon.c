@@ -42,11 +42,10 @@ USA.
 # include <windows.h>
 #endif
 
+#define SLSYSWRAP_REALLOC realloc
+#define SLSYSWRAP_MALLOC malloc
 #ifdef SLSYSWRAP
 # include <slsyswrap.h>
-#else
-# define SLSYSWRAP_REALLOC realloc
-# define SLSYSWRAP_MALLOC malloc
 #endif
 
 int SLang_Version = SLANG_VERSION;

@@ -63,12 +63,11 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
+#define SLSYSWRAP_OPEN open
+#define SLSYSWRAP_READ read
+#define SLSYSWRAP_WRITE write
 #ifdef SLSYSWRAP
 # include <slsyswrap.h>
-#else
-# define SLSYSWRAP_OPEN open
-# define SLSYSWRAP_READ read
-# define SLSYSWRAP_WRITE write
 #endif
 
 typedef struct _Stdio_MMT_List_Type

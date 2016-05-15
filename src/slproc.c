@@ -24,6 +24,10 @@ USA.
 # define _BSD_SOURCE 1
 #endif
 
+#ifndef _DEFAULT_SOURCE
+# define _DEFAULT_SOURCE 1
+#endif
+
 #ifndef _XOPEN_SOURCE
 # define _XOPEN_SOURCE 1
 #endif
@@ -326,9 +330,6 @@ static SLang_Intrin_Fun_Type Process_Name_Table[] =
 #endif
 #ifdef HAVE_GETUID
    MAKE_INTRINSIC_0("getuid", getuid_cmd, SLANG_INT_TYPE),
-#endif
-#ifdef HAVE_GETGID
-   MAKE_INTRINSIC_0("getgid", getgid_cmd, SLANG_INT_TYPE),
 #endif
 #ifdef HAVE_SETGID
    MAKE_INTRINSIC_I("setgid", setgid_cmd, SLANG_INT_TYPE),

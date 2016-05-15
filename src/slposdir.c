@@ -127,6 +127,11 @@ USA.
 #include "slang.h"
 #include "_slang.h"
 
+#define SLSYSWRAP_READDIR readdir
+#ifdef SLSYSWRAP
+# include <slsyswrap.h>
+#endif
+
 static int is_interrupt (int e)
 {
 #ifdef EINTR
@@ -1013,10 +1018,22 @@ static int build_dirlist (char *dir, char *opt, char ***listp, unsigned int *num
 
    num_files = max_num_files = 0;
    list = NULL;
-   while (NULL != (ep = readdir (dp)))
+   while (1)
      {
 	unsigned int len;
 	char *name;
+
+	errno = 0;
+	if (NULL == (ep = SLSYSWRAP_READDIR (dp)))
+	  {
+	     if (errno == 0)
+	       break;
+
+	     if (is_interrupt (errno))
+	       continue;
+	     _pSLerrno_errno = errno;
+	     goto return_error;
+	  }
 
 	name = ep->d_name;
 #  ifdef NEED_D_NAMLEN

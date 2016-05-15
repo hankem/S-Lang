@@ -21,6 +21,7 @@ USA.
 */
 
 #define _BSD_SOURCE 1		       /* to get strtoll */
+#define _DEFAULT_SOURCE 1
 #include "config.h"
 
 #include <stdlib.h>

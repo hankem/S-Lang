@@ -25,6 +25,7 @@
 /*{{{ Include Files */
 
 #define _BSD_SOURCE 1		       /* to get struct ip_mreq */
+#define _DEFAULT_SOURCE 1
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
