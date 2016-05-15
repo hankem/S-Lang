@@ -542,7 +542,9 @@
 @src/test/overflow.sl
 @src/test/pack.sl
 @src/test/path.sl
+@src/test/posdir.sl
 @src/test/posixio.sl
+@src/test/proc.sl
 @src/test/prep.sl
 @src/test/qualif.sl
 @src/test/regexp.sl
@@ -562,6 +564,7 @@
 @src/test/time.sl
 @src/test/utf8.sl
 @src/test/longlong.sl
+
 @src/untic.c
 @src/slang.ver
 @src/terminfo/aix4.inc

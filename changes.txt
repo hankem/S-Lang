@@ -177,6 +177,8 @@ Changes since 2.3.0
 68. Updated more tests.  Made use of the _slang.h LONG_IS_INT macro to
     eliminate some unused functions on systems where
     sizeof(long)==sizeof(int).
+69. modules/slsmg-module.c: was not compiling on windows; fixed a
+    malformed comment in src/test/sltest.c.
 
 {{{ Previous Versions
 

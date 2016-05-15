@@ -314,6 +314,7 @@ int init_slsmg_module_ns (char *ns_name)
 
    if (inited == 0)
      {
+#if defined(VMS) || defined(REAL_UNIX_SYSTEM)
 	int status;
 	char *term = getenv ("TERM");
 
@@ -333,7 +334,9 @@ int init_slsmg_module_ns (char *ns_name)
 	     SLang_verror (SL_RunTime_Error, "The terminal '%s' lacks sufficient capabilities for controlling it", term);
 	     return -1;
 	  }
-
+#else
+	SLtt_get_terminfo ();
+#endif
 	inited = 1;
      }
 

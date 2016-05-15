@@ -86,7 +86,7 @@ static long test_ulong_return (unsigned long *x)
 
 #if SLANG_HAS_FLOAT
 
-/* Intrinsics that return float are not supported.
+/* Intrinsics that return float are not supported. */
 /* static float test_float_return (float *x) */
 /* { */
 /*    return *x; */
