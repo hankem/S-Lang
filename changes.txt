@@ -181,6 +181,9 @@ Changes since 2.3.0
     malformed comment in src/test/sltest.c.
 70. Added "#define _DEFAULT_SOURCE" to a few places to quiet gcc;
     Added slsyswrap support to src/slposdir.c,slposio.c,slcommon.c
+71. src/slexcept.c: The deprecated _clear_error function using in
+    ERROR_BLOCKs was not completely removing queued error messages.
+    Note: ERROR_BLOCKs will be removed in version 3.
 
 {{{ Previous Versions
 

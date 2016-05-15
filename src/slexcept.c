@@ -150,7 +150,9 @@ int _pSLang_pop_error_context (int use_current_queue)
 
    if (_pSLang_Error == 0)
      {
-	if (e->err_cleared == 0)
+	if (e->err_cleared)/* ERROR_BLOCK */
+	  _pSLerr_free_queued_messages ();
+	else
 	  {
 	     SLang_free_slstring ((char *)File_With_Error);
 	     SLang_free_slstring ((char *)Function_With_Error);
