@@ -110,7 +110,7 @@ static SLCONST unsigned char *do_nth_match (Re_Context_Type *ctx, int idx, SLCON
    if (m == 0) return(str);
    if (str + m > estr) return (NULL);
 
-   /* This needs fixed for case sensitive match */
+   /* This needs fixed for case in-sensitive match */
    if (0 != strncmp((char *) str, (char *) bpos, m)) return (NULL);
    str += m;
    return (str);
@@ -271,13 +271,10 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	   case MAYBE_ONCE | NTH_MATCH:
 	     save_str = str;
 	     tmpstr = do_nth_match (ctx, (int) (unsigned char) *regexp, str, estr);
-	     regexp++;
 	     if (tmpstr != NULL)
-	       {
-		  str = tmpstr;
-		  goto match_rest;
-	       }
-	     continue;
+	       str = tmpstr;
+	     regexp++;
+	     goto match_rest;
 
 	   case LEAST_ONCE | NTH_MATCH:
 	     if ((str = do_nth_match(ctx, (int) (unsigned char) *regexp, str, estr)) == NULL) return(NULL);
@@ -291,8 +288,30 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	     regexp++;
 	     goto match_rest;
 
-	   case MANY | NTH_MATCH: return(NULL);
-	     /* needs done */
+	   case MANY | NTH_MATCH:
+	     /* minimum number to match--- could be 0 */
+	     n = n0 = (int) (unsigned char) regexp[1];
+	     /* maximum number to match */
+	     n1 = (int) (unsigned char) regexp[2];
+
+	     while (n && (str < estr)
+		    && (NULL != (tmpstr = do_nth_match(ctx, (int) (unsigned char) *regexp, str, estr))))
+	       {
+		  n--;
+		  str = tmpstr;
+	       }
+	     if (n) return (NULL);
+
+	     save_str = str;
+	     n = n1 - n0;
+	     while (n && (str < estr)
+		    && (NULL != (tmpstr = do_nth_match(ctx, (int) (unsigned char) *regexp, str, estr))))
+	       {
+		  n--;
+		  str = tmpstr;
+	       }
+	     regexp += 3;
+	     goto match_rest;
 
 	   case RANGE:
 	     if (str >= estr) return (NULL);
@@ -361,8 +380,25 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	     goto match_rest;
 
 	   case MANY | ANY_DIGIT:
-	     /* needs finished */
-	     return (NULL);
+	     /* minimum number to match--- could be 0 */
+	     n = n0 = (int) (unsigned char) *regexp++;
+	     /* maximum number to match */
+	     n1 = (int) (unsigned char) *regexp++;
+
+	     while (n && (str < estr) && (*str <= '9') && (*str >= '0'))
+	       {
+		  n--;
+		  str++;
+	       }
+	     if (n) return (NULL);
+	     save_str = str;
+	     n = n1 - n0;
+	     while (n && (str < estr) && (*str <= '9') && (*str >= '0'))
+	       {
+		  n--;
+		  str++;
+	       }
+	     goto match_rest;
 
 	   case ANY:		       /* . */
 	     /* FIXME: UTF8 */
@@ -388,12 +424,31 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	     goto match_rest;
 
 	   case MANY | ANY:
-	     /* FIXME: Not implemented */
-	     return (NULL);
-	     /* needs finished */
+	     /* minimum number to match--- could be 0 */
+	     n = n0 = (int) (unsigned char) *regexp++;
+	     /* maximum number to match */
+	     n1 = (int) (unsigned char) *regexp++;
+
+	     while (n && (str < estr) && (*str != '\n'))
+	       {
+		  n--;
+		  str++;
+	       }
+	     if (n) return (NULL);
+	     save_str = str;
+	     n = n1 - n0;
+	     while (n && (str < estr) && (*str != '\n'))
+	       {
+		  n--;
+		  str++;
+	       }
+	     goto match_rest;
 
 	   case EOL:
-	     if ((str >= estr) || (*str == '\n')) return (str);
+	     if (str >= estr)
+	       return str;
+	     if ((*str == '\n') && (str+1 == estr))
+	       return str;
 	     return(NULL);
 
 	   default: return (NULL);
@@ -542,17 +597,12 @@ char *SLregexp_match (SLRegexp_Type *reg, SLFUTURE_CONST char *str, SLstrlen_Typ
 
 static unsigned char *convert_digit(unsigned char *pat, int *nn)
 {
-   int n = 0, m = 0;
+   int n = 0;
    unsigned char c;
    while (c = (unsigned char) *pat, (c <= '9') && (c >= '0'))
      {
 	pat++;
 	n = 10 * n + (c - '0');
-	m++;
-     }
-   if (m == 0)
-     {
-	return (NULL);
      }
    *nn = n;
    return pat;
@@ -925,6 +975,7 @@ void SLregexp_free (SLRegexp_Type *reg)
 SLRegexp_Type *SLregexp_compile (SLFUTURE_CONST char *pattern, unsigned int flags)
 {
    SLRegexp_Type *reg;
+   int ret;
 
    reg = (SLRegexp_Type *)SLcalloc (1, sizeof (SLRegexp_Type));
    if (reg == NULL)
@@ -939,8 +990,10 @@ SLRegexp_Type *SLregexp_compile (SLFUTURE_CONST char *pattern, unsigned int flag
    reg->case_sensitive = (0 == (flags & SLREGEXP_CASELESS));
    reg->pat = (unsigned char *)pattern;
 
-   if (-1 == regexp_compile (reg))
+   if (0 != (ret = regexp_compile (reg)))
      {
+	SLang_verror (SL_Parse_Error, "Error compiling RE '%s' at byte offset %d",
+		      pattern, ret);
 	SLregexp_free (reg);
 	return NULL;
      }

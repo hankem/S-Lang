@@ -184,6 +184,9 @@ Changes since 2.3.0
 71. src/slexcept.c: The deprecated _clear_error function using in
     ERROR_BLOCKs was not completely removing queued error messages.
     Note: ERROR_BLOCKs will be removed in version 3.
+72. src/slregexp.c: Added "\{m,n\}" support to '\1'-'\9', '.', and
+    '\d' REs.  '$' changed to match only at the end of a string, or
+    just before a \n at the end of the string.  Updated regexp.sl test.
 
 {{{ Previous Versions
 
