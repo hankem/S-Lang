@@ -40,7 +40,7 @@ USA.
 # include <slsyswrap.h>
 #endif
 
-static SLFUTURE_CONST char *Slsh_Version = "0.9.3-1";
+static SLFUTURE_CONST char *Slsh_Version = "0.9.4-0";
 #define SLSHRC_FILE "slsh.rc"
 #include "slsh.h"
 
@@ -208,9 +208,7 @@ static void c_exit (int status)
 	AtExit_Hooks = next;
      }
 
-   if (SLang_get_error ())
-     SLang_restart (1);
-
+   SLang_restart (1);
    exit (status);
 }
 

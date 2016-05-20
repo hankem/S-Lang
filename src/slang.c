@@ -8721,21 +8721,32 @@ static void reset_active_interpreter (void)
    Lang_Break = Lang_Return = 0;
 }
 
-#if SLANG_HAS_QUALIFIERS
-static void clear_qualifier_stack (void)
+static void free_local_variables (void)
 {
-   unsigned int i;
-
-   for (i = 0; i < Recursion_Depth; i++)
+   while (Local_Variable_Frame > Local_Variable_Stack)
      {
-	if (Function_Qualifiers_Stack[i] != NULL)
-	  {
-	     SLang_free_struct (Function_Qualifiers_Stack[i]);
-	     Function_Qualifiers_Stack[i] = NULL;
-	  }
+	SLang_free_object (Local_Variable_Frame);
+	Local_Variable_Frame--;
      }
 }
-#endif
+
+static void clear_switch_objects (void)
+{
+   SLang_Object_Type *p;
+
+   p = Switch_Objects;
+   while (p < Switch_Obj_Max)
+     {
+	if (p->o_data_type != 0)
+	  {
+	     SLang_free_object (p);
+	     p->o_data_type = 0;
+	  }
+	p++;
+     }
+   Switch_Obj_Ptr = Switch_Objects;
+}
+
 void SLang_restart (int localv)
 {
    reset_active_interpreter ();
@@ -8754,29 +8765,12 @@ void SLang_restart (int localv)
 
    if (localv)
      {
-	Next_Function_Num_Args = SLang_Num_Function_Args = 0;
-	Local_Variable_Frame = Local_Variable_Stack;
-#if SLANG_HAS_QUALIFIERS
-	clear_qualifier_stack ();
-#endif
-	Recursion_Depth = 0;
-	Frame_Pointer = Stack_Pointer;
-	Frame_Pointer_Depth = 0;
-	Function_Stack_Ptr = Function_Stack;
-	Switch_Obj_Ptr = Switch_Objects;
-	while (Switch_Obj_Ptr < Switch_Obj_Max)
-	  {
-	     if (Switch_Obj_Ptr->o_data_type != 0)
-	       {
-		  SLang_free_object (Switch_Obj_Ptr);
-		  Switch_Obj_Ptr->o_data_type = 0;
-	       }
-	     Switch_Obj_Ptr++;
-	  }
-	Switch_Obj_Ptr = Switch_Objects;
+	free_local_variables ();
+	clear_switch_objects ();
+	while (0 == pop_compile_context ())
+	  ;
      }
    _pSLerr_print_message_queue ();
-
    _pSLerr_clear_error (0);
 }
 
@@ -10210,7 +10204,7 @@ static Compile_Context_Type *Compile_Context_Stack;
 /* The only way the push/pop_context functions can get called is via
  * an eval type function.  That can only happen when executed from a
  * top level block.  This means that Compile_ByteCode_Ptr can always be
- * rest back to the beginning of a block.
+ * reset back to the beginning of a block.
  */
 
 static int pop_compile_context (void)

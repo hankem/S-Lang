@@ -187,6 +187,11 @@ Changes since 2.3.0
 72. src/slregexp.c: Added "\{m,n\}" support to '\1'-'\9', '.', and
     '\d' REs.  '$' changed to match only at the end of a string, or
     just before a \n at the end of the string.  Updated regexp.sl test.
+73. src/slang.c: The delete_interpreter function (called upon program
+    exit) was not freeing local variables on the function call stack.  This
+    showed up as a memory leak when a function called "exit", which
+    would not allow the function stack to unroll and trigger the
+    destructors.
 
 {{{ Previous Versions
 
