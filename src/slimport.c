@@ -158,7 +158,9 @@ static FVOID_STAR do_dlsym (VOID_STAR handle, SLFUTURE_CONST char *file, int che
    char symbol[MAX_MODULE_NAME_SIZE + 32];
    FVOID_STAR s;
 
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    SLsnprintf (symbol, sizeof(symbol), fmt, module);
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
    if (NULL != (s = (FVOID_STAR) dlsym (handle, symbol)))
      return s;
 

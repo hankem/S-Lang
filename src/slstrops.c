@@ -2188,6 +2188,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	     malloc_len = len + guess_size;
 	  }
 
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 	if (use_string)
 	  {
 	     sprintf(outp, dfmt, str);
@@ -2206,6 +2207,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	       sprintf (outp, dfmt, long_var);
 	  }
 	else sprintf(outp, dfmt, int_var);
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
 
 	len += strlen(outp);
 	outp = out + len;

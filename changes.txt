@@ -192,6 +192,8 @@ Changes since 2.3.0
     showed up as a memory leak when a function called "exit", which
     would not allow the function stack to unroll and trigger the
     destructors.
+74. src/*.c: Added a few gcc #pragmas to turn off warnings about
+    non-string literals as printf-style formats.
 
 {{{ Previous Versions
 

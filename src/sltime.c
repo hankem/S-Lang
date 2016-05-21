@@ -714,7 +714,9 @@ static void strftime_cmd (void)
     *
     * Was this too designed by committee?
     */
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    status = strftime (buf, sizeof(buf), fmt, &tms);
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
    if (status == 0)
      buf[0] = 0;
    buf[sizeof(buf)-1] = 0;

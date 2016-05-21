@@ -1222,6 +1222,7 @@ static void default_format_float (float x, char *buf, unsigned int buflen)
 }
 #endif
 
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 static char *arith_string (SLtype type, VOID_STAR v)
 {
    char buf [1024];
@@ -1285,6 +1286,7 @@ static char *arith_string (SLtype type, VOID_STAR v)
 
    return SLmake_string (s);
 }
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
 
 static int integer_to_bool (SLtype type, int *t)
 {

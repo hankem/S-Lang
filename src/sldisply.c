@@ -546,7 +546,9 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
 		  z = STACK_POP;
 		  z += offset;
 
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 		  sprintf ((char *)b, x_fmt_buf, z);
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
 		  b += strlen ((char *)b);
 		  zero_pad = 0;
 		  break;
@@ -1614,7 +1616,9 @@ static void write_truecolor (const char *fmt, SLtt_Char_Type c)
    g = (int)((c>>8) & 0xFF);
    b = (int)(c & 0xFF);
 
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    sprintf (tmpbuf, fmt, r, g, b);
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
    tt_write_string (tmpbuf);
 }
 #endif
