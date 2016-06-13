@@ -94,6 +94,14 @@ static int utf8_enable (int mode)
 
 #ifdef HAVE_NL_LANGINFO_CODESET
    locale = nl_langinfo (CODESET);
+# ifdef SLSYSWRAP
+     {
+	char *env;
+	if ((NULL != (env = getenv ("SLTEST_NO_LANGINFO")))
+	    && (atoi (env) != 0))
+	  locale = NULL;		       /* skip this block of code */
+     }
+# endif
    if ((locale != NULL) && (*locale))
      {
 	if ((0 == strcmp (locale, "UTF-8"))

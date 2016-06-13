@@ -144,6 +144,50 @@ define syntax_error ()
 syntax_error ();
 stack_underflow ();
 
+private define test_stack_overflow ()
+{
+   variable objs = {"foo", 1, [1:10]};
+   try
+     {
+	forever
+	  {
+	     __push_list (objs);
+	  }
+     }
+   catch StackOverflowError;
+}
+
+test_stack_overflow ();
+
+private define test_recursion ();
+private define test_recursion (n)
+{
+   if (n == 1)
+     {
+	try
+	  {
+	     return test_recursion (1);
+	  }
+	catch StackOverflowError: return 0;
+     }
+   switch (n)
+     {
+      case 2:
+	try
+	  {
+	     return test_recursion (2);
+	  }
+	catch LimitExceededError:
+	  return 0;
+     }
+     {
+	pop();
+	throw UnknownError, "unexpected value: $n"$;
+     }
+}
+if (0 != test_recursion (1)) failed ("test_recursion 1");
+if (0 != test_recursion (2)) failed ("test_recursion 2");
+
 private define throw_exception (err, msg)
 {
    throw err, msg;

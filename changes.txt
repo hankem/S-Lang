@@ -200,6 +200,7 @@ Changes since 2.3.0
 77. src/slarray.c,src/slclass.c,src/slstruct.c: Use the SLclass_set*
     functions to set SLang_Class_Type fields instead of directly
     accessing them.
+78. Added additional unit/regresssion tests.
 
 {{{ Previous Versions
 

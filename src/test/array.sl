@@ -161,6 +161,12 @@ if (neqs (SS, array_map (String_Type, &strcat, S, S))) failed ("array_map 2");
 SS = S + "--end";
 if (neqs (SS, array_map (String_Type, &strcat, S, "--end"))) failed ("array_map 3");
 
+try
+{
+   SS = Long_Type[10000,10000,10000,10000,10000,10000];
+}
+catch IndexError;
+
 private define array_map2_func ()
 {
    variable args = __pop_list (_NARGS-1);
@@ -1550,11 +1556,11 @@ test_arrayn (33.1, 45.0, 0);
 test_arrayn (33.1, 45.0, -5);
 test_arrayn (0f,255f,256);
 
-define test_array_refs ()
+private define test_array_refs ()
 {
    variable a = String_Type[10, 10];
    variable r = &a[5,5];
-   return;
+
    @r = "foo";
    if (a[5,5] != "foo")
      failed ("&a[5,5]");
@@ -1563,6 +1569,11 @@ define test_array_refs ()
    @r = ["1x", "2x", "3x", "4x", "5x","6x"];
    if ((a[2,4] != "1x") or (a[3,6] != "6x"))
      failed ("&a[[2,3],[4,5,6]]");
+
+   ifnot (_eqs (@r, _reshape (["1x", "2x", "3x", "4x", "5x","6x"], [2,3])))
+     {
+	failed ("@r = %S did not produce expected result", @r);
+     }
 }
 test_array_refs ();
 
@@ -1857,6 +1868,46 @@ private define test_wherefirst_op ()
 }
 
 test_wherefirst_op ();
+
+private define test_wherediff ()
+{
+   variable a =  [1, 1, 3, 0, 0, 4, 7, 7];
+   variable i, j;
+
+   i = wherediff (a, &j);
+   ifnot (_eqs (i, [0, 2, 3, 5, 6]) && _eqs(j, [1, 4, 7]))
+     failed ("wherediff test1");
+
+   i = wherediff (Int_Type[0], &j);
+   if (length(i) || length(j))
+     failed ("wherediff test2");
+
+   a = ["foo"];
+   i = wherediff (a, &j);
+   ifnot (_eqs (i, [0]) && _eqs(j, Int_Type[0]))
+     failed ("wherediff test3");
+   a = ["foo"];
+
+   a = String_Type[3];
+   i = wherediff (a, &j);
+   ifnot (_eqs (i, [0]) && _eqs(j, [1,2]))
+     failed ("wherediff test4");
+}
+test_wherediff ();
+
+private define test_misc ()
+{
+   variable a = Char_Type [10], s = "HelloWorld";
+   init_char_array (a, s);
+
+   variable i;
+   _for i (0, length(a)-1, 1)
+     {
+	if (a[i] != s[i])
+	  failed ("init_char_array");
+     }
+}
+test_misc ();
 
 print ("Ok\n");
 exit (0);

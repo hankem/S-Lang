@@ -1599,7 +1599,7 @@ typedef struct
 }
 Feqs_Err_Type;
 
-static int get_tolorances (int nargs, Feqs_Err_Type *ep)
+static int get_tolerances (int nargs, Feqs_Err_Type *ep)
 {
    switch (nargs)
      {
@@ -1654,7 +1654,7 @@ static int do_fgeqs (double a, double b, VOID_STAR cd)
 static void do_an_feqs_fun (int (*f)(double, double, VOID_STAR))
 {
    Feqs_Err_Type e;
-   if (-1 == get_tolorances (SLang_Num_Function_Args-2, &e))
+   if (-1 == get_tolerances (SLang_Num_Function_Args-2, &e))
      return;
 
    do_binary_function_c (f, (VOID_STAR)&e);

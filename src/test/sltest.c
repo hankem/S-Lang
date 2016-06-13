@@ -27,60 +27,110 @@ static void c_exit (int *code)
 
 static char test_char_return (char *x)
 {
-   char y = *x;
-   if (0 == SLang_push_char (y))
-     (void) SLang_pop_char (&y);
+   char y, y1;
+
+   if ((-1 == SLang_push_char (*x))
+       || (-1 == SLang_pop_char (&y1))
+       || (-1 == SLclass_dup_object (SLANG_CHAR_TYPE, &y1, &y))
+       || (-1 == SLclass_push_char_obj (SLANG_CHAR_TYPE, y))
+       || (-1 == SLclass_pop_char_obj (SLANG_CHAR_TYPE, (char *)&y)))
+     return -1;
+
    return y;
 }
 static short test_short_return (short *x)
 {
-   short y = *x;
-   if (0 == SLang_push_short (y))
-     (void) SLang_pop_short (&y);
+   short y, y1;
+
+   if ((-1 == SLang_push_short (*x))
+       || (-1 == SLang_pop_short (&y1))
+       || (-1 == SLclass_dup_object (SLANG_SHORT_TYPE, &y1, &y))
+       || (-1 == SLclass_push_short_obj (SLANG_SHORT_TYPE, y))
+       || (-1 == SLclass_pop_short_obj (SLANG_SHORT_TYPE, (short *)&y)))
+     return -1;
+
    return y;
 }
+
 static int test_int_return (int *x)
 {
-   int y = *x;
-   if (0 == SLang_push_int (y))
-     (void) SLang_pop_int (&y);
+   int y, y1;
+   if ((-1 == SLang_push_int (*x))
+       || (-1 == SLang_pop_int (&y1))
+       || (-1 == SLclass_dup_object (SLANG_INT_TYPE, &y1, &y))
+       || (-1 == SLclass_push_int_obj (SLANG_INT_TYPE, y))
+       || (-1 == SLclass_pop_int_obj (SLANG_LONG_TYPE, (int *)&y)))
+     return -1;
+
    return y;
 }
+
 static long test_long_return (long *x)
 {
-   long y = *x;
-   if (0 == SLang_push_long (y))
-     (void) SLang_pop_long (&y);
+   long y, y1;
+
+   if ((-1 == SLang_push_long (*x))
+       || (-1 == SLang_pop_long (&y1))
+       || (-1 == SLclass_dup_object (SLANG_LONG_TYPE, &y1, &y))
+       || (-1 == SLclass_push_long_obj (SLANG_LONG_TYPE, y))
+       || (-1 == SLclass_pop_long_obj (SLANG_LONG_TYPE, (long *)&y)))
+     return -1;
+
    return y;
 }
 
-static char test_uchar_return (unsigned char *x)
+static unsigned char test_uchar_return (unsigned char *x)
 {
-   unsigned char y = *x;
-   if (0 == SLang_push_uchar (y))
-     (void) SLang_pop_uchar (&y);
-   return y;
-}
-static short test_ushort_return (unsigned short *x)
-{
-   unsigned short y = *x;
-   if (0 == SLang_push_ushort (y))
-     (void) SLang_pop_ushort (&y);
-   return y;
-}
-static int test_uint_return (unsigned int *x)
-{
-   unsigned int y = *x;
-   if (0 == SLang_push_uint (y))
-     (void) SLang_pop_uint (&y);
+   unsigned char y, y1;
+
+   if ((-1 == SLang_push_uchar (*x))
+       || (-1 == SLang_pop_uchar (&y1))
+       || (-1 == SLclass_dup_object (SLANG_UCHAR_TYPE, &y1, &y))
+       || (-1 == SLclass_push_char_obj (SLANG_UCHAR_TYPE, y))
+       || (-1 == SLclass_pop_char_obj (SLANG_UCHAR_TYPE, (char *)&y)))
+     return -1;
+
    return y;
 }
 
-static long test_ulong_return (unsigned long *x)
+static unsigned short test_ushort_return (unsigned short *x)
 {
-   unsigned long y = *x;
-   if (0 == SLang_push_ulong (y))
-     (void) SLang_pop_ulong (&y);
+   unsigned short y, y1;
+
+   if ((-1 == SLang_push_ushort (*x))
+       || (-1 == SLang_pop_ushort (&y1))
+       || (-1 == SLclass_dup_object (SLANG_USHORT_TYPE, &y1, &y))
+       || (-1 == SLclass_push_short_obj (SLANG_USHORT_TYPE, y))
+       || (-1 == SLclass_pop_short_obj (SLANG_USHORT_TYPE, (short *)&y)))
+     return -1;
+
+   return y;
+}
+
+static unsigned int test_uint_return (unsigned int *x)
+{
+   unsigned int y, y1;
+   if ((-1 == SLang_push_uint (*x))
+       || (-1 == SLang_pop_uint (&y1))
+       || (-1 == SLclass_dup_object (SLANG_UINT_TYPE, &y1, &y))
+       || (-1 == SLclass_push_int_obj (SLANG_UINT_TYPE, y))
+       || (-1 == SLclass_pop_int_obj (SLANG_ULONG_TYPE, (int *)&y)))
+     return -1;
+
+   return y;
+}
+
+static unsigned long test_ulong_return (unsigned long *x)
+{
+   unsigned long y, y1;
+
+   if ((-1 == SLang_push_ulong (*x))
+       || (-1 == SLang_pop_ulong (&y1))
+       || (-1 == SLclass_dup_object (SLANG_ULONG_TYPE, &y1, &y))
+       || (-1 == SLclass_push_long_obj (SLANG_ULONG_TYPE, y))
+       || (-1 == SLclass_pop_long_obj (SLANG_ULONG_TYPE, (long *)&y)))
+     return -1;
+
    return y;
 }
 
@@ -94,7 +144,16 @@ static long test_ulong_return (unsigned long *x)
 
 static double test_double_return (double *x)
 {
-   return *x;
+   double y, y1;
+
+   if ((-1 == SLang_push_double (*x))
+       || (-1 == SLang_pop_double (&y1))
+       || (-1 == SLclass_dup_object (SLANG_DOUBLE_TYPE, &y1, &y))
+       || (-1 == SLclass_push_double_obj (SLANG_DOUBLE_TYPE, y))
+       || (-1 == SLclass_pop_double_obj (SLANG_DOUBLE_TYPE, &y)))
+     return -1;
+
+   return y;
 }
 #endif
 typedef struct
@@ -401,6 +460,48 @@ static int set_syscall_failure (int *f)
 }
 #endif
 
+static int interrupt_hook (VOID_STAR fp)
+{
+   int ret;
+   SLang_Name_Type *f;
+
+   f = (SLang_Name_Type *)fp;
+   if (-1 == SLexecute_function (f))
+     return -1;
+   if (-1 == SLang_pop_int (&ret))
+     return -1;
+
+   return ret;
+}
+
+static void add_interrupt_hook (void)
+{
+   SLang_Name_Type *f;
+
+   if (NULL == (f = SLang_pop_function ()))
+     return;
+
+   /* FIXME: Add f to a list that can be memory managed */
+   (void) SLang_add_interrupt_hook (interrupt_hook, f);
+   /* SLang_free_function (f); */
+}
+
+static void remove_interrupt_hook (void)
+{
+   SLang_Name_Type *f;
+
+   if (NULL == (f = SLang_pop_function ()))
+     return;
+
+   SLang_remove_interrupt_hook (interrupt_hook, f);
+   /* SLang_free_function (f); */
+}
+
+static int invoke_interrupts (void)
+{
+   return SLang_handle_interrupt ();
+}
+
 #include "assoc.c"
 #include "list.c"
 
@@ -434,6 +535,10 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
 #ifdef SLSYSWRAP
    MAKE_INTRINSIC_1("_slsyswrap_set_syscall_failure", set_syscall_failure, SLANG_INT_TYPE, SLANG_INT_TYPE),
 #endif
+   MAKE_INTRINSIC_0("sltest_add_interrupt_hook", add_interrupt_hook, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("sltest_remove_interrupt_hook", remove_interrupt_hook, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("sltest_invoke_interrupts", invoke_interrupts, SLANG_INT_TYPE),
+
    ASSOC_API_TEST_INTRINSICS,
    LIST_API_TEST_INTRINSICS,
 
@@ -476,7 +581,20 @@ int main (int argc, char **argv)
 
    if (utf8)
      {
+#ifdef SLSYSWRAP
+	putenv("LANG=");
+	(void) SLutf8_enable (-1);     /* exercise some of the code */
+
+	putenv ("SLTEST_NO_LANGINFO=1");
+	(void) SLutf8_enable (-1);     /* exercise some of the code */
 	putenv("LANG=en_US.UTF-8");
+	if (0 == SLutf8_enable (-1))
+	  {
+	     fprintf (stderr, "***WARNING: Failed to trigger utf8 mode via LANG\n");
+	     (void) SLutf8_enable (1);
+	  }
+	putenv ("SLTEST_NO_LANGINFO=0");
+#endif
 	if (0 == SLutf8_enable (-1))
 	  {
 	     fprintf (stderr, "***WARNING: Failed to trigger utf8 mode via LANG\n");
@@ -485,11 +603,16 @@ int main (int argc, char **argv)
      }
    else (void) SLutf8_enable (0);
 
-   if (utf8 != SLutf8_is_utf8_mode ())
+   SLinterp_utf8_enable (utf8);
+
+   if ((utf8 != SLutf8_is_utf8_mode ())
+       || (utf8 != SLinterp_is_utf8_mode ()))
+
      {
-	fprintf (stderr, "SLutf8_is_utf8_mode failed\n");
+	fprintf (stderr, "SLinterp/utf8_is_utf8_mode failed\n");
 	return 1;
      }
+
 #ifdef SLSYSWRAP
    (void) SLsyswrap_set_syscall_failure (0);
 #endif

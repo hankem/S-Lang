@@ -168,6 +168,17 @@ private define test_statvfs ()
 test_statvfs ();
 #endif
 
+#ifexists umask
+private define test_umask ()
+{
+   variable m = umask (022);
+   if (022 != umask (m))
+     failed ("umask 022");
+   if (m != umask (m))
+     failed ("umask m");
+}
+test_umask ();
+#endif
 
 print ("Ok\n");
 exit (0);

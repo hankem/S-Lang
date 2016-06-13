@@ -148,3 +148,17 @@ define urand (n)
    return array_map (Double_Type, &urand_1, [1:n]);
 }
 
+$1 = path_concat (path_dirname(__FILE__), "../objs");
+set_import_module_path ($1);
+if ($1 != get_import_module_path ())
+{
+   () = fprintf (stderr, "\n\n***WARNING: get_import_module_path ==> %S, expected %S\n\n",
+		 get_import_module_path(), $1);
+}
+
+
+try
+{
+   import ("fofofof", "foobar");
+}
+catch ImportError;

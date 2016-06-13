@@ -8,6 +8,11 @@
 
 try
 {
+   if (NULL == getenv("TERM"))
+     {
+	() = fprintf (stderr, "TERM environment variable not set--- slsmg-module test not performed\n");
+	exit (0);
+     }
    require ("slsmg");
 }
 catch ImportError:

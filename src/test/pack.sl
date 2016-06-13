@@ -39,6 +39,33 @@ test_pack ("S4", "1234", "123456");
 test_pack ("s10", "1234\0\0\0\0\0\0", "1234");
 test_pack ("S10", "1234      ", "1234");
 
+private define test_pack_unpack (x, type, fmt, size)
+{
+   x = typecast (x, type);
+   variable p = pack (fmt, x);
+   variable y = unpack (fmt, p);
+   ifnot (__is_same (x, y))
+     {
+	failed ("packunpack format=%S, input %S --> %S", fmt, x, y);
+     }
+   if (size == 0)
+     return;
+
+   if (sizeof_pack (fmt) != size)
+     failed ("sizeof_pack: expected %S for %S, got %S",
+	     size, type, sizeof_pack(fmt));
+
+   if (size + 1 != sizeof_pack(pad_pack_format(fmt + "c")))
+     failed ("Unexpected size for pad_pack_format(%S)", fmt+"c");
+}
+
+#ifexists Double_Type
+test_pack_unpack (3.14, Double_Type, "d", 0);
+test_pack_unpack (3.14, Float_Type, "f", 0);
+test_pack_unpack (3.14, Float32_Type, "F", 4);
+test_pack_unpack (3.14, Float64_Type, "D", 8);
+#endif
+
 define test_unpack1 (fmt, str, y, type)
 {
    variable xx;
@@ -50,11 +77,6 @@ define test_unpack1 (fmt, str, y, type)
    if (length (where(xx != x)))
      failed ("unpack returned wrong result for " + fmt + ":" + string (xx));
 }
-
-#ifexists Double_Type
-X = 3.14; if (X != unpack ("d", pack ("d", X))) failed ("pack->unpack for d");
-X = 3.14f; if (X != unpack ("f", pack ("f", X))) failed ("pack->unpack for f");
-#endif
 
 test_unpack1 (">j", "\xAB\xCD"B, 0xABCD, Int16_Type);
 test_unpack1 (">k", "\xAB\xCD\xEF\x12"B, 0xABCDEF12L, Int32_Type);

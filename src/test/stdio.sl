@@ -66,6 +66,9 @@ define run_tests (some_text, read_fun, write_fun, length_fun)
 
    if (0 == feof (fp)) failed ("feof");
 
+   if (ferror (fp))
+     failed ("expected ferror to return 0");
+
    clearerr (fp);
    if (feof (fp)) failed ("clearerr");
 
@@ -173,10 +176,30 @@ private define do_foreach_char (addr, nbytes, fp)
    return count;
 }
 
+private define do_foreach_line (addr, nbytes, fp)
+{
+   variable line, str = NULL, count = 0;
+   foreach line (fp) using ("line")
+     {
+	if (str == NULL)
+	  str = "";
+	str = strcat (str, line);
+	count += strbytelen(line);
+	if (count >= nbytes)
+	  break;
+     }
+   if (str == NULL)
+     return -1;
+
+   @addr = str;
+   return count;
+}
+
 run_tests ("ABCDEFG", &do_fgets, &fputs, &strlen);
 run_tests ("A\000BC\000\n\n\n", &do_fread, &fwrite, &bstrlen);
 run_tests ("A\nAB\n\ABC\nABCD", &do_fgets, &do_fprintf, &strbytelen);
 run_tests ("A\nAB\n\ABC\nABCD", &do_foreach_char, &fwrite, &strbytelen);
+run_tests ("A\nAB\n\ABC\nABCD", &do_foreach_line, &fwrite, &strbytelen);
 
 define test_fread_fwrite (x)
 {
@@ -287,6 +310,74 @@ define test_read_write ()
    () = remove (file);
 }
 test_read_write();
+
+#ifdef UNIX
+private define test_write_to_stdout ()
+{
+   () = fflush(stdout);
+   variable fd = fileno (stdout);
+   variable ifd = _fileno(stdout);
+   variable old_stdout = dup_fd(fd);
+   if (old_stdout == NULL)
+     failed ("test_write_to_stdout: dup: %S", errno_string());
+
+   variable new_fd = open("/dev/null", O_WRONLY);
+
+   if (-1 == dup2_fd(new_fd, ifd))
+     failed ("test_write_to_stdout: dup2: %S", errno_string());
+
+   () = close (new_fd);
+
+   () = printf ("Write to stdout, fileno=%S", fileno(stdout));
+   () = fflush(stdout);
+
+   () = dup2_fd(old_stdout, ifd);
+   () = close (old_stdout);
+}
+test_write_to_stdout ();
+#endif
+
+#ifdef UNIX
+private define test_popen ()
+{
+   variable fp = popen ("ls", "r");
+   if (fp == NULL)
+     failed ("popen ls failed");
+   variable count = 0;
+   foreach (fp) using ("wsline")
+     {
+	variable line = ();
+	count++;
+     }
+   if (0 != pclose (fp))
+     failed ("pclose: %S", errno_string());
+   if (count == 0)
+     failed ("no lines read from popen ls");
+}
+test_popen ();
+#endif
+
+private define test_bad_fds ()
+{
+   variable file;
+   variable fp = fopen_tmp_file (&file, "w");
+   () = remove (file);
+
+   if (NULL != fgetslines (fp, 0))
+     {
+	() = fclose (fp);
+	failed ("fgetslines on write-only stdio file pointer");
+     }
+
+   clearerr (fp);
+
+   if (-1 == fclose (fp))
+     failed ("fclose failed");
+
+   if (-1 != fclose (fp))
+     failed ("Expected second fclose to fail");
+}
+test_bad_fds ();
 
 print ("Ok\n");
 

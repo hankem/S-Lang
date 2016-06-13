@@ -28,7 +28,7 @@ private define test_signal (sig, func)
 {
    Signal = 0;
    signal (sig, func);
-   kill (getpid (), sig);
+   () = kill (getpid (), sig);
    variable count = 10;
    while (count and (Signal == 0))
      {
@@ -38,6 +38,7 @@ private define test_signal (sig, func)
    if (Signal != sig)
      failed ("signal %d not caught, count=%d", sig, count);
 }
+test_signal (SIGHUP, &handle_hup);
 
 private define sigalrm_handler (sig)
 {
@@ -148,8 +149,6 @@ private define test_sigprocmask ()
      failed ("sigprocmask: expected to see SIGINT in the mask");
 }
 
-test_signal (SIGHUP, &handle_hup);
-
 $1 = getenv ("SLSYSWRAP_TEST");
 
 if (($1 == NULL) || (atoi ($1) == 0))
@@ -160,6 +159,50 @@ if (($1 == NULL) || (atoi ($1) == 0))
 }
 
 test_sigprocmask ();
+
+% Interrupts are tiggered by signals that interrupt system calls.
+% These tests here are design to exercise that library interrupt hook
+% data structures.
+private variable Interrupt_Hook_A_Fired = 0;
+private variable Interrupt_Hook_B_Fired = 0;
+private define interrupt_hook_a ()
+{
+   Interrupt_Hook_A_Fired = 1;
+   return 0;
+}
+
+private define interrupt_hook_b ()
+{
+   Interrupt_Hook_B_Fired = 1;
+   return 0;
+}
+
+private define add_interrupt_hooks ()
+{
+   sltest_add_interrupt_hook (&interrupt_hook_a);
+   sltest_add_interrupt_hook (&interrupt_hook_b);
+   sltest_add_interrupt_hook (&interrupt_hook_a);
+}
+
+private define remove_interrupt_hooks ()
+{
+   sltest_remove_interrupt_hook (&interrupt_hook_a);
+   sltest_remove_interrupt_hook (&interrupt_hook_b);
+   sltest_remove_interrupt_hook (&interrupt_hook_a);
+}
+
+private define test_interrupts ()
+{
+   add_interrupt_hooks ();
+
+   () = sltest_invoke_interrupts ();
+
+   ifnot (Interrupt_Hook_A_Fired && Interrupt_Hook_B_Fired)
+     failed ("Interrupt_Hooks were not activated");
+
+   remove_interrupt_hooks ();
+}
+test_interrupts ();
 
 print ("Ok\n");
 

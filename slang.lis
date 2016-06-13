@@ -530,6 +530,7 @@
 @src/test/list.sl
 @src/test/longline.inc
 @src/test/loops.sl
+@src/test/math.sl
 @src/test/method.sl
 @src/test/misc.sl
 @src/test/multline.sl
