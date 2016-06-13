@@ -831,8 +831,20 @@ static void invalid_parm_handler (const wchar_t* expression,
 }
 #endif
 
+void _pSLerr_deinit (void)
+{
+   deinit_exceptions ();
+   _pSLerr_delete_error_queue (Default_Error_Queue);
+   Suspend_Error_Messages = 0;
+   Default_Error_Queue = NULL;
+   Active_Error_Queue = NULL;
+   Static_Error_Message = NULL;
+}
+
 int _pSLerr_init (void)
 {
+   static int inited = 0;
+
 #ifdef __WIN32__
    (void) _set_invalid_parameter_handler (invalid_parm_handler);
    /* Disable the message box for assertions. */
@@ -849,16 +861,11 @@ int _pSLerr_init (void)
    if (-1 == init_exceptions ())
      return -1;
 
+   if (inited == 0)
+     {
+	inited = 1;
+	(void) SLang_add_cleanup_function (_pSLerr_deinit);
+     }
    return 0;
-}
-
-void _pSLerr_deinit (void)
-{
-   deinit_exceptions ();
-   _pSLerr_delete_error_queue (Default_Error_Queue);
-   Suspend_Error_Messages = 0;
-   Default_Error_Queue = NULL;
-   Active_Error_Queue = NULL;
-   Static_Error_Message = NULL;
 }
 

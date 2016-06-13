@@ -196,6 +196,7 @@ Changes since 2.3.0
     non-string literals as printf-style formats.
 75. src/*.c, modules/*.c: If close fails with errno=EINTR, do not restart
     it.  Doing so invokes undefined behavior.
+76. src/slerr.c: Add _pSLerr_deinit to the exit hook.
 
 {{{ Previous Versions
 
