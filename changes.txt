@@ -197,6 +197,9 @@ Changes since 2.3.0
 75. src/*.c, modules/*.c: If close fails with errno=EINTR, do not restart
     it.  Doing so invokes undefined behavior.
 76. src/slerr.c: Add _pSLerr_deinit to the exit hook.
+77. src/slarray.c,src/slclass.c,src/slstruct.c: Use the SLclass_set*
+    functions to set SLang_Class_Type fields instead of directly
+    accessing them.
 
 {{{ Previous Versions
 

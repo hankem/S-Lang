@@ -1214,7 +1214,7 @@ int SLclass_set_length_function (SLang_Class_Type *cl, int (*f)(SLtype, VOID_STA
    return 0;
 }
 
-extern int SLclass_set_is_container (SLang_Class_Type *cl, int ic)
+int SLclass_set_is_container (SLang_Class_Type *cl, int ic)
 {
    if (cl == NULL)
      return -1;

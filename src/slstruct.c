@@ -1812,7 +1812,6 @@ int _pSLstruct_define_typedef (void)
    SLang_free_slstring (type_name);
 
    cl->cl_struct_def = s1;
-   cl->cl_init_array_object = struct_init_array_object;
    cl->cl_datatype_deref = typedefed_struct_datatype_deref;
    cl->cl_destroy = struct_destroy;
    cl->cl_push = struct_push;
@@ -1821,6 +1820,7 @@ int _pSLstruct_define_typedef (void)
    cl->cl_foreach_close = struct_foreach_close;
    cl->cl_foreach = struct_foreach;
 
+   (void) SLclass_set_aelem_init_function (cl, struct_init_array_object);
    (void) SLclass_set_string_function (cl, string_method);
    (void) SLclass_set_eqs_function (cl, struct_eqs_method);
    (void) SLclass_set_acopy_function (cl, struct_acopy);

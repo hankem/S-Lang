@@ -371,7 +371,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
 	new_num_elements = dims[i] * num_elements;
 	if (dims[i] && (new_num_elements/dims[i] != num_elements))
 	  {
-	     _pSLang_verror (SL_INVALID_PARM, "Unable to create array of the desired size");
+	     throw_size_error (SL_Index_Error);
 	     free_array (at);
 	     return NULL;
 	  }
@@ -5433,11 +5433,12 @@ _pSLarray_init_slarray (void)
    (void) SLclass_set_string_function (cl, array_string);
    (void) SLclass_set_destroy_function (cl, array_destroy);
    (void) SLclass_set_push_function (cl, array_push);
+   (void) SLclass_set_length_function (cl, array_length);
+   (void) SLclass_set_deref_function (cl, array_dereference);
+   (void) SLclass_set_is_container (cl, 1);
+
    cl->cl_push_intrinsic = array_push_intrinsic;
-   cl->cl_dereference = array_dereference;
    cl->cl_datatype_deref = array_datatype_deref;
-   cl->cl_length = array_length;
-   cl->is_container = 1;
    cl->cl_inc_ref = array_inc_ref;
 
    (void) SLclass_set_eqs_function (cl, array_eqs_method);
