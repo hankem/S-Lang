@@ -293,13 +293,13 @@ static FILE *fopen_fun (char *f, char *m)
    return fp;
 }
 
+/* This function is used only the open_file_type function */
 static int fclose_fun (FILE *fp)
 {
-   errno = 0;
-   while (EOF == fclose (fp))
+   if (EOF == fclose (fp))
      {
-	if (0 == handle_errno (errno))
-	  return EOF;
+	(void) handle_errno (errno);
+	return -1;
      }
    return 0;
 }
@@ -420,27 +420,27 @@ static int close_file_type (SL_File_Table_Type *t)
 
    fp = t->fp;
 
+   /* fclose should not be restarted upon EINTR.  So, flush the stream
+    * and then close it.  Assume the same for pclose.
+    */
    if (NULL == fp) ret = -1;
+#if HAVE_POPEN
+   else if (t->flags & SL_PIPE)
+     ret = pclose (fp);
+#endif
    else
      {
-	while (1)
+	if (t->flags & SL_WRITE)
 	  {
-	     if (0 == (t->flags & SL_PIPE))
-	       {
-		  if (EOF == (ret = fclose (fp)))
-		    ret = -1;
-	       }
-#ifdef HAVE_POPEN
-	     else
-	       {
-		  ret = pclose (fp);
-	       }
-#endif
-	     if ((ret != -1)
-		 || (0 == handle_errno (errno)))
-	       break;
+	     errno = 0;
+	     while ((-1 == fflush (fp))
+		    && (1 == handle_errno (errno)))
+	       errno = 0;
 	  }
+	if (EOF == fclose (fp))
+	  ret = -1;
      }
+
    if (t->buf != NULL) SLfree (t->buf);
    if (t->file != NULL) SLang_free_slstring (t->file);
    memset ((char *) t, 0, sizeof (SL_File_Table_Type));
@@ -458,7 +458,10 @@ static int stdio_fclose (void)
 
    t = (SL_File_Table_Type *) SLang_object_from_mmt (mmt);
    if (NULL == check_fp (t, 0xFFFF))
-     return -1;
+     {
+	SLang_free_mmt (mmt);
+	return -1;
+     }
 
    if (t->flags & SL_FDOPEN)
      _pSLfclose_fdopen_fp (mmt);

@@ -194,6 +194,8 @@ Changes since 2.3.0
     destructors.
 74. src/*.c: Added a few gcc #pragmas to turn off warnings about
     non-string literals as printf-style formats.
+75. src/*.c, modules/*.c: If close fails with errno=EINTR, do not restart
+    it.  Doing so invokes undefined behavior.
 
 {{{ Previous Versions
 

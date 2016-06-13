@@ -663,14 +663,14 @@ static Domain_Methods_Type *lookup_domain_methods (int domain)
 
 static int close_socket (int fd)
 {
-   while (-1 == close (fd))
+   /* Do not call close again to avoid undefined behavior */
+   if (-1 == close (fd))
      {
 #ifdef EINTR
 	if (errno == EINTR)
 	  {
 	     if (-1 == SLang_handle_interrupt ())
 	       return -1;
-	     continue;
 	  }
 #endif
 	return -1;

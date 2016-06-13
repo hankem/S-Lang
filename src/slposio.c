@@ -272,37 +272,32 @@ static int is_interrupt (int e, int check_eagain)
 static int do_close (SLFile_FD_Type *f)
 {
    int fd;
+   int status;
 
    if (-1 == get_fd (f, &fd))
      return -1;
 
-   while (1)
+   errno = 0;
+   if (f->close != NULL)
+     status = (*f->close)(f->clientdata);
+   else
+     status = close (fd);
+
+   if (status == 0)
      {
-	int status;
-
-	errno = 0;
-	if (f->close != NULL)
-	  status = (*f->close)(f->clientdata);
-	else
-	  status = close (fd);
-
-	if (status == 0)
-	  {
-	     f->fd = -1;
-	     f->is_closed = 1;
-	     if ((f->clientdata != NULL) && (f->free_client_data != NULL))
-	       (*f->free_client_data) (f->clientdata);
-	     f->clientdata = NULL;
-	     return status;
-	  }
-
-	if (0 == is_interrupt (errno, 1))
-	  return -1;
-#ifdef EINTR
-	/* see http://lwn.net/Articles/576478/ */
-	if (errno == EINTR) return 0;
-#endif
+	f->fd = -1;
+	f->is_closed = 1;
+	if ((f->clientdata != NULL) && (f->free_client_data != NULL))
+	  (*f->free_client_data) (f->clientdata);
+	f->clientdata = NULL;
+	return status;
      }
+
+   /* see http://lwn.net/Articles/576478/ */
+   if (0 == is_interrupt (errno, 1))
+     return -1;
+
+   return 0;
 }
 
 static int do_write (SLFile_FD_Type *f, char *buf, SLstrlen_Type *nump)
@@ -375,12 +370,12 @@ static int do_read (SLFile_FD_Type *f, char *buf, unsigned int *nump)
 
 static int posix_close_fd (int *fd)
 {
-   while (-1 == close (*fd))
+   if (-1 == close (*fd))
      {
+	/* see http://lwn.net/Articles/576478/ */
 	if (0 == is_interrupt (errno, 1))
 	  return -1;
      }
-
    return 0;
 }
 
@@ -588,8 +583,7 @@ SLFile_FD_Type *SLfile_dup_fd (SLFile_FD_Type *f0)
 
    if (NULL == (f = SLfile_create_fd (f0->name, fd)))
      {
-	while ((-1 == close (fd)) && is_interrupt (errno, 1))
-	  ;
+	(void) close (fd);
 	return NULL;
      }
 

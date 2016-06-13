@@ -476,9 +476,7 @@ void SLang_reset_tty (void)
 
    if (TTY_Open)
      {
-	while ((-1 == close (SLang_TT_Read_FD))
-	       && (errno == EINTR))
-	  ;
+	(void) close (SLang_TT_Read_FD);
 
 	TTY_Open = 0;
 	SLang_TT_Read_FD = -1;
