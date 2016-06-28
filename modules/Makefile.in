@@ -22,7 +22,7 @@ CONFIG_DIR	= @CONFIG_DIR@
 SRCDIR		= $(CONFIG_DIR)/modules
 CONFIG_H        = $(SRCDIR)/config.h
 OBJDIR		= $(ARCH)objs
-ELFDIR          = @ELFDIR@
+OBJDIR_TSTAMP	= $(OBJDIR)/tstamp
 # ---------------------------------------------------------------------------
 # Installation location of the slang library
 # ---------------------------------------------------------------------------
@@ -94,9 +94,10 @@ all: $(OBJDIR)/Makefile
 	cd $(OBJDIR) && $(MAKE) $(MODULES)
 $(CONFIG_H): $(CONFIG_DIR)/src/config.h
 	cp $(CONFIG_DIR)/src/config.h $(CONFIG_H)
-$(OBJDIR):
+$(OBJDIR_TSTAMP):
 	-$(MKINSDIR) $(OBJDIR)
-$(OBJDIR)/Makefile: $(OBJDIR) Makefile
+	touch $(OBJDIR_TSTAMP)
+$(OBJDIR)/Makefile: $(OBJDIR_TSTAMP) Makefile
 	cp Makefile $(OBJDIR)
 
 #
@@ -201,6 +202,7 @@ runtests: all
 	test -z "@SYSCONF_MODULE@" || test_scripts="$$test_scripts test_sysconf.sl"; \
 	cd test; ./runtests.sh $$test_scripts
 clean:
+	-/bin/rm -f $(OBJDIR_TSTAMP)
 	-cd $(OBJDIR) && /bin/rm -f $(MODULES) $(CHKSUM_OBJS)
 	-/bin/rm -f *~ */*~
 distclean: clean

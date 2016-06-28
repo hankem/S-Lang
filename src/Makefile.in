@@ -25,7 +25,8 @@ SRCDIR = @SRCDIR@# Location of sources
 OBJDIR = @OBJDIR@# Location of objects
 ELFDIR = @ELFDIR@# Location of elf objects
 VERSION_SCRIPT	= $(SRCDIR)/slang.ver
-
+ELFDIR_TSTAMP = $(ELFDIR)/tstamp
+OBJDIR_TSTAMP = $(OBJDIR)/tstamp
 #---------------------------------------------------------------------------
 # When searching for modules, slang will search the paths specified by the
 # value of the SLANG_MODULE_PATH environment variable.  The name of this
@@ -123,6 +124,8 @@ ELFOBJS = @PROGRAM_ELFOBJECTS@
 SHELL = /bin/sh
 
 DOT_O_DEPS = sllimits.h _slang.h $(CONFIG_H)
+OBJ_O_DEPS = $(OBJDIR_TSTAMP)
+ELF_O_DEPS = $(ELFDIR_TSTAMP)
 sltoken_O_DEP = keywhash.c
 slarith_O_DEP = slarith.inc slarith2.inc
 slarrfun_O_DEP = slarrfun.inc
@@ -146,8 +149,8 @@ UPDATE_VERSION_SCRIPT = $(HOME)/bin/update_changes_version
 # Rules
 #---------------------------------------------------------------------------
 all: static elf
-static: $(OBJDIR) $(CONFIG_H) $(OBJDIR_NORMAL_LIB) $(OTHERSTUFF)
-elf: $(ELFDIR) $(CONFIG_H) $(ELFDIR_ELF_LIB)
+static: $(OBJDIR_TSTAMP) $(CONFIG_H) $(OBJDIR_NORMAL_LIB) $(OTHERSTUFF)
+elf: $(ELFDIR_TSTAMP) $(CONFIG_H) $(ELFDIR_ELF_LIB)
 
 $(OBJDIR_NORMAL_LIB): $(OBJDIR) $(CONFIG_H) $(OBJS)
 	-$(RM) $(OBJDIR_NORMAL_LIB)
@@ -167,10 +170,12 @@ $(ELFDIR_ELF_LIB): $(ELFDIR) $(CONFIG_H) $(ELFOBJS) $(VERSION_SCRIPT)
 	@echo $(ELFLIB_BUILD_NAME) created in $(ELFDIR).
 	@echo The link $(ELFLIB) to $(ELFLIB_BUILD_NAME) was also created.
 	@echo ""
-$(OBJDIR) :
+$(OBJDIR_TSTAMP) :
 	-$(MKINSDIR) $(OBJDIR)
-$(ELFDIR) :
+	touch $(ELFDIR_TSTAMP)
+$(ELFDIR_TSTAMP) :
 	-$(MKINSDIR) $(ELFDIR)
+	touch $(ELFDIR_TSTAMP)
 $(CONFIG_H) : sysconf.h Makefile
 	-$(CP) sysconf.h $(CONFIG_H)
 terminfo.inc: $(TERMINFO_INC) Makefile

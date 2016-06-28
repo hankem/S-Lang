@@ -201,7 +201,9 @@ Changes since 2.3.0
     functions to set SLang_Class_Type fields instead of directly
     accessing them.
 78. Added additional unit/regresssion tests.
-
+79. Makefiles: Add a time-stamp dependency to directory targets to
+    avoid race conditions when running parallel make (Based upon a
+    patch from Kylie McClain).
 {{{ Previous Versions
 
 Changes since 2.2.4
