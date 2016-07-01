@@ -204,6 +204,8 @@ Changes since 2.3.0
 79. Makefiles: Add a time-stamp dependency to directory targets to
     avoid race conditions when running parallel make (Based upon a
     patch from Kylie McClain).
+80. src/Makefile.in: Updated the libslang.a dependency to account for
+    change #79.
 {{{ Previous Versions
 
 Changes since 2.2.4
