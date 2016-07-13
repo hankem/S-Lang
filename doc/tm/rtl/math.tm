@@ -234,6 +234,27 @@
 \seealso{feqs, fgteqs, flteqs}
 \done
 
+
+\function{frexp}
+\synopsis{Obtain the integral and fractional parts of a floating point number}
+\usage{(b,e) = frexp(x)}
+\description
+  This function breaks a floating point number \exmp{x} into two values
+  \exmp{b} and \exmp{e} such that \exmp{x=b*2^x}, where
+#v+
+    0.5 <= abs(b) < 1  for x != 0,
+    b = 0, e = 0       for x = 0
+    b = _NaN           for x = _NaN
+    b = +/-_Inf        for x = +/-Inf
+#v-
+  For the latter two cases, the value is \exmp{e} is implementation
+  dependent.
+
+  If \exmp{x} is an array, the \ifun{frexp} function will be applied
+  to each element and corresponding arrays will be returned.
+\seealso{ldexp, pow, log}
+\done
+
 \function{get_float_format}
 \synopsis{Get the format for printing floating point values.}
 \usage{String_Type get_float_format ()}
@@ -350,6 +371,18 @@
   otherwise.  If the argument is an array, then the corresponding
   array of boolean (\dtype{Char_Type}) values will be returned.
 \seealso{_isneg, _isnonneg}
+\done
+
+\function{ldexp}
+\synopsis{Multiply a number by a power of 2}
+\usage{x = ldexp(b, e)}
+\description
+  This function computes the value of \exmp{b*2^e} and returns the
+  result.  If either \exmp{b} or \exmp{e} is an array, a corresponding
+  array of values will be returned.
+\notes
+  This function is the inverse of \exmp{frexp}.
+\seealso{frexp}
 \done
 
 \function{log}

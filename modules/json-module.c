@@ -1,6 +1,6 @@
 /* -*- mode: C; mode: fold -*- */
 /*
-Copyright (C) 2013 John E. Davis, Manfred Hanke
+Copyright (C) 2013-2016 John E. Davis, Manfred Hanke
 
 This file is part of the S-Lang Library.
 

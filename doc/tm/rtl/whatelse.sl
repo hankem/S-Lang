@@ -89,7 +89,8 @@ define get_doc_intrinsics ()
 	variable f;
 	f = ();
 	f = strtok (f, "{}")[1];
-	doc [f] = 1;
+	foreach f (strtok (f, ","))
+	  doc [f] = 1;
      }
    funs = grep ("^\\\\variable{", TM_Files);
    foreach (funs)

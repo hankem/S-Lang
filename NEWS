@@ -1,7 +1,7 @@
 NEWS for version 2.3.x                                             -*-text-*-
 
-24 bit color support
-====================
+24 bit color support (new for version 2.3.1)
+============================================
 
   The SLtt interface has been modified to support 24 bit (true)
   colors.  Until the next major release (version 3), this feature is
@@ -23,7 +23,6 @@ NEWS for version 2.3.x                                             -*-text-*-
   24bit RGB value in the form "#RRGGBB" as the name of the color.
   For example, to set the color of the status line in jed to AliceBlue
   (#F0F8FF) on a SlateGray (#708090) background, use
-
       set_color ("status", "#F0F8FF", "#708090");
 
   in the .jedrc file.  In slrn, to set the color of the author name to
@@ -53,8 +52,12 @@ Intrinsic Functions
 
      get/setitimer: get/set an interval timer
 
-     wherefirstmin/max, wherelastmin/max: gets index for first/last
+     wherefirstmin/max, wherelastmin/max: returns index for first/last
        min/max values of an array
+
+     wherefirst_eq/ne/gt/lt/ge/le, where_last_eq/ne/gt/lt/ge/le:
+     returns first/last index of an array where the array value is
+     eq/ne/gt/lt/ge/le of a specified value. (version 2.3.1)
 
      wherediff: returns indices where adjacient elements of an array
        differ.
@@ -67,12 +70,25 @@ Intrinsic Functions
 
      lchown: Change ownership of a symbolic link
 
+     get/set_printable_bstring_size: Get/set the length of the
+     printable representation of binary strings. (version 2.3.1)
+
+     statvfs: Intrinsic that wraps statvfs POSIX function that returns
+     file system statistics. (version 2.3.1)
+
+     _ftime:  returns the number of (wallclock) seconds since an epoch
+     (version 2.3.1)
+
+
    The following functions have been enhanced:
 
      array_map modified to support multiple return values.
 
      is_substrbytes: Added support for an optional offset into the
        string.
+
+     _push_struct_field_values: An optional argument may be used to
+     specify the fields to be pushed. (version 2.3.1)
 
 Interpreter Syntax
 ==================
@@ -84,6 +100,16 @@ Interpreter Syntax
          X = struct {"some-field", some_other_field };
          X.some_other_field = 3;
          X."some-field" = 4;
+
+   String literals now support \uABCD to specify a 32 bit unicode
+   character.  Previously, the braces were required (\u{ABCD}).
+   (version 2.3.1)
+
+Module Updates
+==============
+
+   stats-module: Added Anderson-Darling normality and
+   k-sample tests (version 2.3.1)
 
 
 slsh library (used by conforming slang apps such as jed, slrn, ...)

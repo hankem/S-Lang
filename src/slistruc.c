@@ -1,6 +1,6 @@
 /* Intrinsic Structure type implementation */
 /*
-Copyright (C) 2004-2014 John E. Davis
+Copyright (C) 2004-2016 John E. Davis
 
 This file is part of the S-Lang Library.
 

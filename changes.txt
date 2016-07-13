@@ -210,6 +210,7 @@ Changes since 2.3.0
     to reduce gcc warnings.
 82. modules/test/test_slsmg.sl: Test skipped if the terminal type is
     "unknown".
+83. Updated copyright years; some doc updates
 
 {{{ Previous Versions
 
