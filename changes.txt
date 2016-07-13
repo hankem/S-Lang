@@ -208,6 +208,8 @@ Changes since 2.3.0
     change #79.
 81. tweaked a few files (modules/png-module.c,src/slarith.inc,src/slimport.c)
     to reduce gcc warnings.
+82. modules/test/test_slsmg.sl: Test skipped if the terminal type is
+    "unknown".
 
 {{{ Previous Versions
 

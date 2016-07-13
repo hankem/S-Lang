@@ -13,6 +13,10 @@ try
 	() = fprintf (stderr, "TERM environment variable not set--- slsmg-module test not performed\n");
 	exit (0);
      }
+#if$TERM unknown
+   () = fprintf (stderr, "TERM is unknown-- slsmg-module not tested\n");
+   exit (0);
+#endif
    require ("slsmg");
 }
 catch ImportError:
