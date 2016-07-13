@@ -31,7 +31,10 @@ static int GENERIC_BINARY_FUNCTION
    SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
    VOID_STAR cp)
 {
-   GENERIC_TYPE *c, *a, *b;
+   GENERIC_TYPE *a, *b;
+# ifndef JUST_BOOLEAN_BINARY_OPS
+   GENERIC_TYPE *c;
+# endif
 # ifdef POW_FUNCTION
    POW_RESULT_TYPE *d;
 # endif
@@ -46,7 +49,9 @@ static int GENERIC_BINARY_FUNCTION
 
    a = (GENERIC_TYPE *) ap;
    b = (GENERIC_TYPE *) bp;
+#ifndef JUST_BOOLEAN_BINARY_OPS
    c = (GENERIC_TYPE *) cp;
+#endif
    cc = (char *) cp;
 
 # if SLANG_OPTIMIZE_FOR_SPEED < 2

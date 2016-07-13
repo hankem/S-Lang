@@ -206,6 +206,9 @@ Changes since 2.3.0
     patch from Kylie McClain).
 80. src/Makefile.in: Updated the libslang.a dependency to account for
     change #79.
+81. tweaked a few files (modules/png-module.c,src/slarith.inc,src/slimport.c)
+    to reduce gcc warnings.
+
 {{{ Previous Versions
 
 Changes since 2.2.4

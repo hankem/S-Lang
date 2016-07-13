@@ -264,7 +264,7 @@ static SLang_Array_Type *read_image_internal (char *file, int flip, int *color_t
    png_struct *png;
    png_info *info;
    int bit_depth;
-   int interlace_type;
+   /* int interlace_type; */
    int color_type;
    unsigned int sizeof_type;
    SLindex_Type dims[2];
@@ -294,7 +294,7 @@ static SLang_Array_Type *read_image_internal (char *file, int flip, int *color_t
 
    width = png_get_image_width (png, info);
    height = png_get_image_height (png, info);
-   interlace_type = png_get_interlace_type (png, info);
+   /* interlace_type = png_get_interlace_type (png, info); */
    bit_depth = png_get_bit_depth (png, info);
 
    if (bit_depth == 16)
