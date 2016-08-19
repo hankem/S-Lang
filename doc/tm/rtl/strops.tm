@@ -1208,3 +1208,35 @@
 \seealso{substr, strbytelen}
 \done
 
+
+\function{wchars_to_string,string_to_wchars}
+\synopsis{Convert a UTF-8 encoded string to and from character codes}
+\usage{Int_Type[] string_to_wchars(String_Type str)
+  String_Type wchars_to_string(Int_Type[] array)
+}
+\description
+The \ifun{string_to_wchars} function decodes a UTF-8 encoded string
+and returns the Unicode characters as an array of integer values. The
+\ifun{wchars_to_string} performs the opposite conversion to produce a
+UTF-8 encoded string from an array of Unicode characters.
+\notes
+A malformed UTF-8 encoded string will result in negative byte-values in the
+output array at the positions corresponding to the malformed sequence.
+For example, the following function will substitute a '?' character
+for each byte in the malformed sequence to produce a valid string:
+#v+
+  define handle_malformed_bytes (str)
+  {
+     variable codes = string_to_wchars (str);
+     variable is_bad = (codes < 0);
+     if (any(is_bad))
+       {
+          codes[where(is_bad)] = '?';
+          str = wchars_to_string (codes);
+       }
+     return str;
+  }
+#v-
+\seealso{char, substr, array_to_bstring, bstring_to_array}
+\done
+

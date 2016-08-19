@@ -4061,6 +4061,34 @@ fneqs
 
 --------------------------------------------------------------
 
+frexp
+
+ SYNOPSIS
+  Obtain the integral and fractional parts of a floating point number
+
+ USAGE
+  (b,e) = frexp(x)
+
+ DESCRIPTION
+  This function breaks a floating point number `x' into two values
+  `b' and `e' such that `x=b*2^x', where
+
+    0.5 <= abs(b) < 1  for x != 0,
+    b = 0, e = 0       for x = 0
+    b = _NaN           for x = _NaN
+    b = +/-_Inf        for x = +/-Inf
+
+  For the latter two cases, the value is `e' is implementation
+  dependent.
+
+  If `x' is an array, the `frexp' function will be applied
+  to each element and corresponding arrays will be returned.
+
+ SEE ALSO
+  ldexp, pow, log
+
+--------------------------------------------------------------
+
 get_float_format
 
  SYNOPSIS
@@ -4241,6 +4269,27 @@ _ispos
 
  SEE ALSO
   _isneg, _isnonneg
+
+--------------------------------------------------------------
+
+ldexp
+
+ SYNOPSIS
+  Multiply a number by a power of 2
+
+ USAGE
+  x = ldexp(b, e)
+
+ DESCRIPTION
+  This function computes the value of `b*2^e' and returns the
+  result.  If either `b' or `e' is an array, a corresponding
+  array of values will be returned.
+
+ NOTES
+  This function is the inverse of `frexp'.
+
+ SEE ALSO
+  frexp
 
 --------------------------------------------------------------
 
@@ -10119,6 +10168,45 @@ substrbytes
 
  SEE ALSO
   substr, strbytelen
+
+--------------------------------------------------------------
+
+wchars_to_string,string_to_wchars
+
+ SYNOPSIS
+  Convert a UTF-8 encoded string to and from character codes
+
+ USAGE
+  Int_Type[] string_to_wchars(String_Type str)
+  String_Type wchars_to_string(Int_Type[] array)
+
+ DESCRIPTION
+The `string_to_wchars' function decodes a UTF-8 encoded string
+and returns the Unicode characters as an array of integer values. The
+`wchars_to_string' performs the opposite conversion to produce a
+UTF-8 encoded string from an array of Unicode characters.
+
+ NOTES
+A malformed UTF-8 encoded string will result in negative byte-values in the
+output array at the positions corresponding to the malformed sequence.
+For example, the following function will substitute a '?' character
+for each byte in the malformed sequence to produce a valid string:
+
+  define handle_malformed_bytes (str)
+  {
+     variable codes = string_to_wchars (str);
+     variable is_bad = (codes < 0);
+     if (any(is_bad))
+       {
+          codes[where(is_bad)] = '?';
+          str = wchars_to_string (codes);
+       }
+     return str;
+  }
+
+
+ SEE ALSO
+  char, substr, array_to_bstring, bstring_to_array
 
 --------------------------------------------------------------
 

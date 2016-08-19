@@ -812,7 +812,53 @@ private define test_strtrim_bad ()
 }
 test_strtrim_bad ();
 
-private define string_to_array (str)
+private define test_string_to_wchars (str, ans)
+{
+   ifnot (_eqs (ans, string_to_wchars (str)))
+     {
+	failed ("string_to_wchars (%S)", str);
+     }
+
+   ifnot (_eqs (str, wchars_to_string (ans)))
+     {
+	failed ("wchars_to_string: expected to produce %S", str);
+     }
+
+   ans = [random_integer(1024), random_integer(1024)-255, random_integer(1024),
+	  random_integer(1024), random_integer(1024), random_integer(1024)-255];
+   ans[where(-127 <= ans <= 0)] += 512;
+   str = wchars_to_string (ans);
+   variable ans1 = string_to_wchars(str);
+   if (_eqs (ans, ans1))
+     return;
+
+   variable msg = "";
+   if (length(ans) == length(ans1))
+     {
+	msg = "\n";
+	_for (0, length(ans)-1, 1)
+	  {
+	     variable i = ();
+	     msg = sprintf ("%s%d: in=%d, out=%d\n", msg, i, ans[i], ans1[i]);
+	  }
+     }
+   failed ("string_to_wchars <-> wchars_to_string: %S -> %S -> %S%S", ans, str, ans1, msg);
+}
+
+
+test_string_to_wchars ("", Int_Type[0]);
+test_string_to_wchars ("a", ['a']);
+test_string_to_wchars ("\xEE", [-0xEE]);
+test_string_to_wchars ("\u{1234}", [0x1234]);
+test_string_to_wchars ("a\xEE", ['a', -0xEE]);
+test_string_to_wchars ("\xEEa", [-0xEE, 'a']);
+test_string_to_wchars ("\xEE\u{1234}", [-0xEE, 0x1234]);
+test_string_to_wchars ("\u{1234}\xEE", [0x1234, -0xEE]);
+test_string_to_wchars ("\u{1234}\xEEa", [0x1234, -0xEE, 'a']);
+test_string_to_wchars ("b\u{1234}\xEEa", ['b', 0x1234, -0xEE, 'a']);
+test_string_to_wchars ("b\u{1234}\u{EE}\xEEa", ['b', 0x1234, 0xEE, -0xEE, 'a']);
+
+private define _string_to_array (str)
 {
    variable n = strcharlen (str);
    variable a = ULong_Type[n];
@@ -848,8 +894,8 @@ private define test_wchar_funcs ()
      str = strcat (str, char(i), char(10*i));
 
    variable astr = string_to_array_b (str);
-   variable lstr = string_to_array (strlow (str));
-   variable ustr = string_to_array (strup (str));
+   variable lstr = _string_to_array (strlow (str));
+   variable ustr = _string_to_array (strup (str));
    _for i (0, strcharlen(str)-1, 1)
      {
 	variable wch = astr[i];

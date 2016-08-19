@@ -2918,6 +2918,137 @@ free_and_return:
    SLang_free_slstring (chars);
 }
 
+static int copy_strlen_type_to_index_type (SLstrlen_Type a, SLindex_Type *bp)
+{
+   *bp = (SLindex_Type) a;
+   if ((SLstrlen_Type)*bp != a)
+     {
+	SLang_verror (SL_TypeMismatch_Error, "%s", "SLstrlen_Type value to large for conversion to SLindex_Type");
+	return -1;
+     }
+   return 0;
+}
+
+static void string_to_wchars (unsigned char *str)
+{
+   SLstrlen_Type i, len;
+   SLang_Array_Type *at;
+   _pSLint32_Type *data;
+   unsigned char *strmax;
+   SLindex_Type dims[1];
+
+   len = SLutf8_strlen (str, 0);
+   if (-1 == copy_strlen_type_to_index_type (len, dims))
+     return;
+
+   if (NULL == (at = SLang_create_array (_pSLANG_INT32_TYPE, 0, NULL, dims, 1)))
+     return;
+
+   i = 0;
+   strmax = str + _pSLstring_bytelen ((const char *)str);
+   data = (_pSLint32_Type *)at->data;
+   while (str < strmax)
+     {
+	unsigned char *s;
+	SLwchar_Type wch;
+
+	if (*str < 0x80)
+	  {
+	     data[i++] = *str++;
+	     continue;
+	  }
+
+	s = SLutf8_decode (str, strmax, &wch, NULL);
+	if (s == NULL)
+	  {
+	     data[i++] = -(int)(*str);
+	     str++;
+	     continue;
+	  }
+	data[i++] = (_pSLint32_Type)wch;
+	str = s;
+     }
+
+   (void) SLang_push_array (at, 1);
+}
+
+static void wchars_to_string (void)
+{
+   SLindex_Type i, n;
+   SLang_Array_Type *at;
+   _pSLint32_Type *data;
+   unsigned char *buf, *b, *bmax;
+   SLstrlen_Type buflen;
+
+   if (-1 == SLang_pop_array_of_type (&at, _pSLANG_INT32_TYPE))
+     return;
+
+   buflen = n = at->num_elements;
+   buf = (unsigned char *)SLmalloc(buflen+1);
+   if (buf == NULL)
+     {
+	SLang_free_array (at);
+	return;
+     }
+
+   data = (_pSLint32_Type *) at->data;
+   b = buf;
+   bmax = b + buflen;
+
+   i = 0;
+   for (i = 0; i < n; i++)
+     {
+	SLstrlen_Type dlen;
+	_pSLint32_Type wch;
+
+	wch = data[i];
+	if ((wch < 0x80) && (b < bmax))
+	  {
+	     if (wch < 0) wch = -wch;
+	     *b++ = (unsigned char)(wch);
+	     continue;
+	  }
+
+	dlen = SLUTF8_MAX_MBLEN;
+	if (b + dlen >= bmax)
+	  {
+	     unsigned char *newbuf;
+
+	     dlen = 6;
+	     if (NULL == (newbuf = (unsigned char *)SLrealloc ((char *)buf, buflen+dlen+1)))
+	       {
+		  SLfree ((char *)buf);
+		  SLang_free_array (at);
+		  return;
+	       }
+	     b = newbuf + (b-buf);
+	     buf = newbuf;
+	     buflen += dlen;
+	     bmax = b + buflen;
+	  }
+	b = SLutf8_encode (wch, b, SLUTF8_MAX_MBLEN);
+     }
+
+   if (buf + buflen != b)
+     {
+	unsigned char *newbuf;
+	buflen = b - buf;
+	newbuf = (unsigned char *)SLrealloc((char *)buf, buflen+1);
+	if (newbuf == NULL)
+	  {
+	     SLfree ((char *)buf);
+	     SLang_free_array (at);
+	     return;
+	  }
+	b = newbuf + (b - buf);
+	buf = newbuf;
+     }
+   *b = 0;
+
+   (void) SLang_push_malloced_string ((char *)buf);   /* frees it, even upon error */
+   SLang_free_array (at);
+}
+
 static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
 {
    MAKE_INTRINSIC_I("create_delimited_string",  create_delimited_string_cmd, SLANG_VOID_TYPE),
@@ -2981,6 +3112,8 @@ static SLang_Intrin_Fun_Type Strops_Table [] = /*{{{*/
    MAKE_INTRINSIC_0("isascii", isascii_intrin, SLANG_CHAR_TYPE),
    MAKE_INTRINSIC_0("strskipchar", strskipchar_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("strbskipchar", strbskipchar_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_S("string_to_wchars", string_to_wchars, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("wchars_to_string", wchars_to_string, SLANG_VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

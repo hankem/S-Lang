@@ -212,6 +212,8 @@ Changes since 2.3.0
     "unknown".
 83. Updated copyright years; some doc updates
 84. src/sldisply.c: make JMAX_COLORS consistent with SLTT_MAX_COLORS.
+85. src/slstrops.c: Added string_to_wchars and wchars_to_string
+    intrinsic functions.
 
 {{{ Previous Versions
 

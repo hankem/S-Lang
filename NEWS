@@ -79,6 +79,8 @@ Intrinsic Functions
      _ftime:  returns the number of (wallclock) seconds since an epoch
      (version 2.3.1)
 
+     wchars_to_string/string_to_wchars: Convert a UTF-8 encoded string
+     to and from an array of Unicode characters. (version 2.3.1)
 
    The following functions have been enhanced:
 

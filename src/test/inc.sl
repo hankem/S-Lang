@@ -58,7 +58,7 @@ define random ()
 define random_integer (maxn)
 {
    _Random_Seed = (_Random_Seed * 69069UL + 1013904243UL)&0xFFFFFFFFUL;
-   return _Random_Seed mod maxn;
+   return int(_Random_Seed mod maxn);
 }
 
 define urand ()
