@@ -211,6 +211,7 @@ Changes since 2.3.0
 82. modules/test/test_slsmg.sl: Test skipped if the terminal type is
     "unknown".
 83. Updated copyright years; some doc updates
+84. src/sldisply.c: make JMAX_COLORS consistent with SLTT_MAX_COLORS.
 
 {{{ Previous Versions
 

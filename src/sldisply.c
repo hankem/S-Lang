@@ -205,7 +205,11 @@ static int Mouse_Mode = -1;
  * the highbit is set, we interpret that as a blink character.  This is
  * exploited by DOSemu.
  */
-#define JMAX_COLORS 512
+#ifndef SLTT_MAX_COLORS
+# define SLTT_MAX_COLORS 0x8000       /* consistent with SLSMG_COLOR_MASK */
+#endif
+
+#define JMAX_COLORS SLTT_MAX_COLORS
 #define JNORMAL_COLOR 0
 
 typedef struct
