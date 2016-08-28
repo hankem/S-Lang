@@ -663,6 +663,9 @@ static double _ftime_cmd (void)
 }
 #endif
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 static void strftime_cmd (void)
 {
    /* Rather then using some sort of portable version of strftime, which would
@@ -714,15 +717,16 @@ static void strftime_cmd (void)
     *
     * Was this too designed by committee?
     */
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    status = strftime (buf, sizeof(buf), fmt, &tms);
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
    if (status == 0)
      buf[0] = 0;
    buf[sizeof(buf)-1] = 0;
    (void) SLang_push_string (buf);
    SLang_free_slstring (fmt);
 }
+#if defined(__GNUC__)
+# pragma GCC diagnostic warning "-Wformat-nonliteral"
+#endif
 
 static SLang_Intrin_Fun_Type Time_Funs_Table [] =
 {

@@ -1855,7 +1855,8 @@ static void strcompress_vintrin (char *white) /*{{{*/
    memcpy ((char *)cd.pref_char_buf, white, cd.pref_len);
    cd.pref_char_buf[cd.pref_len] = 0;
 
-   if (NULL == (cd.lut = SLwchar_strtolut ((SLuchar_Type *)white, 1, 0)))
+   /* No ranges and no character classes in white */
+   if (NULL == (cd.lut = SLwchar_strtolut ((SLuchar_Type *)white, 0, 0)))
      return;
 
    (void) arraymap_str_func_str (&func_strcompress, (void *)&cd);
@@ -1865,6 +1866,9 @@ static void strcompress_vintrin (char *white) /*{{{*/
 
 /*}}}*/
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 static char *SLdo_sprintf (char *fmt) /*{{{*/
 {
    register char *p = fmt;
@@ -2188,7 +2192,6 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	     malloc_len = len + guess_size;
 	  }
 
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 	if (use_string)
 	  {
 	     sprintf(outp, dfmt, str);
@@ -2207,7 +2210,6 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	       sprintf (outp, dfmt, long_var);
 	  }
 	else sprintf(outp, dfmt, int_var);
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
 
 	len += strlen(outp);
 	outp = out + len;
@@ -2222,6 +2224,9 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 
    return (out);
 }
+#if defined(__GNUC__)
+# pragma GCC diagnostic warning "-Wformat-nonliteral"
+#endif
 
 /*}}}*/
 

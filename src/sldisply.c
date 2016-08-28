@@ -444,6 +444,9 @@ void SLtt_putchar (char ch)
    else tt_write (&ch, 1);
 }
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt, int x, int y)
 {
    SLCONST char *fmt_max;
@@ -550,9 +553,7 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
 		  z = STACK_POP;
 		  z += offset;
 
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 		  sprintf ((char *)b, x_fmt_buf, z);
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
 		  b += strlen ((char *)b);
 		  zero_pad = 0;
 		  break;
@@ -746,6 +747,9 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
 
    return (unsigned int) (b - (unsigned char *) buf);
 }
+#if defined(__GNUC__)
+# pragma GCC diagnostic warning "-Wformat-nonliteral"
+#endif
 
 static void tt_printf(SLCONST char *fmt, int x, int y)
 {
@@ -1611,6 +1615,9 @@ void SLtt_set_alt_char_set (int i)
 }
 
 #if SLTT_HAS_TRUECOLOR_SUPPORT
+# if defined(__GNUC__)
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+# endif
 static void write_truecolor (const char *fmt, SLtt_Char_Type c)
 {
    char tmpbuf[32];
@@ -1620,12 +1627,13 @@ static void write_truecolor (const char *fmt, SLtt_Char_Type c)
    g = (int)((c>>8) & 0xFF);
    b = (int)(c & 0xFF);
 
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    sprintf (tmpbuf, fmt, r, g, b);
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
    tt_write_string (tmpbuf);
 }
-#endif
+# if defined(__GNUC__)
+#  pragma GCC diagnostic warning "-Wformat-nonliteral"
+# endif
+#endif				       /* SLTT_HAS_TRUECOLOR_SUPPORT */
 
 static void write_attributes (SLtt_Char_Type fgbg)
 {

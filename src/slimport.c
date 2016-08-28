@@ -153,14 +153,15 @@ static int check_api_version (char *file, int api_version)
    return -1;
 }
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 static VOID_STAR do_dlsym (VOID_STAR handle, SLFUTURE_CONST char *file, int check_error, SLFUTURE_CONST char *fmt, char *module)
 {
    char symbol[MAX_MODULE_NAME_SIZE + 32];
    VOID_STAR s;
 
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    SLsnprintf (symbol, sizeof(symbol), fmt, module);
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
    if (NULL != (s = (VOID_STAR) dlsym (handle, symbol)))
      return s;
 
@@ -177,6 +178,9 @@ static VOID_STAR do_dlsym (VOID_STAR handle, SLFUTURE_CONST char *file, int chec
      }
    return NULL;
 }
+#if defined(__GNUC__)
+# pragma GCC diagnostic warning "-Wformat-nonliteral"
+#endif
 
 static Handle_Type *dynamic_link_module (SLFUTURE_CONST char *module)
 {

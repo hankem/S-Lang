@@ -3377,6 +3377,9 @@ static int do_struct_method (SLFUTURE_CONST char *name, int linenum)
    return deref_call_object (&obj, linenum);    /* frees obj */
 }
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 static void trace_dump (SLFUTURE_CONST char *format, char *name, SLang_Object_Type *objs, int n, int dir)
 {
    unsigned int len;
@@ -3390,9 +3393,7 @@ static void trace_dump (SLFUTURE_CONST char *format, char *name, SLang_Object_Ty
    prefix[len] = 0;
 
    _pSLerr_dump_msg ("%s", prefix);
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    _pSLerr_dump_msg (format, name, n);
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
 
    if (n > 0)
      {
@@ -3400,11 +3401,12 @@ static void trace_dump (SLFUTURE_CONST char *format, char *name, SLang_Object_Ty
 	len++;
 	prefix[len] = 0;
 
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 	_pSLerr_dump_msg (prefix, objs, n, dir);
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
      }
 }
+#if defined(__GNUC__)
+# pragma GCC diagnostic warning "-Wformat-nonliteral"
+#endif
 
 /*  Pop a data item from the stack and return a pointer to it.
  *  Strings are not freed from stack so use another routine to do it.
