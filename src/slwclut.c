@@ -532,7 +532,8 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
 	return u;
      }
 
-   if ((*u != '-') || (allow_range == 0))
+   if ((*u != '-') || (allow_range == 0)
+       || (u+1 == umax))/* Allow '-' to occur at the end without being interpreted as a range */
      {
 	lex->lexical_type = LEXICAL_CHAR_TYPE;
 	lex->e.wch = r0;
@@ -540,14 +541,6 @@ static SLuchar_Type *get_lexical_element (SLuchar_Type *u, SLuchar_Type *umax,
      }
 
    u++;
-   if (u == umax)
-     {
-	lex->lexical_type = LEXICAL_CHAR_TYPE;
-	lex->e.wch = '-';
-	return u;
-	/* _pSLang_verror (SL_INVALID_PARM, "Unfinished range specification"); */
-	/* return NULL; */
-     }
 
    if (-1 == get_lex_char (&u, umax, allow_charclass, &r1, &char_class))
      return NULL;

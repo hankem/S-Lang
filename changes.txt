@@ -216,6 +216,13 @@ Changes since 2.3.0
     intrinsic functions.
 86. Moved gcc diagnosic pragmas outside function bodies for
     compatibility with old versions of gcc.
+87. src/slwclut.c: Unclosed ranges (hyphen at the end of a character
+    set specification string) were not being handled properly: the
+    character befor the hyphen was being dropped, e.g.,
+
+      strcompress ("foo-(bar)", "_()-");
+
+    was producing "foo_bar)" instead of "foo_bar".
 
 {{{ Previous Versions
 

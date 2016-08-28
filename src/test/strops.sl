@@ -268,6 +268,7 @@ private define test_strcompress (str, white, ans)
    if (any(b1 != b))
      failed ("strcompress(%S, %S) --> %S", a, white, b1);
 }
+test_strcompress ("3)x", "_ #&<>\t()-", "3_x");
 test_strcompress (" \t  \tA\n\ntest\t", " \t\n", "A test");
 test_strcompress ("../afoo/bfoo/cbard/ooohbhar/", "/", "../afoo/bfoo/cbard/ooohbhar");
 
