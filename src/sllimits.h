@@ -36,7 +36,11 @@ USA.
 #ifdef __MSDOS_16BIT__
 # define SLANG_MAX_RECURSIVE_DEPTH	50
 #else
-# define SLANG_MAX_RECURSIVE_DEPTH	2500
+# if (defined(__WIN32__) || defined(__CYGWIN__))
+#  define SLANG_MAX_RECURSIVE_DEPTH	500 /* The stacksize on these platforms is limited. */
+# else
+#  define SLANG_MAX_RECURSIVE_DEPTH	2500
+# endif
 #endif
 
 /* slang.c: Size of the stack used for local variables */
