@@ -253,10 +253,13 @@ void _pSLtt_tifreeent (SLterminfo_Type *t)
    if (t == NULL)
      return;
 
-   SLfree ((char *)t->string_table);
-   SLfree ((char *)t->string_offsets);
-   SLfree ((char *)t->numbers);
-   SLfree ((char *)t->boolean_flags);
+   if (t->flags != SLTERMCAP)
+     {
+	SLfree ((char *)t->string_table);
+	SLfree ((char *)t->string_offsets);
+	SLfree ((char *)t->numbers);
+	SLfree ((char *)t->boolean_flags);
+     }
    SLfree ((char *)t->terminal_names);
    SLfree ((char *)t);
 }
@@ -533,6 +536,8 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
     * terminfo would almost never get a chance to run.  In addition, the tc=
     * thing should not occur if tset is used to set the termcap entry.
     */
+   ti->flags = SLTERMCAP;
+
    t = termcap;
    while ((len = tcap_extract_field (t)) != -1)
      {
@@ -666,7 +671,6 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
 	b += 2;
      }
    ti->boolean_section_size = (b - ti->boolean_flags);
-   ti->flags = SLTERMCAP;
    return 0;
 }
 
