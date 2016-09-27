@@ -10,8 +10,8 @@ src\mkfiles\mkmake WIN32 MINGW32 DLL < modules\mkfiles\makefile.all > modules\Ma
 
 copy mkfiles\makefile.m32 Makefile
 
-echo -
 echo Now run mingw32-make to build the library.  But first, you should
-echo  look at Makefile and change the installation locations if
-echo  necessary.
+echo look at Makefile and change the installation locations if
+echo necessary.  In particular, the PREFIX variable in the top-level
+echo Makefile controls where the library will be installed.
 echo -

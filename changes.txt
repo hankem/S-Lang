@@ -225,6 +225,7 @@ Changes since 2.3.0
     was producing "foo_bar)" instead of "foo_bar".
 88. src/sllimits.h: Reduce SLANG_MAX_RECURSIVE_DEPTH to 500 on
     CYGWIN/WIN32 to avoid hitting the default runtime stacklimit.
+89. Updates to the mingw32/64 build system.
 
 {{{ Previous Versions
 

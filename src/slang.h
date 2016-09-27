@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20301
-#define SLANG_VERSION_STRING "pre2.3.1-88"
+#define SLANG_VERSION_STRING "pre2.3.1-89"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -929,7 +929,7 @@ typedef struct _pSLang_Array_Type
 }
 SLang_Array_Type;
 
-extern int _pSLarray_convert_to_array (VOID_STAR cd,
+SL_EXTERN int _pSLarray_convert_to_array (VOID_STAR cd,
 				       int (*get_type)(VOID_STAR, SLuindex_Type, SLtype *),
 				       int (*push)(VOID_STAR, SLuindex_Type),
 				       SLuindex_Type num_objects, SLtype type);
@@ -1418,11 +1418,11 @@ SL_EXTERN int SLang_set_argc_argv (int, char **);
 
 /*{{{ Qualifier Functions */
 
-extern int SLang_qualifier_exists (SLCONST char *name);
-extern int SLang_get_int_qualifier (SLCONST char *name, int *val, int defval);
-extern int SLang_get_long_qualifier (SLCONST char *name, long *val, long defval);
-extern int SLang_get_double_qualifier (SLCONST char *name, double *val, double defval);
-extern int SLang_get_string_qualifier (SLCONST char *name, char **val, SLFUTURE_CONST char *defval);
+SL_EXTERN int SLang_qualifier_exists (SLCONST char *name);
+SL_EXTERN int SLang_get_int_qualifier (SLCONST char *name, int *val, int defval);
+SL_EXTERN int SLang_get_long_qualifier (SLCONST char *name, long *val, long defval);
+SL_EXTERN int SLang_get_double_qualifier (SLCONST char *name, double *val, double defval);
+SL_EXTERN int SLang_get_string_qualifier (SLCONST char *name, char **val, SLFUTURE_CONST char *defval);
 
 /*}}}*/
 

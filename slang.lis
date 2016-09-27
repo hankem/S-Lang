@@ -502,6 +502,7 @@
 @src/slxstrng.c
 
 @src/test/runtests.sh 0755
+@src/test/w32test.bat
 @src/test/Makefile
 @src/test/README
 @src/test/sltest.c

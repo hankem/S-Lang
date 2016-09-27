@@ -284,13 +284,23 @@ USA.
 /* #define off_t int */
 /* #define size_t unsigned int */
 
-#if defined(__x86_64__) || defined(__LP64__)   /* gcc only??? */
-/* 64-bit */
-# define SIZEOF_OFF_T	8
-# define SIZEOF_SIZE_T	8
+#if defined(__MINGW64__)
+# define _FILE_OFFSET_BITS 64 /* Makes sizeof(off_t) == 8 */
+# define SIZEOF_SIZE_T 8
+# define SIZEOF_OFF_T 8
 #else
-# define SIZEOF_OFF_T	4
-# define SIZEOF_SIZE_T	4
+# if defined(__LP64__)   /* gcc only??? 64-bit */
+#  define SIZEOF_OFF_T	8
+#  define SIZEOF_SIZE_T	8
+# else
+#  if defined(__WIN64__)
+#   define SIZEOF_OFF_T	4	       /* yes, 4 */
+#   define SIZEOF_SIZE_T 8
+#  else
+#   define SIZEOF_OFF_T	4
+#   define SIZEOF_SIZE_T 4
+#  endif
+# endif
 #endif
 
 #define HAVE_LONG_LONG 1

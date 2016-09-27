@@ -2,7 +2,7 @@
 
 The slang library is available for OS/2, MSDOS, and WIN32 (windows
 9x/NT) systems.  This _includes_ the various GNU environments such as
-DJGPP, and MING32.  For CYGWIN, follow the UNIX instructions.
+DJGPP, and MINGW32/64.  For CYGWIN, follow the UNIX instructions.
 
 Each of the src, modules, and slsh directories contains a mkfiles
 subdirectory that can be used to create Makefiles for non-CYGWIN
@@ -16,10 +16,11 @@ installed using a simple 3-step process:
    2.    C:\path\to\slang> mingw32-make
    3.    C:\path\to\slang> mingw32-make install
 
-The first step will generate makefiles for mingw32.  In particular, it
-will create a top-level makefile that contains the locations where the
-library and its components will get installed.  Before, going on to
-step 2, it is a good idea to look at the makefile and edit it if
+The first step will generate makefiles for mingw32/mingw64.  Note that
+mingw32-make is used for both 32 and 64 bit builds.  In particular,
+this step will create a top-level makefile that contains the locations
+where the library and its components will get installed. Before, going
+on to step 2, it is a good idea to look at the makefile and edit it if
 necessary.
 
 The second step will build the library, slsh, and the modules.  If

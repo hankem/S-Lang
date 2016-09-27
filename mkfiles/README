@@ -1,7 +1,7 @@
 This file contains various scripts to build slang on non-Unix systems.
 See ../README.pc for an overview.
 
-m32init.sh:      Creates makefiles for MINGW32
+m32init.bat:     Creates makefiles for MINGW32/MINGW64
 makefile.m32:    Becomes the top-level makefile for MINGW32
 runslsh.bat:     Runs slsh to execute the install script
 install.sl:      The install script

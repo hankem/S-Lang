@@ -1,3 +1,4 @@
+@echo off
 rem This file is used to run slsh once it has been built
 set SLSH_CONF_DIR=./slsh/etc
 set SLSH_PATH=./slsh/lib

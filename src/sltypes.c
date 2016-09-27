@@ -961,21 +961,30 @@ static void void_undefined_method (SLtype t, VOID_STAR p)
    (void) t; (void) p;
 }
 
+static void check_sizeof (size_t c, size_t s, const char *obj, int *errp)
+{
+   if (c == s) return;
+   (void) fprintf (stderr, "C sizeof (%s) is %d, configured to be %d\n",
+		   obj, (int)c, (int)s);
+   *errp = 1;
+}
+
 int _pSLregister_types (void)
 {
    SLang_Class_Type *cl;
+   int err = 0;
 
-#if 1
-   /* A good compiler should optimize this code away. */
-   if ((sizeof(short) != SIZEOF_SHORT)
-       || (sizeof(int) != SIZEOF_INT)
-       || (sizeof(long) != SIZEOF_LONG)
-       || (sizeof(float) != SIZEOF_FLOAT)
-       || (sizeof(double) != SIZEOF_DOUBLE)
-       || (sizeof(size_t) != SIZEOF_SIZE_T)
-       || (sizeof(off_t) != SIZEOF_OFF_T))
+   check_sizeof (sizeof(short), SIZEOF_SHORT, "short", &err);
+   check_sizeof (sizeof(int), SIZEOF_INT, "int", &err);
+   check_sizeof (sizeof(long), SIZEOF_LONG, "long", &err);
+   check_sizeof (sizeof(float), SIZEOF_FLOAT, "float", &err);
+   check_sizeof (sizeof(double), SIZEOF_DOUBLE, "double", &err);
+   check_sizeof (sizeof(size_t), SIZEOF_SIZE_T, "size_t", &err);
+   check_sizeof (sizeof(off_t), SIZEOF_OFF_T, "off_t", &err);
+
+   if (err)
      SLang_exit_error ("S-Lang Library not built properly.  Fix SIZEOF_* in config.h and recompile");
-#endif
+
    if (-1 == _pSLclass_init ())
      return -1;
 

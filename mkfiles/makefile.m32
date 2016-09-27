@@ -1,12 +1,18 @@
 # -*-sh-*-
+
+# mingw32-make is used for both 32 and 64 bit builds.
 MAKE = mingw32-make
+
 # Note: copy.exe does not exist on windows since it is a cmd.exe built-in
-MFLAGS = COPY="cmd /c copy /y" RM=del
+# The same appears to be true for del.
+MFLAGS = COPY="cmd /c copy /y" RM="cmd /c del"
 
 # DESTDIR is used for building a package for use on another machine.
 DESTDIR =
+
+# PREFIX controls where the library will be installed.
 PREFIX = C:/mingw/local
-CONFDIR = C:/mingw/local/etc
+CONFDIR = $(PREFIX)/etc
 #
 SLSH_DEFS = SLSH_CONF_DIR=$(CONFDIR) SLSH_LIB_DIR=$(PREFIX)/share/slsh
 SLANG_DEFS = prefix=$(PREFIX)
