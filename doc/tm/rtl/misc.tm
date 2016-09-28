@@ -284,7 +284,7 @@
 \usage{putenv (String_Type s)}
 \description
     This functions adds string \exmp{s} to the environment.  Typically,
-    \exmp{s} should of the form \exmp{"name=value"}.  The function
+    \exmp{s} should have the form \exmp{"name=value"}.  The function
     throws an \exc{OSError} upon failure.
 \notes
     This function may not be available on all systems.

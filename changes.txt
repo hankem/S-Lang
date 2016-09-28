@@ -228,6 +228,8 @@ Changes since 2.3.0
 89. Updates to the mingw32/64 build system.
 90. src/sltermin.c: Avoid invalid free when TERMCAP is used.  See
     <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=837868>.
+91. Some documentation typos corrected (Agathoklis D. Hatzimanikas;
+    debian patches)
 
 {{{ Previous Versions
 

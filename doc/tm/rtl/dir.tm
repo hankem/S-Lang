@@ -325,7 +325,7 @@
 \description
  This function may be used to change the last access (actime) and last
  modification (modtime) times associated with the specified file.  If
- sucessful, the function returns 0; otherwise it returns -1 and sets
+ successful, the function returns 0; otherwise it returns -1 and sets
  \ivar{errno} accordingly.
 \notes
  The \ifun{utime} function will call the C library \cfun{utimes}

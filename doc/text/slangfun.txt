@@ -375,8 +375,8 @@ array_sort
   A stable sorting algorithm is one that preserves the order of equal
   elements. Merge-sort is an inherently stable algorithm, whereas
   quick-sort is not. Nevertheless, the slang library ensures the
-  stability of the results because it uses the indices themeselves as
-  tie-breakers.  As a result, the following two statments may not
+  stability of the results because it uses the indices themselves as
+  tie-breakers.  As a result, the following two statements may not
   produce the same results:
 
      i = array_sort (a; dir=-1);
@@ -2770,7 +2770,7 @@ utime
  DESCRIPTION
  This function may be used to change the last access (actime) and last
  modification (modtime) times associated with the specified file.  If
- sucessful, the function returns 0; otherwise it returns -1 and sets
+ successful, the function returns 0; otherwise it returns -1 and sets
  `errno' accordingly.
 
  NOTES
@@ -4130,7 +4130,7 @@ hypot
  EXAMPLE
   A vector in Euclidean 3 dimensional space may be represented by an
   array of three values representing the components of the vector in
-  some orthogonal cartesian coordinate system.  Then the length of the
+  some orthogonal Cartesian coordinate system.  Then the length of the
   vector may be computed using the `hypot' function, e.g.,
 
       A = [2,3,4];
@@ -4363,7 +4363,7 @@ _max
 
  DESCRIPTION
   The `_max' function returns a floating point number equal to
-  the maximum value of its arguments.  If any of the argiments are
+  the maximum value of its arguments.  If any of the arguments are
   arrays (of equal length), an array of the corresponding values will
   be returned.
 
@@ -4386,7 +4386,7 @@ _min
 
  DESCRIPTION
   The `_min' function returns a floating point number equal to
-  the minimum value of its arguments.  If any of the argiments are
+  the minimum value of its arguments.  If any of the arguments are
   arrays (of equal length), an array of the corresponding values will
   be returned.
 
@@ -5461,7 +5461,7 @@ putenv
 
  DESCRIPTION
     This functions adds string `s' to the environment.  Typically,
-    `s' should of the form `"name=value"'.  The function
+    `s' should have the form `"name=value"'.  The function
     throws an `OSError' upon failure.
 
  NOTES
@@ -8849,7 +8849,7 @@ sprintf
     -         Use left-justification
     #         Use alternate form for formatting.
     0         Use 0 padding
-    +         Preceed a number by a plus or minus sign.
+    +         Precede a number by a plus or minus sign.
     (space)   Use a blank instead of a plus sign.
 
 
@@ -9610,7 +9610,7 @@ strskipbytes
   This function skips over a range of bytes in a string `str'.
   The byte range to be skipped is specified by the `range'
   parameter.  Optional start (`n0') and stop (`nmax')
-  (0-based) parameters may be used to specifiy the part of the input
+  (0-based) parameters may be used to specify the part of the input
   string to be processed.  The function returns a 0-based offset from
   the beginning of the string where processing stopped.
 
@@ -10067,7 +10067,7 @@ str_replace
   returned as well as the new string resulting from the replacement.
 
  NOTES
-  This function has been superceded by `strreplace'.  It should no
+  This function has been superseded by `strreplace'.  It should no
   longer be used.
 
  SEE ALSO

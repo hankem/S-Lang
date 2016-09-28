@@ -42,76 +42,34 @@
 \seealso{waitpid, execv, execvp, execve, _exit, system}
 \done
 
-\function{execv}
-\synopsis{Execute a new process}
-\usage{Int_Type execv(path, argv[])}
-\description
-  The \ifun{execv} function may be used to overlay the current process
-  with a new process by invoking to the program specified by the
-  \exmp{path} argument.  If for some reason the function fails a
-  value of -1 will be returned with \ivar{errno} set accordingly.
-  Normally the function will not return.
-
-  The \exmp{argv} parameter is an array of strings that will
-  be used to construct the argument list for the program.  For
-  example, if the invoked program is a C program, the \exmp{argv}
-  parameter will be correspond to the C program's argv-list.
-\notes
-  The \exmp{path} parameter must specify the exact location of the
-  executable.  The related \ifun{execvp} function may be used to
-  search for the executable along a path.
-
-  This function is a wrapper around the corresponding system library
-  function.  See the system-specific documentation for more
-  information.
-\seealso{execvp, execve, system, fork, _exit}
-\done
-
-\function{execve}
+\function{execve, execv, execvp}
 \synopsis{Execute a new process}
 \usage{Int_Type execve(path, argv[], envp[])}
+#v+
+  Int_Type execvp(path, argv[])}
+  Int_Type execv(path, argv[])}
+#v-
 \description
-  The \ifun{execve} function may be used to overlay the current process
-  with a new process by invoking to the program specified by the
-  \exmp{path} argument.  If for some reason the function fails a
+  The \ifun{execv} family of functions overlay the current process
+  with a new process that corresponds to the program specified by the
+  \exmp{path} argument.  If for some reason the function fails, a
   value of -1 will be returned with \ivar{errno} set accordingly.
   Normally the function will not return.
 
   The \exmp{argv} parameter is an array of strings that will
-  be used to construct the argument list for the program.  For
+  correspond to the argument list used when invoking the program.  For
   example, if the invoked program is a C program, the \exmp{argv}
-  parameter will be correspond to the C program's argv-list.
+  parameter will correspond to the C program's argv-list.
 
-  The \exmp{envp} parameter is an array of strings that are used to
-  initialize the environment of the overlayed program.
+  The \ifun{execve} function takes an array of strings that will be
+  used to initialize the environment of the overlayed program.
+
+  The \ifun{execvp} function will mimick the actions \exmp{/bin/sh} when
+  searching for the executable file.
 \notes
-  This function is a wrapper around the corresponding system library
-  function.  See the system-specific documentation for more information.
-\seealso{execv, execvp, system, fork, _exit}
-\done
-
-\function{execvp}
-\synopsis{Execute a new process}
-\usage{Int_Type execvp(pgm, argv[])}
-\description
-  The \ifun{execvp} function may be used to overlay the current process
-  with a new process by invoking to the program specified by the
-  \exmp{pgm} argument.  If for some reason the function fails a
-  value of -1 will be returned with \ivar{errno} set accordingly.
-  Normally the function will not return.
-
-  If the \exmp{pgm} argument does specify the directory containing the
-  program, then a search will be performed for the program using,
-  e.g., the \exmp{PATH} environment variable.
-
-  The \exmp{argv} parameter is an array of strings that will
-  be used to construct the argument list for the program.  For
-  example, if the invoked program is a C program, the \exmp{argv}
-  parameter will be correspond to the C program's argv-list.
-\notes
-  This function is a wrapper around the corresponding system library
-  function.  See the system-specific documentation for more information.
-\seealso{execv, execve, system, fork, _exit}
+  These function are wrappers around the corresponding system library
+  functions.  See the system documentation for more information.
+\seealso{execve, execvp, system, fork, _exit}
 \done
 
 \function{_exit}

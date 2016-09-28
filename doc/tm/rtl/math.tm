@@ -282,7 +282,7 @@
 \example
   A vector in Euclidean 3 dimensional space may be represented by an
   array of three values representing the components of the vector in
-  some orthogonal cartesian coordinate system.  Then the length of the
+  some orthogonal Cartesian coordinate system.  Then the length of the
   vector may be computed using the \ifun{hypot} function, e.g.,
 #v+
       A = [2,3,4];
@@ -426,7 +426,7 @@
 \usage{z = _max (x1,...,xN)}
 \description
   The \ifun{_max} function returns a floating point number equal to
-  the maximum value of its arguments.  If any of the argiments are
+  the maximum value of its arguments.  If any of the arguments are
   arrays (of equal length), an array of the corresponding values will
   be returned.
 \notes
@@ -440,7 +440,7 @@
 \usage{z = _min (x1,...,xN)}
 \description
   The \ifun{_min} function returns a floating point number equal to
-  the minimum value of its arguments.  If any of the argiments are
+  the minimum value of its arguments.  If any of the arguments are
   arrays (of equal length), an array of the corresponding values will
   be returned.
 \notes

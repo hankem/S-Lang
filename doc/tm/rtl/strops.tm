@@ -250,7 +250,7 @@
     -         Use left-justification
     #         Use alternate form for formatting.
     0         Use 0 padding
-    +         Preceed a number by a plus or minus sign.
+    +         Precede a number by a plus or minus sign.
     (space)   Use a blank instead of a plus sign.
 #v-
 
@@ -801,7 +801,7 @@
   This function skips over a range of bytes in a string \exmp{str}.
   The byte range to be skipped is specified by the \exmp{range}
   parameter.  Optional start (\exmp{n0}) and stop (\exmp{nmax})
-  (0-based) parameters may be used to specifiy the part of the input
+  (0-based) parameters may be used to specify the part of the input
   string to be processed.  The function returns a 0-based offset from
   the beginning of the string where processing stopped.
 
@@ -1137,7 +1137,7 @@
   returned.  However, if \exmp{b} occurs in \exmp{a}, a non-zero integer is
   returned as well as the new string resulting from the replacement.
 \notes
-  This function has been superceded by \ifun{strreplace}.  It should no
+  This function has been superseded by \ifun{strreplace}.  It should no
   longer be used.
 \seealso{strreplace}
 \done

@@ -313,8 +313,8 @@
   A stable sorting algorithm is one that preserves the order of equal
   elements. Merge-sort is an inherently stable algorithm, whereas
   quick-sort is not. Nevertheless, the slang library ensures the
-  stability of the results because it uses the indices themeselves as
-  tie-breakers.  As a result, the following two statments may not
+  stability of the results because it uses the indices themselves as
+  tie-breakers.  As a result, the following two statements may not
   produce the same results:
 #v+
      i = array_sort (a; dir=-1);
