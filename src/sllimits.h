@@ -32,14 +32,17 @@ USA.
 # define SLANG_MAX_STACK_LEN		2500
 #endif
 
-/* slang.c: This sets the size on the depth of function calls */
+/* slang.c: This sets the size on the depth of function calls.
+ * Note: The greater the recursion depth, the more likely it is to run
+ * out of C runtime library stackspace.  The numbers below are conservative
+ */
 #ifdef __MSDOS_16BIT__
 # define SLANG_MAX_RECURSIVE_DEPTH	50
 #else
 # if (defined(__WIN32__) || defined(__CYGWIN__))
-#  define SLANG_MAX_RECURSIVE_DEPTH	500 /* The stacksize on these platforms is limited. */
+#  define SLANG_MAX_RECURSIVE_DEPTH	500
 # else
-#  define SLANG_MAX_RECURSIVE_DEPTH	2500
+#  define SLANG_MAX_RECURSIVE_DEPTH	1500
 # endif
 #endif
 

@@ -233,6 +233,8 @@ Changes since 2.3.0
 92. src/_slang.h: On at least one platform, clang defines GNUC but
     does not implement GNU C inline semantics.  Disble inline support
     for clang if GNUC defined.
+93. src/sllimits.h: SLANG_MAX_RECURSIVE_DEPTH set to 1500 to decrease
+    the probability of running into the C runtime stacksize limit.
 
 {{{ Previous Versions
 
