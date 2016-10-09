@@ -594,12 +594,9 @@ int main (int argc, char **argv)
 	     (void) SLutf8_enable (1);
 	  }
 	putenv ("SLTEST_NO_LANGINFO=0");
+#else
+	(void) SLutf8_enable (1);
 #endif
-	if (0 == SLutf8_enable (-1))
-	  {
-	     fprintf (stderr, "***WARNING: Failed to trigger utf8 mode via LANG\n");
-	     (void) SLutf8_enable (1);
-	  }
      }
    else (void) SLutf8_enable (0);
 

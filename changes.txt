@@ -235,6 +235,8 @@ Changes since 2.3.0
     for clang if GNUC defined.
 93. src/sllimits.h: SLANG_MAX_RECURSIVE_DEPTH set to 1500 to decrease
     the probability of running into the C runtime stacksize limit.
+94. src/test/sltest.c: A missing preprocessor #else block in change
+    #78 was causing UTF-8 tests to fail in a non-UTF8 environment.
 
 {{{ Previous Versions
 
