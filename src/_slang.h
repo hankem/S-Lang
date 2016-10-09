@@ -1644,8 +1644,15 @@ extern int _pSLang_check_signals_hook (VOID_STAR);
 #endif
 
 #undef _INLINE_
-#if defined(__GNUC__) && SLANG_USE_INLINE_CODE
-# define _INLINE_ __inline__
+/* clang defines GNUC on the mac, but used c99 sematics for extern inline.  This implementation
+ * assume GNU semantics.
+ */
+#if defined (SLANG_USE_INLINE_CODE) && defined(__GNUC__) && !defined(__clang__)
+# if !defined __GNUC_STDC_INLINE__ && !defined __GNUC_GNU_INLINE__
+#  define _INLINE_ __inline__    /* older compilers */
+# else
+#  define _INLINE_ __inline__ __attribute__((gnu_inline))    /* newer ones */
+# endif
 #else
 # define _INLINE_
 #endif

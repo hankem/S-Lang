@@ -230,6 +230,9 @@ Changes since 2.3.0
     <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=837868>.
 91. Some documentation typos corrected (Agathoklis D. Hatzimanikas;
     debian patches)
+92. src/_slang.h: On at least one platform, clang defines GNUC but
+    does not implement GNU C inline semantics.  Disble inline support
+    for clang if GNUC defined.
 
 {{{ Previous Versions
 
