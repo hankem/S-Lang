@@ -237,6 +237,8 @@ Changes since 2.3.0
     the probability of running into the C runtime stacksize limit.
 94. src/test/sltest.c: A missing preprocessor #else block in change
     #78 was causing UTF-8 tests to fail in a non-UTF8 environment.
+95. MacOSX changes: fix environ intrinsic, export DYLD_LIBRARY env
+    variable in test scripts.
 
 {{{ Previous Versions
 

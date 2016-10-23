@@ -10016,7 +10016,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	break;
 
       case BREAK_N_TOKEN:
-	compile_break (SLANG_BC_BREAK_N, 1, 0, "break", abs(t->v.long_val));
+	compile_break (SLANG_BC_BREAK_N, 1, 0, "break", abs((int)t->v.long_val));
 	break;
 
       case RETURN_TOKEN:
@@ -10027,7 +10027,7 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 	compile_break (SLANG_BC_CONTINUE, 1, 0, "continue", 1);
 	break;
       case CONT_N_TOKEN:
-	compile_break (SLANG_BC_CONTINUE_N, 1, 0, "continue", abs(t->v.long_val));
+	compile_break (SLANG_BC_CONTINUE_N, 1, 0, "continue", abs((int)t->v.long_val));
 	break;
       case EXCH_TOKEN:
 	compile_break (SLANG_BC_EXCH, 0, 0, "", 0);   /* FIXME: Priority=low */

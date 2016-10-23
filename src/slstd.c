@@ -1166,7 +1166,9 @@ extern char **environ;                 /* POSIX and ??? */
 static char **get_sys_environ (void)
 {
 # if defined(__APPLE__)
-   return _NSGetEnviron ();
+   char ***e = _NSGetEnviron ();
+   if (e == NULL) return NULL;
+   return *e;
 # else
    return environ;
 # endif
