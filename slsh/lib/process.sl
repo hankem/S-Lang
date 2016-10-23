@@ -238,7 +238,7 @@ private define exec_child (argv, child_fds, required_child_ifds)
      }
 
    () = execvp (argv[0], argv);
-   throw OSError, "exec failed: " + errno_string ();
+   throw OSError, "exec failed: " + argv[0] + " : " + errno_string ();
 }
 
 private define wait_method ()

@@ -239,6 +239,8 @@ Changes since 2.3.0
     #78 was causing UTF-8 tests to fail in a non-UTF8 environment.
 95. MacOSX changes: fix environ intrinsic, export DYLD_LIBRARY env
     variable in test scripts.
+96. slsh/lib/process.sl: If execvp fails, include the name of the executable
+    in the error message.
 
 {{{ Previous Versions
 
