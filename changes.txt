@@ -241,6 +241,7 @@ Changes since 2.3.0
     variable in test scripts.
 96. slsh/lib/process.sl: If execvp fails, include the name of the executable
     in the error message.
+97. autoconf/config.*: Updated scripts
 
 {{{ Previous Versions
 
