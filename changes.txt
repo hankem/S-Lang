@@ -244,6 +244,9 @@ Changes since 2.3.0
 97. autoconf/config.*: Updated scripts
 98. .../runtests.sh: Added LD_LIBRARY_PATH to test scripts (removed in
     #96)
+99. mkfiles/makefile.m32: Use mkfiles\runslsh.bat instead of
+    mkfiles/runslsh.bat (Windows only).
+
 
 {{{ Previous Versions
 
