@@ -99,7 +99,7 @@
 
 \function{getrusage}
 \synopsis{Get process resource usage}
-\usage{Struct_Type getrusage ([Int_Type who]}
+\usage{Struct_Type getrusage ([Int_Type who])}
 \description
   This function returns a structure whose fields contain information
   about the resource usage of calling process, summed over all threads

@@ -23,6 +23,7 @@ NEWS for version 2.3.x                                             -*-text-*-
   24bit RGB value in the form "#RRGGBB" as the name of the color.
   For example, to set the color of the status line in jed to AliceBlue
   (#F0F8FF) on a SlateGray (#708090) background, use
+
       set_color ("status", "#F0F8FF", "#708090");
 
   in the .jedrc file.  In slrn, to set the color of the author name to
@@ -97,7 +98,7 @@ Interpreter Syntax
 
    The step parameter was made optional for the _for statement.
 
-   Struct field names may be an arbirtary string:
+   Struct field names may be an arbitrary string:
 
          X = struct {"some-field", some_other_field };
          X.some_other_field = 3;

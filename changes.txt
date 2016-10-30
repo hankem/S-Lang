@@ -246,6 +246,7 @@ Changes since 2.3.0
     #96)
 99. mkfiles/makefile.m32: Use mkfiles\runslsh.bat instead of
     mkfiles/runslsh.bat (Windows only).
+100. documentation updates
 
 
 {{{ Previous Versions

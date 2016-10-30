@@ -6246,7 +6246,7 @@ getrusage
   Get process resource usage
 
  USAGE
-  Struct_Type getrusage ([Int_Type who]
+  Struct_Type getrusage ([Int_Type who])
 
  DESCRIPTION
   This function returns a structure whose fields contain information
@@ -10820,7 +10820,7 @@ _ftime
   Get the current calendar time in seconds
 
  USAGE
-  Double_Type _time ( [Double_Type opt_epoch] )
+  Double_Type _ftime ( [Double_Type opt_epoch] )
 
  DESCRIPTION
   The `_ftime' function returns the number seconds since the Unix

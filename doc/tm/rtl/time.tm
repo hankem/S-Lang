@@ -165,7 +165,7 @@
 
 \function{_ftime}
 \synopsis{Get the current calendar time in seconds}
-\usage{Double_Type _time ( [Double_Type opt_epoch] )}
+\usage{Double_Type _ftime ( [Double_Type opt_epoch] )}
 \description
   The \ifun{_ftime} function returns the number seconds since the Unix
   epoch, 00:00:00 UTC, January 1, 1970 as a double precision number.
