@@ -242,6 +242,8 @@ Changes since 2.3.0
 96. slsh/lib/process.sl: If execvp fails, include the name of the executable
     in the error message.
 97. autoconf/config.*: Updated scripts
+98. .../runtests.sh: Added LD_LIBRARY_PATH to test scripts (removed in
+    #96)
 
 {{{ Previous Versions
 

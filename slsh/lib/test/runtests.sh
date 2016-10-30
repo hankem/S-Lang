@@ -5,6 +5,7 @@ SLSHROOT="$ROOT/slsh"
 export SLSH_CONF_DIR="$SLSHROOT/etc"
 export SLSH_PATH="$SLSHROOT/lib:$ROOT/modules"
 export SLANG_MODULE_PATH="$ROOT/modules/${ARCH}objs"
+export LD_LIBRARY_PATH="$ROOT/src/${ARCH}elfobjs"
 export DYLD_LIBRARY_PATH="$ROOT/src/${ARCH}elfobjs"
 
 run_test_pgm="$SLSHROOT/${ARCH}objs/slsh_exe -n -g"
