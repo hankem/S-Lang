@@ -1895,19 +1895,26 @@ private define test_wherediff ()
 }
 test_wherediff ();
 
-private define test_misc ()
+private define test_init_char_array (s)
 {
-   variable a = Char_Type [10], s = "HelloWorld";
-   init_char_array (a, s);
-
-   variable i;
-   _for i (0, length(a)-1, 1)
+   variable t;
+   foreach t ([Char_Type, UChar_Type])
      {
-	if (a[i] != s[i])
-	  failed ("init_char_array");
+	variable a = t[strbytelen (s)];
+	init_char_array (a, s);
+
+	variable i;
+	_for i (0, length(a)-1, 1)
+	  {
+	     if (a[i] != typecast (s[i], t))
+	       failed ("init_char_array: type=%S", t);
+	  }
      }
 }
-test_misc ();
+
+test_init_char_array ("HelloWorld");
+test_init_char_array ("\xAB\xCD\xEF");
+
 
 print ("Ok\n");
 exit (0);

@@ -782,7 +782,7 @@ static int pop_wchar (SLwchar_Type *wchp)
 	return 0;
      }
 
-   return SLang_pop_wchar (wchp);
+   return _pSLang_pop_wchar (wchp);
 }
 
 #define ISXXX_INTRIN(name,isxxx) \
@@ -2082,7 +2082,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	       {
 		  SLwchar_Type wc;
 
-		  if (-1 == SLang_pop_wchar (&wc))
+		  if (-1 == _pSLang_pop_wchar (&wc))
 		    return out;
 		  if ((_pSLinterp_UTF8_Mode == 0) && (wc <= 0xFF))
 		    {

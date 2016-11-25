@@ -556,7 +556,7 @@ typedef union
    struct _pSLang_Array_Type *array_val;
    short short_val;
    unsigned short ushort_val;
-   char char_val;
+   signed char char_val;
    unsigned char uchar_val;
    SLindex_Type index_val;
    _pSLint16_Type int16_val;
@@ -1063,6 +1063,9 @@ extern int _pSLarith_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
  * If *atp!=NULL, then it is an array of indices.
  */
 extern int _pSLarray_pop_index (unsigned int num_elements, SLang_Array_Type **ind_atp, SLindex_Type *ind);
+
+/* Special treatment for signed chars */
+extern int _pSLang_pop_wchar (SLwchar_Type *wcp);
 
 extern int _pSLarray_add_bin_op (SLtype);
 extern int _pSLarray_push_elem_ref (void);

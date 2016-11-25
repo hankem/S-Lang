@@ -980,5 +980,18 @@ test_sprintf ("%5.5B", 7, "00111");
 test_sprintf ("%.7B", 7, "0000111");
 test_sprintf ("%8.7B", 7, " 0000111");
 
+% Reuse function name
+private define test_sprintf ()
+{
+   variable c = typecast (-55, Char_Type);
+   variable u = typecast (-55, UChar_Type);
+   variable cs = sprintf ("%c", c);
+   variable us = sprintf ("%c", u);
+
+   if (us != cs)
+     failed ("sprintf %%c with signed and unsigned char");
+}
+test_sprintf ();
+
 print ("Ok\n");
 exit (0);

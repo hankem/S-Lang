@@ -320,7 +320,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 #endif
 
 /* -------------- CHAR --------------------- */
-#define GENERIC_TYPE char
+#define GENERIC_TYPE signed char
 #define TRANSPOSE_2D_ARRAY transpose_chars
 #define SUM_FUNCTION sum_chars
 #define SUMSQ_FUNCTION sumsq_chars
@@ -403,7 +403,7 @@ static int check_for_empty_array (SLCONST char *fun, unsigned int num)
 # endif
 #endif				       /* HAVE_LONG_LONG */
 
-#define GENERIC_TYPE_A char
+#define GENERIC_TYPE_A signed char
 #define GENERIC_TYPE_B double
 #define DO_WHEREFIRST_OP_FUNC wherefirst_op_char
 #define DO_WHERELAST_OP_FUNC wherelast_op_char

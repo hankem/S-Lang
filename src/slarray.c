@@ -1396,7 +1396,7 @@ int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx)
      {
       case SLANG_CHAR_TYPE:
 	if (NULL == (data = at->index_fun(at, &idx))) return -1;
-	return SLclass_push_char_obj (SLANG_CHAR_TYPE, *(char *)data);
+	return SLclass_push_char_obj (SLANG_CHAR_TYPE, *(signed char *)data);
 
       case SLANG_INT_TYPE:
 	if (NULL == (data = at->index_fun(at, &idx))) return -1;
@@ -2759,7 +2759,7 @@ static void init_char_array (void)
    if (-1 == SLang_pop_array (&at, 0))
      goto free_and_return;
 
-   if (at->data_type != SLANG_CHAR_TYPE)
+   if ((at->data_type != SLANG_CHAR_TYPE) && (at->data_type != SLANG_UCHAR_TYPE))
      {
 	_pSLang_verror (SL_TYPE_MISMATCH, "Operation requires a character array");
 	goto free_and_return;

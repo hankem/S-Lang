@@ -451,6 +451,19 @@ private define test_string()
 	if (s != "37")
 	  failed ("string(%S)", t);
      }
+
+   foreach t (Util_Signed_Arith_Types)
+     {
+	s = string (typecast (-37, t));
+	if ((t == Double_Type) || (t == Float_Type))
+	  {
+	     if (s != "-37.0")
+	       failed ("string(%S)", t);
+	     continue;
+	  }
+	if (s != "-37")
+	  failed ("string(%S)", t);
+     }
 }
 test_string ();
 

@@ -149,6 +149,16 @@ variable Util_Arith_Types
 #endif
     ];
 
+variable Util_Signed_Arith_Types
+  = [Char_Type, Short_Type, Int_Type, Long_Type,
+#ifexists Double_Type
+     Float_Type, Double_Type,
+#endif
+#ifexists LLong_Type
+     LLong_Type,
+#endif
+    ];
+
 #ifexists _slsyswrap_set_syscall_failure
 () = slsyswrap_set_syscall_failure (Inc_Syscall);
 #endif

@@ -806,7 +806,7 @@ static double f_cdf_intrin (double *t, double *nu1p, double *nu2p)
 # define nc_median_ushorts nc_median_uints
 #endif
 
-#define GENERIC_TYPE char
+#define GENERIC_TYPE signed char
 #define MEAN_FUNCTION mean_chars
 #define MEAN_RESULT_TYPE float
 #define STDDEV_FUNCTION stddev_chars

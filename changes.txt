@@ -1,4 +1,11 @@
 -*- mode: text; mode: fold -*-
+Changes since 2.3.1
+a. Some tests were failing when compiled with a compiler that defaults
+   to using `unsigned char'.  In the few places where a `signed char'
+   was assumed, `char' was changed to `signed char'.  Also, a
+   copy-paste error was corrected in the src/test/sltest.c that caused
+   the test program to fail on big-endian 64 bit systems.
+
 Changes since 2.3.0
 1. modules/json-module.c: Fix a possible uninitialized variable error.
 2. Define _BSD_SOURCE the few places necessary to get prototypes for

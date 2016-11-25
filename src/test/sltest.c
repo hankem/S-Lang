@@ -59,7 +59,7 @@ static int test_int_return (int *x)
        || (-1 == SLang_pop_int (&y1))
        || (-1 == SLclass_dup_object (SLANG_INT_TYPE, &y1, &y))
        || (-1 == SLclass_push_int_obj (SLANG_INT_TYPE, y))
-       || (-1 == SLclass_pop_int_obj (SLANG_LONG_TYPE, (int *)&y)))
+       || (-1 == SLclass_pop_int_obj (SLANG_INT_TYPE, (int *)&y)))
      return -1;
 
    return y;
@@ -114,7 +114,7 @@ static unsigned int test_uint_return (unsigned int *x)
        || (-1 == SLang_pop_uint (&y1))
        || (-1 == SLclass_dup_object (SLANG_UINT_TYPE, &y1, &y))
        || (-1 == SLclass_push_int_obj (SLANG_UINT_TYPE, y))
-       || (-1 == SLclass_pop_int_obj (SLANG_ULONG_TYPE, (int *)&y)))
+       || (-1 == SLclass_pop_int_obj (SLANG_UINT_TYPE, (int *)&y)))
      return -1;
 
    return y;

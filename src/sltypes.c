@@ -950,6 +950,22 @@ static int intp_pop (SLtype unused, VOID_STAR ptr)
    return SLang_pop_integer (addr);
 }
 
+int _pSLang_pop_wchar (SLwchar_Type *wcp)
+{
+   /* FIXME: This bit of code will be merged into the SLang_pop_wchar function
+    * for the next major version.  Currently, SLang_pop_wchar is a macro.
+    */
+   if (SLang_peek_at_stack () == SLANG_CHAR_TYPE)
+     {
+	char ch;
+	if (-1 == SLang_pop_char (&ch))
+	  return -1;
+	*wcp = (unsigned char)ch;
+	return 0;
+     }
+   return SLang_pop_wchar (wcp);
+}
+
 static int undefined_method (SLtype t, VOID_STAR p)
 {
    (void) t; (void) p;

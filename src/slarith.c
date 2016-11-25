@@ -1239,7 +1239,7 @@ static char *arith_string (SLtype type, VOID_STAR v)
 	break;
 
       case SLANG_CHAR_TYPE:
-	sprintf (s, "%d", *(char *) v);
+	sprintf (s, "%d", *(signed char *) v);
 	break;
       case SLANG_UCHAR_TYPE:
 	sprintf (s, "%u", *(unsigned char *) v);
