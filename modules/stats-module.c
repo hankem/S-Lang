@@ -27,12 +27,15 @@
   WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-/* Author: John E. Davis <davis@space.mit.edu> */
+/* Author: John E. Davis <jed@jedsoft.org> */
 
 #include "config.h"
 #include <stdio.h>
 #include <slang.h>
 #include <math.h>
+#include <string.h>
+
+#include "stats-module.h"
 
 #ifndef PI
 #define PI 3.14159265358979323846264338327950288
@@ -48,8 +51,12 @@ SLANG_MODULE(stats);
 }
 #endif
 
-#define MODULE_VERSION_STRING "1.0.2"
-#define MODULE_VERSION_NUMBER 10002
+/* typedef unsigned long long uint64_t;
+ * typedef long long int64_t;
+ */
+
+#define MODULE_VERSION_STRING "1.1.0"
+#define MODULE_VERSION_NUMBER 10100
 
 #if 0
 double anderson_darling_statistic (double *f, unsigned int num)
@@ -999,6 +1006,40 @@ static double normal_cdf_intrin (double *xp)
    return 0.5 * (1.0 + erf (x/sqrt(2.0)));
 }
 
+static double kendall_tau_intrin (void)
+{
+   double val, z;
+   size_t n;
+   SLang_Array_Type *at, *bt;
+
+   if (-1 == SLang_pop_array_of_type (&bt, SLANG_ARRAY_INDEX_TYPE))
+     return -1.0;
+   n = bt->num_elements;
+
+   if (-1 == SLang_pop_array_of_type (&at, SLANG_ARRAY_INDEX_TYPE))
+     {
+	SLang_free_array (bt);
+	return -1.0;
+     }
+   if (at->num_elements != n)
+     {
+	SLang_verror (SL_TYPE_MISMATCH, "kendall_tau: arrays must have the same size");
+	val = -1.0;
+	goto free_and_return;
+     }
+
+   val = _pSLstats_kendall_tau ((SLindex_Type *)at->data, (SLindex_Type *)bt->data, n, &z);
+
+   /* drop */
+
+free_and_return:
+
+   SLang_free_array (at);
+   SLang_free_array (bt);
+   (void) SLang_push_double (z);
+   return val;
+}
+
 static SLang_Intrin_Fun_Type Module_Intrinsics [] =
 {
    MAKE_INTRINSIC_1("smirnov_cdf", smirnov_cdf_intrin, SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE),
@@ -1014,6 +1055,7 @@ static SLang_Intrin_Fun_Type Module_Intrinsics [] =
    MAKE_INTRINSIC_0("median", median_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("median_nc", median_nc_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("binomial", binomial_intrin, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_kendall_tau", kendall_tau_intrin, SLANG_DOUBLE_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

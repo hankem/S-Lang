@@ -11,7 +11,8 @@ import ("stats");
 %   t_test2          Two-sample Student t test
 %   welch_t_test
 %   spearman_r       Two-sample Spearman rank test
-%   kendall_tau      Two-sample Kendall tau
+%   kendall_tau      Kendall tau correlation test
+%   mann_kendall     Mann-Kendall trend test
 %   pearson_r        Pearson's r correlation test
 %   correlation      2 sample correlation
 %   z_test
@@ -253,7 +254,11 @@ private define compute_rank ()
    variable r = double([1:n]);
 
    % Worry about ties
-   variable ties = where (0 == (shift (x, 1) - x));
+   variable ties;
+   () = wherediff (x, &ties);
+   % Here, ties is an array of indices {j} where x[j-1]==x[j].
+   % We want those where x[j] == x[j+1].
+   ties -= 1;
 
    variable m = length (ties);
    variable group_ties = Int_Type[0];
@@ -543,6 +548,53 @@ define spearman_r ()
    return map_cdf_to_pval (student_t_cdf(t,n-2) ;; __qualifiers);
 }
 
+% This function is assumed to always pass back a new array.
+private define compute_integer_rank (x, is_sorted)
+{
+   variable n = length (x);
+   variable indx = NULL, rev_indx = NULL;
+   ifnot (is_sorted)
+     {
+	indx = array_sort (x);
+	x = x[indx];
+	% Create a reverse-permutation to restore the array order
+	% upon return.
+	rev_indx = [0:n-1];
+	rev_indx[indx] = @rev_indx;
+     }
+
+   variable r = [1:n];
+
+   % Account for ties
+   variable ties;
+   () = wherediff (x, &ties);
+   % Here, ties is an array of indices {j} where x[j-1]==x[j].
+   % We want those where x[j] == x[j+1].
+   ties -= 1;
+
+   variable m = length (ties);
+   variable i = 0, j;
+   while (i < m)
+     {
+	variable ties_i = ties[i];
+	j = i;
+	j++;
+	variable dties = ties_i - i;
+	while ((j < m) && (dties + j == ties[j]))
+	  j++;
+
+	variable dn = j - i;
+	i = [ties_i:ties_i+dn];
+	r[i] = r[ties_i];
+	i = j;
+     }
+
+   if (indx == NULL)
+     return r;
+
+   return r[rev_indx];
+}
+
 define kendall_tau ()
 {
    variable w_ref = NULL;
@@ -560,25 +612,50 @@ define kendall_tau ()
    if (n != length (y))
      throw InvalidParmError, "Arrays must be the same length for kendall_tau";
 
-   variable i;
-   variable nx = 0.0, ny = 0.0, diff=0.0;
-   _for i (0, n-2, 1)
-     {
-	variable j = [i+1:n-1];
-	variable dx = sign(x[i] - x[j]);
-	variable dy = sign(y[i] - y[j]);
-	nx += sum(abs(dx));
-	ny += sum(abs(dy));
-	diff += sum (dx*dy);	       %  concordant - discordant
-     }
+   % _kendall_tau will modify the contents of the arrays.  Be sure to
+   % pass new instances to it.  The sort operation below will achieve
+   % that.
+   variable i = array_sort (x);
+   x = compute_integer_rank (x[i], 1);
+   y = compute_integer_rank (y[i], 0);
 
-   variable tau = diff/(sqrt(nx)*sqrt(ny));
+   variable tau, z;
+
+   (tau, z) = _kendall_tau (x, y);
 
    if (w_ref != NULL)
      @w_ref = tau;
 
-   variable sigma = sqrt((4.0*n+10.0)/(9.0*n*(n-1)));
-   return map_cdf_to_pval (normal_cdf(tau/sigma) ;; __qualifiers);
+   return map_cdf_to_pval (z ;; __qualifiers);
+}
+
+define mann_kendall ()
+{
+   variable w_ref = NULL;
+   if (_NARGS == 2)
+     w_ref = ();
+   else if (_NARGS != 1)
+     {
+	usage ("p = %s (X [,&r]);  %% Mann-Kendall trend test",
+	       _function_name ());
+     }
+
+   variable x;
+   x = ();
+   variable n = length (x);
+   variable i = [0:n-1];
+
+   % _kendall_tau will modify the contents of the arrays.  Be sure to
+   % pass new instances to it.  compute_integer_rank will create a new
+   % instance.
+   x = compute_integer_rank (x, 0);
+   variable tau, z;
+   (tau, z) = _kendall_tau (i, x);
+
+   if (w_ref != NULL)
+     @w_ref = tau;
+
+   return map_cdf_to_pval (z ;; __qualifiers);
 }
 
 define pearson_r ()

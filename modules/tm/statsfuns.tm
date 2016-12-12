@@ -479,20 +479,49 @@ degrees of freedom.
 
 \function{kendall_tau}
 \synopsis{Kendall's tau Correlation Test}
-\usage{pval = kendall_tau (x, y [,&tau]}
+\usage{pval = kendall_tau (x, y [,&tau])}
 \description
   This function computes Kendall's tau statistic for the paired data
-  values (x,y).  It returns the p-value associated with the statistic.
+  values (x,y), which may or may not have ties.  It returns the
+  double-sided p-value associated with the statistic.
 \notes
-  The current version of this function uses an asymptotic formula
-  based upon the normal distribution to compute the p-value.
+  The implementation is based upon Knight's O(nlogn) algorithm
+  described in "A computer method for calculating Kendall’s tau with
+  ungrouped data", Journal of the American Statistical Association, 61,
+  436-439.
+
+  In the case of no ties, the exact p-value is computed when length(x)
+  is less than 30 using algorithm 71 of Applied Statistics (1974) by
+  Best and Gipps.  If ties are present, the the p-value is computed
+  based upon the normal distribution and a continuity correction.
 \qualifiers
  The following qualifiers may be used to specify a 1-sided test:
 #v+
    side="<"       Perform a left-tailed test
    side=">"       Perform a right-tailed test
 #v-
-\seealso{spearman_r, pearson_r}
+\seealso{spearman_r, pearson_r, mann_kendall}
+\done
+
+\function{mann_kendall}
+\synopsis{Mann-Kendall trend test}
+\usage{pval = mann_kendall (y [,&tau])}
+\description
+  The Mann-Kendall test is a non-parametric test that may be used to
+  identify a trend in a set of serial data values.  It is closely
+  related to the Kendall's tau correlation test.
+
+  The \ifun{mann_kendall} function returns the double-sided p-value
+  that may be used as a basis for rejecting the the null-hypothesis
+  that there is no trend in the data.
+
+\qualifiers
+ The following qualifiers may be used to specify a 1-sided test:
+#v+
+   side="<"       Perform a left-tailed test
+   side=">"       Perform a right-tailed test
+#v-
+\seealso{spearman_r, pearson_r, mann_kendall}
 \done
 
 \function{pearson_r}

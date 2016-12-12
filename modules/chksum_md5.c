@@ -23,11 +23,13 @@ USA.
 #include <string.h>
 #include <slang.h>
 
+#include "_slint.h"
+
 #define MD5_BUFSIZE	64
 #define MD5_DIGEST_LEN	16
 #define CHKSUM_TYPE_PRIVATE_FIELDS \
-   uint32 abcd[4]; \
-   uint32 num_bits[2];		       /* 64 bit representation */ \
+   _pSLuint32_Type abcd[4]; \
+   _pSLuint32_Type num_bits[2];		       /* 64 bit representation */ \
    unsigned int num_buffered; \
    unsigned char buf[MD5_BUFSIZE];
 #include "chksum.h"
@@ -106,7 +108,7 @@ static unsigned char Pad_Bytes[64] =
           word D: 76 54 32 10
 */
 
-static void init_md5_buffer (uint32 buffer[4])
+static void init_md5_buffer (_pSLuint32_Type buffer[4])
 {
    buffer[0] = 0x67452301;
    buffer[1] = 0xEFCDAB89;
@@ -132,9 +134,9 @@ static void init_md5_buffer (uint32 buffer[4])
 #define MD5_I_OP(X,Y,Z) ((Y)^((X)|(~(Z))))
 
 /* The algorithm works on blocks that consist of 16 32bit ints */
-static void process_block (uint32 block[16], uint32 abcd[4])
+static void process_block (_pSLuint32_Type block[16], _pSLuint32_Type abcd[4])
 {
-   uint32 a = abcd[0], b = abcd[1], c = abcd[2], d = abcd[3];
+   _pSLuint32_Type a = abcd[0], b = abcd[1], c = abcd[2], d = abcd[3];
 
 #define MD5_ROTATE(a,n)   (((a)<<(n)) | ((a)>>(32-(n))))
 
@@ -229,7 +231,7 @@ static void process_block (uint32 block[16], uint32 abcd[4])
 }
 
 /* Note: Little Endian is used */
-static void uint32_to_uchar (uint32 *u, unsigned int num, unsigned char *buf)
+static void uint32_to_uchar (_pSLuint32_Type *u, unsigned int num, unsigned char *buf)
 {
    unsigned short t = 0xFF;
    unsigned int i;
@@ -242,7 +244,7 @@ static void uint32_to_uchar (uint32 *u, unsigned int num, unsigned char *buf)
 
    for (i = 0; i < num; i++)
      {
-	uint32 x = u[i];
+	_pSLuint32_Type x = u[i];
 	buf[0] = (unsigned char) (x & 0xFF);
 	buf[1] = (unsigned char) ((x>>8) & 0xFF);
 	buf[2] = (unsigned char) ((x>>16) & 0xFF);
@@ -251,7 +253,7 @@ static void uint32_to_uchar (uint32 *u, unsigned int num, unsigned char *buf)
      }
 }
 
-static void uchar_to_uint32 (unsigned char *buf, unsigned int len, uint32 *u)
+static void uchar_to_uint32 (unsigned char *buf, unsigned int len, _pSLuint32_Type *u)
 {
    unsigned short x = 0xFF;
    unsigned char *bufmax;
@@ -265,15 +267,15 @@ static void uchar_to_uint32 (unsigned char *buf, unsigned int len, uint32 *u)
    bufmax = buf + len;
    while (buf < bufmax)
      {
-	*u++ = (((uint32)buf[0]) | ((uint32)buf[1]<<8)
-		| ((uint32)buf[2]<<16) | ((uint32)buf[3]<<24));
+	*u++ = (((_pSLuint32_Type)buf[0]) | ((_pSLuint32_Type)buf[1]<<8)
+		| ((_pSLuint32_Type)buf[2]<<16) | ((_pSLuint32_Type)buf[3]<<24));
 	buf += 4;
      }
 }
 
-static void process_64_byte_block (unsigned char *buf, uint32 abcd[4])
+static void process_64_byte_block (unsigned char *buf, _pSLuint32_Type abcd[4])
 {
-   uint32 block[16];
+   _pSLuint32_Type block[16];
 
    uchar_to_uint32 (buf, 64, block);
    process_block (block, abcd);
@@ -281,16 +283,16 @@ static void process_64_byte_block (unsigned char *buf, uint32 abcd[4])
 
 static void update_num_bits (SLChksum_Type *md5, unsigned int dnum_bits)
 {
-   uint32 d, lo, hi;
+   _pSLuint32_Type d, lo, hi;
 
-   d = (uint32)dnum_bits << 3;
+   d = (_pSLuint32_Type)dnum_bits << 3;
    lo = md5->num_bits[0];
    hi = md5->num_bits[1];
 
    d += lo;
    if (d < lo)
      hi++; /* overflow */
-   hi += (uint32)dnum_bits >> 29;
+   hi += (_pSLuint32_Type)dnum_bits >> 29;
    lo = d;
 
    md5->num_bits[0] = lo;

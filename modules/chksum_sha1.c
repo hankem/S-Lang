@@ -23,11 +23,13 @@ USA.
 #include <limits.h>
 #include <slang.h>
 
+#include "_slint.h"
+
 #define SHA1_BUFSIZE	64
 #define SHA1_DIGEST_LEN	20
 #define CHKSUM_TYPE_PRIVATE_FIELDS \
-   uint32 h[5]; \
-   uint32 num_bits[2];		       /* 64 bit representation */ \
+   _pSLuint32_Type h[5]; \
+   _pSLuint32_Type num_bits[2];		       /* 64 bit representation */ \
    unsigned int num_buffered; \
    unsigned char buf[SHA1_BUFSIZE];
 
@@ -108,9 +110,9 @@ static unsigned char Pad_Bytes[64] =
  * initialized to the following values in hexadecimal.
  */
 
-static uint32 overflow_add (uint32 a, uint32 b, uint32 *c)
+static _pSLuint32_Type overflow_add (_pSLuint32_Type a, _pSLuint32_Type b, _pSLuint32_Type *c)
 {
-   uint32 b1 = UINT_MAX - b;
+   _pSLuint32_Type b1 = UINT_MAX - b;
    if (a <= b1)
      {
 	*c = 0;
@@ -122,9 +124,9 @@ static uint32 overflow_add (uint32 a, uint32 b, uint32 *c)
 
 static int update_num_bits (SLChksum_Type *sha1, unsigned int dnum_bits)
 {
-   uint32 lo, hi, c, d;
+   _pSLuint32_Type lo, hi, c, d;
 
-   d = (uint32)dnum_bits << 3;
+   d = (_pSLuint32_Type)dnum_bits << 3;
    hi = sha1->num_bits[0];
    lo = sha1->num_bits[1];
 
@@ -154,13 +156,13 @@ static int update_num_bits (SLChksum_Type *sha1, unsigned int dnum_bits)
 #define K_60_79 0xCA62C1D6
 #define CSHIFT(n,X) (((X) << (n)) | ((X) >> (32-(n))))
 #define MAKE_WORD(b) \
-   ((((uint32)(b[0]))<<24) | (((uint32)(b[1]))<<16) \
-     | (((uint32)(b[2]))<<8) | ((uint32)(b[3])))
+   ((((_pSLuint32_Type)(b[0]))<<24) | (((_pSLuint32_Type)(b[1]))<<16) \
+     | (((_pSLuint32_Type)(b[2]))<<8) | ((_pSLuint32_Type)(b[3])))
 
 static int sha1_process_block (SLChksum_Type *sha1, unsigned char *buf)
 {
-   uint32 a, b, c, d, e;
-   uint32 w[80];
+   _pSLuint32_Type a, b, c, d, e;
+   _pSLuint32_Type w[80];
    unsigned int t;
 
    for (t = 0; t < 16; t++)
@@ -170,7 +172,7 @@ static int sha1_process_block (SLChksum_Type *sha1, unsigned char *buf)
      }
    for (t = 16; t < 80; t++)
      {
-	uint32 x = w[t-3] ^ w[t-8] ^ w[t-14] ^ w[t-16];
+	_pSLuint32_Type x = w[t-3] ^ w[t-8] ^ w[t-14] ^ w[t-16];
 	w[t] = CSHIFT(1, x);
      }
 
@@ -178,25 +180,25 @@ static int sha1_process_block (SLChksum_Type *sha1, unsigned char *buf)
 
    for (t = 0; t < 20; t++)
      {
-	uint32 tmp;
+	_pSLuint32_Type tmp;
 	tmp = CSHIFT(5,a) + F_00_19(b,c,d) + e + w[t] + K_00_19;
 	e = d; d = c; c = CSHIFT(30,b); b = a; a = tmp;
      }
    for (t = 20; t < 40; t++)
      {
-	uint32 tmp;
+	_pSLuint32_Type tmp;
 	tmp = CSHIFT(5,a) + F_20_39(b,c,d) + e + w[t] + K_20_39;
 	e = d; d = c; c = CSHIFT(30,b); b = a; a = tmp;
      }
    for (t = 40; t < 60; t++)
      {
-	uint32 tmp;
+	_pSLuint32_Type tmp;
 	tmp = CSHIFT(5,a) + F_40_59(b,c,d) + e + w[t] + K_40_59;
 	e = d; d = c; c = CSHIFT(30,b); b = a; a = tmp;
      }
    for (t = 60; t < 80; t++)
      {
-	uint32 tmp;
+	_pSLuint32_Type tmp;
 	tmp = CSHIFT(5,a) + F_60_79(b,c,d) + e + w[t] + K_60_79;
 	e = d; d = c; c = CSHIFT(30,b); b = a; a = tmp;
      }
@@ -256,13 +258,13 @@ static int sha1_accumulate (SLChksum_Type *sha1, unsigned char *buf, unsigned in
    return 0;
 }
 
-static void uint32_to_uchar (uint32 *u, unsigned int num, unsigned char *buf)
+static void uint32_to_uchar (_pSLuint32_Type *u, unsigned int num, unsigned char *buf)
 {
    unsigned int i;
 
    for (i = 0; i < num; i++)
      {
-	uint32 x = u[i];
+	_pSLuint32_Type x = u[i];
 	buf[3] = (unsigned char) (x & 0xFF);
 	buf[2] = (unsigned char) ((x>>8) & 0xFF);
 	buf[1] = (unsigned char) ((x>>16) & 0xFF);

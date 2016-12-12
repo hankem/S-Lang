@@ -160,7 +160,9 @@
 @modules/slsmg.sl
 @modules/stats.sl
 @modules/stats-module.c
+@modules/stats-module.h
 @modules/stats-module.inc
+@modules/stats_kendall.c
 @modules/statslib/kuiper.sl
 @modules/statslib/ad_test.sl
 @modules/statslib/ks_test.sl
@@ -386,6 +388,7 @@
 @src/Makefile.in
 @src/VMSMAKE.COM
 @src/_slang.h
+@src/_slint.h
 @src/calc.c
 @src/calc.sl
 @src/config.hin

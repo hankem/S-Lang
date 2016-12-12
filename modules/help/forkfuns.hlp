@@ -51,41 +51,7 @@ fork
 
 --------------------------------------------------------------
 
-execv
-
- SYNOPSIS
-  Execute a new process
-
- USAGE
-  Int_Type execv(path, argv[])
-
- DESCRIPTION
-  The `execv' function may be used to overlay the current process
-  with a new process by invoking to the program specified by the
-  `path' argument.  If for some reason the function fails a
-  value of -1 will be returned with `errno' set accordingly.
-  Normally the function will not return.
-
-  The `argv' parameter is an array of strings that will
-  be used to construct the argument list for the program.  For
-  example, if the invoked program is a C program, the `argv'
-  parameter will be correspond to the C program's argv-list.
-
- NOTES
-  The `path' parameter must specify the exact location of the
-  executable.  The related `execvp' function may be used to
-  search for the executable along a path.
-
-  This function is a wrapper around the corresponding system library
-  function.  See the system-specific documentation for more
-  information.
-
- SEE ALSO
-  execvp, execve, system, fork, _exit
-
---------------------------------------------------------------
-
-execve
+execve, execv, execvp
 
  SYNOPSIS
   Execute a new process
@@ -93,60 +59,34 @@ execve
  USAGE
   Int_Type execve(path, argv[], envp[])
 
+  Int_Type execvp(path, argv[])}
+  Int_Type execv(path, argv[])}
+
+
  DESCRIPTION
-  The `execve' function may be used to overlay the current process
-  with a new process by invoking to the program specified by the
-  `path' argument.  If for some reason the function fails a
+  The `execv' family of functions overlay the current process
+  with a new process that corresponds to the program specified by the
+  `path' argument.  If for some reason the function fails, a
   value of -1 will be returned with `errno' set accordingly.
   Normally the function will not return.
 
   The `argv' parameter is an array of strings that will
-  be used to construct the argument list for the program.  For
+  correspond to the argument list used when invoking the program.  For
   example, if the invoked program is a C program, the `argv'
-  parameter will be correspond to the C program's argv-list.
+  parameter will correspond to the C program's argv-list.
 
-  The `envp' parameter is an array of strings that are used to
-  initialize the environment of the overlayed program.
+  The `execve' function takes an array of strings that will be
+  used to initialize the environment of the overlayed program.
+
+  The `execvp' function will mimick the actions `/bin/sh' when
+  searching for the executable file.
 
  NOTES
-  This function is a wrapper around the corresponding system library
-  function.  See the system-specific documentation for more information.
+  These function are wrappers around the corresponding system library
+  functions.  See the system documentation for more information.
 
  SEE ALSO
-  execv, execvp, system, fork, _exit
-
---------------------------------------------------------------
-
-execvp
-
- SYNOPSIS
-  Execute a new process
-
- USAGE
-  Int_Type execvp(pgm, argv[])
-
- DESCRIPTION
-  The `execvp' function may be used to overlay the current process
-  with a new process by invoking to the program specified by the
-  `pgm' argument.  If for some reason the function fails a
-  value of -1 will be returned with `errno' set accordingly.
-  Normally the function will not return.
-
-  If the `pgm' argument does specify the directory containing the
-  program, then a search will be performed for the program using,
-  e.g., the `PATH' environment variable.
-
-  The `argv' parameter is an array of strings that will
-  be used to construct the argument list for the program.  For
-  example, if the invoked program is a C program, the `argv'
-  parameter will be correspond to the C program's argv-list.
-
- NOTES
-  This function is a wrapper around the corresponding system library
-  function.  See the system-specific documentation for more information.
-
- SEE ALSO
-  execv, execve, system, fork, _exit
+  execve, execvp, system, fork, _exit
 
 --------------------------------------------------------------
 

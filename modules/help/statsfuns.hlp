@@ -735,15 +735,23 @@ kendall_tau
   Kendall's tau Correlation Test
 
  USAGE
-  pval = kendall_tau (x, y [,&tau]
+  pval = kendall_tau (x, y [,&tau])
 
  DESCRIPTION
   This function computes Kendall's tau statistic for the paired data
-  values (x,y).  It returns the p-value associated with the statistic.
+  values (x,y), which may or may not have ties.  It returns the
+  double-sided p-value associated with the statistic.
 
  NOTES
-  The current version of this function uses an asymptotic formula
-  based upon the normal distribution to compute the p-value.
+  The implementation is based upon Knight's O(nlogn) algorithm
+  described in "A computer method for calculating Kendall’s tau with
+  ungrouped data", Journal of the American Statistical Association, 61,
+  436-439.
+
+  In the case of no ties, the exact p-value is computed when length(x)
+  is less than 30 using algorithm 71 of Applied Statistics (1974) by
+  Best and Gipps.  If ties are present, the the p-value is computed
+  based upon the normal distribution and a continuity correction.
 
  QUALIFIERS
  The following qualifiers may be used to specify a 1-sided test:
@@ -753,7 +761,36 @@ kendall_tau
 
 
  SEE ALSO
-  spearman_r, pearson_r
+  spearman_r, pearson_r, mann_kendall
+
+--------------------------------------------------------------
+
+mann_kendall
+
+ SYNOPSIS
+  Mann-Kendall trend test
+
+ USAGE
+  pval = mann_kendall (y [,&tau])
+
+ DESCRIPTION
+  The Mann-Kendall test is a non-parametric test that may be used to
+  identify a trend in a set of serial data values.  It is closely
+  related to the Kendall's tau correlation test.
+
+  The `mann_kendall' function returns the double-sided p-value
+  that may be used as a basis for rejecting the the null-hypothesis
+  that there is no trend in the data.
+
+ QUALIFIERS
+ The following qualifiers may be used to specify a 1-sided test:
+
+   side="<"       Perform a left-tailed test
+   side=">"       Perform a right-tailed test
+
+
+ SEE ALSO
+  spearman_r, pearson_r, mann_kendall
 
 --------------------------------------------------------------
 

@@ -1,20 +1,6 @@
 #ifndef SL_CHKSUM_H_
 #define SL_CHKSUM_H_
 
-#if SIZEOF_INT == 4
-typedef unsigned int uint32;
-#else
-# if SIZEOF_SHORT == 4
-typedef unsigned short uint32;
-# else
-#  if SIZEOF_LONG == 4
-typedef unsigned long uint32;
-#  else
-#   error "Unable to find a 32bit integer type"
-#  endif
-# endif
-#endif
-
 typedef struct SLChksum_Type
 {
    int (*accumulate)(struct SLChksum_Type *, unsigned char *, unsigned int);

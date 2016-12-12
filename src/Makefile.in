@@ -123,7 +123,7 @@ ELFOBJS = @PROGRAM_ELFOBJECTS@
 
 SHELL = /bin/sh
 
-DOT_O_DEPS = sllimits.h _slang.h $(CONFIG_H)
+DOT_O_DEPS = sllimits.h _slang.h _slint.h $(CONFIG_H)
 OBJ_O_DEPS = $(OBJDIR_TSTAMP)
 ELF_O_DEPS = $(ELFDIR_TSTAMP)
 sltoken_O_DEP = keywhash.c

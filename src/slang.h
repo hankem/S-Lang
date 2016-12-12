@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 */
 
-#define SLANG_VERSION 20301
-#define SLANG_VERSION_STRING "2.3.1a"
+#define SLANG_VERSION 20302
+#define SLANG_VERSION_STRING "pre2.3.2-1"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */

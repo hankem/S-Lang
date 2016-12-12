@@ -51,37 +51,137 @@ private define test_f ()
      failed ("f_test2 side=< failed: expected %g, got %g", p0, p);
 }
 
-private define test_kendall ()
+private define map_cdf_to_pval (cdf)
+{
+   variable side = qualifier ("side", NULL);
+
+   variable pval = cdf;		       %  side="<"
+   if (side == ">")
+     pval = 1.0 - cdf;
+   else if (side != "<")	       %  double-sided
+     pval = 2.0 * _min (1.0-pval, pval);
+
+   return pval;
+}
+
+private define nsqr_kendall_tau (x, y, w_ref)
+{
+   variable n = length (x);
+   if (n != length (y))
+     throw InvalidParmError, "Arrays must be the same length for nsqr_kendall_tau";
+
+   variable i;
+   variable nx = 0.0, ny = 0.0, diff=0.0;
+   _for i (0, n-2, 1)
+     {
+	variable j = [i+1:n-1];
+	variable dx = sign(x[i] - x[j]);
+	variable dy = sign(y[i] - y[j]);
+	nx += sum(abs(dx));
+	ny += sum(abs(dy));
+	diff += sum (dx*dy);	       %  concordant - discordant
+     }
+
+   variable tau = diff/(sqrt(nx)*sqrt(ny));
+
+   @w_ref = tau;
+
+   variable sigma = sqrt((4.0*n+10.0)/(9.0*n*(n-1)));
+   return map_cdf_to_pval (normal_cdf(tau/sigma) ;; __qualifiers);
+}
+
+private define run_kendall_test (x, y, ep, es)
+{
+   variable p, s;
+
+   p = kendall_tau (x, y, &s);
+   ifnot (feqs (s, es, 0, 0.01))
+     failed ("*** kendall_tau statistic: %g, expected %g", s, es);
+   ifnot (feqs (p, ep, 0, 0.02))
+     failed ("*** kendall_tau pvalue: %g, expected %g", p, ep);
+   %vmessage ("s=%S, expected_s=%S", s, es);
+   %vmessage ("p=%S, expected_p=%S", p, ep);
+}
+
+private define test_kendall_tau ()
 {
    variable x, y, p, s, cdf;
    variable expected_s, expected_p;
 
+   % IDL R_CORRELATE example
+   x = [257, 208, 296, 324, 240, 246, 267, 311, 324, 323, 263,
+	305, 270, 260, 251, 275, 288, 242, 304, 267];
+   y = [201, 56, 185, 221, 165, 161, 182, 239, 278, 243, 197,
+	271, 214, 216, 175, 192, 208, 150, 281, 196];
+   expected_p = 0.000118729;
+   expected_s = 0.624347;
+   run_kendall_test (x, y, expected_p, expected_s);
+
+   % From Armitage and Berry (1994, p. 466) via statsdirect.com 
+   x = [4,10,3,1,9,2,6,7,8,5];
+   y = [5,8,6,2,10,3,9,4,7,1];
+   expected_p = 0.0466;
+   expected_s = 0.5111;
+   run_kendall_test (x, y, expected_p, expected_s);
+
+   % Wine example from Herve Abdi in Encyclopedia of Measurement and
+   % Statistics (2007)
+   x = [1,3,2,4];
+   y = [1,4,2,3];
+   expected_p = 2*(1.0/6);
+   expected_s = 2.0/3.0;
+   run_kendall_test (x, y, expected_p, expected_s);
+
    % Example from Higgins 2004 based upon table 5.3.1
    x = [68, 70, 71, 72];
    y = [153, 155, 140, 180];
-   p = kendall_tau (x, y, &s);
-   expected_p = 0.375;
+   expected_p = 2 * 0.375;	       %  2-sided
    expected_s = 0.33;
-   ifnot (feqs (s, expected_s, 0, 0.01))
-     failed ("*** kendall_tau statistic: %g, expected %g", s, expected_s);
-#iffalse
-   % Before this can be used, I need to implement the exact probability.
-   ifnot (feqs (p, expected_p))
-     failed ("*** kendall_tau pval= %g, expected %g", p, expected_p);
-#endif
+   run_kendall_test (x, y, expected_p, expected_s);
+
+   % Problem 4.3 from Higgins
+   x = [3,7,15,24,85,180,360];
+   y = [2500,3200,4300,5300,5900,6700,6900];
+   expected_p = 2.0/5040.0;
+   expected_s = 1;
+   run_kendall_test (x, y, expected_p, expected_s);
 
    % Higgins 2004 example 5.3.1
    % Rabbit data (table 5.2.1)
    x = [6,16,8,18,17,4,3,1,5,7,15,2,13,12,10,11,14,9];
    y = [5,17,6,18,14,8,2,1,7,3,15,4,16,13,12,10,9,11];
-
-   p = kendall_tau (x, y, &s);
    expected_p = 0.0;
    expected_s = 0.73;
-   ifnot (feqs (s, expected_s, 0, 0.01))
-     failed ("*** kendall_tau statistic: %g, expected %g", s, expected_s);
-   ifnot (feqs (p, expected_p, 0, 1e-4))
-     failed ("*** kendall_tau pval= %g, expected %g", p, expected_p);
+   run_kendall_test (x, y, expected_p, expected_s);
+
+   % Example 6.1 Gibbons & Chakraborti, 2003
+   x = [1,5,9,7,4,6,8,2,3];
+   y = [4,3,6,8,2,7,9,1,5];
+   expected_p = 0.022 * 2;	       %  2-tailed
+   expected_s = 40.0/72.0;
+   run_kendall_test (x, y, expected_p, expected_s);
+
+   % Data tested against www.wessa.net/rwasp_kendall.wasp
+   x = [1,1,1,1,2,2,2,2,3,4,5,6,7,7,7,7];
+   y = [1,1,1,2,1,2,2,2,3,5,4,7,6,7,7,7];
+   expected_p = 4.49419021606445e-05;
+   expected_s = 0.8529412150383;
+   run_kendall_test (x, y, expected_p, expected_s);
+
+   % scipy example (its p-value is wrong, so
+   % www.wessa.net/rwasp_kendall.wasp value is used below)
+   x = [12, 2, 1, 12, 2];
+   y = [1, 4, 7, 1, 0];
+   expected_p = 0.420456647872925; % scipy: 0.24821309157521476;
+   expected_s = -0.47140452079103173;
+   run_kendall_test (x, y, expected_p, expected_s);
+
+   % Data tested against www.wessa.net/rwasp_kendall.wasp
+   x = [12,14,14,17,19,19,19,19,19,20,21,21,21,21,21,22,23,24,24,24,26,26,27];
+   y = [11,4,4,2,0,0,0,0,0,0,4,0,4,0,0,0,0,4,0,0,0,0,0];
+   expected_p = 0.0389842391014099;
+   expected_s = -0.376201540231705;
+   run_kendall_test (x, y, expected_p, expected_s);
 }
 
 private define test_ks ()
@@ -291,8 +391,10 @@ private variable YData = [
 
 private define test_mean_stddev (xdata)
 {
-   ifnot (feqs (sum(1.0*xdata)/length(xdata), mean(xdata), 1e-6))
-     failed ("test_mean_stddev: mean failed");
+   variable m0 = sum(1.0*xdata)/length(xdata);
+   variable m1 = mean(xdata);
+   ifnot (feqs (m0, m1, 1e-6, 1e-7))
+     failed ("test_mean_stddev: mean failed: got %S, expected %S", m0, m1);
 
    variable n = length(xdata);
    if (0 == (n & 0x1))
@@ -308,7 +410,7 @@ private define test_mean_stddev (xdata)
 
    x1 = stddev (xdata);
    x2 = sqrt(sum((xdata-mean(xdata))^2)/(length(xdata)-1));
-   ifnot (feqs (x1, x2, 1e-6))
+   ifnot (feqs (x1, x2, 1e-6, 1e-7))
      failed ("stddev, found %g, expected %g", x1, x2);
 
    variable a = Double_Type [length(xdata), 3];
@@ -316,7 +418,7 @@ private define test_mean_stddev (xdata)
    x2 = stddev (a, 0);
    if (length (x2) != 3)
      failed ("stddev(a,0): expected an array of 3, got %d", length (x2));
-   ifnot (all (feqs(x2, x1, 1e-6)))
+   ifnot (all (feqs(x2, x1, 1e-6, 1e-7)))
      {
 	failed ("stddev(%S,0) produced incorrect values", a);
      }
@@ -342,12 +444,12 @@ define test_skewness_kurtosis ()
 {
    variable w = wikipedia_sample_skewness (XData);
    variable s = skewness (XData);
-   ifnot (feqs (w,s,1e-6))
+   ifnot (feqs (w,s,1e-6, 1e-7))
      failed ("Expected skewness = %g, found %g", w, s);
 
    w = wikipedia_sample_kurtosis (XData);
    s = kurtosis (XData);
-   ifnot (feqs (w,s,1e-6))
+   ifnot (feqs (w,s,1e-6, 1e-7))
      failed ("Expected kurtosis = %g, found %g", w, s);
 }
 
@@ -449,7 +551,7 @@ define slsh_main ()
 
    test_chisqr_test ();
    test_f ();
-   test_kendall ();
+   test_kendall_tau ();
    test_ks ();
    test_mw_cdf (2);
    test_mw_cdf (3);

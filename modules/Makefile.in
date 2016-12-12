@@ -12,6 +12,7 @@ TEST_SCRIPTS = test_slsmg.sl test_termios.sl test_select.sl test_fcntl.sl \
   test_base64.sl test_chksum.sl test_hist.sl test_stats.sl test_json.sl
 #
 CHKSUM_OBJS = chksum-module.o chksum_md5.o chksum_sha1.o
+STATS_OBJS = stats-module.o stats_kendall.o
 # ---------------------------------------------------------------------------
 CC		= @CC@
 CFLAGS		= @CFLAGS@ @SLANG_DLL_CFLAGS@
@@ -21,6 +22,7 @@ CC_SHARED 	= $(CC) $(INCS) $(CC_SHARED_FLAGS) $(CFLAGS)
 CONFIG_DIR	= @CONFIG_DIR@
 SRCDIR		= $(CONFIG_DIR)/modules
 CONFIG_H        = $(SRCDIR)/config.h
+SLINT_H         = $(SRCDIR)/slint.h
 OBJDIR		= $(ARCH)objs
 OBJDIR_TSTAMP	= $(OBJDIR)/tstamp
 # ---------------------------------------------------------------------------
@@ -95,6 +97,8 @@ all: $(OBJDIR)/Makefile
 	cd $(OBJDIR) && $(MAKE) $(MODULES)
 $(CONFIG_H): $(CONFIG_DIR)/src/config.h
 	cp $(CONFIG_DIR)/src/config.h $(CONFIG_H)
+$(SLINT_H): $(CONFIG_DIR)/src/_slint.h
+	cp $(CONFIG_DIR)/src/_slint.h $(SLINT_H)
 $(OBJDIR_TSTAMP):
 	-$(MKINSDIR) $(OBJDIR)
 	touch $(OBJDIR_TSTAMP)
@@ -152,8 +156,13 @@ chksum_sha1.o: $(SRCDIR)/chksum_sha1.c $(SRCDIR)/chksum.h
 #
 histogram-module.so: $(SRCDIR)/histogram-module.c $(SRCDIR)/histogram-module.inc
 	$(COMPILE_CMD) $(SRCDIR)/histogram-module.c -o histogram-module.so $(LIBS)
-stats-module.so: $(SRCDIR)/stats-module.c $(SRCDIR)/stats-module.inc
-	$(COMPILE_CMD) $(SRCDIR)/stats-module.c -o stats-module.so $(LIBS)
+#
+stats-module.so: $(STATS_OBJS)
+	$(COMPILE_CMD) $(STATS_OBJS) -o stats-module.so $(LIBS)
+stats-module.o: $(SRCDIR)/stats-module.c $(SRCDIR)/stats-module.h
+	$(COMPILE_CMD) -c $(SRCDIR)/stats-module.c
+stats_kendall.o: $(SRCDIR)/stats_kendall.c $(SRCDIR)/stats-module.h
+	$(COMPILE_CMD) -c $(SRCDIR)/stats_kendall.c
 #
 # </targets to be built in $(OBJDIR)>
 #
