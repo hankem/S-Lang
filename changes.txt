@@ -5,6 +5,9 @@ Changes since 2.3.1a
    integer typedefs from _slang.h and placing them in _slint.h.  The
    closely relation mann_kendall function was also added to the stats
    module.
+2. modules/stats_kendall.c: In the prtaus function, the loops were
+   reorganized loops to eliminate embedded if-tests, and the code that
+   deals with arrays were made for "C-like".
 
 Changes since 2.3.1
 a. Some tests were failing when compiled with a compiler that defaults

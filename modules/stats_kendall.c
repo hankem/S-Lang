@@ -81,8 +81,10 @@ static int prtaus (_pSLint64_Type is, _pSLint64_Type n, double *probp)
 {
 #define MAX_N_EXACT 30
 #define MAX_L_COLS ((MAX_N_EXACT)*(MAX_N_EXACT-1)/4 + 2)
-   _pSLint64_Type L[2+1][MAX_L_COLS+1];  /* allow 1-based indexing */
-   _pSLint64_Type i, il, io, k, j, jj, in, m, im;
+   _pSLint64_Type row0[MAX_L_COLS];  /* allow 1-based indexing */
+   _pSLint64_Type row1[MAX_L_COLS];  /* allow 1-based indexing */
+   _pSLint64_Type *curr, *prev;
+   _pSLint64_Type i, il, k, m, im;
 
    if (n > MAX_N_EXACT)
      return prtaus_large_n (is, n, probp);
@@ -95,45 +97,48 @@ static int prtaus (_pSLint64_Type is, _pSLint64_Type n, double *probp)
    if (is >= 0) m -= is; else m += is;
    if ((m == 0) && (is <= 0)) return 0;
 
-   memset (L, 0, sizeof(L));
-
    if (is < 0) m = m - 2;
-   im = m/2 + 1;
-   L[1][1] = 1;
-   L[2][1] = 1;
-   il = 1;
+   im = m/2;
+
+   memset (row0, 0, (im+1)*sizeof(_pSLint64_Type));
+   memset (row1, 0, (im+1)*sizeof(_pSLint64_Type));
+   prev = row0; prev[0] = 1;
+   curr = row1; curr[0] = 1;
+
+   il = 0;
    i = 1;
    m = 1;
-   j = 1;
-   jj = 2;
-
    while (i < n)
      {
+	_pSLint64_Type *tmp;
+	_pSLint64_Type in, io;
+
+	tmp = curr; curr = prev; prev = tmp;
         il += i;
         i++;
         m = m*i;
-        j = 3-j;
-        jj = 3-jj;
-        in = 1;
-        io = 0;
 	k = (im < il) ? im : il;
-        while (1)
-          {
-             in++;
-             if (in > k)
-               break;
-             L[jj][in] = L[jj][in-1] + L[j][in];
-             if (in > i)
-               {
-                  io++;
-                  L[jj][in] -= L[j][io];
-               }
-          }
+
+	k++;
+	in = 1;
+	io = (i <= k) ? i : k;
+	while (in < io)
+	  {
+	     curr[in] = curr[in-1] + prev[in];
+	     in++;
+	  }
+	io = 0;
+	while (in < k)
+	  {
+	     curr[in] = curr[in-1] + prev[in] - prev[io];
+	     io++;
+	     in++;
+	  }
      }
 
    k = 0;
-   for (i = 1; i <= im; i++)
-     k += L[jj][i];
+   for (i = 0; i <= im; i++)
+     k += curr[i];
 
    *probp = ((double) k)/m;
    if (is < 0) *probp = 1.0 - *probp;
