@@ -28,17 +28,17 @@ csv_decoder_new
   `csv.readrow' methods for examples.
 
  NOTES
- The current implementation assumes the CSV format specified according
- to RFC 4180.
+  The current implementation assumes the CSV format specified according
+  to RFC 4180.
 
- It is important to understand the difference between a ROW and a LINE
- in a CSV formatted file: a row may span more than one line in a file.  The
- `skiplines' qualifier specifies the number of LINES to be
- skipped, not ROWS.
+  It is important to understand the difference between a ROW and a LINE
+  in a CSV formatted file: a row may span more than one line in a file.
+  The `skiplines' qualifier specifies the number of LINES to be
+  skipped, not ROWS.
 
- CSV files have no notion of data-types: all field values are strings.
- For this reason, the `type' qualifier introduces an extra layer
- that is not part CSV format.
+  CSV files have no notion of data-types: all field values are strings.
+  For this reason, the `type' qualifier introduces an extra layer
+  that is not part CSV format.
 
  SEE ALSO
   csv.readcol, csv.readrow
@@ -54,16 +54,16 @@ csv.readcol
   datastruct = csv.readcol([columns])
 
  DESCRIPTION
- This function method may be used to read one or more columns from a
- comma-separated-value file.  If passed with no arguments, all columns
- of the file will be returned.  Otherwise, only those columns
- specified by the columns argument will be returned.
+  This function method may be used to read one or more columns from a
+  comma-separated-value file.  If passed with no arguments, all columns
+  of the file will be returned.  Otherwise, only those columns
+  specified by the columns argument will be returned.
 
- The return value is a structure with fields that correspond to the
- desired columns.  The default is for the structure to have field
- names `col1', `col2', etc., where the integer suffix
- specifies the column number.  The `fields' and `header'
- qualifiers may be used to specify a different set of names.
+  The return value is a structure with fields that correspond to the
+  desired columns.  The default is for the structure to have field
+  names `col1', `col2', etc., where the integer suffix
+  specifies the column number.  The `fields' and `header'
+  qualifiers may be used to specify a different set of names.
 
  QUALIFIERS
     ; fields: An array of field names to use for the returned structure
@@ -106,7 +106,7 @@ csv.readcol
   information about how blank rows should be handled.
 
  EXAMPLE
- Suppose that `data.csv' is a file that contains
+  Suppose that `data.csv' is a file that contains
 
     # The data below are from runs 6 and 7
     x,y,errx,erry,Notes - or - Comments
@@ -117,34 +117,34 @@ csv.readcol
     31.2,1.2,0.11,0.33,"This data point
     taken from run 7"
 
- This file consists of 8 lines and forms a CSV file with 6 rows.  The
- first row consists of a single column, and the subsequent rows of
- consist of 5 columns. columns.  Note that the last row is split
- across two lines.  The row with the single column will be regarded as
- a comment in what follows.
+  This file consists of 8 lines and forms a CSV file with 6 rows.
+  The first row consists of a single column, and the subsequent rows of
+  consist of 5 columns. columns.  Note that the last row is split
+  across two lines.  The row with the single column will be regarded as
+  a comment in what follows.
 
- The first step is to instantiate a parser object using:
+  The first step is to instantiate a parser object using:
 
     csv = csv_decoder_new ("data.csv" ;comment="#");
 
- The use of the `comment' qualifier will cause all lines
- beginning with `"#"' to be skipped.  Alternatively, the first
- line could have been skipped using
+  The use of the `comment' qualifier will cause all lines
+  beginning with `"#"' to be skipped.  Alternatively, the first
+  line could have been skipped using
 
     csv = csv_decoder_new ("data.csv" ;skiplines=1);
 
- The second row (also second line) in the file is the header line: it
- gives the names of the columns.  It may be read using
+  The second row (also second line) in the file is the header line:
+  it gives the names of the columns.  It may be read using
 
     header = csv.readrow ();
 
- The rest of the file consists of the data values.  We want to read
- the first 4 columns as single precision (Float_Type) values,
- and the 5th as a string.  One way to do this is
+  The rest of the file consists of the data values.  We want to read
+  the first 4 columns as single precision (Float_Type) values,
+  and the 5th as a string.  One way to do this is
 
     table = csv.readcol (;type=['f','f','f','f','s']);
 
- This will result in `table' set to a structure of the form
+  This will result in `table' set to a structure of the form
 
    struct { col1 = Float_Type[5],
             col2 = Float_Type[5],
@@ -153,15 +153,15 @@ csv.readcol
             col5 = String_Type[5]
           }
 
- The same result could also have been achieved using
+  The same result could also have been achieved using
 
     table = csv.readcol (;type='f', type5='s');
 
- If the `header' qualifier is used, then
+  If the `header' qualifier is used, then
 
     table = csv.readcol (;type='f', type5='s', header=header);
 
- would produce the structure
+  would produce the structure
 
    struct {x=Float_Type[5],
            y=Float_Type[5],
@@ -170,16 +170,16 @@ csv.readcol
            notes_or_comments=String_Type[5]
           }
 
- Note how the "Notes -or- Comments" value was normalized.
+  Note how the "Notes -or- Comments" value was normalized.
 
- To read just the `x' and `y' columns, either of the
- following may be used:
+  To read just the `x' and `y' columns, either of the
+  following may be used:
 
     table = csv.readcol ([1,2] ;type='f');
     table = csv.readcol (["x","y"] ;type='f', header=header);
 
- The `header' qualifier was required in the last form to map the
- column names to numbers.
+  The `header' qualifier was required in the last form to map the
+  column names to numbers.
 
  SEE ALSO
   csv_decoder_new, csv_readcol, readascii
@@ -196,8 +196,8 @@ csv.readrow
 
  DESCRIPTION
   The `csv.readrow' function method may be used to read the next
-  row from the underlying CSV (comma-separated-value) parser object.  The
-  object must have already been instantiated using the
+  row from the underlying CSV (comma-separated-value) parser object.
+  The object must have already been instantiated using the
   `csv_decoder_new' function.  It returns the row data in the form
   of an array of strings.  If the end of input it reached, NULL will
   be returned.
@@ -225,8 +225,8 @@ csv.readrow
   will be ignored by the parser.  If the value is `"stop"', then the row
   will be returned as an empty array of strings (length equal to 0).
   Otherwise the row will be treated as if it contained the empty
-  string and returned as an array of length 1 with a value of "".  The
-  default behavior is to skip such rows.
+  string and returned as an array of length 1 with a value of "".
+  The default behavior is to skip such rows.
 
  SEE ALSO
   csv_decoder_new, csv.readcol, csv_readcol
@@ -242,23 +242,23 @@ csv_readcol
   Struct_Type csv_readcol (file|fp [,columns] ;qualifiers)
 
  DESCRIPTION
- This function may be used to read one or more of the columns in the specified
- CSV file.  If the `columns' argument is present, then only those
- columns will be read; otherwise all columns in the file will be read.
- The columns will be returned in the form of a structure.
+  This function may be used to read one or more of the columns in the specified
+  CSV file.  If the `columns' argument is present, then only those
+  columns will be read; otherwise all columns in the file will be read.
+  The columns will be returned in the form of a structure.
 
  QUALIFIERS
- This function supports all of the qualifiers supported by the
- `csv_decoder_new' function and the `csv.readcol' method.  In
- addition, if the `has_header' qualifier is present, the first
- line processed (after skipping any lines implied by the
- `skiplines' and `comment' qualifiers) will be regarded as
- the header.
+  This function supports all of the qualifiers supported by the
+  `csv_decoder_new' function and the `csv.readcol' method.
+  In addition, if the `has_header' qualifier is present, the first
+  line processed (after skipping any lines implied by the
+  `skiplines' and `comment' qualifiers) will be regarded as
+  the header.
 
- If the `rdb' qualifier is present, then assume that the file is
- in the so-called RDB file format.  This is a tab-delimited format
- that consists of a line that contains the names of the fields,
- followed by a line that specifies the data types of the columns.
+  If the `rdb' qualifier is present, then assume that the file is
+  in the so-called RDB file format.  This is a tab-delimited format
+  that consists of a line that contains the names of the fields,
+  followed by a line that specifies the data types of the columns.
 
  EXAMPLE
 
@@ -361,8 +361,8 @@ csv_writecol
 
 
  NOTES
-   This function is a simple wrapper around `csv_encoder_new' and
-   `csv.writecol'.
+  This function is a simple wrapper around `csv_encoder_new' and
+  `csv.writecol'.
 
  SEE ALSO
   csv_encoder_new, csv.writecol, csv_readcol
