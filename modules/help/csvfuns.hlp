@@ -4,7 +4,7 @@ csv_decoder_new
   Instantiate a parser for CSV data
 
  USAGE
-  obj = cvs_decoder_new (filename|File_Type|Strings[])
+  obj = csv_decoder_new (filename|File_Type|Strings[])
 
  DESCRIPTION
   This function instantiates an object that may be used to parse and
@@ -21,11 +21,11 @@ csv_decoder_new
 
  METHODS
   .readrow : Read and parse a row from the CSV object
-  .readcol : Read one or more columns from the CVS object
+  .readcol : Read one or more columns from the CSV object
 
  EXAMPLE
-  See the documentation for the `cvs.readcol' and
-  `cvs.readrow' methods for examples.
+  See the documentation for the `csv.readcol' and
+  `csv.readrow' methods for examples.
 
  NOTES
  The current implementation assumes the CSV format specified according
@@ -182,7 +182,7 @@ csv.readcol
  column names to numbers.
 
  SEE ALSO
-  cvs_decoder_new, csv_readcol, readascii
+  csv_decoder_new, csv_readcol, readascii
 
 --------------------------------------------------------------
 
@@ -198,7 +198,7 @@ csv.readrow
   The `csv.readrow' function method may be used to read the next
   row from the underlying CSV (comma-separated-value) parser object.  The
   object must have already been instantiated using the
-  `cvs_decoder_new' function.  It returns the row data in the form
+  `csv_decoder_new' function.  It returns the row data in the form
   of an array of strings.  If the end of input it reached, NULL will
   be returned.
 

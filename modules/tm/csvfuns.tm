@@ -1,6 +1,6 @@
 \function{csv_decoder_new}
 \synopsis{Instantiate a parser for CSV data}
-\usage{obj = cvs_decoder_new (filename|File_Type|Strings[])}
+\usage{obj = csv_decoder_new (filename|File_Type|Strings[])}
 \description
   This function instantiates an object that may be used to parse and
   read so-called comma-separated-value (CSV) data.  It requires a
@@ -14,10 +14,10 @@
 \qualifier{blankrows}{default for how blank rows should be handled}{"skip"}
 \methods
 \method{readrow}{Read and parse a row from the CSV object}
-\method{readcol}{Read one or more columns from the CVS object}
+\method{readcol}{Read one or more columns from the CSV object}
 \example
-  See the documentation for the \sfun{cvs.readcol} and
-  \sfun{cvs.readrow} methods for examples.
+  See the documentation for the \sfun{csv.readcol} and
+  \sfun{csv.readrow} methods for examples.
 \notes
  The current implementation assumes the CSV format specified according
  to RFC 4180.
@@ -161,7 +161,7 @@
 #v-
  The \exmp{header} qualifier was required in the last form to map the
  column names to numbers.
-\seealso{cvs_decoder_new, csv_readcol, readascii}
+\seealso{csv_decoder_new, csv_readcol, readascii}
 \done
 
 
@@ -172,7 +172,7 @@
   The \exmp{csv.readrow} function method may be used to read the next
   row from the underlying CSV (comma-separated-value) parser object.  The
   object must have already been instantiated using the
-  \sfun{cvs_decoder_new} function.  It returns the row data in the form
+  \sfun{csv_decoder_new} function.  It returns the row data in the form
   of an array of strings.  If the end of input it reached, \NULL will
   be returned.
 \qualifiers
