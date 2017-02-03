@@ -91,15 +91,15 @@ private define test_cmdopt ()
    variable args;
 
    set_struct_fields (s, 1,0,NULL,0,1.0,0);
-   args = ["--foo", "7", "-vvv", "-al", "foo"];
-   test_args (opts, args, 4, s, {7, 3, NULL, 1, 1.0, 3}, 0);
+   args = ["--foo", "7", "-vvv", "-al", "-l4", "foo"];
+   test_args (opts, args, 5, s, {7, 3, NULL, 1, 1.0, 4}, 0);
 
    set_struct_fields (s, 1,0,NULL,0,1.0,0);
    args = ["--foo=2", "-v", "-al", "--opt", "foo"];
    test_args (opts, args, 4, s, {2, 1, "opt-default", 1, 1.0, 3}, 0);
 
    set_struct_fields (s, 1,0,NULL,0,1.0,0);
-   args = ["-vv", "-alf", "-1", "foo"];
+   args = ["-vvl", "-af", "-1", "foo"];
    test_args (opts, args, 3, s, {-1, 2, NULL, 1, 1.0, 3}, 0);
 
    set_struct_fields (s, 1, 0, "opt", -1, PI, -1);

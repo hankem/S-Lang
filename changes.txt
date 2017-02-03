@@ -9,6 +9,8 @@ Changes since 2.3.1a
    reorganized loops to eliminate embedded if-tests, and the code that
    deals with arrays were made for "C-like".
 3. Merged Manfred Hanke's CSV module documentation updates.
+4. slsh/lib/cmdopt.sl: The form -fVAL was not working as described for
+   short-options whose value (VAL) is optional.
 
 Changes since 2.3.1
 a. Some tests were failing when compiled with a compiler that defaults

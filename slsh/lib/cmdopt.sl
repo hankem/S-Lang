@@ -45,7 +45,7 @@ private define convert_to_int (opts, opt, name, value)
 
 	return integer (value);
      }
-   catch SyntaxError: usage_error (opts, name, "error parsing value as an integer");
+   catch SyntaxError: usage_error (opts, name, "error parsing '$value' as an integer"$);
 }
 
 private define convert_to_double (opts, opt, name, value)
@@ -57,7 +57,7 @@ private define convert_to_double (opts, opt, name, value)
 
 	return atof (value);
      }
-   catch SyntaxError: usage_error (opts, name, "error parsing value as a float");
+   catch SyntaxError: usage_error (opts, name, "error parsing value '$value' as a number"$);
 }
 
 define cmdopt_add ()
@@ -304,6 +304,13 @@ define cmdopt_process (opts, argv, istart)
 		    {
 		       if (j < n)
 			 value = substr (arg, j+1, n);
+		       arg = name;
+		       break;
+		    }
+		  % -aVALUE
+		  if ((j < n) && (opt.flags & CMDOPT_OPT_VALUE))
+		    {
+		       value = substr (arg, j+1, n);
 		       arg = name;
 		       break;
 		    }
