@@ -1,10 +1,10 @@
 /* This file was automatically created by ./mktables */
-#define SL_TOLOWER_MAX_CHAR 0x10480ul
+#define SL_TOLOWER_MAX_CHAR 0x1E980ul
 
 #define SL_TOLOWER_LOOKUP(x) \
   (((unsigned)(x)>=SL_TOLOWER_MAX_CHAR)?0:(_pSLwc_Tolower_Table[(unsigned)(x)>>7][(unsigned)(x)&0x7F]))
 
-extern const _pSLint32_Type *_pSLwc_Tolower_Table[521];
+extern const _pSLint32_Type *_pSLwc_Tolower_Table[979];
 
 #ifdef DEFINE_PSLWC_TOLOWER_TABLE
 static const _pSLint32_Type Table_00[128] =
@@ -144,7 +144,7 @@ static const _pSLint32_Type Table_06[128] =
   /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x70-0x77*/     1,     0,     1,     0,     0,     0,     1,     0,
-  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,   116
 };
 
 static const _pSLint32_Type Table_07[128] =
@@ -213,8 +213,8 @@ static const _pSLint32_Type Table_10[128] =
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x10-0x17*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x18-0x1F*/     1,     0,     1,     0,     1,     0,     1,     0,
-  /*0x20-0x27*/     1,     0,     1,     0,     0,     0,     0,     0,
-  /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x28-0x2F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x30-0x37*/     0,    48,    48,    48,    48,    48,    48,    48,
   /*0x38-0x3F*/    48,    48,    48,    48,    48,    48,    48,    48,
   /*0x40-0x47*/    48,    48,    48,    48,    48,    48,    48,    48,
@@ -237,8 +237,8 @@ static const _pSLint32_Type Table_11[128] =
   /*0x28-0x2F*/  7264,  7264,  7264,  7264,  7264,  7264,  7264,  7264,
   /*0x30-0x37*/  7264,  7264,  7264,  7264,  7264,  7264,  7264,  7264,
   /*0x38-0x3F*/  7264,  7264,  7264,  7264,  7264,  7264,  7264,  7264,
-  /*0x40-0x47*/  7264,  7264,  7264,  7264,  7264,  7264,     0,     0,
-  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x40-0x47*/  7264,  7264,  7264,  7264,  7264,  7264,     0,  7264,
+  /*0x48-0x4F*/     0,     0,     0,     0,     0,  7264,     0,     0,
   /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -248,6 +248,26 @@ static const _pSLint32_Type Table_11[128] =
 };
 
 static const _pSLint32_Type Table_12[128] =
+{
+  /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x10-0x17*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x28-0x2F*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x30-0x37*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x38-0x3F*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x40-0x47*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x48-0x4F*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x50-0x57*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x58-0x5F*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x60-0x67*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x68-0x6F*/  38864,  38864,  38864,  38864,  38864,  38864,  38864,  38864,
+  /*0x70-0x77*/     8,     8,     8,     8,     8,     8,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+static const _pSLint32_Type Table_13[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -267,7 +287,7 @@ static const _pSLint32_Type Table_12[128] =
   /*0x78-0x7F*/     1,     0,     1,     0,     1,     0,     1,     0
 };
 
-static const _pSLint32_Type Table_13[128] =
+static const _pSLint32_Type Table_14[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -287,7 +307,7 @@ static const _pSLint32_Type Table_13[128] =
   /*0x78-0x7F*/     1,     0,     1,     0,     1,     0,     1,     0
 };
 
-static const _pSLint32_Type Table_14[128] =
+static const _pSLint32_Type Table_15[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/    -8,    -8,    -8,    -8,    -8,    -8,    -8,    -8,
@@ -307,7 +327,7 @@ static const _pSLint32_Type Table_14[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_15[128] =
+static const _pSLint32_Type Table_16[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/    -8,    -8,    -8,    -8,    -8,    -8,    -8,    -8,
@@ -327,7 +347,7 @@ static const _pSLint32_Type Table_15[128] =
   /*0x78-0x7F*/  -128,  -128,  -126,  -126,    -9,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_16[128] =
+static const _pSLint32_Type Table_17[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -347,7 +367,7 @@ static const _pSLint32_Type Table_16[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_17[128] =
+static const _pSLint32_Type Table_18[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     1,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -367,7 +387,7 @@ static const _pSLint32_Type Table_17[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_18[128] =
+static const _pSLint32_Type Table_19[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -387,7 +407,7 @@ static const _pSLint32_Type Table_18[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_19[128] =
+static const _pSLint32_Type Table_20[128] =
 {
   /*0x00-0x07*/    48,    48,    48,    48,    48,    48,    48,    48,
   /*0x08-0x0F*/    48,    48,    48,    48,    48,    48,    48,    48,
@@ -403,11 +423,11 @@ static const _pSLint32_Type Table_19[128] =
   /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x60-0x67*/     1,     0, -10743, -3814, -10727,     0,     0,     1,
   /*0x68-0x6F*/     0,     1,     0,     1,     0, -10780, -10749, -10783,
-  /*0x70-0x77*/     0,     0,     1,     0,     0,     1,     0,     0,
-  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+  /*0x70-0x77*/ -10782,     0,     1,     0,     0,     1,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0, -10815, -10815
 };
 
-static const _pSLint32_Type Table_20[128] =
+static const _pSLint32_Type Table_21[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
@@ -422,12 +442,12 @@ static const _pSLint32_Type Table_20[128] =
   /*0x50-0x57*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x58-0x5F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x60-0x67*/     1,     0,     1,     0,     0,     0,     0,     0,
-  /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
-  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x68-0x6F*/     0,     0,     0,     1,     0,     1,     0,     0,
+  /*0x70-0x77*/     0,     0,     1,     0,     0,     0,     0,     0,
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_21[128] =
+static const _pSLint32_Type Table_22[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -441,18 +461,18 @@ static const _pSLint32_Type Table_21[128] =
   /*0x48-0x4F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x50-0x57*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x58-0x5F*/     1,     0,     1,     0,     1,     0,     1,     0,
-  /*0x60-0x67*/     0,     0,     1,     0,     1,     0,     1,     0,
+  /*0x60-0x67*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x68-0x6F*/     1,     0,     1,     0,     1,     0,     0,     0,
   /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_22[128] =
+static const _pSLint32_Type Table_23[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x08-0x0F*/     1,     0,     1,     0,     1,     0,     1,     0,
   /*0x10-0x17*/     1,     0,     1,     0,     1,     0,     1,     0,
-  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     1,     0,     1,     0,     0,     0,     0,     0,
   /*0x20-0x27*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x30-0x37*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -467,7 +487,7 @@ static const _pSLint32_Type Table_22[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_23[128] =
+static const _pSLint32_Type Table_24[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -487,15 +507,15 @@ static const _pSLint32_Type Table_23[128] =
   /*0x78-0x7F*/     0,     1,     0,     1,     0, -35332,     1,     0
 };
 
-static const _pSLint32_Type Table_24[128] =
+static const _pSLint32_Type Table_25[128] =
 {
   /*0x00-0x07*/     1,     0,     1,     0,     1,     0,     1,     0,
-  /*0x08-0x0F*/     0,     0,     0,     1,     0,     0,     0,     0,
-  /*0x10-0x17*/     0,     0,     0,     0,     0,     0,     0,     0,
-  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
-  /*0x20-0x27*/     0,     0,     0,     0,     0,     0,     0,     0,
-  /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
-  /*0x30-0x37*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x08-0x0F*/     0,     0,     0,     1,     0, -42280,     0,     0,
+  /*0x10-0x17*/     1,     0,     1,     0,     0,     0,     1,     0,
+  /*0x18-0x1F*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x20-0x27*/     1,     0,     1,     0,     1,     0,     1,     0,
+  /*0x28-0x2F*/     1,     0, -42308, -42319, -42315, -42305, -42308,     0,
+  /*0x30-0x37*/ -42258, -42282, -42261,   928,     1,     0,     1,     0,
   /*0x38-0x3F*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x40-0x47*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -507,7 +527,7 @@ static const _pSLint32_Type Table_24[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_25[128] =
+static const _pSLint32_Type Table_26[128] =
 {
   /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
   /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
@@ -527,7 +547,7 @@ static const _pSLint32_Type Table_25[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-static const _pSLint32_Type Table_26[128] =
+static const _pSLint32_Type Table_27[128] =
 {
   /*0x00-0x07*/    40,    40,    40,    40,    40,    40,    40,    40,
   /*0x08-0x0F*/    40,    40,    40,    40,    40,    40,    40,    40,
@@ -547,7 +567,87 @@ static const _pSLint32_Type Table_26[128] =
   /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
 };
 
-const _pSLint32_Type *_pSLwc_Tolower_Table[521] =
+static const _pSLint32_Type Table_28[128] =
+{
+  /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x10-0x17*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x30-0x37*/    40,    40,    40,    40,    40,    40,    40,    40,
+  /*0x38-0x3F*/    40,    40,    40,    40,    40,    40,    40,    40,
+  /*0x40-0x47*/    40,    40,    40,    40,    40,    40,    40,    40,
+  /*0x48-0x4F*/    40,    40,    40,    40,    40,    40,    40,    40,
+  /*0x50-0x57*/    40,    40,    40,    40,     0,     0,     0,     0,
+  /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+static const _pSLint32_Type Table_29[128] =
+{
+  /*0x00-0x07*/    64,    64,    64,    64,    64,    64,    64,    64,
+  /*0x08-0x0F*/    64,    64,    64,    64,    64,    64,    64,    64,
+  /*0x10-0x17*/    64,    64,    64,    64,    64,    64,    64,    64,
+  /*0x18-0x1F*/    64,    64,    64,    64,    64,    64,    64,    64,
+  /*0x20-0x27*/    64,    64,    64,    64,    64,    64,    64,    64,
+  /*0x28-0x2F*/    64,    64,    64,    64,    64,    64,    64,    64,
+  /*0x30-0x37*/    64,    64,    64,     0,     0,     0,     0,     0,
+  /*0x38-0x3F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x40-0x47*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+static const _pSLint32_Type Table_30[128] =
+{
+  /*0x00-0x07*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x08-0x0F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x10-0x17*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x18-0x1F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x20-0x27*/    32,    32,    32,    32,    32,    32,    32,    32,
+  /*0x28-0x2F*/    32,    32,    32,    32,    32,    32,    32,    32,
+  /*0x30-0x37*/    32,    32,    32,    32,    32,    32,    32,    32,
+  /*0x38-0x3F*/    32,    32,    32,    32,    32,    32,    32,    32,
+  /*0x40-0x47*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+static const _pSLint32_Type Table_31[128] =
+{
+  /*0x00-0x07*/    34,    34,    34,    34,    34,    34,    34,    34,
+  /*0x08-0x0F*/    34,    34,    34,    34,    34,    34,    34,    34,
+  /*0x10-0x17*/    34,    34,    34,    34,    34,    34,    34,    34,
+  /*0x18-0x1F*/    34,    34,    34,    34,    34,    34,    34,    34,
+  /*0x20-0x27*/    34,    34,     0,     0,     0,     0,     0,     0,
+  /*0x28-0x2F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x30-0x37*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x38-0x3F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x40-0x47*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x48-0x4F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x50-0x57*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x58-0x5F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x60-0x67*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x68-0x6F*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x70-0x77*/     0,     0,     0,     0,     0,     0,     0,     0,
+  /*0x78-0x7F*/     0,     0,     0,     0,     0,     0,     0,     0
+};
+
+const _pSLint32_Type *_pSLwc_Tolower_Table[979] =
 {
   Table_01,  Table_02,  Table_03,  Table_04,  Table_05,  Table_00,
   Table_06,  Table_07,  Table_08,  Table_09,  Table_10,  Table_00,
@@ -555,15 +655,16 @@ const _pSLint32_Type *_pSLwc_Tolower_Table[521] =
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_11,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_12,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_13,  Table_14,  Table_15,  Table_16,  Table_00,  Table_00,
+  Table_17,  Table_18,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_19,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_12,  Table_13,  Table_14,  Table_15,  Table_00,  Table_00,
-  Table_16,  Table_17,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_18,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_20,  Table_21,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_00,  Table_00,  Table_00,  Table_19,  Table_20,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
@@ -603,8 +704,8 @@ const _pSLint32_Type *_pSLwc_Tolower_Table[521] =
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_22,  Table_23,  Table_24,  Table_25,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_00,  Table_21,  Table_22,  Table_23,  Table_24,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
@@ -633,8 +734,84 @@ const _pSLint32_Type *_pSLwc_Tolower_Table[521] =
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_26,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_27,  Table_28,
   Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_25,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
-  Table_00,  Table_00,  Table_00,  Table_00,  Table_26
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_29,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_30,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,  Table_00,
+  Table_31
 };
 #endif /* DEFINE_PSLWC_TOLOWER_TABLE */

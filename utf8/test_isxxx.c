@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <locale.h>
 
 #include <slang.h>
@@ -35,15 +36,15 @@ int main (int argc, char **argv)
      {
 #define TEST(xxx) \
    if ((0 == isw##xxx(i)) != (0 == SLwchar_is##xxx(i))) \
-       fprintf (stdout, "Failed " #xxx "(0x%X) : 0x%X != 0x%X\n", \
+       fprintf (stderr, "Failed " #xxx "(0x%X) : libc:0x%X != slang:0x%X\n", \
 		   i, isw##xxx(i), SLwchar_is##xxx(i))
 
 	if (towupper (i) != SLwchar_toupper (i))
-	  fprintf (stdout, "towupper (0x%X) failed 0x%X vs 0x%lX\n",
-		   i, towupper(i), SLwchar_toupper(i));
+	  fprintf (stderr, "towupper (0x%X) failed 0x%X vs 0x%lX\n",
+		   i, towupper(i), (unsigned long)SLwchar_toupper(i));
 	if (towlower (i) != SLwchar_tolower (i))
-	  fprintf (stdout, "towlower (0x%X) failed 0x%X vs 0x%lX\n",
-		   i, towlower(i), SLwchar_tolower(i));
+	  fprintf (stderr, "towlower (0x%X) failed 0x%X vs 0x%lX\n",
+		   i, towlower(i), (unsigned long)SLwchar_tolower(i));
 #if 0
 #undef TEST
 #define TEST(xxx) \
