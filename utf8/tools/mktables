@@ -508,15 +508,14 @@ private define make_char_classes (s)
 	       or (code_point == s.titlecase_mapping))
 	      and (code_point != s.lowercase_mapping));
    char_classes[i] |= UPPER;
-#else
+#endif
    % LOWER
-   i = where (s.general_cat == "Ll");
+   i = where ((s.general_cat == "Ll") and (0 == (char_classes & UPPER)));
    char_classes[i] |= LOWER;
 
    % UPPER
-   i = where (s.general_cat == "Lu");
+   i = where ((s.general_cat == "Lu") and (0 == (char_classes & LOWER)));
    char_classes[i] |= UPPER;
-#endif
 
    % ALPHA
    i = where ((char_classes & (UPPER|LOWER)) or (gcat0 == 'L'));

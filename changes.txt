@@ -12,6 +12,11 @@ Changes since 2.3.1a
 4. slsh/lib/cmdopt.sl: The form -fVAL was not working as described for
    short-options whose value (VAL) is optional.
 5. src/sl*.h: Updated Unicode tables from version 5 to 9
+6. src/slischar.h: Previously, if a lower(upper) case character did
+   not have a mapping to an upper(lower) case character, it was take
+   to not have a case.  This restriction has been dropped.  In other
+   words, it is nolonger necessary for an upper(lower) case character
+   to have a lower(upper) case equivalent.
 
 Changes since 2.3.1
 a. Some tests were failing when compiled with a compiler that defaults
