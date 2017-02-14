@@ -1,3 +1,29 @@
+\function{_array_byteswap}
+\synopsis{Convert an array from one endianness to another}
+\usage{b = _array_byteswap (Array_Type a, Int_Type from, Int_Type to)}
+\description
+The \ifun{_array_byteswap} function converts the elements of an array
+from one endianess to another via a byte-swapping operation.  The
+parameters \exmp{from} and \exmp{to} indicate the endianesss of the
+input and output arrays, respectively.  The values for \exmp{from} and
+\exmp{to} parameters must be one of the following:
+#v+
+   'B', 'b', '>'  : Big Endian (network order)
+   'L', 'l', '<'  : Little Endian
+   'N', 'n', '='  : Native (host order)
+#v-
+The function returns an array of the corresponding byte-swapped
+elements.
+\notes
+If the parameter \exmp{a} is a scalar, a corresponding byte-swapped
+scalar will be returned.
+
+If the object represented by the parameter \exmp{a} cannot be
+byteswapped, an exception will be thrown.  For example, an error will
+be thrown if \exmp{a} is a \dtype{String_Type} object.
+\seealso{pack, unpack, typecast}
+\done
+
 \function{atof}
 \synopsis{Convert a string to a double precision number}
 \usage{Double_Type atof (String_Type s)}
@@ -271,7 +297,7 @@ islower, isprint, ispunct, isspace, isupper, isxdigit
 #v-
   defines a function that converts its argument, \exmp{x} to a complex
   number.
-\seealso{int, double, typeof}
+\seealso{int, double, typeof, _array_byteswap}
 \done
 
 \function{_typeof}

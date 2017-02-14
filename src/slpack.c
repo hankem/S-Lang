@@ -63,10 +63,7 @@ USA.
  *    = = native mode
  */
 
-#define NATIVE_ORDER		0
-#define BIGENDIAN_ORDER		1
-#define LILENDIAN_ORDER		2
-static int Native_Byte_Order = NATIVE_ORDER;
+static int Native_Byte_Order = _pSLANG_BYTEORDER_NATIVE;
 
 typedef struct
 {
@@ -150,21 +147,21 @@ static int parse_a_format (char **format, Format_Type *ft)
    switch (ch)
      {
       default:
-	ft->byteorder = NATIVE_ORDER;
+	ft->byteorder = _pSLANG_BYTEORDER_NATIVE;
 	break;
 
       case '=':
-	ft->byteorder = NATIVE_ORDER;
+	ft->byteorder = _pSLANG_BYTEORDER_NATIVE;
 	ch = *f++;
 	break;
 
       case '>':
-	ft->byteorder = BIGENDIAN_ORDER;
+	ft->byteorder = _pSLANG_BYTEORDER_BIGE;
 	ch = *f++;
 	break;
 
       case '<':
-	ft->byteorder = LILENDIAN_ORDER;
+	ft->byteorder = _pSLANG_BYTEORDER_LILE;
 	ch = *f++;
 	break;
      }
@@ -442,14 +439,14 @@ static void check_native_byte_order (void)
 {
    unsigned short x;
 
-   if (Native_Byte_Order != NATIVE_ORDER)
+   if (Native_Byte_Order != _pSLANG_BYTEORDER_NATIVE)
      return;
 
    x = 0xFF;
    if (*(unsigned char *)&x == 0xFF)
-     Native_Byte_Order = LILENDIAN_ORDER;
+     Native_Byte_Order = _pSLANG_BYTEORDER_LILE;
    else
-     Native_Byte_Order = BIGENDIAN_ORDER;
+     Native_Byte_Order = _pSLANG_BYTEORDER_BIGE;
 }
 
 static SLang_BString_Type *
@@ -518,7 +515,7 @@ pack_according_to_format (char *format, SLuindex_Type nitems)
 		  nitems--;
 	       }
 
-	     if (ft.byteorder != NATIVE_ORDER)
+	     if (ft.byteorder != _pSLANG_BYTEORDER_NATIVE)
 	       byteswap (ft.byteorder, bstart, ft.sizeof_type, num);
 
 	     continue;
@@ -653,7 +650,7 @@ void _pSLunpack (char *format, SLang_BString_Type *bs)
 
 		  cl = _pSLclass_get_class (ft.data_type);
 		  memcpy ((char *)cl->cl_transfer_buf, (char *)b, ft.sizeof_type);
-		  if (ft.byteorder != NATIVE_ORDER)
+		  if (ft.byteorder != _pSLANG_BYTEORDER_NATIVE)
 		    byteswap (ft.byteorder, (unsigned char *)cl->cl_transfer_buf, ft.sizeof_type, 1);
 
 		  if (-1 == (cl->cl_apush (ft.data_type, cl->cl_transfer_buf)))
@@ -669,7 +666,7 @@ void _pSLunpack (char *format, SLang_BString_Type *bs)
 
 	     num_bytes = ft.repeat * ft.sizeof_type;
 	     memcpy ((char *)at->data, (char *)b, num_bytes);
-	     if (ft.byteorder != NATIVE_ORDER)
+	     if (ft.byteorder != _pSLANG_BYTEORDER_NATIVE)
 	       byteswap (ft.byteorder, (unsigned char *)at->data, ft.sizeof_type, ft.repeat);
 
 	     if (-1 == SLang_push_array (at, 1))
@@ -825,4 +822,71 @@ void _pSLpack_pad_format (char *format)
    *b = 0;
 
    (void) SLang_push_malloced_string (buf);
+}
+
+SLang_Array_Type *_pSLpack_byteswap_array (SLang_Array_Type *at, int from, int to)
+{
+   SLang_Array_Type *bt;
+   check_native_byte_order ();
+
+   if (0 == _pSLang_is_arith_type (at->data_type))
+     {
+	if (at->data_type != SLANG_COMPLEX_TYPE)
+	  {
+	     SLang_verror (SL_InvalidParm_Error, "type %s arrays do not support byteswapping",
+			   SLclass_get_datatype_name (at->data_type));
+	     return NULL;
+	  }
+     }
+
+   if (from == _pSLANG_BYTEORDER_NATIVE)
+     from = Native_Byte_Order;
+   if (to == _pSLANG_BYTEORDER_NATIVE)
+     to = Native_Byte_Order;
+
+   if ((from == to) || (at->sizeof_type == 1))
+     {
+	at->num_refs++;
+	return at;
+     }
+
+#if SLANG_USE_TMP_OPTIMIZATION
+   if ((at->num_refs == 1)
+       && (0 == (at->flags & SLARR_DATA_VALUE_IS_READ_ONLY)))
+     {
+	at->num_refs++;
+	bt = at;
+     }
+   else/* drop */
+#endif
+   if (NULL == (bt = SLang_duplicate_array (at)))
+     return NULL;
+
+   switch (bt->sizeof_type)
+     {
+      case 2:
+	byte_swap16 ((unsigned char *)bt->data, bt->num_elements);
+	break;
+
+      case 4:
+	byte_swap32 ((unsigned char *)bt->data, bt->num_elements);
+	break;
+
+      case 8:
+	byte_swap64 ((unsigned char *)bt->data, bt->num_elements);
+	break;
+
+      default:
+	if (bt->data_type == SLANG_COMPLEX_TYPE)
+	  {
+	     byte_swap64 ((unsigned char *)bt->data, 2*bt->num_elements);
+	     break;
+	  }
+	SLang_verror (SL_NotImplemented_Error, "Byteswapping of objects with size %u is not supported",
+		      bt->sizeof_type);
+	SLang_free_array (bt);
+	return NULL;
+     }
+
+   return bt;
 }

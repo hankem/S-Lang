@@ -658,11 +658,16 @@ extern void _pSLbstring_foreach_close (SLtype type, SLang_Foreach_Context_Type *
 extern int _pSLbstring_foreach (SLtype type, SLang_Foreach_Context_Type *c);
 
 extern int _pSLang_init_sltime (void);
+extern int _pSLusleep (unsigned long);
+
+#define _pSLANG_BYTEORDER_NATIVE	0
+#define _pSLANG_BYTEORDER_BIGE		1
+#define _pSLANG_BYTEORDER_LILE		2
 extern void _pSLpack (void);
 extern void _pSLunpack (char *, SLang_BString_Type *);
 extern void _pSLpack_pad_format (char *);
 extern SLstrlen_Type _pSLpack_compute_size (char *);
-extern int _pSLusleep (unsigned long);
+extern SLang_Array_Type *_pSLpack_byteswap_array (SLang_Array_Type *at, int from, int to);
 
 /* frees upon error.  NULL __NOT__ ok. */
 extern int _pSLang_push_slstring (char *);

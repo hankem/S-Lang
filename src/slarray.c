@@ -4955,6 +4955,64 @@ static void aget_intrin (void)
 }
 #endif
 
+static int pop_byte_order (int *bop)
+{
+   int bo;
+
+   if (-1 == SLang_pop_integer (&bo))
+     return -1;
+
+   switch (bo)
+     {
+      case 'n': case 'N': case '=': bo = _pSLANG_BYTEORDER_NATIVE; break;
+      case 'b': case 'B': case '>': bo = _pSLANG_BYTEORDER_BIGE; break;
+      case 'l': case 'L': case '<': bo = _pSLANG_BYTEORDER_LILE; break;
+      default:
+	SLang_verror (SL_InvalidParm_Error, "Invalid byte-order specifier, expecting one of 'B', 'L', or 'N'");
+	return -1;
+     }
+
+   *bop = bo;
+   return 0;
+}
+
+/* Usage b = _array_byteswap (a, from, to);
+ */
+static void byteswap_intrin (void)
+{
+   SLang_Array_Type *at, *bt;
+   int from, to;
+   int converted_scalar;
+
+   if (SLang_Num_Function_Args != 3)
+     {
+	SLang_verror (SL_Usage_Error, "\
+Usage: b = _array_byteswap (a, from, to);\
+  from/to is one of: 'B' (big), 'L' (little), or 'N'(native) endian order");
+	return;
+     }
+   if ((-1 == pop_byte_order (&to)) || (-1 == pop_byte_order (&from)))
+     return;
+
+   if (-1 == SLang_pop_array (&at, 1))
+     return;
+
+   converted_scalar = at->flags & SLARR_DERIVED_FROM_SCALAR;
+
+   bt = _pSLpack_byteswap_array (at, from, to);
+   SLang_free_array (at);
+   if (bt == NULL)
+     return;
+
+   if (converted_scalar)
+     (void) push_element_at_index (bt, 0);
+   else
+     (void) SLang_push_array (bt, 0);
+
+   SLang_free_array (bt);
+}
+
+
 static SLang_Intrin_Fun_Type Array_Table [] =
 {
    MAKE_INTRINSIC_0("array_map", array_map, SLANG_VOID_TYPE),
@@ -4974,6 +5032,7 @@ static SLang_Intrin_Fun_Type Array_Table [] =
    MAKE_INTRINSIC_0("wherediff", array_wherediff, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("reshape", array_reshape, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_reshape", _array_reshape, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_array_byteswap", byteswap_intrin, SLANG_VOID_TYPE),
 #if 0
    MAKE_INTRINSIC_0("__aget", aget_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("__aput", aput_intrin, SLANG_VOID_TYPE),

@@ -2,7 +2,7 @@
 
 testing_feature ("pack and unpack functions");
 
-static variable is_lil_endian = (pack ("j", 0xFF)[0] == 0xFF);
+static variable Is_Lil_Endian = (pack ("j", 0xFF)[0] == 0xFF);
 
 static define test_pack ()
 {
@@ -22,7 +22,7 @@ static define test_pack ()
 
 variable X = 0x12345678L;
 variable S = "\x12\x34\x56\x78";
-if (is_lil_endian) S = "\x78\x56\x34\x12";
+if (Is_Lil_Endian) S = "\x78\x56\x34\x12";
 
 test_pack (">k", "\x12\x34\x56\x78", X);
 test_pack ("<k", "\x78\x56\x34\x12", X);
@@ -165,6 +165,64 @@ test_pack_format ("cjDCkcqc",
 		  %cxj-xxxxD-------cxxxk---cxxxxxxxq-------c
 		  "cx1jx4DCx3kcx7qc", 41);
 #endif
+
+private define test_byteswap (c)
+{
+   variable a, b, type;
+
+   foreach type ([Util_Arith_Types,
+#ifexists
+		  Complex_Type,
+#endif
+		 ])
+     {
+#ifexists Complex_Type
+	if (type == Complex_Type)
+	  c = c + PI*1j;
+#endif
+	a = typecast (c, type);
+	b = _array_byteswap (a, 'n', 'n');
+	if (type != _typeof(b))
+	  failed ("_array_byteswap %S produced wrong type: %S", a, b);
+	ifnot (_eqs (a, b))
+	  failed ("_array_byteswap(%S,N,N) produced %S with unexpected values", a, b);
+
+	if (Is_Lil_Endian)
+	  b = _array_byteswap (a, 'n', 'l');
+	else
+	  b = _array_byteswap (a, 'n', 'b');
+	ifnot (_eqs (a, b))
+	  failed ("_array_byteswap(%S,N,native B|L) produced %S with unexpected values", a, b);
+
+	if (Is_Lil_Endian)
+	  b = _array_byteswap (a, 'l', 'n');
+	else
+	  b = _array_byteswap (a, 'b', 'n');
+	ifnot (_eqs (a, b))
+	  failed ("_array_byteswap(%S,native B|L,N) produced %S with unexpected values", a, b);
+
+	if (Is_Lil_Endian)
+	  b = _array_byteswap (a, 'l', 'b');
+	else
+	  b = _array_byteswap (a, 'b', 'l');
+
+	if (length (a) && (type != Char_Type) && (type != UChar_Type))
+	  {
+	     if (_eqs (a, b))
+	       failed ("_array_byteswap(%S,L<->B) made no difference", a);
+	  }
+
+	if (Is_Lil_Endian)
+	  b = _array_byteswap (__tmp(b), 'b', 'l');
+	else
+	  b = _array_byteswap (__tmp(b), 'l', 'b');
+	ifnot (_eqs (a, b))
+	  failed ("_array_byteswap(%S,L->B->L) produced %S with unexpected values", a, b);
+     }
+}
+test_byteswap ([1:10]);
+test_byteswap ([1:-1]);		       %  empty array
+test_byteswap (0xABCDh);	       %  scalar
 
 print ("Ok\n");
 exit (0);

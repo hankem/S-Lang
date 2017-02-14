@@ -10939,6 +10939,41 @@ toc
 
 --------------------------------------------------------------
 
+_array_byteswap
+
+ SYNOPSIS
+  Convert an array from one endianness to another
+
+ USAGE
+  b = _array_byteswap (Array_Type a, Int_Type from, Int_Type to)
+
+ DESCRIPTION
+The `_array_byteswap' function converts the elements of an array
+from one endianess to another via a byte-swapping operation.  The
+parameters `from' and `to' indicate the endianesss of the
+input and output arrays, respectively.  The values for `from' and
+`to' parameters must be one of the following:
+
+   'B', 'b', '>'  : Big Endian (network order)
+   'L', 'l', '<'  : Little Endian
+   'N', 'n', '='  : Native (host order)
+
+The function returns an array of the corresponding byte-swapped
+elements.
+
+ NOTES
+If the parameter `a' is a scalar, a corresponding byte-swapped
+scalar will be returned.
+
+If the object represented by the parameter `a' cannot be
+byteswapped, an exception will be thrown.  For example, an error will
+be thrown if `a' is a String_Type object.
+
+ SEE ALSO
+  pack, unpack, typecast
+
+--------------------------------------------------------------
+
 atof
 
  SYNOPSIS
@@ -11342,7 +11377,7 @@ typecast
   number.
 
  SEE ALSO
-  int, double, typeof
+  int, double, typeof, _array_byteswap
 
 --------------------------------------------------------------
 
