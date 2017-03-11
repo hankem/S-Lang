@@ -723,12 +723,17 @@ static void rpn_parse_line (_pSLang_Token_Type *tok)
 static int get_identifier_token (_pSLang_Token_Type *tok, int string_ok)
 {
    int type = get_token (tok);
+
    if ((type == IDENT_TOKEN)
        || (string_ok && (type == STRING_TOKEN)))
      return 0;
 
-   if (IDENT_TOKEN == get_token (tok))
-     return IDENT_TOKEN;
+   if (string_ok && (tok->flags & SLTOKEN_VALUE_IS_RESERVED))
+     {
+	if (EOF_TOKEN == _pSLtoken_init_slstring_token (tok, IDENT_TOKEN, tok->v.s_val, strlen(tok->v.s_val)))
+	  return -1;
+	return 0;
+     }
 
    _pSLparse_error (SL_SYNTAX_ERROR, "Expecting identifier", tok, 0);
    return -1;
@@ -1934,7 +1939,13 @@ static _pSLang_Token_Type *
 	else
 	  {
 	     if ((IDENT_TOKEN != ctok->type) && (ctok->type != STRING_TOKEN))
-	       break;
+	       {
+		  if (0 == (ctok->flags & SLTOKEN_VALUE_IS_RESERVED))
+		    break;
+		  /* Allow field names such as "public", ... */
+		  if (EOF_TOKEN == _pSLtoken_init_slstring_token (ctok, STRING_TOKEN, ctok->v.s_val, strlen(ctok->v.s_val)))
+		    break;
+	       }
 	  }
 
 	new_tok = allocate_token ();

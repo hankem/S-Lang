@@ -4,7 +4,7 @@ testing_feature ("structures");
 
 variable S = struct
 {
-   a, b, c
+   a, b, c,
 };
 
 S.a = "a";
@@ -737,6 +737,38 @@ private define test_intrinsic_structure ()
      failed ("Intrinsic_Struct field read/write error");
 }
 test_intrinsic_structure();
+
+private define test_struct_with_reserved_fields ()
+{
+   variable s = struct
+     {
+	public = "*public*",
+	define = "*define*",
+	not = "*not*",
+	xor = "*xor*",
+	then = "*then*",
+	else = "*else*",
+	struct = "*struct*",
+     };
+
+   variable name, names = get_struct_field_names (s);
+   foreach name (names)
+     {
+	variable v = get_struct_field (s, name);
+	if (v != "*$name*"$)
+	  failed ("struct with reserved name %S", name);
+     }
+   s.struct = struct
+     {
+	struct = "<struct>",
+     };
+   if (s.struct.struct != "<struct>")
+     failed ("s.struct with struct failure");
+   s.struct.struct = "foo";
+   if (s.struct.struct != "foo")
+     failed ("s.struct as LVALUE");
+}
+test_struct_with_reserved_fields ();
 
 print ("Ok\n");
 exit (0);

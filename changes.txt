@@ -20,6 +20,14 @@ Changes since 2.3.1a
 7. src/slpack.c: Added an intrinsic function (_array_byteswap) that
    may be used to convert the values of an array from one endianness
    to another.
+8. src/slparse.c: It is now possible to use reserved words as struct
+   field names without quoting them.  For example, it is now possible
+   to write
+              s = struct { public = value };
+   Previously, this required the field name to be quoted:
+              s = struct { "public" = value };
+
+  
 
 {{{ Previous Versions
 

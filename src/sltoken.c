@@ -76,9 +76,11 @@ static void free_static_sval_token (_pSLang_Token_Type *tok)
 _pSLtok_Type _pSLtoken_init_slstring_token (_pSLang_Token_Type *tok, _pSLtok_Type type,
 					    SLCONST char *s, SLstrlen_Type len)
 {
-   if (NULL == (tok->v.s_val = _pSLstring_make_hashed_string (s, len, &tok->hash)))
+   char *sval;
+   if (NULL == (sval = _pSLstring_make_hashed_string (s, len, &tok->hash)))
      return tok->type = EOF_TOKEN;
 
+   tok->v.s_val = sval;
    tok->free_val_func = free_slstring_token_val;
    return tok->type = type;
 }
@@ -541,6 +543,7 @@ static int get_ident_token (_pSLang_Token_Type *tok, unsigned char *s, unsigned 
      {
 	tok->v.s_val = table->name;
 	tok->free_val_func = free_static_sval_token;
+	tok->flags |= SLTOKEN_VALUE_IS_RESERVED;
 	return (tok->type = table->type);
      }
 
