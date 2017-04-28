@@ -416,9 +416,14 @@ degrees of freedom.
 \synopsis{Perform a Student t-test}
 \usage{pval = t_test (X, mu [,&t])}
 \description
- This function computes Student's t-statistic and returns the p-value
- that the data X are consistent with a Gaussian distribution with a
- mean of \exmp{mu}.  \opt-3-parm{statistic}
+ The one-sample t-test may be used to test that the population mean has a
+ specified value under the null hypothesis.  Here, \exmp{X} represents a
+ random sample drawn from the population and \exmp{mu} is the
+ specified mean of the population.   This function computes Student's
+ t-statistic and returns the p-value
+ that the data X were randomly sampled from a population with the
+ specified mean.
+ \opt-3-parm{statistic}
 \qualifiers
  The following qualifiers may be used to specify a 1-sided test:
 #v+
@@ -426,6 +431,10 @@ degrees of freedom.
    side=">"       Perform a right-tailed test
 #v-
 \notes
+ While the parent population need not be normal, the test assumes
+ that random samples drawn from this distribution have means that
+ are normally distributed.
+
  Strictly speaking, this test should only be used if the variance of
  the data are equal to that of the assumed parent distribution.  Use
  the Mann-Whitney-Wilcoxon (\exmp{mw_test}) if the underlying

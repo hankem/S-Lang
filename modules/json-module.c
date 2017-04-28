@@ -895,14 +895,61 @@ static char *String_Map[128] = /*{{{*/
 };
 /*}}}*/
 
-static SLstrlen_Type compute_multibyte_char_len (unsigned char ch) /*{{{*/
+/* Adapted from SLutf8.c */
+static int is_invalid_or_overlong_utf8 (SLuchar_Type *u, unsigned int len)
 {
-   return ((ch & 0xE0) == 0xC0) ? 2  /* (ch & 0b11100000) == 0b11000000 */
-        : ((ch & 0xF0) == 0xE0) ? 3  /* (ch & 0b11110000) == 0b11100000 */
-        : ((ch & 0xF8) == 0xF0) ? 4  /* (ch & 0b11111000) == 0b11110000 */
-        : ((ch & 0xFC) == 0xF8) ? 5  /* (ch & 0b11111100) == 0b11111000 */
-        :                         6;
+   unsigned int i;
+   unsigned char ch, ch1;
+
+   /* Check for invalid sequences */
+   for (i = 1; i < len; i++)
+     {
+	if ((u[i] & 0xC0) != 0x80)
+	  return 1;
+     }
+
+   /* Illegal (overlong) sequences */
+   /*           1100000x (10xxxxxx) */
+   /*           11100000 100xxxxx (10xxxxxx) */
+   /*           11110000 1000xxxx (10xxxxxx 10xxxxxx) */
+   /*           11111000 10000xxx (10xxxxxx 10xxxxxx 10xxxxxx) */
+   /*           11111100 100000xx (10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx) */
+   ch = *u;
+   if ((ch == 0xC0) || (ch == 0xC1))
+     return 1;
+
+   ch1 = u[1];
+   if (((ch1 & ch) == 0x80)
+       && ((ch == 0xE0)
+	   || (ch == 0xF0)
+	   || (ch == 0xF8)
+	   || (ch == 0xFC)))
+     return 1;
+
+   return 0;
 }
+
+static SLstrlen_Type compute_multibyte_char_len (char *p, char *pmax) /*{{{*/
+{
+   SLstrlen_Type len;
+   unsigned char ch;
+
+   ch = (unsigned char)*p;
+   len = ((ch & 0xE0) == 0xC0) ? 2  /* (ch & 0b11100000) == 0b11000000 */
+     : ((ch & 0xF0) == 0xE0) ? 3  /* (ch & 0b11110000) == 0b11100000 */
+     : ((ch & 0xF8) == 0xF0) ? 4  /* (ch & 0b11111000) == 0b11110000 */
+     : ((ch & 0xFC) == 0xF8) ? 5  /* (ch & 0b11111100) == 0b11111000 */
+     :                         6;
+
+   if (p + len > pmax)
+     return 1;
+
+   if (is_invalid_or_overlong_utf8 ((SLuchar_Type *)p, len))
+     return 1;
+
+   return len;
+}
+
 /*}}}*/
 
 static char *alloc_encoded_json_string (char *ptr, char *end_of_input_string, SLstrlen_Type *lenp) /*{{{*/
@@ -919,8 +966,9 @@ static char *alloc_encoded_json_string (char *ptr, char *end_of_input_string, SL
 	     continue;
 	  }
 
-	len += 6;
-	ptr += compute_multibyte_char_len (ch);
+	len += 6;		       /* FIXME: Does not handle 0x1UUUU */
+	ptr += compute_multibyte_char_len (ptr, end_of_input_string);
+
 	if (ptr > end_of_input_string)
 	  {
 	     SLang_verror (Json_Invalid_Json_Error, "Invalid UTF-8 at end of string");
@@ -933,7 +981,8 @@ static char *alloc_encoded_json_string (char *ptr, char *end_of_input_string, SL
 }
 /*}}}*/
 
-static void fill_encoded_json_string (char *ptr, char *end_of_input_string, char *dest_ptr) /*{{{*/
+static char *fill_encoded_json_string (char *ptr, char *end_of_input_string,
+				       char *dest_ptr) /*{{{*/
 {
    *dest_ptr++ = STRING_DELIMITER;
 
@@ -957,7 +1006,14 @@ static void fill_encoded_json_string (char *ptr, char *end_of_input_string, char
 	  }
 
 	/* We cannot use SLutf8_decode, since we need to handle invalid_or_overlong_utf8 or ILLEGAL_UNICODE as well. */
-	len = compute_multibyte_char_len (ch);
+	len = compute_multibyte_char_len (ptr, end_of_input_string);
+	if (len == 1)
+	  {
+	     /* Malformed or overlong */
+	     sprintf (dest_ptr, "<%02X>", (unsigned char)*ptr);
+	     dest_ptr += 4;
+	  }
+	else
 	  {  /* stolen from slutf8.c : fast_utf8_decode */
 	     static unsigned char masks[7] = { 0, 0, 0x1F, 0xF, 0x7, 0x3, 0x1 };
 	     SLwchar_Type w = (ch & masks[len]);
@@ -965,13 +1021,23 @@ static void fill_encoded_json_string (char *ptr, char *end_of_input_string, char
 	     for (i = 1; i < len; i++)
 	       w = (w << 6) | (ptr[i] & 0x3F);
 
-	     sprintf (dest_ptr, "\\u%04X", w);
-	     dest_ptr += 6;
+	     if (w > 0xFFFF)
+	       {
+		  /* FIXME: Must be encoded as a pair of UTF-16 surrogates */
+		  memcpy (dest_ptr, ptr, len);
+		  dest_ptr += len;
+	       }
+	     else
+	       {
+		  sprintf (dest_ptr, "\\u%04X", w);
+		  dest_ptr += 6;
+	       }
 	  }
 	ptr += len;
      }
    *dest_ptr++ = STRING_DELIMITER;
    *dest_ptr = 0;
+   return dest_ptr;
 }
 /*}}}*/
 
@@ -1001,8 +1067,10 @@ static void json_encode_string (void) /*{{{*/
    if ((encoded_json_string = alloc_encoded_json_string (string, string + len, &new_len)) != NULL)
      {
 	SLang_BString_Type *b;
+	char *enc_end;
 
-	fill_encoded_json_string (string, string + len, encoded_json_string);
+	enc_end = fill_encoded_json_string (string, string + len, encoded_json_string);
+	new_len = enc_end - encoded_json_string;
 
 	b = SLbstring_create_malloced ((unsigned char *)encoded_json_string, new_len, 1);
 	if (b != NULL)

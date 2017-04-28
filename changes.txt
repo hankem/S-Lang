@@ -27,7 +27,8 @@ Changes since 2.3.1a
    Previously, this required the field name to be quoted:
               s = struct { "public" = value };
 
-  
+9. modules/json-module.c: Malformed UTF-8 was not being properly
+   handled by the json-encoder.
 
 {{{ Previous Versions
 
