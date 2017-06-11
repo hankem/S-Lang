@@ -29,6 +29,8 @@ Changes since 2.3.1a
 
 9. modules/json-module.c: Malformed UTF-8 was not being properly
    handled by the json-encoder.
+10. modules/csv-module.c: The decode_csv_row function was ignoring the
+    delimiter setting after a quoted string.
 
 {{{ Previous Versions
 

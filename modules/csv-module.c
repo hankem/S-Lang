@@ -220,7 +220,7 @@ static int decode_csv_row (CSV_Type *csv, int flags)
 		       continue;
 		    }
 
-		  if ((ch != ',') && (ch != 0) && (ch != '\n'))
+		  if ((ch != delimchar) && (ch != 0) && (ch != '\n'))
 		    {
 		       SLang_verror (SL_Data_Error, "Expecting a delimiter after an end-quote character in field #%ld",
 				    (long)av.num+1);
