@@ -1019,7 +1019,11 @@ static void statement (_pSLang_Token_Type *ctok)
 	append_token_of_type (CBRACE_TOKEN);
 
 	append_token_of_type (OBRACE_TOKEN);
-	if (SEMICOLON_TOKEN != get_token (ctok))
+	if (SEMICOLON_TOKEN == get_token (ctok))
+	  {
+	     (void) append_int_as_token (1);
+	  }
+	else
 	  {
 #if SLANG_HAS_BOSEOS
 	     eos = append_bos (ctok, 2);
@@ -1035,7 +1039,6 @@ static void statement (_pSLang_Token_Type *ctok)
 	       }
 	  }
 	append_token_of_type (CBRACE_TOKEN);
-
 	append_token_of_type (OBRACE_TOKEN);
 	if (CPAREN_TOKEN != get_token (ctok))
 	  {

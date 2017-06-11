@@ -220,6 +220,14 @@ define check_for ()
 
    if ((s1 != s) or (s != 55))
      failed ("_for: s1=%S, s=%S", s1, s);
+
+   i = 0;
+   for (;;i++)
+     {
+	if (i == 5) break;
+     }
+   if (i != 5)
+     failed ("The for statement without a conditional failed");
 }
 
 check_for ();

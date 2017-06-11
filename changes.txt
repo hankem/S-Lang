@@ -31,6 +31,8 @@ Changes since 2.3.1a
    handled by the json-encoder.
 10. modules/csv-module.c: The decode_csv_row function was ignoring the
     delimiter setting after a quoted string.
+11. src/slparse.c: A for statement lacking a conditional expression
+    was not being properly handled (noticed by rocket penguin).
 
 {{{ Previous Versions
 
