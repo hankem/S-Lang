@@ -821,14 +821,23 @@ static int push_struct_of_type (SLtype type, _pSLang_Struct_Type *s);
 #define NUM_BINARY_OPS	(SLANG_BINARY_OP_MAX-SLANG_BINARY_OP_MIN+1)
 #define NUM_UNARY_OPS	(SLANG_UNARY_OP_MAX-SLANG_UNARY_OP_MIN+1)
 
+typedef struct Binary_Op_List_Type_
+{
+   SLtype type;
+   SLang_Class_Type *result_cl;
+   SLang_Name_Type *binary_func;
+   struct Binary_Op_List_Type_ *next;
+}
+Binary_Op_List_Type;
+
 typedef struct
 {
-   SLang_Class_Type *result_any_this_cl;
-   SLang_Class_Type *result_this_any_cl;
-   SLang_Class_Type *result_this_this_cl;
-   SLang_Name_Type *any_binary_this;
-   SLang_Name_Type *this_binary_void;
-   SLang_Name_Type *this_binary_this;
+   SLang_Name_Type *this_op_any;
+   SLang_Class_Type *result_this_op_any_cl;
+   SLang_Name_Type *any_op_this;
+   SLang_Class_Type *result_any_op_this_cl;
+   Binary_Op_List_Type *that_op_this_list;
+   Binary_Op_List_Type *this_op_that_list;
 }
 Binary_Op_Info_Type;
 
@@ -999,48 +1008,50 @@ static int struct_unary (int op, SLtype a_type, VOID_STAR ap, SLuindex_Type na,
    return -1;
 }
 
-static int this_binary_any_result (int op, SLtype a, SLtype b, SLtype *result)
+static Binary_Op_List_Type *find_type_in_binary_list (Binary_Op_List_Type *list, SLtype type)
+{
+   while ((list != NULL) && (list->type != type))
+     list = list->next;
+
+   return list;
+}
+
+static int this_op_any_result (int op, SLtype a, SLtype b, SLtype *result)
 {
    Binary_Op_Info_Type *bi;
+   Binary_Op_List_Type *item;
    SLang_Class_Type *cl;
 
-   (void) b;
    if (NULL == (bi = find_binary_info (op, a)))
      return 0;
 
-   if (NULL == (cl = bi->result_this_any_cl))
+   if (NULL != (item = find_type_in_binary_list (bi->this_op_that_list, b)))
+     cl = item->result_cl;
+   else
+     cl = bi->result_this_op_any_cl;
+
+   if (cl == NULL)
      return 0;
 
    *result = cl->cl_data_type;
    return 1;
 }
 
-static int this_binary_this_result (int op, SLtype a, SLtype b, SLtype *result)
+static int any_op_this_result (int op, SLtype a, SLtype b, SLtype *result)
 {
    Binary_Op_Info_Type *bi;
+   Binary_Op_List_Type *item;
    SLang_Class_Type *cl;
 
-   (void) b;
-   if (NULL == (bi = find_binary_info (op, a)))
-     return 0;
-
-   if (NULL == (cl = bi->result_this_this_cl))
-     return 0;
-
-   *result = cl->cl_data_type;
-   return 1;
-}
-
-static int any_binary_this_result (int op, SLtype a, SLtype b, SLtype *result)
-{
-   Binary_Op_Info_Type *bi;
-   SLang_Class_Type *cl;
-
-   (void) a;
    if (NULL == (bi = find_binary_info (op, b)))
      return 0;
 
-   if (NULL == (cl = bi->result_any_this_cl))
+   if (NULL != (item = find_type_in_binary_list (bi->that_op_this_list, a)))
+     cl = item->result_cl;
+   else
+     cl = bi->result_any_op_this_cl;
+
+   if (cl == NULL)
      return 0;
 
    *result = cl->cl_data_type;
@@ -1101,12 +1112,15 @@ static int do_struct_binary (SLang_Name_Type *function,
    return -1;
 }
 
-static int this_binary_any (int op,
-			     SLtype a, VOID_STAR ap, SLuindex_Type na,
-			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
-			     VOID_STAR cp)
+static int this_op_any (int op,
+			SLtype a, VOID_STAR ap, SLuindex_Type na,
+			SLtype b, VOID_STAR bp, SLuindex_Type nb,
+			VOID_STAR cp)
 {
    Binary_Op_Info_Type *bi;
+   Binary_Op_List_Type *item;
+   SLang_Name_Type *nt;
+   SLang_Class_Type *cl;
 
    if (NULL == (bi = find_binary_info (op, a)))
      {
@@ -1114,18 +1128,32 @@ static int this_binary_any (int op,
 	return -1;
      }
 
-   return do_struct_binary (bi->this_binary_void,
+   if (NULL != (item = find_type_in_binary_list (bi->this_op_that_list, b)))
+     {
+	nt = item->binary_func;
+	cl = item->result_cl;
+     }
+   else
+     {
+	nt = bi->this_op_any;
+	cl = bi->result_this_op_any_cl;
+     }
+
+   return do_struct_binary (nt,
 			    _pSLclass_get_class (a), ap, na,
 			    _pSLclass_get_class (b), bp, nb,
-			    bi->result_this_any_cl, cp);
+			    cl, cp);
 }
 
-static int any_binary_this (int op,
-			     SLtype a, VOID_STAR ap, SLuindex_Type na,
-			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
-			     VOID_STAR cp)
+static int any_op_this (int op,
+			SLtype a, VOID_STAR ap, SLuindex_Type na,
+			SLtype b, VOID_STAR bp, SLuindex_Type nb,
+			VOID_STAR cp)
 {
    Binary_Op_Info_Type *bi;
+   Binary_Op_List_Type *item;
+   SLang_Name_Type *nt;
+   SLang_Class_Type *cl;
 
    if (NULL == (bi = find_binary_info (op, b)))
      {
@@ -1133,29 +1161,21 @@ static int any_binary_this (int op,
 	return -1;
      }
 
-   return do_struct_binary (bi->any_binary_this,
-			    _pSLclass_get_class (a), ap, na,
-			    _pSLclass_get_class (b), bp, nb,
-			    bi->result_any_this_cl, cp);
-}
-
-static int this_binary_this (int op,
-			     SLtype a, VOID_STAR ap, SLuindex_Type na,
-			     SLtype b, VOID_STAR bp, SLuindex_Type nb,
-			     VOID_STAR cp)
-{
-   Binary_Op_Info_Type *bi;
-
-   if (NULL == (bi = find_binary_info (op, a)))
+   if (NULL != (item = find_type_in_binary_list (bi->that_op_this_list, a)))
      {
-	_pSLang_verror (SL_INTERNAL_ERROR, "binary-op not supported");
-	return -1;
+	nt = item->binary_func;
+	cl = item->result_cl;
+     }
+   else
+     {
+	nt = bi->any_op_this;
+	cl = bi->result_any_op_this_cl;
      }
 
-   return do_struct_binary (bi->this_binary_this,
+   return do_struct_binary (nt,
 			    _pSLclass_get_class (a), ap, na,
 			    _pSLclass_get_class (b), bp, nb,
-			    bi->result_this_this_cl, cp);
+			    cl, cp);
 }
 
 static int register_unary_ops (Struct_Info_Type *si, SLtype t)
@@ -1176,11 +1196,10 @@ static int register_binary_ops (Struct_Info_Type *si, SLtype t)
      return 0;
 
    if ((-1 == SLclass_add_binary_op (t, SLANG_VOID_TYPE,
-				     this_binary_any, this_binary_any_result))
+				     this_op_any, this_op_any_result))
        || (-1 == SLclass_add_binary_op (SLANG_VOID_TYPE, t,
-					any_binary_this, any_binary_this_result))
-       || (-1 == SLclass_add_binary_op (t, t,
-					this_binary_this, this_binary_this_result)))
+					any_op_this, any_op_this_result))
+       || (-1 == SLclass_add_binary_op (t, t, this_op_any, this_op_any_result)))
      return -1;
 
    si->binary_registered = 1;
@@ -1251,49 +1270,79 @@ static Binary_Op_Info_Type *find_binary_info (int op, SLtype t)
   return si->bi + op;
 }
 
+static int add_binary_op_to_list (Binary_Op_List_Type **listp,
+				  SLang_Class_Type *cl,
+				  SLang_Name_Type *nt, SLtype type)
+{
+   Binary_Op_List_Type *item, *list = *listp;
+
+   if (NULL == (item = find_type_in_binary_list (list, type)))
+     {
+	item = (Binary_Op_List_Type *)SLmalloc (sizeof(Binary_Op_List_Type));
+	if (item == NULL)
+	  return -1;
+	memset (item, 0, sizeof(Binary_Op_List_Type));
+	item->type = type;
+
+	if (list == NULL)
+	  *listp = item;
+	else
+	  {
+	     while (list->next != NULL) list = list->next;
+	     list->next = item;
+	  }
+	/* drop */
+     }
+   SLang_free_function (item->binary_func);
+   item->binary_func = nt;
+   item->result_cl = cl;
+   return 0;
+}
+
 static int add_binary_op (char *op,
 			  SLtype result_type, SLang_Name_Type *nt,
 			  SLtype a_type, SLtype b_type)
 {
    Binary_Op_Info_Type *bi;
-   int opcode;
    SLang_Class_Type *cl;
+   int opcode;
 
    if (-1 == (opcode = _pSLclass_get_binary_opcode (op)))
      return -1;
 
-   if (a_type == SLANG_ANY_TYPE)
-     bi = find_binary_info (opcode, b_type);
-   else
-     bi = find_binary_info (opcode, a_type);
-
-   if (bi == NULL)
-     return -1;
-
    cl = _pSLclass_get_class (result_type);
 
-   if (a_type != SLANG_ANY_TYPE)
+   if ((a_type == SLANG_ANY_TYPE)
+       || (NULL == find_struct_info (a_type, 0)))
      {
-	if (b_type == SLANG_ANY_TYPE)
+	/* something op this form */
+	bi = find_binary_info (opcode, b_type);
+	if (bi == NULL)
+	  return -1;
+	if (a_type == SLANG_ANY_TYPE)
 	  {
-	     if (bi->this_binary_void != NULL)
-	       SLang_free_function (bi->this_binary_void);
-	     bi->this_binary_void = nt;
-	     bi->result_this_any_cl = cl;
+	     SLang_free_function (bi->any_op_this);   /* NULL ok */
+	     bi->any_op_this = nt;
+	     bi->result_any_op_this_cl = cl;
 	     return 0;
 	  }
-	if (bi->this_binary_this != NULL)
-	  SLang_free_function (bi->this_binary_this);
-	bi->this_binary_this = nt;
-	bi->result_this_this_cl = cl;
+
+	return add_binary_op_to_list (&bi->that_op_this_list, cl, nt, a_type);
+     }
+
+   /* Otherwise this op something form */
+   bi = find_binary_info (opcode, a_type);
+   if (bi == NULL)
+     return -1;
+   if (b_type == SLANG_ANY_TYPE)
+     {
+	SLang_free_function (bi->this_op_any);   /* NULL ok */
+	bi->this_op_any = nt;
+	bi->result_this_op_any_cl = cl;
 	return 0;
      }
 
-   if (bi->any_binary_this != NULL)
-     SLang_free_function (bi->any_binary_this);
-   bi->any_binary_this = nt;
-   bi->result_any_this_cl = cl;
-   return 0;
+   return add_binary_op_to_list (&bi->this_op_that_list, cl, nt, b_type);
 }
 
 static int add_unary_op (char *op,

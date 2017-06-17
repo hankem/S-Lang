@@ -322,6 +322,12 @@ private define scalar_vector_mul (a, u)
 }
 __add_binary ("*", Vector_Type, &scalar_vector_mul, Any_Type, Vector_Type);
 
+private define dotprod (u, v)
+{
+   return u.x*v.x + u.y*v.y + u.z*v.z;
+}
+__add_binary ("*", Double_Type, &dotprod, Vector_Type, Vector_Type);
+
 private define vector_scalar_mul (v, a)
 {
    return scalar_vector_mul (a,v);
@@ -364,6 +370,40 @@ private define vector_aput (i, v)
    v.z[i] = u.z;
 }
 __add_aput (Vector_Type, &vector_aput);
+
+typedef struct
+{
+   ax, ay, az,
+}
+Matrix33_Type;
+
+private define matrix33 (ax, ay, az)
+{
+   variable m = @Matrix33_Type;
+   m.ax = vector (ax[0], ax[1], ax[2]);
+   m.ay = vector (ay[0], ay[1], ay[2]);
+   m.az = vector (az[0], az[1], az[2]);
+   return m;
+}
+private define matrix_vector_mul (m, v)
+{
+   return vector (m.ax*v, m.ay*v, m.az*v);
+}
+__add_binary ("*", Vector_Type, &matrix_vector_mul, Matrix33_Type, Vector_Type);
+
+private define test_matrix_vector_mul ()
+{
+   variable v = vector (1, 2, 3);
+   variable m = matrix33 ([4, 5, 6], [7, 8, 9], [1,2,3]);
+   variable mv = m*v;
+   if (typeof (mv) != Vector_Type)
+     failed ("typeof Matrix33_Type*Vector_Type");
+   if ((mv.x != (4*1+5*2+6*3))
+       || (mv.y != (7*1+8*2+9*3))
+       || (mv.z != (1*1+2*2+3*3)))
+     failed ("Matrix33_Type*Vector_Type");
+}
+test_matrix_vector_mul ();
 
 private define test_aget_aput ()
 {

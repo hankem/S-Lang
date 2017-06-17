@@ -33,6 +33,8 @@ Changes since 2.3.1a
     delimiter setting after a quoted string.
 11. src/slparse.c: A for statement lacking a conditional expression
     was not being properly handled (noticed by rocket penguin).
+12. src/struct.c: Rewrote the __add_binary function, which was not
+    properly handling multiple data types.
 
 {{{ Previous Versions
 
