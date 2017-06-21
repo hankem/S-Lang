@@ -35,6 +35,7 @@ Changes since 2.3.1a
     was not being properly handled (noticed by rocket penguin).
 12. src/struct.c: Rewrote the __add_binary function, which was not
     properly handling multiple data types.
+13. changes.txt: Converted to UTF-8 (Miroslav Lichvar)
 
 {{{ Previous Versions
 
@@ -2393,7 +2394,7 @@ Changes since 2.0.0 pre-release 3
 12. src/mkfiles/makefile.all: DOS/Windows: The response file was not
     being properly generated (SANGOI DINO (SANGOID at lloydadriatico, it)
 13. src/slang.c: The autoload function may be used to load a file into
-    a namespace. (Based upon an idea from Jörg Sommer (joerg at alea,
+    a namespace. (Based upon an idea from JÃ¶rg Sommer (joerg at alea,
     gnuu, de)
 14. src/slstring.c: New hash function (from Bob Jenkins-- see
     See http://burtleburtle.net/bob/hash/evahash.html)
@@ -2810,7 +2811,7 @@ Changes since 1.4.1
     properly handled in do..while statements.  src/test/loops.sl added
     for testing.
 2.  slparse.c: avoid potential (rare?) infinite loop when slang error occurs
-    (Stanis³a Bartkowski <sb at protest.com.pl>).
+    (StanisÅ‚a Bartkowski <sb at protest.com.pl>).
 3.  slsmg.c: When SLsmg_init_smg is called, mark the display as trashed.
 4.  It is now possible to add intrinsics to their own namespace via
     new SLns_add* functions.  Moreover, the import function now takes
@@ -3049,7 +3050,7 @@ Changes since 1.2.2
    initialize.
 5. An array such as [[1,2,3],[4,5,6]] is interpreted as a 2-row
    3-column array.
-6. Amiga patches from Jörg Strohmayer <j_s at gmx.de>.
+6. Amiga patches from JÃ¶rg Strohmayer <j_s at gmx.de>.
 7. New table types:
 
        SLang_IConstant_Type
@@ -3368,7 +3369,7 @@ Changes since 1.2.2
 
         #ifeval (_slang_version > 9900) || (x == 1)
 
-63. sl-feat.h: Patch from Jörg Strohmayer <j_s at gmx.de> to define
+63. sl-feat.h: Patch from JÃ¶rg Strohmayer <j_s at gmx.de> to define
     _SLANG_MAP_VTXX_8BIT=1 for AMIGA.
 
 64. New intrinsics:
