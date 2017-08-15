@@ -342,7 +342,8 @@ static int parse_double (SLFUTURE_CONST char **sp, SLFUTURE_CONST char *smax, do
      }
 
    if ((b == b_after_decimal_position)
-       && (has_leading_zeros == 0))
+       && (has_leading_zeros == 0)
+       && (expon == 0))		       /* .0 ==> expon=-1 */
      {
 	*sp = start_pos;
 	errno = EINVAL;

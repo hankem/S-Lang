@@ -150,6 +150,8 @@ test_scanf ("-0.E-", "%lf%s", 0, "E-", 2);
 test_scanf ("-0.E+", "%lf%s", 0, "E+", 2);
 test_scanf ("-0.E+X", "%lf%s", 0, "E+X", 2);
 test_scanf ("-1.E+0X", "%lf%s", -1, "X", 2);
+test_scanf (".000", "%lf", 0.0, "", 1);
+test_scanf ("-.000", "%lf", -0.0, "", 1);
 test_scanf ("-0+X", "%lf%s", 0, "+X", 2);
 test_scanf ("0+X", "%lf%s", 0, "+X", 2);
 test_scanf ("0.000000000000E00+X", "%lf%s", 0, "+X", 2);

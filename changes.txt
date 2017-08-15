@@ -36,6 +36,8 @@ Changes since 2.3.1a
 12. src/struct.c: Rewrote the __add_binary function, which was not
     properly handling multiple data types.
 13. changes.txt: Converted to UTF-8 (Miroslav Lichvar)
+14. src/slscanf.c: The sscanf function was not parsing ".0" as a
+    floating poing number (zero).
 
 {{{ Previous Versions
 
