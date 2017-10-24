@@ -3684,7 +3684,7 @@ static int array_binary_op (int op,
 		      SLtype, VOID_STAR, SLuindex_Type,
 		      VOID_STAR);
    SLang_Class_Type *a_cl, *b_cl, *c_cl;
-   int no_init, ret;
+   int ret;
 
    if (a_type == SLANG_ARRAY_TYPE)
      {
@@ -3782,9 +3782,6 @@ static int array_binary_op (int op,
 
    ct = NULL;
 
-   no_init = ((c_cl->cl_class_type == SLANG_CLASS_TYPE_SCALAR)
-	      || (c_cl->cl_class_type == SLANG_CLASS_TYPE_VECTOR));
-
 #if SLANG_USE_TMP_OPTIMIZATION
    /* If we are dealing with scalar (or vector) objects, and if the object
     * appears to be owned by the stack, then use it instead of creating a
@@ -3792,7 +3789,8 @@ static int array_binary_op (int op,
     * @  x = [1,2,3,4];
     * @  x = __tmp(x) + 1;
     */
-   if (no_init)
+   if ((c_cl->cl_class_type == SLANG_CLASS_TYPE_SCALAR)
+       || (c_cl->cl_class_type == SLANG_CLASS_TYPE_VECTOR))
      {
 	if ((at != NULL)
 	    && (at->num_refs == 1)
@@ -5151,7 +5149,6 @@ do_array_math_op (int op, int unary_type,
    int (*f) (int, SLtype, VOID_STAR, SLuindex_Type, VOID_STAR);
    SLang_Array_Type *bt;
    SLang_Class_Type *b_cl;
-   int no_init;
 
    if (na != 1)
      {
@@ -5167,9 +5164,6 @@ do_array_math_op (int op, int unary_type,
    if (-1 == coerse_array_to_linear (at))
      return NULL;
 
-   no_init = ((b_cl->cl_class_type == SLANG_CLASS_TYPE_SCALAR)
-	      || (b_cl->cl_class_type == SLANG_CLASS_TYPE_VECTOR));
-
 #if SLANG_USE_TMP_OPTIMIZATION
    /* If we are dealing with scalar (or vector) objects, and if the object
     * appears to be owned by the stack, then use it instead of creating a
@@ -5177,7 +5171,8 @@ do_array_math_op (int op, int unary_type,
     * @  x = [1,2,3,4];
     * @  x = UNARY_OP(__tmp(x));
     */
-   if (no_init
+   if (((b_cl->cl_class_type == SLANG_CLASS_TYPE_SCALAR)
+	|| (b_cl->cl_class_type == SLANG_CLASS_TYPE_VECTOR))
        && (at->num_refs == 1)
        && (at->data_type == b_cl->cl_data_type)
        && (0 == (at->flags & SLARR_DATA_VALUE_IS_READ_ONLY)))

@@ -748,6 +748,7 @@ static SLindex_Type issubbytes (void)
 static SLang_BString_Type *join_bstrings (SLang_BString_Type **data, SLuindex_Type num, SLang_BString_Type *delim,
 					  int tmp_opt_ok)
 {
+   size_t len;
    SLuindex_Type i;
    unsigned char *delim_ptr = NULL, *bytes = NULL;
    SLstrlen_Type delim_len = 0;
@@ -755,7 +756,7 @@ static SLang_BString_Type *join_bstrings (SLang_BString_Type **data, SLuindex_Ty
    unsigned char *ptr;
    SLstrlen_Type dlen;
 
-   size_t len;
+   (void) tmp_opt_ok;
 
    if (num == 0)
      return SLbstring_create ((unsigned char *)"", 0);

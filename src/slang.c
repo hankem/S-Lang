@@ -2625,7 +2625,9 @@ set_struct_obj_lvalue (SLBlock_Type *bc_blk, SLang_Object_Type *objA, int do_fre
 	     if (do_free) free_object (objA, cl);
 	     return -1;
 	  }
+#if SLANG_USE_TMP_OPTIMIZATION
 	free_object (&obj, cl_obj);
+#endif
      }
 
    /* The result of the operation is now on the stack.

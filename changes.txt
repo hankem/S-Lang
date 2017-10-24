@@ -38,6 +38,10 @@ Changes since 2.3.1a
 13. changes.txt: Converted to UTF-8 (Miroslav Lichvar)
 14. src/slscanf.c: The sscanf function was not parsing ".0" as a
     floating poing number (zero).
+15. The library was failing to compile when __tmp operator
+    optimizations were turned off.  The default is to permit such
+    optimizations since they can lead to faster running code and less
+    memory usage.  Bug reported by Henry.
 
 {{{ Previous Versions
 
