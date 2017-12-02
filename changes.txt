@@ -42,6 +42,7 @@ Changes since 2.3.1a
     optimizations were turned off.  The default is to permit such
     optimizations since they can lead to faster running code and less
     memory usage.  Bug reported by Henry.
+16. src/slsh.c: Updated copyright year.
 
 {{{ Previous Versions
 
