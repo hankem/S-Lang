@@ -21,6 +21,7 @@ strongly recommended:
 
    PCRE (Perl Compatible Regular Expression)
      URL: <http://www.pcre.org>
+     *** Note: PCRE2, released in 2015 is currently unsupported.
 
    PNG  (Portable Network Graphics)
      URL: <http://www.libpng.org/pub/png/>
@@ -29,7 +30,7 @@ strongly recommended:
      URL: <http://www.zlib.net/>
 
    ONIGURUMA (Regular expression library)
-     URL: <http://www.geocities.jp/kosako3/oniguruma/>
+     URL: <https://github.com/kkos/oniguruma>
 
 On a Debian system, these libraries can be installed using:
 
