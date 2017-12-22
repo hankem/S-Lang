@@ -21,6 +21,13 @@ struct _CSV_Type
    int flags;
 };
 
+static int check_special_chars (CSV_Type *csv)
+{
+   if (csv->delimchar == 0) csv->delimchar = ',';
+   if (csv->quotechar == 0) csv->quotechar = '"';
+   return 0;
+}
+
 static int execute_read_callback (CSV_Type *csv, char **sptr)
 {
    char *s;
@@ -346,6 +353,7 @@ static void new_csv_decoder_intrin (void)
    if ((-1 == SLang_pop_int (&csv->flags))
        ||(-1 == SLang_pop_char (&csv->quotechar))
        || (-1 == SLang_pop_char (&csv->delimchar))
+       || (-1 == check_special_chars (csv))
        || (-1 == SLang_pop_anytype (&csv->callback_data))
        || (NULL == (csv->read_callback = SLang_pop_function ()))
        || (NULL == (mmt = SLang_create_mmt (CSV_Type_Id, (VOID_STAR)csv))))
@@ -571,6 +579,7 @@ static void new_csv_encoder_intrin (void)
    if ((-1 == SLang_pop_int (&csv->flags))
        ||(-1 == SLang_pop_char (&csv->quotechar))
        || (-1 == SLang_pop_char (&csv->delimchar))
+       || (-1 == check_special_chars (csv))
        || (NULL == (mmt = SLang_create_mmt (CSV_Type_Id, (VOID_STAR)csv))))
      {
 	free_csv_type (csv);

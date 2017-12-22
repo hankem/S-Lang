@@ -45,6 +45,9 @@ Changes since 2.3.1a
 16. src/slsh.c: Updated copyright year.
 17. INSTALL.unx: Corrected the URL for the ONIGURUMA regexp library; added
     a small note that PCRE2 is not supported (Henry Nelson).
+18. modules/csv-module.c: If the delimiter or quote character is
+    specified to be 0, then use the defaults (, and ").
+
 
 {{{ Previous Versions
 
