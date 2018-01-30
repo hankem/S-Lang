@@ -47,7 +47,8 @@ Changes since 2.3.1a
     a small note that PCRE2 is not supported (Henry Nelson).
 18. modules/csv-module.c: If the delimiter or quote character is
     specified to be 0, then use the defaults (, and ").
-
+19. src/sltermin.c: Added support for the new ncurses 32-bit terminfo
+    database entries.
 
 {{{ Previous Versions
 

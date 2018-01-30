@@ -36,7 +36,7 @@ int main (int argc, char **argv)
    puts (t->terminal_names);
    while (*map->name != 0)
      {
-	str = (unsigned char *) SLtt_tigetstr (map->name, (char **) &t);
+	str = (unsigned char *) SLtt_tigetstr ((SLFUTURE_CONST char *)map->name, (char **) &t);
 	if (str == NULL)
 	  {
 	     map++;
@@ -76,7 +76,7 @@ int main (int argc, char **argv)
    while (*map->name != 0)
      {
 	int val;
-	if ((val = SLtt_tigetnum (map->name, (char **) &t)) >= 0)
+	if ((val = SLtt_tigetnum ((SLFUTURE_CONST char *)map->name, (char **) &t)) >= 0)
 	  {
 	     fprintf (stdout, "\t%s#%d\t\t%s\n",
 		      map->name, val,
@@ -85,6 +85,7 @@ int main (int argc, char **argv)
 	map++;
      }
 
+   _pSLtt_tifreeent (t);
    return 0;
 }
 
