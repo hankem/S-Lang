@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.3.3-1: Use INSTALL instead of INSTALL_DATA to install modules to get executable permissions
 dnl# 0.3.3-0: Added $(OBJ_O_DEPS) and $(ELF_O_DEPS) to PROGRAM_OBJECT_RULES
 dnl# 0.3.2-0: Add rpath support for freebsd
 dnl# 0.3.1-0: New output variable: CC_SHARED_FLAGS; CC_SHARED is deprecated
@@ -606,7 +607,7 @@ ELFLIB_MAJOR_MINOR_MICRO="\$(ELFLIB_MAJOR_MINOR).\$(ELF_MICRO_VERSION)"
 dnl# This specifies the target to use in the makefile to install the shared library
 INSTALL_ELFLIB_TARGET="install-elf-and-links"
 ELFLIB_BUILD_NAME="\$(ELFLIB_MAJOR_MINOR_MICRO)"
-INSTALL_MODULE="\$(INSTALL_DATA)"
+INSTALL_MODULE="\$(INSTALL)"
 SLANG_DLL_CFLAGS=""
 M_LIB="-lm"
 

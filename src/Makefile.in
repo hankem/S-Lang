@@ -207,7 +207,7 @@ install-elf-and-links:
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB)
 	-$(RM) $(DEST_LIBDIR)/$(ELFLIB_MAJOR)
 	@echo installing $(ELFLIB_BUILD_NAME) in $(DEST_LIBDIR)
-	$(INSTALL_DATA) $(ELFDIR_ELF_LIB) $(DEST_LIBDIR)/
+	$(INSTALL) $(ELFDIR_ELF_LIB) $(DEST_LIBDIR)/
 	-cd $(DEST_LIBDIR) && $(LN) $(ELFLIB_BUILD_NAME) $(ELFLIB_MAJOR)
 	-cd $(DEST_LIBDIR) && $(LN) $(ELFLIB_MAJOR) $(ELFLIB)
 	@echo ""

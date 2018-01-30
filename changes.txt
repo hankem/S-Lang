@@ -49,6 +49,8 @@ Changes since 2.3.1a
     specified to be 0, then use the defaults (, and ").
 19. src/sltermin.c: Added support for the new ncurses 32-bit terminfo
     database entries.
+20. autoconf/aclocal.m4,src/Makefile.in: Install shared objects
+    (modules and library) with executable permissions.
 
 {{{ Previous Versions
 
