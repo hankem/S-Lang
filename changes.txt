@@ -52,6 +52,8 @@ Changes since 2.3.1a
 20. autoconf/aclocal.m4,src/Makefile.in: Install shared objects
     (modules and library) with executable permissions.
 21. src/sl*.h: Updated Unicode tables from version 9 to 10
+22. src/sltermin.c: Corrected a few typos in the comments (Manfred
+    Hanke).
 
 {{{ Previous Versions
 

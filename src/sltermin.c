@@ -35,7 +35,7 @@ USA.
 
 /* The ncurses terminfo binary files come in two flavors: A legacy
  * format that uses 16 bit integers in the number-section, and a new
- * 32 bit format (nurses 6, from 2018).
+ * 32 bit format (ncurses 6.1, from 2018).
  */
 
 /* Short integers are stored in two 8-bit bytes.  The first byte contains
@@ -81,13 +81,13 @@ static int make_integer32 (unsigned char *buf)
  * divided into six parts in the following order:  the header, terminal
  * names, boolean flags, numbers, strings, and string table.
  *
- * The header section begins the file.  This section contains six short
- * integers in the format described below.  These integers are (1) the magic
- * number (legacy:0432, 01036:32 but); (2) the size, in bytes, of the names section; (3)
- * the number of bytes in the boolean section; (4) the number of integers
- * in the numbers section; (5) the number of offsets (short
- * integers) in the strings section; (6) the size, in bytes, of the string
- * table.
+ * The header section begins the file.  This section contains six
+ * short integers in the format described below.  These integers are
+ * (1) the magic number (legacy:0432, 32 bit:01036); (2) the size, in
+ * bytes, of the names section; (3) the number of bytes in the
+ * boolean section; (4) the number of integers in the numbers
+ * section; (5) the number of offsets (short integers) in the strings
+ * section; (6) the size, in bytes, of the string table.
  */
 
 #define MAGIC_LEGACY 0432
