@@ -1,7 +1,7 @@
 #ifndef SLSTATS_MODULE_H_
 # define SLSTATS_MODULE_H_ 1
 /*
-Copyright (C) 2016 John E. Davis
+Copyright (C) 2017,2018 John E. Davis
 
 This file is part of the S-Lang Library.
 

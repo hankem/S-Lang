@@ -54,6 +54,7 @@ Changes since 2.3.1a
 21. src/sl*.h: Updated Unicode tables from version 9 to 10
 22. src/sltermin.c: Corrected a few typos in the comments (Manfred
     Hanke).
+23. Updated Copyright year to 2018
 
 {{{ Previous Versions
 

@@ -1,5 +1,5 @@
 % -*- mode: slang; mode: fold -*-
-% Copyright (C) 2012-2016 John E. Davis
+% Copyright (C) 2012-2017,2018 John E. Davis
 %
 % This file is part of the S-Lang Library and may be distributed under the
 % terms of the GNU General Public License.  See the file COPYING for

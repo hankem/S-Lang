@@ -1,6 +1,6 @@
 /* SLang Scrolling Window Routines */
 /*
-Copyright (C) 2004-2016 John E. Davis
+Copyright (C) 2004-2017,2018 John E. Davis
 
 This file is part of the S-Lang Library.
 

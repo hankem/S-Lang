@@ -2,7 +2,7 @@
 
 /*
   Copyright (c) 2003-2007 Massachusetts Institute of Technology
-  Copyright (c) 2013-2016 John E. Davis <jed@jedsoft.org>
+  Copyright (c) 2013-2017,2018 John E. Davis <jed@jedsoft.org>
 
   This software was developed by the MIT Center for Space Research
   under contract SV1-61010 from the Smithsonian Institution.
