@@ -55,6 +55,7 @@ Changes since 2.3.1a
 22. src/sltermin.c: Corrected a few typos in the comments (Manfred
     Hanke).
 23. Updated Copyright year to 2018
+24. doc updates
 
 {{{ Previous Versions
 

@@ -631,9 +631,14 @@ t_test
   pval = t_test (X, mu [,&t])
 
  DESCRIPTION
- This function computes Student's t-statistic and returns the p-value
- that the data X are consistent with a Gaussian distribution with a
- mean of `mu'.  If the optional parameter is passed to the function, then
+ The one-sample t-test may be used to test that the population mean has a
+ specified value under the null hypothesis.  Here, `X' represents a
+ random sample drawn from the population and `mu' is the
+ specified mean of the population.   This function computes Student's
+ t-statistic and returns the p-value
+ that the data X were randomly sampled from a population with the
+ specified mean.
+ If the optional parameter is passed to the function, then
  it must be a reference to a variable that, upon return, will be
  set to the value of the statistic.
 
@@ -645,6 +650,10 @@ t_test
 
 
  NOTES
+ While the parent population need not be normal, the test assumes
+ that random samples drawn from this distribution have means that
+ are normally distributed.
+
  Strictly speaking, this test should only be used if the variance of
  the data are equal to that of the assumed parent distribution.  Use
  the Mann-Whitney-Wilcoxon (`mw_test') if the underlying
