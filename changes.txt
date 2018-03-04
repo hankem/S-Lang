@@ -56,6 +56,7 @@ Changes since 2.3.1a
     Hanke).
 23. Updated Copyright year to 2018
 24. doc updates
+25. src/sltermin.c: removed unnecessary "extern" function attribute.
 
 {{{ Previous Versions
 

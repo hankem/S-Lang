@@ -715,7 +715,7 @@ static int tcap_getent (SLCONST char *term, SLterminfo_Type *ti)
 }
 
 /* These routines are provided only for backward binary compatability.
- * They will vanish in V2.x
+ * They will vanish in V3.x
  */
 char *SLtt_tigetent (SLFUTURE_CONST char *s)
 {
@@ -729,7 +729,7 @@ char *SLtt_tigetstr (SLFUTURE_CONST char *s, char **p)
    return _pSLtt_tigetstr ((SLterminfo_Type *) *p, s);
 }
 
-extern int SLtt_tigetnum (SLFUTURE_CONST char *s, char **p)
+int SLtt_tigetnum (SLFUTURE_CONST char *s, char **p)
 {
    if (p == NULL)
      return -1;
