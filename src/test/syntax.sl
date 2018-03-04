@@ -6,7 +6,7 @@ private define check_version_string ()
    variable vers = _slang_version_string;
    if (0 == strncmp (vers, "pre", 3))
      vers = vers[[3:]];
-   if (isascii(vers[-1])) vers = vers[[:-2]];   %  knock off patch-level
+   if (isalpha(vers[-1])) vers = vers[[:-2]];   %  knock off patch-level
 
    variable v = strtok (vers, "-.");
    variable major = integer(v[0]);

@@ -57,6 +57,8 @@ Changes since 2.3.1a
 23. Updated Copyright year to 2018
 24. doc updates
 25. src/sltermin.c: removed unnecessary "extern" function attribute.
+26. src/test/syntax.sl: The version number test required the use of
+    isalpha and not isascii.
 
 {{{ Previous Versions
 
