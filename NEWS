@@ -44,6 +44,12 @@ New Modules
    4. histogram: A histogram module
    5. json: Encode/decode json structures
 
+Module Updates
+==============
+
+   stats-module: Added Anderson-Darling normality and
+   k-sample tests (version 2.3.1)
+
 Intrinsic Functions
 ===================
 
@@ -83,6 +89,9 @@ Intrinsic Functions
      wchars_to_string/string_to_wchars: Convert a UTF-8 encoded string
      to and from an array of Unicode characters. (version 2.3.1)
 
+     _array_byteswap: used to convert the values of an array from one
+     endianness to another (version 2.3.2)
+
    The following functions have been enhanced:
 
      array_map modified to support multiple return values.
@@ -108,11 +117,8 @@ Interpreter Syntax
    character.  Previously, the braces were required (\u{ABCD}).
    (version 2.3.1)
 
-Module Updates
-==============
-
-   stats-module: Added Anderson-Darling normality and
-   k-sample tests (version 2.3.1)
+   A reserved word may be used for a struct field name without quoting
+   it (version 2.3.2)
 
 
 slsh library (used by conforming slang apps such as jed, slrn, ...)
@@ -199,6 +205,17 @@ API News
         SLstack_exch;
 	SLcompute_string_hash;
 	SLpath_getcwd;
+
+Unicode Support
+===============
+
+  Unicode tables were updated to version 10.0.0 (version 2.3.2)
+
+Miscellaneous
+=============
+
+  Support was added to support 32-bit terminfo database
+  entries introduced by ncurses 6.1 (version 2.3.2)
 
 =x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=
 
