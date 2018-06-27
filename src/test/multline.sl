@@ -1,6 +1,8 @@
 () = evalfile ("inc.sl");
 
-testing_feature ("Multiline strings");
+variable crlf = any (array_map (Int_Type, &string_match, __argv, "_crlf.sl"));
+
+testing_feature ("Multiline strings" + (crlf ? " with CRLF line terminators" : ""));
 private define break_string (str, rep)
 {
    (str, ) = strreplace (str, "\n", rep, strlen (str));
@@ -60,12 +62,16 @@ test_string3 (`4 This is\\\na ${FOO}\nstring\nX`Q$,
 	      "4 This is\\\na multiline\nstring\nX");
 test_string3 (`5 This is\na ${FOO}
 string\n`$,
-	      "5 This is\\na multiline\nstring\\n");
+	      crlf
+	      ? "5 This is\\na multiline\r\nstring\\n"
+	      : "5 This is\\na multiline\nstring\\n");
 
 test_string3 (`6 This is
  a \0 binary
  string\0`BQ,
-	      "6 This is\n a \0 binary\n string\0");
+	      crlf
+	      ? "6 This is\r\n a \0 binary\r\n string\0"
+	      : "6 This is\n a \0 binary\n string\0");
 
 print ("Ok\n");
 

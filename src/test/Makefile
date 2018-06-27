@@ -3,7 +3,7 @@ TEST_SCRIPTS_SLC = argv syntax scircuit eqs sscanf loops arith array strops \
   bstring pack stdio assoc selfload struct nspace path ifeval anytype arrmult \
   time utf8 except bugs list regexp method deref naninf overflow sort \
   longlong signal dollar req docfun debug qualif compare break multline \
-  stack misc posixio posdir proc math
+  multline_crlf stack misc posixio posdir proc math
 
 TEST_SCRIPTS_NO_SLC = autoload nspace2 prep
 
@@ -17,7 +17,7 @@ SLANGLIB = ../$(ARCH)objs
 OTHER_LIBS = -lm
 OTHER_CFLAGS =
 
-runtests: $(TEST_PGM) cleantmp
+runtests: $(TEST_PGM) multline_crlf.sl cleantmp
 	@tests=""; \
 	for test in $(TEST_SCRIPTS); \
 	do \
@@ -30,7 +30,7 @@ runtests: $(TEST_PGM) cleantmp
 	MAKERUNNING=1 ./runtests.sh $$tests
 #	@touch $(TEST_PGM).c
 
-update: $(TEST_PGM) cleantmp
+update: $(TEST_PGM) multline_crlf.sl cleantmp
 	@tests=""; \
 	for X in $(TEST_SCRIPTS); \
 	do \
@@ -52,7 +52,7 @@ update: $(TEST_PGM) cleantmp
 	fi
 #	@touch $(TEST_PGM).c
 
-memcheck_runtests: $(TEST_PGM) cleantmp
+memcheck_runtests: $(TEST_PGM) multline_crlf.sl cleantmp
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -65,7 +65,7 @@ memcheck_runtests: $(TEST_PGM) cleantmp
 	done
 #	touch $(TEST_PGM).c
 
-memcheck_runtests_slc: $(TEST_PGM) cleantmp
+memcheck_runtests_slc: $(TEST_PGM) multline_crlf.sl cleantmp
 	@echo ""
 	@echo "Running tests:"
 	@echo ""
@@ -80,10 +80,12 @@ memcheck: memcheck_runtests memcheck_runtests_slc
 
 $(TEST_PGM): $(TEST_PGM).c assoc.c list.c $(SLANGLIB)/libslang.a
 	$(CC) $(CFLAGS) $(OTHER_CFLAGS) $(LDFLAGS) $(TEST_PGM).c -o $(TEST_PGM) -I$(SLANGINC) -L$(SLANGLIB) -lslang $(OTHER_LIBS)
+multline_crlf.sl: multline.sl
+	unix2dos < $< > $@
 cleantmp:
 	-/bin/rm -rf tmpfile*.* tmpdir*.*
 clean: cleantmp
-	-/bin/rm -f *~ *.o *.log log.pid* *.slc log.* *.log-*
+	-/bin/rm -f *~ *.o *.log log.pid* *.slc log.* *.log-* multline_crlf.sl
 distclean: clean
 	/bin/rm -f $(TEST_PGM) $(TEST_PGM).gcda $(TEST_PGM).gcno
 .PHONY: clean memcheck runtests memcheck_runtests_slc memcheck_runtests cleantmp

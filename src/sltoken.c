@@ -1040,6 +1040,8 @@ static int read_string_token (unsigned char quote_char,
 
 	if (ch == '\\')
 	  {
+	     int cr = 0;
+
 	     if (is_multiline_raw)
 	       {
 		  s[len++] = ch;
@@ -1048,12 +1050,22 @@ static int read_string_token (unsigned char quote_char,
 	       }
 
 	     ch = prep_get_char ();
+	     if (ch == '\r')
+	       {
+		  cr = 1;
+		  ch = prep_get_char();
+	       }
 	     if ((ch == '\n') || (ch == 0))
 	       {
 		  is_continued = 1;
 		  break;
 	       }
 	     s[len++] = '\\';
+	     if (cr && len < maxlen)
+	       {
+		  s[len++] = '\r';
+		  has_bs = 1;
+	       }
 	     if (len < maxlen)
 	       {
 		  s[len++] = ch;
@@ -2277,7 +2289,7 @@ static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
 	break;
 
       default:
-	SLang_verror (SL_Internal_Error, "Unsupported multline token: 0x%X", tok->type);
+	SLang_verror (SL_Internal_Error, "Unsupported multiline token: 0x%X", tok->type);
 	return -1;
      }
 
