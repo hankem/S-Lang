@@ -184,77 +184,170 @@ static int push_stat_struct (struct stat *st, int opt_attrs)
    return SLang_push_cstruct ((VOID_STAR) &s, Stat_Struct);
 }
 
-static void stat_cmd (char *file)
+typedef struct
 {
-   struct stat st;
-   int status;
-   int opt_attrs;
-#if defined(__MSDOS__) || defined(__WIN32__)
-   unsigned int len = strlen (file);
-   int is_malloced = 0;
+   int type;
+   int fd;
+   char *path;
+   SLFile_FD_Type *f;
+   SLang_MMT_Type *mmt;
+   FILE *fp;
+}
+Stat_Arg_Type;
 
-   if (len && ((file[len-1] == '\\') || (file[len-1] == '/')))
+
+static void free_stat_arg (Stat_Arg_Type *sa)
+{
+   switch (sa->type)
      {
-	file = SLmake_nstring (file, len-1);
-	if (file == NULL)
-	  return;
+      default:
+      case SLANG_INT_TYPE:
+	break;
 
-	is_malloced = 1;
+      case SLANG_FILE_FD_TYPE:
+	if (sa->f != NULL) SLfile_free_fd (sa->f);
+	break;
+
+      case SLANG_FILE_PTR_TYPE:
+	if (sa->mmt != NULL) SLang_free_mmt (sa->mmt);
+	break;
+
+      case SLANG_STRING_TYPE:
+	SLang_free_slstring (sa->path);
+	break;
      }
-#endif
+}
 
-   while ((-1 == (status = stat (file, &st)))
-	  && (is_interrupt (errno)))
-     continue;
+static int pop_stat_arg (Stat_Arg_Type *sa)
+{
+   int status;
+
+   memset (sa, 0, sizeof(Stat_Arg_Type));
+
+   sa->type = SLang_peek_at_stack ();
+   switch (sa->type)
+     {
+      default:
+      case SLANG_INT_TYPE:
+	status = SLang_pop_int (&sa->fd);
+	break;
+
+      case SLANG_FILE_FD_TYPE:
+	if (0 == (status = SLfile_pop_fd (&sa->f)))
+	  status = SLfile_get_fd (sa->f, &sa->fd);
+	break;
+
+      case SLANG_FILE_PTR_TYPE:
+	if (0 == (status = SLang_pop_fileptr (&sa->mmt, &sa->fp)))
+	  sa->fd = fileno (sa->fp);
+	break;
+
+      case SLANG_STRING_TYPE:
+      case SLANG_BSTRING_TYPE:
+	sa->type = SLANG_STRING_TYPE;
+	if (0 == (status = SLang_pop_slstring (&sa->path)))
+	  {
+#if defined(__MSDOS__) || defined(__WIN32__)
+	     char *file = sa->path;
+	     unsigned int len = strlen (file);
+
+	     if (len && ((file[len-1] == '\\') || (file[len-1] == '/')))
+	       {
+		  file = SLmake_nstring (file, len-1);
+		  if (file == NULL)
+		    status = -1;
+		  else
+		    {
+		       SLang_free_slstring (sa->path);
+		       sa->path = file;
+		    }
+	       }
+#endif
+	  }
+	break;
+     }
+
+   if (status == -1)
+     {
+	free_stat_arg (sa);
+#ifdef EINVAL
+	(void) SLerrno_set_errno (EINVAL);
+#endif
+     }
+   return status;
+}
+
+static int do_xstat (int x)
+{
+   Stat_Arg_Type sa;
+   struct stat st;
+   int status = 0;
+   int opt_attrs = 0;
+
+   if (-1 == pop_stat_arg (&sa))
+     return -1;
+
+   switch (x)
+     {
+      case 'l':
+	if (sa.type == SLANG_STRING_TYPE)
+	  {
+#ifdef HAVE_LSTAT
+	     while ((-1 == (status = lstat (sa.path, &st)))
+		    && (is_interrupt (errno)))
+	       ;
+	     break;
+#endif
+	  }
+	/* drop */
+      default:
+      case 's':
+	if (sa.type == SLANG_STRING_TYPE)
+	  {
+	     while ((-1 == (status = stat (sa.path, &st)))
+		    && (is_interrupt (errno)))
+	       ;
+#ifdef __WIN32__
+	     if (status == 0) opt_attrs = GetFileAttributes (sa.path);
+#endif
+	  }
+	else
+	  {
+	     while ((-1 == (status = fstat (sa.fd, &st)))
+		    && (is_interrupt (errno)))
+	       ;
+#ifdef __WIN32__
+	     if (status == 0)
+	       {
+		  /* GetFileAttributes for fd??? */
+	       }
+#endif
+	  }
+	break;
+     }
 
    if (status == 0)
      {
-#ifdef __WIN32__
-	opt_attrs = GetFileAttributes (file);
-#else
-	opt_attrs = 0;
-#endif
-
-	push_stat_struct (&st, opt_attrs);
+	status = push_stat_struct (&st, opt_attrs);
      }
    else
      {
 	_pSLerrno_errno = errno;
-	SLang_push_null ();
+	(void) SLang_push_null ();
      }
 
-#if defined(__MSDOS__) || defined(__WIN32__)
-   if (is_malloced)
-     SLfree (file);
-#endif
+   free_stat_arg (&sa);
+   return status;
 }
 
-static void lstat_cmd (char *file)
+static void stat_cmd (void)
 {
-#ifdef HAVE_LSTAT
-   struct stat st;
-   int opt_attrs;
+   (void) do_xstat ('s');
+}
 
-   while (-1 == lstat (file, &st))
-     {
-	if (is_interrupt (errno))
-	  continue;
-
-	_pSLerrno_errno = errno;
-	SLang_push_null ();
-	return;
-     }
-
-# ifdef __WIN32__
-   opt_attrs = GetFileAttributes (file);
-# else
-   opt_attrs = 0;
-# endif
-
-   push_stat_struct (&st, opt_attrs);
-#else
-   stat_cmd (file);
-#endif				       /* HAVE_LSTAT */
+static void lstat_cmd (void)
+{
+   do_xstat ('l');
 }
 
 #if defined(HAVE_STATVFS)
@@ -278,48 +371,21 @@ static SLang_CStruct_Field_Type StatVFS_Struct [] =
 static void statvfs_cmd (void)
 {
    struct statvfs vfs;
-   FILE *fp;
-   char *path = NULL;
-   SLFile_FD_Type *f = NULL;
-   SLang_MMT_Type *mmt = NULL;
-   int fd, status;
+   Stat_Arg_Type st;
+   int status;
 
-   switch (SLang_peek_at_stack ())
+   if (-1 == pop_stat_arg (&st))
+     return;
+
+   if (st.type == SLANG_STRING_TYPE)
      {
-      default:
-      case SLANG_INT_TYPE:
-	if (-1 == SLang_pop_int (&fd))
-	  return;
-	break;
-
-      case SLANG_FILE_FD_TYPE:
-	if (-1 == SLfile_pop_fd (&f))
-	  return;
-	if (-1 == SLfile_get_fd (f, &fd))
-	  goto free_and_return;
-	break;
-
-      case SLANG_FILE_PTR_TYPE:
-	if (-1 == SLang_pop_fileptr (&mmt, &fp))
-	  return;
-	fd = fileno (fp);
-	break;
-
-      case SLANG_STRING_TYPE:
-	if (-1 == SLang_pop_slstring (&path))
-	  return;
-	break;
-     }
-
-   if (path != NULL)
-     {
-	while ((-1 == (status = statvfs (path, &vfs)))
+	while ((-1 == (status = statvfs (st.path, &vfs)))
 	       && (is_interrupt (errno)))
 	  continue;
      }
    else
      {
-	while ((-1 == (status = fstatvfs (fd, &vfs)))
+	while ((-1 == (status = fstatvfs (st.fd, &vfs)))
 	       && (is_interrupt (errno)))
 	  continue;
      }
@@ -333,10 +399,7 @@ static void statvfs_cmd (void)
      }
 
    /* drop */
-free_and_return:
-   if (f != NULL) SLfile_free_fd (f);
-   if (mmt != NULL) SLang_free_mmt (mmt);
-   if (path != NULL) SLang_free_slstring (path);
+   free_stat_arg (&st);
 }
 #endif				       /* HAVE_STATVFS */
 
@@ -1190,8 +1253,8 @@ static SLang_Intrin_Fun_Type PosixDir_Name_Table [] =
 #ifdef HAVE_LINK
    MAKE_INTRINSIC_SS("hardlink", hardlink_cmd, SLANG_INT_TYPE),
 #endif
-   MAKE_INTRINSIC_S("lstat_file", lstat_cmd, SLANG_VOID_TYPE),
-   MAKE_INTRINSIC_S("stat_file", stat_cmd, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("lstat_file", lstat_cmd, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("stat_file", stat_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_SI("stat_is", stat_is_cmd, SLANG_CHAR_TYPE),
 #ifdef HAVE_MKFIFO
    MAKE_INTRINSIC_SI("mkfifo", mkfifo_cmd, SLANG_INT_TYPE),

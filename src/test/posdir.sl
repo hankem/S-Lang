@@ -45,12 +45,30 @@ private define test_posdir ()
 }
 test_posdir ();
 
+private define compare_stat (st, st1)
+{
+   if ((st1.st_dev != st.st_dev)
+       || (st1.st_ino != st.st_ino))
+     failed ("stat compare");
+}
+
 private define test_non_exist_file_ops ()
 {
    variable badfile = "/122345 user";
    if (NULL == stat_file (badfile))
      () = remove (badfile);	       %  should fail
    variable tmpfile = util_make_tmp_file ("tmpfileX", NULL);
+   variable st = stat_file (tmpfile);
+   if (st == NULL)
+     failed ("stat_file tmpfile");
+   variable fp = fopen (tmpfile, "r");
+   variable st1 = stat_file (fp);
+   if (st1 == NULL) failed ("stat_file fp");
+   compare_stat (st, st1);
+   st1 = stat_file (fileno(fp));
+   if (st1 == NULL) failed ("stat_file fileno(fp)");
+   compare_stat (st, st1);
+
    variable tmpfile1 = tmpfile + "-tmp";
    variable tmpdir = util_make_tmp_dir ("tmpdir");
    variable dir = getcwd ();
@@ -76,7 +94,7 @@ private define test_non_exist_file_ops ()
 #ifexists symlink
    if (-1 == symlink (tmpfile, tmpfile1))
      failed ("symlink %s -> %s: %S", tmpfile1, tmpfile, errno_string());
-   variable st = lstat_file (tmpfile1);
+   st = lstat_file (tmpfile1);
    if ((st == NULL) || (0 == stat_is  ("lnk", st.st_mode)))
      failed ("stat_is lnk for %s", tmpfile1);
    if (-1 != symlink ("", ""))
