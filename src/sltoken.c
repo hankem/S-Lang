@@ -844,12 +844,7 @@ static int expand_escaped_string (register char *s,
 	     is_binary = -1;
 	     break;
 	  }
-	if ((isunicode == 0)
-#if 0
-	    && ((wch < 127)
-		|| (utf8_encode == 0))
-#endif
-	    )
+	if (isunicode == 0)
 	  {
 	     if (wch == 0)
 	       is_binary = 1;
@@ -1040,6 +1035,8 @@ static int read_string_token (unsigned char quote_char,
 
 	if (ch == '\\')
 	  {
+	     int cr = 0;
+
 	     if (is_multiline_raw)
 	       {
 		  s[len++] = ch;
@@ -1048,15 +1045,23 @@ static int read_string_token (unsigned char quote_char,
 	       }
 
 	     ch = prep_get_char ();
+	     if (ch == '\r')
+	       {
+		  cr = 1;
+		  ch = prep_get_char ();
+	       }
+
 	     if ((ch == '\n') || (ch == 0))
 	       {
+		  /* ignore the \r, if present */
 		  is_continued = 1;
 		  break;
 	       }
 	     s[len++] = '\\';
 	     if (len < maxlen)
 	       {
-		  s[len++] = ch;
+		  if (cr) s[len++] = '\r';
+		  if (len < maxlen) s[len++] = ch;
 		  has_bs = 1;
 	       }
 	     continue;
@@ -2277,7 +2282,7 @@ static int byte_compile_multiline_token (_pSLang_Token_Type *tok,
 	break;
 
       default:
-	SLang_verror (SL_Internal_Error, "Unsupported multline token: 0x%X", tok->type);
+	SLang_verror (SL_Internal_Error, "Unsupported multiline token: 0x%X", tok->type);
 	return -1;
      }
 
