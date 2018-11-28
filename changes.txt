@@ -4,6 +4,7 @@ Changes since 2.3.2
    addition to filenames.
 2. src/sltoken.c: Ignore the \r character in multiline strings that
    appear to have CRLF line terminators.  (Manfred Hanke)
+3. *.tm: minor documentation updates
 
 Changes since 2.3.1a
 1. modules/stats_kendall.c: Updated to use Knight's O(NlogN)

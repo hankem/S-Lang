@@ -57,6 +57,19 @@
 \seealso{__add_unary, __add_string, __add_destroy}
 \done
 
+
+\function{__add_destroy}
+\synopsis{Add a destroy callback function to a user-defined type}
+\usage{__add_destroy(DataType_Type user_type, Ref_Type callback_func)}
+\description
+  The \ifun{__add_destroy} function adds a callback function to a
+  user-defined type such that it will get called prior to deleting an
+  instance of the user-defined type.  Just prior to deleting the
+  object, the object will be passed to the callback function. The
+  callback function should return nothing.
+\seealso{__add_unary, __add_binary}
+\done
+
 \function{__add_string}
 \synopsis{Specify a string representation for a user-defined type}
 \usage{__add_string (DataType_Type user_type, Ref_Type func)}

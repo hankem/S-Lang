@@ -1,3 +1,23 @@
+\variable{_Inf}
+\synopsis{IEEE Infinity}
+\usage{Double_Type _Inf}
+\description
+The value of this variable is an IEEE double precision positive infinity.
+\seealso{isinf, isnan, finite, _NaN}
+
+\variable{_NaN}
+\synopsis{IEEE Not-a-Number}
+\usage{Double_Type _NaN}
+\description
+The value of this variable is a non-signalling IEEE double precision
+NaN.
+\notes
+An IEEE NaN has some peculiar properties that limits how it should be
+used.  For example, an IEEE NaN is not equal to itself and expressions
+such as \exmp{x == _NaN} will always be false.  To test if a number is
+a NaN, use the \ifun{isnan} function.
+\seealso{isinf, isnan, finite, _Inf}
+
 \function{abs}
 \synopsis{Compute the absolute value of a number}
 \usage{y = abs(x)}

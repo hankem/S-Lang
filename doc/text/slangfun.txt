@@ -980,7 +980,7 @@ wherefirst
 
 
  SEE ALSO
-  where, wherelast, wherfirstmin, wherfirstmax, wherefirst_eq
+  where, wherelast, wherefirstmin, wherefirstmax, wherefirst_eq
 
 --------------------------------------------------------------
 
@@ -1576,6 +1576,32 @@ unpack
 
  SEE ALSO
   pack, sizeof_pack, pad_pack_format
+
+--------------------------------------------------------------
+
+Array_Type
+
+ SYNOPSIS
+  An array type
+
+ DESCRIPTION
+  Arrays up to 7 dimensions are supported.  The `{i,j,...,k}` element
+  of an array `A' may be indexed using `A[i,j,..k]'.
+
+  The `length' function may be used to obtain the total number of
+  elements in the array.  The shape, type, and other properties of an
+  array may obtained using the `array_shape' and
+  `array_info'  functions.
+
+  The `foreach' construct may be used with arrays via the
+  following construct:
+
+      foreach v (A) {...}
+
+  In all the above forms, the loop is over all elements `v' of the array.
+
+ SEE ALSO
+  List_Type, Struct_Type, Assoc_Type
 
 --------------------------------------------------------------
 
@@ -3662,6 +3688,41 @@ list_to_array
   length, typecast, __pop_list, typeof, array_sort
 
 --------------------------------------------------------------
+
+_Inf
+
+ SYNOPSIS
+  IEEE Infinity
+
+ USAGE
+  Double_Type _Inf
+
+ DESCRIPTION
+The value of this variable is an IEEE double precision positive infinity.
+
+ SEE ALSO
+  isinf, isnan, finite, _NaN
+
+_NaN
+
+ SYNOPSIS
+  IEEE Not-a-Number
+
+ USAGE
+  Double_Type _NaN
+
+ DESCRIPTION
+The value of this variable is a non-signalling IEEE double precision
+NaN.
+
+ NOTES
+An IEEE NaN has some peculiar properties that limits how it should be
+used.  For example, an IEEE NaN is not equal to itself and expressions
+such as `x == _NaN' will always be false.  To test if a number is
+a NaN, use the `isnan' function.
+
+ SEE ALSO
+  isinf, isnan, finite, _Inf
 
 abs
 
@@ -10278,6 +10339,26 @@ __add_binary
 
 --------------------------------------------------------------
 
+__add_destroy
+
+ SYNOPSIS
+  Add a destroy callback function to a user-defined type
+
+ USAGE
+  __add_destroy(DataType_Type user_type, Ref_Type callback_func)
+
+ DESCRIPTION
+  The `__add_destroy' function adds a callback function to a
+  user-defined type such that it will get called prior to deleting an
+  instance of the user-defined type.  Just prior to deleting the
+  object, the object will be passed to the callback function. The
+  callback function should return nothing.
+
+ SEE ALSO
+  __add_unary, __add_binary
+
+--------------------------------------------------------------
+
 __add_string
 
  SYNOPSIS
@@ -11089,7 +11170,7 @@ char
   A better name should have been chosen for this function.
 
  SEE ALSO
-  integer, string, typedef, sprintf, pack
+  integer, string, sprintf, pack
 
 --------------------------------------------------------------
 

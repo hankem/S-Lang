@@ -739,7 +739,7 @@
           return NULL;
      }
 #v-
-\seealso{where, wherelast, wherfirstmin, wherfirstmax, wherefirst_eq}
+\seealso{where, wherelast, wherefirstmin, wherefirstmax, wherefirst_eq}
 \done
 
 \function{wherefirst_eq,

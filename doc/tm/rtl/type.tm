@@ -95,7 +95,7 @@ be thrown if \exmp{a} is a \dtype{String_Type} object.
   whose value is that of \exmp{-c&0xFF}.
 \notes
   A better name should have been chosen for this function.
-\seealso{integer, string, typedef, sprintf, pack}
+\seealso{integer, string, sprintf, pack}
 \done
 
 \function{define_case}

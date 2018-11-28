@@ -54,8 +54,8 @@ ad_test
   to the value of the statistic upon return.
 
  QUALIFIERS
-  ; mu=value: Specifies the known mean of the normal distribution.
-  ; sigma: Specifies the known standard deviation of the normal distribution
+  ; mean=value: Specifies the known mean of the normal distribution.
+  ; stddev=value: Specifies the known standard deviation of the normal distribution
   ; cdf: If present, the data will be interpreted as a CDFs of a known, but unspecified, distribution.
 
  NOTES
@@ -71,7 +71,7 @@ ad_test
   2004.
 
  SEE ALSO
-  ad_ktest, ks_test, t_test, z_test, normal_cdf,
+  ad_ktest, ks_test, t_test, z_test, normal_cdf
 
 --------------------------------------------------------------
 
@@ -271,12 +271,12 @@ poisson_cdf
   Compute the Poisson CDF
 
  USAGE
-  cdf = poisson_cdf (Double_Type m, Int_Type k)
+  cdf = poisson_cdf (Double_Type lambda, Int_Type k)
 
  DESCRIPTION
  This function computes the CDF for the Poisson probability
- distribution parameterized by the value `m'.  For values of
- `m>100' and `abs(m-k)<sqrt(m)', the Wilson and Hilferty
+ distribution parameterized by the value `lambda'.  For values of
+ `lambda>100' and `abs(lambda-k)<sqrt(lambda)', the Wilson and Hilferty
  asymptotic approximation is used.
 
  SEE ALSO

@@ -1,3 +1,23 @@
+\datatype{Array_Type}
+\synopsis{An array type}
+\description
+  Arrays up to 7 dimensions are supported.  The `{i,j,...,k}` element
+  of an array \exmp{A} may be indexed using \exmp{A[i,j,..k]}.
+
+  The \ifun{length} function may be used to obtain the total number of
+  elements in the array.  The shape, type, and other properties of an
+  array may obtained using the \ifun{array_shape} and
+  \ifun{array_info}  functions.
+
+  The \var{foreach} construct may be used with arrays via the
+  following construct:
+#v+
+      foreach v (A) {...}
+#v-
+  In all the above forms, the loop is over all elements \exmp{v} of the array.
+\seealso{List_Type, Struct_Type, Assoc_Type}
+\done
+
 \datatype{Assoc_Type}
 \synopsis{An associative array or hash type}
 \description

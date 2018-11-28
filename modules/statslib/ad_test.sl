@@ -315,8 +315,10 @@ define ad_test ()
      usage ("\
 p = ad_test (X [,&Asquared]);\n\ %% 1-sample Anderson-Darling test\n\
 Qualifiers:\n\
-  ;cdf   %% The X values are the CDFs of the underlying distribution\n\
-         %%   and 0 <= X <= 1\n\
+  ;cdf        %% The X values are the CDFs of the underlying distribution\n\
+              %%   and 0 <= X <= 1\n\
+  ;mean=val   %% The mean of the assumed normal distribution\n\
+  ;stddev=val %% The stddev of the assumed normal distribution\n\
 "
 	   );
 

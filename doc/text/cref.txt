@@ -1,6 +1,6 @@
   The S-Lang C Library Reference
   John E. Davis <www.jedsoft.org>
-  Nov 11, 2013
+  Jul 4, 2018
   ____________________________________________________________
 
 

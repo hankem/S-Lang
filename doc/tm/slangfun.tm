@@ -5,7 +5,8 @@
 
 #i local.tm
 
-#d function#1 \sect{<bf>$1</bf>\label{$1}}<descrip>
+#d function#1 \sect{\linuxdoc_list_to_label{$1}}<descrip>
+#% #d function#1 \sect{<bf>$1</bf>\label{$1}}<descrip>
 #d variable#1 \sect{<bf>$1</bf>\label{$1}}<descrip>
 #d datatype#1 \sect{<bf>$1</bf>\label{$1}}<descrip>
 
