@@ -22,6 +22,7 @@ USA.
 
 #include "slinclud.h"
 #include <math.h>
+#include <limits.h>
 
 /* #define SL_APP_WANTS_FOREACH */
 #include "slang.h"
@@ -312,6 +313,26 @@ void SLang_free_array (SLang_Array_Type *at)
    free_array (at);
 }
 
+/* Here, a and b are assumed to be non-negative */
+static int check_overflow_mult_i (SLindex_Type a, SLindex_Type b, SLindex_Type *cp)
+{
+   if ((a < 0) || (b < 0) || ((b > 0) && (a > INT_MAX/b)))
+     return -1;
+
+   *cp = a*b;
+
+   return 0;
+}
+
+static int check_overflow_mult_ui (SLuindex_Type a, SLindex_Type b, SLuindex_Type *cp)
+{
+   if ((b < 0) || ((b > 0) && (a > UINT_MAX/(SLuindex_Type)b)))
+     return -1;
+
+   *cp = a*(SLuindex_Type)b;
+   return 0;
+}
+
 SLang_Array_Type *
 SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
 		     SLindex_Type *dims, unsigned int num_dims, int no_init)
@@ -366,16 +387,14 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
    num_elements = 1;
    for (i = 0; i < num_dims; i++)
      {
-	SLindex_Type new_num_elements;
 	at->dims[i] = dims[i];
-	new_num_elements = dims[i] * num_elements;
-	if (dims[i] && (new_num_elements/dims[i] != num_elements))
+
+	if (-1 == check_overflow_mult_i (num_elements, dims[i], &num_elements))
 	  {
 	     throw_size_error (SL_Index_Error);
 	     free_array (at);
 	     return NULL;
 	  }
-	num_elements = new_num_elements;
      }
 
    /* Now set the rest of the unused dimensions to 1.  This makes it easier
@@ -395,8 +414,10 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
 	return at;
      }
 
-   size = (num_elements * sizeof_type);
-   if ((size/sizeof_type != num_elements) || (size < 0))
+   /* SLmalloc is currently limited to the use of unsigned integers.
+    * So include the size of the type as well.
+    */
+   if (-1 == check_overflow_mult_i (num_elements, sizeof_type, &size))
      {
 	throw_size_error (SL_INVALID_PARM);
 	free_array (at);
@@ -1103,7 +1124,6 @@ convert_nasty_index_objs (SLang_Array_Type *at,
    total_num_elements = 1;
    for (i = 0; i < num_indices; i++)
      {
-	SLuindex_Type new_total_num_elements;
 	SLang_Object_Type *obj = index_objs + i;
 	range_delta_buf [i] = 0;
 
@@ -1145,13 +1165,11 @@ convert_nasty_index_objs (SLang_Array_Type *at,
 	       }
 	  }
 
-	new_total_num_elements = total_num_elements * max_dims[i];
-	if (max_dims[i] && (new_total_num_elements/max_dims[i] != total_num_elements))
+	if (-1 == check_overflow_mult_ui (total_num_elements, max_dims[i], &total_num_elements))
 	  {
 	     throw_size_error (SL_INVALID_PARM);
 	     return -1;
 	  }
-       total_num_elements = new_total_num_elements;
      }
 
    *num_elements = total_num_elements;

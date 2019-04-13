@@ -8,6 +8,8 @@ Changes since 2.3.2
 4. src/slang.h: SLANG_VERSION_STRING was missing the "pre" prefix.
 5. src/sltermin.c: Added support for TERMINFO_DIRS (based upon a patch
    forwarded by Jörg Thalheim)
+6. src/slarray.c: src/slarray.c: some integer overflow checks were
+   resulting undefined behavior (reported by Sergey)
 
 Changes since 2.3.1a
 1. modules/stats_kendall.c: Updated to use Knight's O(NlogN)
