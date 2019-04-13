@@ -10,6 +10,7 @@ Changes since 2.3.2
    forwarded by Jörg Thalheim)
 6. src/slarray.c: src/slarray.c: some integer overflow checks were
    resulting undefined behavior (reported by Sergey)
+7. modules/csv.sl: Strip leading/trailing whitespace from column names
 
 Changes since 2.3.1a
 1. modules/stats_kendall.c: Updated to use Knight's O(NlogN)
