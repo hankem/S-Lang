@@ -41,9 +41,14 @@ Screen_Type;
 #define TRASHED 0x2
 static int Screen_Trashed;
 
-static Screen_Type SL_Screen[SLTT_MAX_SCREEN_ROWS];
+#define DEFAULT_NUM_SCREEN_ROWS (25)
+static Screen_Type SL_Screen_Static[DEFAULT_NUM_SCREEN_ROWS];
+static Screen_Type *SL_Screen = SL_Screen_Static;
+static unsigned int SL_Screen_Num_Rows = DEFAULT_NUM_SCREEN_ROWS;
+
+static unsigned int Screen_Rows;
+static unsigned int Screen_Cols;
 static int Start_Col, Start_Row;
-static unsigned int Screen_Cols, Screen_Rows;
 static int This_Row, This_Col;
 static SLsmg_Color_Type This_Color;
 
@@ -1560,8 +1565,9 @@ static void reset_smg (void)
 
 static int init_smg (int mode)
 {
-   unsigned int i, len;
    SLsmg_Char_Type *old, *neew;
+   unsigned int num_screen_rows;
+   unsigned int i, len;
 
    Smg_Mode = mode;
 
@@ -1569,10 +1575,22 @@ static int init_smg (int mode)
    Bce_Color_Offset = _pSLtt_get_bce_color_offset ();
 #endif
 
-   Screen_Rows = *tt_Screen_Rows;
-   if (Screen_Rows > SLTT_MAX_SCREEN_ROWS)
-     Screen_Rows = SLTT_MAX_SCREEN_ROWS;
+   num_screen_rows = *tt_Screen_Rows;
+   if (num_screen_rows <= SL_Screen_Num_Rows)
+     Screen_Rows = num_screen_rows;
+   else
+     {
+	Screen_Type *s;
 
+	if (NULL != (s = (Screen_Type *)SLmalloc (num_screen_rows*sizeof(Screen_Type))))
+	  {
+	     SL_Screen_Num_Rows = num_screen_rows;
+	     if (SL_Screen != SL_Screen_Static)
+	       SLfree ((char *)SL_Screen);
+	     SL_Screen = s;
+	     Screen_Rows = num_screen_rows;
+	  }
+     }
    Screen_Cols = *tt_Screen_Cols;
 
    This_Col = This_Row = Start_Col = Start_Row = 0;

@@ -11,6 +11,9 @@ Changes since 2.3.2
 6. src/slarray.c: src/slarray.c: some integer overflow checks were
    resulting undefined behavior (reported by Sergey)
 7. modules/csv.sl: Strip leading/trailing whitespace from column names
+8. src/slsmg.c,sldisply.c: Removed static buffers with sizes dependent
+   upon SLTT_MAX_SCREEN_ROWS/COLS in favor of dynamically allocated
+   ones.
 
 Changes since 2.3.1a
 1. modules/stats_kendall.c: Updated to use Knight's O(NlogN)

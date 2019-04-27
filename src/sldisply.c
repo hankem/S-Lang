@@ -153,8 +153,11 @@ static int Has_True_Color = 0;
 # define MAKE_COLOR(fg, bg) (((fg)<<8) | ((bg)<<16))
 #endif
 
-int SLtt_Screen_Cols = 80;
-int SLtt_Screen_Rows = 24;
+#define DEFAULT_SCREEN_COLS (80)
+#define DEFAULT_SCREEN_ROWS (24)
+
+int SLtt_Screen_Cols = DEFAULT_SCREEN_COLS;
+int SLtt_Screen_Rows = DEFAULT_SCREEN_ROWS;
 int SLtt_Term_Cannot_Insert = 0;
 int SLtt_Term_Cannot_Scroll = 0;
 int SLtt_Use_Ansi_Colors = 0;
@@ -308,13 +311,69 @@ static SLtt_Char_Type Current_Fgbg = INVALID_ATTR;
 static int Cursor_Set;		       /* 1 if cursor position known, 0
 					* if not.  -1 if only row is known
 					*/
-/* This is used only in relative-cursor-addressing mode */
-static SLsmg_Char_Type Display_Start_Chars[SLTT_MAX_SCREEN_ROWS];
-
 #define MAX_OUTPUT_BUFFER_SIZE 4096
-
 static unsigned char Output_Buffer[MAX_OUTPUT_BUFFER_SIZE];
 static unsigned char *Output_Bufferp = Output_Buffer;
+
+/* This is used only in relative-cursor-addressing mode */
+static SLsmg_Char_Type Display_Start_Chars_Buf[DEFAULT_SCREEN_ROWS];
+static SLsmg_Char_Type *Display_Start_Chars = Display_Start_Chars_Buf;
+static unsigned int Display_Start_Chars_Nrows = DEFAULT_SCREEN_ROWS;
+
+static SLsmg_Char_Type Smart_Puts_Static_Buffer[DEFAULT_SCREEN_COLS+1];
+static SLsmg_Char_Type *Smart_Puts_Buffer = Smart_Puts_Static_Buffer;
+static unsigned int Smart_Puts_Buffer_Ncols = DEFAULT_SCREEN_COLS;
+
+/* Reallocate buffers for large screens and update SLtt_Screen_Rows/Cols vars */
+static int resize_screen_buffers (unsigned int r, unsigned int c)
+{
+   int status;
+
+   if (c <= Smart_Puts_Buffer_Ncols)
+     SLtt_Screen_Cols = c;
+   else
+     {
+	SLsmg_Char_Type *s;
+
+	s = (SLsmg_Char_Type *)SLmalloc(sizeof(SLsmg_Char_Type)*(c+1));
+	if (s != NULL)
+	  {
+	     if (Smart_Puts_Buffer != Smart_Puts_Static_Buffer)
+	       SLfree ((char *)Smart_Puts_Buffer);
+	     Smart_Puts_Buffer = s;
+	     Smart_Puts_Buffer_Ncols = c;
+	     SLtt_Screen_Cols = c;
+	  }
+	else
+	  {
+	     /* No update -- keep screen size */
+	     status = -1;
+	  }
+     }
+
+   if (r <= Display_Start_Chars_Nrows)
+     SLtt_Screen_Rows = r;
+   else
+     {
+	SLsmg_Char_Type *s;
+
+	s = (SLsmg_Char_Type *)SLcalloc(r,sizeof(SLsmg_Char_Type));
+	if (s != NULL)
+	  {
+	     if (Display_Start_Chars != Display_Start_Chars_Buf)
+	       SLfree ((char *)Display_Start_Chars);
+	     Display_Start_Chars = s;
+	     Display_Start_Chars_Nrows = r;
+	     SLtt_Screen_Rows = r;
+	  }
+	else
+	  {
+	     /* No update -- keep screen size */
+	     status = -1;
+	  }
+     }
+   return status;
+}
 
 unsigned long SLtt_Num_Chars_Output = 0;
 
@@ -1092,13 +1151,13 @@ void SLtt_beep (void)
    SLtt_flush_output ();
 }
 
-static void write_string_with_care (SLCONST char *);
+static void write_string_with_care (SLCONST char *, unsigned int);
 
 static void del_eol (void)
 {
    if ((Cursor_c == 0)
        && (Use_Relative_Cursor_Addressing)
-       && (Cursor_r < SLTT_MAX_SCREEN_ROWS))
+       && (Cursor_r < SLtt_Screen_Rows))
      {
 	Display_Start_Chars[Cursor_r].nchars = 0;
      }
@@ -1112,7 +1171,7 @@ static void del_eol (void)
 
    while (Cursor_c < SLtt_Screen_Cols)
      {
-	write_string_with_care (" ");
+	write_string_with_care (" ", 1);
 	Cursor_c++;
      }
    Cursor_c = SLtt_Screen_Cols - 1;
@@ -1792,13 +1851,10 @@ static int bce_colors_eq (SLsmg_Color_Type ca, SLsmg_Color_Type cb, int just_bg)
 /* The whole point of this routine is to prevent writing to the last column
  * and last row on terminals with automatic margins.
  */
-static void write_string_with_care (SLCONST char *str)
+static void write_string_with_care (SLCONST char *str, unsigned int len)
 {
-   SLstrlen_Type len;
+   if ((str == NULL) || (len == 0)) return;
 
-   if (str == NULL) return;
-
-   len = strlen (str);
    if (Automatic_Margins && (Cursor_r + 1 == SLtt_Screen_Rows))
      {
 	if (_pSLtt_UTF8_Mode == 0)
@@ -1816,38 +1872,55 @@ static void write_string_with_care (SLCONST char *str)
 	 }
        else
 	 {
-	    SLstrlen_Type nchars = SLutf8_strlen((SLuchar_Type *)str, 1);
+	    SLstrlen_Type nchars;
+
+	    (void) SLutf8_skip_chars ((SLuchar_Type *)str, (SLuchar_Type *)str + len, len, &nchars, 1);
 	    if (nchars + (unsigned int) Cursor_c >= (unsigned int) SLtt_Screen_Cols)
-	     {
-	       if (SLtt_Screen_Cols > Cursor_c)
-	         {
-		    char *p;
-		    nchars = (SLstrlen_Type)(SLtt_Screen_Cols - Cursor_c - 1);
-		    p = (char *)SLutf8_skip_chars((SLuchar_Type *) str, (SLuchar_Type *)(str + len), nchars, NULL, 1);
-		    len = p - str;
-		 }
-	       else
-		  len = 0;
-	     }
+	      {
+		 if (SLtt_Screen_Cols > Cursor_c)
+		   {
+		      char *p;
+		      nchars = (SLstrlen_Type)(SLtt_Screen_Cols - Cursor_c - 1);
+		      p = (char *)SLutf8_skip_chars((SLuchar_Type *) str, (SLuchar_Type *)(str + len), nchars, NULL, 1);
+		      len = p - str;
+		   }
+		 else
+		   len = 0;
+	      }
 	 }
      }
    tt_write (str, len);
 }
 
+_INLINE_ static unsigned char *
+buffer_or_write_char (unsigned char *pmin,
+		      unsigned char *p,
+		      unsigned char *pmax,
+		      unsigned char ch)
+{
+   if (p == pmax)
+     {
+	write_string_with_care ((char *)pmin, p - pmin);
+	p = pmin;
+     }
+   *p++ = ch;
+   return p;
+}
+
 static void send_attr_str (SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
 {
-   unsigned char out[1+SLUTF8_MAX_MBLEN*SLSMG_MAX_CHARS_PER_CELL*SLTT_MAX_SCREEN_COLS];
+   unsigned char out[SLUTF8_MAX_MBLEN*SLSMG_MAX_CHARS_PER_CELL];
    unsigned char *p, *pmax;
-   register SLtt_Char_Type attr;
+   SLtt_Char_Type attr;
    SLsmg_Color_Type color, last_color = (SLsmg_Color_Type)-1;
    int dcursor_c;
 
    p = out;
-   pmax = p + (sizeof (out)-1);
+   pmax = p + sizeof (out);
 
    if ((Cursor_c == 0)
        && (Use_Relative_Cursor_Addressing)
-       && (Cursor_r < SLTT_MAX_SCREEN_ROWS))
+       && (Cursor_r < SLtt_Screen_Rows))
      {
 	if (s < smax)
 	  Display_Start_Chars[Cursor_r] = *s;
@@ -1866,7 +1939,7 @@ static void send_attr_str (SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
 	     /* 2nd element of a char that occupies two columns */
 	     s++;
 	     if (_pSLtt_UTF8_Mode == 0)
-	       *p++ = ' ';
+	       p = buffer_or_write_char (out, p, pmax, ' ');
 	     dcursor_c++;
 	     continue;
 	  }
@@ -1906,8 +1979,7 @@ static void send_attr_str (SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
 		    {
 		       if (p != out)
 			 {
-			    *p = 0;
-			    write_string_with_care ((char *) out);
+			    write_string_with_care ((char *) out, p-out);
 			    p = out;
 			    Cursor_c += dcursor_c;
 			    dcursor_c = 0;
@@ -1919,32 +1991,37 @@ static void send_attr_str (SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
 	  }
 
 	if ((wch < 0x80) && (nchars == 1))
-	  *p++ = (unsigned char) wch;
+	  p = buffer_or_write_char(out, p, pmax, (unsigned char) wch);
 	else if (_pSLtt_UTF8_Mode == 0)
 	  {
 	     if (wch > 255)
 	       wch = '?';
 	     else if (wch < (SLwchar_Type)SLsmg_Display_Eight_Bit)
 	       wch = '?';
-	     *p++ = (unsigned char) wch;
+	     p = buffer_or_write_char(out, p, pmax, (unsigned char) wch);
 	  }
 	else
 	  {
 	     unsigned int i;
+	     unsigned char buf[SLUTF8_MAX_MBLEN];
 	     for (i = 0; i < nchars; i++)
 	       {
-		  if (NULL == (p = SLutf8_encode (s->wchars[i], p, pmax-p)))
+		  unsigned char *b, *b1;
+		  b1 = SLutf8_encode (s->wchars[i], buf, sizeof(buf));
+		  if (b1 == NULL)
 		    {
 		       fprintf (stderr, "*** send_attr_str: buffer too small\n");
-		       return;
+		       continue;
 		    }
+		  b = buf;
+		  while (b < b1)
+		    p = buffer_or_write_char (out, p, pmax, *b++);
 	       }
 	  }
 	dcursor_c++;
 	s++;
      }
-   *p = 0;
-   if (p != out) write_string_with_care ((char *) out);
+   if (p != out) write_string_with_care ((char *) out, p-out);
    Cursor_c += dcursor_c;
 }
 
@@ -1972,8 +2049,7 @@ static void forward_cursor (unsigned int n, int row)
 	  n = sizeof (buf) - 1;
 #endif
 	SLMEMSET (buf, ' ', n);
-	buf[n] = 0;
-	write_string_with_care (buf);
+	write_string_with_care (buf, n);
 	Cursor_c += n;
      }
    else if (Curs_RightN_Str != NULL)
@@ -2016,7 +2092,7 @@ static void forward_cursor (unsigned int n, int row)
 void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int row)
 {
    register SLsmg_Char_Type *p, *q, *qmax, *pmax, *buf;
-   SLsmg_Char_Type buffer[SLTT_MAX_SCREEN_COLS+1];
+   SLsmg_Char_Type *buffer = Smart_Puts_Buffer;
    SLsmg_Char_Type *space_match, *last_buffered_match;
 #ifdef HP_GLITCH_CODE
    int handle_hp_glitch = 0;
@@ -2053,8 +2129,8 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
    space_char->nchars = 1;
    space_char->wchars[0] = ' ';
 
-   if (len > SLTT_MAX_SCREEN_COLS)
-     len = SLTT_MAX_SCREEN_COLS;
+   if (len > SLtt_Screen_Cols)
+     len = SLtt_Screen_Cols;
 
    q = oldd; p = neww;
    qmax = oldd + len;
@@ -2445,7 +2521,7 @@ void SLtt_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len, int 
 	      */
 	     Cursor_c = 0;
 	     Cursor_r++;
-	     if (Cursor_r < SLTT_MAX_SCREEN_ROWS)
+	     if (Cursor_r < SLtt_Screen_Rows)
 	       {
 		  SLsmg_Char_Type *c = Display_Start_Chars + Cursor_r;
 		  if (c->nchars)
@@ -3307,10 +3383,10 @@ void SLtt_get_screen_size (void)
 	if (s != NULL) c = atoi (s);
      }
 
-   if ((r <= 0) || (r > SLTT_MAX_SCREEN_ROWS)) r = 24;
-   if ((c <= 0) || (c > SLTT_MAX_SCREEN_COLS)) c = 80;
-   SLtt_Screen_Rows = r;
-   SLtt_Screen_Cols = c;
+   if (r <= 0) r = 24;
+   if (c <= 0) c = 80;
+
+   (void) resize_screen_buffers (r, c);
 }
 
 #if SLTT_HAS_NON_BCE_SUPPORT

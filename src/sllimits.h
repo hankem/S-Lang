@@ -93,12 +93,8 @@ USA.
 #define SLANG_INNERPROD_BLOCK_SIZE	29
 
 #if !defined(__MSDOS_16BIT__)
-# define SLTT_MAX_SCREEN_COLS 512
-# define SLTT_MAX_SCREEN_ROWS 512
 # define SLTT_MAX_COLORS 0x8000       /* consistent with SLSMG_COLOR_MASK */
 #else
-# define SLTT_MAX_SCREEN_ROWS 64
-# define SLTT_MAX_SCREEN_COLS 75
 /* #define SLTT_MAX_COLORS 0x8000 */  /* use slvideo.c default */
 #endif
 
