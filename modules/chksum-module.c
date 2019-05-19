@@ -48,6 +48,9 @@ static Chksum_Def_Type Chksum_Table[] =
 {
    {"md5", _pSLchksum_md5_new},
    {"sha1", _pSLchksum_sha1_new},
+   {"crc8", _pSLchksum_crc8_new},      /* qualifiers: poly, seed, refin, refout, xorout */
+   {"crc16", _pSLchksum_crc16_new},      /* qualifiers: poly, seed, ... */
+   {"crc32", _pSLchksum_crc32_new},      /* qualifiers: poly, seed, ...*/
    {NULL, NULL}
 };
 
@@ -148,6 +151,13 @@ static void chksum_close (Chksum_Object_Type *obj)
 	(void) SLang_push_null ();
 	return;
      }
+   obj->c = NULL;
+
+   if (c->close_will_push)
+     {
+	(void) c->close (c, NULL);
+	return;
+     }
 
    digest_len = c->digest_len;
    if (NULL == (digest = (unsigned char *)SLmalloc(2*digest_len+1)))
@@ -158,10 +168,8 @@ static void chksum_close (Chksum_Object_Type *obj)
 	SLfree ((char *)digest);
 	return;
      }
-   obj->c = NULL;
 
    hexify_string (digest, digest_len);
-
    (void) SLang_push_malloced_string ((char *)digest);
 }
 

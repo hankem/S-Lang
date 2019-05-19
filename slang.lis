@@ -185,6 +185,7 @@
 @modules/test/test.sl
 @modules/test/test_base64.sl
 @modules/test/test_chksum.sl
+@modules/test/test_crc.sl
 @modules/test/test_csv.sl
 @modules/test/test_fcntl.sl
 @modules/test/test_fork.sl
