@@ -133,6 +133,7 @@
 @modules/chksum-module.c
 @modules/chksum_sha1.c
 @modules/chksum_md5.c
+@modules/chksum_crc.c
 @modules/chksum.h
 @modules/chksum.sl
 @modules/csv-module.c
