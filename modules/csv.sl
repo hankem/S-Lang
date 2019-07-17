@@ -179,7 +179,7 @@ Qualifiers:\n\
 	     col = columns[i];
 	     j = wherefirst (col == header);
 	     if (j == NULL)
-	       throw InvalidParmError, "Unknown (canonical) column name $col";
+	       throw InvalidParmError, "Unknown (canonical) column name $col"$;
 	     column_ints[i] = j+1;
 	  }
      }
