@@ -17,6 +17,9 @@ Changes since 2.3.2
 9. modules/chksum-module: added CRC-8,16,32 checksums to the chksum module
 10. modules/csv.sl: An error message in the form of a dollar-string
     was not marked as such.
+11. modules/csv.sl: Added support for empty CSV files
+
+{{{ Previous Versions
 
 Changes since 2.3.1a
 1. modules/stats_kendall.c: Updated to use Knight's O(NlogN)
@@ -78,8 +81,6 @@ Changes since 2.3.1a
 25. src/sltermin.c: removed unnecessary "extern" function attribute.
 26. src/test/syntax.sl: The version number test required the use of
     isalpha and not isascii.
-
-{{{ Previous Versions
 
 Changes since 2.3.1
 a. Some tests were failing when compiled with a compiler that defaults

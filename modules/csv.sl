@@ -184,17 +184,36 @@ Qualifiers:\n\
 	  }
      }
 
+   variable datastruct = NULL, ncols;
    variable row_data = _csv_decode_row (csv.decoder, flags);
-   if (column_ints == NULL)
-     column_ints = [1:length(row_data)];
-
-   if (any(column_ints>length(row_data)))
+   variable nread = 0;
+   if (row_data != NULL)
      {
-	throw InvalidParmError, "column number is too large for data";
-     }
-   variable ncols = length(column_ints);
+	nread++;
 
-   variable datastruct = NULL;
+	if (column_ints == NULL)
+	  column_ints = [1:length(row_data)];
+
+	if (any(column_ints>length(row_data)))
+	  {
+	     throw InvalidParmError, "column number is too large for data";
+	  }
+     }
+
+   if (column_ints == NULL)
+     {
+	if (fields != NULL)
+	  ncols = length(fields);
+	else if (columns_are_string)
+	  ncols = length(columns);
+	else if (header != NULL)
+	  ncols = length (header);
+	else
+	  throw RunTimeError, "Insufficient information to determine the number of columns in the CSV file";
+
+       column_ints = [1:ncols];
+     }
+
    if (fields == NULL)
      {
 	if (columns_are_string)
@@ -204,6 +223,7 @@ Qualifiers:\n\
 	else
 	  fields = array_map(String_Type, &sprintf, "col%d", column_ints);
      }
+   ncols = length(fields);
    datastruct = @Struct_Type(fields);
 
    column_ints -= 1;		       %  make 0-based
@@ -232,7 +252,9 @@ Qualifiers:\n\
    _for i (1, ncols, 1)
      {
 	i1 = i-1;
-	types[i1] = qualifier ("type$i"$, types[i1]);
+	val = qualifier ("type$i"$, types[i1]);
+
+	types[i1] = val;
      }
 
    i = where(types=='i');
@@ -255,15 +277,12 @@ Qualifiers:\n\
 	       {
 		  convert_funcs[i1] = &atof;
 		  nan_values[i1] = dnan;
-		  types[i1] = 'd';
 	       }
 	     else if (type == Int_Type)
 	       {
 		  convert_funcs[i1] = &atoi;
 		  nan_values[i1] = inan;
-		  types[i1] = 'i';
 	       }
-	     else types[i1] = 's';
 	  }
 
 	val = nan_values[i1];
@@ -276,6 +295,12 @@ Qualifiers:\n\
    variable max_allocated = init_size;
    _for i (0, ncols-1, 1)
      {
+	if (row_data == NULL)
+	  {
+	     list_append (list_of_arrays, typeof(nan_values[i])[0]);
+	     continue;
+	  }
+
 	val = row_data[column_ints[i]];
 	array = typeof(nan_values[i])[max_allocated];
 	ifnot (strbytelen(val))
@@ -290,7 +315,6 @@ Qualifiers:\n\
 	list_append (list_of_arrays, array);
      }
 
-   variable nread = 1;
    variable min_row_size = 1+max(column_ints);
    while (row_data = _csv_decode_row (csv.decoder, flags), row_data != NULL)
      {
@@ -639,6 +663,9 @@ Qualifiers:\n\
    if (rdb || qualifier_exists ("has_header"))
      {
 	variable header = csv.readrow ();
+	if (header == NULL)
+	  throw ReadError, "Unable to read a CSV header row";
+
 	q = struct { header=header, @q };
 	if (rdb)
 	  {

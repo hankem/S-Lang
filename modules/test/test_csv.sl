@@ -70,6 +70,29 @@ private define test_csv (file)
      }
 }
 
+private define test_empty_file (file)
+{
+   variable s = struct
+     {
+	col1name = String_Type[0], col2name = Int_Type [0], col3name = Float_Type[0],
+     };
+   csv_writecol (file, s);
+   variable s1 = csv_readcol (file; has_header, type2='i', type3='f');
+
+   ifnot (_eqs(s, s1))
+     {
+	failed ("csv_read/writecol for a file with no rows");
+     }
+
+   () = open (file, O_WRONLY|O_TRUNC);
+   s1 = csv_readcol (file; header=get_struct_field_names(s), type="sif");
+   ifnot (_eqs(s, s1))
+     {
+	failed ("csv_read/writecol for empty file failed");
+     }
+
+}
+
 define slsh_main ()
 {
    testing_module ("csv");
@@ -78,6 +101,8 @@ define slsh_main ()
    csv_writecol (file, Table);
    test_csv (file);
    test_csv (fopen (file, "r"));
+   test_empty_file (file);
+
    () = remove (file);
    end_test ();
 }
