@@ -18,6 +18,8 @@ Changes since 2.3.2
 10. modules/csv.sl: An error message in the form of a dollar-string
     was not marked as such.
 11. modules/csv.sl: Added support for empty CSV files
+12. src/sltime.c: The timegm function will ignore the tm_wday and
+    tm_yday fields, and instead use the tm_mon and tm_mday fields.
 
 {{{ Previous Versions
 

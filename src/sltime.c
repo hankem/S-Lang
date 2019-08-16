@@ -360,8 +360,17 @@ static int tm_cmp (struct tm *a, struct tm *b)
 {
    if (a->tm_year != b->tm_year)
      return a->tm_year - b->tm_year;
+#if 1
+   /* give tm_mon/tm_mday precedence over tm_yday */
+   if (a->tm_mon != b->tm_mon)
+     return a->tm_mon - b->tm_mon;
+   if (a->tm_mday != b->tm_mday)
+     return a->tm_mday - b->tm_mday;
+#else
    if (a->tm_yday != b->tm_yday)
      return a->tm_yday - b->tm_yday;
+#endif
+
    if (a->tm_hour - b->tm_hour)
      return a->tm_hour - b->tm_hour;
    return (a->tm_min - b->tm_min)*60 + (a->tm_sec - b->tm_sec);
