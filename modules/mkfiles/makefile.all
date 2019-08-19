@@ -145,7 +145,7 @@ SLANGDIR = ..$(P)src$(P)$(OBJDIR)
 # List of modules to compile.  Some/Most require additional libraries to be
 # installed.
 MODULES = chksum stats slsmg rand csv base64 histogram json
-CHKSUM_XOBJS = chksum_md5.$(O) chksum_sha1.$(O)
+CHKSUM_XOBJS = chksum_md5.$(O) chksum_sha1.$(O) chksum_crc.$(O)
 STATS_XOBJS = stats_kendall.$(O)
 # slsmg, rand, csv base64 histogram stats: no external dependencies
 # iconv: iconv library
@@ -186,6 +186,7 @@ json:
 chksum:
 	$(MAKE) TARGET=chksum_md5 TARGETINCS=$(CHKSUMINCS) compile-target
 	$(MAKE) TARGET=chksum_sha1 TARGETINCS=$(CHKSUMINCS) compile-target
+	$(MAKE) TARGET=chksum_crc TARGETINCS=$(CHKSUMINCS) compile-target
 	$(MAKE) TARGET=chksum-module TARGETLIBS=$(CHKSUMLIBS) TARGETINCS=$(CHKSUMINCS) "TARGET_XOBJS=$(CHKSUM_XOBJS)" build-target
 stats:
 	$(MAKE) TARGET=stats_kendall TARGETINCS=$(STATSINCS) compile-target

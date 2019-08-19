@@ -20,6 +20,8 @@ Changes since 2.3.2
 11. modules/csv.sl: Added support for empty CSV files
 12. src/sltime.c: The timegm function will ignore the tm_wday and
     tm_yday fields, and instead use the tm_mon and tm_mday fields.
+13. modules/mkfiles/makefile.all:  Added a target for chksum_crc.o for
+    win32/64 platforms (see change #9)
 
 {{{ Previous Versions
 
