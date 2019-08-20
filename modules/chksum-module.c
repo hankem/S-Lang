@@ -106,7 +106,7 @@ static void chksum_new (char *name)
    obj = (Chksum_Object_Type *)SLmalloc (sizeof (Chksum_Object_Type));
    if (obj == NULL)
      return;
-   memset ((char *)obj, 0, sizeof(SLChksum_Type));
+   memset ((char *)obj, 0, sizeof(Chksum_Object_Type));
 
    obj->numrefs = 1;
    if (NULL == (obj->c = t->create (name)))

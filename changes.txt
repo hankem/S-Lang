@@ -22,6 +22,8 @@ Changes since 2.3.2
     tm_yday fields, and instead use the tm_mon and tm_mday fields.
 13. modules/mkfiles/makefile.all:  Added a target for chksum_crc.o for
     win32/64 platforms (see change #9)
+14. modules/chksum-module.c: The memset function was used with the
+    wrong structure size causing a buffer overflow on 32 bit systems.
 
 {{{ Previous Versions
 
