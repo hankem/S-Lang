@@ -24,6 +24,9 @@ Changes since 2.3.2
     win32/64 platforms (see change #9)
 14. modules/chksum-module.c: The memset function was used with the
     wrong structure size causing a buffer overflow on 32 bit systems.
+15. src/terminfo/parsecaps.sl: Tweaked an auto-generated comment
+    produced by parsecaps.sl to produce a more deterministic build
+    (Ian Rogers).
 
 {{{ Previous Versions
 
