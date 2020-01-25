@@ -354,7 +354,6 @@ static void lstat_cmd (void)
 static SLang_CStruct_Field_Type StatVFS_Struct [] =
 {
    MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_bsize, "f_bsize", 0),
-   MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_bsize, "f_bsize", 0),
    MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_frsize, "f_frsize", 0),
    MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_blocks, "f_blocks", 0),
    MAKE_CSTRUCT_UINT_FIELD(struct statvfs, f_bfree, "f_bfree", 0),
