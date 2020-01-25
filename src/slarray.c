@@ -419,7 +419,7 @@ SLang_create_array1 (SLtype type, int read_only, VOID_STAR data,
     */
    if (-1 == check_overflow_mult_i (num_elements, sizeof_type, &size))
      {
-	throw_size_error (SL_INVALID_PARM);
+	throw_size_error (SL_Index_Error);
 	free_array (at);
 	return NULL;
      }
@@ -1167,7 +1167,7 @@ convert_nasty_index_objs (SLang_Array_Type *at,
 
 	if (-1 == check_overflow_mult_ui (total_num_elements, max_dims[i], &total_num_elements))
 	  {
-	     throw_size_error (SL_INVALID_PARM);
+	     throw_size_error (SL_Index_Error);
 	     return -1;
 	  }
      }

@@ -27,6 +27,8 @@ Changes since 2.3.2
 15. src/terminfo/parsecaps.sl: Tweaked an auto-generated comment
     produced by parsecaps.sl to produce a more deterministic build
     (Ian Rogers).
+16. src/slarray.c: Changed two instances of index errors to throw an
+    IndexError exception instead of InvalidParmError exception.
 
 {{{ Previous Versions
 
