@@ -1291,7 +1291,7 @@ static int add_binary_op_to_list (Binary_Op_List_Type **listp,
 	     while (list->next != NULL) list = list->next;
 	     list->next = item;
 	  }
-	/* drop */
+	/* fall through */
      }
    SLang_free_function (item->binary_func);
    item->binary_func = nt;
@@ -1997,7 +1997,7 @@ static void push_struct_fields_intrin (void)
       case 2:
 	if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
 	  return;
-	/* drop */
+	/* fall through */
       case 1:
 	if (-1 == SLang_pop_struct (&s))
 	  {
@@ -2429,7 +2429,7 @@ static _pSLang_Struct_Type *create_cstruct (VOID_STAR cs, SLang_CStruct_Field_Ty
      }
 
    s = create_struct (n, field_names, field_types, field_values);
-   /* drop */
+   /* fall through */
 
    return_error:
    SLfree ((char *) field_values);

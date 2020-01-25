@@ -299,7 +299,7 @@ static int do_xstat (int x)
 	     break;
 #endif
 	  }
-	/* drop */
+	/* fall through */
       default:
       case 's':
 	if (sa.type == SLANG_STRING_TYPE)
@@ -397,7 +397,7 @@ static void statvfs_cmd (void)
 	(void) SLang_push_null ();
      }
 
-   /* drop */
+   /* fall through */
    free_stat_arg (&st);
 }
 #endif				       /* HAVE_STATVFS */
@@ -723,7 +723,7 @@ static char *vms_convert_dirspec_to_vms_dir (char *str)
    *dot = ']';
    s = str + (len - 1);
 
-   /* Drop */
+   /* fall through */
 
    add_dir_version:
    strcpy (s, ".dir");
@@ -1191,6 +1191,7 @@ static void listdir_cmd_wrap (void)
       case 2:
 	if (-1 == SLang_pop_slstring (&sopt))
 	  return;
+	/* fall through */
       case 1:
 	if (-1 == SLang_pop_slstring (&s))
 	  {

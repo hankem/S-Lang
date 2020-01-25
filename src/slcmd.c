@@ -252,6 +252,7 @@ int SLcmd_execute_string (SLFUTURE_CONST char *str, SLcmd_Cmd_Table_Type *table)
 	     /* variable argument number */
 	   case 'v':
 	     if (token_present == 0) break;
+	     /* fall through */
 	   case 'V':
 	     if (token_present == 0)
 	       {
@@ -272,6 +273,7 @@ int SLcmd_execute_string (SLFUTURE_CONST char *str, SLcmd_Cmd_Table_Type *table)
 
 	   case 's':
 	     if (token_present == 0) break;
+	     /* fall through */
 	   case 'S':
 	     if (token_present == 0)
 	       {
@@ -288,6 +290,7 @@ int SLcmd_execute_string (SLFUTURE_CONST char *str, SLcmd_Cmd_Table_Type *table)
 	     /* integer argument */
 	   case 'i':
 	     if (token_present == 0) break;
+	     /* fall through */
 	   case 'I':
 	     if ((token_present == 0) || (SLANG_INT_TYPE != guess_type))
 	       {
@@ -303,6 +306,7 @@ int SLcmd_execute_string (SLFUTURE_CONST char *str, SLcmd_Cmd_Table_Type *table)
 #if SLANG_HAS_FLOAT
 	   case 'f':
 	     if (token_present == 0) break;
+	     /* fall through */
 	   case 'F':
 	     if ((token_present == 0) || (SLANG_STRING_TYPE == guess_type))
 	       {
@@ -316,6 +320,7 @@ int SLcmd_execute_string (SLFUTURE_CONST char *str, SLcmd_Cmd_Table_Type *table)
 	     /* Generic type */
 	   case 'g':
 	     if (token_present == 0) break;
+	     /* fall through */
 	   case 'G':
 	     if (token_present == 0)
 	       {

@@ -185,7 +185,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	   case NOT_LITERAL | LEAST_ONCE:   /* match at least once */
 	     if ((str >= estr) || (UPPERCASE(*str) == UPPERCASE(*regexp))) return (NULL);
 	     str++;
-	     /* drop */
+	     /* fall through */
 	   case STAR | NOT_LITERAL:
 	     save_str = str;  p1 = *regexp;
 	     while ((str < estr) && (UPPERCASE(*str) != p1)) str++;
@@ -231,7 +231,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	   case LITERAL | LEAST_ONCE:   /* match at least once */
 	     if ((str >= estr) || (UPPERCASE(*str) != UPPERCASE(*regexp))) return (NULL);
 	     str++;
-	     /* drop */
+	     /* fall through */
 	   case STAR | LITERAL:
 	     save_str = str;  p1 = *regexp;
 	     while ((str < estr) && (UPPERCASE(*str) == p1)) str++;
@@ -278,7 +278,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 
 	   case LEAST_ONCE | NTH_MATCH:
 	     if ((str = do_nth_match(ctx, (int) (unsigned char) *regexp, str, estr)) == NULL) return(NULL);
-	     /* drop */
+	     /* fall through */
 	   case STAR | NTH_MATCH:
 	     save_str = str;
 	     while (NULL != (tmpstr = do_nth_match(ctx, (int) (unsigned char) *regexp, str, estr)))
@@ -328,7 +328,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	   case LEAST_ONCE | RANGE:
 	     if ((str >= estr) || (0 == TEST_BIT(regexp, UPPERCASE(*str)))) return NULL;
 	     str++;
-	     /* drop */
+	     /* fall through */
 	   case STAR | RANGE:
 	     save_str = str;
 	     while ((str < estr) && TEST_BIT(regexp, UPPERCASE(*str))) str++;
@@ -373,7 +373,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	   case LEAST_ONCE | ANY_DIGIT:
 	     if ((str >= estr) || ((*str > '9') || (*str < '0'))) return NULL;
 	     str++;
-	     /* drop */
+	     /* fall through */
 	   case STAR | ANY_DIGIT:
 	     save_str = str;
 	     while ((str < estr) && ((*str <= '9') && (*str >= '0'))) str++;
@@ -416,7 +416,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	     /* FIXME: UTF8 */
 	     if ((str >= estr) || (*str == '\n')) return (NULL);
 	     str++;
-	     /* drop */
+	     /* fall through */
 	   case STAR | ANY:	       /* .* */
 	     /* FIXME: UTF8 */
 	     save_str = str;
@@ -1030,7 +1030,7 @@ char *SLregexp_quote_string (SLFUTURE_CONST char *re, char *buf, unsigned int bu
 	   case '?':
 	     *b++ = '\\';
 	    if (b == bmax) break;
-	     /* drop */
+	     /* fall through */
 
 	   default:
 	     *b++ = ch;

@@ -3130,7 +3130,7 @@ static void function_args_expression (_pSLang_Token_Type *ctok, int handle_num_a
 		    _pSLparse_error (SL_SYNTAX_ERROR, "Expecting ')'", ctok, 0);
 		  break;
 	       }
-	     /* drop */
+	     /* fall through */
 
 	   default:
 	     simple_expression (ctok);

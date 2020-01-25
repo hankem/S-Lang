@@ -593,7 +593,7 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
 	       break;
 	     zero_pad = 1;
 	     fmt++;
-	     /* drop */
+	     /* fall through */
 
 	   case '2':
 	   case '3':
@@ -619,7 +619,7 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
 	       }
 
 	     field_width = (ch - '0');
-		  /* drop */
+		  /* fall through */
 
 	   case 'd':
 	     z = STACK_POP;
@@ -770,7 +770,7 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
 	     /* z == 0 and test has failed.  So, skip past this entire if
 	      * expression to the matching else or matching endif.
 	      */
-	     /* drop */
+	     /* fall through */
 	   case 'e':		       /* else */
 
 	     parse_level = 0;

@@ -494,7 +494,7 @@ static int insert_element (SLang_List_Type *list, SLang_Object_Type *obj, SLinde
    c1->num_elements = num;
    c->num_elements -= num;
    c->elements[c->num_elements] = *obj;
-   /* drop */
+   /* fall through */
 
 the_return:
 
@@ -1233,7 +1233,7 @@ static int _pSLlist_aput (SLtype type, unsigned int num_indices)
      }
 
    ret = 0;
-   /* drop */
+   /* fall through */
 free_and_return:
 
    SLang_free_object (&obj);

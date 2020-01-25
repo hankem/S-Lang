@@ -62,7 +62,7 @@ static int pop_array (SLang_Array_Type **at_ptr, int convert_scalar)
 
       case SLANG_NULL_TYPE:
 	/* convert_scalar = 0; */  /* commented out for 2.0.5 to fix array_map NULL bug */
-	/* drop */
+	/* fall through */
       default:
 	if (convert_scalar == 0)
 	  {
@@ -1071,7 +1071,7 @@ aget_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 
       case SLANG_LONG_TYPE:
       case SLANG_ULONG_TYPE:
-	/* drop */
+	/* fall through */
 # if LONG_IS_NOT_INT
 	if (-1 == aget_longs_from_index_array ((long *)src_data, num_elements,
 					      ind_at, is_range, (long *)new_data))
@@ -1893,7 +1893,7 @@ aput_from_indices (SLang_Array_Type *at,
 
    ret = 0;
 
-   /* drop */
+   /* fall through */
 
    return_error:
    if (bt == NULL)
@@ -2057,7 +2057,7 @@ aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 
       case SLANG_LONG_TYPE:
       case SLANG_ULONG_TYPE:
-	/* drop */
+	/* fall through */
 #if LONG_IS_NOT_INT
 	if (-1 == aput_longs_from_index_array (data_to_put, data_increment,
 					      ind_at, is_range,
@@ -2080,7 +2080,7 @@ aput_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
      }
 
    ret = 0;
-   /* Drop */
+   /* fall through */
 
    return_error:
 
@@ -2792,7 +2792,7 @@ static void init_char_array (void)
      }
 
    strncpy((char *) at->data, s, ndim);
-   /* drop */
+   /* fall through */
 
    free_and_return:
    free_array (at);
@@ -3660,7 +3660,7 @@ static int try_range_int_binary (SLang_Array_Type *at, int op, int x, int swap, 
 	     break;
 	  }
 	x = -x;
-	/* drop */
+	/* fall through */
       case SLANG_PLUS:
 	first_index = at_r->first_index + x;
 	last_index = at_r->last_index + x;
@@ -3721,7 +3721,7 @@ static int array_binary_op (int op,
 	     int status = try_range_int_binary (at, op, *(int *)bp, 0, cp);
 	     if (status)
 	       return status;
-	     /* drop */
+	     /* fall through */
 	  }
 
 	if (-1 == coerse_array_to_linear (at))
@@ -3753,7 +3753,7 @@ static int array_binary_op (int op,
 	     int status = try_range_int_binary (bt, op, *(int *)ap, 1, cp);
 	     if (status)
 	       return status;
-	     /* drop */
+	     /* fall through */
 	  }
 
 	if (-1 == coerse_array_to_linear (bt))
@@ -4047,7 +4047,7 @@ static void is_null_intrinsic (void)
 
       case SLANG_NULL_TYPE:
 	ret = 1;
-	/* drop */
+	/* fall through */
       default:
 	(void) SLdo_pop();
 	(void) SLang_push_char (ret);
@@ -4235,7 +4235,7 @@ static void array_where_intern (int cmp)
 	(void) SLang_assign_to_ref (ref, SLANG_ARRAY_TYPE, &ct);
 	/* Let any error propagate */
 	free_array (ct);
-	/* drop */
+	/* fall through */
      }
    else
      {
@@ -4252,7 +4252,7 @@ static void array_where_intern (int cmp)
      }
 
    (void) SLang_push_array (bt, 0);
-   /* drop */
+   /* fall through */
 
    return_error:
    free_array (at);
@@ -4376,7 +4376,7 @@ static void array_wherediff (void)
 	     if (isdiff[i] == 0) *idx_ptr++ = i;
 	  }
 	(void) SLang_assign_to_ref (ref, SLANG_ARRAY_TYPE, &at);
-	/* drop */
+	/* fall through */
      }
 
 free_and_return:
@@ -4797,7 +4797,7 @@ static void array_map (void)
 	  (void) SLang_push_array (retvals[i].at, 0);
      }
 
-   /* drop */
+   /* fall through */
 
 return_error:
    free_arraymap_argvals (argvals, nargs);

@@ -126,16 +126,26 @@ SLstr_Hash_Type _pSLstring_hash (SLCONST unsigned char *s, SLCONST unsigned char
    switch(len)              /* all the case statements fall through */
    {
    case 11: c+=((_pSLuint32_Type)s[10]<<24);
+      /* fall through */
    case 10: c+=((_pSLuint32_Type)s[9]<<16);
+      /* fall through */
    case 9 : c+=((_pSLuint32_Type)s[8]<<8);
+      /* fall through */
       /* the first byte of c is reserved for the length */
    case 8 : b+=((_pSLuint32_Type)s[7]<<24);
+      /* fall through */
    case 7 : b+=((_pSLuint32_Type)s[6]<<16);
+      /* fall through */
    case 6 : b+=((_pSLuint32_Type)s[5]<<8);
+      /* fall through */
    case 5 : b+=s[4];
+      /* fall through */
    case 4 : a+=((_pSLuint32_Type)s[3]<<24);
+      /* fall through */
    case 3 : a+=((_pSLuint32_Type)s[2]<<16);
+      /* fall through */
    case 2 : a+=((_pSLuint32_Type)s[1]<<8);
+      /* fall through */
    case 1 : a+=s[0];
      /* case 0: nothing left to add */
    }

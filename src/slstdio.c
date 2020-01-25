@@ -266,7 +266,7 @@ static int open_file_type (char *file, int fd, char *mode,
        && (0 == SLang_push_mmt (mmt)))
      return 0;
 
-   /* drop */
+   /* fall through */
 
    return_error:
    if (fp != NULL) (*close_fun) (fp);
@@ -889,7 +889,7 @@ static void stdio_fread (SLang_Ref_Type *ref, int *data_typep, unsigned int *num
 	SLang_free_array (at);
      }
    s = NULL;
-   /* drop */
+   /* fall through */
 the_return:
    if (s != NULL)
      SLfree (s);
@@ -953,7 +953,7 @@ static void stdio_fwrite (SL_File_Table_Type *t)
    if ((ret == -1) && ferror (fp))
      _pSLerrno_errno = errno;
 
-   /* drop */
+   /* fall through */
    the_return:
    if (b != NULL)
      SLbstring_free (b);

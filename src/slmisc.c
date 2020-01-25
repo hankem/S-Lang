@@ -145,7 +145,7 @@ char *_pSLexpand_escaped_char(char *p, char *pmax, SLwchar_Type *ch, int *isunic
 
       case 'u':
 	isunicode = 1;
-	/* drop */
+	/* fall through */
       case 'x':			       /* hex */
 	base = 16;
 	max = '9';
@@ -644,7 +644,7 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 		  _pSLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in binary or octal numbers");
 		  return -1;
 	       }
-	     /* drop */
+	     /* fall through */
 	   case '7':
 	   case '6':
 	   case '5':
@@ -656,6 +656,7 @@ static int hex_atoul (unsigned char *s, unsigned long *ul)
 		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits 0 and 1 are permitted in binary numbers");
 		  return -1;
 	       }
+	     /* fall through */
 	   case '1':
 	   case '0':
 	     ch1 -= '0';
@@ -756,7 +757,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 		  _pSLang_verror (SL_SYNTAX_ERROR, "8 or 9 are not permitted in binary or octal numbers");
 		  return -1;
 	       }
-	     /* drop */
+	     /* fall through */
 	   case '7':
 	   case '6':
 	   case '5':
@@ -768,6 +769,7 @@ static int hex_atoull (unsigned char *s, unsigned long long *ul)
 		  _pSLang_verror (SL_SYNTAX_ERROR, "Only digits 0 and 1 are permitted in binary numbers");
 		  return -1;
 	       }
+	     /* fall through */
 	   case '1':
 	   case '0':
 	     ch1 -= '0';

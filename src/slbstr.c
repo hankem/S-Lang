@@ -899,7 +899,7 @@ static void bstrcat_cmd (void) /*{{{*/
 	(void) SLang_push_bstring (bstr);
 	SLbstring_free (bstr);
      }
-   /* drop */
+   /* fall through */
 
 free_and_return:
    for (i = 0; i < nargs; i++)

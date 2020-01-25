@@ -875,7 +875,7 @@ static void strskipchar_intrin (void)
 	goto free_and_return;
      }
    (void) SLang_push_wchar (wch);
-   /* drop */
+   /* fall through */
 free_and_return:
    SLang_free_slstring ((char *)str);
 }
@@ -913,7 +913,7 @@ static void strbskipchar_intrin (void)
 	goto free_and_return;
      }
    (void) SLang_push_wchar (wch);
-   /* drop */
+   /* fall through */
 free_and_return:
    SLang_free_slstring ((char *)str);
 }
@@ -1221,11 +1221,11 @@ static int arraymap_int_func_str_str (int (*func)(char *, char *, void *), void 
    for (i = 0; i < num; i++)
      int_at_data[i] = (*func)(aos.str, bos.sp[i], cd);
 
-   /* drop */
+   /* fall through */
 
 push_and_return:
    status = SLang_push_array (int_at, 1);
-   /* drop */
+   /* fall through */
 free_and_return:
    free_array_or_string (&aos);
    free_array_or_string (&bos);
@@ -2054,12 +2054,12 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 		  f1--;
 	       }
 
-	     /* drop */
+	     /* fall through */
 	   case 'S':
 	     if (ch == 'S')
 	       _pSLstring_intrinsic ();
 	     ch = 's';
-	     /* drop */
+	     /* fall through */
 	   case 's':
 	     if (-1 == SLang_pop_slstring(&str))
 	       return (out);
@@ -2644,7 +2644,7 @@ static void create_delimited_string_cmd (int *nptr)
      }
 
    str = create_delimited_string (strings + 1, (n - 1), strings[0]);
-   /* drop */
+   /* fall through */
    return_error:
    for (i = 0; i < n; i++) _pSLang_free_slstring (strings[i]);
    SLfree ((char *)strings);
@@ -2872,11 +2872,11 @@ static void skip_bytes_intrin (void)
 	if (-1 == SLang_pop_int (&nmax))
 	  return;
 	has_nmax = 1;
-	/* drop */
+	/* fall through */
       case 3:
 	if (-1 == SLang_pop_int (&n0))
 	  return;
-	/* drop */
+	/* fall through */
       default:
 	if (-1 == SLang_pop_slstring (&chars))
 	  return;
@@ -2916,7 +2916,7 @@ static void skip_bytes_intrin (void)
      goto free_and_return;
 
    (void) SLang_push_integer ((int)((char *)strmax - str));
-   /* drop */
+   /* fall through */
 
 free_and_return:
    SLang_free_slstring (str);

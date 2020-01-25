@@ -1278,7 +1278,7 @@ static void math_poly (void)
       case 3:
 	if (-1 == SLang_pop_int (&use_factorial))
 	  return;
-	/* drop */
+	/* fall through */
       case 2:
 	break;
 
@@ -1390,7 +1390,7 @@ Usage: y = polynom([a0,a1,...], x [,use_factorial_form])");
      }
 
    (void) SLang_push_array (y_at, 1);
-   /* drop */
+   /* fall through */
 free_and_return:
    free_array_or_scalar (&ast);
    SLang_free_array (coeff_at);
@@ -1991,10 +1991,10 @@ static void ldexp_intrin (void)
 	for (i = 0; i < imax; i++)
 	  c[i] = LDEXP_FUN(a[i], e_ptr[i]);
      }
-   /* drop */
+   /* fall through */
 push_free_and_return:
    (void) SLang_push_array (c_at, 0);
-   /* drop */
+   /* fall through */
 free_and_return:
    if (e_at != NULL) SLang_free_array (e_at);
    SLang_free_array (c_at);
@@ -2083,7 +2083,7 @@ static void sincos_intrin (void)
    if (0 == SLang_push_array (s_at, 0))
      (void) SLang_push_array (c_at, 0);
 
-   /* drop */
+   /* fall through */
 free_and_return:
    if (c_at != NULL) SLang_free_array (c_at);
    if (s_at != NULL) SLang_free_array (s_at);

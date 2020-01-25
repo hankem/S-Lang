@@ -320,6 +320,7 @@ static int parse_a_format (char **format, Format_Type *ft)
       case 'S':
       case 'A':
 	ft->pad = ' ';
+	/* fall through */
       case 'a':
       case 's':
       case 'z':
@@ -857,7 +858,7 @@ SLang_Array_Type *_pSLpack_byteswap_array (SLang_Array_Type *at, int from, int t
 	at->num_refs++;
 	bt = at;
      }
-   else/* drop */
+   else/* fall through */
 #endif
    if (NULL == (bt = SLang_duplicate_array (at)))
      return NULL;

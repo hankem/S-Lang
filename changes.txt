@@ -31,6 +31,8 @@ Changes since 2.3.2
     IndexError exception instead of InvalidParmError exception.
 17. src/slposdir.c; The statvfs function was returning a struct with
     duplicated f_bsize fields.
+18. *.c: In switch statements, changed the /* drop */ comment to /*
+    fall through */ to avoid gcc-8 warnings.
 
 {{{ Previous Versions
 

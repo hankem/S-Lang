@@ -795,7 +795,7 @@ static void do_inner_product (void)
    (*fun)(a, b, c, a_loops, a_stride, b_loops, b_inc, ai_dims);
 
    (void) SLang_push_array (c, 1);
-   /* drop */
+   /* fall through */
 
    free_and_return:
    SLang_free_array (a);
@@ -1835,7 +1835,7 @@ static int do_wherefirstlast_op (const char *fname, int is_first, int op)
       case 3:
 	if (-1 == SLang_pop_array_index (&istart))
 	  return -1;
-	/* drop */
+	/* fall through */
       case 2:
 	if (-1 == SLstack_exch (0, 1))
 	  return -1;

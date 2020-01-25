@@ -270,7 +270,7 @@ static SLCONST char *map_token_to_string (_pSLang_Token_Type *tok)
       case FLOAT_TOKEN:
       case DOUBLE_TOKEN:
       case COMPLEX_TOKEN:
-	/* drop */
+	/* fall through */
 #endif
       default:
 	  if (NULL != (s = lookup_op_token_string (type)))

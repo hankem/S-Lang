@@ -137,7 +137,7 @@ static void _pcre_compile (void)
       case 2:
 	if (-1 == SLang_pop_integer (&options))
 	  return;
-	/* drop */
+	/* fall through */
       case 1:
       default:
 	if (-1 == SLang_pop_slstring (&pattern))
@@ -187,12 +187,12 @@ static int _pcre_exec (void)
       case 4:
 	if (-1 == SLang_pop_integer (&options))
 	  return -1;
-	/* drop */
+	/* fall through */
       case 3:
-	/* drop */
+	/* fall through */
 	if (-1 == SLang_pop_integer (&pos))
 	  return -1;
-	/* drop */
+	/* fall through */
       default:
 	switch (SLang_peek_at_stack())
 	  {

@@ -747,7 +747,7 @@ static void setitimer_intrinsic (void)
       case 3:
 	if (-1 == SLang_pop_double (&interval))
 	  goto free_and_return;
-	/* drop */
+	/* fall through */
       case 2:
       default:
 	if ((-1 == SLang_pop_double (&value))

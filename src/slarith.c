@@ -466,7 +466,7 @@ SLtype _pSLarith_promote_type (SLtype t)
 	t = SLANG_UINT_TYPE;
 	break;
 #endif
-	/* drop */
+	/* fall through */
       case SLANG_CHAR_TYPE:
       case SLANG_UCHAR_TYPE:
       case SLANG_SHORT_TYPE:

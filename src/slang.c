@@ -2728,6 +2728,7 @@ static int make_unit_object (SLang_Object_Type *a, SLang_Object_Type *u)
 
       case SLANG_COMPLEX_TYPE:
 	u->o_data_type = SLANG_DOUBLE_TYPE;
+	/* fall through */
       case SLANG_DOUBLE_TYPE:
 	u->v.double_val = 1;
 	break;
@@ -3741,7 +3742,7 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
       case SLANG_BCST_FOREACH_EARGS:
 	if (-1 == end_arg_list ())
 	  goto return_error;
-	/* drop */
+	/* fall through */
       case SLANG_BCST_FOREACH:	       /* obsolete */
 	loop_name = "foreach";
 	if (num_blocks != 1)
@@ -3997,7 +3998,7 @@ lang_do_loops (int stype, SLBlock_Type *block, unsigned int num_blocks)
    wrong_num_blocks_error:
    _pSLang_verror (SL_SYNTAX_ERROR, "Wrong number of blocks for '%s' construct", loop_name);
 
-   /* drop */
+   /* fall through */
    return_error:
    return -1;
    /* do_traceback (loop_name, NULL, -1); */
@@ -4283,7 +4284,7 @@ static int do_compare (SLBlock_Type *ops1)
 	  }
      }
    ret = 0;
-   /* drop */
+   /* fall through */
    return_error:
    if (cp != NULL)
      SLang_free_object (cp);
@@ -5278,7 +5279,7 @@ int _pSLpush_dollar_string (SLFUTURE_CONST char *str)
      }
 
    status = _pSLstrops_do_sprintf_n (argc-1);
-   /* drop */
+   /* fall through */
 
    free_return:
    for (i = 0; i < argc; i++)
@@ -5886,7 +5887,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 			    break;
 			 }
 		    }
-		  /* drop */
+		  /* fall through */
 		case SLANG_BCST_ANDELSE:
 		  if (block == NULL) block = addr;
 		  lang_do_and_orelse (0, block, addr);
@@ -5904,7 +5905,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 			    break;
 			 }
 		    }
-		  /* drop */
+		  /* fall through */
 		case SLANG_BCST_ORELSE:
 		  if (block == NULL) block = addr;
 		  lang_do_and_orelse (1, block, addr);
@@ -6067,7 +6068,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	   case SLANG_BC_CALL_DIRECT_RETINTR:
 	     (*addr->b.call_function) ();
 	     addr++;
-	     /* drop */
+	     /* fall through */
 	   case SLANG_BC_RET_INTRINSIC:
 	     EXECUTE_INTRINSIC (addr)
 	     if (0 == Handle_Interrupt)
@@ -6355,7 +6356,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 	     if (-1 == push_local_variable (addr->b.i_blk))
 	       break;
 	     addr++;
-	     /* drop */
+	     /* fall through */
 	   case SLANG_BC_LVARIABLE_APUT1:
 	       {
 		  SLang_Object_Type *o;
@@ -6547,7 +6548,7 @@ static int inner_interp (SLBlock_Type *addr_start)
 		  if (-1 == push_object (&obj3))
 		    break;
 	       }
-	     /* drop */
+	     /* fall through */
 	   case SLANG_BC_IF_BLOCK:
 	       {
 		  int i;
@@ -6861,7 +6862,7 @@ static int lang_free_branch (SLBlock_Type *p)
 	   case SLANG_BC_COMBINED:
 	     if (0 == (p->bc_flags & BC_LITERAL_MASK))
 	       break;
-	     /* drop */
+	     /* fall through */
 	   case SLANG_BC_LITERAL:
 	   case SLANG_BC_LITERAL_STR:
 	   case SLANG_BC_LITERAL_DBL:
@@ -7103,7 +7104,7 @@ int _pSLcompile_push_context (SLang_Load_Type *load_object)
 
    (void) _pSLerr_suspend_messages ();
    status = 0;
-   /* drop */
+   /* fall through */
 
    free_return:
    if (free_name)

@@ -2327,6 +2327,8 @@ static void rline_get_last_key_function_intrinsic (void)
 	     (void) SLang_push_function (last_key->f.slang_fun);
 	     return;
 	  }
+	break;
+
       case SLKEY_F_KEYSYM:
 	(void) SLang_push_uint (last_key->f.keysym);
 	return;

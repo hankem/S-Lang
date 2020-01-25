@@ -175,7 +175,7 @@ static int do_strtod (char *buf, int sign, double *xp)
 	*xp = sign * strtod_l (buf, NULL, C_Locale);
 	return 1;
      }
-   /* drop */
+   /* fall through */
 # endif
 
 # ifdef HAVE_STRTOD
@@ -646,6 +646,7 @@ try_again:		       /* used by i, x, and o, conversions */
 	     goto return_error;
 	   case 'D':
 	     is_long = 1;
+	     /* fall through */
 	   case 'd':
 	     if (is_short)
 	       {
@@ -666,6 +667,7 @@ try_again:		       /* used by i, x, and o, conversions */
 
 	   case 'U':
 	     is_long = 1;
+	     /* fall through */
 	   case 'u':
 	     if (is_short)
 	       {
@@ -686,7 +688,7 @@ try_again:		       /* used by i, x, and o, conversions */
 
 	   case 'I':
 	     is_long = 1;
-	     /* drop */
+	     /* fall through */
 	   case 'i':
 	     if ((s + 1 >= smax)
 		 || (*s != '0'))
@@ -703,7 +705,7 @@ try_again:		       /* used by i, x, and o, conversions */
 
 	   case 'O':
 	     is_long = 1;
-	     /* drop */
+	     /* fall through */
 	   case 'o':
 	     map = map8;
 	     base = 8;
@@ -715,7 +717,7 @@ try_again:		       /* used by i, x, and o, conversions */
 
 	   case 'X':
 	     is_long = 1;
-	     /* drop */
+	     /* fall through */
 	   case 'x':
 	     base = 16;
 	     map = map16;
@@ -728,7 +730,7 @@ try_again:		       /* used by i, x, and o, conversions */
 	   case 'E':
 	   case 'F':
 	     is_long = 1;
-	     /* drop */
+	     /* fall through */
 	   case 'e':
 	   case 'f':
 	   case 'g':

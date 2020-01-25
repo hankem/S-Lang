@@ -506,7 +506,7 @@ int _pSLassoc_inc_value (unsigned int num_indices, int inc)
      goto free_and_return;
 
    ret = 0;
-   /* drop */
+   /* fall through */
 
 free_and_return:
 
@@ -530,12 +530,12 @@ static int assoc_anew (SLtype type, unsigned int num_dims)
 	if (-1 == SLreverse_stack (2))
 	  return -1;
 	has_default_value = 1;
-	/* drop */
+	/* fall through */
       case 1:
 	if (0 == SLang_pop_datatype (&type))
 	  break;
 	num_dims--;
-	/* drop */
+	/* fall through */
       default:
 	SLdo_pop_n (num_dims);
 	_pSLang_verror (SL_SYNTAX_ERROR, "Usage: Assoc_Type [DataType_Type]");

@@ -495,7 +495,7 @@ unsigned int _pSLsys_getkey (void)
 	  break;
 	/* ^space = ^@ */
 	scan = 3;		/* send back Ctrl-@ => ^@^C */
-	/* drop */
+	/* fall through */
       case 0xe0:
       case 0:			/* extended key code */
 	ch = _pSLpc_convert_scancode (scan, 0, 1);

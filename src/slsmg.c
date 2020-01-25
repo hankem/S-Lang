@@ -322,7 +322,7 @@ static void init_acs (int mode)
 	     break;
 	  }
 	mode = ACS_MODE_ASCII;
-	/* drop */
+	/* fall through */
       case ACS_MODE_ASCII:
       default:
 	acs = UTF8_ACS_Map;

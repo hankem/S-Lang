@@ -315,15 +315,15 @@ int _pSLerr_throw (void)
 	if (-1 == SLang_pop (&Object_Thrown))
 	  return -1;
 	Object_Thrownp = &Object_Thrown;
-	/* drop */
+	/* fall through */
       case 2:
 	if (-1 == SLang_pop_slstring (&msg))
 	  {
 	     free_thrown_object ();
 	     return -1;
 	  }
+	/* fall through */
       case 1:
-	/* drop */
 	if (-1 == _pSLerr_pop_exception (&e))
 	  {
 	     SLang_free_slstring (msg);/* NULL ok */
