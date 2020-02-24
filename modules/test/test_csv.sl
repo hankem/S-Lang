@@ -93,6 +93,28 @@ private define test_empty_file (file)
 
 }
 
+private define test_embedded_comments (file)
+{
+   variable fp = fopen (file, "w");
+   () = fputs (`
+#comment line
+name
+"Value
+#1"
+#another comment
+Value #2
+`,
+	       fp);
+   () = fclose (fp);
+   variable s = csv_readcol (file; has_header, comment="#");
+   if (length (s.name) != 2)
+     failed ("test_embedded_comments: expected 2 rows");
+   if (s.name[0] != "Value\n#1")
+     failed ("test_embedded_comments: value 1 incorrect");
+   if (s.name[1] != "Value #2")
+     failed ("test_embedded_comments: value 2 incorrect");
+}
+
 define slsh_main ()
 {
    testing_module ("csv");
@@ -102,7 +124,7 @@ define slsh_main ()
    test_csv (file);
    test_csv (fopen (file, "r"));
    test_empty_file (file);
-
+   test_embedded_comments (file);
    () = remove (file);
    end_test ();
 }

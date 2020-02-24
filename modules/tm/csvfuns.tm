@@ -25,11 +25,13 @@
   It is important to understand the difference between a ROW and a LINE
   in a CSV formatted file: a row may span more than one line in a file.
   The \exmp{skiplines} qualifier specifies the number of LINES to be
-  skipped, not ROWS.
+  skipped, not ROWS.  However, if a comment string appears at the
+  beginning of one of the lines forming a multiline string, it will
+  treated as part of the string and not as a comment.
 
   CSV files have no notion of data-types: all field values are strings.
   For this reason, the \exmp{type} qualifier introduces an extra layer
-  that is not part CSV format.
+  that is not part of the CSV specification.
 \seealso{csv.readcol, csv.readrow}
 \done
 

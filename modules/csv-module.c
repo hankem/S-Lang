@@ -28,13 +28,14 @@ static int check_special_chars (CSV_Type *csv)
    return 0;
 }
 
-static int execute_read_callback (CSV_Type *csv, char **sptr)
+static int execute_read_callback (CSV_Type *csv, int in_quote, char **sptr)
 {
    char *s;
 
    *sptr = NULL;
 
    if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_push_int (in_quote))
        || (-1 == SLang_push_anytype (csv->callback_data))
        || (-1 == SLang_end_arg_list ())
        || (-1 == SLexecute_function (csv->read_callback)))
@@ -147,7 +148,7 @@ static int store_value (Values_Array_Type *va, char *value)
 	} \
       SLang_free_slstring (line); \
       line = NULL; \
-      status = execute_read_callback (csv, &line); \
+      status = execute_read_callback (csv, in_quote, &line); \
       do_read = 0; \
       if (status == -1) \
 	goto return_error; \

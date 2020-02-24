@@ -1,4 +1,4 @@
-% Copyright (C) 2012-2017,2018 John E. Davis
+% Copyright (C) 2012-2020 John E. Davis
 %
 % This file is part of the S-Lang Library and may be distributed under the
 % terms of the GNU General Public License.  See the file COPYING for
@@ -6,7 +6,7 @@
 %---------------------------------------------------------------------------
 import ("csv");
 
-private define read_fp_callback (info)
+private define read_fp_callback (in_quote, info)
 {
    variable line, comment_char = info.comment_char;
    forever
@@ -15,14 +15,15 @@ private define read_fp_callback (info)
 	  return NULL;
 
 	if ((line[0] == comment_char)
-	     && (0 == strnbytecmp (line, info.comment, info.comment_len)))
+	    && (in_quote == 0)
+	    && (0 == strnbytecmp (line, info.comment, info.comment_len)))
 	  continue;
 
 	return line;
      }
 }
 
-private define read_strings_callback (str_info)
+private define read_strings_callback (in_quote, str_info)
 {
    variable line;
 

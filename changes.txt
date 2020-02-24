@@ -33,6 +33,8 @@ Changes since 2.3.2
     duplicated f_bsize fields.
 18. *.c: In switch statements, changed the /* drop */ comment to /*
     fall through */ to avoid gcc-8 warnings.
+19. modules/csv.sl: If a comment string appears at the start of a line
+    forming a multiline string, then treat it as part of the string.
 
 {{{ Previous Versions
 
