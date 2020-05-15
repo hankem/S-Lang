@@ -301,6 +301,7 @@
 @slsh/lib/profile.sl
 @slsh/lib/print.sl
 @slsh/lib/slshhelp.sl
+@slsh/lib/timestamp.sl
 @slsh/lib/cmdopt.sl
 @slsh/lib/readascii.sl
 @slsh/lib/process.sl
@@ -328,6 +329,7 @@
 @slsh/lib/help/process.hlp
 @slsh/lib/help/setfuns.hlp
 @slsh/lib/help/listfuns.hlp
+@slsh/lib/help/timestamp.hlp
 
 @slsh/lib/tm/Makefile
 @slsh/lib/tm/arrayfuns.tm
@@ -342,6 +344,7 @@
 @slsh/lib/tm/process.tm
 @slsh/lib/tm/setfuns.tm
 @slsh/lib/tm/listfuns.tm
+@slsh/lib/tm/timestamp.tm
 
 @slsh/lib/test/runtests.sh 0755
 @slsh/lib/test/common.sl
@@ -352,6 +355,7 @@
 @slsh/lib/test/test_process.sl
 @slsh/lib/test/test_setfuns.sl
 @slsh/lib/test/test_listfuns.sl
+@slsh/lib/test/test_timestamp.sl
 
 @slsh/doc/tm/slsh.tm
 @slsh/doc/tm/Makefile

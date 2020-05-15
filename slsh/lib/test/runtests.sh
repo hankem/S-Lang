@@ -9,6 +9,7 @@ export LD_LIBRARY_PATH="$ROOT/src/${ARCH}elfobjs"
 export DYLD_LIBRARY_PATH="$ROOT/src/${ARCH}elfobjs"
 
 run_test_pgm="$SLSHROOT/${ARCH}objs/slsh_exe -n -g"
+#run_test_pgm="sldb"
 #run_test_pgm="$SLSHROOT/${ARCH}objs/slsh_exe -n -g $SLSHROOT/scripts/sldb"
 runprefix="$SLTEST_RUN_PREFIX"
 #runprefix="valgrind --tool=memcheck --leak-check=yes --error-limit=no --num-callers=25"

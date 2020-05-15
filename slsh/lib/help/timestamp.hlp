@@ -1,0 +1,33 @@
+timestamp_parse
+
+ SYNOPSIS
+  Parse a timestamps to Unix time
+
+ USAGE
+  Long_Type timestamp_parse (String_Type timestamp)
+
+ DESCRIPTION
+  The `timestamp_parse' function parses the string representation
+  of a timestamp and returns it expessed as the number of seconds
+  since the Unix Epoch.
+
+  The `timestamp' string is assumed to conform to one of the
+  following standards: RFCs 822, 1036, 1123, 2822, 3339, and ISO-8601.
+  Examples include:
+
+   "2020-05-02T17:09:58+00:00"
+   "Sunday, 02-May-20 17:09:58 UTC"
+   "Sun, 2 May 2020 17:09:58 +0000"
+   "5/2/2020, 5:31:57 PM EDT"
+   "2020-02-14T170958+0000"
+   "5/02/2020, 5:31:57 PM",
+
+  If a timezone specifier is missing,  the local timezone will be
+  assumed.
+
+  Upon success, the functions returns the number of seconds since
+  1970-01-01T00:00:00 UTC.  If the format of the timestamp is not
+  recognized as the function, NULL will be returned.
+
+ SEE ALSO
+  _time, ctime, strftime, gmtime, timegm, mktime

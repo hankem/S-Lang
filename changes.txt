@@ -35,6 +35,9 @@ Changes since 2.3.2
     fall through */ to avoid gcc-8 warnings.
 19. modules/csv.sl: If a comment string appears at the start of a line
     forming a multiline string, then treat it as part of the string.
+20. slsh/lib/timestamp.sl:  Added a function timestamp_parse that parses
+    strings such as `Thu May 14 18:05:05 2020` and returns the number
+    of seconds since the Unix epoch.
 
 {{{ Previous Versions
 
