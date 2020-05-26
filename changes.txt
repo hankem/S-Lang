@@ -40,6 +40,7 @@ Changes since 2.3.2
     of seconds since the Unix epoch.
 21. src/slregexp.c: Added \D (non-digit), \s (whitespace), and \S
     (non-whitespace).
+22. src/slstrops.c: Added a compiled regexp cache
 
 {{{ Previous Versions
 

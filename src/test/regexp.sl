@@ -24,11 +24,27 @@ test_regexp (`.d`, "ffdoodfoo fob", 2, "fd");
 test_regexp (`.*d`, "ffdoodfoo fob", 1, "ffdood");
 test_regexp (`.?d`, "ffdoodfoo fob", 2, "fd");
 test_regexp (`.+d`, "ffdoodfoo fob", 1, "ffdood");
-test_regexp (`.\{1,3\}d`, "ffdoodfoo fob", 1, "ffd");
-test_regexp (`.\{1,\}d`, "ffdoodfoo fob", 1, "ffdood");
-test_regexp (`.\{4,\}d`, "ffdoodfoo fob", 1, "ffdood");
-test_regexp (`.\{3,4\}d`, "ffdoodfoo fob", 2, "fdood");
+
+% Looping test the RE cache
+loop (7)
+{
+   test_regexp (`.\{1,3\}d`, "ffdoodfoo fob", 1, "ffd");
+   loop (5)
+     {
+	test_regexp (`.\{1,\}d`, "ffdoodfoo fob", 1, "ffdood");
+	loop (3)
+	  {
+	     test_regexp (`.\{4,\}d`, "ffdoodfoo fob", 1, "ffdood");
+	     test_regexp (`.\{3,4\}d`, "ffdoodfoo fob", 2, "fdood");
+	  }
+     }
+}
+
 test_regexp (`.\{3\}d`, "ffdoodfoo fob", 3, "dood");
+
+test_regexp(`\s+fo\so`, "fo o    fo od", 5, "    fo o");
+test_regexp(`\s+\S+\s?d`, "fo o    fo od", 11, " od");
+test_regexp(`\s+\S+\s?o`, "fo o    fo od", 5, "    fo o");
 
 test_regexp (`\c[A-Z]+`, "fooFOO4", 4, "FOO");
 test_regexp (`\C[A-Z]+`, "fooFOO4", 1, "fooFOO");
@@ -137,6 +153,7 @@ test_regexp_match (`=\(\d+\)`, "L=1X", 2, "1");
 test_regexp_match (`=\(\d+\)`, "L=12X", 2, "12");
 test_regexp_match (`=\(\d*\)`, "L=1X", 2, "1");
 test_regexp_match (`=\(\d*\)`, "L=X", 2, "");
+test_regexp_match (`\D+\d+\D?\(\d+\)`, "L=12X13", 1, "13");
 
 static define test_globbing (glob, re)
 {
