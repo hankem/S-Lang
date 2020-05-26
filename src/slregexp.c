@@ -50,24 +50,25 @@ struct _pSLRegexp_Type
 
 #define SET_BIT(b, n) b[(unsigned int) (n) >> 3] |= 1 << ((unsigned int) (n) % 8)
 #define TEST_BIT(b, n) (b[(unsigned int)(n) >> 3] & (1 << ((unsigned int) (n) % 8)))
-#define LITERAL 1
-#define RANGE 2			       /* [...] */
-#define ANY 3			       /* . */
-#define BOL 4			       /* ^ */
-#define EOL 5			       /* $ */
-#define NTH_MATCH 6		       /* \1 \2 ... \9 */
-#define OPAREN 7		       /* \( */
-#define CPAREN 0x8		       /* \) */
-#define ANY_DIGIT 0x9		       /* \d */
-#define BOW	0xA		       /* \< */
-#define EOW	0xB		       /* \> */
-#if 0
-#define NOT_LITERAL		0xC	       /* \~ */
-#endif
-#define STAR 0x80		       /* * */
-#define LEAST_ONCE 0x40		       /* + */
-#define MAYBE_ONCE 0x20		       /* ? */
-#define MANY 0x10		       /* {n,m} */
+#define LITERAL		0x01
+#define RANGE		0x02	       /* [...] */
+#define ANY		0x03	       /* . */
+#define BOL		0x04	       /* ^ */
+#define EOL		0x05	       /* $ */
+#define NTH_MATCH	0x06	       /* \1 \2 ... \9 */
+#define OPAREN		0x07	       /* \( */
+#define CPAREN		0x08	       /* \) */
+#define ANY_DIGIT	0x09	       /* \d */
+#define ANY_NONDIGIT	0x0A	       /* \D */
+#define ANY_SPACE	0x0B	       /* \s */
+#define ANY_NONSPACE	0x0C	       /* \S */
+#define BOW		0x0D	       /* \< */
+#define EOW		0x0E	       /* \> */
+#define STAR		0x10	       /* * */
+#define LEAST_ONCE	0x20	       /* + */
+#define MAYBE_ONCE	0x40	       /* ? */
+#define MANY		0x80	       /* {n,m} */
+
 /* The rest are additions */
 #define YES_CASE (STAR | BOL)
 #define NO_CASE  (STAR | EOL)
@@ -78,14 +79,8 @@ struct _pSLRegexp_Type
 /* FIXME: UTF8 */
 static unsigned char Word_Chars[256];
 #define IS_WORD_CHAR(x) Word_Chars[(unsigned int) (x)]
-
-#if 0
-static int ctx->open_paren_number;
-static char Closed_Paren_Matches[10];
-
-static SLRegexp_Type *This_Reg;
-static unsigned char *This_Str;
-#endif
+static unsigned char Space_Chars[256];
+#define IS_WHITESPACE(x) (0 != Space_Chars[(unsigned int)(x)])
 
 typedef struct
 {
@@ -115,6 +110,42 @@ static SLCONST unsigned char *do_nth_match (Re_Context_Type *ctx, int idx, SLCON
    str += m;
    return (str);
 }
+
+#define CASES(_X, _expr_str) \
+ case _X: \
+   if ((str >= estr) || (0 == (_expr_str))) return NULL; \
+   str++; \
+   break; \
+ case MAYBE_ONCE | _X: \
+   save_str = str; \
+   if ((str < estr) && (_expr_str)) str++; \
+   goto match_rest; \
+ case LEAST_ONCE | _X: \
+   if ((str >= estr) || (0 == (_expr_str))) return NULL; \
+   str++; \
+   /* fall through */ \
+ case STAR | _X: \
+   save_str = str; \
+   while ((str < estr) && (_expr_str)) str++; \
+   goto match_rest; \
+ case MANY | _X: \
+   /* minimum number to match--- could be 0 */ \
+   n = n0 = (int) (unsigned char) *regexp++; \
+   /* maximum number to match */ \
+   n1 = (int) (unsigned char) *regexp++; \
+   while (n && (str < estr) && (_expr_str)) \
+   { \
+      n--; str++; \
+   } \
+   if (n) return NULL; \
+   save_str = str; \
+   n = n1 - n0; \
+   while (n && (str < estr) && (_expr_str)) \
+   { \
+      n--; str++; \
+   } \
+   goto match_rest
+
 
 /* returns pointer to the end of regexp or NULL */
 static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
@@ -170,53 +201,7 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 		  break;
 	       }
 	     break;
-#ifdef NOT_LITERAL
-	   case NOT_LITERAL:
-	     if ((str >= estr) || (*regexp == UPPERCASE(*str))) return (NULL);
-	     str++; regexp++;
-	     break;
 
-	   case MAYBE_ONCE | NOT_LITERAL:
-	     save_str = str;
-	     if ((str < estr) && (*regexp != UPPERCASE(*str))) str++;
-	     regexp++;
-	     goto match_rest;
-
-	   case NOT_LITERAL | LEAST_ONCE:   /* match at least once */
-	     if ((str >= estr) || (UPPERCASE(*str) == UPPERCASE(*regexp))) return (NULL);
-	     str++;
-	     /* fall through */
-	   case STAR | NOT_LITERAL:
-	     save_str = str;  p1 = *regexp;
-	     while ((str < estr) && (UPPERCASE(*str) != p1)) str++;
-	     regexp++;
-	     goto match_rest;
-
-	     /* this type consists of the expression + two bytes that
-	        determine number of matches to perform */
-	   case MANY | NOT_LITERAL:
-	     p1 = *regexp; regexp++;
-	     n = n0 = (int) (unsigned char) *regexp++;
-	     /* minimum number to match--- could be 0 */
-	     n1 = (int) (unsigned char) *regexp++;
-	     /* maximum number to match */
-
-	     while (n && (str < estr) && (p1 != UPPERCASE(*str)))
-	       {
-		  n--;
-		  str++;
-	       }
-	     if (n) return (NULL);
-
-	     save_str = str;
-	     n = n1 - n0;
-	     while (n && (str < estr) && (p1 != UPPERCASE(*str)))
-	       {
-		  n--;
-		  str++;
-	       }
-	     goto match_rest;
-#endif				       /* NOT_LITERAL */
 	   case LITERAL:
 	     if ((str >= estr) || (*regexp != UPPERCASE(*str))) return (NULL);
 	     str++; regexp++;
@@ -264,7 +249,8 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	     goto match_rest;
 
 	   case NTH_MATCH:
-	     if ((str = do_nth_match(ctx, (int) (unsigned char) *regexp, str, estr)) == NULL) return(NULL);
+	     if (NULL == (str = do_nth_match(ctx, (int) (unsigned char) *regexp, str, estr)))
+	       return(NULL);
 	     regexp++;
 	     break;
 
@@ -360,89 +346,11 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	     regexp += 34;		       /* 32 + 2 */
 	     goto match_rest;
 
-	   case ANY_DIGIT:
-	     if ((str >= estr) || (*str > '9') || (*str < '0')) return (NULL);
-	     str++;
-	     break;
-
-	   case MAYBE_ONCE | ANY_DIGIT:
-	     save_str = str;
-	     if ((str < estr) && ((*str <= '9') && (*str >= '0'))) str++;
-	     goto match_rest;
-
-	   case LEAST_ONCE | ANY_DIGIT:
-	     if ((str >= estr) || ((*str > '9') || (*str < '0'))) return NULL;
-	     str++;
-	     /* fall through */
-	   case STAR | ANY_DIGIT:
-	     save_str = str;
-	     while ((str < estr) && ((*str <= '9') && (*str >= '0'))) str++;
-	     goto match_rest;
-
-	   case MANY | ANY_DIGIT:
-	     /* minimum number to match--- could be 0 */
-	     n = n0 = (int) (unsigned char) *regexp++;
-	     /* maximum number to match */
-	     n1 = (int) (unsigned char) *regexp++;
-
-	     while (n && (str < estr) && (*str <= '9') && (*str >= '0'))
-	       {
-		  n--;
-		  str++;
-	       }
-	     if (n) return (NULL);
-	     save_str = str;
-	     n = n1 - n0;
-	     while (n && (str < estr) && (*str <= '9') && (*str >= '0'))
-	       {
-		  n--;
-		  str++;
-	       }
-	     goto match_rest;
-
-	   case ANY:		       /* . */
-	     /* FIXME: UTF8 */
-	     if ((str >= estr) || (*str == '\n')) return (NULL);
-	     str++;
-	     break;
-
-	   case MAYBE_ONCE | ANY:      /* .? */
-	     /* FIXME: UTF8 */
-	     save_str = str;
-	     if ((str < estr) && (*str != '\n')) str++;
-	     goto match_rest;
-
-	   case LEAST_ONCE | ANY:      /* .+ */
-	     /* FIXME: UTF8 */
-	     if ((str >= estr) || (*str == '\n')) return (NULL);
-	     str++;
-	     /* fall through */
-	   case STAR | ANY:	       /* .* */
-	     /* FIXME: UTF8 */
-	     save_str = str;
-	     while ((str < estr) && (*str != '\n')) str++;
-	     goto match_rest;
-
-	   case MANY | ANY:
-	     /* minimum number to match--- could be 0 */
-	     n = n0 = (int) (unsigned char) *regexp++;
-	     /* maximum number to match */
-	     n1 = (int) (unsigned char) *regexp++;
-
-	     while (n && (str < estr) && (*str != '\n'))
-	       {
-		  n--;
-		  str++;
-	       }
-	     if (n) return (NULL);
-	     save_str = str;
-	     n = n1 - n0;
-	     while (n && (str < estr) && (*str != '\n'))
-	       {
-		  n--;
-		  str++;
-	       }
-	     goto match_rest;
+	     CASES(ANY_DIGIT, ((*str <= '9') && (*str >= '0')));
+	     CASES(ANY_NONDIGIT, ((*str > '9') || (*str < '0')));
+	     CASES(ANY_SPACE, IS_WHITESPACE(*str));
+	     CASES(ANY_NONSPACE, (0 == IS_WHITESPACE(*str)));
+	     CASES(ANY, (*str != '\n'));
 
 	   case EOL:
 	     if (str >= estr)
@@ -456,18 +364,12 @@ static SLCONST unsigned char *regexp_looking_at (Re_Context_Type *ctx,
 	p = *regexp++;
 	continue;
 
-	match_rest:
+match_rest:
 	if (save_str == str)
 	  {
 	     p = *regexp++;
 	     continue;
 	  }
-
-	/* if (p == EOL)
-	 * {
-	 * if (str < estr) return (NULL); else return (str);
-	 * }
-	 */
 
 	SLMEMCPY(save_closed_matches, ctx->closed_paren_matches, sizeof(save_closed_matches));
 	save_num_open = ctx->open_paren_number;
@@ -638,6 +540,7 @@ static int regexp_compile (SLRegexp_Type *reg)
 #else
 	SLmake_lut (Word_Chars, (unsigned char *) "_0-9a-zA-Z\277-\326\330-\336\340-\366\370-\376", 0);
 #endif
+	SLmake_lut (Space_Chars, (unsigned char *) "\x09\x0A\x0B\x0C\x0D ", 0);
 	already_initialized = 1;
      }
 
@@ -714,19 +617,26 @@ static int regexp_compile (SLRegexp_Type *reg)
 		  last = buf;
 		  *buf++ = NTH_MATCH; *buf++ = c;
 		  break;
-#ifdef NOT_LITERAL
-		case '~':	       /* slang extension */
-		  if ((c = *pat) == 0) ERROR;
-		  pat++;
-		  last = buf;
-		  *buf++ = NOT_LITERAL;
-		  *buf++ = c;
-		  min_length++;
-		  break;
-#endif
 		case 'd':	       /* slang extension */
 		  last = buf;
 		  *buf++ = ANY_DIGIT;
+		  min_length++;
+		  break;
+		case 'D':	       /* slang extension */
+		  last = buf;
+		  *buf++ = ANY_NONDIGIT;
+		  min_length++;
+		  break;
+
+		case 's':
+		  last = buf;
+		  *buf++ = ANY_SPACE;
+		  min_length++;
+		  break;
+
+		case 'S':
+		  last = buf;
+		  *buf++ = ANY_NONSPACE;
 		  min_length++;
 		  break;
 

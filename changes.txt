@@ -38,6 +38,8 @@ Changes since 2.3.2
 20. slsh/lib/timestamp.sl:  Added a function timestamp_parse that parses
     strings such as `Thu May 14 18:05:05 2020` and returns the number
     of seconds since the Unix epoch.
+21. src/slregexp.c: Added \D (non-digit), \s (whitespace), and \S
+    (non-whitespace).
 
 {{{ Previous Versions
 
