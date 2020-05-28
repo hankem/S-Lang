@@ -41,6 +41,10 @@ Changes since 2.3.2
 21. src/slregexp.c: Added \D (non-digit), \s (whitespace), and \S
     (non-whitespace).
 22. src/slstrops.c: Added a compiled regexp cache
+23. src/slstdio.c: Added trim qualifier to the fgetlines intrinsic:
+      ;trim=1 ==> trim trailing whitespace
+      ;trim=2 ==> trim leading whitespace
+      ;trim=3 ==> trim leading and trailing whitespace
 
 {{{ Previous Versions
 

@@ -268,21 +268,56 @@ test_fread_fwrite ([2i+3, 7i+1]);
 
 static define test_fgetsputslines ()
 {
-   variable lines = array_map (String_Type, &string, [1:1000]);
+   variable lines, lines1;
+
+   lines = array_map (String_Type, &string, [1:1000]);
    lines += "\n";
-   variable file;
-   variable fp = fopen_tmp_file (&file, "w");
+
+   variable fp, file;
+
+   fp = fopen_tmp_file (&file, "w");
    if (length (lines) != fputslines (lines, fp))
      failed ("fputslines");
    if (-1 == fclose (fp))
      failed ("fputslines;fclose");
+
    fp = fopen (file, "r");
    if (fp == NULL)
      failed ("fputslines...fopen");
-   variable lines1 = fgetslines (fp);
+   lines1 = fgetslines (fp);
    if (0 == _eqs (lines1, lines))
      failed ("fgetslines");
    ()=fclose (fp);
+   if (-1 == remove (file))
+     failed ("remove:" + errno_string(errno));
+
+   lines = array_map (String_Type, &string, [1:1000]);
+   lines[[10:20:3]] = "";
+   lines = " \t" + lines + " \n";
+
+   variable a = Array_Type[4];
+   a[0] = lines;
+   a[1] = strtrim_end (lines);
+   a[2] = strtrim_beg (lines);
+   a[3] = strtrim (lines);
+
+   fp = fopen_tmp_file (&file, "w");
+   if (length (lines) != fputslines (lines, fp))
+     failed ("fputslines");
+   if (-1 == fclose (fp))
+     failed ("fputslines;fclose");
+
+   _for (0, 3, 1)
+     {
+	variable t = ();
+	fp = fopen (file, "r");
+	if (fp == NULL)
+	  failed ("fputslines...fopen");
+	ifnot (_eqs (a[t], fgetslines (fp; trim=t)))
+	  failed ("fgetslines with trim=%d", t);
+	() = fclose (fp);
+     }
+
    if (-1 == remove (file))
      failed ("remove:" + errno_string(errno));
 }

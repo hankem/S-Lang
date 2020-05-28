@@ -169,6 +169,12 @@
   unspecified, the function will return the rest of the lines in the
   file.  If the file is empty, an empty string array will be returned.
   The function returns \NULL upon error.
+\qualifiers
+  The \exmp{trim} qualifier may be used remove leading or trailing
+  whitespace from the returned lines.  If \exmp{trim} is 1, trailing
+  whitespace will be removed.  If its value is 2, then leading
+  whitespace will be removed.  If \exmp{trim} is 3, then both leading
+  and trailing whitespace will be removed.
 \example
   The following function returns the number of lines in a file:
 #v+

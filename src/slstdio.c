@@ -473,10 +473,13 @@ static int stdio_fclose (void)
    return ret;
 }
 
-static int read_one_line (FILE *fp, char **strp, SLstrlen_Type *lenp, int trim_trailing)
+/* If trim = 1, trim trailing whitespace, if 2 trim leading, if 3 trim both */
+#define TRIM_TRAILING (0x1)
+#define TRIM_LEADING (0x2)
+static int read_one_line (FILE *fp, char **strp, SLstrlen_Type *lenp, int trim)
 {
    char buf[512];
-   char *str;
+   char *str, *str0;
    size_t len;
 
    *strp = NULL;
@@ -520,7 +523,7 @@ static int read_one_line (FILE *fp, char **strp, SLstrlen_Type *lenp, int trim_t
    if (str == NULL)
      return 0;
 
-   if (trim_trailing)
+   if (trim & TRIM_TRAILING)
      {
 	unsigned int len1 = len;
 	while (len1)
@@ -535,8 +538,18 @@ static int read_one_line (FILE *fp, char **strp, SLstrlen_Type *lenp, int trim_t
 	len = len1;
      }
 
+   str0 = str;
+   if (trim & TRIM_LEADING)
+     {
+	unsigned int i = 0;
+	while ((i < len) && (isspace ((unsigned char) str[i])))
+	  i++;
+	str += i;
+	len -= i;
+     }
+
    *strp = SLang_create_nslstring (str, len);
-   if (str != buf) SLfree (str);
+   if (str0 != buf) SLfree (str0);
 
    if (*strp == NULL) return -1;
 
@@ -569,7 +582,7 @@ static int stdio_fgets (SLang_Ref_Type *ref, SL_File_Table_Type *t)
    return (int) len;
 }
 
-static void stdio_fgetslines_internal (FILE *fp, unsigned int n)
+static void stdio_fgetslines_internal (FILE *fp, unsigned int n, int trim)
 {
    unsigned int num_lines, max_num_lines;
    char **list;
@@ -596,7 +609,7 @@ static void stdio_fgetslines_internal (FILE *fp, unsigned int n)
 	char *line;
 	SLstrlen_Type len;
 
-	status = read_one_line (fp, &line, &len, 0);
+	status = read_one_line (fp, &line, &len, trim);
 	if (status == -1)
 	  goto return_error;
 
@@ -656,9 +669,10 @@ return_error:
 
 static void stdio_fgetslines (void)
 {
-   unsigned int n;
    FILE *fp;
    SLang_MMT_Type *mmt;
+   unsigned int n;
+   int trim;
 
    n = (unsigned int)-1;
 
@@ -674,7 +688,9 @@ static void stdio_fgetslines (void)
 	return;
      }
 
-   stdio_fgetslines_internal (fp, n);
+   if (0 == SLang_get_int_qualifier ("trim", &trim, 0))
+     stdio_fgetslines_internal (fp, n, trim);
+
    SLang_free_mmt (mmt);
 }
 

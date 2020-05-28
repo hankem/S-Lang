@@ -1,6 +1,6 @@
   A Guide to the S-Lang Language (v2.3.0)
   John E. Davis <www.jedsoft.org>
-  Jul 4, 2018
+  Apr 18, 2020
   ____________________________________________________________
 
 
@@ -1141,10 +1141,11 @@
 
   4.1.7.  Array_Type, Assoc_Type, List_Type, and Struct_Type
 
-  Variables of type Array_Type, Assoc_Type, List_Type, and Struct_Type
-  are known as container objects. They are more complicated than the
-  simple data types discussed so far and each obeys a special syntax.
-  For these reasons they are discussed in a separate chapters.
+  Variables of type ``Array_Type'', ``Assoc_Type'', ``List_Type'', and
+  ``Struct_Type'' are known as container objects. They are more
+  complicated than the simple data types discussed so far and each obeys
+  a special syntax.  For these reasons they are discussed in a separate
+  chapters.
 
   4.1.8.  DataType_Type Type
 
@@ -2171,8 +2172,8 @@
        block
 
   The allowed values of control-list will depend upon the type of con-
-  tainer object. For associative arrays (Assoc_Type), control-list spec-
-  ifies whether keys, values, or both are used. For example,
+  tainer object. For associative arrays (``Assoc_Type''), control-list
+  specifies whether keys, values, or both are used. For example,
 
             foreach k (a) using ("keys")
               {
@@ -3109,7 +3110,7 @@
   tain as many as 7 dimensions. When a numeric array is created, all its
   elements are initialized to zero.  The initialization of other array
   types depend upon the data type, e.g., the elements in String_Type and
-  Struct_Type arrays are initialized to NULL.
+  ``Struct_Type'' arrays are initialized to NULL.
 
   As a concrete example, consider
 

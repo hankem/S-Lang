@@ -10,6 +10,8 @@
 #d sectref#1 the section on \ref{$1}
 #d chapterref#1 the chapter on \ref{$1}
 
+#d ref_dtype#1 <tt><ref id="label-$1" name="$1"></tt>
+#d labeled_dtype#1 <label id="label-$1">
 #d documentstyle book
 
 #%}}}
@@ -1169,8 +1171,8 @@
 
 \sect1{Array_Type, Assoc_Type, List_Type, and Struct_Type}
 
-   Variables of type \dtype{Array_Type}, \dtype{Assoc_Type},
-   \dtype{List_Type}, and \dtype{Struct_Type} are known as
+   Variables of type \ref_dtype{Array_Type}, \ref_dtype{Assoc_Type},
+   \ref_dtype{List_Type}, and \ref_dtype{Struct_Type} are known as
    \em{container objects}.  They are more complicated than the
    simple data types discussed so far and each obeys a special syntax.
    For these reasons they are discussed in a separate chapters.
@@ -2308,7 +2310,7 @@
        \em{statement-or-block}
 \end{tscreen}
    The allowed values of \em{control-list} will depend upon the type
-   of container object.  For associative arrays (\var{Assoc_Type}),
+   of container object.  For associative arrays (\ref_dtype{Assoc_Type}),
    \em{control-list} specifies whether \em{keys}, \em{values}, or both
    are used.  For example,
 #v+
@@ -3300,6 +3302,7 @@
 #%}}}
 
 \labeled_chapter{Arrays} #%{{{
+\labeled_dtype{Array_Type}
 
    An array is a container object that can contain many values of one
    data type.  Arrays are very useful objects and are indispensable
@@ -3320,7 +3323,7 @@
    permits arrays to contain as many as 7 dimensions.  When a
    numeric array is created, all its elements are initialized to zero.
    The initialization of other array types depend upon the data type,
-   e.g., the elements in \var{String_Type} and \var{Struct_Type} arrays are
+   e.g., the elements in \var{String_Type} and \ref_dtype{Struct_Type} arrays are
    initialized to \NULL.
 
    As a concrete example, consider
@@ -3934,6 +3937,7 @@
 #%}}}
 
 \chapter{Associative Arrays} #%{{{
+\labeled_dtype{Assoc_Type}
 
    An associative array differs from an ordinary array in the sense
    that its size is not fixed and that it is indexed by a string, called
@@ -4053,6 +4057,8 @@
 #%}}}
 
 \chapter{Structures and User-Defined Types} #%{{{
+
+\labeled_dtype{Struct_Type}
 
    A \em{structure} is a heterogeneous container object, i.e., it is
    an object with elements whose values do not have to be of the same
@@ -4537,6 +4543,7 @@
 #%}}}
 
 \chapter{Lists} #%{{{
+\labeled_dtype{List_Type}
 
  Sometimes it is desirable to utilize an object that has many of the
  properties of an array, but can also easily grow or shrink upon
