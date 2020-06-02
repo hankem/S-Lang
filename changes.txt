@@ -45,6 +45,8 @@ Changes since 2.3.2
       ;trim=1 ==> trim trailing whitespace
       ;trim=2 ==> trim leading whitespace
       ;trim=3 ==> trim leading and trailing whitespace
+24. slsh/lib/timestamp.sl: When matching a regexp to a timestamp,
+    start with the RE that was used in the previous match.
 
 {{{ Previous Versions
 

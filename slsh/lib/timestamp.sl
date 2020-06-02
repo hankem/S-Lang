@@ -94,7 +94,7 @@ add_ts_format (`\(\d\d?\)/\(\d\d?\)/\(\d\d\d*\),?`
 	       [2,1,3,4,5,6,7], 1);
 
 % Dec 4 11:05:52 2020
-add_ts_format (`^\([a-zA-Z]\{3,\}\) \(\d+\),?`  %  month, day
+add_ts_format (`^\([a-zA-Z]\{3,\}\) +\(\d+\),?`  %  month, day
 	       + ` +\(\d\d?\):\(\d\d\):?\(\d*\),?`%  hh:mm:ss
 	       + ` +\(\d\d\d*\)`       %  year
 	       + ` *\(.*\)`,	       %  tz  
@@ -102,12 +102,13 @@ add_ts_format (`^\([a-zA-Z]\{3,\}\) \(\d+\),?`  %  month, day
 
 % Tue Dec 4 11:05:52 2020
 add_ts_format (`^[A-Za-z,]+`
-	       + ` +\([a-zA-Z]\{3,\}\) \(\d+\),?`  %  month, day
+	       + ` +\([a-zA-Z]\{3,\}\) +\(\d+\),?`  %  month, day
 	       + ` +\(\d\d?\):\(\d\d\):?\(\d*\),?`%  hh:mm:ss
 	       + ` +\(\d\d\d*\)`       %  year  
 	       + ` *\(.*\)`,	       %  tz  
 	       [2,1,6,3,4,5,7], 0);
 
+private variable Last_TS_Index = 0;
 private define guess_local_timezone_offset ()
 {
    variable now = _time(), tm = gmtime(now);
@@ -121,12 +122,17 @@ define timestamp_parse (timestamp)
 {
    timestamp = strtrim (timestamp);
    variable day, month, year, hours, minutes, secs, tz, tzstr;
-   foreach (TS_Formats)
+   variable num = length (TS_Formats);
+   loop (num)
      {
-	variable fmt = ();
+	variable fmt = TS_Formats[Last_TS_Index];
+
 	variable matches = string_matches (timestamp, fmt.re);
 	if (matches == NULL)
-	  continue;
+	  {
+	     Last_TS_Index = (Last_TS_Index + 1) mod num;
+	     continue;
+	  }
 	variable ind = fmt.indices;
 	day = atoi (matches[ind[0]]);
 	month = matches[ind[1]];
@@ -145,6 +151,8 @@ define timestamp_parse (timestamp)
 	     if (month == NULL) return NULL;
 	  }
 	break;
+
+	Last_TS_Index = (Last_TS_Index + 1) mod num;
      }
    then return NULL;
 
