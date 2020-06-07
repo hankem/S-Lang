@@ -64,7 +64,7 @@ private define add_ts_format (re, indices, month_is_int)
 % Tue 12 May 2020 04:37:54 [PM] EDT
 add_ts_format (`^[a-zA-Z,]*`		       %  weekday  
 	       + ` *\(\d\d?\)[ -]\([a-zA-Z]+\)[ -]\(\d\d\d*\),?`   %  day month year
-	       + ` *\(\d\d?\):\(\d\d\):?\(\d*\)`  %  hh:mm:ss
+	       + ` *\(\d\d?\)[:.]\(\d\d\)[:.]?\(\d*\)`  %  hh:mm:ss
 	       + ` *\(.*\)`,		       %  AM/PM + tz
 	       [1,2,3,4,5,6,7], 0);
 
