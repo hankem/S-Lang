@@ -366,7 +366,7 @@ Qualifiers:\n\
   quote='\"', delim=',', skiplines=0, comment=string");
 
    variable fp = ();
-   variable type = typeof(fp);
+   variable type = typeof(fp), file = fp;
    variable func = &read_fp_callback;
    variable func_data;
 
@@ -391,11 +391,21 @@ Qualifiers:\n\
      }
    else
      {
+	variable line;
 	if (type != File_Type)
 	  {
-	     fp = fopen (fp, "r");
+	     fp = fopen (file, "r");
 	     if (fp == NULL)
-	       throw OpenError, "Unable to open CSV file"$;
+	       throw OpenError, "Unable to open CSV file '$file'"$;
+
+	     % Ignore a BOM if it exists
+	     if (-1 != fgets (&line, fp))
+	       {
+		  if (0 == strnbytecmp (line, "\xEF\xBB\xBF", 3))
+		    () = fseek (fp, 3, SEEK_SET);
+		  else
+		    () = fseek (fp, 0, SEEK_SET);
+	       }
 	  }
 
 	func_data = struct
@@ -405,7 +415,6 @@ Qualifiers:\n\
 	     comment = comment,
 	     comment_len = ((comment == NULL) ? 0 : strbytelen(comment)),
 	  };
-	variable line;
 	loop (skiplines)
 	  () = fgets (&line, fp);
      }
