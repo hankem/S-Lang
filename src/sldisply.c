@@ -515,7 +515,8 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
    int zero_pad;
    int field_width;
    int variables [26];
-   int stack [64];
+#define STACK_SIZE 64
+   int stack [STACK_SIZE];
    unsigned int stack_len;
    int parms [10];
 #define STACK_POP (stack_len ? stack[--stack_len] : 0)
@@ -542,7 +543,7 @@ static unsigned int tt_sprintf(char *buf, unsigned int buflen, SLCONST char *fmt
 
    fmt_max = fmt + strlen (fmt);
 
-   while ((fmt < fmt_max) && (b < bmax))
+   while ((fmt < fmt_max) && (b < bmax) && (stack_len < STACK_SIZE))
      {
 	unsigned char ch = *fmt++;
 
@@ -2733,9 +2734,9 @@ int SLtt_tputs(char *str, int affcnt, int (*p)(int))
 
 char *SLtt_tgoto (char *cap, int col, int row)
 {
-   static char buf[64];
+   static char buf[128];
    /* beware of overflows. 2^64 is 20 bytes printed */
-   if (strlen(cap) > 23)
+   if (strlen(cap) > 80)
      strcpy(buf, "capability too long");
    else
      tt_sprintf(buf, sizeof(buf), cap, row, col);

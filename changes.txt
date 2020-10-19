@@ -49,6 +49,8 @@ Changes since 2.3.2
     start with the RE that was used in the previous match.
 25. Another timestamp RE tweak to pickup additional irregular forms
 26. modules/csv.sl: If a CSV file has a byte-order mark (BOM), ignore it.
+27. src/sldisply.c: Increased the buffer size for the SLtt_tgoto
+    function to allow for larger terminfo strings
 
 {{{ Previous Versions
 
