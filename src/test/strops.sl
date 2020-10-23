@@ -993,5 +993,21 @@ private define test_sprintf ()
 }
 test_sprintf ();
 
+private define test_issubstr ()
+{
+   variable a = String_Type[4];
+   a[2] = "foobar";
+   a[3] = "oo";
+
+   variable i = where(is_substr (a, "foo"));
+   ifnot (_eqs (i, [2]))
+     failed ("test_issubstr: foo");
+
+   i = where (is_substr ("oo", a));
+   ifnot (_eqs (i, [3]))
+     failed ("test_issubstr: oo");
+}
+test_issubstr ();
+
 print ("Ok\n");
 exit (0);

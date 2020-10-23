@@ -1323,6 +1323,7 @@ static int func_issubstr (char *a, char *b, void *cd)
    SLstrlen_Type n;
    char *c;
 
+   if ((a == NULL) || (b == NULL)) return 0;
    (void) cd;
 
    if (NULL == (c = strstr(a, b)))

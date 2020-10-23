@@ -52,6 +52,8 @@ Changes since 2.3.2
 27. src/sldisply.c: Increased the buffer size for the SLtt_tgoto
     function to allow for larger terminfo strings
 28. modules/Makefile.in: Added STATS_OBJS to the clean target
+29. src/slstrops.c: The is_substr function was not handling a NULL
+    argument
 
 {{{ Previous Versions
 
