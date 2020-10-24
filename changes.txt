@@ -54,6 +54,8 @@ Changes since 2.3.2
 28. modules/Makefile.in: Added STATS_OBJS to the clean target
 29. src/slstrops.c: The is_substr function was not handling a NULL
     argument
+30. slsh/lib/timestamp.sl: Corrected a regular expression for a
+    timestamp with "Z" as the timezone.
 
 {{{ Previous Versions
 
