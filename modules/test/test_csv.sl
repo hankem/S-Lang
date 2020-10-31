@@ -93,6 +93,24 @@ private define test_empty_file (file)
 
 }
 
+private define test_embedded_cr (file)
+{
+   variable fp = fopen (file, "w");
+   variable f0 = "ABC\rDEF", f1 = `quot\r,ed"`, f2 = "\rXYZ";
+   () = fprintf (fp, "%S,\"%S\"\",%S\n", f0, f1, f2);
+   () = fclose (fp);
+   variable s = csv_readcol (file);
+   if (3 != length (get_struct_field_names (s)))
+     {
+	failed ("test_embedded_cr: wrong num fields");
+     }
+   if ((s.col1[0] != f0) || (s.col2[0] != f1) || (s.col3[0] != f2))
+     {
+	failed ("test_embedded_cr: column values do not match");
+     }
+}
+
+
 private define test_embedded_comments (file)
 {
    variable fp = fopen (file, "w");
@@ -125,6 +143,7 @@ define slsh_main ()
    test_csv (fopen (file, "r"));
    test_empty_file (file);
    test_embedded_comments (file);
+   test_embedded_cr (file);
    () = remove (file);
    end_test ();
 }

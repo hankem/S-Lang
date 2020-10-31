@@ -56,6 +56,8 @@ Changes since 2.3.2
     argument
 30. slsh/lib/timestamp.sl: Corrected a regular expression for a
     timestamp with "Z" as the timezone.
+31. modules/csv-module.c: Fields with an embedded \r were not being
+    properly handled.
 
 {{{ Previous Versions
 

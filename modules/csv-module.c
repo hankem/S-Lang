@@ -140,8 +140,9 @@ static int store_value (Values_Array_Type *va, char *value)
 	  || (0 == (ch = line[line_ofs++])) \
 	  || (ch == '\r')) \
    { \
-      if ((do_read == 0) && (ch == '\r') && (line[line_ofs] == '\n')) \
+      if ((do_read == 0) && (ch == '\r')) \
 	{ \
+	   if (line[line_ofs] != '\n') break; \
 	   line_ofs++; \
 	   ch = '\n'; \
 	   break; \
