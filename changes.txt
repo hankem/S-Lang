@@ -58,6 +58,8 @@ Changes since 2.3.2
     timestamp with "Z" as the timezone.
 31. modules/csv-module.c: Fields with an embedded \r were not being
     properly handled.
+32. src/slarray.c: Improved the speed of multi-dimensional array
+    indexing by about a factor of 2
 
 {{{ Previous Versions
 
