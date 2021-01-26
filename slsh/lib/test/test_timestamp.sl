@@ -60,6 +60,20 @@ define slsh_main ()
      };
    bad += test_timestamp (t_expected, dates);
 
+   t_expected = 1611445148;
+   dates =
+     {
+	"Sat, 23 Jan 2021 23:39:08 +0000 (UTC)",
+     };
+   bad += test_timestamp (t_expected, dates);
+
+   t_expected = 97027200;;
+   dates =
+     {
+	"1973-01-28T00:00:00Z",
+     };
+   bad += test_timestamp (t_expected, dates);
+
    if (bad) failed ("%d timestamps failed to parse", bad);
 
    end_test ();

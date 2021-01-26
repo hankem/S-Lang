@@ -193,7 +193,7 @@ define timestamp_parse (timestamp)
      day++;
 
    year -= 1970;		       %  Unix EPOCH
-   day += 365*year + year/4;	       %  leap year, every 4 years
+   day += 365*year + (year+1)/4;       %  leap year, every 4 years from 72
 
    % The TZ is hhmm form, so 600 is 6 hours, and 0 minutes
    hours -= tz/100;

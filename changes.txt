@@ -60,6 +60,8 @@ Changes since 2.3.2
     properly handled.
 32. src/slarray.c: Improved the speed of multi-dimensional array
     indexing by about a factor of 2
+33. slsh/lib/timestamp.sl: The computation of leap days was incorrect
+    for some years
 
 {{{ Previous Versions
 
