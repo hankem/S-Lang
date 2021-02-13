@@ -67,6 +67,9 @@ Changes since 2.3.2
     updated to use this.
 35. slsh/lib/fswalk.sl: Added an optional callback argument to the
     fswalk that is called when leaving a directory.
+36. modules/termios-module.c: Avoid a potential problem with the
+    tcgetpgrp intrinsic in the unlikely case that sizeof(pid_t) is
+    larger than sizeof(int).
 
 {{{ Previous Versions
 

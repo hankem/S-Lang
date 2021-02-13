@@ -424,12 +424,15 @@ static void do_onig_new (void)
       case 4:
 	if (NULL == (syntax = pop_onig_syntax ()))
 	  return;
+	/* fall through */
       case 3:
 	if (NULL == (enc = pop_onig_encoding ()))
 	  return;
+	/* fall through */
       case 2:
 	if (-1 == pop_onig_option (&option))
 	  return;
+	/* fall through */
       case 1:
 	if (-1 == SLang_pop_slstring ((char **)&pattern))
 	  return;
@@ -516,7 +519,7 @@ static int do_onig_search (void)
       case 5:
 	if (-1 == pop_onig_option (&option))
 	  return -1;
-	/* drop */
+	/* fall through */
       case 4:
 	if (-1 == SLang_pop_int (&end_pos))
 	  return -1;

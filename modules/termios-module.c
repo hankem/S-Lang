@@ -101,7 +101,8 @@ static int do_syscall_struct_2 (int (*fun)(int, int, void *), SLFile_FD_Type *f,
 }
 
 #define DO_SYSCALL_0(fun, f) do_syscall_0((int(*)(int))(fun),(f))
-#define DO_SYSCALL_1(fun, f, i) do_syscall_1((int(*)(int,int))(fun),(f),(i))
+/* #define DO_SYSCALL_1(fun, f, i) do_syscall_1((int(*)(int,int))(fun),(f),(i)) */
+#define DO_SYSCALL_1(fun, f, i) do_syscall_1((fun),(f),(i))
 #define DO_SYSCALL_STRUCT_1(fun, f, s) \
      do_syscall_struct_1((int(*)(int, void*))(fun), (f), (void*)(s))
 #define DO_SYSCALL_STRUCT_2(fun, f, i, s) \
@@ -129,7 +130,18 @@ static int tcgetpgrp_intrin (SLFile_FD_Type *f)
 
 static int tcsetpgrp_intrin (SLFile_FD_Type *f, int *id)
 {
-   return DO_SYSCALL_1 (tcgetpgrp, f, *id);
+   /* In case sizeof(pid_t) is not the same as sizeof(int), inline this */
+   int fd;
+   int ret;
+
+   if (-1 == SLfile_get_fd (f, &fd))
+     return -1;
+
+   while ((-1 == (ret = tcsetpgrp (fd, *id)))
+	  && (0 == check_and_set_errno (errno)))
+     ;
+
+   return ret;
 }
 
 static int tcsendbreak_intrin (SLFile_FD_Type *f, int *action)
