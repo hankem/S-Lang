@@ -853,288 +853,288 @@ static Binary_Matrix_Type Binary_Matrix [MAX_ARITHMETIC_TYPES][MAX_ARITHMETIC_TY
 {
    /* signed char */
    {
-     {(FVOID_STAR)copy_char_to_char, char_to_char},
-     {(FVOID_STAR)copy_char_to_uchar, char_to_uchar},
-     {(FVOID_STAR)copy_char_to_short, char_to_short},
-     {(FVOID_STAR)copy_char_to_ushort, char_to_ushort},
-     {(FVOID_STAR)copy_char_to_int, char_to_int},
-     {(FVOID_STAR)copy_char_to_uint, char_to_uint},
-     {(FVOID_STAR)copy_char_to_long, char_to_long},
-     {(FVOID_STAR)copy_char_to_ulong, char_to_ulong},
+     {(SLFvoid_Star)copy_char_to_char, char_to_char},
+     {(SLFvoid_Star)copy_char_to_uchar, char_to_uchar},
+     {(SLFvoid_Star)copy_char_to_short, char_to_short},
+     {(SLFvoid_Star)copy_char_to_ushort, char_to_ushort},
+     {(SLFvoid_Star)copy_char_to_int, char_to_int},
+     {(SLFvoid_Star)copy_char_to_uint, char_to_uint},
+     {(SLFvoid_Star)copy_char_to_long, char_to_long},
+     {(SLFvoid_Star)copy_char_to_ulong, char_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_char_to_llong, char_to_llong},
+     {(SLFvoid_Star)copy_char_to_llong, char_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_char_to_ullong, char_to_ullong},
+     {(SLFvoid_Star)copy_char_to_ullong, char_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_char_to_float, char_to_float},
+     {(SLFvoid_Star)copy_char_to_float, char_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_char_to_double, char_to_double},
+     {(SLFvoid_Star)copy_char_to_double, char_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_char_to_ldouble, char_to_ldouble},
+     {(SLFvoid_Star)copy_char_to_ldouble, char_to_ldouble},
 #else
      {NULL, NULL},
 #endif
    },
    /* unsigned char */
    {
-     {(FVOID_STAR)copy_uchar_to_char, uchar_to_char},
-     {(FVOID_STAR)copy_uchar_to_uchar, uchar_to_uchar},
-     {(FVOID_STAR)copy_uchar_to_short, uchar_to_short},
-     {(FVOID_STAR)copy_uchar_to_ushort, uchar_to_ushort},
-     {(FVOID_STAR)copy_uchar_to_int, uchar_to_int},
-     {(FVOID_STAR)copy_uchar_to_uint, uchar_to_uint},
-     {(FVOID_STAR)copy_uchar_to_long, uchar_to_long},
-     {(FVOID_STAR)copy_uchar_to_ulong, uchar_to_ulong},
+     {(SLFvoid_Star)copy_uchar_to_char, uchar_to_char},
+     {(SLFvoid_Star)copy_uchar_to_uchar, uchar_to_uchar},
+     {(SLFvoid_Star)copy_uchar_to_short, uchar_to_short},
+     {(SLFvoid_Star)copy_uchar_to_ushort, uchar_to_ushort},
+     {(SLFvoid_Star)copy_uchar_to_int, uchar_to_int},
+     {(SLFvoid_Star)copy_uchar_to_uint, uchar_to_uint},
+     {(SLFvoid_Star)copy_uchar_to_long, uchar_to_long},
+     {(SLFvoid_Star)copy_uchar_to_ulong, uchar_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_uchar_to_llong, uchar_to_llong},
+     {(SLFvoid_Star)copy_uchar_to_llong, uchar_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_uchar_to_ullong, uchar_to_ullong},
+     {(SLFvoid_Star)copy_uchar_to_ullong, uchar_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_uchar_to_float, uchar_to_float},
+     {(SLFvoid_Star)copy_uchar_to_float, uchar_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_uchar_to_double, uchar_to_double},
+     {(SLFvoid_Star)copy_uchar_to_double, uchar_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_uchar_to_ldouble, uchar_to_ldouble},
+     {(SLFvoid_Star)copy_uchar_to_ldouble, uchar_to_ldouble},
 #else
      {NULL, NULL},
 #endif
    },
    /* short */
    {
-     {(FVOID_STAR)copy_short_to_char, short_to_char},
-     {(FVOID_STAR)copy_short_to_uchar, short_to_uchar},
-     {(FVOID_STAR)copy_short_to_short, short_to_short},
-     {(FVOID_STAR)copy_short_to_ushort, short_to_ushort},
-     {(FVOID_STAR)copy_short_to_int, short_to_int},
-     {(FVOID_STAR)copy_short_to_uint, short_to_uint},
-     {(FVOID_STAR)copy_short_to_long, short_to_long},
-     {(FVOID_STAR)copy_short_to_ulong, short_to_ulong},
+     {(SLFvoid_Star)copy_short_to_char, short_to_char},
+     {(SLFvoid_Star)copy_short_to_uchar, short_to_uchar},
+     {(SLFvoid_Star)copy_short_to_short, short_to_short},
+     {(SLFvoid_Star)copy_short_to_ushort, short_to_ushort},
+     {(SLFvoid_Star)copy_short_to_int, short_to_int},
+     {(SLFvoid_Star)copy_short_to_uint, short_to_uint},
+     {(SLFvoid_Star)copy_short_to_long, short_to_long},
+     {(SLFvoid_Star)copy_short_to_ulong, short_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_short_to_llong, short_to_llong},
+     {(SLFvoid_Star)copy_short_to_llong, short_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_short_to_ullong, short_to_ullong},
+     {(SLFvoid_Star)copy_short_to_ullong, short_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_short_to_float, short_to_float},
+     {(SLFvoid_Star)copy_short_to_float, short_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_short_to_double, short_to_double},
+     {(SLFvoid_Star)copy_short_to_double, short_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_short_to_ldouble, short_to_ldouble},
+     {(SLFvoid_Star)copy_short_to_ldouble, short_to_ldouble},
 #else
      {NULL, NULL},
 #endif
    },
    /* unsigned short */
    {
-     {(FVOID_STAR)copy_ushort_to_char, ushort_to_char},
-     {(FVOID_STAR)copy_ushort_to_uchar, ushort_to_uchar},
-     {(FVOID_STAR)copy_ushort_to_short, ushort_to_short},
-     {(FVOID_STAR)copy_ushort_to_ushort, ushort_to_ushort},
-     {(FVOID_STAR)copy_ushort_to_int, ushort_to_int},
-     {(FVOID_STAR)copy_ushort_to_uint, ushort_to_uint},
-     {(FVOID_STAR)copy_ushort_to_long, ushort_to_long},
-     {(FVOID_STAR)copy_ushort_to_ulong, ushort_to_ulong},
+     {(SLFvoid_Star)copy_ushort_to_char, ushort_to_char},
+     {(SLFvoid_Star)copy_ushort_to_uchar, ushort_to_uchar},
+     {(SLFvoid_Star)copy_ushort_to_short, ushort_to_short},
+     {(SLFvoid_Star)copy_ushort_to_ushort, ushort_to_ushort},
+     {(SLFvoid_Star)copy_ushort_to_int, ushort_to_int},
+     {(SLFvoid_Star)copy_ushort_to_uint, ushort_to_uint},
+     {(SLFvoid_Star)copy_ushort_to_long, ushort_to_long},
+     {(SLFvoid_Star)copy_ushort_to_ulong, ushort_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_ushort_to_llong, ushort_to_llong},
+     {(SLFvoid_Star)copy_ushort_to_llong, ushort_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_ushort_to_ullong, ushort_to_ullong},
+     {(SLFvoid_Star)copy_ushort_to_ullong, ushort_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_ushort_to_float, ushort_to_float},
+     {(SLFvoid_Star)copy_ushort_to_float, ushort_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_ushort_to_double, ushort_to_double},
+     {(SLFvoid_Star)copy_ushort_to_double, ushort_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_ushort_to_ldouble, ushort_to_ldouble},
+     {(SLFvoid_Star)copy_ushort_to_ldouble, ushort_to_ldouble},
 #else
      {NULL, NULL},
 #endif
    },
    /* int */
    {
-     {(FVOID_STAR)copy_int_to_char, int_to_char},
-     {(FVOID_STAR)copy_int_to_uchar, int_to_uchar},
-     {(FVOID_STAR)copy_int_to_short, int_to_short},
-     {(FVOID_STAR)copy_int_to_ushort, int_to_ushort},
-     {(FVOID_STAR)copy_int_to_int, int_to_int},
-     {(FVOID_STAR)copy_int_to_uint, int_to_uint},
-     {(FVOID_STAR)copy_int_to_long, int_to_long},
-     {(FVOID_STAR)copy_int_to_ulong, int_to_ulong},
+     {(SLFvoid_Star)copy_int_to_char, int_to_char},
+     {(SLFvoid_Star)copy_int_to_uchar, int_to_uchar},
+     {(SLFvoid_Star)copy_int_to_short, int_to_short},
+     {(SLFvoid_Star)copy_int_to_ushort, int_to_ushort},
+     {(SLFvoid_Star)copy_int_to_int, int_to_int},
+     {(SLFvoid_Star)copy_int_to_uint, int_to_uint},
+     {(SLFvoid_Star)copy_int_to_long, int_to_long},
+     {(SLFvoid_Star)copy_int_to_ulong, int_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_int_to_llong, int_to_llong},
+     {(SLFvoid_Star)copy_int_to_llong, int_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_int_to_ullong, int_to_ullong},
+     {(SLFvoid_Star)copy_int_to_ullong, int_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_int_to_float, int_to_float},
+     {(SLFvoid_Star)copy_int_to_float, int_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_int_to_double, int_to_double},
+     {(SLFvoid_Star)copy_int_to_double, int_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_int_to_ldouble, int_to_ldouble},
+     {(SLFvoid_Star)copy_int_to_ldouble, int_to_ldouble},
 #else
      {NULL, NULL},
 #endif
    },
    /* unsigned int */
    {
-     {(FVOID_STAR)copy_uint_to_char, uint_to_char},
-     {(FVOID_STAR)copy_uint_to_uchar, uint_to_uchar},
-     {(FVOID_STAR)copy_uint_to_short, uint_to_short},
-     {(FVOID_STAR)copy_uint_to_ushort, uint_to_ushort},
-     {(FVOID_STAR)copy_uint_to_int, uint_to_int},
-     {(FVOID_STAR)copy_uint_to_uint, uint_to_uint},
-     {(FVOID_STAR)copy_uint_to_long, uint_to_long},
-     {(FVOID_STAR)copy_uint_to_ulong, uint_to_ulong},
+     {(SLFvoid_Star)copy_uint_to_char, uint_to_char},
+     {(SLFvoid_Star)copy_uint_to_uchar, uint_to_uchar},
+     {(SLFvoid_Star)copy_uint_to_short, uint_to_short},
+     {(SLFvoid_Star)copy_uint_to_ushort, uint_to_ushort},
+     {(SLFvoid_Star)copy_uint_to_int, uint_to_int},
+     {(SLFvoid_Star)copy_uint_to_uint, uint_to_uint},
+     {(SLFvoid_Star)copy_uint_to_long, uint_to_long},
+     {(SLFvoid_Star)copy_uint_to_ulong, uint_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_uint_to_llong, uint_to_llong},
+     {(SLFvoid_Star)copy_uint_to_llong, uint_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_uint_to_ullong, uint_to_ullong},
+     {(SLFvoid_Star)copy_uint_to_ullong, uint_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_uint_to_float, uint_to_float},
+     {(SLFvoid_Star)copy_uint_to_float, uint_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_uint_to_double, uint_to_double},
+     {(SLFvoid_Star)copy_uint_to_double, uint_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_uint_to_ldouble, uint_to_ldouble},
+     {(SLFvoid_Star)copy_uint_to_ldouble, uint_to_ldouble},
 #else
      {NULL, NULL},
 #endif
    },
    /* long */
    {
-     {(FVOID_STAR)copy_long_to_char, long_to_char},
-     {(FVOID_STAR)copy_long_to_uchar, long_to_uchar},
-     {(FVOID_STAR)copy_long_to_short, long_to_short},
-     {(FVOID_STAR)copy_long_to_ushort, long_to_ushort},
-     {(FVOID_STAR)copy_long_to_int, long_to_int},
-     {(FVOID_STAR)copy_long_to_uint, long_to_uint},
-     {(FVOID_STAR)copy_long_to_long, long_to_long},
-     {(FVOID_STAR)copy_long_to_ulong, long_to_ulong},
+     {(SLFvoid_Star)copy_long_to_char, long_to_char},
+     {(SLFvoid_Star)copy_long_to_uchar, long_to_uchar},
+     {(SLFvoid_Star)copy_long_to_short, long_to_short},
+     {(SLFvoid_Star)copy_long_to_ushort, long_to_ushort},
+     {(SLFvoid_Star)copy_long_to_int, long_to_int},
+     {(SLFvoid_Star)copy_long_to_uint, long_to_uint},
+     {(SLFvoid_Star)copy_long_to_long, long_to_long},
+     {(SLFvoid_Star)copy_long_to_ulong, long_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_long_to_llong, long_to_llong},
+     {(SLFvoid_Star)copy_long_to_llong, long_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_long_to_ullong, long_to_ullong},
+     {(SLFvoid_Star)copy_long_to_ullong, long_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_long_to_float, long_to_float},
+     {(SLFvoid_Star)copy_long_to_float, long_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_long_to_double, long_to_double},
+     {(SLFvoid_Star)copy_long_to_double, long_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_long_to_ldouble, long_to_ldouble},
+     {(SLFvoid_Star)copy_long_to_ldouble, long_to_ldouble},
 #else
      {NULL, NULL},
 #endif
    },
    /* unsigned long */
    {
-     {(FVOID_STAR)copy_ulong_to_char, ulong_to_char},
-     {(FVOID_STAR)copy_ulong_to_uchar, ulong_to_uchar},
-     {(FVOID_STAR)copy_ulong_to_short, ulong_to_short},
-     {(FVOID_STAR)copy_ulong_to_ushort, ulong_to_ushort},
-     {(FVOID_STAR)copy_ulong_to_int, ulong_to_int},
-     {(FVOID_STAR)copy_ulong_to_uint, ulong_to_uint},
-     {(FVOID_STAR)copy_ulong_to_long, ulong_to_long},
-     {(FVOID_STAR)copy_ulong_to_ulong, ulong_to_ulong},
+     {(SLFvoid_Star)copy_ulong_to_char, ulong_to_char},
+     {(SLFvoid_Star)copy_ulong_to_uchar, ulong_to_uchar},
+     {(SLFvoid_Star)copy_ulong_to_short, ulong_to_short},
+     {(SLFvoid_Star)copy_ulong_to_ushort, ulong_to_ushort},
+     {(SLFvoid_Star)copy_ulong_to_int, ulong_to_int},
+     {(SLFvoid_Star)copy_ulong_to_uint, ulong_to_uint},
+     {(SLFvoid_Star)copy_ulong_to_long, ulong_to_long},
+     {(SLFvoid_Star)copy_ulong_to_ulong, ulong_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_ulong_to_llong, ulong_to_llong},
+     {(SLFvoid_Star)copy_ulong_to_llong, ulong_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_ulong_to_ullong, ulong_to_ullong},
+     {(SLFvoid_Star)copy_ulong_to_ullong, ulong_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_ulong_to_float, ulong_to_float},
+     {(SLFvoid_Star)copy_ulong_to_float, ulong_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_ulong_to_double, ulong_to_double},
+     {(SLFvoid_Star)copy_ulong_to_double, ulong_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_ulong_to_ldouble, ulong_to_ldouble},
+     {(SLFvoid_Star)copy_ulong_to_ldouble, ulong_to_ldouble},
 #else
      {NULL, NULL},
 #endif
@@ -1142,36 +1142,36 @@ static Binary_Matrix_Type Binary_Matrix [MAX_ARITHMETIC_TYPES][MAX_ARITHMETIC_TY
    /* long long */
 #if defined(HAVE_LONG_LONG)
    {
-     {(FVOID_STAR)copy_llong_to_char, llong_to_char},
-     {(FVOID_STAR)copy_llong_to_uchar, llong_to_uchar},
-     {(FVOID_STAR)copy_llong_to_short, llong_to_short},
-     {(FVOID_STAR)copy_llong_to_ushort, llong_to_ushort},
-     {(FVOID_STAR)copy_llong_to_int, llong_to_int},
-     {(FVOID_STAR)copy_llong_to_uint, llong_to_uint},
-     {(FVOID_STAR)copy_llong_to_long, llong_to_long},
-     {(FVOID_STAR)copy_llong_to_ulong, llong_to_ulong},
+     {(SLFvoid_Star)copy_llong_to_char, llong_to_char},
+     {(SLFvoid_Star)copy_llong_to_uchar, llong_to_uchar},
+     {(SLFvoid_Star)copy_llong_to_short, llong_to_short},
+     {(SLFvoid_Star)copy_llong_to_ushort, llong_to_ushort},
+     {(SLFvoid_Star)copy_llong_to_int, llong_to_int},
+     {(SLFvoid_Star)copy_llong_to_uint, llong_to_uint},
+     {(SLFvoid_Star)copy_llong_to_long, llong_to_long},
+     {(SLFvoid_Star)copy_llong_to_ulong, llong_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_llong_to_llong, llong_to_llong},
+     {(SLFvoid_Star)copy_llong_to_llong, llong_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_llong_to_ullong, llong_to_ullong},
+     {(SLFvoid_Star)copy_llong_to_ullong, llong_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_llong_to_float, llong_to_float},
+     {(SLFvoid_Star)copy_llong_to_float, llong_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_llong_to_double, llong_to_double},
+     {(SLFvoid_Star)copy_llong_to_double, llong_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_llong_to_ldouble, llong_to_ldouble},
+     {(SLFvoid_Star)copy_llong_to_ldouble, llong_to_ldouble},
 #else
      {NULL, NULL},
 #endif
@@ -1197,36 +1197,36 @@ static Binary_Matrix_Type Binary_Matrix [MAX_ARITHMETIC_TYPES][MAX_ARITHMETIC_TY
    /* unsigned long long */
 #if defined(HAVE_LONG_LONG)
    {
-     {(FVOID_STAR)copy_ullong_to_char, ullong_to_char},
-     {(FVOID_STAR)copy_ullong_to_uchar, ullong_to_uchar},
-     {(FVOID_STAR)copy_ullong_to_short, ullong_to_short},
-     {(FVOID_STAR)copy_ullong_to_ushort, ullong_to_ushort},
-     {(FVOID_STAR)copy_ullong_to_int, ullong_to_int},
-     {(FVOID_STAR)copy_ullong_to_uint, ullong_to_uint},
-     {(FVOID_STAR)copy_ullong_to_long, ullong_to_long},
-     {(FVOID_STAR)copy_ullong_to_ulong, ullong_to_ulong},
+     {(SLFvoid_Star)copy_ullong_to_char, ullong_to_char},
+     {(SLFvoid_Star)copy_ullong_to_uchar, ullong_to_uchar},
+     {(SLFvoid_Star)copy_ullong_to_short, ullong_to_short},
+     {(SLFvoid_Star)copy_ullong_to_ushort, ullong_to_ushort},
+     {(SLFvoid_Star)copy_ullong_to_int, ullong_to_int},
+     {(SLFvoid_Star)copy_ullong_to_uint, ullong_to_uint},
+     {(SLFvoid_Star)copy_ullong_to_long, ullong_to_long},
+     {(SLFvoid_Star)copy_ullong_to_ulong, ullong_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_ullong_to_llong, ullong_to_llong},
+     {(SLFvoid_Star)copy_ullong_to_llong, ullong_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_ullong_to_ullong, ullong_to_ullong},
+     {(SLFvoid_Star)copy_ullong_to_ullong, ullong_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_ullong_to_float, ullong_to_float},
+     {(SLFvoid_Star)copy_ullong_to_float, ullong_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_ullong_to_double, ullong_to_double},
+     {(SLFvoid_Star)copy_ullong_to_double, ullong_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_ullong_to_ldouble, ullong_to_ldouble},
+     {(SLFvoid_Star)copy_ullong_to_ldouble, ullong_to_ldouble},
 #else
      {NULL, NULL},
 #endif
@@ -1252,36 +1252,36 @@ static Binary_Matrix_Type Binary_Matrix [MAX_ARITHMETIC_TYPES][MAX_ARITHMETIC_TY
    /* float */
 #if SLANG_HAS_FLOAT
    {
-     {(FVOID_STAR)copy_float_to_char, float_to_char},
-     {(FVOID_STAR)copy_float_to_uchar, float_to_uchar},
-     {(FVOID_STAR)copy_float_to_short, float_to_short},
-     {(FVOID_STAR)copy_float_to_ushort, float_to_ushort},
-     {(FVOID_STAR)copy_float_to_int, float_to_int},
-     {(FVOID_STAR)copy_float_to_uint, float_to_uint},
-     {(FVOID_STAR)copy_float_to_long, float_to_long},
-     {(FVOID_STAR)copy_float_to_ulong, float_to_ulong},
+     {(SLFvoid_Star)copy_float_to_char, float_to_char},
+     {(SLFvoid_Star)copy_float_to_uchar, float_to_uchar},
+     {(SLFvoid_Star)copy_float_to_short, float_to_short},
+     {(SLFvoid_Star)copy_float_to_ushort, float_to_ushort},
+     {(SLFvoid_Star)copy_float_to_int, float_to_int},
+     {(SLFvoid_Star)copy_float_to_uint, float_to_uint},
+     {(SLFvoid_Star)copy_float_to_long, float_to_long},
+     {(SLFvoid_Star)copy_float_to_ulong, float_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_float_to_llong, float_to_llong},
+     {(SLFvoid_Star)copy_float_to_llong, float_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_float_to_ullong, float_to_ullong},
+     {(SLFvoid_Star)copy_float_to_ullong, float_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_float_to_float, float_to_float},
+     {(SLFvoid_Star)copy_float_to_float, float_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_float_to_double, float_to_double},
+     {(SLFvoid_Star)copy_float_to_double, float_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_float_to_ldouble, float_to_ldouble},
+     {(SLFvoid_Star)copy_float_to_ldouble, float_to_ldouble},
 #else
      {NULL, NULL},
 #endif
@@ -1307,36 +1307,36 @@ static Binary_Matrix_Type Binary_Matrix [MAX_ARITHMETIC_TYPES][MAX_ARITHMETIC_TY
    /* double */
 #if SLANG_HAS_FLOAT
    {
-     {(FVOID_STAR)copy_double_to_char, double_to_char},
-     {(FVOID_STAR)copy_double_to_uchar, double_to_uchar},
-     {(FVOID_STAR)copy_double_to_short, double_to_short},
-     {(FVOID_STAR)copy_double_to_ushort, double_to_ushort},
-     {(FVOID_STAR)copy_double_to_int, double_to_int},
-     {(FVOID_STAR)copy_double_to_uint, double_to_uint},
-     {(FVOID_STAR)copy_double_to_long, double_to_long},
-     {(FVOID_STAR)copy_double_to_ulong, double_to_ulong},
+     {(SLFvoid_Star)copy_double_to_char, double_to_char},
+     {(SLFvoid_Star)copy_double_to_uchar, double_to_uchar},
+     {(SLFvoid_Star)copy_double_to_short, double_to_short},
+     {(SLFvoid_Star)copy_double_to_ushort, double_to_ushort},
+     {(SLFvoid_Star)copy_double_to_int, double_to_int},
+     {(SLFvoid_Star)copy_double_to_uint, double_to_uint},
+     {(SLFvoid_Star)copy_double_to_long, double_to_long},
+     {(SLFvoid_Star)copy_double_to_ulong, double_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_double_to_llong, double_to_llong},
+     {(SLFvoid_Star)copy_double_to_llong, double_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_double_to_ullong, double_to_ullong},
+     {(SLFvoid_Star)copy_double_to_ullong, double_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_double_to_float, double_to_float},
+     {(SLFvoid_Star)copy_double_to_float, double_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_double_to_double, double_to_double},
+     {(SLFvoid_Star)copy_double_to_double, double_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_double_to_ldouble, double_to_ldouble},
+     {(SLFvoid_Star)copy_double_to_ldouble, double_to_ldouble},
 #else
      {NULL, NULL},
 #endif
@@ -1362,36 +1362,36 @@ static Binary_Matrix_Type Binary_Matrix [MAX_ARITHMETIC_TYPES][MAX_ARITHMETIC_TY
    /* long double */
 #if defined(HAVE_LONG_DOUBLE)
    {
-     {(FVOID_STAR)copy_ldouble_to_char, ldouble_to_char},
-     {(FVOID_STAR)copy_ldouble_to_uchar, ldouble_to_uchar},
-     {(FVOID_STAR)copy_ldouble_to_short, ldouble_to_short},
-     {(FVOID_STAR)copy_ldouble_to_ushort, ldouble_to_ushort},
-     {(FVOID_STAR)copy_ldouble_to_int, ldouble_to_int},
-     {(FVOID_STAR)copy_ldouble_to_uint, ldouble_to_uint},
-     {(FVOID_STAR)copy_ldouble_to_long, ldouble_to_long},
-     {(FVOID_STAR)copy_ldouble_to_ulong, ldouble_to_ulong},
+     {(SLFvoid_Star)copy_ldouble_to_char, ldouble_to_char},
+     {(SLFvoid_Star)copy_ldouble_to_uchar, ldouble_to_uchar},
+     {(SLFvoid_Star)copy_ldouble_to_short, ldouble_to_short},
+     {(SLFvoid_Star)copy_ldouble_to_ushort, ldouble_to_ushort},
+     {(SLFvoid_Star)copy_ldouble_to_int, ldouble_to_int},
+     {(SLFvoid_Star)copy_ldouble_to_uint, ldouble_to_uint},
+     {(SLFvoid_Star)copy_ldouble_to_long, ldouble_to_long},
+     {(SLFvoid_Star)copy_ldouble_to_ulong, ldouble_to_ulong},
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_ldouble_to_llong, ldouble_to_llong},
+     {(SLFvoid_Star)copy_ldouble_to_llong, ldouble_to_llong},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_LONG)
-     {(FVOID_STAR)copy_ldouble_to_ullong, ldouble_to_ullong},
+     {(SLFvoid_Star)copy_ldouble_to_ullong, ldouble_to_ullong},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_ldouble_to_float, ldouble_to_float},
+     {(SLFvoid_Star)copy_ldouble_to_float, ldouble_to_float},
 #else
      {NULL, NULL},
 #endif
 #if SLANG_HAS_FLOAT
-     {(FVOID_STAR)copy_ldouble_to_double, ldouble_to_double},
+     {(SLFvoid_Star)copy_ldouble_to_double, ldouble_to_double},
 #else
      {NULL, NULL},
 #endif
 #if defined(HAVE_LONG_DOUBLE)
-     {(FVOID_STAR)copy_ldouble_to_ldouble, ldouble_to_ldouble},
+     {(SLFvoid_Star)copy_ldouble_to_ldouble, ldouble_to_ldouble},
 #else
      {NULL, NULL},
 #endif

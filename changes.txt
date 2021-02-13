@@ -62,6 +62,9 @@ Changes since 2.3.2
     indexing by about a factor of 2
 33. slsh/lib/timestamp.sl: The computation of leap days was incorrect
     for some years
+34. src/slang.h:  Added `typedef void (*SLFVOID_STAR)(void)', which
+    will replace FVOID_STAR in version 3.  The library code was
+    updated to use this.
 
 {{{ Previous Versions
 

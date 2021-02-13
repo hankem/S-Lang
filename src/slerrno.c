@@ -566,7 +566,7 @@ int _pSLerrno_init (void)
    if (e != NULL)		       /* already initialized */
      return 0;
 
-   if ((-1 == SLadd_intrinsic_function ("errno_string", (FVOID_STAR) intrin_errno_string,
+   if ((-1 == SLadd_intrinsic_function ("errno_string", (FVOID_STAR)(SLFvoid_Star)intrin_errno_string,
 					SLANG_STRING_TYPE, 0))
        || (-1 == SLadd_intrinsic_variable ("errno", (VOID_STAR)&_pSLerrno_errno, SLANG_INT_TYPE, 1)))
      return -1;

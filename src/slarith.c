@@ -187,7 +187,7 @@ To_Double_Fun_Table_Type;
  */
 typedef struct
 {
-   FVOID_STAR copy_function;
+   SLFvoid_Star copy_function;
    Convert_Fun_Type convert_function;
 }
 Binary_Matrix_Type;

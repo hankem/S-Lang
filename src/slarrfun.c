@@ -912,7 +912,8 @@ static int map_or_contract_array (SLCONST SLarray_Map_Type *c, int use_contracti
 	old_num_dims = 1;
      }
 
-   fcon = (SLarray_Contract_Fun_Type *) c->f;
+   /* Use double cast to avoid gcc warning */
+   fcon = (SLarray_Contract_Fun_Type *) (SLFvoid_Star) c->f;
    fmap = c->f;
 
    if (use_contraction

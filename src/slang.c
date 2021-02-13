@@ -3495,12 +3495,12 @@ static int execute_intrinsic_fun (SLang_Intrin_Fun_Type *objf)
    SLtype ret_type;
    unsigned int argc;
    unsigned int i;
-   FVOID_STAR fptr;
+   SLFvoid_Star fptr;
    SLtype *arg_types;
    int stk_depth;
    int num_args;
 
-   fptr = objf->i_fun;
+   fptr = (SLFvoid_Star)objf->i_fun;
    argc = objf->num_args;
    ret_type = objf->return_type;
    arg_types = objf->arg_types;

@@ -1211,7 +1211,7 @@ char *SLrline_read_line (SLrline_Type *rli, SLFUTURE_CONST char *prompt, unsigne
 	if (key->type == SLKEY_F_INTRINSIC)
 	  {
 	     int (*func)(SLrline_Type *);
-	     func = (int (*)(SLrline_Type *)) key->f.f;
+	     func = (int (*)(SLrline_Type *))(SLFvoid_Star) key->f.f;
 
 	     (void) (*func)(rli);
 
@@ -1361,7 +1361,7 @@ static int rl_next_line (SLrline_Type *This_RLI)
    return rl_select_line (This_RLI, next);
 }
 
-#define AKEY(name,func) {name,(int (*)(void))func}
+#define AKEY(name,func) {name,(FVOID_STAR)(SLFvoid_Star)func}
 
 static SLKeymap_Function_Type SLReadLine_Functions[] =
 {
@@ -1436,7 +1436,7 @@ static int init_keymap (void)
    for (ch = ' '; ch < 256; ch++)
      {
 	simple[0] = (char) ch;
-	SLkm_define_key (simple, (FVOID_STAR) rl_self_insert, km);
+	SLkm_define_key (simple, (FVOID_STAR)(SLFvoid_Star)rl_self_insert, km);
      }
 #else
    ch = ' ';
@@ -1450,61 +1450,61 @@ static int init_keymap (void)
 #endif				       /* NOT __DECC */
 
    simple[0] = SLang_Abort_Char;
-   SLkm_define_key (simple, (FVOID_STAR) rl_abort, km);
+   SLkm_define_key (simple, (FVOID_STAR)(SLFvoid_Star)rl_abort, km);
 #ifdef REAL_UNIX_SYSTEM
    simple[0] = (char) 4;
 #else
    simple[0] = (char) 26;
 #endif
-   SLkm_define_key (simple, (FVOID_STAR) rl_eof_insert, km);
+   SLkm_define_key (simple, (FVOID_STAR)(SLFvoid_Star) rl_eof_insert, km);
 
 #ifndef IBMPC_SYSTEM
-   SLkm_define_key  ("^[[A", (FVOID_STAR) rl_prev_line, km);
-   SLkm_define_key  ("^[[B", (FVOID_STAR) rl_next_line, km);
-   SLkm_define_key  ("^[[C", (FVOID_STAR) rl_right, km);
-   SLkm_define_key  ("^[[D", (FVOID_STAR) rl_left, km);
-   SLkm_define_key  ("^[OA", (FVOID_STAR) rl_prev_line, km);
-   SLkm_define_key  ("^[OB", (FVOID_STAR) rl_next_line, km);
-   SLkm_define_key  ("^[OC", (FVOID_STAR) rl_right, km);
-   SLkm_define_key  ("^[OD", (FVOID_STAR) rl_left, km);
+   SLkm_define_key  ("^[[A", (FVOID_STAR)(SLFvoid_Star) rl_prev_line, km);
+   SLkm_define_key  ("^[[B", (FVOID_STAR)(SLFvoid_Star) rl_next_line, km);
+   SLkm_define_key  ("^[[C", (FVOID_STAR)(SLFvoid_Star) rl_right, km);
+   SLkm_define_key  ("^[[D", (FVOID_STAR)(SLFvoid_Star) rl_left, km);
+   SLkm_define_key  ("^[OA", (FVOID_STAR)(SLFvoid_Star) rl_prev_line, km);
+   SLkm_define_key  ("^[OB", (FVOID_STAR)(SLFvoid_Star) rl_next_line, km);
+   SLkm_define_key  ("^[OC", (FVOID_STAR)(SLFvoid_Star) rl_right, km);
+   SLkm_define_key  ("^[OD", (FVOID_STAR)(SLFvoid_Star) rl_left, km);
 #else
-   SLkm_define_key  ("^@H", (FVOID_STAR) rl_prev_line, km);
-   SLkm_define_key  ("^@P", (FVOID_STAR) rl_next_line, km);
-   SLkm_define_key  ("^@M", (FVOID_STAR) rl_right, km);
-   SLkm_define_key  ("^@K", (FVOID_STAR) rl_left, km);
-   SLkm_define_key  ("^@S", (FVOID_STAR) rl_del, km);
-   SLkm_define_key  ("^@O", (FVOID_STAR) SLrline_eol, km);
-   SLkm_define_key  ("^@G", (FVOID_STAR) SLrline_bol, km);
+   SLkm_define_key  ("^@H", (FVOID_STAR)(SLFvoid_Star) rl_prev_line, km);
+   SLkm_define_key  ("^@P", (FVOID_STAR)(SLFvoid_Star) rl_next_line, km);
+   SLkm_define_key  ("^@M", (FVOID_STAR)(SLFvoid_Star) rl_right, km);
+   SLkm_define_key  ("^@K", (FVOID_STAR)(SLFvoid_Star) rl_left, km);
+   SLkm_define_key  ("^@S", (FVOID_STAR)(SLFvoid_Star) rl_del, km);
+   SLkm_define_key  ("^@O", (FVOID_STAR)(SLFvoid_Star) SLrline_eol, km);
+   SLkm_define_key  ("^@G", (FVOID_STAR)(SLFvoid_Star) SLrline_bol, km);
 
-   SLkm_define_key  ("\xE0H", (FVOID_STAR) rl_prev_line, km);
-   SLkm_define_key  ("\xE0P", (FVOID_STAR) rl_next_line, km);
-   SLkm_define_key  ("\xE0M", (FVOID_STAR) rl_right, km);
-   SLkm_define_key  ("\xE0K", (FVOID_STAR) rl_left, km);
-   SLkm_define_key  ("\xE0S", (FVOID_STAR) rl_del, km);
-   SLkm_define_key  ("\xE0O", (FVOID_STAR) SLrline_eol, km);
-   SLkm_define_key  ("\xE0G", (FVOID_STAR) SLrline_bol, km);
+   SLkm_define_key  ("\xE0H", (FVOID_STAR)(SLFvoid_Star) rl_prev_line, km);
+   SLkm_define_key  ("\xE0P", (FVOID_STAR)(SLFvoid_Star) rl_next_line, km);
+   SLkm_define_key  ("\xE0M", (FVOID_STAR)(SLFvoid_Star) rl_right, km);
+   SLkm_define_key  ("\xE0K", (FVOID_STAR)(SLFvoid_Star) rl_left, km);
+   SLkm_define_key  ("\xE0S", (FVOID_STAR)(SLFvoid_Star) rl_del, km);
+   SLkm_define_key  ("\xE0O", (FVOID_STAR)(SLFvoid_Star) SLrline_eol, km);
+   SLkm_define_key  ("\xE0G", (FVOID_STAR)(SLFvoid_Star) SLrline_bol, km);
 #endif
-   SLkm_define_key  ("^C", (FVOID_STAR) rl_abort, km);
-   SLkm_define_key  ("^E", (FVOID_STAR) SLrline_eol, km);
-   SLkm_define_key  ("^G", (FVOID_STAR) rl_abort, km);
-   SLkm_define_key  ("^I", (FVOID_STAR) rl_complete, km);
-   SLkm_define_key  ("^A", (FVOID_STAR) SLrline_bol, km);
-   SLkm_define_key  ("\r", (FVOID_STAR) rl_enter, km);
-   SLkm_define_key  ("\n", (FVOID_STAR) rl_enter, km);
-   SLkm_define_key  ("^K", (FVOID_STAR) rl_deleol, km);
-   SLkm_define_key  ("^L", (FVOID_STAR) rl_deleol, km);
-   SLkm_define_key  ("^U", (FVOID_STAR) rl_delbol, km);
-   SLkm_define_key  ("^V", (FVOID_STAR) rl_del, km);
-   SLkm_define_key  ("^D", (FVOID_STAR) rl_del, km);
-   SLkm_define_key  ("^F", (FVOID_STAR) rl_right, km);
-   SLkm_define_key  ("^B", (FVOID_STAR) rl_left, km);
-   SLkm_define_key  ("^?", (FVOID_STAR) rl_bdel, km);
-   SLkm_define_key  ("^H", (FVOID_STAR) rl_bdel, km);
-   SLkm_define_key  ("^P", (FVOID_STAR) rl_prev_line, km);
-   SLkm_define_key  ("^N", (FVOID_STAR) rl_next_line, km);
-   SLkm_define_key  ("^R", (FVOID_STAR) rl_redraw, km);
-   SLkm_define_key  ("`", (FVOID_STAR) rl_quote_insert, km);
-   SLkm_define_key  ("\033\\", (FVOID_STAR) rl_trim, km);
+   SLkm_define_key  ("^C", (FVOID_STAR)(SLFvoid_Star) rl_abort, km);
+   SLkm_define_key  ("^E", (FVOID_STAR)(SLFvoid_Star) SLrline_eol, km);
+   SLkm_define_key  ("^G", (FVOID_STAR)(SLFvoid_Star) rl_abort, km);
+   SLkm_define_key  ("^I", (FVOID_STAR)(SLFvoid_Star) rl_complete, km);
+   SLkm_define_key  ("^A", (FVOID_STAR)(SLFvoid_Star) SLrline_bol, km);
+   SLkm_define_key  ("\r", (FVOID_STAR)(SLFvoid_Star) rl_enter, km);
+   SLkm_define_key  ("\n", (FVOID_STAR)(SLFvoid_Star) rl_enter, km);
+   SLkm_define_key  ("^K", (FVOID_STAR)(SLFvoid_Star) rl_deleol, km);
+   SLkm_define_key  ("^L", (FVOID_STAR)(SLFvoid_Star) rl_deleol, km);
+   SLkm_define_key  ("^U", (FVOID_STAR)(SLFvoid_Star) rl_delbol, km);
+   SLkm_define_key  ("^V", (FVOID_STAR)(SLFvoid_Star) rl_del, km);
+   SLkm_define_key  ("^D", (FVOID_STAR)(SLFvoid_Star) rl_del, km);
+   SLkm_define_key  ("^F", (FVOID_STAR)(SLFvoid_Star) rl_right, km);
+   SLkm_define_key  ("^B", (FVOID_STAR)(SLFvoid_Star) rl_left, km);
+   SLkm_define_key  ("^?", (FVOID_STAR)(SLFvoid_Star) rl_bdel, km);
+   SLkm_define_key  ("^H", (FVOID_STAR)(SLFvoid_Star) rl_bdel, km);
+   SLkm_define_key  ("^P", (FVOID_STAR)(SLFvoid_Star) rl_prev_line, km);
+   SLkm_define_key  ("^N", (FVOID_STAR)(SLFvoid_Star) rl_next_line, km);
+   SLkm_define_key  ("^R", (FVOID_STAR)(SLFvoid_Star) rl_redraw, km);
+   SLkm_define_key  ("`", (FVOID_STAR)(SLFvoid_Star) rl_quote_insert, km);
+   SLkm_define_key  ("\033\\", (FVOID_STAR)(SLFvoid_Star) rl_trim, km);
    if (_pSLang_Error)
      return -1;
    RL_Keymap = km;
@@ -2099,14 +2099,14 @@ static void rline_call_intrinsic (char *fun)
    if (Active_Rline_Info == NULL)
      return;
 
-   if (NULL == (f = (int (*)(SLrline_Type *)) (SLang_find_key_function(fun, Active_Rline_Info->keymap))))
+   if (NULL == (f = (int (*)(SLrline_Type *))(SLFvoid_Star)SLang_find_key_function(fun, Active_Rline_Info->keymap)))
      {
 	_pSLang_verror (SL_UndefinedName_Error, "rline internal function %s does not exist", fun);
 	return;
      }
 
    (void) (*f)(Active_Rline_Info);
-   /* Active_Rline_Info->last_fun = (FVOID_STAR) f; */
+   /* Active_Rline_Info->last_fun = (FVOID_STAR)(SLFvoid_Star) f; */
 }
 
 static void rline_get_line_intrinsic (void)
