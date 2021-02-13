@@ -72,6 +72,7 @@ Changes since 2.3.2
     larger than sizeof(int).
 37. src/slarray.c: Simplified the range checking in the
     linear_get_data_addr function and removed unused code.
+38. Updated the copyright year
 
 {{{ Previous Versions
 

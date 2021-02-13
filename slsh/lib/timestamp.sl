@@ -1,3 +1,9 @@
+% Copyright (C) 2020,2021 John E. Davis
+%
+% This file is part of the S-Lang Library and may be distributed under the
+% terms of the GNU General Public License.  See the file COPYING for
+% more information.
+%---------------------------------------------------------------------------
 % The code here attemps to convert a human readable representation of a
 % timestamp, such as Wed May 13 02:38:34 2020 to a Unix time (number
 % of secs since the Unix epoch)

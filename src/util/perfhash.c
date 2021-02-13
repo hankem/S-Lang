@@ -1,4 +1,4 @@
-/* Copyright (c) 1998-2017,2018 John E. Davis
+/* Copyright (c) 1998-2020,2021 John E. Davis
 This file is part of the S-Lang Library.
 
 The S-Lang Library is free software; you can redistribute it and/or

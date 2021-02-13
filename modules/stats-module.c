@@ -1,6 +1,7 @@
 /* -*- mode: C; mode: fold; -*- */
 
 /*
+  Copyright (c) 2013-2020,2021 John E. Davis
   Copyright (c) 2007 Massachusetts Institute of Technology
 
   This software was developed by the MIT Center for Space Research

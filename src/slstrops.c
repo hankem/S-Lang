@@ -1,7 +1,7 @@
 /* -*- mode: C; mode: fold; -*- */
 /* string manipulation functions for S-Lang. */
 /*
-Copyright (C) 2004-2017,2018 John E. Davis
+Copyright (C) 2004-2020,2021 John E. Davis
 
 This file is part of the S-Lang Library.
 
