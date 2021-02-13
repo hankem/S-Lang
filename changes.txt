@@ -70,6 +70,8 @@ Changes since 2.3.2
 36. modules/termios-module.c: Avoid a potential problem with the
     tcgetpgrp intrinsic in the unlikely case that sizeof(pid_t) is
     larger than sizeof(int).
+37. src/slarray.c: Simplified the range checking in the
+    linear_get_data_addr function and removed unused code.
 
 {{{ Previous Versions
 

@@ -124,19 +124,18 @@ static VOID_STAR linear_get_data_addr (SLang_Array_Type *at, SLindex_Type *dims)
 	ofs = 0;
 	for (i = 0; i < num_dims; i++)
 	  {
-	     size_t new_ofs;
 	     SLindex_Type d = dims[i];
-	     if (d < 0)
-	       d = d + max_dims[i];
-
-	     new_ofs = ofs * (size_t)max_dims [i] + (size_t) d;
-	     if ((max_dims[i] != 0)
-		 && ((new_ofs - (size_t)d)/max_dims[i] != ofs))
+	     if ((d < 0) || (d >= max_dims[i]))
 	       {
-		  throw_size_error (SL_Index_Error);
-		  return NULL;
+		  if (d < 0)
+		    d = d + max_dims[i];
+		  if ((d < 0) || (d >= max_dims[i]))
+		    {
+		       SLang_set_error (SL_Index_Error);
+		       return NULL;
+		    }
 	       }
-	     ofs = new_ofs;
+	     ofs = ofs * (size_t)max_dims [i] + (size_t) d;
 	  }
      }
    if (ofs >= at->num_elements)
@@ -242,7 +241,7 @@ static int next_index (SLindex_Type *dims, SLindex_Type *max_dims,
 	num_dims--;
 
 	dims_i = dims [num_dims] + 1;
-	if (dims_i < (int) max_dims [num_dims])
+	if (dims_i < (SLindex_Type) max_dims [num_dims])
 	  {
 	     dims [num_dims] = dims_i;
 	     *changed_indexp = num_dims;
@@ -1520,15 +1519,6 @@ static int aget_from_array (unsigned int num_indices)
 #if SLANG_OPTIMIZE_FOR_SPEED
 	SLindex_Type indices[SLARRAY_MAX_DIMS];
 
-	if ((num_indices == 1)
-	    && (index_objs[0].o_data_type == SLANG_ARRAY_INDEX_TYPE)
-	    && (at->num_dims == 1))
-	  {
-	     ret = _pSLarray1d_push_elem (at, index_objs[0].v.index_val);
-	     free_array (at);
-	     return ret;
-	  }
-#if 1
 	for (i = 0; i < num_indices; i++)
 	  {
 	     if (index_objs[i].o_data_type != SLANG_ARRAY_INDEX_TYPE)
@@ -1546,7 +1536,6 @@ static int aget_from_array (unsigned int num_indices)
 	     free_array (at);
 	     return ret;
 	  }
-#endif
 #endif
 	ret = aget_from_indices (at, index_objs, num_indices);
      }
@@ -1813,11 +1802,7 @@ aput_get_data_to_put (SLang_Class_Type *cl, SLuindex_Type num_elements, int allo
 	if (-1 == SLang_pop_array (&at, 0))
 	  return -1;
 
-	if ((at->num_elements != num_elements)
-#if 0
-	    || (at->num_dims != 1)
-#endif
-	    )
+	if (at->num_elements != num_elements)
 	  {
 	     _pSLang_verror (SL_Index_Error, "Array size is inappropriate for use with index-array");
 	     free_array (at);
@@ -3542,25 +3527,7 @@ static SLang_Array_Type *concat_arrays (unsigned int count)
 	dest_data += num_elements * sizeof_type;
      }
 
-#if 0
-   /* If the arrays are all 1-d, and all the same size, then reshape to a
-    * 2-d array.  This will allow us to do, e.g.
-    * a = [[1,2], [3,4]]
-    * to specifiy a 2-d.
-    * Someday I will generalize this.
-    */
-   /* This is a bad idea.  Everyone using it expects concatenation to happen.
-    * Perhaps I will extend the syntax to allow a 2-d array to be expressed
-    * as [[1,2];[3,4]].
-    */
-   if ((max_dims == min_dims) && (max_dims == 1) && (min_rows == max_rows))
-     {
-	at->num_dims = 2;
-	at->dims[0] = count;
-	at->dims[1] = min_rows;
-     }
-#endif
-   free_and_return:
+free_and_return:
 
    for (i = 0; i < count; i++)
      free_array (arrays[i]);
@@ -4931,7 +4898,8 @@ static void array_shape (void)
    free_array (at);
 }
 
-#if 0
+#define HAVE_AGET_PUT_INTRIN 0
+#if HAVE_AGET_PUT_INTRIN
 static int pop_int_indices (SLindex_Type *dims, unsigned int ndims)
 {
    int i;
@@ -5051,7 +5019,7 @@ static void aget_intrin (void)
    free_and_return:
    free_array (at);
 }
-#endif
+#endif				       /* HAVE_AGET_PUT_INTRIN */
 
 static int pop_byte_order (int *bop)
 {
@@ -5131,7 +5099,7 @@ static SLang_Intrin_Fun_Type Array_Table [] =
    MAKE_INTRINSIC_0("reshape", array_reshape, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_reshape", _array_reshape, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_array_byteswap", byteswap_intrin, SLANG_VOID_TYPE),
-#if 0
+#if HAVE_AGET_PUT_INTRIN
    MAKE_INTRINSIC_0("__aget", aget_intrin, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("__aput", aput_intrin, SLANG_VOID_TYPE),
 #endif
@@ -5523,18 +5491,6 @@ array_datatype_deref (SLtype type)
 {
    SLang_Array_Type *ind_at;
    SLang_Array_Type *at;
-
-#if 0
-   /* The parser generated code for this as if a function call were to be
-    * made.  However, the interpreter simply called the deref object routine
-    * instead of the function call.  So, I must simulate the function call.
-    * This needs to be formalized to hide this detail from applications
-    * who wish to do the same.  So...
-    * FIXME: Priority=medium
-    */
-   if (0 == _pSL_increment_frame_pointer ())
-     (void) _pSL_decrement_frame_pointer ();
-#endif
 
    if (-1 == pop_1d_index_array (&ind_at))
      goto return_error;
