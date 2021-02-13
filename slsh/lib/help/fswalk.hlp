@@ -4,36 +4,45 @@ fswalk_new
   Create an object to walk the filesystem tree
 
  USAGE
-  obj = fswalk_new (Ref_Type dirfunc, Ref_Type filefunc; qualifiers)
+  obj = fswalk_new (Ref_Type enterdir_func, Ref_Type file_func[, Ref_Type leavedir_func]; qualifiers)
 
  DESCRIPTION
   The `fswalk_new' function creates an object that is useful
-  for exploring a filesystem tree.  It requires two arguments that
+  for exploring a filesystem tree.  It requires at least two arguments that
   are references to functions to be called when a directory or file is
-  encountered.  Each of these functions is passed at least two
+  encountered. The third argument (`leavedir_func') is optional.
+  Each of these functions is passed at least two
   arguments: the name of the file or directory (including leading path
   elements relative to the directory where processing started), and
-  the stat structure of the of the file or directory.  Qualifiers may
+  the stat structure of the file or directory.  Qualifiers may
   be used to specify additional arguments.
 
   The object's `walk' method is the one that actually walks the
   filesystem.
 
-  The directory callback function must return an integer value that
+  The `enterdir_func' callback function is called when a
+  directory is encountered.  It must return an integer value that
   indicates how it should be processed.  If the function returns 0,
   then the directory will be skipped (pruned).  A positive value
   indicates that the directory will processed.  If the function
   returns a negative value, then no further processing by the walk
-  function will take place and control will pass to the user.
+  function will take place and control will pass back to the caller.  The
+  value of this function may be NULL.
 
-  The file callback function must also return an integer that
+  The `file_func' callback function must return an integer that
   indicates how processing should continue.  If it returns a positive
   value, then additional files in the corresponding directory will be
   processed.  If it returns 0, then no further files or subdirectories
   of the directory will be processed, and processing will continue to
   take place in the parent directory.  Otherwise, the return value is
   negative, which indicates that processing should be stopped and
-  control will pass back to the caller.
+  control will pass back to the caller.  The value of this function
+  may be NULL.
+
+  If the `leavedir_func' has been specified and is non-NULL, then
+  it will be called after the directory has been processed.  It must
+  return an integer.  A return value of -1 is used to indicate that an
+  error has occurred, and that further processing should stop.
 
  QUALIFIERS
   The following qualifiers are supported:
@@ -41,12 +50,17 @@ fswalk_new
    dargs={args...}
 
     `dargs' is a list of additional arguments that will be added when
-    calling the directory callback function.
+    calling the `enterdir_func' callback.
 
    fargs={args...}
 
     `fargs' is a list of additional arguments that will be added when
-    calling the file callback function.
+    calling the `file_func' callback function.
+
+   largs={args...}
+
+    `largs' is a list of additional arguments that will be added when
+    calling the `leavedir_func' callback.
 
    followlinks[=val]
 

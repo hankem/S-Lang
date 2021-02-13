@@ -65,6 +65,8 @@ Changes since 2.3.2
 34. src/slang.h:  Added `typedef void (*SLFVOID_STAR)(void)', which
     will replace FVOID_STAR in version 3.  The library code was
     updated to use this.
+35. slsh/lib/fswalk.sl: Added an optional callback argument to the
+    fswalk that is called when leaving a directory.
 
 {{{ Previous Versions
 

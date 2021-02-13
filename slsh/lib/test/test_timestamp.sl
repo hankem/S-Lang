@@ -67,10 +67,18 @@ define slsh_main ()
      };
    bad += test_timestamp (t_expected, dates);
 
-   t_expected = 97027200;;
+   t_expected = 97027200;
    dates =
      {
 	"1973-01-28T00:00:00Z",
+     };
+   bad += test_timestamp (t_expected, dates);
+
+   t_expected = 1597014697;
+   dates =
+     {
+	"2020-08-09T23:11:37Z",
+	"Sun Aug  9 19:11:37 2020 EDT",
      };
    bad += test_timestamp (t_expected, dates);
 
