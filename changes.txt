@@ -73,6 +73,8 @@ Changes since 2.3.2
 37. src/slarray.c: Simplified the range checking in the
     linear_get_data_addr function and removed unused code.
 38. Updated the copyright year
+39. slsh/lib/fswalk.sl: Change #35 regression: The get_stat function
+    was being called with the wrong number of arguments.
 
 {{{ Previous Versions
 

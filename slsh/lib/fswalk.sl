@@ -40,7 +40,7 @@ private define process_dir (w, dir, dir_st)
 	variable file = ();
 	file = path_concat (dir, file);
 
-	variable st = get_stat (file);
+	variable st = get_stat (w, file);
 	if (st == NULL)
 	  continue;
 
