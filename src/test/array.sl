@@ -371,86 +371,99 @@ define check_result (result, answer, op)
      failed ("Binary operation `%s' failed", op);
 }
 
-check_result ([1,2] + [3,4], [4,6],"+");
-check_result (1 + [3,4], [4,5],"+");
-check_result ([3,4] + 1, [4,5],"+");
+private define check_bin_result (a, op, b, ans, opstr)
+{
+   variable types = [Char_Type, UChar_Type, Short_Type, UShort_Type,
+		     Int_Type, UInt_Type, Long_Type, ULong_Type];
 
-check_result ([1,2] - [3,4], [-2,-2],"-");
-check_result (1 - [3,4], [-2,-3],"-");
-check_result ([3,4] - 1, [2,3],"-");
+   variable atype, btype;
+   foreach atype (types)
+     {
+	variable aa = typecast (a, atype);
+	foreach btype (types)
+	  {
+	     variable bb = typecast (b, btype);
+	     check_result ((@op)(aa, bb), ans, "$atype $opstr $btype"$);
+	  }
+     }
+}
 
-check_result ([1,2] * [3,4], [3,8], "*");
-check_result (1 * [3,4], [3,4], "*");
-check_result ([3,4] * 1, [3,4], "*");
+check_bin_result ([1,2], &_op_plus, [3,4], [4,6],"+");
+check_bin_result (1, &_op_plus, [3,4], [4,5],"+");
+check_bin_result ([3,4], &_op_plus, 1, [4,5],"+");
 
-check_result ([12,24] / [3,4], [4,6],"/");
-check_result (12 / [3,4], [4,3],"/");
-check_result ([3,4] / 1, [3,4],"/");
+check_bin_result ([1,2], &_op_minus, [3,4], [-2,-2],"-");
+check_bin_result (1, &_op_minus, [3,4], [-2,-3],"-");
+check_bin_result ([3,4], &_op_minus, 1, [2,3],"-");
 
-check_result ([1,2] mod [3,4], [1,2],"mod");
-check_result (3 mod [3,2], [0,1],"mod");
-check_result ([3,4] mod 4, [3,0],"mod");
+check_bin_result ([1,2], &_op_times, [3,4], [3,8], "*");
+check_bin_result (1, &_op_times, [3,4], [3,4], "*");
+check_bin_result ([3,4], &_op_times, 1, [3,4], "*");
 
-check_result ([1,2] == [3,2], [0,1],"==");
-check_result (3 == [3,4], [1,0],"==");
-check_result ([3,4] == 1, [0,0],"==");
+check_bin_result ([12,24], &_op_divide, [3,4], [4,6],"/");
+check_bin_result (12, &_op_divide, [3,4], [4,3],"/");
+check_bin_result ([3,4], &_op_divide, 1, [3,4],"/");
 
-check_result ([1,2] != [3,2], [1,0],"!=");
-check_result (3 != [3,4], [0,1],"!=");
-check_result ([3,4] != 1, [1,1],"!=");
+check_bin_result ([1,2], &_op_mod, [3,4], [1,2],"mod");
+check_bin_result (3, &_op_mod, [3,2], [0,1],"mod");
+check_bin_result ([3,4], &_op_mod, 4, [3,0],"mod");
 
-check_result ([1,2] > [3,2], [0,0],">");
-check_result (1 > [3,4], [0,0],">");
-check_result ([3,4] > 1, [1,1],">");
+check_bin_result ([1,2], &_op_eqs, [3,2], [0,1],"==");
+check_bin_result (3, &_op_eqs, [3,4], [1,0],"==");
+check_bin_result ([3,4], &_op_eqs, 1, [0,0],"==");
 
-check_result ([1,2] >= [3,2], [0,1],">=");
-check_result (1 >= [3,4], [0,0],">=");
-check_result ([3,4] >= 1, [1,1],">=");
+check_bin_result ([1,2], &_op_neqs, [3,2], [1,0],"!=");
+check_bin_result (3, &_op_neqs, [3,4], [0,1],"!=");
+check_bin_result ([3,4], &_op_neqs, 1, [1,1],"!=");
 
-check_result ([1,2] >= [3,2], [0,1],">=");
-check_result (1 >= [3,4], [0,0],">=");
-check_result ([3,4] >= 1, [1,1],">=");
+check_bin_result ([1,2], &_op_gt, [3,2], [0,0],">");
+check_bin_result (1, &_op_gt, [3,4], [0,0],">");
+check_bin_result ([3,4], &_op_gt, 1, [1,1],">");
 
-check_result ([1,2] < [3,2], [1,0],"<");
-check_result (1 < [3,4], [1,1],"<");
-check_result ([3,4] < 1, [0,0],"<");
+check_bin_result ([1,2], &_op_ge, [3,2], [0,1],">=");
+check_bin_result (1, &_op_ge, [3,4], [0,0],">=");
+check_bin_result ([3,4], &_op_ge, 1, [1,1],">=");
 
-check_result ([1,2] <= [3,2], [1,1],"<=");
-check_result (1 <= [3,4], [1,1],"<=");
-check_result ([3,4] <= 1, [0,0],"<=");
+check_bin_result ([1,2], &_op_lt, [3,2], [1,0],"<");
+check_bin_result (1, &_op_lt, [3,4], [1,1],"<");
+check_bin_result ([3,4], &_op_lt, 1, [0,0],"<");
+
+check_bin_result ([1,2], &_op_le, [3,2], [1,1],"<=");
+check_bin_result (1, &_op_le, [3,4], [1,1],"<=");
+check_bin_result ([3,4], &_op_le, 1, [0,0],"<=");
 #ifexists Double_Type
-check_result ([1,2] ^ [3,2], [1,4],"^");
-check_result (1 ^ [3,4], [1,1],"^");
-check_result ([3,4] ^ 1, [3,4],"^");
-check_result ([3,4] ^ 0, [1,1],"^");
+check_bin_result ([1,2], &_op_pow, [3,2], [1,4],"^");
+check_bin_result (1, &_op_pow, [3,4], [1,1],"^");
+check_bin_result ([3,4], &_op_pow, 1, [3,4],"^");
+check_bin_result ([3,4], &_op_pow, 0, [1,1],"^");
 #endif
-check_result ([1,2] or [3,2], [1,1],"or");
-check_result (1 or [3,4], [1,1],"or");
-check_result ([0,1] or 1, [1,1],"or");
+check_bin_result ([1,2], &_op_or, [3,2], [1,1],"or");
+check_bin_result (1, &_op_or, [3,4], [1,1],"or");
+check_bin_result ([0,1], &_op_or, 1, [1,1],"or");
 
-check_result ([1,2] and [3,2], [1,1],"and");
-check_result (1 and [0,4], [0,1],"and");
-check_result ([3,4] and 0, [0,0],"and");
+check_bin_result ([1,2], &_op_and, [3,2], [1,1],"and");
+check_bin_result (1, &_op_and, [0,4], [0,1],"and");
+check_bin_result ([3,4], &_op_and, 0, [0,0],"and");
 
-check_result ([1,2] & [3,2], [1,2],"&");
-check_result (1 & [3,4], [1,0],"&");
-check_result ([3,4] & 1, [1,0],"&");
+check_bin_result ([1,2], &_op_band, [3,2], [1,2],"&");
+check_bin_result (1, &_op_band, [3,4], [1,0],"&");
+check_bin_result ([3,4], &_op_band, 1, [1,0],"&");
 
-check_result ([1,2] | [3,2], [3,2],"|");
-check_result (1 | [3,4], [3,5],"|");
-check_result ([3,4] | 1, [3,5],"|");
+check_bin_result ([1,2], &_op_bor, [3,2], [3,2],"|");
+check_bin_result (1, &_op_bor, [3,4], [3,5],"|");
+check_bin_result ([3,4], &_op_bor, 1, [3,5],"|");
 
-check_result ([1,2] xor [3,2], [2,0],"xor");
-check_result (1 xor [3,4], [2,5],"xor");
-check_result ([3,4] xor 1, [2,5],"xor");
+check_bin_result ([1,2], &_op_xor, [3,2], [2,0],"xor");
+check_bin_result (1, &_op_xor, [3,4], [2,5],"xor");
+check_bin_result ([3,4], &_op_xor, 1, [2,5],"xor");
 
-check_result ([1,2] shl [3,2], [8,8],"shl");
-check_result (1 shl [3,4], [8,16],"shl");
-check_result ([3,4] shl 1, [6,8],"shl");
+check_bin_result ([1,2], &_op_shl, [3,2], [8,8],"shl");
+check_bin_result (1, &_op_shl, [3,4], [8,16],"shl");
+check_bin_result ([3,4], &_op_shl, 1, [6,8],"shl");
 
-check_result ([1,4] shr [3,1], [0,2],"shr");
-check_result (8 shr [3,4], [1,0],"shr");
-check_result ([3,4] shr 1, [1,2],"shr");
+check_bin_result ([1,4], &_op_shr, [3,1], [0,2],"shr");
+check_bin_result (8, &_op_shr, [3,4], [1,0],"shr");
+check_bin_result ([3,4], &_op_shr, 1, [1,2],"shr");
 
 % Test __tmp optimizations
 private define test_tmp ()

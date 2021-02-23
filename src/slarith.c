@@ -558,6 +558,129 @@ static Bin_Fun_Type Bin_Fun_Map [MAX_ARITHMETIC_TYPES] =
      double_double_bin_op		       /* double */
 };
 
+/* char optimizations */
+#define GENERIC_TYPE int
+#define GENERICB_TYPE signed char
+#define GENERIC_BIT_OPERATIONS
+#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+#define POW_RESULT_TYPE double
+#define MOD_FUNCTION(a,b) ((a) % (b))
+#define TRAP_DIV_ZERO	1
+#define GENERIC_BINARY_FUNCTION int_char_arith_bin_op
+#include "slarith.inc"
+
+#if SLANG_HAS_FLOAT
+# define GENERIC_TYPE float
+# define GENERICB_TYPE signed char
+# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+# define POW_RESULT_TYPE double
+# define MOD_FUNCTION(a,b) (float)fmod((a),(b))
+# define TRAP_DIV_ZERO	0
+# define GENERIC_BINARY_FUNCTION float_char_arith_bin_op
+# include "slarith.inc"
+
+# define GENERIC_TYPE double
+# define GENERICB_TYPE signed char
+# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+# define POW_RESULT_TYPE double
+# define MOD_FUNCTION(a,b) fmod((a),(b))
+# define TRAP_DIV_ZERO	0
+# define GENERIC_BINARY_FUNCTION double_char_arith_bin_op
+# include "slarith.inc"
+#endif
+
+#define GENERIC_TYPE int
+#define GENERICB_TYPE unsigned char
+#define GENERIC_BIT_OPERATIONS
+#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+#define POW_RESULT_TYPE double
+#define MOD_FUNCTION(a,b) ((a) % (b))
+#define TRAP_DIV_ZERO	1
+#define GENERIC_BINARY_FUNCTION int_uchar_arith_bin_op
+#include "slarith.inc"
+
+#if SLANG_HAS_FLOAT
+# define GENERIC_TYPE float
+# define GENERICB_TYPE unsigned char
+# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+# define POW_RESULT_TYPE double
+# define MOD_FUNCTION(a,b) (float)fmod((a),(b))
+# define TRAP_DIV_ZERO	0
+# define GENERIC_BINARY_FUNCTION float_uchar_arith_bin_op
+# include "slarith.inc"
+
+# define GENERIC_TYPE double
+# define GENERICB_TYPE unsigned char
+# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+# define POW_RESULT_TYPE double
+# define MOD_FUNCTION(a,b) (float)fmod((a),(b))
+# define TRAP_DIV_ZERO	0
+# define GENERIC_BINARY_FUNCTION double_uchar_arith_bin_op
+# include "slarith.inc"
+#endif				       /* SLANG_HAS_FLOAT */
+
+#if SHORT_IS_NOT_INT
+# define GENERIC_TYPE int
+# define GENERICB_TYPE signed short
+# define GENERIC_BIT_OPERATIONS
+# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+# define POW_RESULT_TYPE double
+# define MOD_FUNCTION(a,b) ((a) % (b))
+# define TRAP_DIV_ZERO	1
+# define GENERIC_BINARY_FUNCTION int_short_arith_bin_op
+# include "slarith.inc"
+
+# if SLANG_HAS_FLOAT
+#  define GENERIC_TYPE float
+#  define GENERICB_TYPE signed short
+#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+#  define POW_RESULT_TYPE double
+#  define MOD_FUNCTION(a,b) (float)fmod((a),(b))
+#  define TRAP_DIV_ZERO	0
+#  define GENERIC_BINARY_FUNCTION float_short_arith_bin_op
+#  include "slarith.inc"
+
+#  define GENERIC_TYPE double
+#  define GENERICB_TYPE signed short
+#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+#  define POW_RESULT_TYPE double
+#  define MOD_FUNCTION(a,b) fmod((a),(b))
+#  define TRAP_DIV_ZERO	0
+#  define GENERIC_BINARY_FUNCTION double_short_arith_bin_op
+#  include "slarith.inc"
+# endif				       /* SLANG_HAS_FLOAT */
+
+# define GENERIC_TYPE int
+# define GENERICB_TYPE unsigned short
+# define GENERIC_BIT_OPERATIONS
+# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+# define POW_RESULT_TYPE double
+# define MOD_FUNCTION(a,b) ((a) % (b))
+# define TRAP_DIV_ZERO	1
+# define GENERIC_BINARY_FUNCTION int_ushort_arith_bin_op
+# include "slarith.inc"
+
+# if SLANG_HAS_FLOAT
+#  define GENERIC_TYPE float
+#  define GENERICB_TYPE unsigned short
+#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+#  define POW_RESULT_TYPE double
+#  define MOD_FUNCTION(a,b) (float)fmod((a),(b))
+#  define TRAP_DIV_ZERO	0
+#  define GENERIC_BINARY_FUNCTION float_ushort_arith_bin_op
+#  include "slarith.inc"
+
+#  define GENERIC_TYPE double
+#  define GENERICB_TYPE unsigned short
+#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
+#  define POW_RESULT_TYPE double
+#  define MOD_FUNCTION(a,b) (float)fmod((a),(b))
+#  define TRAP_DIV_ZERO	0
+#  define GENERIC_BINARY_FUNCTION double_ushort_arith_bin_op
+#  include "slarith.inc"
+# endif				       /* SLANG_HAS_FLOAT */
+#endif				       /* SHORT_IS_NOT_INT */
+
 static int arith_bin_op (int op,
 			 SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			 SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
@@ -567,17 +690,117 @@ static int arith_bin_op (int op,
    int c_indx;
    SLtype c_type;
 
-   if ((a_type == b_type)
-       && ((a_type == SLANG_CHAR_TYPE) || (a_type == SLANG_UCHAR_TYPE)))
+   switch (b_type)
      {
-	switch (op)
+      case SLANG_CHAR_TYPE:
+	switch (a_type)
 	  {
-	   case SLANG_EQ:
-	   case SLANG_NE:
-	   case SLANG_AND:
-	   case SLANG_OR:
-	     return char_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	   case SLANG_CHAR_TYPE:
+	   case SLANG_UCHAR_TYPE:
+	     switch (op)
+	       {
+		/* char_char_arith_bin_op only supports boolean operations.
+		 * They are insensitive to the sign involved
+		 */
+		case SLANG_EQ:
+		case SLANG_NE:
+		case SLANG_AND:
+		case SLANG_OR:
+		  return char_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	       }
+	     break;
+	   case SLANG_INT_TYPE:
+	     return int_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+#if SLANG_HAS_FLOAT
+	   case SLANG_FLOAT_TYPE:
+	     return float_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	   case SLANG_DOUBLE_TYPE:
+	     return double_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+#endif
 	  }
+	break;
+
+      case SLANG_UCHAR_TYPE:
+	switch (a_type)
+	  {
+	   case SLANG_CHAR_TYPE:
+	   case SLANG_UCHAR_TYPE:
+	     switch (op)
+	       {
+		/* char_char_arith_bin_op only supports boolean operations.
+		 * They are insensitive to the sign involved
+		 */
+		case SLANG_EQ:
+		case SLANG_NE:
+		case SLANG_AND:
+		case SLANG_OR:
+		  return char_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	       }
+	     break;
+	   case SLANG_INT_TYPE:
+	     return int_uchar_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+#if SLANG_HAS_FLOAT
+	   case SLANG_FLOAT_TYPE:
+	     return float_uchar_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	   case SLANG_DOUBLE_TYPE:
+	     return double_uchar_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+#endif
+	  }
+	break;
+
+#if SHORT_IS_NOT_INT
+      case SLANG_SHORT_TYPE:
+	switch (a_type)
+	  {
+	   case SLANG_INT_TYPE:
+	     return int_short_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+# if SLANG_HAS_FLOAT
+	   case SLANG_FLOAT_TYPE:
+	     return float_short_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	   case SLANG_DOUBLE_TYPE:
+	     return double_short_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+# endif
+	  }
+	break;
+      case SLANG_USHORT_TYPE:
+	switch (a_type)
+	  {
+	   case SLANG_INT_TYPE:
+	     return int_ushort_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+# if SLANG_HAS_FLOAT
+	   case SLANG_FLOAT_TYPE:
+	     return float_ushort_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	   case SLANG_DOUBLE_TYPE:
+	     return double_ushort_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+# endif
+	  }
+	break;
+#endif			       /* SHORT_IS_NOT_INT */
+
+      case SLANG_INT_TYPE:
+	if (a_type == b_type) return int_int_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	break;
+      case SLANG_UINT_TYPE:
+	if (a_type == b_type) return uint_uint_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	break;
+
+#if LONG_IS_NOT_INT
+      case SLANG_LONG_TYPE:
+	if (a_type == b_type) return long_long_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	break;
+      case SLANG_ULONG_TYPE:
+	if (a_type == b_type) return ulong_ulong_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	break;
+#endif
+
+#if SLANG_HAS_FLOAT
+      case SLANG_FLOAT_TYPE:
+	if (a_type == b_type) return float_float_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	break;
+      case SLANG_DOUBLE_TYPE:
+	if (a_type == b_type) return double_double_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
+	break;
+#endif
      }
 
    c_type = promote_to_common_type (a_type, b_type);

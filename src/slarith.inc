@@ -31,7 +31,12 @@ static int GENERIC_BINARY_FUNCTION
    SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
    VOID_STAR cp)
 {
-   GENERIC_TYPE *a, *b;
+   GENERIC_TYPE *a;
+# ifndef GENERICB_TYPE
+#  define GENERICB_TYPE GENERIC_TYPE
+# endif
+   GENERICB_TYPE *b;
+
 # ifndef JUST_BOOLEAN_BINARY_OPS
    GENERIC_TYPE *c;
 # endif
@@ -48,7 +53,7 @@ static int GENERIC_BINARY_FUNCTION
    (void) b_type;
 
    a = (GENERIC_TYPE *) ap;
-   b = (GENERIC_TYPE *) bp;
+   b = (GENERICB_TYPE *) bp;
 #ifndef JUST_BOOLEAN_BINARY_OPS
    c = (GENERIC_TYPE *) cp;
 #endif
@@ -83,7 +88,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     if (xb == 2)
 	       for (n = 0; n < na; n++)
 		 d[n] = (double)a[n] * (double)a[n];
@@ -114,7 +119,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       c[n] = a[n] + xb;
 	  }
@@ -141,7 +146,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       c[n] = a[n] - xb;
 	  }
@@ -168,7 +173,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       c[n] = a[n] * xb;
 	  }
@@ -211,7 +216,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 #   if TRAP_DIV_ZERO
 	     if (xb == 0)
 	       {
@@ -270,7 +275,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 #   if TRAP_DIV_ZERO
 	     if (xb == 0)
 	       {
@@ -314,7 +319,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       c[n] = a[n] & xb;
 	  }
@@ -341,7 +346,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       c[n] = a[n] ^ xb;
 	  }
@@ -368,7 +373,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       c[n] = a[n] | xb;
 	  }
@@ -395,7 +400,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       c[n] = a[n] << xb;
 	  }
@@ -422,7 +427,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       c[n] = a[n] >> xb;
 	  }
@@ -449,7 +454,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       cc[n] = (a[n] > xb);
 	  }
@@ -476,7 +481,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       cc[n] = (a[n] >= xb);
 	  }
@@ -503,7 +508,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       cc[n] = (a[n] < xb);
 	  }
@@ -530,7 +535,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       cc[n] = (a[n] <= xb);
 	  }
@@ -559,7 +564,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       cc[n] = (a[n] == xb);
 	  }
@@ -586,7 +591,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       cc[n] = (a[n] != xb);
 	  }
@@ -613,7 +618,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       cc[n] = (a[n] || xb);
 	  }
@@ -640,7 +645,7 @@ static int GENERIC_BINARY_FUNCTION
 	  }
 	else if (nb == 1)
 	  {
-	     GENERIC_TYPE xb = *b;
+	     GENERICB_TYPE xb = *b;
 	     for (n = 0; n < na; n++)
 	       cc[n] = (a[n] && xb);
 	  }
@@ -868,6 +873,7 @@ static int TO_BINARY_FUNCTION (GENERIC_TYPE x, char *buf, unsigned int buflen,
 #undef GENERIC_UNARY_FUNCTION
 #undef GENERIC_BIT_OPERATIONS
 #undef GENERIC_TYPE
+#undef GENERICB_TYPE
 #undef POW_FUNCTION
 #undef POW_RESULT_TYPE
 #undef MOD_FUNCTION

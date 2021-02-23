@@ -75,6 +75,8 @@ Changes since 2.3.2
 38. Updated the copyright year
 39. slsh/lib/fswalk.sl: Change #35 regression: The get_stat function
     was being called with the wrong number of arguments.
+40. src/slarith.c: Additional binary arithmetic optimizations involving
+    arrays of char and short.
 
 {{{ Previous Versions
 
