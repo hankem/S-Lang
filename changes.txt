@@ -77,6 +77,8 @@ Changes since 2.3.2
     was being called with the wrong number of arguments.
 40. src/slarith.c: Additional binary arithmetic optimizations involving
     arrays of char and short.
+41. src/slang.c,slarray.c: Added qualifier support to the array_map
+    function.
 
 {{{ Previous Versions
 

@@ -318,6 +318,29 @@ private define test_intrinsic_qualifiers ()
 }
 test_intrinsic_qualifiers ();
 
+private define check_qualifier (x)
+{
+   return x + qualifier ("bar", 0);
+}
+
+private define test_array_map_qualifiers (dx)
+{
+   variable x = [1:10];
+   variable y = array_map (Int_Type, &check_qualifier, x; bar=dx);
+   ifnot (_eqs (y, x+dx))
+     {
+	() = array_map (Int_Type, &fprintf, stdout, "%d, %d\n", y, x+dx);
+	failed ("array_map with explicit qualifiers failed");
+     }
+   y = array_map (Int_Type, &check_qualifier, x;; __qualifiers);
+   ifnot (_eqs (y, x + qualifier("bar", 0)))
+     {
+	failed ("array_map with implicit qualifier failed");
+     }
+}
+test_array_map_qualifiers (11; bar=130, foo=1);
+test_array_map_qualifiers (11);
+
 print ("Ok\n");
 
 exit (0);

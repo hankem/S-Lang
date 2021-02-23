@@ -4734,6 +4734,7 @@ static void array_map (void)
    SLuindex_Type i, nrets, nargs;
    SLang_Array_Type *at_control;
    SLang_Name_Type *func;
+   SLang_Struct_Type *q;
    SLuindex_Type num_elements;
    int num_arraymap_parms;
 
@@ -4745,6 +4746,9 @@ static void array_map (void)
 	SLdo_pop_n (num_arraymap_parms);
 	return;
      }
+
+   if (-1 == _pSLang_get_qualifiers (&q))
+     return;
 
    if (-1 == pop_array_map_args (num_arraymap_parms, &retvals, &nrets, &func,
 				 &argvals, &nargs, &at_control))
@@ -4796,6 +4800,9 @@ static void array_map (void)
 	     SLdo_pop_n (nargs);
 	     goto return_error;
 	  }
+
+	if ((q != NULL) && (-1 == _pSLang_set_qualifiers (q)))
+	  goto return_error;
 
 	if (-1 == SLexecute_function (func))
 	  goto return_error;
@@ -4850,6 +4857,7 @@ static void array_map (void)
 
 return_error:
    free_arraymap_argvals (argvals, nargs);
+   if (q != NULL) SLang_free_struct (q);
    SLang_free_function (func);
    free_arraymap_retvals (retvals, nrets);
 }

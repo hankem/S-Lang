@@ -1091,7 +1091,25 @@ static int set_qualifier (void)
    return SLang_pop_struct (&Next_Function_Qualifiers);
 }
 
-/* This function is called from slang code */
+int _pSLang_set_qualifiers (SLang_Struct_Type *q)
+{
+   /* For efficiency, skip the push_struct/set_qualifier step */
+   if (Next_Function_Qualifiers != NULL)
+     SLang_free_struct (Next_Function_Qualifiers);
+   if (q != NULL) q->num_refs++;
+   Next_Function_Qualifiers = q;
+   return 0;
+}
+
+int _pSLang_get_qualifiers (SLang_Struct_Type **qp)
+{
+   SLang_Struct_Type *q = Function_Qualifiers;
+   if (q != NULL) q->num_refs++;
+   *qp = q;
+   return 0;
+}
+
+/* This function is called from slang code by the __qualifiers function */
 int _pSLang_get_qualifiers_intrin (SLang_Struct_Type **qp)
 {
    /* The assumption is that this is being called from a function one level up.

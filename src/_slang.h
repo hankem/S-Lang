@@ -466,7 +466,10 @@ extern int _pSLstruct_push_field_ref (SLFUTURE_CONST char *);
 extern int _pSLstruct_push_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free);
 extern int _pSLstruct_pop_field (SLang_Struct_Type *s, SLFUTURE_CONST char *name, int do_free);
 
-extern int _pSLang_get_qualifiers_intrin (SLang_Struct_Type **);
+extern int _pSLang_get_qualifiers_intrin (SLang_Struct_Type **);   /* Value is not to be freed by caller */
+
+extern int _pSLang_get_qualifiers (SLang_Struct_Type **);   /* Caller must free when done */
+extern int _pSLang_set_qualifiers (SLang_Struct_Type *);
 
 struct _pSLang_Ref_Type
 {
