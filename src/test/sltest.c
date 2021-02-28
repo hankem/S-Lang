@@ -177,6 +177,8 @@ static SLang_CStruct_Field_Type C_Struct [] =
    MAKE_CSTRUCT_FIELD(CStruct_Type, i, "i", SLANG_INT_TYPE, 0),
 #if SLANG_HAS_FLOAT
    MAKE_CSTRUCT_FIELD(CStruct_Type, d, "d", SLANG_DOUBLE_TYPE, 0),
+#endif
+#if SLANG_HAS_COMPLEX
    MAKE_CSTRUCT_FIELD(CStruct_Type, c, "z", SLANG_COMPLEX_TYPE, 0),
 #endif
    MAKE_CSTRUCT_FIELD(CStruct_Type, s, "s", SLANG_STRING_TYPE, 0),

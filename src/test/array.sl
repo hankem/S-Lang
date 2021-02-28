@@ -745,9 +745,12 @@ test_sum (A,2);
 test_sum (A,1);
 test_sum (A,0);
 
+#ifexists Complex_Type
 A = [1+2i, 2+3i, 3+4i];
 if (sum(A) != A[0] + A[1] + A[2])
   failed ("sum(Complex)");
+#endif
+
 #endif				       %  Double_Type
 
 define find_min (a)
@@ -1462,7 +1465,9 @@ private define test_array_types (a, b)
 test_array_types (1h, 1L);
 test_array_types (1h, 1f);
 test_array_types (1h, 1.0);
+#ifexists Complex_Type
 test_array_types (1h, 1j);
+#endif
 test_array_types ("a", "a\0");
 
 % Test presence of NULLs in inline arrays
@@ -1672,9 +1677,11 @@ private define test_sumsq (a)
    variable s, t;
 
    s = sumsq (a);
+#ifexists Complex_Type
    if (_typeof (a) == Complex_Type)
      t = sumsq (Real(a)) + sumsq(Imag(a));
    else
+#endif
      t = sum (a*a);
 
    if (s != t)

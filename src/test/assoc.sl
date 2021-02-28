@@ -207,7 +207,9 @@ private define test_api_create_assoc_without_default_value ()
      {
 	"foo", 1,
 	"bar", PI,
+#ifexists Complex_Type
 	"complex", 2+3i,
+#endif
 	"string", "foobar",
 	"array", [1,2,3,4],
 	"struct", struct {foo, bar},
@@ -224,7 +226,9 @@ private define test_api_create_assoc_with_default_value ()
      {
 	"foo", "1",
 	"bar", "3.141592653589793",
+#ifexists Complex_Type
 	"complex", "(2 + 3i)",
+#endif
 	"string", "foobar",
 	"array", "Integer_Type[4]",
 	"struct", "Struct_Type with 2 fields",

@@ -341,11 +341,11 @@ private define test_misc_trig ()
 	if (fneqs (log(ten), 2.302585092994046, 1e-6)) failed("log(%S)",ten);
 	if (fneqs (exp(one), E, 1e-6)) failed("exp(%S)",one);
 	if (log10(ten) != 1) failed("log10(%S)", ten);
-
+#ifexists Complex_Type
 	if (Imag(one) != 0) failed ("Imag(%S)", one);
 	if (Real(one) != 1) failed ("Real(%S)", one);
 	if (Conj(one) != 1) failed ("Conj(%S)", one);
-
+#endif
 	one = [one, one, one];
 	ten = [ten,ten,ten];
 	if (any(fneqs (tan(one), 1.5574077246549023, 1e-6))) failed("tan(%S)",one);
@@ -363,9 +363,11 @@ private define test_misc_trig ()
 	if (any(fneqs (log(ten), 2.302585092994046, 1e-6))) failed("log(%S)",ten);
 	if (any(fneqs (exp(one), E, 1e-6))) failed("exp(%S)",one);
 	if (any(log10(ten) != 1)) failed("log10(%S)", ten);
+#ifexists Complex_Type
 	if (any(Imag(one) != 0)) failed ("Imag(%S)", one);
 	if (any(Real(one) != 1)) failed ("Real(%S)", one);
 	if (any(Conj(one) != 1)) failed ("Conj(%S)", one);
+#endif
      }
 }
 test_misc_trig ();

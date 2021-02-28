@@ -86,6 +86,9 @@ Changes since 2.3.2
 43. src/sl-feat.h: Floating point support by the interpreter is now
     required.  The library has not compiled without it for a long
     time.  As such, this option is no longer available.
+44. */test/*.sl: Surrounded regression test code that makes use of
+    complex numbers with `#ifexists Complex_Type' so that they run
+    when the interpreter is compiled without complex variable support.
 
 {{{ Previous Versions
 

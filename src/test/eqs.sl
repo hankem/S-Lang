@@ -5,8 +5,10 @@ testing_feature ("_eqs");
 if (0 == _eqs (1h, 1L))
   failed ("_eqs(1h,1L)");
 
+#ifexists Complex_Type
 if (0 == _eqs (1h, 1+0i))
   failed ("_eqs(1h,1+0i)");
+#endif
 
 if (0 == _eqs ([1h:10h], [1L:10L]))
   failed ("_eqs (arrays of ints)");

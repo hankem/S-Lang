@@ -478,6 +478,7 @@ private define is_vector_eq_to_list (v, l)
 }
 __add_typecast (Vector_Type, List_Type, &vector_to_list);
 
+#ifexists Complex_Type
 private define vector_to_complex (v)
 {
    return v.x + 1j*v.y;
@@ -487,6 +488,7 @@ private define is_vector_eq_to_complex (v, z)
    return (vector_to_complex (v) == z);
 }
 __add_typecast (Vector_Type, Complex_Type, &vector_to_complex);
+#endif
 
 private define vector_to_stdout (v)
 {
@@ -518,7 +520,10 @@ private define test_typecast (to, eqsfun)
      failed ("simple vector not equal to %S", to);
    v = [vector(4,5,6),
 		 vector (7,8,9),
-		 vector (1i,2i,3i)];
+#ifexists Complex_Type
+		 vector (1i,2i,3i)
+#endif
+       ];
    l = typecast (v, to);
    _for (0, length (v)-1, 1)
      {
@@ -528,7 +533,9 @@ private define test_typecast (to, eqsfun)
      }
 }
 test_typecast (List_Type, &is_vector_eq_to_list);
+#ifexists Complex_Type
 test_typecast (Complex_Type, &is_vector_eq_to_complex);
+#endif
 test_typecast (File_Type, &is_vector_eq_to_stdout);
 test_typecast (String_Type, &is_vector_eq_to_string);
 
