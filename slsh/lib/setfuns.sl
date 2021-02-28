@@ -93,8 +93,8 @@ define union ()
    variable has_list = 0;
    loop (_NARGS)
      {
-	has_list += (typeof (obj) == List_Type);
 	obj = pop_set_object ();
+	has_list += (typeof (obj) == List_Type);
 	list_insert (args, obj);
      }
 

@@ -4785,6 +4785,11 @@ static int carefully_push_object (SLang_Object_Type *obj)
    SLtype subtype;
 
    subtype = obj->o_data_type;
+   IF_UNLIKELY (subtype == 0)
+     {
+       SLang_set_error (SL_VariableUninitialized_Error);
+       return -1;
+     }
 
    GET_CLASS(cl,subtype);
 

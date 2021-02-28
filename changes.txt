@@ -79,6 +79,10 @@ Changes since 2.3.2
     arrays of char and short.
 41. src/slang.c,slarray.c: Added qualifier support to the array_map
     function.
+42. src/slang.c: Flagged the use of an uninitialized variable as soon
+    as it is accessed ("pushed") rather than waiting until it is used
+    ("popped").  Fixed a bug in slsh/lib/setfuns.sl:union that was
+    detected by this change.
 
 {{{ Previous Versions
 
