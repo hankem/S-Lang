@@ -141,37 +141,20 @@ static SLtype Alias_Map [MAX_ARITHMETIC_TYPES];
 /* Here are a bunch of functions to convert from one type to another.  To
  * facilitate the process, macros will be used.
  */
-
-#define DEFUN_1(f,from_type,to_type) \
-static void f (to_type *y, from_type *x, SLuindex_Type n) \
-{ \
-   SLuindex_Type i; \
-   for (i = 0; i < n; i++) y[i] = (to_type) x[i]; \
-}
-
-#define DEFUN_2(f,from_type,to_type,copy_fun) \
-static VOID_STAR f (VOID_STAR xp, SLuindex_Type n) \
-{ \
-   from_type *x; \
-   to_type *y; \
-   x = (from_type *) xp; \
-   if (NULL == (y = (to_type *) _SLcalloc (n, sizeof (to_type)))) return NULL; \
-   copy_fun (y, x, n); \
-   return (VOID_STAR) y; \
-}
 typedef VOID_STAR (*Convert_Fun_Type)(VOID_STAR, SLuindex_Type);
 
-#if SLANG_HAS_FLOAT
-#define TO_DOUBLE_FUN(name,type) \
-   static double name (VOID_STAR x) { return (double) *(type *) x; }
+typedef int (*Bin_Fun_Type) (int,
+			     SLtype, VOID_STAR, SLuindex_Type,
+			     SLtype, VOID_STAR, SLuindex_Type,
+			     VOID_STAR);
 
+#if SLANG_HAS_FLOAT
 typedef SLCONST struct
 {
    unsigned int sizeof_type;
    double (*to_double_fun)(VOID_STAR);
 }
 To_Double_Fun_Table_Type;
-
 #endif
 
 /* Each element of the matrix determines how the row maps onto the column.
@@ -189,6 +172,7 @@ typedef struct
 {
    SLFvoid_Star copy_function;
    Convert_Fun_Type convert_function;
+   Bin_Fun_Type bin_op_function;
 }
 Binary_Matrix_Type;
 
@@ -211,228 +195,6 @@ SLarith_get_to_double_fun (SLtype type, unsigned int *sizeof_type)
    return t->to_double_fun;
 }
 #endif				       /* SLANG_HAS_FLOAT */
-
-#define GENERIC_BINARY_FUNCTION int_int_bin_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE int
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define ABS_FUNCTION abs
-#define MOD_FUNCTION(a,b) ((a) % (b))
-#define TRAP_DIV_ZERO	1
-#define GENERIC_UNARY_FUNCTION int_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION int_arith_unary_op
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
-#if SLANG_OPTIMIZE_FOR_SPEED
-# define SCALAR_BINARY_FUNCTION int_int_scalar_bin_op
-#endif
-#define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_int_obj(SLANG_INT_TYPE,(x))
-#define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#define CMP_FUNCTION int_cmp_function
-#include "slarith.inc"
-
-#define GENERIC_BINARY_FUNCTION uint_uint_bin_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE unsigned int
-#define GENERIC_TYPE_IS_UNSIGNED
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) ((a) % (b))
-#define TRAP_DIV_ZERO	1
-#define GENERIC_UNARY_FUNCTION uint_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION uint_arith_unary_op
-#define ABS_FUNCTION(a) (a)
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
-#if SLANG_OPTIMIZE_FOR_SPEED
-# define SCALAR_BINARY_FUNCTION uint_uint_scalar_bin_op
-#endif
-#define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_int_obj(SLANG_UINT_TYPE,(int)(x))
-#define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#define CMP_FUNCTION uint_cmp_function
-#define TO_BINARY_FUNCTION uint_to_binary
-#include "slarith.inc"
-
-#if LONG_IS_NOT_INT
-#define GENERIC_BINARY_FUNCTION long_long_bin_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE long
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) ((a) % (b))
-#define TRAP_DIV_ZERO	1
-#define GENERIC_UNARY_FUNCTION long_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION long_arith_unary_op
-#define ABS_FUNCTION(a) (((a) >= 0) ? (a) : -(a))
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
-#if SLANG_OPTIMIZE_FOR_SPEED
-# define SCALAR_BINARY_FUNCTION long_long_scalar_bin_op
-#endif
-#define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_long_obj(SLANG_LONG_TYPE,(x))
-#define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#define CMP_FUNCTION long_cmp_function
-#include "slarith.inc"
-
-#define GENERIC_BINARY_FUNCTION ulong_ulong_bin_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE unsigned long
-#define GENERIC_TYPE_IS_UNSIGNED
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) ((a) % (b))
-#define TRAP_DIV_ZERO	1
-#define GENERIC_UNARY_FUNCTION ulong_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION ulong_arith_unary_op
-#define ABS_FUNCTION(a) (a)
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
-#if SLANG_OPTIMIZE_FOR_SPEED
-# define SCALAR_BINARY_FUNCTION ulong_ulong_scalar_bin_op
-#endif
-#define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_long_obj(SLANG_ULONG_TYPE,(long)(x))
-#define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#define CMP_FUNCTION ulong_cmp_function
-#define TO_BINARY_FUNCTION ulong_to_binary
-#include "slarith.inc"
-#else
-#define long_long_bin_op	int_int_bin_op
-#define ulong_ulong_bin_op	uint_uint_bin_op
-#define long_unary_op		int_unary_op
-#define ulong_unary_op		uint_unary_op
-#define long_cmp_function	int_cmp_function
-#define ulong_cmp_function	uint_cmp_function
-#define ulong_to_binary		uint_to_binary
-#endif				       /* LONG_IS_NOT_INT */
-
-#ifdef HAVE_LONG_LONG
-# if LLONG_IS_NOT_LONG
-#  define GENERIC_BINARY_FUNCTION llong_llong_bin_op
-#  define GENERIC_BIT_OPERATIONS
-#  define GENERIC_TYPE long long
-#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#  define POW_RESULT_TYPE double
-#  define MOD_FUNCTION(a,b) ((a) % (b))
-#  define TRAP_DIV_ZERO	1
-#  define GENERIC_UNARY_FUNCTION llong_unary_op
-#  define GENERIC_ARITH_UNARY_FUNCTION llong_arith_unary_op
-#  define ABS_FUNCTION(a) (((a) >= 0) ? (a) : -(a))
-#  define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
-#  if SLANG_OPTIMIZE_FOR_SPEED
-#   define SCALAR_BINARY_FUNCTION llong_llong_scalar_bin_op
-#  endif
-#  define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_llong_obj(SLANG_LLONG_TYPE,(x))
-#  define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#  define CMP_FUNCTION llong_cmp_function
-#  include "slarith.inc"
-
-#  define GENERIC_BINARY_FUNCTION ullong_ullong_bin_op
-#  define GENERIC_BIT_OPERATIONS
-#  define GENERIC_TYPE unsigned long long
-#  define GENERIC_TYPE_IS_UNSIGNED
-#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#  define POW_RESULT_TYPE double
-#  define MOD_FUNCTION(a,b) ((a) % (b))
-#  define TRAP_DIV_ZERO	1
-#  define GENERIC_UNARY_FUNCTION ullong_unary_op
-#  define GENERIC_ARITH_UNARY_FUNCTION ullong_arith_unary_op
-#  define ABS_FUNCTION(a) (a)
-#  define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
-#  if SLANG_OPTIMIZE_FOR_SPEED
-#   define SCALAR_BINARY_FUNCTION ullong_ullong_scalar_bin_op
-#  endif
-#  define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_llong_obj(SLANG_ULLONG_TYPE,(long long)(x))
-#  define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#  define CMP_FUNCTION ullong_cmp_function
-#  define TO_BINARY_FUNCTION ullong_to_binary
-#  include "slarith.inc"
-# else
-#  define llong_llong_bin_op long_long_bin_op
-#  define ullong_ullong_bin_op ulong_ulong_bin_op
-#  define llong_llong_scalar_bin_op long_long_scalar_bin_op
-#  define ullong_ullong_scalar_bin_op ulong_ulong_scalar_bin_op
-#  define ullong_to_binary ulong_to_binary
-# endif				       /* LLONG_IS_NOT_LONG */
-#endif				       /* HAVE_LONG_LONG */
-
-#if SLANG_HAS_FLOAT
-#define GENERIC_BINARY_FUNCTION float_float_bin_op
-#define GENERIC_TYPE float
-#define POW_FUNCTION(a,b) (float)pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE float
-#define MOD_FUNCTION(a,b) (float)fmod((a),(b))
-#define TRAP_DIV_ZERO	0
-#define GENERIC_UNARY_FUNCTION float_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION float_arith_unary_op
-#define ABS_FUNCTION(a) (float)fabs((double) a)
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
-#if SLANG_OPTIMIZE_FOR_SPEED
-# define SCALAR_BINARY_FUNCTION float_float_scalar_bin_op
-#endif
-#define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_float_obj(SLANG_FLOAT_TYPE,(x))
-#define PUSH_POW_OBJ_FUN(x) SLclass_push_float_obj(SLANG_FLOAT_TYPE, (x))
-#define CMP_FUNCTION float_cmp_function
-#include "slarith.inc"
-
-#define GENERIC_BINARY_FUNCTION double_double_bin_op
-#define GENERIC_TYPE double
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) fmod((a),(b))
-#define TRAP_DIV_ZERO	0
-#define GENERIC_UNARY_FUNCTION double_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION double_arith_unary_op
-#define ABS_FUNCTION(a) fabs(a)
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
-#if SLANG_OPTIMIZE_FOR_SPEED
-# define SCALAR_BINARY_FUNCTION double_double_scalar_bin_op
-#endif
-#define PUSH_SCALAR_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE,(x))
-#define PUSH_POW_OBJ_FUN(x) SLclass_push_double_obj(SLANG_DOUBLE_TYPE, (x))
-#define CMP_FUNCTION double_cmp_function
-#include "slarith.inc"
-#endif				       /* SLANG_HAS_FLOAT */
-
-#define GENERIC_UNARY_FUNCTION char_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION char_arith_unary_op
-#define GENERIC_BINARY_FUNCTION char_char_arith_bin_op
-#define JUST_BOOLEAN_BINARY_OPS
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE signed char
-#define ABS_FUNCTION abs
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
-#define CMP_FUNCTION char_cmp_function
-#include "slarith.inc"
-
-#define GENERIC_UNARY_FUNCTION uchar_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION uchar_arith_unary_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE unsigned char
-#define GENERIC_TYPE_IS_UNSIGNED
-#define ABS_FUNCTION(x) (x)
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
-#define CMP_FUNCTION uchar_cmp_function
-#define TO_BINARY_FUNCTION uchar_to_binary
-#include "slarith.inc"
-
-#if SHORT_IS_NOT_INT
-#define GENERIC_UNARY_FUNCTION short_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION short_arith_unary_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE short
-#define ABS_FUNCTION abs
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : (((x) < 0) ? -1 : 0))
-#define CMP_FUNCTION short_cmp_function
-#include "slarith.inc"
-
-#define GENERIC_UNARY_FUNCTION ushort_unary_op
-#define GENERIC_ARITH_UNARY_FUNCTION ushort_arith_unary_op
-#define GENERIC_BIT_OPERATIONS
-#define GENERIC_TYPE unsigned short
-#define GENERIC_TYPE_IS_UNSIGNED
-#define ABS_FUNCTION(x) (x)
-#define SIGN_FUNCTION(x) (((x) > 0) ? 1 : 0)
-#define CMP_FUNCTION ushort_cmp_function
-#define TO_BINARY_FUNCTION ushort_to_binary
-#include "slarith.inc"
-#endif				       /* SHORT_IS_NOT_INT */
 
 int _pSLarith_get_precedence (SLtype type)
 {
@@ -530,309 +292,89 @@ static int arith_bin_op_result (int op, SLtype a_type, SLtype b_type,
    return 1;
 }
 
-typedef int (*Bin_Fun_Type) (int,
-			     SLtype, VOID_STAR, SLuindex_Type,
-			     SLtype, VOID_STAR, SLuindex_Type,
-			     VOID_STAR);
-
-/* This array of functions must be indexed by precedence after arithmetic
- * promotions.
+/* This function is used to compute the result of a binary operation between
+ * two arithmetic types.  The resulting type depends upon the operation.  Boolean
+ * operations produce Char_Type.  The result of the other operations depends upon
+ * the C promotion rules.  If the two operands promote to a C float, the pow
+ * operator will produce a float.  Otherwise a double will result for the pow
+ * operation.  Other operations produce the type given by the promotion rules.
  */
-static Bin_Fun_Type Bin_Fun_Map [MAX_ARITHMETIC_TYPES] =
-{
-   NULL,			       /* char */
-     NULL,			       /* uchar */
-     NULL,			       /* short */
-     NULL,			       /* ushort */
-     int_int_bin_op,		       /* int */
-     uint_uint_bin_op,		       /* uint */
-     long_long_bin_op,		       /* long */
-     ulong_ulong_bin_op,	       /* ulong */
-#ifdef HAVE_LONG_LONG
-     llong_llong_bin_op,	       /* llong */
-     ullong_ullong_bin_op,	       /* ullong */
-#else
-     NULL, NULL,
-#endif
-     float_float_bin_op,		       /* float */
-     double_double_bin_op		       /* double */
-};
-
-/* char optimizations */
-#define GENERIC_TYPE int
-#define GENERICB_TYPE signed char
-#define GENERIC_BIT_OPERATIONS
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) ((a) % (b))
-#define TRAP_DIV_ZERO	1
-#define GENERIC_BINARY_FUNCTION int_char_arith_bin_op
-#include "slarith.inc"
-
-#if SLANG_HAS_FLOAT
-# define GENERIC_TYPE float
-# define GENERICB_TYPE signed char
-# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-# define POW_RESULT_TYPE double
-# define MOD_FUNCTION(a,b) (float)fmod((a),(b))
-# define TRAP_DIV_ZERO	0
-# define GENERIC_BINARY_FUNCTION float_char_arith_bin_op
-# include "slarith.inc"
-
-# define GENERIC_TYPE double
-# define GENERICB_TYPE signed char
-# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-# define POW_RESULT_TYPE double
-# define MOD_FUNCTION(a,b) fmod((a),(b))
-# define TRAP_DIV_ZERO	0
-# define GENERIC_BINARY_FUNCTION double_char_arith_bin_op
-# include "slarith.inc"
-#endif
-
-#define GENERIC_TYPE int
-#define GENERICB_TYPE unsigned char
-#define GENERIC_BIT_OPERATIONS
-#define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#define POW_RESULT_TYPE double
-#define MOD_FUNCTION(a,b) ((a) % (b))
-#define TRAP_DIV_ZERO	1
-#define GENERIC_BINARY_FUNCTION int_uchar_arith_bin_op
-#include "slarith.inc"
-
-#if SLANG_HAS_FLOAT
-# define GENERIC_TYPE float
-# define GENERICB_TYPE unsigned char
-# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-# define POW_RESULT_TYPE double
-# define MOD_FUNCTION(a,b) (float)fmod((a),(b))
-# define TRAP_DIV_ZERO	0
-# define GENERIC_BINARY_FUNCTION float_uchar_arith_bin_op
-# include "slarith.inc"
-
-# define GENERIC_TYPE double
-# define GENERICB_TYPE unsigned char
-# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-# define POW_RESULT_TYPE double
-# define MOD_FUNCTION(a,b) (float)fmod((a),(b))
-# define TRAP_DIV_ZERO	0
-# define GENERIC_BINARY_FUNCTION double_uchar_arith_bin_op
-# include "slarith.inc"
-#endif				       /* SLANG_HAS_FLOAT */
-
-#if SHORT_IS_NOT_INT
-# define GENERIC_TYPE int
-# define GENERICB_TYPE signed short
-# define GENERIC_BIT_OPERATIONS
-# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-# define POW_RESULT_TYPE double
-# define MOD_FUNCTION(a,b) ((a) % (b))
-# define TRAP_DIV_ZERO	1
-# define GENERIC_BINARY_FUNCTION int_short_arith_bin_op
-# include "slarith.inc"
-
-# if SLANG_HAS_FLOAT
-#  define GENERIC_TYPE float
-#  define GENERICB_TYPE signed short
-#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#  define POW_RESULT_TYPE double
-#  define MOD_FUNCTION(a,b) (float)fmod((a),(b))
-#  define TRAP_DIV_ZERO	0
-#  define GENERIC_BINARY_FUNCTION float_short_arith_bin_op
-#  include "slarith.inc"
-
-#  define GENERIC_TYPE double
-#  define GENERICB_TYPE signed short
-#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#  define POW_RESULT_TYPE double
-#  define MOD_FUNCTION(a,b) fmod((a),(b))
-#  define TRAP_DIV_ZERO	0
-#  define GENERIC_BINARY_FUNCTION double_short_arith_bin_op
-#  include "slarith.inc"
-# endif				       /* SLANG_HAS_FLOAT */
-
-# define GENERIC_TYPE int
-# define GENERICB_TYPE unsigned short
-# define GENERIC_BIT_OPERATIONS
-# define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-# define POW_RESULT_TYPE double
-# define MOD_FUNCTION(a,b) ((a) % (b))
-# define TRAP_DIV_ZERO	1
-# define GENERIC_BINARY_FUNCTION int_ushort_arith_bin_op
-# include "slarith.inc"
-
-# if SLANG_HAS_FLOAT
-#  define GENERIC_TYPE float
-#  define GENERICB_TYPE unsigned short
-#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#  define POW_RESULT_TYPE double
-#  define MOD_FUNCTION(a,b) (float)fmod((a),(b))
-#  define TRAP_DIV_ZERO	0
-#  define GENERIC_BINARY_FUNCTION float_ushort_arith_bin_op
-#  include "slarith.inc"
-
-#  define GENERIC_TYPE double
-#  define GENERICB_TYPE unsigned short
-#  define POW_FUNCTION(a,b) pow((double)(a),(double)(b))
-#  define POW_RESULT_TYPE double
-#  define MOD_FUNCTION(a,b) (float)fmod((a),(b))
-#  define TRAP_DIV_ZERO	0
-#  define GENERIC_BINARY_FUNCTION double_ushort_arith_bin_op
-#  include "slarith.inc"
-# endif				       /* SLANG_HAS_FLOAT */
-#endif				       /* SHORT_IS_NOT_INT */
-
 static int arith_bin_op (int op,
 			 SLtype a_type, VOID_STAR ap, SLuindex_Type na,
 			 SLtype b_type, VOID_STAR bp, SLuindex_Type nb,
 			 VOID_STAR cp)
 {
    Bin_Fun_Type binfun;
-   int c_indx;
+   VOID_STAR ap_c, bp_c;
+   int a_indx, b_indx, c_indx, ret;
    SLtype c_type;
 
-   switch (b_type)
-     {
-      case SLANG_CHAR_TYPE:
-	switch (a_type)
-	  {
-	   case SLANG_CHAR_TYPE:
-	   case SLANG_UCHAR_TYPE:
-	     switch (op)
-	       {
-		/* char_char_arith_bin_op only supports boolean operations.
-		 * They are insensitive to the sign involved
-		 */
-		case SLANG_EQ:
-		case SLANG_NE:
-		case SLANG_AND:
-		case SLANG_OR:
-		  return char_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	       }
-	     break;
-	   case SLANG_INT_TYPE:
-	     return int_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-#if SLANG_HAS_FLOAT
-	   case SLANG_FLOAT_TYPE:
-	     return float_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	   case SLANG_DOUBLE_TYPE:
-	     return double_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-#endif
-	  }
-	break;
+   a_indx = TYPE_TO_TABLE_INDEX(a_type);
+   b_indx = TYPE_TO_TABLE_INDEX(b_type);
 
-      case SLANG_UCHAR_TYPE:
-	switch (a_type)
-	  {
-	   case SLANG_CHAR_TYPE:
-	   case SLANG_UCHAR_TYPE:
-	     switch (op)
-	       {
-		/* char_char_arith_bin_op only supports boolean operations.
-		 * They are insensitive to the sign involved
-		 */
-		case SLANG_EQ:
-		case SLANG_NE:
-		case SLANG_AND:
-		case SLANG_OR:
-		  return char_char_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	       }
-	     break;
-	   case SLANG_INT_TYPE:
-	     return int_uchar_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-#if SLANG_HAS_FLOAT
-	   case SLANG_FLOAT_TYPE:
-	     return float_uchar_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	   case SLANG_DOUBLE_TYPE:
-	     return double_uchar_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-#endif
-	  }
-	break;
-
-#if SHORT_IS_NOT_INT
-      case SLANG_SHORT_TYPE:
-	switch (a_type)
-	  {
-	   case SLANG_INT_TYPE:
-	     return int_short_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-# if SLANG_HAS_FLOAT
-	   case SLANG_FLOAT_TYPE:
-	     return float_short_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	   case SLANG_DOUBLE_TYPE:
-	     return double_short_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-# endif
-	  }
-	break;
-      case SLANG_USHORT_TYPE:
-	switch (a_type)
-	  {
-	   case SLANG_INT_TYPE:
-	     return int_ushort_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-# if SLANG_HAS_FLOAT
-	   case SLANG_FLOAT_TYPE:
-	     return float_ushort_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	   case SLANG_DOUBLE_TYPE:
-	     return double_ushort_arith_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-# endif
-	  }
-	break;
-#endif			       /* SHORT_IS_NOT_INT */
-
-      case SLANG_INT_TYPE:
-	if (a_type == b_type) return int_int_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	break;
-      case SLANG_UINT_TYPE:
-	if (a_type == b_type) return uint_uint_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	break;
-
-#if LONG_IS_NOT_INT
-      case SLANG_LONG_TYPE:
-	if (a_type == b_type) return long_long_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	break;
-      case SLANG_ULONG_TYPE:
-	if (a_type == b_type) return ulong_ulong_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	break;
-#endif
-
-#if SLANG_HAS_FLOAT
-      case SLANG_FLOAT_TYPE:
-	if (a_type == b_type) return float_float_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	break;
-      case SLANG_DOUBLE_TYPE:
-	if (a_type == b_type) return double_double_bin_op (op, a_type, ap, na, b_type, bp, nb, cp);
-	break;
-#endif
-     }
+   binfun = Binary_Matrix[a_indx][b_indx].bin_op_function;
+   if (binfun != NULL)
+     return (*binfun) (op, a_type, ap, na, b_type, bp, nb, cp);
 
    c_type = promote_to_common_type (a_type, b_type);
    c_indx = TYPE_TO_TABLE_INDEX(c_type);
-   binfun = Bin_Fun_Map[c_indx];
 
-   if ((c_type != a_type) || (c_type != b_type))
+   /* A convert_function will return its argument when converting
+    * between signed and unsigned versions of an integer.
+    */
+   ap_c = ap;
+   bp_c = bp;
+
+   /* Try to convert the one with fewer elements first */
+   if ((na <= nb) && (a_type != c_type))
      {
-	int ret;
-	int a_indx = TYPE_TO_TABLE_INDEX(a_type);
-	int b_indx = TYPE_TO_TABLE_INDEX(b_type);
-	Convert_Fun_Type af = Binary_Matrix[a_indx][c_indx].convert_function;
-	Convert_Fun_Type bf = Binary_Matrix[b_indx][c_indx].convert_function;
-
-	if ((af != NULL)
-	    && (NULL == (ap = (VOID_STAR) (*af) (ap, na))))
+	Convert_Fun_Type f = Binary_Matrix[a_indx][c_indx].convert_function;
+	if ((f == NULL)
+	    || (NULL == (ap_c = (VOID_STAR) (*f) (ap, na))))
 	  return -1;
-
-	if ((bf != NULL)
-	    && (NULL == (bp = (VOID_STAR) (*bf) (bp, nb))))
-	  {
-	     if (af != NULL) SLfree ((char *) ap);
-	     return -1;
-	  }
-
-	ret = (*binfun) (op, a_type, ap, na, b_type, bp, nb, cp);
-	if (af != NULL) SLfree ((char *) ap);
-	if (bf != NULL) SLfree ((char *) bp);
-	return ret;
+	a_type = c_type; a_indx = c_indx;
+	binfun = Binary_Matrix[a_indx][b_indx].bin_op_function;
      }
 
-   return (*binfun) (op, a_type, ap, na, b_type, bp, nb, cp);
+   if ((binfun == NULL) && (b_type != c_type))
+     {
+	Convert_Fun_Type f = Binary_Matrix[b_indx][c_indx].convert_function;
+	if ((f == NULL)
+	    || (NULL == (bp_c = (VOID_STAR) (*f) (bp, nb))))
+	  {
+	     if (ap_c != ap) SLfree ((char *)ap_c);
+	     return -1;
+	  }
+	b_type = c_type; b_indx = c_indx;
+	binfun = Binary_Matrix[a_indx][b_indx].bin_op_function;
+     }
+
+   if ((binfun == NULL) && (a_type != c_type))
+     {
+	Convert_Fun_Type f = Binary_Matrix[a_indx][c_indx].convert_function;
+	if ((f == NULL)
+	    || (NULL == (ap_c = (VOID_STAR) (*f) (ap, na))))
+	  {
+	     if (bp_c != bp) SLfree ((char *)bp_c);
+	     return -1;
+	  }
+	a_type = c_type; a_indx = c_indx;
+	binfun = Binary_Matrix[a_indx][b_indx].bin_op_function;
+     }
+
+   if (binfun != NULL)
+     ret = (*binfun) (op, a_type, ap_c, na, b_type, bp_c, nb, cp);
+   else
+     {
+	SLang_verror (SL_Internal_Error, "No binary function between arithmetic types '%u' and '%u'",
+		      a_type, b_type);
+	ret = -1;
+     }
+
+   if (bp_c != bp) SLfree ((char *) bp_c);
+   if (ap_c != ap) SLfree ((char *) ap_c);
+
+   return ret;
 }
 
 static int arith_unary_op_result (int op, SLtype a, SLtype *b)
@@ -1894,6 +1436,7 @@ static _pSLang_LLConstant_Type LLConst_Table[] =
 };
 #endif
 
+#if SLANG_HAS_FLOAT
 static SLang_FConstant_Type FConst_Table [] =
 {
 #if defined(FLT_MIN) && defined(FLT_MAX)
@@ -1917,6 +1460,7 @@ static SLang_DConstant_Type DConst_Table [] =
 #endif
    SLANG_END_DCONST_TABLE
 };
+#endif				       /* SLANG_HAS_FLOAT */
 
 static void compute_inf_an_nan (void)
 {
@@ -1951,6 +1495,46 @@ static void compute_inf_an_nan (void)
    _pSLang_Inf = inf_val;
 #endif
 }
+
+static int get_table_index (SLtype a_type)
+{
+   int a_indx = TYPE_TO_TABLE_INDEX(a_type);
+   if ((a_indx < 0) || (a_indx >= MAX_ARITHMETIC_TYPES))
+     {
+	SLang_verror (SL_Internal_Error, "Type %u does not appear to be arithmetic", a_type);
+	return -1;
+     }
+   return a_indx;
+}
+
+/* Make sure that binary operations between the types are supported */
+static int check_binary_operation (SLtype a_type, SLtype b_type)
+{
+   int a_indx, b_indx, c_indx;
+   SLtype c_type;
+
+   if (-1 == (a_indx = get_table_index (a_type)))
+     return -1;
+   if (-1 == (b_indx = get_table_index (b_type)))
+     return -1;
+
+   if (NULL != Binary_Matrix[a_indx][b_indx].bin_op_function)
+     return 0;
+
+   /* See if promotion to a common type can be used */
+   c_type = promote_to_common_type (a_type, b_type);
+   if (-1 == (c_indx = get_table_index (c_type)))
+     return -1;
+
+   if ((Binary_Matrix[a_indx][c_indx].convert_function != NULL)
+       && (Binary_Matrix[b_indx][c_indx].convert_function != NULL))
+     return 0;
+
+   SLang_verror (SL_Internal_Error, "Unable to perform binary operation between arithmetic types %u and %u",
+		 a_type, b_type);
+   return -1;
+}
+
 
 int _pSLarith_register_types (void)
 {
@@ -2058,21 +1642,23 @@ int _pSLarith_register_types (void)
 
 	for (j = 0; j < MAX_ARITHMETIC_TYPES; j++)
 	  {
-	     int implicit_ok;
-
 	     b_type = _pSLarith_Arith_Types[j];
 	     if (b_type == 0)
 	       continue;
-	     /* Allow implicit typecast, except from int to float */
-	     implicit_ok = ((b_type >= SLANG_FLOAT_TYPE)
-			    || (a_type < SLANG_FLOAT_TYPE));
 
+	     if (-1 == check_binary_operation (a_type, b_type))
+	       return -1;
 	     if (-1 == SLclass_add_binary_op (a_type, b_type, arith_bin_op, arith_bin_op_result))
 	       return -1;
 
 	     if (a_type != b_type)
-	       if (-1 == SLclass_add_typecast (a_type, b_type, _pSLarith_typecast, implicit_ok))
-		 return -1;
+	       {
+		  /* Allow implicit typecast, except from int to float */
+		  int implicit_ok = ((b_type >= SLANG_FLOAT_TYPE)
+				     || (a_type < SLANG_FLOAT_TYPE));
+		  if (-1 == SLclass_add_typecast (a_type, b_type, _pSLarith_typecast, implicit_ok))
+		    return -1;
+	       }
 	  }
      }
 
@@ -2173,39 +1759,29 @@ int _pSLarith_bin_op (SLang_Object_Type *oa, SLang_Object_Type *ob, int op)
    switch (a_type)
      {
       case SLANG_CHAR_TYPE:
-	return int_int_scalar_bin_op (oa->v.char_val, ob->v.char_val, op);
+	return char_char_scalar_bin_op (oa->v.char_val, ob->v.char_val, op);
 
       case SLANG_UCHAR_TYPE:
-	return int_int_scalar_bin_op (oa->v.uchar_val, ob->v.uchar_val, op);
+	return uchar_uchar_scalar_bin_op (oa->v.uchar_val, ob->v.uchar_val, op);
 
       case SLANG_SHORT_TYPE:
-	return int_int_scalar_bin_op (oa->v.short_val, ob->v.short_val, op);
+	return short_short_scalar_bin_op (oa->v.short_val, ob->v.short_val, op);
 
       case SLANG_USHORT_TYPE:
-# if SHORT_IS_INT
-	return uint_uint_scalar_bin_op (oa->v.ushort_val, ob->v.ushort_val, op);
-# else
-	return int_int_scalar_bin_op ((int)oa->v.ushort_val, (int)ob->v.ushort_val, op);
-# endif
+	return ushort_ushort_scalar_bin_op (oa->v.ushort_val, ob->v.ushort_val, op);
 
-#if LONG_IS_INT
-      case SLANG_LONG_TYPE:
-#endif
       case SLANG_INT_TYPE:
 	return int_int_scalar_bin_op (oa->v.int_val, ob->v.int_val, op);
 
-#if LONG_IS_INT
-      case SLANG_ULONG_TYPE:
-#endif
       case SLANG_UINT_TYPE:
 	return uint_uint_scalar_bin_op (oa->v.uint_val, ob->v.uint_val, op);
 
-#if LONG_IS_NOT_INT
       case SLANG_LONG_TYPE:
 	return long_long_scalar_bin_op (oa->v.long_val, ob->v.long_val, op);
+
       case SLANG_ULONG_TYPE:
 	return ulong_ulong_scalar_bin_op (oa->v.ulong_val, ob->v.ulong_val, op);
-#endif
+
 #ifdef HAVE_LONG_LONG
       case SLANG_LLONG_TYPE:
 	return llong_llong_scalar_bin_op (oa->v.llong_val, ob->v.llong_val, op);

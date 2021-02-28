@@ -1499,7 +1499,10 @@ static int int_int_binary_result (int op, SLang_Object_Type *obja, SLang_Object_
 	     SLang_set_error (SL_DIVIDE_ERROR);
 	     return -1;
 	  }
-	objc->v.int_val = a/b;  objc->o_data_type = SLANG_INT_TYPE;
+	if (b == -1) objc->v.int_val = -a;
+	else
+	  objc->v.int_val = a/b;
+	objc->o_data_type = SLANG_INT_TYPE;
 	return 0;
       case SLANG_MOD:
 	if (b == 0)
@@ -1507,7 +1510,10 @@ static int int_int_binary_result (int op, SLang_Object_Type *obja, SLang_Object_
 	     SLang_set_error (SL_DIVIDE_ERROR);
 	     return -1;
 	  }
-	objc->v.int_val = a % b;  objc->o_data_type = SLANG_INT_TYPE;
+	if (b == -1) objc->v.int_val = 0;
+	else
+	  objc->v.int_val = a % b;
+	objc->o_data_type = SLANG_INT_TYPE;
 	return 0;
 
       case SLANG_BAND:
@@ -1570,6 +1576,7 @@ static int int_int_binary (int op, SLang_Object_Type *obja, SLang_Object_Type *o
 	     SLang_set_error (SL_DIVIDE_ERROR);
 	     return -1;
 	  }
+	else if (b == -1) return push_int_object (SLANG_INT_TYPE, -a);
 	return push_int_object (SLANG_INT_TYPE, a/b);
       case SLANG_MOD:
 	if (b == 0)
@@ -1577,6 +1584,7 @@ static int int_int_binary (int op, SLang_Object_Type *obja, SLang_Object_Type *o
 	     SLang_set_error (SL_DIVIDE_ERROR);
 	     return -1;
 	  }
+	if (b == -1) return push_int_object (SLANG_INT_TYPE, 0);
 	return push_int_object (SLANG_INT_TYPE, a%b);
 
       case SLANG_BAND:
@@ -1828,6 +1836,7 @@ static int do_binary_ab_inc_ref (int op, SLang_Object_Type *obja, SLang_Object_T
 		       SLang_set_error (SL_DIVIDE_ERROR);
 		       return -1;
 		    }
+		  if (b == -1) return push_int_object (SLANG_INT_TYPE, -a);
 		  return push_int_object (SLANG_INT_TYPE, a/b);
 		case SLANG_MOD:
 		  if (b == 0)
@@ -1835,6 +1844,7 @@ static int do_binary_ab_inc_ref (int op, SLang_Object_Type *obja, SLang_Object_T
 		       SLang_set_error (SL_DIVIDE_ERROR);
 		       return -1;
 		    }
+		  if (b == -1) return push_int_object (SLANG_INT_TYPE, 0);
 		  return push_int_object (SLANG_INT_TYPE, a%b);
 
 		case SLANG_BAND:
@@ -4787,8 +4797,8 @@ static int carefully_push_object (SLang_Object_Type *obj)
    subtype = obj->o_data_type;
    IF_UNLIKELY (subtype == 0)
      {
-       SLang_set_error (SL_VariableUninitialized_Error);
-       return -1;
+	SLang_set_error (SL_VariableUninitialized_Error);
+	return -1;
      }
 
    GET_CLASS(cl,subtype);
@@ -4807,11 +4817,11 @@ static int carefully_push_object (SLang_Object_Type *obj)
 
 int _pSLslang_copy_obj (SLang_Object_Type *obja, SLang_Object_Type *objb)
 {
+#if SLANG_OPTIMIZE_FOR_SPEED
    SLtype type;
 
    type = obja->o_data_type;
 
-#if SLANG_OPTIMIZE_FOR_SPEED
    if (SLANG_CLASS_TYPE_SCALAR == GET_CLASS_TYPE(type))
      {
 	*objb = *obja;
