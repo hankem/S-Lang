@@ -89,6 +89,8 @@ Changes since 2.3.2
 44. */test/*.sl: Surrounded regression test code that makes use of
     complex numbers with `#ifexists Complex_Type' so that they run
     when the interpreter is compiled without complex variable support.
+45. src/slarray.c: The _pSLarray1d_push_elem needed to be exposed when
+    compiling the interpreter without optimization.
 
 {{{ Previous Versions
 

@@ -591,7 +591,7 @@ static int coerse_array_to_linear (SLang_Array_Type *at)
      }
 
    imax = at->num_elements;
-   
+
    vdata = (VOID_STAR) _SLcalloc (imax, at->sizeof_type);
    if (vdata == NULL)
      return -1;
@@ -1091,7 +1091,7 @@ aget_from_index_array (SLang_Array_Type *at, SLang_Array_Type *ind_at)
 					      ind_at, is_range, (int *)new_data))
 	  goto return_error;
 	break;
-#endif
+#endif				       /* SLANG_OPTIMIZE_FOR_SPEED */
       default:
 	if (-1 == aget_generic_from_index_array (at, ind_at, is_range, new_data))
 	  goto return_error;
@@ -1429,7 +1429,6 @@ static int pop_array_as_bstring (SLang_BString_Type **bs)
    return ret;
 }
 
-#if SLANG_OPTIMIZE_FOR_SPEED
 /* This routine assumes that the array is 1d */
 int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx)
 {
@@ -1472,7 +1471,6 @@ int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx)
    (*cl->cl_adestroy) (at->data_type, (VOID_STAR)new_data);
    return ret;
 }
-#endif
 
 static int aget_from_array (unsigned int num_indices)
 {

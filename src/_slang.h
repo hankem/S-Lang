@@ -906,8 +906,8 @@ extern void _pSLang_set_arith_type (SLtype, unsigned char);
 extern SLclass_Type _pSLang_get_class_type (SLtype);
 extern void _pSLang_set_class_info (SLtype, SLang_Class_Type *);
 extern int _pSLarray_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
-extern int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx);
 #endif
+extern int _pSLarray1d_push_elem (SLang_Array_Type *at, SLindex_Type idx);
 extern int _pSLarith_bin_op (SLang_Object_Type *, SLang_Object_Type *, int);
 
 /* Does not perform any range checking.  It is up to the caller.
