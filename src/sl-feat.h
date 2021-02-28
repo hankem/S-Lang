@@ -10,10 +10,9 @@
 #define SLANG_HAS_ASSOC_ARRAYS		1
 
 #define SLANG_HAS_COMPLEX		1
-#define SLANG_HAS_FLOAT			1
 
 /* This is the old space-speed trade off.  To reduce memory usage and code
- * size, set this to zero.
+ * size, set this to zero at the risk of resulting in slower running code.
  */
 #define SLANG_OPTIMIZE_FOR_SPEED	2
 
@@ -89,3 +88,7 @@
 #else
 # define SLANG_HAS_MULTILINE_RLINE	0
 #endif
+
+/* The interpreter is crippled without floating point.  Make it manditory. */
+#undef SLANG_HAS_FLOAT
+#define SLANG_HAS_FLOAT 1

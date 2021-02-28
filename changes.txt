@@ -83,6 +83,9 @@ Changes since 2.3.2
     as it is accessed ("pushed") rather than waiting until it is used
     ("popped").  Fixed a bug in slsh/lib/setfuns.sl:union that was
     detected by this change.
+43. src/sl-feat.h: Floating point support by the interpreter is now
+    required.  The library has not compiled without it for a long
+    time.  As such, this option is no longer available.
 
 {{{ Previous Versions
 
