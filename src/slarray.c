@@ -739,10 +739,10 @@ pop_indices (unsigned num_dims, SLindex_Type *dims, SLuindex_Type num_elements,
    return -1;
 }
 
-static void do_index_error (SLuindex_Type i, SLindex_Type indx, SLindex_Type dim)
+static void do_index_error (SLuindex_Type i, SLindex_Type n)
 {
-   _pSLang_verror (SL_Index_Error, "Array index %lu (value=%ld) out of allowed range 0<=index<%ld",
-		 (unsigned long)i, (long)indx, (long)dim);
+   _pSLang_verror (SL_Index_Error, "Array index %lu out of allowed range 0<=index<%ld",
+		 (unsigned long)i, (long)n);
 }
 
 int _pSLarray_pop_index (unsigned int num_elements, SLang_Array_Type **ind_atp, SLindex_Type *ind)
@@ -898,6 +898,39 @@ aget_transfer_n_elems (SLang_Array_Type *at, SLuindex_Type num, SLindex_Type *st
    return 0;
 }
 
+#define CHECK_INDEX(_i,_n,_then) \
+   if ((_i) < 0) \
+   { \
+      (_i) += (_n); \
+      if ((_i) < 0) (_i) = (_n); \
+   } \
+   if ((_i) >= (_n)) \
+   { \
+      do_index_error((_i),(_n)); \
+      _then; \
+   }(void)0
+
+/* Check that 0 <= | idx, idx + 1*delta, ..., idx + jmax-1 | <= num_elements */
+static int check_range_indices (SLindex_Type idx, SLindex_Type delta, SLindex_Type jmax,
+				SLindex_Type num_elements, int *isposp)
+{
+   SLindex_Type idx_0, idx_1;
+
+   idx_0 = idx;
+   idx_1 = idx + delta*(jmax-1);
+
+   if ((idx_0 >= num_elements) || (idx_1 >= num_elements))
+     {
+	SLang_set_error (SL_Index_Error);
+	return -1;
+     }
+
+   if (isposp != NULL) *isposp = (idx_0 >= 0) && (idx_1 >= 0);
+   CHECK_INDEX(idx_0, num_elements, return -1);
+   CHECK_INDEX(idx_1, num_elements, return -1);
+   return 0;
+}
+
 #if SLANG_OPTIMIZE_FOR_SPEED
 # if SLANG_HAS_FLOAT
 #  define GENERIC_TYPE double
@@ -949,22 +982,15 @@ static int aget_generic_from_index_array (SLang_Array_Type *at,
 	SLindex_Type idx = r->first_index, delta = r->delta;
 	SLuindex_Type j, jmax = at_ind->num_elements;
 
+	if (-1 == check_range_indices (idx, delta, jmax, num_elements, NULL))
+	  return -1;
+
 	for (j = 0; j < jmax; j++)
 	  {
 	     size_t offset;
 	     SLindex_Type i = idx;
 
-	     if (i < 0)
-	       {
-		  i += num_elements;
-		  if (i < 0)
-		    i = num_elements;
-	       }
-	     if (i >= num_elements)
-	       {
-		  SLang_set_error (SL_Index_Error);
-		  return -1;
-	       }
+	     if (i < 0) i += num_elements;
 	     offset = sizeof_type * (SLuindex_Type)i;
 	     if (-1 == transfer_n_elements (at, (VOID_STAR) dest_data,
 					    (VOID_STAR) (src_data + offset),
@@ -974,6 +1000,7 @@ static int aget_generic_from_index_array (SLang_Array_Type *at,
 	     dest_data += sizeof_type;
 	     idx += delta;
 	  }
+
 	return 0;
      }
 
@@ -985,18 +1012,7 @@ static int aget_generic_from_index_array (SLang_Array_Type *at,
 	size_t offset;
 	SLindex_Type i = *indices;
 
-	if (i < 0)
-	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     return -1;
-	  }
-
+	CHECK_INDEX(i, num_elements, return -1);
 	offset = sizeof_type * (SLuindex_Type)i;
 	if (-1 == transfer_n_elements (at, (VOID_STAR) dest_data,
 				       (VOID_STAR) (src_data + offset),
@@ -1269,15 +1285,7 @@ aget_from_indices (SLang_Array_Type *at,
 	     else
 	       indx = index_data [i][j];
 
-	     if (indx < 0)
-	       indx += at_dims[i];
-
-	     if ((indx < 0) || (indx >= at_dims[i]))
-	       {
-		  do_index_error (i, indx, at_dims[i]);
-		  free_array (new_at);
-		  return -1;
-	       }
+	     CHECK_INDEX (indx, at_dims[i], free_array(new_at); return -1);
 	     indices[i] = indx;
 	  }
 
@@ -1888,14 +1896,7 @@ aput_from_index_objs (SLang_Array_Type *at,
 	     else
 	       indx = index_data [i][j];
 
-	     if (indx < 0)
-	       indx += at_dims[i];
-
-	     if ((indx < 0) || (indx >= at_dims[i]))
-	       {
-		  do_index_error (i, indx, at_dims[i]);
-		  goto return_error;
-	       }
+	     CHECK_INDEX(indx, at_dims[i], goto return_error);
 	     indices[i] = indx;
 	  }
 
@@ -1977,22 +1978,15 @@ aput_generic_from_index_array (char *src_data,
 	SLindex_Type idx = r->first_index, delta = r->delta;
 	SLuindex_Type j, jmax = ind_at->num_elements;
 
+	if (-1 == check_range_indices (idx, delta, jmax, num_elements, NULL))
+	  return -1;
+
 	for (j = 0; j < jmax; j++)
 	  {
 	     size_t offset;
 	     SLindex_Type i = idx;
 
-	     if (i < 0)
-	       {
-		  i += num_elements;
-		  if (i < 0)
-		    i = num_elements;
-	       }
-	     if (i >= num_elements)
-	       {
-		  SLang_set_error (SL_Index_Error);
-		  return -1;
-	       }
+	     if (i < 0) i += num_elements;
 	     offset = sizeof_type * (SLuindex_Type)i;
 	     if (-1 == transfer_n_elements (dest_at, (VOID_STAR) (dest_data + offset),
 					    (VOID_STAR) src_data, sizeof_type,
@@ -2014,18 +2008,7 @@ aput_generic_from_index_array (char *src_data,
 	size_t offset;
 	SLindex_Type i = *indices;
 
-	if (i < 0)
-	  {
-	     i += num_elements;
-	     if (i < 0)
-	       i = num_elements;
-	  }
-	if (i >= num_elements)
-	  {
-	     SLang_set_error (SL_Index_Error);
-	     return -1;
-	  }
-
+	CHECK_INDEX(i,num_elements,return -1);
 	offset = sizeof_type * (SLuindex_Type)i;
 
 	if (-1 == transfer_n_elements (dest_at, (VOID_STAR) (dest_data + offset),

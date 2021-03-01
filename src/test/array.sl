@@ -1935,6 +1935,41 @@ private define test_init_char_array (s)
 test_init_char_array ("HelloWorld");
 test_init_char_array ("\xAB\xCD\xEF");
 
+private define check_indices (a, idx, isbad)
+{
+   variable b;
+   try
+     {
+	b = a[idx];
+	if (isbad) failed ("get: Bad index not detected");
+     }
+   catch IndexError:
+     {
+	ifnot (isbad) failed ("get: Bad index exception erroneously caught");
+     }
+
+   b = @a;
+   try
+     {
+	b[idx] = a[idx];
+	if (isbad) failed ("put: Bad index not detected");
+     }
+   catch IndexError:
+     {
+	ifnot (isbad) failed ("put: Bad index exception erroneously caught");
+     }
+}
+check_indices ([1,2,3], [0:2], 0);
+check_indices ([1,2,3], [-1:], 0);
+check_indices ([1,2,3], [-1::-1], 0);
+check_indices ([1,2,3], [0:3], 1);
+check_indices ([1,2,3], [0,3], 1);
+check_indices ([1,2,3], [-4,-2,-1], 1);
+check_indices ([1,2,3], [2:-3], 0);
+check_indices (["foo", "bar", "baz"], [0:3], 1);
+check_indices (["foo", "bar", "baz"], [0,3], 1);
+check_indices (["foo", "bar", "baz"], [-4,-2,-1], 1);
+check_indices (["foo", "bar", "baz"], [2:-3], 0);
 
 print ("Ok\n");
 exit (0);

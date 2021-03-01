@@ -94,6 +94,8 @@ Changes since 2.3.2
 46. src/slarith.c,...: Rewrote the various macros used by this file to
     simplify the code, permit better optimization, and easier
     maintenance.  Some of the loops were also unrolled.
+47. src/slarray.c: Made the array bounds index checking code more
+    uniform for better readability.
 
 {{{ Previous Versions
 
