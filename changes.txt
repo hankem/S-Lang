@@ -96,6 +96,8 @@ Changes since 2.3.2
     maintenance.  Some of the loops were also unrolled.
 47. src/slarray.c: Made the array bounds index checking code more
     uniform for better readability.
+48. src/slarray.c: The previous change introduced a bug that caused
+    array indexing with no (empty) indices to fail.
 
 {{{ Previous Versions
 

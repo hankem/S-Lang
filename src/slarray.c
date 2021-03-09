@@ -910,11 +910,19 @@ aget_transfer_n_elems (SLang_Array_Type *at, SLuindex_Type num, SLindex_Type *st
       _then; \
    }(void)0
 
-/* Check that 0 <= | idx, idx + 1*delta, ..., idx + jmax-1 | <= num_elements */
+/* Check that 0 <= | idx, idx + 1*delta, ..., idx + jmax-1 | <= num_elements
+ * If jmax == 0, then there are no indices to check.
+ */
 static int check_range_indices (SLindex_Type idx, SLindex_Type delta, SLindex_Type jmax,
 				SLindex_Type num_elements, int *isposp)
 {
    SLindex_Type idx_0, idx_1;
+
+   if (jmax == 0)
+     {
+	if (isposp != NULL) *isposp = 1;
+	return 0;
+     }
 
    idx_0 = idx;
    idx_1 = idx + delta*(jmax-1);
