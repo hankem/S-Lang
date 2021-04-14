@@ -104,6 +104,10 @@ Changes since 2.3.2
     communicate messages from the child process back to the parent is
     requested by the caller, then dup an unused one.  To facilitate
     testing, two additional hooks were added: exit_hook and exec_hook.
+51. slsh/lib/cmdopt.sl: If a command line option is associated with a
+    callback function, and the value of the command line argument is
+    optional, pass the default value to the callback if not given on
+    the command line.
 
 {{{ Previous Versions
 

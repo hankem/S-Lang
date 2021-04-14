@@ -170,6 +170,8 @@ private define process_option (opts, opt, name, value)
 	  {
 	     if (value != NULL)
 	       value = (@opt.convert_method) (opts, opt, name, value);
+	     else
+	       value = opt.default_value;
 
 	     (@opt.valuep)(value, __push_args(opt.callback_args));
 	     return;
@@ -231,25 +233,6 @@ private define find_short_opt (opts, name)
 private define find_long_opt (opts, name)
 {
    return find_opt (opts, name);
-}
-
-private define process_short_args (opts, letters)
-{
-   variable i = 0, n = strlen (letters);
-   while (i < n)
-     {
-	i++;
-	variable name = substr (letters, i, 1);
-	variable opt = find_short_opt (opts, name);
-	variable value = NULL;
-	if (opt.flags & CMDOPT_REQ_VALUE)
-	  {
-	     if (i < n)
-	       value = substr (letters, i+1, n);
-	     i = n;
-	  }
-	process_option (opts, opt, name, NULL);
-     }
 }
 
 private define parse_arg (arg)
