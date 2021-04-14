@@ -100,6 +100,10 @@ Changes since 2.3.2
     array indexing with no (empty) indices to fail.
 49. modules/chksum-module.c: When a CRC object went out of scope
     without being closed, it would leave its value on the stack.
+50. slsh/lib/process.sl: If the file descriptor that is used to
+    communicate messages from the child process back to the parent is
+    requested by the caller, then dup an unused one.  To facilitate
+    testing, two additional hooks were added: exit_hook and exec_hook.
 
 {{{ Previous Versions
 

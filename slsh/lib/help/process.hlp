@@ -105,6 +105,35 @@ new_process
      If this qualifier exists, its value will be passed as the second
      argument to the `pre_exec_hook' callback function.
 
+   exec_hook=&func
+
+     This qualifier may be used to specify the function that actually
+     executes the child process.  It is expected to take 2 arguments:
+     the `argv' array and the value of the `exec_hook_arg'
+     qualifier.  The function should invoke the `execvp' system
+     and return its value.  Only in very special cases, such as testing
+     the process code itself, should this hook be needed.
+
+  exec_hook_arg=VAL
+
+     The value of this qualifier will be passed to the `exec_hook'
+     callback function.
+
+   exit_hook=&func
+
+     This qualifier may be used to specify the function to be called
+     just before the child process exits in the case of a failure.
+     executes the child process.  The function will be passed 2
+     arguments: the `argv' array and the value of the
+     `exit_hook_arg' qualifier.  The function should not return a
+     value. Only in very special cases, such as testing the process
+     code itself, should this hook be needed.
+
+  exit_hook_arg=VAL
+
+     The value of this qualifier will be passed to the `exit_hook'
+     callback function.
+
   Note that the read and write qualifiers specify the nature of the
   file descriptors from the child process's view.  That is, those
   opened in the child process using the read qualifier, may be written

@@ -99,6 +99,35 @@
 #v-
      If this qualifier exists, its value will be passed as the second
      argument to the \exmp{pre_exec_hook} callback function.
+#v+
+   exec_hook=&func
+#v-
+     This qualifier may be used to specify the function that actually
+     executes the child process.  It is expected to take 2 arguments:
+     the \exmp{argv} array and the value of the \exmp{exec_hook_arg}
+     qualifier.  The function should invoke the \ifun{execvp} system
+     and return its value.  Only in very special cases, such as testing
+     the process code itself, should this hook be needed.
+#v+
+  exec_hook_arg=VAL
+#v-
+     The value of this qualifier will be passed to the \exmp{exec_hook}
+     callback function.
+#v+
+   exit_hook=&func
+#v-
+     This qualifier may be used to specify the function to be called
+     just before the child process exits in the case of a failure.
+     executes the child process.  The function will be passed 2
+     arguments: the \exmp{argv} array and the value of the
+     \exmp{exit_hook_arg} qualifier.  The function should not return a
+     value. Only in very special cases, such as testing the process
+     code itself, should this hook be needed.
+#v+
+  exit_hook_arg=VAL
+#v-
+     The value of this qualifier will be passed to the \exmp{exit_hook}
+     callback function.
 
   Note that the read and write qualifiers specify the nature of the
   file descriptors from the child process's view.  That is, those

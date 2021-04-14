@@ -56,6 +56,9 @@ private define open_redirect_files (q)
      {
 	variable name = ();
 	variable fd, ifd, value, defflags = 0, flags, file;
+
+	value = get_struct_field (q, name);
+
 	if (1 != sscanf (name, "fd%d", &ifd))
 	  {
 	     if (name == "stdin") ifd = 0;
@@ -66,7 +69,6 @@ private define open_redirect_files (q)
 	if (ifd == 0) defflags = O_RDONLY|O_NOCTTY;
 	if ((ifd == 1) || (ifd == 2)) defflags = O_WRONLY|O_TRUNC|O_CREAT|O_NOCTTY;
 
-	value = get_struct_field (q, name);
 	if (typeof(value) == String_Type)
 	  {
 	     (flags, file) = parse_redir (value);
@@ -106,7 +108,7 @@ private define open_redirect_files (q)
    return (redir_fds, redir_ifds);
 }
 
-% parse dipN=M qualifiers
+% parse dupN=M qualifiers
 private define parse_dup_qualifiers (q)
 {
    variable open_fds = FD_Type[0], wanted_ifds = Int_Type[0];
@@ -146,23 +148,44 @@ private define parse_dup_qualifiers (q)
 private define dup2_open_fds (wanted_ifds, open_ifds, open_fds, idx_offset)
 {
    variable i, ifd, fd;
+
    _for i (0, length(wanted_ifds)-1, 1)
      {
 	ifd = wanted_ifds[i];
 
 	i += idx_offset;
 	variable j = wherefirst (open_ifds == ifd);
+
+	if (j == i) continue;
+	if (j == 0)
+	  {
+	     % This is the file descriptior that we want to use for
+	     % messages
+	     % Dup it to something else.
+	     fd = dup_fd (open_fds[0]);
+	     if (fd == NULL)
+	       throw OSError, "dup_fd failed: " + errno_string ();
+	     () = fcntl_setfd (fd, fcntl_getfd (fd) | FD_CLOEXEC);
+
+	     open_fds[0] = fd;
+	     open_ifds[0] = _fileno(fd);
+	     j = wherefirst (open_ifds == ifd);
+	  }
+
 	if (j != NULL)
 	  {
-	     if (j == i)
-	       continue;
+	     % Here, ifd is already associated with an open
+	     % descriptor.  Dup that descriptor to something else so
+	     % that ifd can be used.
 	     fd = dup_fd (open_fds[j]);
 	     if (fd == NULL)
 	       throw OSError, "dup_fd failed: " + errno_string ();
 	     open_ifds[j] = _fileno(fd);
 	     open_fds[j] = fd;
+	     % drop
 	  }
 
+	% Replace open_ifds[i] with the desired descriptor
 	if (-1 == dup2_fd (open_fds[i], ifd))
 	  throw OSError, "dup2_fd failed: " + errno_string ();
 
@@ -178,7 +201,7 @@ private define exec_child (argv, child_fds, required_child_ifds)
    % The child pipe ends will need to be dup2'd to the corresponding
    % integers.  Care must be exercised to not stomp on pipe descriptors
    % that have the same values.
-   % Note: The first on in the list is the traceback fd
+   % Note: The first one in the list is the traceback fd
    variable child_open_ifds = array_map (Int_Type, &_fileno, child_fds);
    dup2_open_fds (required_child_ifds, child_open_ifds, child_fds, 1);
 
@@ -192,6 +215,7 @@ private define exec_child (argv, child_fds, required_child_ifds)
 	child_fds = [child_fds, redir_fds];
 	child_open_ifds = [child_open_ifds,
 			   array_map (Int_Type, &_fileno, redir_fds)];
+
 	redir_fds = NULL;	       % decrement ref-counts
 	dup2_open_fds (wanted_redir_ifds, child_open_ifds, child_fds, ofs);
 
@@ -209,6 +233,7 @@ private define exec_child (argv, child_fds, required_child_ifds)
 	     % descriptors that correspond to the ifdNs
 	     child_fds = [child_fds, fdMs, fdMs];
 	     child_open_ifds = [child_open_ifds, ifdMs, Int_Type[num_aliased]-1];
+
 	     dup2_open_fds (ifdNs, child_open_ifds, child_fds, length(child_fds)-num_aliased);
 	  }
      }
@@ -229,7 +254,7 @@ private define exec_child (argv, child_fds, required_child_ifds)
 	child_open_ifds = list_to_array (list);
      }
 
-   variable close_mask = Char_Type[OPEN_MAX+1];
+   variable close_mask = Char_Type[OPEN_MAX];
    close_mask [[3:]] = 1;
    foreach ifd (child_open_ifds) close_mask[ifd] = 0;
    _for ifd (0, length(close_mask)-1, 1)
@@ -237,7 +262,12 @@ private define exec_child (argv, child_fds, required_child_ifds)
 	if (close_mask[ifd]) () = _close (ifd);
      }
 
-   () = execvp (argv[0], argv);
+   variable exec_hook = qualifier("exec_hook");
+   if (exec_hook == NULL)
+     () = execvp (argv[0], argv);
+   else
+     () = (@exec_hook)(argv, qualifier ("exec_hook_arg"));
+
    throw OSError, "exec failed: " + argv[0] + " : " + errno_string ();
 }
 
@@ -335,6 +365,9 @@ define new_process ()
 	     () = write (fd, sprintf ("Traceback:\n%S\n", e.traceback));
 	     fd = NULL;
 	  }
+	variable exit_hook = qualifier("exit_hook");
+	variable exit_hook_arg = qualifier ("exit_hook_arg");
+	if (exit_hook != NULL) (@exit_hook)(argv, exit_hook_arg);
 	_exit (1);
      }
    variable other_struct_fields = ["pid", "wait"];
