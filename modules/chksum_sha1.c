@@ -273,14 +273,14 @@ static void uint32_to_uchar (_pSLuint32_Type *u, unsigned int num, unsigned char
      }
 }
 
-static int sha1_close (SLChksum_Type *sha1, unsigned char *digest)
+static int sha1_close (SLChksum_Type *sha1, unsigned char *digest, int just_free)
 {
    unsigned char num_bits_buf[8];
 
    if (sha1 == NULL)
      return -1;
 
-   if (digest != NULL)
+   if ((digest != NULL) && (just_free == 0))
      {
 	/* Handle num bits before padding */
 	uint32_to_uchar (sha1->num_bits, 2, num_bits_buf);

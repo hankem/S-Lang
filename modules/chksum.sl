@@ -10,7 +10,7 @@ private variable CRC8_Map = Assoc_Type[Struct_Type];
 define chksum_add_crc8_subtype (subtype)
 {
    subtype = strtrans(subtype, "-_", "");
-   CRC8_Map[strlow(subtype)] = __qualifiers;
+   CRC8_Map[strlow(subtype)] = @__qualifiers;
 }
 
 chksum_add_crc8_subtype("";		poly=0xD5, seed=0x00, refin=0, refout=0, xorout=0x00);
@@ -28,7 +28,7 @@ private variable CRC16_Map = Assoc_Type[Struct_Type];
 define chksum_add_crc16_subtype (subtype)
 {
    subtype = strtrans(subtype, "-_", "");
-   CRC16_Map[strlow(subtype)] = __qualifiers;
+   CRC16_Map[strlow(subtype)] = @__qualifiers;
 }
 
 chksum_add_crc16_subtype("";		poly=0x1021U, seed=0xFFFFU, refin=0, refout=0, xorout=0x0000U);
@@ -60,7 +60,7 @@ private variable CRC32_Map = Assoc_Type[Struct_Type];
 define chksum_add_crc32_subtype (subtype)
 {
    subtype = strtrans(subtype, "-_", "");
-   CRC32_Map[strlow(subtype)] = __qualifiers;
+   CRC32_Map[strlow(subtype)] = @__qualifiers;
 }
 
 chksum_add_crc32_subtype("";		poly=0x04C11DB7U, seed=0xFFFFFFFFU, refin=1, refout=1, xorout=0xFFFFFFFFU);

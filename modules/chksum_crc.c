@@ -138,7 +138,7 @@ static int crc8_accumulate (SLChksum_Type *cs, unsigned char *buf, unsigned int 
    return 0;
 }
 
-static int crc8_close (SLChksum_Type *cs, unsigned char *digest)
+static int crc8_close (SLChksum_Type *cs, unsigned char *digest, int just_free)
 {
    unsigned char crc;
 
@@ -146,6 +146,12 @@ static int crc8_close (SLChksum_Type *cs, unsigned char *digest)
      return -1;
 
    (void) digest;
+
+   if (just_free)
+     {
+	SLfree ((char *) cs);
+	return 0;
+     }
 
    crc = (unsigned char) cs->seed & 0xFF;
    if (cs->refout)
@@ -233,13 +239,19 @@ static int crc16_accumulate (SLChksum_Type *cs, unsigned char *buf, unsigned int
    return 0;
 }
 
-static int crc16_close (SLChksum_Type *cs, unsigned char *digest)
+static int crc16_close (SLChksum_Type *cs, unsigned char *digest, int just_free)
 {
    uint16_t crc;
 
    (void) digest;
    if (cs == NULL)
      return -1;
+
+   if (just_free)
+     {
+	SLfree ((char *) cs);
+	return 0;
+     }
 
    crc = cs->seed & 0xFFFF;
    if (cs->refout)
@@ -328,13 +340,19 @@ static int crc32_accumulate (SLChksum_Type *cs, unsigned char *buf, unsigned int
    return 0;
 }
 
-static int crc32_close (SLChksum_Type *cs, unsigned char *digest)
+static int crc32_close (SLChksum_Type *cs, unsigned char *digest, int just_free)
 {
    uint32_t crc;
 
    (void) digest;
    if (cs == NULL)
      return -1;
+
+   if (just_free)
+     {
+	SLfree ((char *) cs);
+	return 0;
+     }
 
    crc = cs->seed & 0xFFFFFFFFU;
    if (cs->refout)

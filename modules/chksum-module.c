@@ -90,7 +90,7 @@ static void chksum_free (Chksum_Object_Type *obj)
 	return;
      }
    if (obj->c != NULL)
-     (void) obj->c->close (obj->c, NULL);
+     (void) obj->c->close (obj->c, NULL, 1);
    SLfree ((char *)obj);
 }
 
@@ -155,7 +155,7 @@ static void chksum_close (Chksum_Object_Type *obj)
 
    if (c->close_will_push)
      {
-	(void) c->close (c, NULL);
+	(void) c->close (c, NULL, 0);
 	return;
      }
 
@@ -163,7 +163,7 @@ static void chksum_close (Chksum_Object_Type *obj)
    if (NULL == (digest = (unsigned char *)SLmalloc(2*digest_len+1)))
      return;
 
-   if (-1 == c->close (c, digest))
+   if (-1 == c->close (c, digest, 0))
      {
 	SLfree ((char *)digest);
 	return;

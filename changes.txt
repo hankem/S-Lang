@@ -98,6 +98,8 @@ Changes since 2.3.2
     uniform for better readability.
 48. src/slarray.c: The previous change introduced a bug that caused
     array indexing with no (empty) indices to fail.
+49. modules/chksum-module.c: When a CRC object went out of scope
+    without being closed, it would leave its value on the stack.
 
 {{{ Previous Versions
 

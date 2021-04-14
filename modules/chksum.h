@@ -5,10 +5,10 @@ typedef struct SLChksum_Type
 {
    int (*accumulate)(struct SLChksum_Type *, unsigned char *, unsigned int);
 
-   /* compute the digest and delete the object.  If the digest parameter is
-    * NULL, just delete the object
+   /* compute the digest and delete the object.  If the last argument is
+    * non-zero, just delete the object.
     */
-   int (*close)(struct SLChksum_Type *, unsigned char *);
+   int (*close)(struct SLChksum_Type *, unsigned char *, int);
    unsigned int digest_len;	       /* set by open */
    int close_will_push;		       /* if non-zero, the close method will push the result */
 #ifdef CHKSUM_TYPE_PRIVATE_FIELDS
