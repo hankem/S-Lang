@@ -113,7 +113,8 @@ Changes since 2.3.2
     bug in the _zlib_inflate_reset function where deflateReset was
     being called instead of inflateReset.
 53. slsh/lib: Updated unit/regression tests for better coverage
-
+54. slsh/lib/print.sl: Use >= instead of > when comparing the number
+    of screen rows to determine if the pager should be used.
 {{{ Previous Versions
 
 Changes since 2.3.1a

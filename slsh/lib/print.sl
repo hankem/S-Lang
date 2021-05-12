@@ -75,10 +75,10 @@ private define new_pager_print (cmd)
 # ifexists SIGPIPE
    signal (SIGPIPE, SIG_IGN, &Sigpipe_Handler);
 # endif
-   variable fp = popen (cmd, "w");
-
    try
      {
+	variable fp = popen (cmd, "w");
+
 	if (fp == NULL)
 	  throw OpenError, "Unable to open the pager ($cmd)"$;
 
@@ -340,16 +340,16 @@ define print ()
 	  {
 	   case Array_Type:
 	     variable dims = array_shape (x);
-	     use_pager = ((dims[0] > pager_rows)
-			  || (prod(dims) > 10*pager_rows));
+	     use_pager = ((dims[0] >= pager_rows)
+			  || (prod(dims) >= 10*pager_rows));
 	  }
 	  {
 	   case List_Type:
-	     use_pager = length (x) > pager_rows;
+	     use_pager = length (x) >= pager_rows;
 	  }
 	  {
 	   case String_Type:
-	     use_pager = count_byte_occurrences (x, '\n') > pager_rows;
+	     use_pager = count_byte_occurrences (x, '\n') >= pager_rows;
 	     if (noescape)
 	       str_x = x;
 	  }
@@ -359,7 +359,7 @@ define print ()
 	     else
 	       str_x = generic_to_string (x);
 
-	     use_pager = (count_byte_occurrences (str_x, '\n') > pager_rows);
+	     use_pager = (count_byte_occurrences (str_x, '\n') >= pager_rows);
 	  }
      }
 
