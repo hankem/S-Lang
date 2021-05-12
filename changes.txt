@@ -112,6 +112,7 @@ Changes since 2.3.2
     regression scripts/unit tests for better code coverage; fixed a
     bug in the _zlib_inflate_reset function where deflateReset was
     being called instead of inflateReset.
+53. slsh/lib: Updated unit/regression tests for better coverage
 
 {{{ Previous Versions
 

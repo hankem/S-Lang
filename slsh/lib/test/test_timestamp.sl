@@ -82,6 +82,11 @@ define slsh_main ()
      };
    bad += test_timestamp (t_expected, dates);
 
+   % Test the current line without a timezone specified
+   variable now = _time();
+   dates = [strftime ("%b %d, %Y %H:%M:%S", localtime(now))];
+   bad += test_timestamp (now, dates);
+
    if (bad) failed ("%d timestamps failed to parse", bad);
 
    end_test ();

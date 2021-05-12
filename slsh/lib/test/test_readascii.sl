@@ -17,6 +17,22 @@ private define make_lines_array (x, y, z, delim)
    return array_map (String_Type, &sprintf, fmt, x, y, z);
 }
 
+private define make_lines_file (x, y, z, delim)
+{
+   variable lines = make_lines_array (x, y, z, delim);
+   variable file = sprintf ("/tmp/test_readascii_%X_%d", _time(), getpid());
+   variable fp = fopen (file, "w");
+   if (fp == NULL)
+     throw OpenError, "Unable to open $file"$;
+   () = fputslines (lines, fp);
+   () = fclose (fp);
+
+   variable data;
+   () = readascii (file, &data; ncols=3, delim=delim, size=11, dsize=7);
+   () = remove (file);
+   return make_lines_array (data[0], data[1], data[2], delim);
+}
+
 private define make_lines_list (x, y, z, delim)
 {
    variable list = {};
@@ -140,5 +156,6 @@ define slsh_main ()
    start_test ("readascii");
    run_test (&make_lines_array);
    run_test (&make_lines_list);
+   run_test (&make_lines_file);
    end_test ();
 }

@@ -157,8 +157,6 @@ define timestamp_parse (timestamp)
 	     if (month == NULL) return NULL;
 	  }
 	break;
-
-	Last_TS_Index = (Last_TS_Index + 1) mod num;
      }
    then return NULL;
 

@@ -66,6 +66,11 @@ private define callback_inc (ref)
    @ref += 1;
 }
 
+private define callback_opt2 (value, a, b, ref)
+{
+   @ref = value + a + b;
+}
+
 private define test_cmdopt ()
 {
    variable opts = cmdopt_new (NULL);
@@ -132,6 +137,20 @@ private define test_cmdopt ()
    opts.add ("f", &s.flags; bor=1, band=~0x2);
    args = ["-a", "-f", "--b4000"];
    test_args (opts, args, 3, s, {0x8000|0x4000|1, 0x4|0x1}, 0);
+
+   s = struct {v = NULL};
+   opts = cmdopt_new (NULL);
+   opts.add ("f|foo", &callback_opt2, 1, 2, &s.v; type="int", optional=17);
+
+   args = ["-f"];
+   test_args (opts, args, 1, s, {1+2+17}, 0);
+
+   args = ["--foo=12"];
+   test_args (opts, args, 1, s, {1+2+12}, 0);
+
+   args = ["--bar=12"];
+   test_args (opts, args, 1, s, {-1}, 1);
+
 }
 
 define slsh_main ()

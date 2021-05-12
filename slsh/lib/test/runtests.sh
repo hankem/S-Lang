@@ -9,18 +9,36 @@ export LD_LIBRARY_PATH="$ROOT/src/${ARCH}elfobjs"
 export DYLD_LIBRARY_PATH="$ROOT/src/${ARCH}elfobjs"
 
 run_test_pgm="$SLSHROOT/${ARCH}objs/slsh_exe -n -g"
-#run_test_pgm="sldb"
-#run_test_pgm="$SLSHROOT/${ARCH}objs/slsh_exe -n -g $SLSHROOT/scripts/sldb"
 runprefix="$SLTEST_RUN_PREFIX"
-#runprefix="valgrind --tool=memcheck --leak-check=yes --error-limit=no --num-callers=25"
-#runprefix="gdb --args"
 
+use_slcov=0
+while [ "$#" -ge 1 ]
+do
+  case "$1" in
+    "--slcov" ) runsuffix="$SLSHROOT/scripts/slcov"; shift
+      rm test_*.slcov*
+      use_slcov=1
+      ;;
+    "--sldb" ) runsuffix="$SLSHROOT/scripts/sldb"; shift
+      ;;
+    "--gdb" ) runprefix="gdb --args"; shift
+      ;;
+    "--memcheck" ) runprefix="valgrind --tool=memcheck --leak-check=yes --error-limit=no --num-callers=25"
+      shift
+      ;;
+    "--strace" ) runprefix="strace -f -o strace.log"
+      shift
+      ;;
+    * ) break
+      ;;
+  esac
+done
 
 ########################################################################
 
 if [ $# -eq 0 ]
 then
-    echo "Usage: $0 test1.sl test2.sl ..."
+    echo "Usage: $0 [--gdb|--sldb|--slcov|--memcheck] test1.sl test2.sl ..."
     exit 64
 fi
 
@@ -30,9 +48,10 @@ echo
 
 n_failed=0
 tests_failed=""
+
 for testxxx in $@
 do
-    $runprefix $run_test_pgm $testxxx
+    $runprefix $run_test_pgm $runsuffix $testxxx
 
     if [ $? -ne 0 ]
     then
@@ -45,6 +64,15 @@ echo
 if [ $n_failed -eq 0 ]
 then
     echo "All tests passed."
+    if [ $use_slcov -eq 1 ]
+    then
+      lcov_merge_args=""
+      for X in test_*.slcov*
+      do
+         lcov_merge_args="$lcov_merge_args -a $X"
+      done
+      lcov $lcov_merge_args -o "slshlib.slcov"
+    fi
 else
     echo "$n_failed tests failed: $tests_failed"
 fi
