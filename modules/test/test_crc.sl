@@ -81,7 +81,21 @@ addcrc32("CRC-32/Q", 0x099A5C02U, 0x3010BF7FU, 0x814141ABU, 0x00000000U, 0, 0, 0
 addcrc32("CRC-32/JAMCRC", 0xC3016C47U, 0x340BC6D9U, 0x04C11DB7U, 0xFFFFFFFFU, 1, 1, 0x00000000U);
 addcrc32("CRC-32/XFER", 0x636909D5U, 0xBD0BE338U, 0x000000AFU, 0x00000000U, 0, 0, 0x00000000U);
 
-private define check_crcmap (type, map)
+private define test_crc_file (func, data)
+{
+   variable tmpfile = sprintf ("/tmp/test_crc_%d_%d", getpid(), _time());
+   variable fp = fopen (tmpfile, "wb");
+   if (fp == NULL)
+     return;
+   () = fwrite (data, fp);
+   () = fclose (fp);
+   variable s = (@func)(tmpfile;; __qualifiers);
+   () = remove (tmpfile);
+   return s;
+}
+
+
+private define check_crcmap (type, map, sumfunc, sumfile)
 {
    foreach (assoc_get_keys (map))
      {
@@ -122,15 +136,33 @@ private define check_crcmap (type, map)
 	     failed ("%S `%S' produced 0x%X, expected 0x%X",
 		     key, s.s1, r, s.r1);
 	  }
+
+	r = (@sumfunc)(s.s1;
+		       seed=s.seed, poly=s.poly,
+		       refin=s.refin, refout=s.refout, xorout=s.xorout);
+	if (r != s.r1)
+	  {
+	     failed ("sumfunc=%S", sumfunc);
+	  }
+
+	r = test_crc_file (sumfile, s.s1;
+			   seed=s.seed, poly=s.poly,
+			   refin=s.refin, refout=s.refout, xorout=s.xorout);
+	if (r != s.r1)
+	  failed ("sumfile=%S", sumfile);
      }
 }
 
 private define test_module (module_name)
 {
    testing_module (module_name);
-   check_crcmap ("crc32", CRC32_Map);
-   check_crcmap ("crc8", CRC8_Map);
-   check_crcmap ("crc16", CRC16_Map);
+   check_crcmap ("crc8", CRC8_Map, &crc8sum, &crc8sum_file);
+   check_crcmap ("crc16", CRC16_Map, &crc16sum, &crc16sum_file);
+   check_crcmap ("crc32", CRC32_Map, &crc32sum, &crc32sum_file);
+
+   if (crc8_new().name != "crc8") failed ("crc8_new");
+   if (crc16_new().name != "crc16") failed ("crc16_new");
+   if (crc32_new().name != "crc32") failed ("crc32_new");
 }
 
 define slsh_main ()

@@ -44,8 +44,8 @@ define ks_test ()
 %
 private define ks_test2_prob ()
 {
-   if (_NARGS != 3)
-     usage ("p = %s(m, n, d); %% P(D_mn >= d)", _function_name ());
+   %if (_NARGS != 3)
+   %  usage ("p = %s(m, n, d); %% P(D_mn >= d)", _function_name ());
    variable d, m, n; (m, n, d) = ();
 
    % See the above note for why 1 is subtracted for the first argument of

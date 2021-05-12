@@ -99,6 +99,9 @@ private define test_module (module_name)
 	if (sha1 != s.sha1)
 	  failed ("sha1sum_file failed: got %s, expected %s", sha1, s.sha1);
      }
+
+   if (md5sum_new().name != "md5") failed ("md5sum_new");
+   if (sha1sum_new().name != "sha1") failed ("sha1sum_new");
 }
 
 define slsh_main ()

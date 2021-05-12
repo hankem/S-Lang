@@ -364,9 +364,58 @@ private define test_badgrids ()
    catch InvalidParmError:;
 }
 
+private define check_usage (fun)
+{
+   try
+     {
+	(@fun)();
+     }
+   catch UsageError;
+}
+
+private define test_whist ()
+{
+   variable grid = [0:9];
+   variable pts = 10*urand (20);
+   variable wghts = Double_Type[length(pts)];
+   wghts[where (5 <= pts < 6)] = 7.5;
+   variable h = whist1d (pts, wghts, grid);
+   % We expect h=0, except for h[5].
+   variable i = where (grid[5] <= pts < grid[6]);
+   variable hexp = Double_Type[10]; hexp[5] = 7.5*length(i);
+   ifnot (_eqs (h, hexp))
+     {
+	failed ("whist1d 1");
+     }
+
+   variable nx = 10, ny = 20, xgrid = [0:nx-1], ygrid = [0:ny-1];
+   variable xpts = nx*urand(10000);
+   variable ypts = ny*urand(10000);
+   wghts = Double_Type[length(xpts)];
+   i = where ((5 <= xpts < 7) and (2 <= ypts < 3));
+   wghts[i] = 7.1;
+   hexp = Double_Type[nx, ny];
+   hexp[5,2] = 7.1*length(where((5<=xpts<6)and(2<=ypts<3)));
+   hexp[6,2] = 7.1*length(where((6<=xpts<7)and(2<=ypts<3)));
+   variable r;
+   h = whist2d (xpts, ypts, wghts, xgrid, ygrid, &r);
+   ifnot (_eqs(h, hexp))
+     failed ("whist2d 1");
+
+   variable xgrid1 = [0,2,4,5,[7:nx-1:2]];
+   h = hist2d_rebin (xgrid1, ygrid, xgrid, ygrid, h);
+   if (h[3,2] != (hexp[5,2] + hexp[6,2]))
+     failed ("hist2d_rebin");
+
+   check_usage (&whist2d);
+   check_usage (&whist1d);
+   check_usage (&hist2d_rebin);
+}
+
 define slsh_main ()
 {
    test_module ("hist");
    test_badgrids ();
+   test_whist ();
    end_test ();
 }

@@ -108,6 +108,10 @@ Changes since 2.3.2
     callback function, and the value of the command line argument is
     optional, pass the default value to the callback if not given on
     the command line.
+52. modules: Added cumulant function to the stats module; updated
+    regression scripts/unit tests for better code coverage; fixed a
+    bug in the _zlib_inflate_reset function where deflateReset was
+    being called instead of inflateReset.
 
 {{{ Previous Versions
 

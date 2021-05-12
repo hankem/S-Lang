@@ -345,6 +345,34 @@ define test_rand_sample ()
      }
 }
 
+private define test_rand_usage_forms ()
+{
+   variable g = rand_new ([_time(), getpid()]);
+   variable imin = 12, imax = 15, r;
+
+   r = rand_int (imin, imax);
+   ifnot (imin <= r <= imax)
+     failed ("rand_int form 1");
+   r = rand_int (imin, imax, 0);
+   if (length (r) != 0)
+     failed ("rand_int form 2a");
+   r = rand_int (imin, imax, 20);
+   if (length (r) != 20)
+     failed ("rand_int form 2b");
+   r = rand_int (g, imin, imax, 10);
+   if (length (r) != 10)
+     failed ("rand_int form 3");
+   r = rand_int (g, imin, imax);
+   ifnot (imin <= r <= imax)
+     failed ("rand_int form 4");
+   try
+     {
+	rand_int ();
+	failed ("rand_int usage");
+     }
+   catch UsageError;
+}
+
 define slsh_main ()
 {
    testing_module ("rand");
@@ -368,6 +396,8 @@ define slsh_main ()
    test_rand_tdist ();
    test_rand_int ();
    test_rand_exp ();
+
+   test_rand_usage_forms ();
 
    end_test ();
 }

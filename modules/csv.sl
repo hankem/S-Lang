@@ -596,44 +596,24 @@ private define convert_to_numeric (s, name)
 	set_struct_field (s, name, val);
      }
 
-   variable types = DataType_Type[num];
    _for (0, length (val)-1, 1)
      {
 	variable i = ();
 	variable type = _slang_guess_type (val[i]);
-	if (type == Double_Type)
+	if ((type == Double_Type) || (type == Float_Type))
 	  {
 	     val = atof (val);
 	     return;
 	  }
-	types[i] = type;
+	if (type == String_Type)
+	  return;
+	% Otherwise an integer
      }
 
-   if (all (types == Int_Type))
-     {
-	val = atoi (val);
-	return;
-     }
-
-   if (any (types == Float_Type))
-     {
-	val = atofloat (val);
-	return;
-     }
-
-   if (any (types == Long_Type))
-     {
-	val = atol (val);
-	return;
-     }
-
-   if (any (types == Int_Type))
-     {
-	val = atoi (val);
-	return;
-     }
-
-   val = atof (val);
+   variable lval = atol (val);
+   val = atoi (val);
+   if (any(val != lval))
+     val = lval;
 }
 
 define csv_readcol ()
@@ -666,7 +646,7 @@ Qualifiers:\n\
    % second line gives the field types.
    if (rdb)
      {
-	q = struct { comment = "#", delim = '\t' };
+	q = struct { @q, comment = "#", delim = '\t' };
      }
    variable types = NULL;
    variable csv = csv_decoder_new (file ;; q);

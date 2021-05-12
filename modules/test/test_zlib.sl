@@ -1,27 +1,25 @@
 () = evalfile("./test.sl");
 require ("zlib");
 
-private define silly_deflate (str)
+private define silly_deflate (z, str)
 {
-   variable z = zlib_deflate_new ();
    variable x = "";
    foreach (str)
      {
 	variable ch = ();
-	x = x + _zlib_deflate (z.zobj, pack("C", ch), 0);
+	x = x + z.deflate (pack("C", ch); flush=ZLIB_NO_FLUSH);
      }
    x = x + z.flush ();
    return x;
 }
 
-private define silly_inflate (zstr)
+private define silly_inflate (z, zstr)
 {
-   variable z = zlib_inflate_new ();
    variable x = "";
    foreach (zstr)
      {
 	variable ch = ();
-	x = x + _zlib_inflate (z.zobj, pack("C", ch), 0);
+	x = x + z.inflate(pack("C", ch); flush=ZLIB_NO_FLUSH);
      }
    x = x + z.flush ();
    return x;
@@ -36,13 +34,33 @@ define test_zlib (str0)
 	failed ("to deflate/inflate %s", str0);
 	return;
      }
-   variable zstr1 = silly_deflate (str0);
+
+   variable z = zlib_deflate_new ();
+   variable zstr1 = silly_deflate (z, str0);
    if (zstr1 != zstr)
      {
 	failed ("to deflate %s via multiple calls", str0);
 	return;
      }
-   str1 = silly_inflate (zstr1);
+   % Repeat using the same object
+   z.reset ();
+   zstr1 = silly_deflate (z, str0);
+   if (zstr1 != zstr)
+     {
+	failed ("to deflate %s via multiple calls", str0);
+	return;
+     }
+
+   z = zlib_inflate_new ();
+   str1 = silly_inflate (z, zstr1);
+   if (str1 != str0)
+     {
+	failed ("to inflate %s via multiple calls", str0);
+	return;
+     }
+   % Repeat using the same object
+   z.reset ();
+   str1 = silly_inflate (z, zstr1);
    if (str1 != str0)
      {
 	failed ("to inflate %s via multiple calls", str0);
@@ -50,10 +68,30 @@ define test_zlib (str0)
      }
 }
 
+private define check_usage ()
+{
+   foreach (["zlib_inflate()", "zlib_deflate()",
+	     "zlib_inflate_new().inflate()",
+	     "(@zlib_inflate_new().flush)()",
+	     "zlib_deflate_new().deflate()",
+	     "(@zlib_deflate_new().flush)()",
+	     ])
+     {
+	variable f = ();
+	try
+	  {
+	     eval (f);
+	     failed ("%s usage", f);
+	  }
+	catch UsageError;
+     }
+}
+
 define slsh_main ()
 {
    testing_module ("zlib");
 
+   check_usage ();
    test_zlib ("");
    test_zlib ("\0");
    test_zlib ("\0\0\0");

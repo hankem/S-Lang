@@ -485,7 +485,7 @@ static void inflate_reset_intrin (ZLib_Type *z)
      return;
 
    if (z->initialized)
-     check_zerror (deflateReset (&z->zs));
+     check_zerror (inflateReset (&z->zs));
 }
 
 static void inflate_flush_intrin (ZLib_Type *z, int *flush)

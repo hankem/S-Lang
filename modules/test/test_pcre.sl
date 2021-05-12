@@ -18,6 +18,10 @@ static define test_regexp_match (slpat, str, eret, eans, opts)
    if (ans != eans)
      failed ("pcre_exec(%s) matched '%s, expected '%s'",
 	     slpat, ans, eans);
+
+   variable matches = pcre_matches (pat, str);
+   if ((matches == NULL) || (matches[0] != eans))
+     failed ("pcre_matches");
 }
 
 define slsh_main ()

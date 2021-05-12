@@ -78,15 +78,15 @@ define sample_mean ()
    return mean (__push_args(args));
 }
 
-% These functions return the biased stddev
 define sample_stddev ()
 {
-   variable x = ();
-   variable n = 1.0*length (x);
-   return stddev(x) * sqrt((n-1.0)/n);
+   % The stddev intrinsic returns the sample stddev.
+   % For backward compatibility, simply call it.
+   variable args = __pop_list (_NARGS);
+   return stddev (__push_list (args));
 }
 
-private define get_mean_stddev (x)
+private define get_mean_and_biased_stddev (x)
 {
    variable m = mean(x);
    variable n = 1.0*length (x);
@@ -94,13 +94,61 @@ private define get_mean_stddev (x)
    return m, s, n;
 }
 
+define cumulant ()
+{
+   variable x, m = 0;
+
+   if (_NARGS == 2)
+     (x,m) = ();
+
+   % Only the first 4 cumulants are supported
+   if ((m != 1) && (m != 2) && (m != 3) && (m != 4))
+     usage ("[k1,..,kn] = cumulant(A, n);  %% n=1,2,3,4");
+
+   variable i, n = double(length (x));
+   variable k = Double_Type[m]; k[*] = _NaN;
+
+   if (n <= m) return k;
+
+   variable s1, s2, s3, s4, s1_2, s1_3, s1_4, den, xm;
+
+   den = n;
+   xm = x;
+   s1 = sum(xm);
+   k[0] = s1/den;
+   if ((m == 1) || isnan(s1)) return k;
+
+   den = den*(n-1.0);
+   xm = xm * x;
+   s2 = sum(xm);
+   s1_2 = s1*s1;
+   k[1] = (n*s2-s1_2)/den;
+   if (m == 2) return k;
+
+   den = den*(n-2.0);
+   xm = xm*x;
+   s3 = sum(xm);
+   s1_3 = s1_2*s1;
+   k[2] = (2*s1_3 - n*(3*s1*s2 - n*s3))/den;
+   if (m == 3) return k;
+
+   den = den*(n-3.0);
+   xm = xm*x;
+   s4 = sum(xm);
+   s1_4 = s1_3*s1;
+   k[3] = (-6*s1_4 + n*s2*(12*s1_2 - 3*(n-1)*s2)
+	   -n*(n+1)*(4*s1*s3 - n*s4))/den;
+   return k;
+}
+
+% Returns the skewness (Wikipedia g1)
 define skewness ()
 {
    if (_NARGS != 1)
      usage ("s = %s(A);", _function_name ());
    variable x = ();
    variable m, s, n;
-   (m, s, n) = get_mean_stddev (x);
+   (m, s, n) = get_mean_and_biased_stddev (x);
 
    x = sum (((x - m)/s)^3)/n;
 
@@ -116,7 +164,7 @@ define kurtosis ()
      usage ("s = %s(A);", _function_name ());
    variable x = ();
    variable m, s, n;
-   (m, s, n) = get_mean_stddev (x);
+   (m, s, n) = get_mean_and_biased_stddev (x);
 
    x = sum (((x - m)/s)^4)/n - 3.0;
 
@@ -423,7 +471,7 @@ define welch_t_test ()
      (x,y,tref) = ();
    else
      {
-	usage ("p = welch_t_test2 (X, Y [,&t] [; qualifiers]);  %% Welch's 2 sample t-test\n"
+	usage ("p = welch_t_test (X, Y [,&t] [; qualifiers]);  %% Welch's 2 sample t-test\n"
 	       + "Qualifiers:\n"
 	       + " side=\"<\" | \">\""
 	      );

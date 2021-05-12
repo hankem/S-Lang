@@ -29,20 +29,18 @@ private define test_csv (file)
 {
    variable names = get_struct_field_names (Table);
 
-   variable table = csv_readcol (file;has_header);
-
+   variable table = csv_readcol (file; has_header);
    if (any(names != get_struct_field_names (table)))
      {
-	failed ("csv_read/write failed to produce a table with the expected column names");
+	failed ("1: csv_read/write failed to produce a table with the expected column names");
 	return;
      }
-
    foreach (names)
      {
 	variable name = ();
 	ifnot (_eqs(get_struct_field (table, name), get_struct_field (table, name)))
 	  {
-	     failed ("column %S entries are not equal", name);
+	     failed ("1: column %S entries are not equal", name);
 	     return;
 	  }
      }
@@ -56,7 +54,7 @@ private define test_csv (file)
    table = csv_readcol (file, 1, 3; has_header);
    if (any(names[[1,3]-1] != get_struct_field_names (table)))
      {
-	failed ("csv_read/write failed to produce a table with the expected column names");
+	failed ("2: csv_read/write failed to produce a table with the expected column names");
 	return;
      }
    foreach (get_struct_field_names (table))
@@ -64,7 +62,28 @@ private define test_csv (file)
 	name = ();
 	ifnot (_eqs(get_struct_field (table, name), get_struct_field (table, name)))
 	  {
-	     failed ("column %S entries are not equal", name);
+	     failed ("2: column %S entries are not equal", name);
+	     return;
+	  }
+     }
+
+   if (typeof(file) == File_Type)
+     {
+	clearerr (file);
+	() = fseek (file, 0, SEEK_SET);
+     }
+   table = csv_readcol (file, names[2], names[0]; has_header);
+   if (any(names[[2,0]] != get_struct_field_names (table)))
+     {
+	failed ("3: csv_read/write failed to produce a table with the expected column names");
+	return;
+     }
+   foreach (get_struct_field_names (table))
+     {
+	name = ();
+	ifnot (_eqs(get_struct_field (table, name), get_struct_field (table, name)))
+	  {
+	     failed ("3: column %S entries are not equal", name);
 	     return;
 	  }
      }
@@ -133,6 +152,32 @@ Value #2
      failed ("test_embedded_comments: value 2 incorrect");
 }
 
+private define test_rdb (file)
+{
+   variable n = 10;
+   variable x = [0:2*PI:#n];
+   variable s0 = struct
+     {
+	idx = [1:n], x = x, sinx = sin(x), fsinx,
+     };
+   variable fsinx = typecast (s0.sinx, Float_Type);
+   s0.fsinx = fsinx;
+
+   csv_writecol (file, s0; rdb);
+   variable s1 = csv_readcol (file; rdb, type4='f');
+   ifnot (_eqs (s0, s1))
+     {
+	failed ("rdb 1");
+     }
+
+   s1 = csv_readcol (file; rdb, type='A', type4='f');
+   ifnot (_eqs (s0, s1))
+     {
+	failed ("rdb 2");
+     }
+}
+
+
 define slsh_main ()
 {
    testing_module ("csv");
@@ -141,9 +186,11 @@ define slsh_main ()
    csv_writecol (file, Table);
    test_csv (file);
    test_csv (fopen (file, "r"));
+   test_csv (fgetslines (fopen (file, "r")));
    test_empty_file (file);
    test_embedded_comments (file);
    test_embedded_cr (file);
+   test_rdb (file);
    () = remove (file);
    end_test ();
 }

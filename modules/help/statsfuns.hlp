@@ -75,6 +75,29 @@ ad_test
 
 --------------------------------------------------------------
 
+cumulant
+
+ SYNOPSIS
+  Compute the first n cumulants of an array
+
+ USAGE
+  [k1,...,kn] = cumulant (X, n)
+
+ DESCRIPTION
+ This function returns unbiased estimates of the first `n'
+ cumulants from an array `X' of samples of a probability
+ distribution.  The cumulants are returned as an array of size
+ `n'.
+
+ NOTES
+ The implementation currently restricts the value of n to 1, 2, 3, or 4.
+ The estimator of the nth cumulent is also known as the nth k-statistic.
+
+ SEE ALSO
+  mean, stddev, kurtosis, skewness
+
+--------------------------------------------------------------
+
 median
 
  SYNOPSIS
@@ -195,7 +218,7 @@ skewness
   s = skewness (a)
 
  DESCRIPTION
-  This function computes the so-called skewness of the array `a'.
+  This function computes the skewness (g1) of the array `a'.
 
  SEE ALSO
   mean, stddev, kurtosis
@@ -211,7 +234,7 @@ kurtosis
   s = kurtosis (a)
 
  DESCRIPTION
- This function computes the so-called kurtosis of the array `a'.
+ This function computes the kurtosis (g2) of the array `a'.
 
  NOTES
  This function is defined such that the kurtosis of the normal

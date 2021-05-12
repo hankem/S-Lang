@@ -56,6 +56,21 @@
 \seealso{ad_ktest, ks_test, t_test, z_test, normal_cdf}
 \done
 
+
+\function{cumulant}
+\synopsis{Compute the first n cumulants of an array}
+\usage{[k1,...,kn] = cumulant (X, n)}
+\description
+ This function returns unbiased estimates of the first \exmp{n}
+ cumulants from an array \exmp{X} of samples of a probability
+ distribution.  The cumulants are returned as an array of size
+ \exmp{n}.
+\notes
+ The implementation currently restricts the value of n to 1, 2, 3, or 4.
+ The estimator of the nth cumulent is also known as the nth k-statistic.
+\seealso{mean, stddev, kurtosis, skewness}
+\done
+
 \function{median}
 \synopsis{Compute the median of an array of values}
 \usage{m = median (a [,i])}
@@ -136,7 +151,7 @@
 \synopsis{Compute the skewness of an array of values}
 \usage{s = skewness (a)}
 \description
-  This function computes the so-called skewness of the array \exmp{a}.
+  This function computes the skewness (g1) of the array \exmp{a}.
 \seealso{mean, stddev, kurtosis}
 \done
 
@@ -144,7 +159,7 @@
 \synopsis{Compute the kurtosis of an array of values}
 \usage{s = kurtosis (a)}
 \description
- This function computes the so-called kurtosis of the array \exmp{a}.
+ This function computes the kurtosis (g2) of the array \exmp{a}.
 \notes
  This function is defined such that the kurtosis of the normal
  distribution is 0, and is also known as the ``excess-kurtosis''.
