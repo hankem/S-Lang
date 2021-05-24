@@ -23,5 +23,7 @@ extern SLChksum_Type *_pSLchksum_md5_new (char *name);
 extern SLChksum_Type *_pSLchksum_crc8_new (char *name);
 extern SLChksum_Type *_pSLchksum_crc16_new (char *name);
 extern SLChksum_Type *_pSLchksum_crc32_new (char *name);
+extern SLChksum_Type *_pSLchksum_sha256_new (char *name);
+extern SLChksum_Type *_pSLchksum_sha512_new (char *name);
 #endif
 

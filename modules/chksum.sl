@@ -253,3 +253,79 @@ define crc32sum_file (file)
    return chksum_file (file, "crc32";;__qualifiers);
 }
 
+
+%%%
+define sha256sum_new ()
+{
+   return chksum_new ("sha256");
+}
+
+define sha256sum (str)
+{
+   variable c = _chksum_new ("sha256");
+   _chksum_accumulate (c, str);
+   return _chksum_close (c);
+}
+
+define sha256sum_file (file)
+{
+   return chksum_file (file, "sha256");
+}
+%%%
+
+%%%
+define sha224sum_new ()
+{
+   return chksum_new ("sha224");
+}
+
+define sha224sum (str)
+{
+   variable c = _chksum_new ("sha224");
+   _chksum_accumulate (c, str);
+   return _chksum_close (c);
+}
+
+define sha224sum_file (file)
+{
+   return chksum_file (file, "sha224");
+}
+%%%
+
+%%%
+define sha512sum_new ()
+{
+   return chksum_new ("sha512");
+}
+
+define sha512sum (str)
+{
+   variable c = _chksum_new ("sha512");
+   _chksum_accumulate (c, str);
+   return _chksum_close (c);
+}
+
+define sha512sum_file (file)
+{
+   return chksum_file (file, "sha512");
+}
+%%%
+
+%%%
+define sha384sum_new ()
+{
+   return chksum_new ("sha384");
+}
+
+define sha384sum (str)
+{
+   variable c = _chksum_new ("sha384");
+   _chksum_accumulate (c, str);
+   return _chksum_close (c);
+}
+
+define sha384sum_file (file)
+{
+   return chksum_file (file, "sha384");
+}
+%%%

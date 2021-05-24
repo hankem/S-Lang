@@ -115,6 +115,9 @@ Changes since 2.3.2
 53. slsh/lib: Updated unit/regression tests for better coverage
 54. slsh/lib/print.sl: Use >= instead of > when comparing the number
     of screen rows to determine if the pager should be used.
+55. modules/chksum-module: Added sha224, sha256, sha384, and sha512
+    algorithms kindly provided by Jakob Stierhof
+
 {{{ Previous Versions
 
 Changes since 2.3.1a
