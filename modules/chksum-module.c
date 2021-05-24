@@ -173,8 +173,31 @@ static void chksum_close (Chksum_Object_Type *obj)
 	return;
      }
 
+   if (SLang_qualifier_exists("binary")) /* allow to return the digest as BString */
+     {
+        SLang_BString_Type *bstr;
+        if (NULL == (bstr = SLbstring_create_malloced(digest, digest_len, 0)))
+           {
+	     SLang_push_null();
+	     return;
+	   }
+        (void) SLang_push_bstring(bstr);
+        SLbstring_free(bstr);
+	return;
+     }
+
    hexify_string (digest, digest_len);
    (void) SLang_push_malloced_string ((char *)digest);
+}
+
+static SLChksum_Type *get_chksum_type_from_obj (Chksum_Object_Type *obj)
+{
+   SLChksum_Type *c = obj->c;
+
+   if (c == NULL)
+     SLang_verror (SL_InvalidParm_Error, "Checksum object is invalid");
+
+   return c;
 }
 
 static void chksum_accumulate (Chksum_Object_Type *obj, SLang_BString_Type *b)
@@ -183,16 +206,35 @@ static void chksum_accumulate (Chksum_Object_Type *obj, SLang_BString_Type *b)
    SLstrlen_Type len;
    unsigned char *s;
 
-   if (NULL == (c = obj->c))
-     {
-	SLang_verror (SL_InvalidParm_Error, "Checksum object is invalid");
-	return;
-     }
+   if (NULL == (c = get_chksum_type_from_obj (obj)))
+     return;
+
    if (NULL == (s = SLbstring_get_pointer (b, &len)))
      return;
 
    (void) c->accumulate (c, s, len);
 }
+
+static unsigned int chksum_buffer_size (Chksum_Object_Type *obj)
+{
+   SLChksum_Type *c;
+
+   if (NULL == (c = get_chksum_type_from_obj (obj)))
+     return 0;
+
+   return c->buffer_size;
+}
+
+static unsigned int chksum_digest_length (Chksum_Object_Type *obj)
+{
+   SLChksum_Type *c;
+
+   if (NULL == (c = get_chksum_type_from_obj (obj)))
+     return 0;
+
+   return c->digest_len;
+}
+
 
 #define DUMMY_CHKSUM_TYPE ((unsigned int)-1)
 static SLang_Intrin_Fun_Type Intrinsics [] =
@@ -200,6 +242,8 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
    MAKE_INTRINSIC_1 ("_chksum_new", chksum_new, SLANG_VOID_TYPE, SLANG_STRING_TYPE),
    MAKE_INTRINSIC_2 ("_chksum_accumulate", chksum_accumulate, SLANG_VOID_TYPE, DUMMY_CHKSUM_TYPE, SLANG_BSTRING_TYPE),
    MAKE_INTRINSIC_1 ("_chksum_close", chksum_close, SLANG_VOID_TYPE, DUMMY_CHKSUM_TYPE),
+   MAKE_INTRINSIC_1 ("_chksum_digest_length", chksum_digest_length, SLANG_UINT_TYPE, DUMMY_CHKSUM_TYPE),
+   MAKE_INTRINSIC_1 ("_chksum_buffer_size", chksum_buffer_size, SLANG_UINT_TYPE, DUMMY_CHKSUM_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

@@ -308,6 +308,7 @@ SLChksum_Type *_pSLchksum_sha1_new (char *name)
    sha1->accumulate = sha1_accumulate;
    sha1->close = sha1_close;
    sha1->digest_len = SHA1_DIGEST_LEN;
+   sha1->buffer_size = SHA1_BUFSIZE;
 
    sha1->h[0] = 0x67452301;
    sha1->h[1] = 0xEFCDAB89;

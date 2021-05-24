@@ -118,9 +118,19 @@ private define chksum_accumulate (c, str)
 
 private define chksum_close (c)
 {
-   variable chksum = _chksum_close (c.obj);
+   variable chksum = _chksum_close (c.obj;; __qualifiers);
    c.obj = NULL;
    return chksum;
+}
+
+private define chksum_digest_length (c)
+{
+   return _chksum_digest_length(c.obj);
+}
+
+private define chksum_buffer_size (c)
+{
+   return _chksum_buffer_size(c.obj);
 }
 
 define chksum_new (name)
@@ -132,6 +142,8 @@ define chksum_new (name)
 	obj = _chksum_new (name;; q),
 	accumulate = &chksum_accumulate,
 	close = &chksum_close,
+	digest_length = &chksum_digest_length,
+	buffer_size = &chksum_buffer_size,
 	name = name,
      };
 }
@@ -171,7 +183,7 @@ define md5sum (str)
 {
    variable c = _chksum_new ("md5");
    _chksum_accumulate (c, str);
-   return _chksum_close (c);
+   return _chksum_close (c;; __qualifiers);
 }
 
 define md5sum_file (file)
@@ -188,7 +200,7 @@ define sha1sum (str)
 {
    variable c = _chksum_new ("sha1");
    _chksum_accumulate (c, str);
-   return _chksum_close (c);
+   return _chksum_close (c;; __qualifiers);
 }
 
 define sha1sum_file (file)
@@ -212,7 +224,7 @@ define crc8sum (str)
 
 define crc8sum_file (file)
 {
-   return chksum_file (file, "crc8";;__qualifiers);
+   return chksum_file (file, "crc8";; __qualifiers);
 }
 
 define crc16_new ()
@@ -231,7 +243,7 @@ define crc16sum (str)
 
 define crc16sum_file (file)
 {
-   return chksum_file (file, "crc16";;__qualifiers);
+   return chksum_file (file, "crc16";; __qualifiers);
 }
 
 define crc32_new ()
@@ -250,7 +262,7 @@ define crc32sum (str)
 
 define crc32sum_file (file)
 {
-   return chksum_file (file, "crc32";;__qualifiers);
+   return chksum_file (file, "crc32";; __qualifiers);
 }
 
 
@@ -264,31 +276,31 @@ define sha256sum (str)
 {
    variable c = _chksum_new ("sha256");
    _chksum_accumulate (c, str);
-   return _chksum_close (c);
+   return _chksum_close (c;; __qualifiers);
 }
 
 define sha256sum_file (file)
 {
-   return chksum_file (file, "sha256");
+   return chksum_file (file, "sha256";; __qualifiers);
 }
 %%%
 
 %%%
 define sha224sum_new ()
 {
-   return chksum_new ("sha224");
+   return chksum_new ("sha224";; __qualifiers);
 }
 
 define sha224sum (str)
 {
    variable c = _chksum_new ("sha224");
    _chksum_accumulate (c, str);
-   return _chksum_close (c);
+   return _chksum_close (c;; __qualifiers);
 }
 
 define sha224sum_file (file)
 {
-   return chksum_file (file, "sha224");
+   return chksum_file (file, "sha224";; __qualifiers);
 }
 %%%
 
@@ -302,12 +314,12 @@ define sha512sum (str)
 {
    variable c = _chksum_new ("sha512");
    _chksum_accumulate (c, str);
-   return _chksum_close (c);
+   return _chksum_close (c;; __qualifiers);
 }
 
 define sha512sum_file (file)
 {
-   return chksum_file (file, "sha512");
+   return chksum_file (file, "sha512";; __qualifiers);
 }
 %%%
 
@@ -321,11 +333,67 @@ define sha384sum (str)
 {
    variable c = _chksum_new ("sha384");
    _chksum_accumulate (c, str);
-   return _chksum_close (c);
+   return _chksum_close (c;; __qualifiers);
 }
 
 define sha384sum_file (file)
 {
-   return chksum_file (file, "sha384");
+   return chksum_file (file, "sha384";; __qualifiers);
 }
 %%%
+
+private define hmac_close (h)
+{
+   variable inner = _chksum_close(h.obj; binary);
+   h.obj = NULL;
+
+   _chksum_accumulate(h.obj2, inner);
+
+   variable r = _chksum_close(h.obj2;; __qualifiers);
+   h.obj2 = NULL;
+
+   return r;
+}
+
+define hmac_new (name, key)
+{
+   variable obj = _chksum_new(name);
+   variable obj2 = _chksum_new(name);
+   variable tmp = _chksum_new(name);
+   _chksum_accumulate(tmp, key);
+   variable kk = _chksum_close(tmp; binary);
+
+   if ((typeof(kk) != BString_Type) && (typeof(kk) != String_Type))
+     {
+        throw UsageError, "HMAC requires a hash function producing a binary string";
+     }
+   variable dlen = _chksum_buffer_size(obj);
+   if (dlen <= 0)
+     {
+        throw UsageError, "HMAC requires a secure hash function";
+     }
+
+   if (bstrlen(key)>dlen)
+     {
+        key = kk;
+     }
+
+   % generate inner padding array
+   variable kip = bstring_to_array(key+("\0"B)[[0:dlen-bstrlen(key)-1]/dlen]);
+   kip = array_to_bstring(typecast(kip xor '\x36', UChar_Type));
+  _chksum_accumulate(obj, kip);
+
+   % generate outer padding array
+   variable kop = bstring_to_array(key+("\0"B)[[0:dlen-bstrlen(key)-1]/dlen]);
+   kop = array_to_bstring(typecast(kop xor '\x5c', UChar_Type));
+   _chksum_accumulate(obj2, kop);
+
+   return struct
+     {
+	obj = obj,
+	obj2 = obj2,
+	name = name,
+	close = &hmac_close,
+	accumulate = &chksum_accumulate,
+     };
+}

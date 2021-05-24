@@ -413,6 +413,7 @@ SLChksum_Type *_pSLchksum_crc8_new (char *name)
    cs->accumulate = crc8_accumulate;
    cs->close = crc8_close;
    cs->digest_len = 1;
+   cs->buffer_size = 0;
 
    if (NULL == (cs->vlookup_table = get_crc8_table (cs->poly)))
      {
@@ -433,6 +434,7 @@ SLChksum_Type *_pSLchksum_crc16_new (char *name)
    cs->accumulate = crc16_accumulate;
    cs->close = crc16_close;
    cs->digest_len = 2;
+   cs->buffer_size = 0;
 
    if (NULL == (cs->vlookup_table = get_crc16_table (cs->poly)))
      {
@@ -453,6 +455,7 @@ SLChksum_Type *_pSLchksum_crc32_new (char *name)
    cs->accumulate = crc32_accumulate;
    cs->close = crc32_close;
    cs->digest_len = 4;
+   cs->buffer_size = 0;
 
    if (NULL == (cs->vlookup_table = get_crc32_table (cs->poly)))
      {

@@ -26,7 +26,6 @@
 #define SHA512_BITSIZE    512
 
 #define CHKSUM_TYPE_PRIVATE_FIELDS \
-   unsigned int bufsize; \
    unsigned int bitsize; \
    _pSLuint32_Type *h; \
    _pSLuint32_Type num_bits[4];                /* 64 bit/128 bit representation */ \
@@ -345,7 +344,7 @@ static int init_sha224_object (SLChksum_Type *chksum) /*{{{*/
    chksum->h[6] = 0x64f98fa7;
    chksum->h[7] = 0xbefa4fa4;
 
-   chksum->bufsize = SHA224_BUFSIZE;
+   chksum->buffer_size = SHA224_BUFSIZE;
    chksum->bitsize = SHA224_BITSIZE;
    chksum->digest_len = SHA224_DIGEST_LEN;
 
@@ -370,7 +369,7 @@ static int init_sha256_object (SLChksum_Type *chksum) /*{{{*/
    chksum->h[6] = 0x1f83d9ab;
    chksum->h[7] = 0x5be0cd19;
 
-   chksum->bufsize = SHA256_BUFSIZE;
+   chksum->buffer_size = SHA256_BUFSIZE;
    chksum->bitsize = SHA256_BITSIZE;
    chksum->digest_len = SHA256_DIGEST_LEN;
 
@@ -406,7 +405,7 @@ static int init_sha384_object (SLChksum_Type *chksum) /*{{{*/
    ((_pSLuint32_Type (*)[2])(chksum->h))[7][0] = 0x47b5481d; ((_pSLuint32_Type (*)[2])(chksum->h))[7][1] = 0xbefa4fa4;
 #endif /* !_pSLANG_UINT64_TYPE */
 
-   chksum->bufsize = SHA384_BUFSIZE;
+   chksum->buffer_size = SHA384_BUFSIZE;
    chksum->bitsize = SHA384_BITSIZE;
    chksum->digest_len = SHA384_DIGEST_LEN;
 
@@ -442,7 +441,7 @@ static int init_sha512_object (SLChksum_Type *chksum) /*{{{*/
    ((_pSLuint32_Type (*)[2])(chksum->h))[7][0] = 0x5be0cd19; ((_pSLuint32_Type (*)[2])(chksum->h))[7][1] = 0x137e2179;
 #endif /* !_pSLANG_UINT64_TYPE */
 
-   chksum->bufsize = SHA512_BUFSIZE;
+   chksum->buffer_size = SHA512_BUFSIZE;
    chksum->bitsize = SHA512_BITSIZE;
    chksum->digest_len = SHA512_DIGEST_LEN;
 
@@ -754,7 +753,7 @@ static int sha256_accumulate (SLChksum_Type *sha256, unsigned char *buf, unsigne
 
    if (num_buffered)
      {
-	unsigned int dlen = sha256->bufsize - sha256->num_buffered;
+	unsigned int dlen = sha256->buffer_size - sha256->num_buffered;
 
 	if (buflen < dlen)
 	  dlen = buflen;
@@ -764,7 +763,7 @@ static int sha256_accumulate (SLChksum_Type *sha256, unsigned char *buf, unsigne
 	buflen -= dlen;
 	buf += dlen;
 
-	if (num_buffered < sha256->bufsize)
+	if (num_buffered < sha256->buffer_size)
 	  {
 	     sha256->num_buffered = num_buffered;
 	     return 0;
@@ -774,12 +773,12 @@ static int sha256_accumulate (SLChksum_Type *sha256, unsigned char *buf, unsigne
 	num_buffered = 0;
      }
 
-   num_buffered = buflen % sha256->bufsize;
+   num_buffered = buflen % sha256->buffer_size;
    bufmax = buf + (buflen - num_buffered);
    while (buf < bufmax)
      {
 	sha256_process_block (sha256, buf);
-	buf += sha256->bufsize;
+	buf += sha256->buffer_size;
      }
 
    if (num_buffered)
@@ -805,7 +804,7 @@ static int sha512_accumulate (SLChksum_Type *sha512, unsigned char *buf, unsigne
 
    if (num_buffered)
      {
-	unsigned int dlen = sha512->bufsize - sha512->num_buffered;
+	unsigned int dlen = sha512->buffer_size - sha512->num_buffered;
 
 	if (buflen < dlen)
 	  dlen = buflen;
@@ -815,7 +814,7 @@ static int sha512_accumulate (SLChksum_Type *sha512, unsigned char *buf, unsigne
 	buflen -= dlen;
 	buf += dlen;
 
-	if (num_buffered < sha512->bufsize)
+	if (num_buffered < sha512->buffer_size)
 	  {
 	     sha512->num_buffered = num_buffered;
 	     return 0;
@@ -825,12 +824,12 @@ static int sha512_accumulate (SLChksum_Type *sha512, unsigned char *buf, unsigne
 	num_buffered = 0;
      }
 
-   num_buffered = buflen % sha512->bufsize;
+   num_buffered = buflen % sha512->buffer_size;
    bufmax = buf + (buflen - num_buffered);
    while (buf < bufmax)
      {
 	sha512_process_block (sha512, buf);
-	buf += sha512->bufsize;
+	buf += sha512->buffer_size;
      }
 
    if (num_buffered)
@@ -922,7 +921,7 @@ static int sha256_close (SLChksum_Type *sha256, unsigned char *digest, int just_
      }
 
    // clear it to not leave sensitive data long lived
-   memset(sha256->buf, 0, sha256->bufsize);
+   memset(sha256->buf, 0, sha256->buffer_size);
 
    SLfree((char*)(sha256->buf));
    SLfree((char*)(sha256->h));
@@ -949,8 +948,8 @@ static int sha512_close (SLChksum_Type *sha512, unsigned char *digest, int just_
 	uint64_to_uchar(sha512->h, sha512->bitsize/64, digest);
      }
 
-    /* clear it to not leave sensitive data long lived */
-   memset(sha512->buf, 0, sha512->bufsize);
+   /* clear it to not leave sensitive data long lived */
+   memset(sha512->buf, 0, sha512->buffer_size);
 
    SLfree((char*)(sha512->buf));
    SLfree((char*)(sha512->h));

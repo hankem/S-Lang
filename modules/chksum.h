@@ -10,6 +10,7 @@ typedef struct SLChksum_Type
     */
    int (*close)(struct SLChksum_Type *, unsigned char *, int);
    unsigned int digest_len;	       /* set by open */
+   unsigned int buffer_size;           /* the buffer length */
    int close_will_push;		       /* if non-zero, the close method will push the result */
 #ifdef CHKSUM_TYPE_PRIVATE_FIELDS
    /* private data */

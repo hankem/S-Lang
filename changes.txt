@@ -117,6 +117,8 @@ Changes since 2.3.2
     of screen rows to determine if the pager should be used.
 55. modules/chksum-module: Added sha224, sha256, sha384, and sha512
     algorithms kindly provided by Jakob Stierhof
+56. modules/chksum-module: Added HMAC message authentication code
+    algorithm (Jakob Stierhof)
 
 {{{ Previous Versions
 
