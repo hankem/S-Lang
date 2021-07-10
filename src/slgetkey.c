@@ -45,8 +45,8 @@ unsigned int SLang_getkey (void)
 	SLang_Input_Buffer_Len--;
 	imax = SLang_Input_Buffer_Len;
 
-	SLMEMCPY ((char *) SLang_Input_Buffer,
-		(char *) (SLang_Input_Buffer + 1), imax);
+	memmove ((char *) SLang_Input_Buffer,
+		 (char *) (SLang_Input_Buffer + 1), imax);
      }
    else if (SLANG_GETKEY_ERROR == (ch = _pSLsys_getkey ())) return ch;
 
@@ -86,11 +86,9 @@ int SLang_ungetkey_string (unsigned char *s, unsigned int n)
 
 int SLang_buffer_keystring (unsigned char *s, unsigned int n)
 {
-
    if (n + SLang_Input_Buffer_Len + 3 > SL_MAX_INPUT_BUFFER_LEN) return -1;
 
-   SLMEMCPY ((char *) SLang_Input_Buffer + SLang_Input_Buffer_Len,
-	   (char *) s, n);
+   memcpy ((char *) SLang_Input_Buffer + SLang_Input_Buffer_Len, (char *) s, n);
    SLang_Input_Buffer_Len += n;
    return 0;
 }

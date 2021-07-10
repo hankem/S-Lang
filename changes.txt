@@ -121,6 +121,8 @@ Changes since 2.3.2
     algorithm (Jakob Stierhof)
 57. modules/mkfiles/makefile.all: Added chksum_sha2 to the non-Unix
     makefile.
+58. src/slgetkey.c: Use memmove instead of SLMEMCPY to avoid issues
+    with coping to an overlapping buffer. (William Ahern)
 
 {{{ Previous Versions
 
