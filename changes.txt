@@ -119,6 +119,8 @@ Changes since 2.3.2
     algorithms kindly provided by Jakob Stierhof
 56. modules/chksum-module: Added HMAC message authentication code
     algorithm (Jakob Stierhof)
+57. modules/mkfiles/makefile.all: Added chksum_sha2 to the non-Unix
+    makefile.
 
 {{{ Previous Versions
 
