@@ -123,6 +123,8 @@ Changes since 2.3.2
     makefile.
 58. src/slgetkey.c: Use memmove instead of SLMEMCPY to avoid issues
     with coping to an overlapping buffer. (William Ahern)
+59. modules/pcre.sl: The options qualifier was not being properly
+    handled by the pcre_matches function.
 
 {{{ Previous Versions
 

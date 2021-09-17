@@ -25,7 +25,7 @@ Qualifiers:\n\
    if (typeof (re) != PCRE_Type)
      {
 	variable compile_options = qualifier ("options", 0);
-	re = pcre_compile (re, options);
+	re = pcre_compile (re, compile_options);
      }
 
    variable n = pcre_exec (re, str, pos, options);

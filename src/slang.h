@@ -23,7 +23,7 @@ USA.
 */
 
 #define SLANG_VERSION 20303
-#define SLANG_VERSION_STRING "pre2.3.3-58"
+#define SLANG_VERSION_STRING "pre2.3.3-59"
 /* #ifdef __DATE__ */
 /* # define SLANG_VERSION_STRING SLANG_VERSION_STRING0 " " __DATE__ */
 /* #else */
@@ -1334,6 +1334,7 @@ SL_EXTERN int SLstruct_create_struct (unsigned int,
 /* This is an interface to atexit */
 SL_EXTERN int SLang_add_cleanup_function (void (*)(void));
 
+/* The SLmake_[n]string functions return malloced strings, and not slang hashed slstrings */
 SL_EXTERN char *SLmake_string (SLFUTURE_CONST char *);
 SL_EXTERN char *SLmake_nstring (SLFUTURE_CONST char *, SLstrlen_Type);
 /* Returns a null terminated string made from the first n characters of the
