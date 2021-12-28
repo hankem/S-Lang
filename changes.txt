@@ -125,6 +125,9 @@ Changes since 2.3.2
     with coping to an overlapping buffer. (William Ahern)
 59. modules/pcre.sl: The options qualifier was not being properly
     handled by the pcre_matches function.
+60. src/_slang.h,etc: replaced the dependence of the internal
+    _pSLang_get_run_stack* functions, which return absolute pointers,
+    in favor of relative offsets.
 
 {{{ Previous Versions
 

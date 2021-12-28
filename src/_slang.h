@@ -565,8 +565,6 @@ extern int _pSLpush_dollar_string (SLFUTURE_CONST char *);
 extern char *_pSLstringize_object (SLang_Object_Type *);
 extern int _pSLdump_objects (char *, SLang_Object_Type *, unsigned int, int);
 
-extern SLang_Object_Type *_pSLang_get_run_stack_pointer (void);
-extern SLang_Object_Type *_pSLang_get_run_stack_base (void);
 extern int _pSLang_dump_stack (void);
 extern int _pSLang_peek_at_stack2 (SLtype *);
 extern int _pSLang_restart_arg_list (int nargs);

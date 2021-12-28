@@ -411,7 +411,7 @@ int SLang_peek_at_stack_n (unsigned int n)
 {
    unsigned int stklen = (unsigned int)(Stack_Pointer - Run_Stack);
 
-   if (n >= stklen)
+   IF_UNLIKELY(n >= stklen)
      {
 	(void) SLang_set_error (SL_STACK_UNDERFLOW);
 	return -1;
@@ -10957,16 +10957,6 @@ SLCONST char *_pSLang_current_function_name (void)
      return NULL;
 
    return Current_Function->name;
-}
-
-SLang_Object_Type *_pSLang_get_run_stack_pointer (void)
-{
-   return Stack_Pointer;
-}
-
-SLang_Object_Type *_pSLang_get_run_stack_base (void)
-{
-   return Run_Stack;
 }
 
 int _pSLang_dump_stack (void) /*{{{*/

@@ -2165,7 +2165,7 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	     /* Pointer type?? Why?? */
 	     if (-1 == SLdo_pop ())
 	       return out;
-	     str = (char *) _pSLang_get_run_stack_pointer ();
+	     str = ((char *)NULL + SLstack_depth ());
 	     use_string = 1;
 	     use_long = 0;
 	     break;
@@ -2235,13 +2235,10 @@ int _pSLstrops_do_sprintf_n (int n) /*{{{*/
 {
    char *p;
    char *fmt;
-   SLang_Object_Type *ptr;
    int ofs;
 
    if (-1 == (ofs = SLreverse_stack (n + 1)))
      return -1;
-
-   ptr = _pSLang_get_run_stack_base () + ofs;
 
    if (SLang_pop_slstring(&fmt))
      return -1;
@@ -2249,7 +2246,7 @@ int _pSLstrops_do_sprintf_n (int n) /*{{{*/
    p = SLdo_sprintf (fmt);
    _pSLang_free_slstring (fmt);
 
-   SLdo_pop_n (_pSLang_get_run_stack_pointer () - ptr);
+   SLdo_pop_n (SLstack_depth () - ofs);
 
    if (_pSLang_Error)
      {

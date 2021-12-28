@@ -3527,38 +3527,30 @@ free_and_return:
 
 int _pSLarray_inline_array (void)
 {
-   SLang_Object_Type *obj, *objmin;
    SLtype type;
    unsigned int count;
    SLang_Array_Type *at;
 
-   obj = _pSLang_get_run_stack_pointer ();
-   objmin = _pSLang_get_run_stack_base ();
-
    count = SLang_Num_Function_Args;
    type = 0;
 
-   while ((count > 0) && (--obj >= objmin))
+   while (count > 0)
      {
-	SLtype this_type = obj->o_data_type;
+	int this_type;
 
-	if (type == 0)
-	  type = this_type;
-	else if (type != this_type)
+	count--;
+	if (-1 == (this_type = SLang_peek_at_stack_n (count)))
+	  return -1;
+
+	if (type == 0) type = (SLtype) this_type;
+	else if (type != (SLtype) this_type)
 	  {
-	     if (-1 == promote_to_common_type (type, this_type, &type))
+	     if (-1 == promote_to_common_type (type, (SLtype) this_type, &type))
 	       {
-		  _pSLclass_type_mismatch_error (type, this_type);
+		  _pSLclass_type_mismatch_error (type, (SLtype) this_type);
 		  return -1;
 	       }
 	  }
-	count--;
-     }
-
-   if (count != 0)
-     {
-	SLang_set_error (SL_STACK_UNDERFLOW);
-	return -1;
      }
 
    count = SLang_Num_Function_Args;
