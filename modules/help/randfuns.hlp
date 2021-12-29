@@ -335,7 +335,7 @@ rand_gauss
 rand
 
  SYNOPSIS
-  Generate random integers numbers
+  Generate random unsigned integers
 
  USAGE
   X = rand ([Rand_Type g,] [,num])

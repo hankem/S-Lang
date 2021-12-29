@@ -174,7 +174,7 @@
 \done
 
 \function{rand}
-\synopsis{Generate random integers numbers}
+\synopsis{Generate random unsigned integers}
 \usage{X = rand ([Rand_Type g,] [,num])}
 \description
  This function generates unsigned 32 bit randomly distributed

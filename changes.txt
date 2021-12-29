@@ -130,6 +130,7 @@ Changes since 2.3.2
     in favor of relative offsets.
 61. src/slang.c: Made the run-time stack dynamically growable up to a
     maximum configured size.
+62. modules/: Documentation updates
 
 {{{ Previous Versions
 

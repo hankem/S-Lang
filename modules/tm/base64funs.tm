@@ -123,7 +123,7 @@
      variable b64 = _base64_encoder_new (&encode_callback, &s);
      _base64_encoder_accumulate (b64, bstr);
      _base64_encoder_close (b64);
-     return b;
+     return s;
    }
 #v-
 \example

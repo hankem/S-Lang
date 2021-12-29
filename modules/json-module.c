@@ -558,7 +558,7 @@ static void free_string_array (char **sp, unsigned int n)
    SLfree ((char *)sp);
 }
 
-/* This has table implementation does not copy the strings */
+/* This hash table implementation does not copy the strings */
 #define HASH_TABLE_SIZE 601
 typedef struct String_Hash_Elem_Type
 {
