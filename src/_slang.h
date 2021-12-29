@@ -639,6 +639,8 @@ extern int _pSLcall_eos_handler (void);
 extern int _pSLcall_bof_handler (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
 extern int _pSLcall_eof_handler (void);
 extern int _pSLcall_debug_hook (SLFUTURE_CONST char *file, int linenum);
+extern int _pSLcall_bos_compile_hook (const char *file, long linenum);
+extern int _pSLcall_bof_compile_hook (const char *file, const char *func);
 /* extern int _pSLcall_debug_hook (char *file, int linenum, char *funct); */
 #endif
 

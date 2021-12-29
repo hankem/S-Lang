@@ -28,6 +28,8 @@ static SLang_Name_Type *BOS_Callback_Handler = NULL;
 static SLang_Name_Type *EOS_Callback_Handler = NULL;
 static SLang_Name_Type *BOF_Callback_Handler = NULL;
 static SLang_Name_Type *EOF_Callback_Handler = NULL;
+static SLang_Name_Type *BOF_Compile_Hook = NULL;
+static SLang_Name_Type *BOS_Compile_Hook = NULL;
 
 static void set_bos_eos_handlers (SLang_Name_Type *bos, SLang_Name_Type *eos)
 {
@@ -49,6 +51,20 @@ static void set_bof_eof_handlers (SLang_Name_Type *bof, SLang_Name_Type *eof)
    if (EOF_Callback_Handler != NULL)
      SLang_free_function (EOF_Callback_Handler);
    EOF_Callback_Handler = eof;
+}
+
+static void unset_bof_compile_hook (void)
+{
+   if (BOF_Compile_Hook != NULL)
+     SLang_free_function (BOF_Compile_Hook);
+   BOF_Compile_Hook = NULL;
+}
+
+static void unset_bos_compile_hook (void)
+{
+   if (BOS_Compile_Hook != NULL)
+     SLang_free_function (BOS_Compile_Hook);
+   BOS_Compile_Hook = NULL;
 }
 
 static int Handler_Active = 0;
@@ -113,6 +129,7 @@ int _pSLcall_eos_handler (void)
    return status;
 }
 
+
 int _pSLcall_bof_handler (SLFUTURE_CONST char *fun, SLFUTURE_CONST char *file)
 {
    int status = 0, err;
@@ -169,6 +186,42 @@ int _pSLcall_eof_handler (void)
    return status;
 }
 
+int _pSLcall_bos_compile_hook (const char *file, long linenum)
+{
+   if (_pSLang_Error || (NULL == BOS_Compile_Hook))
+     return 0;
+
+   if (file == NULL) file = "";
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_push_string ((char *)file))
+       || (-1 == SLclass_push_int_obj (SLANG_INT_TYPE, (int) linenum))
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (BOS_Compile_Hook)))
+     {
+	unset_bos_compile_hook ();
+	return -1;
+     }
+   return 0;
+}
+
+int _pSLcall_bof_compile_hook (const char *file, const char *func)
+{
+   if (_pSLang_Error || (NULL == BOF_Compile_Hook))
+     return 0;
+
+   if (file == NULL) file = "";
+   if ((-1 == SLang_start_arg_list ())
+       || (-1 == SLang_push_string ((char *)file))
+       || (-1 == SLang_push_string ((char *)func))
+       || (-1 == SLang_end_arg_list ())
+       || (-1 == SLexecute_function (BOF_Compile_Hook)))
+     {
+	unset_bof_compile_hook ();
+	return -1;
+     }
+   return 0;
+}
+
 static int pop_new_push_old (SLang_Name_Type **handler)
 {
    SLang_Name_Type *new_handler;
@@ -212,6 +265,16 @@ static void set_bof_handler (void)
 static void set_eof_handler (void)
 {
    (void) pop_new_push_old (&EOF_Callback_Handler);
+}
+
+static void set_bof_compile_hook (void)
+{
+   (void) pop_new_push_old (&BOF_Compile_Hook);
+}
+
+static void set_bos_compile_hook (void)
+{
+   (void) pop_new_push_old (&BOS_Compile_Hook);
 }
 
 #if SLANG_HAS_DEBUGGER_SUPPORT
@@ -366,6 +429,8 @@ static SLang_Intrin_Fun_Type Intrin_Funs [] =
    MAKE_INTRINSIC_0("_set_eos_handler", set_eos_handler, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_set_bof_handler", set_bof_handler, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("_set_eof_handler", set_eof_handler, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_set_bof_compile_hook", set_bof_compile_hook, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_0("_set_bos_compile_hook", set_bos_compile_hook, SLANG_VOID_TYPE),
 #if SLANG_HAS_DEBUGGER_SUPPORT
    MAKE_INTRINSIC_0("_set_frame_variable", set_frame_variable, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_IS("_get_frame_variable", get_frame_variable, SLANG_VOID_TYPE),

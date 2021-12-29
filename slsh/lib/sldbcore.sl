@@ -21,7 +21,8 @@
 %    it may be limited due to the lack of line number information.
 %
 %
-require ("print");
+%require ("print");
+()=evalfile("print");
 
 private variable Debugger_Methods = struct
 {

@@ -8581,6 +8581,12 @@ static int lang_define_function (SLFUTURE_CONST char *name, unsigned char type, 
 	return -1;
      }
    Compile_ByteCode_Ptr = This_Compile_Block;
+
+#if SLANG_HAS_DEBUG_CODE && SLANG_HAS_BOSEOS
+   if (h->issue_bofeof_info
+       && (-1 == _pSLcall_bof_compile_hook (h->file, name)))
+     return -1;
+#endif
    return 0;
 }
 
@@ -10215,7 +10221,8 @@ static void compile_basic_token_mode (_pSLang_Token_Type *t)
 #endif
       case BOS_TOKEN:
 #if SLANG_HAS_DEBUG_CODE && SLANG_HAS_BOSEOS
-	compile_line_info (SLANG_BC_BOS, This_Compile_Filename, t->v.long_val);
+	if (0 == _pSLcall_bos_compile_hook (This_Compile_Filename, t->v.long_val))
+	  compile_line_info (SLANG_BC_BOS, This_Compile_Filename, t->v.long_val);
 #endif
 	break;
       case EOS_TOKEN:
