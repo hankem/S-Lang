@@ -133,6 +133,8 @@ Changes since 2.3.2
 62. modules/: Documentation updates
 63. src/: Added _set_bos/f_compile_hook functions to specify a
     function to get called when a statement or function gets compiled.
+64. src/sllimits.h: Reduced the initial stack size to a value similar
+    to what it was before change #61.
 
 {{{ Previous Versions
 

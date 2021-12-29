@@ -30,11 +30,11 @@ USA.
  * SLANG_MAX_STACK_LEN.
  */
 #ifdef __MSDOS_16BIT__
-# define SLANG_MAX_STACK_LEN		512
-# define SLANG_INITIAL_STACK_LEN        1024
+# define SLANG_INITIAL_STACK_LEN        512
+# define SLANG_MAX_STACK_LEN		1024
 #else
+# define SLANG_INITIAL_STACK_LEN	(2*1024)
 # define SLANG_MAX_STACK_LEN		(1024*1024)
-# define SLANG_INITIAL_STACK_LEN	(32*1024)
 #endif
 
 /* slang.c: This sets the size on the depth of function calls.
