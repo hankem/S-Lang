@@ -25,11 +25,16 @@ USA.
 /* slstring.c: Size of the hash table used for strings (prime numbers) */
 #define SLSTRING_HASH_TABLE_SIZE       140009  /* was 32327, 25013, 10007 */
 /* Other large primes: 70001, 100003, 300007,... */
-/* slang.c: maximum size of run time stack */
+/* slang.c: The stack size grows dynamically from SLANG_INITIAL_STACK_LEN
+ * in increments of SLANG_INITIAL_STACK_LEN up to a maximum size of
+ * SLANG_MAX_STACK_LEN.
+ */
 #ifdef __MSDOS_16BIT__
-# define SLANG_MAX_STACK_LEN		500
+# define SLANG_MAX_STACK_LEN		512
+# define SLANG_INITIAL_STACK_LEN        1024
 #else
-# define SLANG_MAX_STACK_LEN		2500
+# define SLANG_MAX_STACK_LEN		(1024*1024)
+# define SLANG_INITIAL_STACK_LEN	(32*1024)
 #endif
 
 /* slang.c: This sets the size on the depth of function calls.

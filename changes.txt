@@ -128,6 +128,8 @@ Changes since 2.3.2
 60. src/_slang.h,etc: replaced the dependence of the internal
     _pSLang_get_run_stack* functions, which return absolute pointers,
     in favor of relative offsets.
+61. src/slang.c: Made the run-time stack dynamically growable up to a
+    maximum configured size.
 
 {{{ Previous Versions
 
