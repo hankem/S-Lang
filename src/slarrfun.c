@@ -1538,7 +1538,7 @@ static int check_range_indices (int len, int *ip, int *jp)
 /* Usage: array_swap (a, i, j [,dim]);  (dim not yet supported) */
 static void array_swap (void)
 {
-   int i, j;
+   SLindex_Type i, j;
    int len;
    unsigned char *src, *dst;
    size_t sizeof_type;
@@ -1555,15 +1555,16 @@ static void array_swap (void)
 	have_dim = 1;
      }
 
-   if ((-1 == SLang_pop_integer (&j))
-       || (-1 == SLang_pop_integer (&i)))
+   if ((-1 == SLang_pop_array_index (&j))
+       || (-1 == SLang_pop_array_index (&i))
+       || (-1 == pop_writable_array (&at)))
      return;
 
    if (i == j)
-     return;			       /* leave array on stack */
-
-   if (-1 == pop_writable_array (&at))
-     return;
+     {
+	SLang_free_array (at);
+	return;
+     }
 
    if (have_dim)
      {

@@ -135,6 +135,9 @@ Changes since 2.3.2
     function to get called when a statement or function gets compiled.
 64. src/sllimits.h: Reduced the initial stack size to a value similar
     to what it was before change #61.
+65. src/slarrfun.c: array_swap was returning a copy of the input array
+    when when swapping an array element with itself (bug reported by
+    Jakob Stierhof)
 
 {{{ Previous Versions
 
