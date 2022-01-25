@@ -138,6 +138,8 @@ Changes since 2.3.2
 65. src/slarrfun.c: array_swap was returning a copy of the input array
     when when swapping an array element with itself (bug reported by
     Jakob Stierhof)
+66. modules/csv.sl: If _csv_decode_row fails, include in the error
+    message the line number of the file where the error was detected
 
 {{{ Previous Versions
 

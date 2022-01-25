@@ -14,6 +14,7 @@ private define read_fp_callback (in_quote, info)
 	if (-1 == fgets (&line, info.fp))
 	  return NULL;
 
+	info.line_num++;
 	if ((line[0] == comment_char)
 	    && (in_quote == 0)
 	    && (0 == strnbytecmp (line, info.comment, info.comment_len)))
@@ -40,6 +41,7 @@ private define read_strings_callback (in_quote, str_info)
    if (line[-1] != '\n')
      str_info.output_crlf = 1;
 
+   str_info.line_num++;
    return line;
 }
 
@@ -185,8 +187,16 @@ Qualifiers:\n\
 	  }
      }
 
-   variable datastruct = NULL, ncols;
-   variable row_data = _csv_decode_row (csv.decoder, flags);
+   variable datastruct = NULL, ncols, row_data, e;
+   try (e)
+     {
+	row_data = _csv_decode_row (csv.decoder, flags);
+     }
+   catch AnyError:
+     {
+	throw e.error, sprintf ("Error encountered decoding line %S: %S", csv.func_data.line_num, e.message);
+     }
+
    variable nread = 0;
    if (row_data != NULL)
      {
@@ -317,8 +327,18 @@ Qualifiers:\n\
      }
 
    variable min_row_size = 1+max(column_ints);
-   while (row_data = _csv_decode_row (csv.decoder, flags), row_data != NULL)
+   forever
      {
+	try (e)
+	  {
+	     row_data = _csv_decode_row (csv.decoder, flags);
+	  }
+	catch AnyError:
+	  {
+	     throw e.error, sprintf ("Error encountered decoding line %S: %S", csv.func_data.line_num, e.message);
+	  }
+	if (row_data == NULL) break;
+
 	if (length (row_data) < min_row_size)
 	  {
 	     % FIXME-- make what to do here configurable
@@ -383,6 +403,7 @@ Qualifiers:\n\
 	func_data = struct
 	  {
 	     strings = fp,
+	     line_num = skiplines,
 	     i = skiplines, n = length(fp),
 	     output_crlf = 0,
 	     comment_char = comment_char,
@@ -411,6 +432,7 @@ Qualifiers:\n\
 	func_data = struct
 	  {
 	     fp = fp,
+	     line_num = skiplines,
 	     comment_char = comment_char,
 	     comment = comment,
 	     comment_len = ((comment == NULL) ? 0 : strbytelen(comment)),
@@ -424,6 +446,7 @@ Qualifiers:\n\
 	decoder = _csv_decoder_new (func, func_data, delim, quote, flags),
 	readrow = &read_row,
 	readcol = &read_cols,
+	func_data = func_data,
      };
 
    return csv;
