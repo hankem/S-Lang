@@ -545,7 +545,7 @@ static int bind_af_inet (Socket_Type *s, int nargs)
    int status;
    Host_Addr_Info_Type *hinfo;
 
-   if (-1 == pop_host_port ("connect", nargs, &host, &port))
+   if (-1 == pop_host_port ("bind", nargs, &host, &port))
      return -1;
 
    if (NULL == (hinfo = get_host_addr_info (host)))

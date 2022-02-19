@@ -140,6 +140,8 @@ Changes since 2.3.2
     Jakob Stierhof)
 66. modules/csv.sl: If _csv_decode_row fails, include in the error
     message the line number of the file where the error was detected
+67. modules/socket-module.c: Corrected an error message for the bind
+    function
 
 {{{ Previous Versions
 
