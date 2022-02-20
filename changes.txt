@@ -143,6 +143,9 @@ Changes since 2.3.2
 67. modules/socket-module.c: Corrected an error message for the bind
     function
 68. Updated the copyright year
+69. Added slcov script which generates lcov-compatible code coverage
+    data
+
 
 {{{ Previous Versions
 

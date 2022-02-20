@@ -1,0 +1,358 @@
+#!/usr/bin/env slsh
+() = evalfile ("cmdopt");
+() = evalfile ("csv");
+
+private variable Version = "0.1.0";
+private variable Output_Fp;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+_boseos_info = 0;
+
+private variable Hits_Hash = Assoc_Type[UInt_Type, 0];
+private define bos_handler (file, line)
+{
+   variable h = strcat (file, "\t", string(line));
+   Hits_Hash[h] += 1;
+}
+
+private variable Func_Hits = Assoc_Type[UInt_Type, 0];
+private define bof_handler (func, file)
+{
+   variable h = strcat (file, "\t", func);
+   %() = fprintf (stderr, "bof_handler: %S\n", h);
+   Func_Hits[h] += 1;
+}
+
+#ifexists _set_bof_compile_hook
+private variable Func_List = Assoc_Type[Int_Type, 0];
+private define bof_compile_hook (file, fname)
+{
+   Func_List[strcat (file, "\t", fname)] = 1;
+}
+
+private define bos_compile_hook (file, line)
+{
+   Hits_Hash[strcat (file, "\t", string(line))] = 0;
+}
+#endif
+
+define slcov_enable ()
+{
+   ()=_set_bos_handler (&bos_handler);
+   ()=_set_bof_handler (&bof_handler);
+   _boseos_info = 3;
+   _bofeof_info = 1;
+#ifexists _set_bof_compile_hook
+   ()=_set_bof_compile_hook (&bof_compile_hook);
+   ()=_set_bos_compile_hook (&bos_compile_hook);
+#endif
+}
+
+define slcov_disable ()
+{
+   ()=_set_bos_handler (NULL);
+   ()=_set_eos_handler (NULL);
+   ()=_set_bof_handler (NULL);
+   _boseos_info = 0;
+   _bofeof_info = 0;
+#ifexists _set_bof_compile_hook
+   ()=_set_bof_compile_hook (NULL);
+   ()=_set_bos_compile_hook (NULL);
+#endif
+}
+
+private define make_absolute_filename (file)
+{
+   file = path_concat (getcwd(), file);
+   file = strreplace (file, "/./", "/");
+   ifnot (is_substr (file, "../")) return file;
+   variable components = strchop (file, '/', 0);
+   file = "/";
+   foreach (components)
+     {
+	variable c = ();
+	if (c == "..")
+	  file = path_dirname (file);
+	else
+	  file = path_concat (file, c);
+     }
+   return file;
+}
+
+private define output_trace_file (fp, csv)
+{
+   variable file = NULL, i;
+   _for i (0, length (csv.file)-1, 1)
+     {
+	if (file != csv.file[i])
+	  {
+	     if (file != NULL) () = fputs ("end_of_record\n", fp);
+	     () = fputs ("TN:\n", fp);
+	     file = csv.file[i];
+	     % Use an absolute pathname to faciliate merging output files
+	     () = fprintf (fp, "SF:%s\n", make_absolute_filename (file));
+	     variable jj, j = where ((csv.file == file) and (csv.function != ""));
+	     foreach jj (j)
+	       () = fprintf (fp, "FN:%d,%s\n", csv.lineno[jj], csv.function[jj]);
+
+	     foreach jj (j)
+	       {
+		  () = fprintf (fp, "FNDA:%d,%s\n", csv.fhits[jj], csv.function[jj]);
+	       }
+
+	     () = fprintf (fp, "FNF:%d\n", length(j));
+	     () = fprintf (fp, "FNH:%d\n", length(j)); % FIXME
+	  }
+	variable h = csv.hits[i];
+	if ((h == -1) || ((h == 0) && (csv.function[i] != ""))) continue;
+	() = fprintf (fp, "DA:%d,%d\n", csv.lineno[i], h);
+     }
+   if (file != NULL) () = fputs ("end_of_record\n", fp);
+}
+
+define slcov_write_report (fp, use_gcov)
+{
+   variable s = struct
+     {
+	file = {}, lineno = {}, hits = {},
+     };
+
+   variable key, val, fields, file, files = Assoc_Type[Int_Type];
+   foreach key, val (Hits_Hash)
+     {
+	fields = strchop (key, '\t', 0);
+	file = fields[0];
+	list_append (s.file, file);
+	list_append (s.lineno, atoi (fields[1]));
+	list_append (s.hits, val);
+	files[file] = 1;
+     }
+   s.file = list_to_array (s.file);
+   s.lineno = list_to_array (s.lineno);
+   s.hits = list_to_array (s.hits);
+
+   variable csv = struct
+     {
+	file = String_Type[0], lineno = Int_Type[0],
+	hits = Int_Type[0], function = String_Type[0],
+	fhits = Int_Type[0],
+     };
+
+   foreach file (assoc_get_keys (files))
+     {
+	if (file == __FILE__) continue;
+	variable fpin = fopen (file, "r");
+	if (fpin == NULL)
+	  {
+	     files[file] = 0;
+	     continue;
+	  }
+	variable i,
+	  fre = `^[^%"]*define[ \t]+\([a-zA-Z0-9_]+\)`,
+	  line, lines = fgetslines(fpin),
+	  num = length(lines),
+	  hits = -1[Int_Type[num]],
+	  funcs = [""][Int_Type[num]],
+	  fhits = Int_Type[num];
+
+#ifnexists _set_bos_compile_hook
+	variable stmt_res =
+	  [
+	   `^[^#%]*[-([@!+/*&|<>^=]`,
+	   `^[ \t]*continue\>`,
+	   `^[ \t]*break\>`,
+	   `^[ \t]*return\>`,
+	   `^[ \t]*throw\>`,
+	  ];
+	variable not_stmt_res =
+	  [
+	   `^[ \t]*[]0-9"'[{}+-/*&!=|]`,  %  continuation
+	   `^[ \ta-z0-9_]+,`,	       %  continuation
+	   `^["%]*\\\$`,               %  continuation of multiline string
+	   `^[ \t]*([a-z0-9_, \t]*)[ \t][^=]`,   %  matches (a,b,..) [^=]
+	   `^[ \t]*try\>`,
+	   `^[ \t]*return[ \t]*;`,     %  return;
+	  ];
+#endif
+	() = fclose (fpin);
+
+	_for i (0, num-1, 1)
+	  {
+	     line = lines[i];
+	     variable matches = string_matches (line, fre);
+	     if (matches != NULL)
+	       {
+		  variable func = matches[1];
+#ifexists _set_bof_compile_hook
+		  ifnot (Func_List[file + "\t" + func])
+		    continue;	       %  not compiled, probably #ifdef'd out
+#endif
+		  hits[where (funcs == func)] = -1;   %  probably a forward declaration
+		  funcs[i] = func;
+		  fhits[i] = Func_Hits[file + "\t" + func];
+		  continue;
+	       }
+#ifnexists _set_bos_compile_hook
+	     variable re;
+	     foreach re (stmt_res)
+	       {
+		  if (string_match (line, re))
+		    {
+		       hits[i] = 0;
+		       % False positive check
+		       foreach re (not_stmt_res)
+			 {
+			    if (string_match (line, re))
+			      {
+				 hits[i] = -1;
+				 break;
+			      }
+			 }
+		       break;
+		    }
+	       }
+#endif
+	  }
+
+	i = where (s.file == file);
+	hits[s.lineno[i]-1] = s.hits[i];
+
+	csv.file = [csv.file, [file][Int_Type[num]]];
+	csv.lineno = [csv.lineno, [1:num]];
+	csv.hits = [csv.hits, hits];
+	csv.function = [csv.function, funcs];
+	csv.fhits = [csv.fhits, fhits];
+     }
+   struct_filter (csv, where ((csv.hits != -1) or (csv.function != "")));
+
+   if (use_gcov)
+     output_trace_file (fp, csv);
+   else
+     csv_writecol (fp, csv);
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+private define _slcov_version ()
+{
+   () = fprintf (stderr, "slcov version %s; S-Lang version: %s\n",
+		 Version, _slang_version_string);
+}
+
+private define _slcov_usage ()
+{
+   variable fp = stderr;
+   () = fprintf (fp, "Usage: %s [options] script args...\n", path_basename (__argv[0]));
+   () = fprintf (fp, "Options:\n");
+   variable opts =
+     [
+      " -f|--func <function>       Name of Function to call [default: slsh_main]\n",
+      " -o|--output <file>         Name of output file [default: <script>.slcov]\n",
+      " -v|--version               Print version information\n",
+      " -h|--help                  Print this message\n"
+     ];
+   variable opt;
+   foreach opt (opts)
+     () = fputs (opt, fp);
+
+   () = fputs ("\
+After running this script, use the genhtml script to produce html output:\n\
+ genhtml -o /var/www/html/dir  -t 'title' --num-spaces 8 OUTPUT-FILE\n\
+",
+	       fp);
+   exit (1);
+}
+
+private define _slcov_cmdopt_error (msg)
+{
+   () = fprintf (stderr, "%s\n", msg);
+   _slcov_usage ();
+}
+
+private variable Use_Gcov = 1;
+private define _slcov_write_report ()
+{
+   slcov_write_report (Output_Fp, Use_Gcov);
+   () = fclose (Output_Fp);
+}
+
+private define _slcov_main ()
+{
+   variable output = NULL;
+   variable func = "slsh_main";
+   variable line_by_line = 0;
+
+   variable opts = cmdopt_new (&_slcov_cmdopt_error);
+   opts.add("f|funct", &func; type="string");
+   opts.add("o|output",&output; type="string");
+   opts.add("v|version", &_slcov_version),
+   opts.add("h|help", &_slcov_usage);
+   variable i = opts.process (__argv, 1);
+
+   if (func == "")
+     _slcov_usage ();
+
+   if (i >= __argc)
+     _slcov_usage ();
+
+   variable main = strtok (func, " \t(;")[0];
+   variable main_args = strtrim (substrbytes (func, 1+strlen(main), -1));
+
+   variable depth = _stkdepth();
+   try
+     {
+	if (strlen (main)) eval (main_args);
+     }
+   catch AnyError:
+     {
+	() = fprintf (stderr, "Error parsing args of %s\n", func);
+	exit (1);
+     }
+   main_args = __pop_args (_stkdepth ()-depth);
+
+   variable script = __argv[i];
+
+   if (not path_is_absolute (script))
+     script = path_concat (getcwd (), script);
+
+   variable st = stat_file (script);
+   if (st == NULL)
+     {
+	() = fprintf (stderr, "Unable to stat %s -- did you specify its path?\n", script);
+	exit (1);
+     }
+
+   if (not stat_is ("reg", st.st_mode))
+     () = fprintf (stderr, "*** Warning %s is not a regular file\n", script);
+
+   if (output == NULL)
+     output = strcat (path_basename_sans_extname (script), ".slcov");
+
+   variable fp = fopen (output, "w");
+   if (fp == NULL)
+     {
+	() = fprintf (stderr, "Unable to open code coverage  output file %s\n");
+	exit (1);
+     }
+   () = fprintf (fp, "# slcov report for:\n");
+   () = fprintf (fp, "#  %S\n", strjoin (__argv, " "));
+   Output_Fp = fp;
+
+   variable has_at_exit = 0;
+   atexit (&_slcov_write_report);
+
+   __set_argc_argv (__argv[[i:]]);
+
+   slcov_enable ();
+   () = evalfile (script);
+
+   variable ref = __get_reference (main);
+   if (ref != NULL)
+     (@ref) (__push_args (main_args));
+   else if (main != "slsh_main")
+     () = fprintf (stderr, "*** Warning: %s is not defined\n", main);
+}
+
+_slcov_main ();
+exit (0);
