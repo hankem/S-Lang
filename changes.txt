@@ -142,6 +142,7 @@ Changes since 2.3.2
     message the line number of the file where the error was detected
 67. modules/socket-module.c: Corrected an error message for the bind
     function
+68. Updated the copyright year
 
 {{{ Previous Versions
 

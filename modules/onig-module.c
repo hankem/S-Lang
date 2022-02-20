@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2007-2020,2021 John E. Davis
+Copyright (C) 2007-2021,2022 John E. Davis
 
 This file is part of the S-Lang Library.
 

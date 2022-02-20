@@ -1,6 +1,6 @@
 /* This module implements an interface to the SLang SMG routines */
 /* -*- mode: C; mode: fold -*-
-Copyright (C) 2010-2020,2021 John E. Davis
+Copyright (C) 2010-2021,2022 John E. Davis
 
 This file is part of the S-Lang Library.
 

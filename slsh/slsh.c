@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005-2020,2021 John E. Davis
+Copyright (C) 2005-2021,2022 John E. Davis
 
 This file is part of the S-Lang Library.
 
@@ -512,7 +512,7 @@ static void output_version (void)
 static int output_copyright (void)
 {
    output_version ();
-   fprintf (stdout, "Copyright (C) 2005-2020,2021 John E. Davis <jed@jedsoft.org>\r\n");
+   fprintf (stdout, "Copyright (C) 2005-2021,2022 John E. Davis <jed@jedsoft.org>\r\n");
    fprintf (stdout, "This is free software with ABSOLUTELY NO WARRANTY.\r\n");
    fprintf (stdout, "\n");
 

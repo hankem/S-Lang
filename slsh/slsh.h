@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold -*-
-Copyright (C) 2010-2020,2021 John E. Davis
+Copyright (C) 2010-2021,2022 John E. Davis
 
 This file is part of the S-Lang Library.
 

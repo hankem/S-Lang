@@ -1,5 +1,5 @@
 % Functions that operate on sets in the form of arrays and lists:
-% Copyright (C) 2010-2020,2021 John E. Davis
+% Copyright (C) 2010-2021,2022 John E. Davis
 %
 % This file is part of the S-Lang Library and may be distributed under the
 % terms of the GNU General Public License.  See the file COPYING for
