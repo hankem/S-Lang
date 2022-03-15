@@ -386,6 +386,7 @@
 @slsh/scripts/jpegsize 0755
 @slsh/scripts/svnsh 0755
 @slsh/scripts/sldb 0755
+@slsh/scripts/slcov 0755
 @slsh/scripts/slprof 0755
 @slsh/scripts/slstkchk 0755
 @slsh/slsh.c

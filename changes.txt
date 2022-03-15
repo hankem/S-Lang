@@ -145,6 +145,7 @@ Changes since 2.3.2
 68. Updated the copyright year
 69. Added slcov script which generates lcov-compatible code coverage
     data
+70. autoconf/aclocal.m4: Updated to v0.3.4.1
 
 
 {{{ Previous Versions
