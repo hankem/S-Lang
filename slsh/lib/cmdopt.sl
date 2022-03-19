@@ -313,7 +313,7 @@ define cmdopt_process (opts, argv, istart)
 	  {
 	     i++;
 	     if (i == iend)
-	       usage_error (opts, opt, "value expected");
+	       usage_error (opts, arg, "value expected");
 	     value = argv[i];
 	  }
 
