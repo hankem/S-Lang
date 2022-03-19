@@ -146,7 +146,8 @@ Changes since 2.3.2
 69. Added slcov script which generates lcov-compatible code coverage
     data
 70. autoconf/aclocal.m4: Updated to v0.3.4.1
-
+71. slsh/Makefile.in: Changed the order of the linker flags to avoid a
+    linking problem on MacPorts (Ryan Schmidt)
 
 {{{ Previous Versions
 
