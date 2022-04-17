@@ -241,9 +241,9 @@
   If the value of mode is 1, then the library will be put in UTF-8 mode.
   If the value of mode is 0, then the library will be initialized with
   UTF-8 support disabled. If the value is -1, then the mode will deter-
-  mined through an OS-dependent manner, e.g., for Unix, the standard
-  locale mechanism will be used. The return value of this function will
-  be 1 if UTF-8 support was activated, or 0 if not.
+  mined through an OS-dependent manner, e.g., for Unix, the standard lo-
+  cale mechanism will be used. The return value of this function will be
+  1 if UTF-8 support was activated, or 0 if not.
 
   The above function determines the UTF-8 state of the library as a
   whole. For some purposes it may be desirable to have more fine-grained
@@ -548,8 +548,8 @@
   Here name is the name of the intrinsic function that the interpreter
   is to give to the function. func-ptr is a pointer to the intrinsic
   function taking num-args and returning ret-type. The final 7 arguments
-  specify the argument types. For example, the intrin_exit intrinsic
-  described above may be added to the table using
+  specify the argument types. For example, the intrin_exit intrinsic de-
+  scribed above may be added to the table using
 
            MAKE_INTRINSIC_N("exit", intrin_exit, SLANG_VOID_TYPE, 1,
                             SLANG_INT_TYPE, 0,0,0,0,0,0)
@@ -611,8 +611,8 @@
            MAKE_INTRINSIC_2("vmin", intrin_min, SLANG_DOUBLE_TYPE,
                             SLANG_DOUBLE_TYPE, SLANG_DOUBLE_TYPE)
 
-  It is useful to extend this function to take an arbitray number of
-  arguments and return the lesser. Consider the following variant:
+  It is useful to extend this function to take an arbitray number of ar-
+  guments and return the lesser. Consider the following variant:
 
            double intrin_min_n (int *num_ptr)
            {
@@ -724,8 +724,8 @@
 
             char S[256];
 
-  then it would not be possible to make it directly available to the
-  interpreter. However, one could create a pointer to it, i.e.,
+  then it would not be possible to make it directly available to the in-
+  terpreter. However, one could create a pointer to it, i.e.,
 
             char *S_Ptr = S;
 
@@ -847,8 +847,8 @@
 
            SLang_set_array_element (at, &i, seasons[i])
 
-  was not used. The return value from this function was also checked
-  because it too could also fail.
+  was not used. The return value from this function was also checked be-
+  cause it too could also fail.
 
   Finally, the array was pushed onto the interpreter's stack and then it
   was freed. It is important to understand why it was freed. This is
@@ -1100,9 +1100,8 @@
             }
             Name_Type;
 
-  is not supported since char name[32] is not a SLANG_STRING_TYPE
-  object. Always keep in mind that a SLANG_STRING_TYPE object is a char
-  *.
+  is not supported since char name[32] is not a SLANG_STRING_TYPE ob-
+  ject. Always keep in mind that a SLANG_STRING_TYPE object is a char *.
 
   5.5.2.2.  Intrinsic Structures
 
@@ -1384,8 +1383,8 @@
   and set the S-Lang global variable SLKeyBoard_Quit to a non-zero
   value. In addition, if the default S-Lang interrupt handler has been
   specified by a NULL argument to the SLang_set_abort_signal function,
-  the error state of the library will be set to SL_UserBreak_Error
-  unless the variable SLang_Ignore_User_Abort is non-zero.
+  the error state of the library will be set to SL_UserBreak_Error un-
+  less the variable SLang_Ignore_User_Abort is non-zero.
 
   The SLang_getkey function waits until input is available to be read.
   The SLang_input_pending function may be used to determine whether or
@@ -1950,10 +1949,10 @@
             void SLtt_set_mono (int obj, char *, SLtt_Char_Type attr);
 
   Only the first of these routines will be discussed briefly here. The
-  latter two functions allow more fine control over the object to
-  attribute mapping (such as assigning a ``blink'' attribute to the
-  object). For a more full explanation on all of these routines see the
-  section about the SLtt interface.
+  latter two functions allow more fine control over the object to attri-
+  bute mapping (such as assigning a ``blink'' attribute to the object).
+  For a more full explanation on all of these routines see the section
+  about the SLtt interface.
 
   The SLtt_set_color function takes four parameters. The first
   parameter, obj, is simply the integer of the object for which
@@ -2164,9 +2163,9 @@
 
   It is important that handlers be established for these signals while
   the either the SLsmg routines or the getkey routines are initialized.
-  The SLang_init_tty, SLang_reset_tty, SLsmg_init_smg, and
-  SLsmg_reset_smg functions block these signals from occurring while
-  they are being called.
+  The SLang_init_tty, SLang_reset_tty, SLsmg_init_smg, and SLsmg_re-
+  set_smg functions block these signals from occurring while they are
+  being called.
 
   Since a signal can be delivered at any time, it is important for the
   signal handler to call only functions that can be called from a signal
@@ -2471,12 +2470,12 @@
           TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. This License applies to any program or other work which contains a
-  notice placed by the copyright holder saying it may be distributed
-  under the terms of this General Public License. The "Program", below,
+  notice placed by the copyright holder saying it may be distributed un-
+  der the terms of this General Public License. The "Program", below,
   refers to any such program or work, and a "work based on the Program"
   means either the Program or any derivative work under copyright law:
-  that is to say, a work containing the Program or a portion of it,
-  either verbatim or with modifications and/or translated into another
+  that is to say, a work containing the Program or a portion of it, ei-
+  ther verbatim or with modifications and/or translated into another
   language. (Hereinafter, translation is included without limitation in
   the term "modification".) Each licensee is addressed as "you".
 

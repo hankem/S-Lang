@@ -3715,10 +3715,10 @@
 
      The type field specifies which field of the union f should be used.
      If type is SLKEY_F_INTERPRET, then f.s is a string that should be
-     passed to the interpreter for evaluation. If type is
-     SLKEY_F_INTRINSIC, then f.f refers to function that should be
-     called. Otherwise, type is SLKEY_F_KEYSYM and f.keysym represents
-     the value of the keysym that is associated with the key sequence.
+     passed to the interpreter for evaluation. If type is SLKEY_F_IN-
+     TRINSIC, then f.f refers to function that should be called. Other-
+     wise, type is SLKEY_F_KEYSYM and f.keysym represents the value of
+     the keysym that is associated with the key sequence.
 
       See Also
         SLkm_define_keysym, SLkm_define_key

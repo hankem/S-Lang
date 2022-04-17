@@ -82,6 +82,10 @@ static Errno_Map_Type Errno_Map [] =
 # define EAGAIN	-1
 #endif
      {"Try again",			EAGAIN,	"EAGAIN"},
+#ifndef EWOULDBLOCK
+# define EWOULDBLOCK -1
+#endif
+   {"Operation would block",            EWOULDBLOCK, "EWOULDBLOCK"},
 #ifndef ENOMEM
 # define ENOMEM	-1
 #endif

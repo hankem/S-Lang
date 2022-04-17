@@ -5249,6 +5249,7 @@ utime utimes \
 ttyname ttyname_r \
 newlocale strtod_l localeconv \
 statvfs \
+flock \
 
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`

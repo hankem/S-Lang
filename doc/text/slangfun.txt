@@ -6132,6 +6132,51 @@ write
 
 --------------------------------------------------------------
 
+flock
+
+ SYNOPSIS
+  control an advisory lock on a file
+
+ USAGE
+  Int_Type flock (File_Type|FD_Type fd, Int_Type op)
+
+ DESCRIPTION
+  This function may be used to apply or remove an advisory lock to the
+  open file represented by the file descriptor `fd'.  The
+  `op' argument controls the use of the lock via one of
+  the following values:
+
+    LOCK_SH : Add a shared lock.  Such locks may be shared by multiple
+       processes
+    LOCK_EX : Add an exclusive lock.  This type of lock is not shared
+       with other processes
+    LOCK_UN : Remove the lock added by the current process
+
+  If another process currently has the file locked in an incompatible
+  way, the call to `flock' will block until that process has
+  removed the lock.  To preveent such blocking, the `LOCK_NB'
+  flag may be ``ored'' with the locking operation, e.g.,
+  `LOCK_EX|LOCK_NB'.
+
+  The advisory locks are inherited through any operation that
+  duplicates or inherits the file descriptor, e.g., the `dup2' or
+  `fork' functions.
+
+  The functions returns 0 upon sucess and -1 upon error.  Check the
+  value of the `errno' variable for the reason for failure.  Note
+  that if the `LOCK_NB' flag is used and the file is already
+  locked in an incompatible way, then the function will fail and set
+  `errno' to `EWOULDBLOCK'.
+
+ NOTES
+  See the system documentation for additional semantics associated
+  with this function.
+
+ SEE ALSO
+  open, fopen, fdopen
+
+--------------------------------------------------------------
+
 getegid
 
  SYNOPSIS

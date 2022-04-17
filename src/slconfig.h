@@ -173,6 +173,7 @@ USA.
 #if defined(__unix__) || (defined(VMS) && (__VMS_VER >= VMS_VERSION_700))
 # define HAVE_KILL 1
 # define HAVE_CHOWN 1
+# define HAVE_FLOCK 1
 #endif
 
 #undef HAVE_LSTAT

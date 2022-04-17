@@ -45,6 +45,23 @@ define run_tests (some_text)
    if (bstrlen (new_text))
      failed ("read at EOF");
 
+   if (0 == flock (fd, LOCK_EX))
+     {
+	variable fp = fopen (file, "r");
+	if ((-1 != flock (fp, LOCK_EX|LOCK_NB))
+	    || (errno != EWOULDBLOCK))
+	  {
+	     () = failed ("flock LOCK_NB");
+	  }
+	() = fclose (fp);
+     }
+   else failed ("flock LOCK_EX: %S", errno_string());
+
+   if (-1 == flock (fd, LOCK_UN))
+     {
+	failed ("flock LOCK_UN: %S", errno_string());
+     }
+
    if (-1 == _close (_fileno(fd))) failed ("_close after tests");
    if (0 == close (fd))
      failed ("Expected close to fail since _close was already used");

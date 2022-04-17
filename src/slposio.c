@@ -999,6 +999,26 @@ static int fdtype_datatype_deref (SLtype type)
    return status;
 }
 
+#ifdef HAVE_FLOCK
+static int flock_cmd (int *op)
+{
+   SLFile_FD_Type *f;
+   SLang_MMT_Type *mmt;
+   int fd, status;
+
+   if (-1 == pop_fd (&fd, &f, &mmt))
+     return 0;		       /* invalid descriptor */
+
+   while ((-1 == (status = flock (fd, *op)))
+	  && is_interrupt (errno, 0))
+     ;
+
+   if (mmt != NULL) SLang_free_mmt (mmt);
+   if (f != NULL) SLfile_free_fd (f);
+   return status;
+}
+#endif
+
 #define I SLANG_INT_TYPE
 #define V SLANG_VOID_TYPE
 #define F SLANG_FILE_FD_TYPE
@@ -1023,6 +1043,9 @@ static SLang_Intrin_Fun_Type Fd_Name_Table [] =
    MAKE_INTRINSIC_1("_close", posix_close_fd, I, I),
 #if defined(TTYNAME_R)
    MAKE_INTRINSIC_0("ttyname", posix_ttyname, V),
+#endif
+#ifdef HAVE_FLOCK
+   MAKE_INTRINSIC_1("flock", flock_cmd, I, I),
 #endif
    SLANG_END_INTRIN_FUN_TABLE
 };
@@ -1075,6 +1098,19 @@ static SLang_IConstant_Type PosixIO_Consts [] =
 #ifdef O_LARGEFILE
    MAKE_ICONSTANT("O_LARGEFILE", O_LARGEFILE),
 #endif
+#ifdef LOCK_SH
+   MAKE_ICONSTANT("LOCK_SH", LOCK_SH),
+#endif
+#ifdef LOCK_NB
+   MAKE_ICONSTANT("LOCK_NB", LOCK_NB),
+#endif
+#ifdef LOCK_EX
+   MAKE_ICONSTANT("LOCK_EX", LOCK_EX),
+#endif
+#ifdef LOCK_UN
+   MAKE_ICONSTANT("LOCK_UN", LOCK_UN),
+#endif
+
    SLANG_END_ICONST_TABLE
 };
 

@@ -149,6 +149,8 @@ Changes since 2.3.2
 71. slsh/Makefile.in: Changed the order of the linker flags to avoid a
     linking problem on MacPorts (Ryan Schmidt)
 72. slsh/lib/cmdopt.sl: Corrected a usage message
+73. src/slposio.c: Added the flock function for the creation of
+    advisory locks
 
 {{{ Previous Versions
 

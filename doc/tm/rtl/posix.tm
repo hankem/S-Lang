@@ -1,3 +1,40 @@
+
+\function{flock}
+\synopsis{control an advisory lock on a file}
+\usage{Int_Type flock (File_Type|FD_Type fd, Int_Type op)}
+\description
+  This function may be used to apply or remove an advisory lock to the
+  open file represented by the file descriptor \exmp{fd}.  The
+  \exmp{op} argument controls the use of the lock via one of
+  the following values:
+#v+
+    LOCK_SH : Add a shared lock.  Such locks may be shared by multiple
+       processes
+    LOCK_EX : Add an exclusive lock.  This type of lock is not shared
+       with other processes
+    LOCK_UN : Remove the lock added by the current process
+#v-
+  If another process currently has the file locked in an incompatible
+  way, the call to \ifun{flock} will block until that process has
+  removed the lock.  To preveent such blocking, the \ivar{LOCK_NB}
+  flag may be ``ored'' with the locking operation, e.g.,
+  \exmp{LOCK_EX|LOCK_NB}.
+
+  The advisory locks are inherited through any operation that
+  duplicates or inherits the file descriptor, e.g., the \ifun{dup2} or
+  \ifun{fork} functions.
+
+  The functions returns 0 upon sucess and -1 upon error.  Check the
+  value of the \ivar{errno} variable for the reason for failure.  Note
+  that if the \ivar{LOCK_NB} flag is used and the file is already
+  locked in an incompatible way, then the function will fail and set
+  \ivar{errno} to \exmp{EWOULDBLOCK}.
+\notes
+  See the system documentation for additional semantics associated
+  with this function.
+\seealso{open, fopen, fdopen}
+\done
+
 \function{getegid}
 \synopsis{Get the effective group id of the current process}
 \usage{Int_Type getegid ()}

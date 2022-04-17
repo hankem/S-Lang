@@ -188,6 +188,7 @@
 #undef HAVE_SYS_UTSNAME_H
 #undef HAVE_UNAME
 
+#undef HAVE_FLOCK
 #undef HAVE_ALARM
 #undef HAVE_PAUSE
 

@@ -171,9 +171,8 @@
   expression involving where filters the data by accepting only those
   energy values whose status is set to 0. The fits and histogram modules
   are not distributed with S-Lang but may be obtained separately-- see
-  http://www.jedsoft.org/slang/modules/ for links to them. For more
-  information about modules, see the ``Modules'' chapter in this docu-
-  ment.
+  http://www.jedsoft.org/slang/modules/ for links to them. For more in-
+  formation about modules, see the ``Modules'' chapter in this document.
 
   For more information about using slsh, see the chapter on ``slsh''.
 
@@ -604,9 +603,9 @@
              A = Int_Type [10];  A[[0:9]] = 7;
              A = Int_Type [10];  A[*] = 7;
 
-  The second and third methods use an array of indices to index the
-  array A. In the second, the range of indices has been explicitly spec-
-  ified, whereas the third example uses a wildcard form. See chapter
+  The second and third methods use an array of indices to index the ar-
+  ray A. In the second, the range of indices has been explicitly speci-
+  fied, whereas the third example uses a wildcard form. See chapter
   ``Arrays'' for more information about array indexing.
 
   Although the examples have pertained to integer arrays, the fact is
@@ -665,11 +664,11 @@
 
   is a list of four objects, each with a different type. Like an array,
   the elements of a list may be accessed via an index, e.g.,
-  x=my_list[2] will result in the assignment of "foo" to x. The most
-  important difference between an array and a list is that an array's
-  size is fixed whereas a list may grow or shrink. Algorithms that
-  require such a data structure may execute many times faster when a
-  list is used instead of an array.
+  x=my_list[2] will result in the assignment of "foo" to x. The most im-
+  portant difference between an array and a list is that an array's size
+  is fixed whereas a list may grow or shrink. Algorithms that require
+  such a data structure may execute many times faster when a list is
+  used instead of an array.
 
   3.7.  Structures and User-Defined Types
 
@@ -718,17 +717,17 @@
              bill.age = 51;
 
   One advantage of creating a new type is that array elements of such
-  types are automatically initialized to instances of the type. For
-  example,
+  types are automatically initialized to instances of the type. For ex-
+  ample,
 
              People = Person_Type [100];
              People[0].first_name = "Bill";
              People[1].first_name = "Hillary";
 
   may be used to create an array of 100 such objects and initialize the
-  first_name fields of the first two elements. In contrast, the form
-  using an anonymous would require a separate step to instantiate the
-  array elements:
+  first_name fields of the first two elements. In contrast, the form us-
+  ing an anonymous would require a separate step to instantiate the ar-
+  ray elements:
 
              People = Struct_Type [100];
              People[0] = @person;
@@ -1513,9 +1512,9 @@
                 return flags;
              }
 
-  The buffer flags object is a bitmapped quantity where the 0th bit
-  indicates whether or not the buffer has been modified, the first bit
-  indicates whether or not autosave has been enabled for the buffer, and
+  The buffer flags object is a bitmapped quantity where the 0th bit in-
+  dicates whether or not the buffer has been modified, the first bit in-
+  dicates whether or not autosave has been enabled for the buffer, and
   so on. Consider for the moment the task of determining if the buffer
   has been modified. This can be determined by looking at the zeroth
   bit: if it is 0 the buffer has not been modified, otherwise it has
@@ -1595,10 +1594,10 @@
                  }
 
   Here the relational binary operator > forms a comparison between one
-  of the return values (the one at the top of the stack) and 0. In
-  accordance with the above rule, since read_line returns multiple val-
-  ues, it must occur as the left binary operand.  Putting it on the
-  right as in
+  of the return values (the one at the top of the stack) and 0. In ac-
+  cordance with the above rule, since read_line returns multiple values,
+  it must occur as the left binary operand.  Putting it on the right as
+  in
 
                while (0 < read_line (fp))    % Incorrect
                  {
@@ -1845,8 +1844,8 @@
                   }
               }
 
-  although the indentation indicates otherwise. It is important to
-  understand the grammar and not be seduced by the indentation!
+  although the indentation indicates otherwise. It is important to un-
+  derstand the grammar and not be seduced by the indentation!
 
   8.3.1.3.  ifnot
 
@@ -1886,16 +1885,16 @@
 
             orelse { 0 } { 6 } { 2 } { 3 }
 
-  returns 6 since the second block is the first to return a non-zero
-  result. The last two block will not get executed.
+  returns 6 since the second block is the first to return a non-zero re-
+  sult. The last two block will not get executed.
 
   The syntax for the andelse statement is:
 
        andelse {integer-expression-1} ... {integer-expression-n}
 
   Each of the blocks will be executed in turn until one of them returns
-  a zero value. The result of this statement is the integer value
-  returned by the last block executed. For example,
+  a zero value. The result of this statement is the integer value re-
+  turned by the last block executed. For example,
 
             andelse { 6 } { 2 } { 0 } { 4 }
 
@@ -2052,12 +2051,12 @@
        or-block [ then statement-or-block ] next-statement
 
   In addition to statement-or-block, its specification requires three
-  other expressions. When executed, the for statement evaluates init-
-  expression, then it tests integer-expression. If integer-expression
-  evaluates to zero, control passes to next-statement. Otherwise, it
-  executes statement-or-block as long as integer-expression evaluates to
-  a non-zero result. After every execution of statement-or-block, end-
-  expression will get evaluated.
+  other expressions. When executed, the for statement evaluates init-ex-
+  pression, then it tests integer-expression. If integer-expression
+  evaluates to zero, control passes to next-statement. Otherwise, it ex-
+  ecutes statement-or-block as long as integer-expression evaluates to a
+  non-zero result. After every execution of statement-or-block, end-ex-
+  pression will get evaluated.
 
   This statement is almost equivalent to
 
@@ -2151,8 +2150,8 @@
 
   Here object can be an expression that evaluates to a value.  Each time
   through the loop the variable var will take on a value that depends
-  upon the data type of the object being processed. For container
-  objects, var will take on values of successive members of the object.
+  upon the data type of the object being processed. For container ob-
+  jects, var will take on values of successive members of the object.
 
   A simple example is
 
@@ -2181,8 +2180,8 @@
                   .
               }
 
-  results in the keys of the associative array a being successively
-  assigned to k. Similarly,
+  results in the keys of the associative array a being successively as-
+  signed to k. Similarly,
 
             foreach v (a) using ("values")
               {
@@ -2380,8 +2379,8 @@
   represent parameters passed to the function, and may be empty if no
   parameters are to be passed. The variables in the parameter-list are
   implicitly declared, thus, there is no need to declare them via a
-  variable declaration statement. In fact any attempt to do so will
-  result in a syntax error.
+  variable declaration statement. In fact any attempt to do so will re-
+  sult in a syntax error.
 
   The body of the function is enclosed in braces and consists of zero or
   more statements (statement-list). While there are no imposed limits
@@ -2404,11 +2403,11 @@
 
   Here a function add_10 has been defined, which when executed, adds 10
   to its parameter. A variable b has also been declared and initialized
-  to zero before being passed to add_10. What will be the value of b
-  after the call to add_10? If S-Lang were a language that passed param-
-  eters by reference, the value of b would be changed to 10.  However,
-  S-Lang always passes by value, which means that b will retain its
-  value during and after after the function call.
+  to zero before being passed to add_10. What will be the value of b af-
+  ter the call to add_10? If S-Lang were a language that passed parame-
+  ters by reference, the value of b would be changed to 10.  However, S-
+  Lang always passes by value, which means that b will retain its value
+  during and after after the function call.
 
   S-Lang does provide a mechanism for simulating pass by reference via
   the reference operator. This is described in greater detail in the
@@ -2540,8 +2539,8 @@
                return (line, 0);
             }
 
-  This function returns either one or two values, depending upon the
-  return value of fgets. Such a function may be handled using:
+  This function returns either one or two values, depending upon the re-
+  turn value of fgets. Such a function may be handled using:
 
              status = read_line (fp);
              if (status != -1)
@@ -2574,10 +2573,10 @@
   The expression &b creates a reference to the variable b and it is the
   reference that gets passed to add_10.  When the function add_10 is
   called, the value of the local variable a will be a reference to the
-  variable b. It is only by dereferencing this value that b can be
-  accessed and changed. So, the statement @a=@a+10 should be read as
-  ``add 10 to the value of the object that a references and assign the
-  result to the object that a references''.
+  variable b. It is only by dereferencing this value that b can be ac-
+  cessed and changed. So, the statement @a=@a+10 should be read as ``add
+  10 to the value of the object that a references and assign the result
+  to the object that a references''.
 
   The reader familiar with C will note the similarity between references
   in S-Lang and pointers in C.
@@ -2649,8 +2648,8 @@
   For the uninitiated, this example looks as if it is destined for dis-
   aster. The add_10 function appears to accept zero arguments, yet it
   was called with a single argument. On top of that, the assignment to x
-  might look a bit strange. The truth is, the code presented in this
-  example makes perfect sense, once you realize what is happening.
+  might look a bit strange. The truth is, the code presented in this ex-
+  ample makes perfect sense, once you realize what is happening.
 
   First, consider what happens when add_10 is called with the parameter
   12. Internally, 12 is pushed onto the stack and then the function
@@ -2682,8 +2681,8 @@
               .
            }
 
-  before further parsing. (The add_10 function, as defined above, is
-  already in this form.) With this knowledge in hand, one can write a
+  before further parsing. (The add_10 function, as defined above, is al-
+  ready in this form.) With this knowledge in hand, one can write a
   function that accepts a variable number of arguments. Consider the
   function:
 
@@ -2958,8 +2957,8 @@
                  % Handle the error
               }
 
-  Other acceptable ways to ``do something'' with the return value
-  include assigning it to a dummy variable,
+  Other acceptable ways to ``do something'' with the return value in-
+  clude assigning it to a dummy variable,
 
             dummy = fputs ("good luck", fp);
 
@@ -3148,8 +3147,8 @@
 
             [first-value : last-value : increment]
 
-  where the increment is optional and defaults to 1. This creates an
-  array whose first element is first-value and whose successive values
+  where the increment is optional and defaults to 1. This creates an ar-
+  ray whose first element is first-value and whose successive values
   differ by increment. last-value sets an upper limit upon the last
   value of the array as described below.
 
@@ -3221,9 +3220,9 @@
        reshape (array-name, integer-array);
 
   where array-name specifies the array to be reshaped to the dimensions
-  given by integer-array, a 1-dimensional array of integers. It is
-  important to note that this does not create a new array, it simply
-  reshapes the existing array. Thus,
+  given by integer-array, a 1-dimensional array of integers. It is im-
+  portant to note that this does not create a new array, it simply re-
+  shapes the existing array. Thus,
 
             variable a = Double_Type [100];
             reshape (a, [10, 10]);
@@ -3389,8 +3388,8 @@
                 return s;
              }
 
-  Better yet is to recognize that the diagonal elements of an n by n
-  array are given by an index array I with elements 0, n+1, 2*n+2, ...,
+  Better yet is to recognize that the diagonal elements of an n by n ar-
+  ray are given by an index array I with elements 0, n+1, 2*n+2, ...,
   n*n-1, or more precisely as
 
             [0:n*n-1:n+1]
@@ -3478,10 +3477,10 @@
 
   Since the array is passed to the function by reference, there is no
   need to make a separate copy of the 100000 element array. As pointed
-  out above, this saves both execution time and memory. The other
-  salient feature to note is that any changes made to the elements of
-  the array within the function will be manifested in the array outside
-  the function. Of course, in this case this is a desirable side-effect.
+  out above, this saves both execution time and memory. The other sa-
+  lient feature to note is that any changes made to the elements of the
+  array within the function will be manifested in the array outside the
+  function. Of course, in this case this is a desirable side-effect.
 
   To see the downside of this representation, consider:
 
@@ -3570,12 +3569,12 @@
             a[where (a < 0.0)] = 0;
 
   Here, the expression (a < 0.0) returns a boolean array whose dimen-
-  sions are the same size as a but whose elements are either 1 or 0,
-  according to whether or not the corresponding element of a is less
-  than zero. This array of zeros and ones is then passed to the where
-  function, which returns a 1-d integer array of indices that indicate
-  where the elements of a are less than zero. Finally, those elements of
-  a are set to zero.
+  sions are the same size as a but whose elements are either 1 or 0, ac-
+  cording to whether or not the corresponding element of a is less than
+  zero. This array of zeros and ones is then passed to the where func-
+  tion, which returns a 1-d integer array of indices that indicate where
+  the elements of a are less than zero. Finally, those elements of a are
+  set to zero.
 
   Consider once more the example involving the set of n quadratic
   equations presented above. Suppose that we wish to get rid of the
@@ -3776,12 +3775,11 @@
              }
 
   The most redeeming feature of the version involving the series of if
-  statements is that it is easy to understand. However, the version
-  involving the associative array has two significant advantages over
-  the former. Namely, the function lookup will be much faster with a
-  time that is independent of the item being searched, and it is exten-
-  sible in the sense that additional functions may be added at run-time,
-  e.g.,
+  statements is that it is easy to understand. However, the version in-
+  volving the associative array has two significant advantages over the
+  former. Namely, the function lookup will be much faster with a time
+  that is independent of the item being searched, and it is extensible
+  in the sense that additional functions may be added at run-time, e.g.,
 
              add_function ("bing", &bing);
 
@@ -4104,8 +4102,8 @@
 
   The problem with the last statement is that it is not a very natural
   way to express the addition of three vectors. It would be far better
-  to extend the action of the binary + operator to the Vector_Type
-  objects and then write the above sum more simply as
+  to extend the action of the binary + operator to the Vector_Type ob-
+  jects and then write the above sum more simply as
 
           V4 = V1 + V2 + V3;
 
@@ -4210,9 +4208,9 @@
           c = a + b;
 
   in isolation one can easily overlook the fact that a function such as
-  vector_add may be getting executed. Moreover, in cases where the
-  action is ambiguous such as Vector_Type*Vector_Type it may not be
-  clear what
+  vector_add may be getting executed. Moreover, in cases where the ac-
+  tion is ambiguous such as Vector_Type*Vector_Type it may not be clear
+  what
 
           c = a*b;
 
@@ -4465,8 +4463,8 @@
                 throw WriteError;
            }
 
-  Here the throw statement has been used to generate the appropriate
-  exception, which in this case is either an OpenError exception or a
+  Here the throw statement has been used to generate the appropriate ex-
+  ception, which in this case is either an OpenError exception or a
   WriteError exception. Since the function now returns nothing (no error
   code), it may be called as
 
@@ -4649,8 +4647,8 @@
 
   In this case, the value of the message field was assigned a default
   value. The reason that the object field is NULL is that no object was
-  specified when the exception was generated.  In order to throw an
-  object, a more complex form of throw statement must be used:
+  specified when the exception was generated.  In order to throw an ob-
+  ject, a more complex form of throw statement must be used:
 
        throw exception-name [, message [, object ] ]
 
@@ -4684,10 +4682,10 @@
 
            catch OSError, RunTimeError:
 
-  The last clause of a try-statement is the finally-block, which is
-  optional and is introduced using the finally keyword. If the try-
-  statement contains no catch-clauses, then it must specify a finally-
-  clause, otherwise a syntax error will result.
+  The last clause of a try-statement is the finally-block, which is op-
+  tional and is introduced using the finally keyword. If the try-state-
+  ment contains no catch-clauses, then it must specify a finally-clause,
+  otherwise a syntax error will result.
 
   If the finally-clause is present, then its corresponding statements
   will be executed regardless of whether an exception occurs. If an
@@ -4754,9 +4752,9 @@
        new_exception (exception-name, baseclass, description);
 
   The exception-name is the name of the exception, baseclass represents
-  the node in the exception hierarchy where it is to be placed, and
-  description is a string that provides a brief description of the
-  exception.
+  the node in the exception hierarchy where it is to be placed, and de-
+  scription is a string that provides a brief description of the excep-
+  tion.
 
   For example, suppose that you are writing some code that processes
   numbers stored in a binary format. In particular, assume that the
@@ -4836,8 +4834,8 @@
               .
            y = gsl->zeta(x);
 
-  This form requires that the module's symbols be accessed via the
-  namespace qualifier "gsl->".
+  This form requires that the module's symbols be accessed via the name-
+  space qualifier "gsl->".
 
   18.  File Input/Output
 
@@ -4964,8 +4962,8 @@
              while (-1 != fread (&line, Char_Type, 1024, fp))
                   count += length (line);
 
-  The fread function requires two additional arguments: the type of
-  object to read (Char_Type in the case), and the number of such objects
+  The fread function requires two additional arguments: the type of ob-
+  ject to read (Char_Type in the case), and the number of such objects
   to be read. The function returns the number of objects actually read
   in the form of an array of the specified type, or -1 upon failure.
 
@@ -5039,8 +5037,8 @@
 
   and combines the objects in the item-list according to format-string
   into a binary string and returns the result.  Likewise, the unpack
-  function may be used to convert a binary string into separate data
-  objects:
+  function may be used to convert a binary string into separate data ob-
+  jects:
 
        (variable-list) = unpack (format-string, binary-string);
 
@@ -5271,8 +5269,8 @@
           }
 
   The first line of the script Unix-specific and should be familiar to
-  Unix users. Typically, the code before slsh_main will load any
-  required modules or packages, and define other functions to be used by
+  Unix users. Typically, the code before slsh_main will load any re-
+  quired modules or packages, and define other functions to be used by
   the script.
 
   Although the use of slsh_main is not required, its use is strongly
@@ -5813,8 +5811,8 @@
          "\(\<[a-zA-Z]+\>\)[ ]+\1\>"
 
   which matches any word repeated consecutively. Note how the grouping
-  operators \( and \) are used to define the text matched by the
-  enclosed regular expression, and then subsequently referred to \1.
+  operators \( and \) are used to define the text matched by the en-
+  closed regular expression, and then subsequently referred to \1.
 
   Finally, remember that when used in string literals either in the S-
   Lang language or in the C language, care must be taken to "double-up"
@@ -5839,9 +5837,9 @@
 
   matches "xxx@abc@silly@abc@yyy", where the pattern \1 matches the text
   enclosed by the \( and \) expressions. However, in the current imple-
-  mentation, the grouping operators are not used to group regular
-  expressions to form a single regular expression. Thus expression such
-  as "\(hello\)*" is not a pattern to match zero or more occurrences of
+  mentation, the grouping operators are not used to group regular ex-
+  pressions to form a single regular expression. Thus expression such as
+  "\(hello\)*" is not a pattern to match zero or more occurrences of
   "hello" as it is in e.g., egrep.
 
   One question that comes up from time to time is why doesn't S-Lang
@@ -6280,8 +6278,8 @@
                       cleanup_after_error ();
                    }
 
-     And code using _clear_error in conjunction with EXE-
-     CUTE_ERROR_BLOCK:
+     And code using _clear_error in conjunction with EXECUTE_ER-
+     ROR_BLOCK:
 
                  ERROR_BLOCK { cleanup_after_error (); _clear_error ();}
                  do_something ();
@@ -6324,8 +6322,8 @@
 
                   nread = fread (&str, Char_Type, num_wanted, fp)
 
-     will no longer result in str being a BString_Type if nread > 1.
-     Instead, str will now become a Char_Type[nread] object. In order to
+     will no longer result in str being a BString_Type if nread > 1. In-
+     stead, str will now become a Char_Type[nread] object. In order to
      read a specified number of bytes from a file in the form of a
      string, use the fread_bytes function:
 
@@ -6432,12 +6430,12 @@
           TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. This License applies to any program or other work which contains a
-  notice placed by the copyright holder saying it may be distributed
-  under the terms of this General Public License. The "Program", below,
+  notice placed by the copyright holder saying it may be distributed un-
+  der the terms of this General Public License. The "Program", below,
   refers to any such program or work, and a "work based on the Program"
   means either the Program or any derivative work under copyright law:
-  that is to say, a work containing the Program or a portion of it,
-  either verbatim or with modifications and/or translated into another
+  that is to say, a work containing the Program or a portion of it, ei-
+  ther verbatim or with modifications and/or translated into another
   language. (Hereinafter, translation is included without limitation in
   the term "modification".) Each licensee is addressed as "you".
 

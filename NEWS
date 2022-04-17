@@ -1,4 +1,11 @@
-NEWS for version 2.3.x                                             -*-text-*-
+-*-text-*-
+
+See changes.txt for a detailed list of changes.  The changes described
+below are highlights.
+
+=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=
+
+NEWS for version 2.3.x
 
 24 bit color support (new for version 2.3.1)
 ============================================
@@ -48,7 +55,15 @@ Module Updates
 ==============
 
    stats-module: Added Anderson-Darling normality and
-   k-sample tests (version 2.3.1)
+     k-sample tests (version 2.3.1)
+     Added a cumulant function (version 2.3.3)
+
+   chksum-module:
+     8, 16, and 32 bit CRCs were added (version 2.3.3)
+     sha224, sha256, sha384, and sha512 added (version 2.3.3)
+     HMAC added (version 2.3.3)
+
+
 
 Intrinsic Functions
 ===================
@@ -92,7 +107,12 @@ Intrinsic Functions
      _array_byteswap: used to convert the values of an array from one
      endianness to another (version 2.3.2)
 
+     fclock: Apply an advisory lock (version 2.3.3)
+
    The following functions have been enhanced:
+
+     stat_file was modifed to accept an open file descriptor (version
+     2.3.3)
 
      array_map modified to support multiple return values.
 
@@ -101,6 +121,10 @@ Intrinsic Functions
 
      _push_struct_field_values: An optional argument may be used to
      specify the fields to be pushed. (version 2.3.1)
+
+     fgetslines: Added support for a "trim" qualifier to indicate how
+     leading/trailing whitespace is to be handled (version 2.3.3)
+
 
 Interpreter Syntax
 ==================
@@ -132,6 +156,12 @@ slsh library (used by conforming slang apps such as jed, slrn, ...)
    rearrange: Performs an in-place arrangement of values in an array
      or list (defined in arrayfuns.sl).
 
+   timestamp.sl: Parses timestamp strings such as Thu May 14 18:05:05
+     2020 and returns the number of seconds since the Unix epoch
+     (version 2.3.3)
+
+   slcov: produces an LCOV compatible code coverage data for slang
+     scripts (version 2.3.3)
 
 slsh
 ====
@@ -144,6 +174,12 @@ API News
 
    Note: The slang 2.3.x API is backward binary compatible with slang
    2.y.z.
+
+   The size of the interpreter's runtime stack is now dynamically
+   allocated and can grow up to a maximum configured size (version
+   2.3.3)
+
+   Added support for TERMINFO_DIR (version 2.3.3)
 
    Font attributes (italics, bold, underline, ...) may be enabled for
    terminals that support them by using a color name with a qualifier:

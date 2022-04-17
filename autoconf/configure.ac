@@ -182,6 +182,7 @@ utime utimes \
 ttyname ttyname_r \
 newlocale strtod_l localeconv \
 statvfs \
+flock \
 )
 
 if test x"$ac_cv_func_socketpair" != x"yes"; then
