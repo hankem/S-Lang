@@ -151,6 +151,9 @@ Changes since 2.3.2
 72. slsh/lib/cmdopt.sl: Corrected a usage message
 73. src/slposio.c: Added the flock function for the creation of
     advisory locks
+74. src/slcurses.h: Added 'extern "C"' to enable the file to be used
+    in C++ programs; also marked some variables as dynamically
+    exportable by using SL_EXTERN (Gisle Vanem)
 
 {{{ Previous Versions
 

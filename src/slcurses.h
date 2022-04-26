@@ -25,6 +25,10 @@ USA.
 # include <slang.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* This is a temporary hack until lynx is fixed to not include this file. */
 #ifndef LYCURSES_H
 
@@ -105,7 +109,7 @@ extern int SLcurses_scanw (char *, ...);
 #define scanw SLcurses_scanw
 #endif
 
-extern SLcurses_Window_Type *SLcurses_Stdscr;
+SL_EXTERN SLcurses_Window_Type *SLcurses_Stdscr;
 #define WINDOW SLcurses_Window_Type
 #define stdscr SLcurses_Stdscr
 
@@ -204,7 +208,7 @@ extern int SLcurses_raw (void);
 
 extern int SLcurses_endwin (void);
 #define endwin SLcurses_endwin
-extern int SLcurses_Is_Endwin;
+SL_EXTERN int SLcurses_Is_Endwin;
 #define isendwin() SLcurses_Is_Endwin
 
 #define keypad(w,x) ((w)->use_keypad = (x))
@@ -242,7 +246,7 @@ extern int SLcurses_Is_Endwin;
    (w)->scroll_max=(w)->nrows, \
    wscrl((w), -1))
 
-extern SLcurses_Char_Type SLcurses_Acs_Map [128];
+SL_EXTERN SLcurses_Char_Type SLcurses_Acs_Map [128];
 #define acs_map SLcurses_Acs_Map
 
 #define ACS_ULCORNER (acs_map[SLSMG_ULCORN_CHAR])
@@ -300,7 +304,7 @@ extern SLcurses_Char_Type SLcurses_Acs_Map [128];
 #define COLOR_CYAN	SLSMG_COLOR_CYAN
 #define COLOR_WHITE	SLSMG_COLOR_LGRAY
 
-extern int SLcurses_Num_Colors;
+SL_EXTERN int SLcurses_Num_Colors;
 #define COLORS		SLcurses_Num_Colors
 #define COLOR_PAIRS	(SLcurses_Num_Colors*SLcurses_Num_Colors)
 
@@ -338,7 +342,7 @@ extern int SLcurses_wdelch (SLcurses_Window_Type *);
 extern int SLcurses_winsch (SLcurses_Window_Type *, int);
 #define winsch SLcurses_winsch
 
-extern int SLcurses_Esc_Delay;/* ESC expire time in milliseconds (ncurses compatible) */
+SL_EXTERN int SLcurses_Esc_Delay;/* ESC expire time in milliseconds (ncurses compatible) */
 #define ESCDELAY SLcurses_Esc_Delay
 
 extern int SLcurses_clearok (SLcurses_Window_Type *, int);
@@ -366,7 +370,9 @@ extern int SLcurses_clearok (SLcurses_Window_Type *, int);
 /* These have no place in C */
 #define TRUE 1
 #define FALSE 0
-#define bool int
+#if !defined(_STDBOOL)  /* MSVC v18+ */
+# define bool int
+#endif
 
 /* Lynx compatability */
 #else
@@ -386,4 +392,8 @@ extern int SLcurses_clearok (SLcurses_Window_Type *, int);
 #define printw SLsmg_printf
 #define endwin SLsmg_reset_smg(),SLang_reset_tty
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
