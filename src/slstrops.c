@@ -1956,6 +1956,12 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	 * to be.
 	 */
 	want_width = width = 0;
+	if (ch == '0')
+	  {
+	     *f++ = '0';
+	     ch = *p++;
+	  }
+
 	if (ch == '*')
 	  {
 	     if (SLang_pop_uinteger(&width)) return (out);
@@ -1964,12 +1970,6 @@ static char *SLdo_sprintf (char *fmt) /*{{{*/
 	  }
 	else
 	  {
-	     if (ch == '0')
-	       {
-		  *f++ = '0';
-		  ch = *p++;
-	       }
-
 	     while ((ch <= '9') && (ch >= '0'))
 	       {
 		  width = width * 10 + (ch - '0');

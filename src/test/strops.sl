@@ -990,7 +990,17 @@ private define test_sprintf ()
 
    if (us != cs)
      failed ("sprintf %%c with signed and unsigned char");
+
+   variable ans = "   6";
+   variable s = sprintf ("%*d", 4, 6);
+   if (s != ans)
+     failed ("sprintf (%%*d, 4, 6) ==> \"%S\", expected \"%S\"", s, ans);
+
+   ans = "0006";
+   if (ans != sprintf ("%0*d", 4, 6))
+     failed ("sprintf (%%0*d, 4, 6)");
 }
+
 test_sprintf ();
 
 private define test_issubstr ()

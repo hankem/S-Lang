@@ -154,6 +154,8 @@ Changes since 2.3.2
 74. src/slcurses.h: Added 'extern "C"' to enable the file to be used
     in C++ programs; also marked some variables as dynamically
     exportable by using SL_EXTERN (Gisle Vanem)
+75. src/slstrops.c: "%0*" was being flagged as invalid by the sprintf
+    function (Jakob Stierhof)
 
 {{{ Previous Versions
 
