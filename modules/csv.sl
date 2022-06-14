@@ -517,10 +517,21 @@ Qualifiers:\n\
 	  }
      }
 
-   variable ncols = length(data);
-   if (length (data) == 0)
+   variable i, ncols = length(data);
+   if (ncols == 0)
      return;
-   variable nrows = length(data[0]), i, j;
+
+   % The following assumes that data is a list or array of lists or
+   % array.
+   data = @data;
+   _for i (0, ncols-1, 1)
+     {
+	variable t = typeof(data[i]);
+	if ((t != List_Type) && (t != Array_Type))
+	  data[i] = [data[i]];
+     }
+
+   variable nrows = length(data[0]), j;
    _for i (1, ncols-1, 1)
      {
 	if (nrows != length(data[i]))

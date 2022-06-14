@@ -156,6 +156,8 @@ Changes since 2.3.2
     exportable by using SL_EXTERN (Gisle Vanem)
 75. src/slstrops.c: "%0*" was being flagged as invalid by the sprintf
     function (Jakob Stierhof)
+76. modules/csv.sl: When writing a CSV file with a single row, convert
+    any scalar data values to single element arrays.
 
 {{{ Previous Versions
 
