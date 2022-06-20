@@ -124,7 +124,7 @@ install_directories:
 	$(MKINSDIR) $(DEST_SLSH_LOCALLIB_DIR)
 	$(MKINSDIR) $(DEST_SLSH_SCRIPT_DIR)
 	$(MKINSDIR) $(DEST_SLSH_DOC_DIR)/html
-install_lib_files:
+install_lib_files: install_directories
 	@for X in lib/*.sl; \
 	do \
 		echo $(INSTALL_DATA) $$X $(DEST_SLSH_LIB_DIR); \
@@ -133,7 +133,7 @@ install_lib_files:
 		  exit 1; \
 		fi; \
 	done
-install_rline_files:
+install_rline_files: install_directories
 	@for X in lib/rline/*.sl lib/rline/slrline.rc; \
 	do \
 		echo $(INSTALL_DATA) $$X $(DEST_SLSH_LIB_DIR)/rline/; \
@@ -142,7 +142,7 @@ install_rline_files:
 		  exit 1; \
 		fi; \
 	done
-install_scripts:
+install_scripts: install_directories
 	@for X in $(SCRIPTS); \
 	do \
 		echo $(INSTALL) scripts/$$X $(DEST_SLSH_SCRIPT_DIR); \
@@ -151,7 +151,7 @@ install_scripts:
 		  exit 1; \
 		fi; \
 	done
-install_help:
+install_help: install_directories
 	@for X in lib/help/*.hlp; \
 	do \
 		echo $(INSTALL_DATA) $$X $(DEST_SLSH_HELP_DIR); \
@@ -160,7 +160,7 @@ install_help:
 		  exit 1; \
 		fi; \
 	done
-install_docs:
+install_docs: install_directories
 	@for X in doc/html/*.html; \
 	do \
 		echo $(INSTALL_DATA) $$X $(DEST_SLSH_DOC_DIR)/html/; \
@@ -171,11 +171,11 @@ install_docs:
 	done
 	$(INSTALL_DATA) doc/man/slsh.1 $(DEST_MAN_DIR)/
 #
-install_slsh:
+install_slsh: install_directories $(OBJDIR)/slsh
 	$(INSTALL) $(OBJDIR)/slsh $(DEST_BIN_DIR)/
-install_static_slsh:
+install_static_slsh: install_directories $(SOBJDIR)/slsh
 	$(INSTALL) $(SOBJDIR)/slsh $(DEST_BIN_DIR)/
-install_slshrc:
+install_slshrc: install_directories
 	$(INSTALL_DATA) etc/slsh.rc $(DEST_SLSH_CONF_DIR)/
 	echo 'prepend_to_slang_load_path("$(SLSH_LOCALLIB_DIR)");' >> $(DEST_SLSH_CONF_DIR)/slsh.rc
 install_common: install_directories install_lib_files install_rline_files install_scripts install_help install_docs
@@ -199,4 +199,3 @@ distclean: clean
   install_lib_files install_rline_files install_scripts install_help \
   install_docs install-static static install_common \
   install_slsh install_static_slsh install_slshrc
-

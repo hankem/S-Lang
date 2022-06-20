@@ -158,6 +158,9 @@ Changes since 2.3.2
     function (Jakob Stierhof)
 76. modules/csv.sl: When writing a CSV file with a single row, convert
     any scalar data values to single element arrays.
+77. src/Makefile.in, slsh/Makefile.in: Addressed some dependency
+    problems found by `make --shuffle` that were causing parallel
+    builds to fail (Sergei Trofimovich)
 
 {{{ Previous Versions
 
