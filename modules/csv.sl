@@ -52,6 +52,7 @@ private define resize_arrays (list, n)
 	variable i = ();
 	variable a = list[i];
 	variable m = length(a);
+	if (m == n) continue;
 	if (m > n)
 	  {
 	     list[i] = a[[:n-1]];
