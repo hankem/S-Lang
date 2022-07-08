@@ -161,6 +161,9 @@ Changes since 2.3.2
 77. src/Makefile.in, slsh/Makefile.in: Addressed some dependency
     problems found by `make --shuffle` that were causing parallel
     builds to fail (Sergei Trofimovich)
+78. src/slarray.c: Flag out-of-range indexing of indefinite ranges
+    involving negative indexes,  e.g., x = [1];  y = x[[-2:]];
+    Previousely this resulted in y = [1,1] instead of an error.
 
 {{{ Previous Versions
 

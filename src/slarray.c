@@ -616,6 +616,13 @@ free_index_objects (SLang_Object_Type *index_objs, unsigned int num_indices)
      }
 }
 
+static void do_index_error (SLuindex_Type i, SLindex_Type n)
+{
+   _pSLang_verror (SL_Index_Error, "Array index %lu out of allowed range 0<=index<%ld",
+		 (unsigned long)i, (long)n);
+}
+
+
 /* If *is_index_array!=0, then only one index object is returned, which is
  * to index all the elements, and not just a single dimension.
  */
@@ -719,6 +726,12 @@ pop_indices (unsigned num_dims, SLindex_Type *dims, SLuindex_Type num_elements,
 			 }
 		    }
 
+		  if ((first_index < 0) || (last_index < 0))
+		    {
+		       do_index_error (i, n);
+		       goto return_error;
+		    }
+
 		  if (NULL == (new_at = inline_implicit_index_array (&first_index, &last_index, &delta)))
 		    goto return_error;
 
@@ -737,12 +750,6 @@ pop_indices (unsigned num_dims, SLindex_Type *dims, SLuindex_Type num_elements,
    return_error:
    free_index_objects (index_objs, num_indices);
    return -1;
-}
-
-static void do_index_error (SLuindex_Type i, SLindex_Type n)
-{
-   _pSLang_verror (SL_Index_Error, "Array index %lu out of allowed range 0<=index<%ld",
-		 (unsigned long)i, (long)n);
 }
 
 int _pSLarray_pop_index (unsigned int num_elements, SLang_Array_Type **ind_atp, SLindex_Type *ind)
