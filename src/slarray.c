@@ -690,6 +690,7 @@ pop_indices (unsigned num_dims, SLindex_Type *dims, SLuindex_Type num_elements,
 		  SLindex_Type first_index, last_index;
 		  SLindex_Type delta = r->delta;
 		  SLindex_Type n;
+		  int ok;
 
 		  if (num_indices == 1)/* could be index array */
 		    n = (SLindex_Type)num_elements;
@@ -726,7 +727,11 @@ pop_indices (unsigned num_dims, SLindex_Type *dims, SLuindex_Type num_elements,
 			 }
 		    }
 
-		  if ((first_index < 0) || (last_index < 0))
+		  ok = (((first_index >= 0) && (last_index >= 0))
+			|| ((first_index == 0) && (last_index == -1) && (delta > 0))   /* [0:-1] */
+		       );
+
+		  if (!ok)
 		    {
 		       do_index_error (i, n);
 		       goto return_error;

@@ -166,6 +166,8 @@ Changes since 2.3.2
     Previousely this resulted in y = [1,1] instead of an error.
 79. modules/csv.sl: Avoid indexing an empty array with a negative
     index (detected by change #78)
+80. src/slarray:c: #78 was flagging x[[:-2]] as invalid instead of
+    producing an empty array for x=[1]
 
 
 {{{ Previous Versions

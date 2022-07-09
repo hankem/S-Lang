@@ -1935,41 +1935,50 @@ private define test_init_char_array (s)
 test_init_char_array ("HelloWorld");
 test_init_char_array ("\xAB\xCD\xEF");
 
-private define check_indices (a, idx, isbad)
+private define check_indices (a, idx, ans)
 {
    variable b;
    try
      {
 	b = a[idx];
-	if (isbad) failed ("get: Bad index not detected");
+	if (ans == NULL) failed ("get: Bad index not detected");
      }
    catch IndexError:
      {
-	ifnot (isbad) failed ("get: Bad index exception erroneously caught");
+	if (ans != NULL) failed ("get: Bad index exception erroneously caught");
+     }
+   if ((ans != NULL)
+       && (not _eqs (ans, b)))
+     {
+	failed ("check_indices: Unexpected result: %S != %S", b, ans);
      }
 
    b = @a;
    try
      {
 	b[idx] = a[idx];
-	if (isbad) failed ("put: Bad index not detected");
+	if (ans == NULL) failed ("put: Bad index not detected");
      }
    catch IndexError:
      {
-	ifnot (isbad) failed ("put: Bad index exception erroneously caught");
+	if (ans != NULL) failed ("put: Bad index exception erroneously caught");
      }
 }
-check_indices ([1,2,3], [0:2], 0);
-check_indices ([1,2,3], [-1:], 0);
-check_indices ([1,2,3], [-1::-1], 0);
-check_indices ([1,2,3], [0:3], 1);
-check_indices ([1,2,3], [0,3], 1);
-check_indices ([1,2,3], [-4,-2,-1], 1);
-check_indices ([1,2,3], [2:-3], 0);
-check_indices (["foo", "bar", "baz"], [0:3], 1);
-check_indices (["foo", "bar", "baz"], [0,3], 1);
-check_indices (["foo", "bar", "baz"], [-4,-2,-1], 1);
-check_indices (["foo", "bar", "baz"], [2:-3], 0);
+check_indices ([1,2,3], [0:2], [1,2,3]);
+check_indices ([1,2,3], [:2], [1,2,3]);
+check_indices ([1,2,3], [:-2], [1,2]);
+check_indices ([1,2,3], [:-3], [1]);
+check_indices ([1,2,3], [:-4], Int_Type[0]);
+check_indices ([1,2,3], [-1:], [3]);
+check_indices ([1,2,3], [-1::-1], [3,2,1]);
+check_indices ([1,2,3], [0:3], NULL);
+check_indices ([1,2,3], [0,3], NULL);
+check_indices ([1,2,3], [-4,-2,-1], NULL);
+check_indices ([1,2,3], [2:-3], Int_Type[0]);
+check_indices (["foo", "bar", "baz"], [0:3], NULL);
+check_indices (["foo", "bar", "baz"], [0,3], NULL);
+check_indices (["foo", "bar", "baz"], [-4,-2,-1], NULL);
+check_indices (["foo", "bar", "baz"], [2:-3], String_Type[0]);
 
 print ("Ok\n");
 exit (0);
