@@ -1966,10 +1966,17 @@ private define check_indices (a, idx, ans)
 }
 check_indices ([1,2,3], [0:2], [1,2,3]);
 check_indices ([1,2,3], [:2], [1,2,3]);
+check_indices ([1,2,3], [:3], NULL);
 check_indices ([1,2,3], [:-2], [1,2]);
 check_indices ([1,2,3], [:-3], [1]);
 check_indices ([1,2,3], [:-4], Int_Type[0]);
+check_indices ([1,2,3], [:-5], Int_Type[0]);
 check_indices ([1,2,3], [-1:], [3]);
+check_indices ([1,2,3], [-3:], [1,2,3]);
+check_indices ([1,2,3], [-4:], NULL);
+check_indices ([1,2,3], [:3:-1], Int_Type[0]);
+check_indices ([1,2,3], [::-1], [3,2,1]);
+
 check_indices ([1,2,3], [-1::-1], [3,2,1]);
 check_indices ([1,2,3], [0:3], NULL);
 check_indices ([1,2,3], [0,3], NULL);

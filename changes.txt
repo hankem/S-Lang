@@ -168,6 +168,9 @@ Changes since 2.3.2
     index (detected by change #78)
 80. src/slarray:c: #78 was flagging x[[:-2]] as invalid instead of
     producing an empty array for x=[1]
+81. src/slarray.c: Tweaked the handling of negative indices in
+    indefinite ranges such that x[[:-i]] will produce an empty array
+    wheneve i > length(x)
 
 
 {{{ Previous Versions
