@@ -8,6 +8,36 @@ static void usage (void)
    exit (1);
 }
 
+static void print_string_cap (const char *name, unsigned char *str, char *comment)
+{
+   fprintf (stdout, "\t%s=", name);
+   while (*str)
+     {
+	if ((int) (*str & 0x7F) < ' ')
+	  {
+	     putc ('^', stdout);
+	     *str += '@';
+	  }
+	putc (*str, stdout);
+	str++;
+     }
+   if (comment != NULL)
+     fprintf (stdout, "\t\t%s", comment);
+   putc ('\n', stdout);
+}
+
+static void print_bool_cap (const char *name, char *comment)
+{
+   fprintf (stdout, "\t%s\t\t%s\n", name,
+	    ((comment == NULL) ? "" : comment));
+}
+
+static void print_numeric_cap (const char *name, int val, char *comment)
+{
+   fprintf (stdout, "\t%s#%d\t\t%s\n", name, val,
+	    ((comment == NULL) ? "" : comment));
+}
+
 int main (int argc, char **argv)
 {
    SLterminfo_Type *t;
@@ -44,20 +74,7 @@ int main (int argc, char **argv)
 	     /* str = (unsigned char *) "NULL"; */
 	  }
 
-	fprintf (stdout, "\t%s=", map->name);
-	while (*str)
-	  {
-	     if ((int) (*str & 0x7F) < ' ')
-	       {
-		  putc ('^', stdout);
-		  *str += '@';
-	       }
-	     putc (*str, stdout);
-	     str++;
-	  }
-	if (map->comment != NULL)
-	  fprintf (stdout, "\t\t%s", map->comment);
-	putc ('\n', stdout);
+	print_string_cap (map->name, str, map->comment);
 	map++;
      }
 
@@ -65,11 +82,7 @@ int main (int argc, char **argv)
    while (*map->name != 0)
      {
 	if (_pSLtt_tigetflag (t, map->name) > 0)
-	  {
-	     fprintf (stdout, "\t%s\t\t%s\n",
-		      map->name,
-		      ((map->comment == NULL) ? "" : map->comment));
-	  }
+	  print_bool_cap (map->name, map->comment);
 	map++;
      }
    map = Tgetnum_Map;
@@ -77,12 +90,35 @@ int main (int argc, char **argv)
      {
 	int val;
 	if ((val = SLtt_tigetnum ((SLFUTURE_CONST char *)map->name, (char **) &t)) >= 0)
-	  {
-	     fprintf (stdout, "\t%s#%d\t\t%s\n",
-		      map->name, val,
-		      ((map->comment == NULL) ? "" : map->comment));
-	  }
+	  print_numeric_cap (map->name, val, map->comment);
+
 	map++;
+     }
+
+   if (t->ext != NULL)
+     {
+	Extended_Cap_Type *e = t->ext;
+	int i;
+
+	fprintf (stdout, "Local Extensions:\n");
+	for (i = 0; i < e->num_string; i++)
+	  {
+	     str = (unsigned char *) SLtt_tigetstr ((SLFUTURE_CONST char *)e->string_caps[i], (char **) &t);
+	     if (str != NULL) print_string_cap (e->string_caps[i], str, NULL);
+	  }
+
+	for (i = 0; i < e->num_bool; i++)
+	  {
+	     if (_pSLtt_tigetflag (t, e->bool_caps[i]) > 0)
+	       print_bool_cap (e->bool_caps[i], NULL);
+	  }
+
+	for (i = 0; i < e->num_numeric; i++)
+	  {
+	     int val;
+	     if ((val = SLtt_tigetnum ((SLFUTURE_CONST char *)e->numeric_caps[i], (char **) &t)) >= 0)
+	       print_numeric_cap (e->numeric_caps[i], val, NULL);
+	  }
      }
 
    _pSLtt_tifreeent (t);

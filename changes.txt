@@ -171,6 +171,9 @@ Changes since 2.3.2
 81. src/slarray.c: Tweaked the handling of negative indices in
     indefinite ranges such that x[[:-i]] will produce an empty array
     wheneve i > length(x)
+82. src/sltermin.c: Added support for so-called user-defined terminfo
+    extensions.  In particular, if the terminfo file defines RGB=true,
+    then truecolor support will be enabled.
 
 
 {{{ Previous Versions

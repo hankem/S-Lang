@@ -3049,6 +3049,12 @@ int SLtt_initialize (SLFUTURE_CONST char *term)
    if ((Max_Terminfo_Colors = tt_tgetnum ("Co")) < 0)
      Max_Terminfo_Colors = 8;
 
+   if (TGETFLAG("RGB"))
+     {
+        Max_Terminfo_Colors = 0x1000000;
+        Has_True_Color = 1;
+     }
+
    if ((Color_Bg_Str != NULL) && (Color_Fg_Str != NULL))
      SLtt_Use_Ansi_Colors = 1;
    else

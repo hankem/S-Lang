@@ -93,6 +93,26 @@ static int make_integer32 (unsigned char *buf)
 #define MAGIC_LEGACY 0432
 #define MAGIC_32BIT 01036
 
+typedef struct
+{
+   int num_bool;
+   char **bool_caps;		       /* malloced */
+   unsigned char *bool_values;	       /* malloced */
+
+   int num_numeric;
+   char **numeric_caps;		       /* NOT malloced */
+   unsigned char *numeric_values;      /* malloced */
+
+   int num_string;
+   char **string_caps;		       /* NOT malloced */
+   unsigned char *string_offsets;      /* malloced */
+
+   char *heap;			       /* malloced */
+   char *cap_name_heap;		       /* NOT malloced */
+}
+Extended_Cap_Type;
+
+
 /* In this structure, all char * fields are malloced EXCEPT if the
  * structure is SLTERMCAP.  In that case, only terminal_names is malloced
  * and the other fields are pointers into it.
@@ -120,6 +140,9 @@ struct _pSLterminfo_Type
    unsigned int string_table_size;
    char *string_table;
 
+   size_t read_offset;		       /* number of bytes currently read */
+
+   Extended_Cap_Type *ext;
 };
 
 static char *tcap_getstr (SLCONST char *, SLterminfo_Type *);
@@ -176,6 +199,8 @@ static FILE *open_terminfo (char *file, SLterminfo_Type *h)
    h->num_string_offsets = make_integer16 (buf + 8);
    h->string_table_size = make_integer16 (buf + 10);
 
+   h->read_offset = 12;
+
    return fp;
 }
 
@@ -187,7 +212,7 @@ static FILE *open_terminfo (char *file, SLterminfo_Type *h)
  */
 
 /* returns pointer to malloced space */
-static unsigned char *read_terminfo_section (FILE *fp, unsigned int size)
+static void *read_terminfo_section (FILE *fp, SLterminfo_Type *t, unsigned int size)
 {
    char *s;
 
@@ -197,12 +222,14 @@ static unsigned char *read_terminfo_section (FILE *fp, unsigned int size)
 	SLfree (s);
 	return NULL;
      }
+   t->read_offset += size;
+
    return (unsigned char *) s;
 }
 
 static char *read_terminal_names (FILE *fp, SLterminfo_Type *t)
 {
-   return t->terminal_names = (char *) read_terminfo_section (fp, t->name_section_size);
+   return t->terminal_names = (char *) read_terminfo_section (fp, t, t->name_section_size);
 }
 
 /*
@@ -223,7 +250,7 @@ static unsigned char *read_boolean_flags (FILE *fp, SLterminfo_Type *t)
    unsigned int size = (t->name_section_size + t->boolean_section_size) % 2;
    size += t->boolean_section_size;
 
-   return t->boolean_flags = read_terminfo_section (fp, size);
+   return t->boolean_flags = (unsigned char *)read_terminfo_section (fp, t, size);
 }
 
 /*
@@ -235,7 +262,7 @@ static unsigned char *read_boolean_flags (FILE *fp, SLterminfo_Type *t)
 
 static unsigned char *read_numbers (FILE *fp, SLterminfo_Type *t)
 {
-   return t->numbers = read_terminfo_section (fp, t->sizeof_number * t->num_numbers);
+   return t->numbers = (unsigned char *)read_terminfo_section (fp, t, t->sizeof_number * t->num_numbers);
 }
 
 /* The strings section is also similar.  Each capability is stored as a
@@ -249,7 +276,7 @@ static unsigned char *read_numbers (FILE *fp, SLterminfo_Type *t)
 
 static unsigned char *read_string_offsets (FILE *fp, SLterminfo_Type *t)
 {
-   return t->string_offsets = (unsigned char *) read_terminfo_section (fp, 2 * t->num_string_offsets);
+   return t->string_offsets = (unsigned char *) read_terminfo_section (fp, t, 2 * t->num_string_offsets);
 }
 
 /* The final section is the string table.  It contains all the values of
@@ -259,7 +286,133 @@ static unsigned char *read_string_offsets (FILE *fp, SLterminfo_Type *t)
 
 static char *read_string_table (FILE *fp, SLterminfo_Type *t)
 {
-   return t->string_table = (char *) read_terminfo_section (fp, t->string_table_size);
+   return t->string_table = (char *) read_terminfo_section (fp, t, t->string_table_size);
+}
+
+static void free_ext_caps (Extended_Cap_Type *ext)
+{
+   if (ext == NULL) return;
+
+   SLfree ((char *)ext->bool_values);
+   SLfree ((char *)ext->numeric_values);
+   SLfree ((char *)ext->string_offsets);
+   SLfree ((char *)ext->heap);
+   SLfree ((char *)ext->bool_caps);
+
+   SLfree ((char *)ext);
+}
+
+static int try_read_extended_caps (FILE *fp, SLterminfo_Type *t)
+{
+   Extended_Cap_Type *ext;
+   size_t size;
+   char **cap_names;
+   unsigned char *b;
+   char *heap_max, *cap_name_heap;
+   unsigned int i, num_caps, heap_size;
+   unsigned char buf[11];
+
+   size = 10;
+   b = buf;
+   if (t->read_offset % 2)
+     {
+	size++;
+	b++;
+     }
+
+   if (size != fread (buf, 1, size, fp))
+     return 0;			       /* assume no extended caps */
+   t->read_offset += size;
+
+   if (NULL == (ext = (Extended_Cap_Type *)SLmalloc (sizeof(Extended_Cap_Type))))
+     return -1;
+   memset (ext, 0, sizeof(Extended_Cap_Type));
+
+   ext->num_bool = make_integer16(b);
+   ext->num_numeric = make_integer16(b+2);
+   ext->num_string = make_integer16(b+4);
+   (void) make_integer16(b+6);   /* number of valid strings (not cancelled or absent) */
+   heap_size = make_integer16(b+8);   /* size of the area containing all strings */
+
+   /* The heap should be large enough to hold all the strings */
+   num_caps = ext->num_bool + ext->num_numeric + ext->num_string;
+   if ((ext->num_bool < 0) || (ext->num_numeric < 0) || (ext->num_string < 0)
+       || (heap_size < 2*(num_caps + ext->num_string)))
+     goto return_failure;
+
+   size = ext->num_bool;
+   if (size % 2) size++;     /* so numbers will start on an even byte bndry */
+   if (NULL == (ext->bool_values = (unsigned char *)read_terminfo_section (fp, t, size)))
+     goto return_failure;
+
+   size = t->sizeof_number * ext->num_numeric;
+   if (NULL == (ext->numeric_values = (unsigned char *)read_terminfo_section (fp, t, size)))
+     goto return_failure;
+
+   /* Now read the offsets for the strings.  These also include offsets for all
+    * capability names.
+    */
+   size = 2 * ext->num_string;
+   /* Now add the offsets for _all_ the extended cap names */
+   size += 2 * num_caps;
+   if (NULL == (ext->string_offsets = (unsigned char *)read_terminfo_section (fp, t, size)))
+     goto return_failure;
+
+   /* Now read the heap that contains all the strings. The heaps contains two
+    * areas: the first contains the values the string-valued capabilities.  The
+    * seccond area contains the names of all the extended capabilities.  Unfortunately
+    * the file format lacks explicit information about where the second area begins.
+    * So it will have to be deduced.
+    */
+   if (NULL == (ext->heap = (char *)read_terminfo_section (fp, t, heap_size)))
+     goto return_failure;
+   heap_max = ext->heap + heap_size;
+
+   /* The whole point of this next loop is to find the cap_name_heap.  This info
+    * should have been put in the header.
+    */
+   cap_name_heap = ext->heap;
+   b = ext->string_offsets;
+   for (i = 0; i < (unsigned int)ext->num_string; i++)
+     {
+	int offset = make_integer16 (b);
+	if (((offset >= 0) && ((unsigned int)offset < heap_size))
+	    && (ext->heap + offset >= cap_name_heap))
+	  {
+	     cap_name_heap = ext->heap + offset;
+	     while ((cap_name_heap < heap_max)
+		    && (*cap_name_heap != 0))
+	       cap_name_heap++;
+	     if (cap_name_heap < heap_max) cap_name_heap++;   /* skip \0 */
+	  }
+	b += 2;
+     }
+
+   if (NULL == (cap_names = (char **)SLmalloc(num_caps * sizeof(char *))))
+     goto return_failure;
+
+   for (i = 0; i < num_caps; i++)
+     {
+	int offset = make_integer16 (b);
+
+	if ((offset < 0)
+	    || ((cap_names[i] = cap_name_heap + offset) >= heap_max))
+	  cap_names[i] = "*invalid*";
+
+	b += 2;
+     }
+   ext->cap_name_heap = cap_name_heap;
+
+   ext->bool_caps = cap_names;
+   ext->numeric_caps = cap_names + ext->num_bool;
+   ext->string_caps = ext->numeric_caps + ext->num_numeric;
+
+   t->ext = ext;
+   return 0;
+
+return_failure:
+   free_ext_caps (ext);
+   return 0;			       /* we tried */
 }
 
 /*
@@ -381,6 +534,7 @@ void _pSLtt_tifreeent (SLterminfo_Type *t)
 	SLfree ((char *)t->string_offsets);
 	SLfree ((char *)t->numbers);
 	SLfree ((char *)t->boolean_flags);
+	free_ext_caps (t->ext);
      }
    SLfree ((char *)t->terminal_names);
    SLfree ((char *)t);
@@ -426,7 +580,7 @@ SLterminfo_Type *_pSLtt_tigetent (SLCONST char *term)
    if (fp == NULL) fp = try_open_hardcoded (ti, term);
 
 #ifdef SLANG_UNTIC
-   fp_open_label:
+fp_open_label:
 #endif
 
    if (fp == NULL)
@@ -440,7 +594,8 @@ SLterminfo_Type *_pSLtt_tigetent (SLCONST char *term)
        || (NULL == read_boolean_flags (fp, ti))
        || (NULL == read_numbers (fp, ti))
        || (NULL == read_string_offsets (fp, ti))
-       || (NULL == read_string_table (fp, ti)))
+       || (NULL == read_string_table (fp, ti))
+       || (-1 == try_read_extended_caps (fp, ti)))
      {
 	_pSLtt_tifreeent (ti);
 	ti = NULL;
@@ -472,7 +627,11 @@ static int compute_cap_offset (SLCONST char *cap, SLterminfo_Type *t, Tgetstr_Ma
    char cha, chb;
 
    (void) t;
-   cha = *cap++; chb = *cap;
+
+   /* cap must be at most 2 characters */
+   if ((0 == (cha = cap[0]))
+       || ((0 != (chb = cap[1])) && (0 != cap[2])))
+     return -1;
 
    while (*map->name != 0)
      {
@@ -488,12 +647,32 @@ static int compute_cap_offset (SLCONST char *cap, SLterminfo_Type *t, Tgetstr_Ma
 
 char *_pSLtt_tigetstr (SLterminfo_Type *t, SLCONST char *cap)
 {
-   int offset;
+   int i, offset;
 
    if (t == NULL)
      return NULL;
 
    if (t->flags == SLTERMCAP) return tcap_getstr (cap, t);
+
+   /* Check local extensions first */
+   if (t->ext != NULL)
+     {
+	Extended_Cap_Type *e = t->ext;
+	int n = e->num_string;
+
+	for (i = 0; i < n; i++)
+	  {
+	     char *val;
+	     if (strcmp (cap, e->string_caps[i]))
+	       continue;
+
+	     offset = make_integer16 (e->string_offsets + 2*i);
+	     if (offset < 0) return NULL;
+	     val = e->heap + offset;
+	     if (val >= e->cap_name_heap) return NULL;
+	     return val;
+	  }
+     }
 
    offset = compute_cap_offset (cap, t, Tgetstr_Map, t->num_string_offsets);
    if (offset < 0) return NULL;
@@ -511,6 +690,19 @@ int _pSLtt_tigetnum (SLterminfo_Type *t, SLCONST char *cap)
 
    if (t->flags == SLTERMCAP) return tcap_getnum (cap, t);
 
+   if (t->ext != NULL)
+     {
+	Extended_Cap_Type *e = t->ext;
+	int i, n = e->num_numeric;
+
+	for (i = 0; i < n; i++)
+	  {
+	     if (strcmp (cap, e->numeric_caps[i]))
+	       continue;
+	     return (*t->make_integer)(e->numeric_values + i*t->sizeof_number);
+	  }
+     }
+
    offset = compute_cap_offset (cap, t, Tgetnum_Map, t->num_numbers);
    if (offset < 0) return -1;
 
@@ -524,6 +716,19 @@ int _pSLtt_tigetflag (SLterminfo_Type *t, SLCONST char *cap)
    if (t == NULL) return -1;
 
    if (t->flags == SLTERMCAP) return tcap_getflag (cap, t);
+
+   if (t->ext != NULL)
+     {
+	Extended_Cap_Type *e = t->ext;
+	int i, n = e->num_bool;
+
+	for (i = 0; i < n; i++)
+	  {
+	     if (strcmp (cap, e->bool_caps[i]))
+	       continue;
+	     return e->bool_values[i];
+	  }
+     }
 
    offset = compute_cap_offset (cap, t, Tgetflag_Map, t->boolean_section_size);
 
