@@ -98,8 +98,8 @@ USA.
  *
  * The bits are split so we can maintain ABI compatibility on 64 bit machines.
  */
-#if SLTT_HAS_TRUECOLOR_SUPPORT && (SIZEOF_LONG == 8)
 static int Has_True_Color = 0;
+#if SLTT_HAS_TRUECOLOR_SUPPORT && (SIZEOF_LONG == 8)
 # if 0
 #  define FG_MASK_LOW		0x0000000000FFFFFFULL
 #  define FG_MASK_HIGH		0x0200000000000000ULL
