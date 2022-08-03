@@ -45,23 +45,42 @@ private define read_strings_callback (in_quote, str_info)
    return line;
 }
 
-private define resize_arrays (list, n)
+private define resize_arrays (arrays, n)
 {
-   _for (0, length(list)-1, 1)
+   _for (0, length(arrays)-1, 1)
      {
 	variable i = ();
-	variable a = list[i];
+	variable a = arrays[i];
 	variable m = length(a);
 	if (m == n) continue;
 	if (m > n)
 	  {
-	     list[i] = a[[:n-1]];
+	     arrays[i] = a[[:n-1]];
 	     continue;
 	  }
 	variable b = _typeof(a)[n];
 	b[[:m-1]] = a;
-	list[i] = b;
+	arrays[i] = b;
      }
+}
+
+private define merge_column_arrays (list_of_column_arrays)
+{
+   variable j, n = length (list_of_column_arrays);
+   variable column_arrays = list_of_column_arrays[0];
+   variable i, ncols = length (column_arrays);
+   variable merged = {};
+   _for i (0, ncols-1, 1)
+     {
+	variable array_list = {};
+	_for j (0, n-1, 1)
+	  {
+	     column_arrays = list_of_column_arrays[j];
+	     list_append (array_list, column_arrays[i]);
+	  }
+	list_append (merged, [__push_list(__tmp(array_list))]);
+     }
+   return merged;
 }
 
 private define atofloat (x)
@@ -140,6 +159,7 @@ Qualifiers:\n\
  typeNTH=val (specifiy type for NTH column)\n\
  snan=\"\", inan=0, lnan=0L, fnan=_NaN, dnan=_NaN (defaults for empty fields),\n\
  nanNTH=val (value used for an empty field in the NTH column\n\
+ init_size=int (number of rows to initially read)\n\
 "
 	     );
      }
@@ -159,6 +179,8 @@ Qualifiers:\n\
    variable fnan = qualifier ("fnan", typecast(_NaN,Float_Type));
    variable inan = qualifier ("inan", 0);
    variable lnan = qualifier ("lnan", 0L);
+   variable init_size = qualifier ("init_size", 0x8000);
+   if (init_size <= 0) init_size = 0x8000;
 
    if ((fields != NULL) && (columns != NULL)
        && (length(fields) != length(columns)))
@@ -301,15 +323,15 @@ Qualifiers:\n\
 	nan_values[i1] = typecast (qualifier ("nan$i"$, val), typeof(val));
      }
 
-   variable list_of_arrays = {}, array;
-   variable init_size = 0x8000;
+   variable column_arrays = Array_Type[ncols], array;
    variable dsize = init_size;
    variable max_allocated = init_size;
+   variable list_of_column_arrays = {};
    _for i (0, ncols-1, 1)
      {
 	if (row_data == NULL)
 	  {
-	     list_append (list_of_arrays, typeof(nan_values[i])[0]);
+	     column_arrays[i] = typeof(nan_values[i])[0];
 	     continue;
 	  }
 
@@ -324,8 +346,9 @@ Qualifiers:\n\
 	       val = (@convert_func)(val);
 	  }
 	array[0] = val;
-	list_append (list_of_arrays, array);
+	column_arrays[i] = array;
      }
+   list_append (list_of_column_arrays, column_arrays);
 
    variable min_row_size = 1+max(column_ints);
    forever
@@ -351,8 +374,11 @@ Qualifiers:\n\
 
 	if (nread >= max_allocated)
 	  {
-	     max_allocated += dsize;
-	     resize_arrays (list_of_arrays, max_allocated);
+	     column_arrays = Array_Type[ncols];
+	     _for i (0, ncols-1, 1)
+	       column_arrays[i] = _typeof(list_of_column_arrays[0][i])[max_allocated];
+	     list_append (list_of_column_arrays, column_arrays);
+	     nread = 0;
 	  }
 
 	_for i (0, ncols-1, 1)
@@ -360,21 +386,23 @@ Qualifiers:\n\
 	     val = row_data[column_ints[i]];
 	     ifnot (strbytelen(val))
 	       {
-		  list_of_arrays[i][nread] = nan_values[i];
+		  column_arrays[i][nread] = nan_values[i];
 		  continue;
 	       }
 	     convert_func = convert_funcs[i];
 	     if (convert_func == NULL)
 	       {
-		  list_of_arrays[i][nread] = val;
+		  column_arrays[i][nread] = val;
 		  continue;
 	       }
-	     list_of_arrays[i][nread] = (@convert_func)(val);
+	     column_arrays[i][nread] = (@convert_func)(val);
 	  }
 	nread++;
      }
-   resize_arrays (list_of_arrays, nread);
-   set_struct_fields (datastruct, __push_list(list_of_arrays));
+   resize_arrays (__tmp(column_arrays), nread);
+   list_of_column_arrays = merge_column_arrays (__tmp(list_of_column_arrays));
+
+   set_struct_fields (datastruct, __push_list(list_of_column_arrays));
    return datastruct;
 }
 

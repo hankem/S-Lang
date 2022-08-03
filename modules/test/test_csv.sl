@@ -29,7 +29,7 @@ private define test_csv (file)
 {
    variable names = get_struct_field_names (Table);
 
-   variable table = csv_readcol (file; has_header);
+   variable table = csv_readcol (file; has_header, init_size=1);
    if (any(names != get_struct_field_names (table)))
      {
 	failed ("1: csv_read/write failed to produce a table with the expected column names");

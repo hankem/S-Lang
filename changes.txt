@@ -176,8 +176,7 @@ Changes since 2.3.2
     then truecolor support will be enabled.
 83. src/sldisply.c: The Has_True_Color variable was not defined for 32
     bit systems
-
-
+84. modules/csv.sl: Improved read speed for large CSV files
 
 {{{ Previous Versions
 
