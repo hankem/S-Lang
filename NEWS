@@ -15,18 +15,20 @@ NEWS for version 2.3.x
   available for 64 bit Unix/VMS systems to keep binary compatibility.
   Support for 32 bit systems will be added in version 3.
 
-  Since not all terminals support true color, and it is not supported
-  by terminfo, 24 bit color is disabled by default.  A list of
-  terminals that support true color may be found at
-  <https://gist.github.com/XVilka/8346728>.
+  The library tries to detect the terminal's support for 24 bit true by
+  looking for the "RGB" terminfo flag.  If this flag exists, and is
+  TRUE then true color will be enabled.  Note that this this flag is a
+  relatively recent addition to terminfo and is defined by the
+  so-called user-defined terminfo extension.  A list of terminals that
+  support true color may be found at <https://github.com/termstandard/colors>.
 
-  To indicate that a terminal supports true color, set the value of
-  the environment variable COLORTERM to either "24bit" or "truecolor",
-  e.g.,
+  If the terminal supports 24 bit true color, but the library does not
+  detect it, then set the value of the environment variable COLORTERM
+  to either "24bit" or "truecolor", e.g.,
 
       export COLORTERM=truecolor
 
-  Then to use 24 bit color in applications such as jed and slrn, use a
+  To use 24 bit color in applications such as jed and slrn, use a
   24bit RGB value in the form "#RRGGBB" as the name of the color.
   For example, to set the color of the status line in jed to AliceBlue
   (#F0F8FF) on a SlateGray (#708090) background, use
@@ -45,8 +47,7 @@ New Modules
 ===========
 
    1. base64: A base64 encoder/decoder module
-   2. chksum: A module for computing various checksums (currently md5
-      and sha1)
+   2. chksum: A module for computing various checksums (md5, sha1, ...)
    3. stats: A statistics module
    4. histogram: A histogram module
    5. json: Encode/decode json structures
@@ -250,8 +251,12 @@ Unicode Support
 Miscellaneous
 =============
 
-  Support was added to support 32-bit terminfo database
-  entries introduced by ncurses 6.1 (version 2.3.2)
+  Support was added to support 32-bit terminfo database entries
+  introduced by ncurses 6.1 (version 2.3.2), and (in version 2.3.3)
+  for so-called user-defined terminfo extensions.  In particular, if
+  the terminfo file defines RGB=true, then truecolor support will be
+  enabled.
+
 
 =x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=x=
 

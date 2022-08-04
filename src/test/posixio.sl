@@ -8,7 +8,9 @@ define run_tests (some_text)
    variable new_text, nbytes, len;
    variable pos;
 
-   file = util_make_tmp_file ("tmpfile", &fd);
+   % Avoid an NFS mount.  The flock function can fail if lockd is not
+   % running on the server
+   file = util_make_tmp_file ("/tmp/sltest-tmpfile", &fd);
 
    if (-1 == write (fd, some_text))
      failed ("write");
