@@ -162,7 +162,8 @@ slsh library (used by conforming slang apps such as jed, slrn, ...)
      (version 2.3.3)
 
    slcov: produces an LCOV compatible code coverage data for slang
-     scripts (version 2.3.3)
+     scripts (version 2.3.3).  See <http://jedsoft.org/slang/slcov/>
+     for some examples
 
 slsh
 ====
